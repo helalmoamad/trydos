@@ -1,0 +1,130 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/config/theme/my_color_scheme.dart';
+import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/responsive_padding.dart';
+import 'package:trydos/core/utils/theme_state.dart';
+import 'package:trydos/features/chat/presentation/widgets/call_status_widget.dart';
+
+class CreateCallPage extends StatefulWidget {
+  const CreateCallPage({Key? key}) : super(key: key);
+
+  @override
+  State<CreateCallPage> createState() => _CreateCallPageState();
+}
+
+class _CreateCallPageState extends ThemeState<CreateCallPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: colorScheme.black,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                Column(
+                  children: [
+                    140.verticalSpace,
+                    Padding(
+                      padding: HWEdgeInsets.symmetric(horizontal: 105.w),
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 200,
+                            width: 200.w,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(AppAssets.chatProfileJpg),
+                                fit: BoxFit.cover,
+                              ),
+                              borderRadius: BorderRadius.circular(12.0),
+                              border: Border.all(
+                                  width: 1.0, color: const Color(0xff388cff)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: colorScheme.white.withOpacity(0.35),
+                                  offset: const Offset(0, 10),
+                                  blurRadius: 30,
+                                  spreadRadius: 10
+                                ),
+                              ],
+                            ),
+                          ),
+                          15.verticalSpace,
+                          Text(
+                            'Grant Marshall',
+                            style: textTheme.headline5?.rr
+                                .copyWith(color: const Color(0xffD3D3D3)),
+                          ),
+                          80.verticalSpace,
+                          CallStatusWidget(
+                            text: 'Calling ...',
+                            iconUrl: AppAssets.callingSvg,
+                            textColor: colorScheme.grey200,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                Padding(
+                  padding: HWEdgeInsets.symmetric(horizontal: 41.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SvgPicture.asset(
+                        AppAssets.callMutedSvg,
+                        width: 25.sp,
+                        height: 25.sp,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            AppAssets.endCallSvg,
+                            width: 25.sp,
+                            height: 25.sp,
+                          ),
+                          10.verticalSpace,
+                          Text(
+                            'End Call',
+                            style: textTheme.bodyText2?.lr
+                                .copyWith(color: const Color(0xffFF5F61)),
+                          ),
+                        ],
+                      ),
+                      SvgPicture.asset(
+                        AppAssets.cancelVideoCallSvg,
+                        width: 34.sp,
+                        height: 25.sp,
+                      ),
+                    ],
+                  ),
+                ),
+                50.verticalSpace
+              ],
+            ),
+            Padding(
+              padding: EdgeInsetsDirectional.fromSTEB(20.w, 15.h, 0, 0),
+              child: InkWell(
+                onTap: (){
+                  Navigator.pop(context);
+                },
+                child: SvgPicture.asset(
+                  AppAssets.backFromCallSvg,
+                  height: 20,
+                  width: 8,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
