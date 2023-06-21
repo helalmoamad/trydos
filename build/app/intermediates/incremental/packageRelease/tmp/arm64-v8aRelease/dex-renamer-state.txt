@@ -1,0 +1,4 @@
+#Wed Jun 21 20:04:16 AST 2023
+base.0=E\:\\AndroidStudioProjects\\trydos\\build\\app\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
+renamed.0=classes.dex
+path.0=classes.dex

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_4612" data-name="Rectangle 4612" width="20" height="20" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Mask_Group_273" data-name="Mask Group 273" clip-path="url(#clip-path)">
+    <g id="voice-search" transform="translate(-28.701)">
+      <path id="Path_15710" data-name="Path 15710" d="M149.8,14.1a4.106,4.106,0,0,0,4.1-4.1V4.1a4.1,4.1,0,1,0-8.2,0V10a4.106,4.106,0,0,0,4.1,4.1Z" transform="translate(-111.104)" fill="#8e8d92"/>
+      <path id="Path_15711" data-name="Path 15711" d="M100.111,203.6a.586.586,0,0,0-.586.586v1.171a5.273,5.273,0,0,1-10.546,0v-1.171a.586.586,0,1,0-1.171,0v1.171a6.453,6.453,0,0,0,5.859,6.418v2.412h-2.93a.586.586,0,1,0,0,1.171h7.03a.586.586,0,0,0,0-1.171h-2.93v-2.412a6.453,6.453,0,0,0,5.859-6.418v-1.171a.586.586,0,0,0-.587-.586Z" transform="translate(-55.552 -195.358)" fill="#8e8d92"/>
+      <path id="Path_15712" data-name="Path 15712" d="M88.394,48.487a.586.586,0,0,0,.586-.586v-2.93a.586.586,0,0,0-1.171,0V47.9A.586.586,0,0,0,88.394,48.487Z" transform="translate(-55.552 -42.59)" fill="#8e8d92"/>
+      <path id="Path_15713" data-name="Path 15713" d="M30.5,0a.586.586,0,0,0-.586.586V7.069a.586.586,0,1,0,1.171,0V.586A.586.586,0,0,0,30.5,0Z" fill="#8e8d92"/>
+      <path id="Path_15714" data-name="Path 15714" d="M377.871,44.387a.586.586,0,0,0-.586.586V47.9a.586.586,0,0,0,1.171,0v-2.93a.586.586,0,0,0-.586-.586Z" transform="translate(-333.312 -42.59)" fill="#8e8d92"/>
+      <path id="Path_15715" data-name="Path 15715" d="M435.767,0a.586.586,0,0,0-.586.586V7.069a.586.586,0,1,0,1.171,0V.586A.586.586,0,0,0,435.767,0Z" transform="translate(-388.864)" fill="#8e8d92"/>
+    </g>
+  </g>
+</svg>
