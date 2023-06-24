@@ -16,7 +16,6 @@ class ChatPageContent extends StatefulWidget {
 class _ChatPageContentState extends State<ChatPageContent> {
   @override
   Widget build(BuildContext context) {
-    print(1.sw);
     return  SlidableAutoCloseBehavior(
       closeWhenOpened: true,
       child: sliverListSeparated(
