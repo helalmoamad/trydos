@@ -8,10 +8,9 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-
-import '../../../../../app_bloc/app_bloc.dart';
-import '../../../../../app_bloc/app_event.dart';
 import '../../../../../core/utils/responsive_padding.dart';
+import '../../../../app/blocs/app_bloc/app_bloc.dart';
+import '../../../../app/blocs/app_bloc/app_event.dart';
 
 class ImageMessage extends StatelessWidget {
   const ImageMessage({Key? key ,this.isForwarded=false, required this.isSent,required this.messageId,required this.isFirstMessage}) : super(key: key);

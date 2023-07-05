@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trydos/app_bloc/app_bloc.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 
 class ServiceProvider extends StatelessWidget {
   final Widget child;

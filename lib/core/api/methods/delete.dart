@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
-import 'package:shipping/common/enums/status_code_type.dart';
 import '../../../common/constant/configuration/url_routes.dart';
+import '../../../enums/status_code_type.dart';
 import '../base_api.dart';
 import '../client_config.dart';
 

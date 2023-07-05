@@ -6,6 +6,8 @@ abstract class PrefsRepository {
 
   Future<bool> setToken(String token);
 
+  Future<bool> setUserId(int id);
+
   Future<bool> setTheme(ThemeMode themeMode);
 
   // Future<bool> setUser(User user);

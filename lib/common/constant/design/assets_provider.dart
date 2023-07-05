@@ -112,6 +112,8 @@ abstract class AppAssets {
   static String get notificationIconSvg=>'notification_icon'.svg;
   static String get goBackIconSvg=>'go_back_icon'.svg;
   static String get addToGroupSvg=>'add_to_group'.svg;
+  static String get backButtonSvg=>'back_button'.svg;
+  static String get supportSvg=>'support'.svg;
 
   ///endregion
 

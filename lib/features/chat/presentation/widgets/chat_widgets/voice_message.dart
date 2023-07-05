@@ -10,8 +10,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/voice_waves.dart';
 
-import '../../../../../app_bloc/app_bloc.dart';
-import '../../../../../app_bloc/app_event.dart';
+import '../../../../app/blocs/app_bloc/app_bloc.dart';
+import '../../../../app/blocs/app_bloc/app_event.dart';
 
 class VoiceMessage extends StatelessWidget {
   const VoiceMessage(

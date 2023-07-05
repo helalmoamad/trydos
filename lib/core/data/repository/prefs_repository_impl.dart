@@ -24,7 +24,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
       setTheme(defaultAppTheme);
       return defaultAppTheme;
     }
-    return mapAppThemeMode[res]!;
+    return defaultAppTheme;
+    //return mapAppThemeMode[res]!;
   }
 
   @override
@@ -94,6 +95,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
     Map<String, dynamic> data = convert.jsonDecode(requestsJson);
     return List<Map<String, dynamic>>.from(data['requests_data']!.map((x) => x));
   }
+
+  @override
+  Future<bool> setUserId(int id) => _preferences.setString(PrefsKey.userId, id.toString());
 
   // @override
   // User? get user {

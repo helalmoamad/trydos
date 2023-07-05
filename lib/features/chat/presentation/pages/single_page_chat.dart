@@ -5,17 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trydos/app_bloc/app_bloc.dart';
-import 'package:trydos/app_bloc/app_event.dart';
-import 'package:trydos/app_bloc/app_state.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
-import 'package:trydos/features/app/trydos_app_bar/app_bar_params.dart';
-import 'package:trydos/features/app/trydos_app_bar/trydos_appbar.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_input_field.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/missed_call.dart';
@@ -23,6 +19,10 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_mes
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_me_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/voice_message.dart';
 
+import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
+import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
+import '../../../app/blocs/app_bloc/app_bloc.dart';
+import '../../../app/blocs/app_bloc/app_event.dart';
 import '../widgets/chat_widgets/text_message.dart';
 
 class SinglePageChat extends StatefulWidget {

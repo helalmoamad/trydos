@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trydos/app_bloc/app_bloc.dart';
-import 'package:trydos/app_bloc/app_event.dart';
-import 'package:trydos/app_bloc/app_state.dart';
-import 'package:trydos/app_widgets/app_text_field.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -14,6 +10,11 @@ import 'package:trydos/core/utils/form_state_mixin.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
+
+import '../../../app/app_widgets/app_text_field.dart';
+import '../../../app/blocs/app_bloc/app_bloc.dart';
+import '../../../app/blocs/app_bloc/app_event.dart';
+import '../../../app/blocs/app_bloc/app_state.dart';
 
 class ChatInputField extends StatefulWidget {
   const ChatInputField({

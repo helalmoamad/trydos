@@ -4,9 +4,9 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shipping/core/data/repository/prefs_repository_impl.dart';
 import '../../common/constant/configuration/url_routes.dart';
 import '../api/log_interceptor.dart';
+import '../data/repository/prefs_repository_impl.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'di_container.config.dart';
 
@@ -24,8 +24,8 @@ Future<GetIt> configureDependencies() async => $initGetIt(_getIt);
 abstract class AppModule {
   BaseOptions get dioOption => BaseOptions(
         baseUrl: Urls.baseUrl,
-        connectTimeout: 30000,
-        receiveTimeout: 30000,
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
         contentType: 'application/json',
         responseType: ResponseType.json,
         headers: <String, String>{

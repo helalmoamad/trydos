@@ -4,10 +4,9 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:shipping/features/app/models/error_model.dart';
 import '../../../common/constant/configuration/url_routes.dart';
-import '../../common/enums/status_code_type.dart';
 import '../../common/helper/show_message.dart';
+import '../../enums/status_code_type.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'api.dart';
 
@@ -30,7 +29,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n param : ${options.data}"
         "\n url: ${options.path}"
         "\n Header: ${options.headers}"
-        "\n timeout: ${options.connectTimeout ~/ 1000}s",
+        "\n timeout: ${options.connectTimeout! ~/ 1000}s",
       );
     }
 
@@ -80,10 +79,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
 
     final data = err.response?.data;
     if (data != null) {
-      showMessage(
-        ErrorModel.fromJson(jsonDecode(data!)).errorMessage ?? '',
-        hasError: true,
-      );
+
     }
 
     handler.next(err);

@@ -4,8 +4,12 @@ import 'package:adobe_xd/pinned.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/base_page.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/authentication/presentation/pages/login_page.dart';
+
+import 'core/domin/repositories/prefs_repository.dart';
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
 
@@ -14,6 +18,7 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
   @override
   void initState() {
@@ -22,6 +27,13 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   _onSplash() {
+    Widget child;
+
+    if (prefsRepository.registeredUser) {
+      child = const BasePage();
+    } else {
+      child = const LoginPage();
+    }
     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) =>  const BasePage()), (route) => false);
   }
 

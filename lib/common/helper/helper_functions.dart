@@ -1,8 +1,11 @@
+
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:trydos/common/constant/countries.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../service/language_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HelperFunctions {
   static changeAppStatus(ThemeMode theme) {
@@ -15,6 +18,12 @@ class HelperFunctions {
         statusBarIconBrightness: brightness,
       ),
     );
+  }
+  static Future<String> changeSvgColor(String svgPath , String newColor) async {
+    String svgCode =await rootBundle.loadString(svgPath);
+
+    svgCode=svgCode.replaceAll("CC3333", newColor.toUpperCase());
+    return svgCode;
   }
 
   static Future<bool> urlLauncherApplication(String url) async {
@@ -72,6 +81,15 @@ class HelperFunctions {
         );
       },
     );
+  }
+  Future<List<Contact>> getContactsFromDevice() async {
+    final PermissionStatus permissionStatus =
+    await Permission.contacts.request();
+    List<Contact> contacts =[];
+    if (permissionStatus == PermissionStatus.granted) {
+      contacts =  await ContactsService.getContacts(withThumbnails: false);
+    }
+    return contacts;
   }
 
   String _replaceArabicNumber(String input) {

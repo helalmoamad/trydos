@@ -1,0 +1,193 @@
+import 'dart:developer';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/form_utils.dart';
+import '../../../../base_page.dart';
+import '../../../../common/constant/countries.dart';
+import '../../../../core/utils/form_state_mixin.dart';
+import '../../../../core/utils/responsive_padding.dart';
+import '../../../app/app_elvated_button.dart';
+import '../../../app/app_widgets/app_text_field.dart';
+import '../../../app/app_widgets/phone_input/phone_input_widget.dart';
+import '../manager/auth_bloc.dart';
+import 'package:trydos/core/utils/theme_state.dart';
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+ class _LoginPageState extends ThemeState<LoginPage> with FormStateMinxin {
+  final termsAndConditionsNotifier = ValueNotifier(true);
+  final showPasswordNotifier = ValueNotifier(true);
+  late final ValueNotifier<bool> filledPasswordNotifier;
+  late final ValueNotifier<Country?> countryNotifier;
+  String? fullPhone;
+
+  @override
+  void initState() {
+    super.initState();
+    filledPasswordNotifier = ValueNotifier(false);
+    countryNotifier = ValueNotifier(null);
+    form.controllers[1].addListener(() {
+      filledPasswordNotifier.value = form.controllers[1].text.trim().length >= 6;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      body: Form(
+        key: form.key,
+        child: Padding(
+          padding: HWEdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              50.verticalSpace,
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Please enter your',
+                      style: textTheme.headline5?.rr,
+                    ),
+                    TextSpan(
+                      text: 'Phone Number',
+                      style: textTheme.headline5?.rr
+                          .copyWith(color: colorScheme.secondary),
+                    ),
+                  ],
+                ),
+              ),
+              22.verticalSpace,
+                ValueListenableBuilder<bool>(
+                    valueListenable: termsAndConditionsNotifier,
+                    builder: (context, value, _) {
+                      return PhoneInputField(
+                        phoneController: form.controllers[0],
+                        onInputChanged: (phone) {
+                          log('phone is $phone');
+                          log('phone is ${phone.phoneNumber!.substring(phone.dialCode!.length)}');
+                          fullPhone=phone.phoneNumber;
+                        },
+                      );
+                },
+              ),
+              10.verticalSpace,
+              BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+                return AppTextField(
+                  controller: form.controllers[1],
+                  enabled: state.loginUserStatus != LoginUserStatus.loading,
+                  hintText: 'password',
+                  contentPadding:
+                      HWEdgeInsets.symmetric(horizontal: 5),
+                  suffixIcon: ValueListenableBuilder<bool>(
+                      valueListenable: showPasswordNotifier,
+                      builder: (context, show, _) {
+                        return IconButton(
+                          icon: Icon(
+                            show
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
+                          onPressed: () {
+                            showPasswordNotifier.value =
+                                !showPasswordNotifier.value;
+                          },
+                        );
+                      }),
+                );
+              }),
+              const Spacer(),
+              Transform.translate(
+                offset: Offset(-10.w, 0),
+                child: Row(
+                  children: [
+                    BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        return ValueListenableBuilder<bool>(
+                          valueListenable: termsAndConditionsNotifier,
+                          builder: (context, value, _) {
+                            return Checkbox(
+                              value: value,
+                              onChanged: (value) =>
+                                  state.loginUserStatus == LoginUserStatus.loading
+                                      ? null
+                                      : termsAndConditionsNotifier.value =
+                                          value ?? false,
+                              shape: const CircleBorder(),
+                              activeColor: colorScheme.secondary,
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    12.verticalSpace,
+                  ],
+                ),
+              ),
+              BlocConsumer<AuthBloc, AuthState>(
+                listener: (context, state) {
+                  if (state.loginUserStatus == LoginUserStatus.success) {
+                    if (!mounted) {
+                      return;
+                    }
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                          builder: (_) => const BasePage()),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  return ValueListenableBuilder<bool>(
+                        valueListenable: termsAndConditionsNotifier,
+                        builder: (context, isCheckedTerms, child) {
+                          return ValueListenableBuilder<bool>(
+                              valueListenable: filledPasswordNotifier,
+                              builder: (context, isFilledPassword, _) {
+                                return AppElevatedButton(
+                                  appButtonStyle: AppButtonStyle.primary,
+                                  onPressed: isCheckedTerms &&
+                                          isFilledPassword
+                                      ? _onLogIn
+                                      : null,
+                                  text: 'Login',
+                                  sensitiveNetwork: true,
+                                  isLoading:
+                                      state.loginUserStatus == LoginUserStatus.loading,
+                                );
+                              });
+                        });
+                  },
+              ),
+              60.verticalSpace,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _onLogIn() {
+    form.key.currentState!.save();
+    final validate = form.key.currentState!.validate() && fullPhone != null;
+    if (!validate) return;
+    print(fullPhone);
+    BlocProvider.of<AuthBloc>(context).add(
+      LoginEvent(
+          mobilePhone: fullPhone, password: form.controllers[1].text),
+    );
+  }
+
+  @override
+  int get numberOfFields => 2;
+}

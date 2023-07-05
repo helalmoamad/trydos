@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trydos/app_bloc/app_bloc.dart';
-import 'package:trydos/app_bloc/app_state.dart';
-import 'package:trydos/app_widgets/app_bottom_navigation_bar.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/features/app/app_widgets/app_bottom_navigation_bar.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_pages.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 
