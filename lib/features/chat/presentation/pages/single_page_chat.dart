@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -19,106 +21,102 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_mes
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_me_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/voice_message.dart';
 
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
+import '../../data/models/my_chats_response_model.dart';
+import '../manager/chat_bloc.dart';
 import '../widgets/chat_widgets/text_message.dart';
 
 class SinglePageChat extends StatefulWidget {
-  const SinglePageChat({Key? key}) : super(key: key);
+  const SinglePageChat(
+      {Key? key, required this.messages, required this.receiverName})
+      : super(key: key);
+
+  final List<Message> messages;
+  final String receiverName;
 
   @override
   State<SinglePageChat> createState() => _SinglePageChatState();
 }
 
 class _SinglePageChatState extends State<SinglePageChat> {
+  final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
+  late ChatBloc chatBloc;
+
   final ValueNotifier<int> rebuildMessage = ValueNotifier(-1);
   final ValueNotifier<int> currentFocusedIcon = ValueNotifier(-1);
   double currentHoverPosition = -1;
   double x = -1;
   final ScrollController scrollController = ScrollController();
-  List<bool> isSent = [
-    false,
-    false,
-    false,
-    true,
-    false,
-    true,
-    false,
-    false,
-    false,
-    false,
-    false,
-    true,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ];
   final key = GlobalKey();
-
-  List<Widget> data = [
-    10.verticalSpace,
-    const MessagesDate(date: 'YESTERDAY'),
-    10.verticalSpace,
-    const TextMessage(
-        message: 'How are you?',
-        isSent: true,
-        isFirstMessage: true,
-        messageId: '1'),
-    10.verticalSpace,
-    const TextMessage(
-        message:
-            'The person who says it cannot be only onc done should not interrupt the person who is doing it.',
-        isSent: true,
-        messageId: '2',
-        isFirstMessage: false),
-    30.verticalSpace,
-    const TextMessage(
-        message: 'i am fine',
-        isSent: false,
-        messageId: '3',
-        isFirstMessage: true),
-    10.verticalSpace,
-    const TextMessage(
-        message:
-            'The person who says it cannot be done should not interrupt the person who isdoing it.The person who says it cannot be done should not interrupt the person whois doing it.The person who says it cannotbe done should not interrupt the personwho is doing it.The person who says itcannot bedone should not interrupt the person whois doing it.The person who says it cannotbedone should not interrupt the personwho is doing it.',
-        isSent: false,
-        messageId: '4',
-        isFirstMessage: false),
-    30.verticalSpace,
-    const VoiceMessage(isSent: true, isFirstMessage: true, messageId: '5'),
-    30.verticalSpace,
-    const ImageMessage(isSent: false, isFirstMessage: true, messageId: '6'),
-    10.verticalSpace,
-    const MissedCall(
-      message: 'Missed Call At 20:16  "Two Hours Ago"',
-      isFirstMessage: true,
-    ),
-    30.verticalSpace,
-    const ReplayMessage(
-        message:
-            'The person who says it cannot be only onc done should not interrupt the person who is doing it.'),
-    10.verticalSpace,
-    const ReplayOnMeMessage(
-        message:
-            'The person who says it cannot be only onc done should not interrupt the person who is doing it.'),
-    30.verticalSpace
-  ];
+  bool isISentLastMessage = false;
+  List<Widget> data = [];
   bool rebuild = true;
+  int days = -1;
 
   @override
   void initState() {
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     scrollController.addListener(() {
       if (rebuild) {
         rebuildMessage.value = -1;
       }
     });
+    isISentLastMessage =
+        widget.messages[0].senderUserId == _prefsRepository.myId;
+    for (int i = widget.messages.length - 1; i >= 0; i--) {
+      Message element = widget.messages[i];
+      bool previousIsDate = false;
+      bool isFirstMessage = element.senderUserId !=
+          widget.messages[min(widget.messages.length - 1, i + 1)].senderUserId;
+      if (i == widget.messages.length - 1) {
+        isFirstMessage = true;
+      }
+      if (element.createdAt!.difference(DateTime.now()).inDays != days) {
+        days = element.createdAt!.difference(DateTime.now()).inDays;
+        data.add(10.verticalSpace);
+        previousIsDate = true;
+        data.add(const MessagesDate(date: 'TODAY'));
+      }
+      print(isFirstMessage);
+      data.add(previousIsDate
+          ? 10.verticalSpace
+          : isFirstMessage
+              ? 10.verticalSpace
+              : 10.verticalSpace);
+      previousIsDate = false;
+      if (element.messageType!.name == 'TextMessage') {
+        data.add(TextMessage(
+          message: element.messageContent!.content.toString(),
+          messageId: element.messageContent!.messageId.toString(),
+          isSent: element.receiverUserId != _prefsRepository.myId,
+          isFirstMessage: isFirstMessage,
+          time: element.createdAt!,
+          isForwarded: element.isForward == 1,
+        ));
+      } else {
+        for (int i = 0; i < (element.mediaMessageContent?.length ?? 0); i++) {
+          data.add(
+            ImageMessage(
+              isSent: element.receiverUserId != _prefsRepository.myId,
+              imageUrl: element.mediaMessageContent![i].filePath,
+              messageId: element.mediaMessageContent![i].messageId.toString(),
+              time: element.createdAt!,
+              isFirstMessage: isFirstMessage,
+              isLocalMessage: false,
+              isForwarded: element.isForward == 1,
+            ),
+          );
+          if (i != element.mediaMessageContent!.length - 1) {
+            data.add(10.verticalSpace);
+          }
+        }
+      }
+    }
+    data.add(30.verticalSpace);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       scrollController.animateTo(
         scrollController.position.maxScrollExtent,
@@ -137,7 +135,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: const Color(0xffEBFFF8),
-        resizeToAvoidBottomInset: true,
         appBar: TrydosAppBar(
           appBarParams: AppBarParams(
               dividerBottom: false,
@@ -192,7 +189,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     ),
                     20.horizontalSpace,
                     Text(
-                      'Marie Winter',
+                      widget.receiverName,
                       style: textTheme.subtitle1?.mr
                           .copyWith(color: const Color(0xff5D5C5D)),
                     ),
@@ -233,6 +230,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                 return ValueListenableBuilder<int>(
                                     valueListenable: currentFocusedIcon,
                                     builder: (context, focusedIndex, _) {
+                                      bool isSent = (data[index]
+                                              is TextMessage &&
+                                          (data[index] as TextMessage).isSent);
                                       return Column(
                                         children: [
                                           GestureDetector(
@@ -240,12 +240,15 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                 if (index != 0) {
                                                   rebuild = false;
                                                   rebuildMessage.value = index;
-                                                  scrollController.animateTo(
-                                                    scrollController.position.maxScrollExtent+55,
-                                                    duration: const Duration(
-                                                        milliseconds: 100),
-                                                    curve: Curves.easeOut,
-                                                  );
+                                                  if(rebuildMessage.value ==(data.length-2) ) {
+                                                    scrollController.animateTo(
+                                                      scrollController.position
+                                                          .maxScrollExtent + 100,
+                                                      duration: const Duration(
+                                                          milliseconds: 100),
+                                                      curve: Curves.easeOut,
+                                                    );
+                                                  }
                                                   Future.delayed(
                                                     const Duration(
                                                         milliseconds: 150),
@@ -257,17 +260,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                 rebuildMessage.value = -1;
                                               },
                                               child: data[index]),
-                                          5.verticalSpace,
+                                          currentIndex == index
+                                              ? 5.verticalSpace
+                                              : const SizedBox.shrink(),
                                           currentIndex == index
                                               ? Padding(
                                                   padding: HWEdgeInsets.only(
-                                                      left: isSent[index]
-                                                          ? 40.w
-                                                          : 20.w,
+                                                      left:
+                                                          isSent ? 40.w : 20.w,
                                                       top: 10,
-                                                      right: isSent[index]
-                                                          ? 20.w
-                                                          : 40.w),
+                                                      right:
+                                                          isSent ? 20.w : 40.w),
                                                   child: Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment.end,
@@ -538,10 +541,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                   ),
                                                 )
                                               : const SizedBox.shrink(),
-                                          (index == data.length - 2 &&
-                                                  currentIndex != -1)
-                                              ? 40.verticalSpace
-                                              : const SizedBox.shrink()
                                         ],
                                       );
                                     });
@@ -553,48 +552,123 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         BlocBuilder<AppBloc, AppState>(
                           builder: (context, state) {
                             return ChatInputField(
-                              onSendMessage: (String message) {
+                              onSendFile: (File file) {
                                 data.removeLast();
-                                isSent.removeLast();
                                 if (state.thereIsReply) {
                                   data.add(10.verticalSpace);
-                                  isSent.add(false);
                                   if (state.replyOnMe) {
-                                    data.add(
-                                        ReplayOnMeMessage(message: message));
-                                    isSent.add(true);
+                                    data.add(ReplayOnMeMessage(
+                                      messageDate: state.time!,
+                                      messageId: state.messageId!,
+                                      isFirstMessage: !isISentLastMessage,
+                                      isSent: true,
+                                      message: state.message!,
+                                      answeredFile: file,
+                                      messageAnswerId: data.length.toString(),
+                                    ));
                                   } else {
                                     data.add(10.verticalSpace);
-                                    isSent.add(false);
-                                      data.add(ReplayMessage(message: message));
-                                      isSent.add(true);
-                                    }
-                                  BlocProvider.of<AppBloc>(context).add(
-                                      RefreshChatInputField(false, '', false));
+                                    data.add( ReplayMessage(
+                                      messageDate: state.time!,
+                                      messageId: state.messageId!,
+                                      isFirstMessage: !isISentLastMessage,
+                                      isSent: true,
+                                      message: state.message!,
+                                      answeredFile: file,
+                                      messageAnswerId: data.length.toString(),
+                                    ));
+                                  }
                                 } else {
                                   data.add(10.verticalSpace);
-                                  isSent.add(false);
+                                  data.add(
+                                    ImageMessage(
+                                        isSent: true,
+                                        imageFile: file,
+                                        time: DateTime.now(),
+                                        messageId: data.length.toString(),
+                                        isFirstMessage: !isISentLastMessage),
+                                  );
+                                }
+                                isISentLastMessage = true;
+                                data.add(30.verticalSpace);
+                                scrollController.animateTo(
+                                  scrollController.position.maxScrollExtent+50,
+                                  duration: const Duration(milliseconds: 100),
+                                  curve: Curves.easeOut,
+                                );
+                                Message m = widget.messages.first;
+                                chatBloc.add(UploadFileEvent(
+                                    file: file,
+                                    filePath: 'images/test',
+                                    messageType: 'ImageMessage',
+                                    isForward: state.thereIsReply,
+                                    parentMessageId: state.messageId != null ? int.parse(state.messageId!) : null,
+                                    messageId: data.length - 2,
+                                    receiverUserId:
+                                        m.senderUserId == _prefsRepository.myId
+                                            ? m.receiverUserId
+                                            : m.senderUserId));
+                                BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(false, '', false,messageId: null,message: null,imageUrl: null,time: null));
+                                rebuildMessage.value = data.length;
+                              },
+                              onSendMessage: (String message) {
+                                data.removeLast();
+                                if (state.thereIsReply) {
+                                  data.add(10.verticalSpace);
+                                  if (state.replyOnMe) {
+                                    print(state.time!);
+                                    data.add(ReplayOnMeMessage(
+                                      messageDate: state.time!,
+                                      messageId: state.messageId!,
+                                      messageAnswer: message,
+                                      isFirstMessage: !isISentLastMessage,
+                                      isSent: true,
+                                      message: 'Photo',
+                                      messageAnswerId: data.length.toString(),
+                                    ));
+                                  } else {
+                                    data.add(10.verticalSpace);
+                                    data.add(ReplayMessage(
+                                      messageDate: state.time!,
+                                      messageId: state.messageId!,
+                                      messageAnswer: message,
+                                      isFirstMessage: !isISentLastMessage,
+                                      isSent: true,
+                                      message: 'Photo',
+                                      messageAnswerId: data.length.toString(),
+                                    ));
+                                  }
+                                } else {
+                                  data.add(10.verticalSpace);
                                   data.add(
                                     TextMessage(
                                         message: message,
                                         isSent: true,
+                                        time: DateTime.now(),
                                         messageId: data.length.toString(),
-                                        isFirstMessage:
-                                            isSent[isSent.length - 1]
-                                                ? false
-                                                : true),
+                                        isFirstMessage: !isISentLastMessage),
                                   );
-                                  isSent.add(
-                                      isSent[isSent.length - 1] ? false : true);
                                 }
+                                isISentLastMessage = true;
+                                data.add(30.verticalSpace);
                                 scrollController.animateTo(
-                                  scrollController.position.maxScrollExtent +
-                                      40,
+                                  scrollController.position.maxScrollExtent+50,
                                   duration: const Duration(milliseconds: 100),
                                   curve: Curves.easeOut,
                                 );
-                                data.add(30.verticalSpace);
-                                isSent.add(false);
+                                print(state.messageId);
+                                Message m = widget.messages.first;
+                                chatBloc.add(SendMessageEvent(
+                                    messageType: 'TextMessage',
+                                    isForward: state.thereIsReply,
+                                    parentMessageId: state.messageId != null ? int.parse(state.messageId!) : null,
+                                    content: message,
+                                    messageId: data.length - 2,
+                                    receiverUserId:
+                                        m.senderUserId == _prefsRepository.myId
+                                            ? m.receiverUserId
+                                            : m.senderUserId));
+                                BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(false, '', false,messageId: null,message: null,imageUrl: null,time: null));
                                 rebuildMessage.value = data.length;
                               },
                             );

@@ -6,6 +6,8 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
+import '../../../../service/language_service.dart';
+
 class HomePageCard extends StatelessWidget {
   const HomePageCard({Key? key , required this.showWhite}) : super(key: key);
    final bool showWhite;
@@ -71,8 +73,8 @@ class HomePageCard extends StatelessWidget {
             height: 200,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: const Alignment(1, 0),
-                end: const Alignment(-1, 0),
+                begin: LanguageService.languageCode=='ar' ?const Alignment(-1, 0) : const Alignment(1, 0),
+                end:  LanguageService.languageCode=='ar' ?  const Alignment(1, 0) :const Alignment(-1, 0),
                 colors: showWhite ? [
                 const Color(0x00ffffff),
                 const Color(0xcbffffff),
@@ -80,9 +82,11 @@ class HomePageCard extends StatelessWidget {
                 ] :[const Color(0x00000000), const Color(0xb2000000)],
                 stops: showWhite ? [0.0, 0.559, 1.0] : [0.0, 1.0],
               ),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20.0),
-                bottomLeft: Radius.circular(20.0),
+              borderRadius:  BorderRadius.only(
+                topLeft: Radius.circular(LanguageService.languageCode=='ar' ? 0 :20.0),
+                bottomLeft: Radius.circular(LanguageService.languageCode=='ar' ? 0 :20.0),
+                bottomRight: Radius.circular(LanguageService.languageCode!='ar' ? 0 :20.0),
+                topRight: Radius.circular(LanguageService.languageCode!='ar' ? 0 :20.0),
               ),
             ),
           ),

@@ -28,7 +28,7 @@ class LoginParams {
     this.password,
   });
   Map<String, dynamic> get map =>{
-    "mobilePhone" :mobilePhone,
+    "mobile_phone" :mobilePhone,
     "password" :password,
   };
 }

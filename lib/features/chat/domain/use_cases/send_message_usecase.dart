@@ -23,8 +23,6 @@ class SendMessageUseCase extends UseCase<bool , SendMessageParams>{
 }
 class SendMessageParams{
   final int? receiverUserId;
-  final int? receiverRoleId;
-  final int? senderRoleId;
   final String? content;
   final List<Map<String , dynamic>>? mediaContent;
   final int? parentMessageId;
@@ -34,8 +32,6 @@ class SendMessageParams{
 
   SendMessageParams({
     this.receiverUserId,
-    this.receiverRoleId,
-    this.senderRoleId,
     this.content,
     this.mediaContent,
     this.parentMessageId,
@@ -45,8 +41,6 @@ class SendMessageParams{
   });
   Map<String, dynamic> get map=> {
     "receiver_user_id": receiverUserId,
-    "receiver_role_id":receiverRoleId,
-    "sender_role_id":senderRoleId,
     "content": messageType!='TextMessage' ? mediaContent : content,
     "parent_message_id": parentMessageId,
     "message_type": messageType,

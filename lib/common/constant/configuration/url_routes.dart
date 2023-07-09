@@ -21,7 +21,8 @@ abstract class EndPoints {
   static final saveContactsEP = 'save_contacts'.usersScope();
 
   ///! ----< No scope >----
-  static final createUserEP = 'create_user'.usersScope();
+  static final createUserEP = 'create_user'.noScope();
+  static final uploadFileEP = 'upload_file'.noScope();
 
 ///! ----< channels ( chats )  >----
 ///

@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 abstract class PrefsRepository {
   String? get token;
 
+  int? get myId;
+
   Future<bool> setToken(String token);
 
-  Future<bool> setUserId(int id);
+  Future<bool> setMyId(int id);
 
   Future<bool> setTheme(ThemeMode themeMode);
 

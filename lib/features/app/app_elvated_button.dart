@@ -92,7 +92,7 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const AppTextView(
-              text: '',
+              text: ' ',
               style: null,
               adaptiveColor: false,
             ),

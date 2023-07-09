@@ -13,25 +13,15 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 import '../../data/models/my_chats_response_model.dart';
 @injectable
-class GetMyChatsUseCase extends UseCase<MyChatsResponseModel , GetMyChatsParams>{
+class GetMyChatsUseCase extends UseCase<MyChatsResponseModel , NoParams>{
   final ChatRepository repository;
 
   GetMyChatsUseCase(this.repository);
 
   @override
-  Future<Either<Failure, MyChatsResponseModel>> call(GetMyChatsParams params) {
+  Future<Either<Failure, MyChatsResponseModel>> call(NoParams params) {
     return repository.getChats();
   }
 
 }
 
-class GetMyChatsParams{
-  final int? roleId;
-
-  GetMyChatsParams({
-    this.roleId,
-  });
-  Map<String, dynamic> get map=> {
-    "role_id": roleId,
-  };
-}

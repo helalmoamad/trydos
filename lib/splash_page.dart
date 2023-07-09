@@ -34,7 +34,7 @@ class _SplashPageState extends State<SplashPage> {
     } else {
       child = const LoginPage();
     }
-    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) =>  const BasePage()), (route) => false);
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) =>  child), (route) => false);
   }
 
   @override

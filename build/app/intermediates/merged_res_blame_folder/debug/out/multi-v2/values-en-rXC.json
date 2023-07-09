@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.trydos.app-mergeDebugResources-9:/values-en-rXC/values-en-rXC.xml",
+            "outputFile": "com.example.trydos.app-mergeDebugResources-22:/values-en-rXC/values-en-rXC.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Mahmoud\\.gradle\\caches\\transforms-3\\657234e116902e525fa2b6f7eb2dfd8f\\transformed\\core-1.6.0\\res\\values-en-rXC\\values-en-rXC.xml",
+                    "source": "C:\\Users\\Mahmoud\\.gradle\\caches\\transforms-3\\64f1cceffa537e49699549ed7f0f9610\\transformed\\core-1.9.0\\res\\values-en-rXC\\values-en-rXC.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

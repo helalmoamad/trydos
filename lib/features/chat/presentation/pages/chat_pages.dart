@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -17,6 +18,8 @@ import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/pages/calls_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
+
+import '../manager/chat_bloc.dart';
 class ChatPages extends StatefulWidget {
   const ChatPages({Key? key}) : super(key: key);
 
@@ -26,12 +29,24 @@ class ChatPages extends StatefulWidget {
 
 class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   final ScrollController scrollController = ScrollController();
+  late ChatBloc chatBloc;
 
   List<Widget> chatPages=[
     const ChatPageContent(),
     const CallsPageContent(),
     const CallsPageContent(),
   ];
+  void saveUserContacts()async{
+    List<Map<String,dynamic>> contacts= await HelperFunctions.getContactsFromDevice();
+    chatBloc.add(SaveContactsEvent(contacts: contacts));
+  }
+
+  @override
+  void initState() {
+    saveUserContacts();
+    chatBloc=BlocProvider.of<ChatBloc>(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

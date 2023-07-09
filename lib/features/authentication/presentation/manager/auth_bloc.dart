@@ -33,8 +33,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   FutureOr<void> _onCreateUserEvent(CreateUserEvent event, Emitter<AuthState> emit) async{
-  }
+    emit(state.copyWith(createUserStatus: CreateUserStatus.loading));
 
+    final response = await createUserUseCase(
+
+      CreateUserParams(mobilePhone: event.mobilePhone , password: event.password,name: event.name),
+    );
+    response.fold(
+          (l) => emit(state.copyWith(createUserStatus: CreateUserStatus.failure)),
+          (r) {
+        emit(
+          state.copyWith(
+              createUserStatus: CreateUserStatus.success
+          ),
+        );
+      },
+    );
+  }
   FutureOr<void> _onLoginEvent(LoginEvent event, Emitter<AuthState> emit) async{
     emit(state.copyWith(loginUserStatus: LoginUserStatus.loading));
 
@@ -45,13 +60,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     response.fold(
           (l) => emit(state.copyWith(loginUserStatus: LoginUserStatus.failure)),
           (r) {
-        final token = r.data!.accessToken;
         final id = r.data!.id;
+        final token = r.data!.accessToken;
         final checkToken = token?.isNotEmpty ?? false;
 
         if (checkToken) {
           _prefsRepository.setToken(token!);
-          _prefsRepository.setUserId(id!);
+          _prefsRepository.setMyId(id!);
         }
         emit(
           state.copyWith(

@@ -19,7 +19,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     on<ChangeTab>(_onChangeTab);
     on<ChangeTabInChat>(_onChangeTabInChat);
     on<ShowOrHideBars>(_onShowOrHideBars);
-    on<RefreshChatInputField>(_onSRefreshChatInputField);
+    on<RefreshChatInputField>(_onRefreshChatInputField);
   }
 
   _onChangeBasePage(
@@ -50,11 +50,17 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     emit(state.copyWith(showBars: event.show));
   }
 
-  FutureOr<void> _onSRefreshChatInputField(
+  FutureOr<void> _onRefreshChatInputField(
       RefreshChatInputField event, Emitter<AppState> emit) {
-    emit(state.copyWith(
-        thereIsReply: event.thereIsReply,
-        replyType: event.replyType,
-        replyOnMe: event.replyOnMe));
+    emit(
+      state.copyWith(
+          thereIsReply: event.thereIsReply,
+          replyType: event.replyType,
+          replyOnMe: event.replyOnMe,
+          message: event.message,
+          messageId: event.messageId,
+          time: event.time,
+          imageUrl: event.imageUrl)
+    );
   }
 }

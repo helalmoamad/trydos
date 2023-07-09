@@ -1,8 +1,13 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mime/mime.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -10,18 +15,22 @@ import 'package:trydos/core/utils/form_state_mixin.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../app/app_widgets/app_text_field.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
+import '../../../app/my_cached_network_image.dart';
 
 class ChatInputField extends StatefulWidget {
   const ChatInputField({
     Key? key,
     required this.onSendMessage,
+    required this.onSendFile,
   }) : super(key: key);
   final void Function(String message) onSendMessage;
+  final void Function(File file) onSendFile;
 
   @override
   State<ChatInputField> createState() => _ChatInputFieldState();
@@ -91,9 +100,9 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                   ),
                                 ),
                                 20.horizontalSpace,
-                                Flexible(
+                                Expanded(
                                   child: Text(
-                                    'The person who says it cannot be only onc done should not interrupt the person who is doing it.',
+                                    state.message.toString(),
                                     style: textTheme.caption?.lr.copyWith(
                                         color: colorScheme.grey200,
                                         height: 1.66),
@@ -151,27 +160,35 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     ),
                                     20.horizontalSpace,
-                                    Container(
-                                      width: 40.sp,
-                                      height: 40.sp,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          image: AssetImage(
-                                              AppAssets.chatImageJpg),
-                                          fit: BoxFit.cover,
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: context.colorScheme.black
-                                                .withOpacity(0.05),
-                                            offset: const Offset(0, 3),
-                                            blurRadius: 6,
+                                    state.imageUrl!.contains('images/test')
+                                        ? MyCachedNetworkImage(
+                                            height: 40.sp,
+                                            width: 40.sp,
+                                            imageUrl:
+                                                Urls.baseUrl + state.imageUrl!,
+                                          )
+                                        : Container(
+                                            width: 40.sp,
+                                            height: 40.sp,
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                image:
+                                                    AssetImage(state.imageUrl!),
+                                                fit: BoxFit.cover,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12.0),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: context
+                                                      .colorScheme.black
+                                                      .withOpacity(0.05),
+                                                  offset: const Offset(0, 3),
+                                                  blurRadius: 6,
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ],
-                                      ),
-                                    ),
                                     10.horizontalSpace,
                                     Text(
                                       'Photo',
@@ -295,18 +312,36 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                             padding: HWEdgeInsets.symmetric(vertical: 7.0),
                             child: AppTextField(
                               controller: form.controllers[0],
-                              contentPadding: HWEdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 12)
-                                ..copyWith(right: 0),
+                              contentPadding:
+                                  HWEdgeInsets.symmetric(horizontal: 12)
+                                    ..copyWith(right: 0),
                             ),
                           ),
                         ),
                         5.horizontalSpace,
                         if (!thereText) ...{
-                          SvgPicture.asset(
-                            AppAssets.takePictureSvg,
-                            width: 50.w,
-                            height: 40,
+                          InkWell(
+                            onTap: () async {
+                              AssetEntity? assetEntity =
+                                  await HelperFunctions.getAssetFromCamera(
+                                      context);
+                              if (assetEntity != null) {
+                                File file = (await assetEntity.file)!;
+                                String mimeStr =
+                                    lookupMimeType(file.absolute.path ?? '') ??
+                                        '';
+                                var fileType = mimeStr.split('/');
+                                log(fileType.toString());
+                                if (fileType[0] == 'image') {
+                                  widget.onSendFile.call(file);
+                                }
+                              }
+                            },
+                            child: SvgPicture.asset(
+                              AppAssets.takePictureSvg,
+                              width: 50.w,
+                              height: 40,
+                            ),
                           ),
                           10.horizontalSpace,
                           SvgPicture.asset(
@@ -317,7 +352,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                         } else ...{
                           InkWell(
                             onTap: () {
-                              String message=form.controllers[0].text;
+                              String message = form.controllers[0].text;
                               form.controllers[0].text = '';
                               widget.onSendMessage.call(message);
                             },

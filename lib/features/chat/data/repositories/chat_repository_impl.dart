@@ -2,10 +2,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/error/failures.dart';
-import 'package:trydos/features/chat/data/data_sources/orders_remote_datasource.dart';
+import 'package:trydos/features/chat/data/data_sources/chat_remote_datasource.dart';
 import 'package:trydos/features/chat/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/login_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
+import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
 
 import 'package:trydos/features/chat/domain/repositories/chat_repository.dart';
 import '../../../../core/api/handling_exception.dart';
@@ -49,6 +50,11 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   Future<Either<Failure, bool>> sendMessage(Map<String, dynamic> params) {
     return handlingExceptionRequest(tryCall:()=> dataSource.sendMessage(params) );
 
+  }
+
+  @override
+  Future<Either<Failure, UploadFileResponseModel>> uploadFile(Map<String, dynamic> params) {
+    return handlingExceptionRequest(tryCall:()=> dataSource.uploadFile(params) );
   }
 
 }

@@ -2,8 +2,10 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:trydos/common/constant/countries.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -82,15 +84,31 @@ class HelperFunctions {
       },
     );
   }
-  Future<List<Contact>> getContactsFromDevice() async {
+  static Future<List<Map<String,dynamic>>> getContactsFromDevice() async {
     final PermissionStatus permissionStatus =
     await Permission.contacts.request();
     List<Contact> contacts =[];
     if (permissionStatus == PermissionStatus.granted) {
       contacts =  await ContactsService.getContacts(withThumbnails: false);
     }
-    return contacts;
+    return contacts.map((e) => {
+      "mobile_phone":(e.phones?.isNotEmpty ??  false) ?e.phones!.first.value : '',
+      "name":e.displayName,
+    }).toList();
   }
+   static Future<AssetEntity?> getAssetFromCamera(BuildContext context) async{
+     final List<AssetEntity>? assets = await AssetPicker.pickAssets(
+       context,
+       pickerConfig: const AssetPickerConfig(
+         maxAssets: 1,
+         themeColor: Color(0xff137AC9),
+         requestType: RequestType.all,
+         textDelegate: EnglishAssetPickerTextDelegate()
+       )
+     );
+     return assets?[0];
+   }
+
 
   String _replaceArabicNumber(String input) {
     const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -100,5 +118,10 @@ class HelperFunctions {
       input = input.replaceAll(arabic[i], english[i]);
     }
     return input;
+  }
+  static String getDateInFormat(DateTime date){
+    final dateFormatter = DateFormat('yyy-MM-ddTHH:mmZ').parseUTC(date.toIso8601String()).toLocal();
+    String formattedTime = DateFormat("HH:mm").format(dateFormatter);
+    return formattedTime;
   }
 }

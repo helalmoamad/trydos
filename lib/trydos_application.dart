@@ -36,7 +36,9 @@ class _TrydosApplicationState extends State<TrydosApplication> {
     ));
     super.didChangeDependencies();
   }
+
   final botToastBuilder = BotToastInit();
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -45,21 +47,25 @@ class _TrydosApplicationState extends State<TrydosApplication> {
       builder: (context, child) {
         return LocalizationService(
           child: ServiceProvider(
-            child: MaterialApp(
-                navigatorKey: TrydosApplication.navKey,
-                debugShowCheckedModeBanner: false,
-                theme: AppTheme.light,
-                locale: context.locale,
-                supportedLocales: supportedLocal,
-                localizationsDelegates: context.localizationDelegates,
-                navigatorObservers: [BotToastNavigatorObserver()],
-                builder: (context, child) {
-                  LanguageService(context);
-                  ConnectivityObserver(context);
-                  ScreenService(context);
-                  return botToastBuilder(context,child);
-                },
-                home:  const SplashPage()),
+            child: Builder(
+              builder: (context) {
+                return MaterialApp(
+                    navigatorKey: TrydosApplication.navKey,
+                    debugShowCheckedModeBanner: false,
+                    theme: AppTheme.light,
+                    locale: context.locale,
+                    supportedLocales: context.supportedLocales,
+                    localizationsDelegates: context.localizationDelegates,
+                    navigatorObservers: [BotToastNavigatorObserver()],
+                    builder: (context, child) {
+                      LanguageService(context);
+                      ConnectivityObserver(context);
+                      ScreenService(context);
+                      return botToastBuilder(context, child);
+                    },
+                    home: const SplashPage());
+              },
+            ),
           ),
         );
       },

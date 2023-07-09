@@ -10,7 +10,7 @@ class LoginUserResponseModel {
   bool? hasContent;
   int? code;
   String? message;
-  String? detailedError;
+  dynamic detailedError;
   Data? data;
 
   LoginUserResponseModel({

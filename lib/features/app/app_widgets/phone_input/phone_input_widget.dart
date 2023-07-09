@@ -76,7 +76,7 @@ class PhoneInputField extends StatelessWidget {
           child: DefaultContainer(
             borderColor: context.colorScheme.borderTextField,
             radius: 8.0.sp,
-            backColor: context.colorScheme.borderTextField,
+            backColor: context.colorScheme.white,
             childWidget: Padding(
               padding: HWEdgeInsets.symmetric(horizontal: 10),
               child: InternationalPhoneNumberInput(

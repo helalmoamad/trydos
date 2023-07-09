@@ -43,33 +43,27 @@ class GetContactsEvent extends ChatEvent {
 }
 
 class GetChatsEvent extends ChatEvent {
-  final int? roleId;
-
-  const GetChatsEvent({
-    this.roleId,
-  });
+  const GetChatsEvent();
 
   @override
   // TODO: implement props
-  List<Object?> get props => [roleId];
+  List<Object?> get props => [];
 }
 
 class SendMessageEvent extends ChatEvent {
   final int? receiverUserId;
-  final int? receiverRoleId;
-  final int? senderRoleId;
   final String? content;
   final List<Map<String, dynamic>>? mediaContent;
   final int? parentMessageId;
   final String? messageType;
   final bool? isForward;
   final Map<String, dynamic>? extraFields;
+  final int messageId;
 
   const SendMessageEvent({
     this.receiverUserId,
-    this.receiverRoleId,
-    this.senderRoleId,
     this.content,
+    required this.messageId,
     this.mediaContent,
     this.parentMessageId,
     this.messageType,
@@ -81,15 +75,51 @@ class SendMessageEvent extends ChatEvent {
   // TODO: implement props
   List<Object?> get props => [
         receiverUserId,
-        receiverRoleId,
-        senderRoleId,
         content,
         mediaContent,
         parentMessageId,
         messageType,
         isForward,
-        extraFields
+        extraFields,
+        messageId
       ];
+}
+
+class UploadFileEvent extends ChatEvent {
+  final File file;
+  final String filePath;
+  final int messageId;
+  final int? receiverUserId;
+  final String? content;
+  final List<Map<String, dynamic>>? mediaContent;
+  final int? parentMessageId;
+  final String? messageType;
+  final bool? isForward;
+  final Map<String, dynamic>? extraFields;
+
+  const UploadFileEvent({
+    required this.file,
+    required this.filePath,
+    required this.messageId,
+    this.receiverUserId,
+    this.content,
+    this.mediaContent,
+    this.parentMessageId,
+    this.messageType,
+    this.isForward,
+    this.extraFields,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [filePath, file, receiverUserId,
+    content,
+    mediaContent,
+    parentMessageId,
+    messageType,
+    isForward,
+    extraFields,
+    messageId];
 }
 
 class SaveContactsEvent extends ChatEvent {

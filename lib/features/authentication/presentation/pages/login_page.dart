@@ -108,33 +108,6 @@ class LoginPage extends StatefulWidget {
                 );
               }),
               const Spacer(),
-              Transform.translate(
-                offset: Offset(-10.w, 0),
-                child: Row(
-                  children: [
-                    BlocBuilder<AuthBloc, AuthState>(
-                      builder: (context, state) {
-                        return ValueListenableBuilder<bool>(
-                          valueListenable: termsAndConditionsNotifier,
-                          builder: (context, value, _) {
-                            return Checkbox(
-                              value: value,
-                              onChanged: (value) =>
-                                  state.loginUserStatus == LoginUserStatus.loading
-                                      ? null
-                                      : termsAndConditionsNotifier.value =
-                                          value ?? false,
-                              shape: const CircleBorder(),
-                              activeColor: colorScheme.secondary,
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    12.verticalSpace,
-                  ],
-                ),
-              ),
               BlocConsumer<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state.loginUserStatus == LoginUserStatus.success) {
@@ -154,16 +127,19 @@ class LoginPage extends StatefulWidget {
                           return ValueListenableBuilder<bool>(
                               valueListenable: filledPasswordNotifier,
                               builder: (context, isFilledPassword, _) {
-                                return AppElevatedButton(
-                                  appButtonStyle: AppButtonStyle.primary,
-                                  onPressed: isCheckedTerms &&
-                                          isFilledPassword
-                                      ? _onLogIn
-                                      : null,
-                                  text: 'Login',
-                                  sensitiveNetwork: true,
-                                  isLoading:
-                                      state.loginUserStatus == LoginUserStatus.loading,
+                                return SizedBox(
+                                  width: 1.sw,
+                                  child: AppElevatedButton(
+                                    appButtonStyle: AppButtonStyle.primary,
+                                    onPressed: isCheckedTerms &&
+                                            isFilledPassword
+                                        ? _onLogIn
+                                        : null,
+                                    text: 'Login',
+                                    sensitiveNetwork: true,
+                                    isLoading:
+                                        state.loginUserStatus == LoginUserStatus.loading,
+                                  ),
                                 );
                               });
                         });
@@ -184,7 +160,7 @@ class LoginPage extends StatefulWidget {
     print(fullPhone);
     BlocProvider.of<AuthBloc>(context).add(
       LoginEvent(
-          mobilePhone: fullPhone, password: form.controllers[1].text),
+          mobilePhone: fullPhone!.substring(1), password: form.controllers[1].text),
     );
   }
 

@@ -65,7 +65,7 @@ abstract class AppAssets {
   static String get messageReadArrowSvg=>'message_read'.svg;
   static String get messageReadArrowWithOpacitySvg=>'message_read_with_opacity'.svg;
   static String get messageDeliveredArrowSvg=>'message_delivered'.svg;
-  static String get messageSentArrowSvg=>'sent_sent'.svg;
+  static String get messageSentArrowSvg=>'message_sent'.svg;
   static String get storyOutlinedSvg=>'story_outlined'.svg;
   static String get storyFilledSvg=>'story_filled'.svg;
   static String get forwardArrowRight=>'arrow_right'.svg;
@@ -114,6 +114,7 @@ abstract class AppAssets {
   static String get addToGroupSvg=>'add_to_group'.svg;
   static String get backButtonSvg=>'back_button'.svg;
   static String get supportSvg=>'support'.svg;
+  static String get sandClockSvg=>'sand_clock'.svg;
 
   ///endregion
 

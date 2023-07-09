@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -13,11 +14,16 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 
+import '../../../../common/helper/helper_functions.dart';
+import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../data/models/my_chats_response_model.dart';
+
 class ChatCard extends StatefulWidget {
-  const ChatCard({Key? key, this.index = 0, this.isTyping = false})
+  const ChatCard({Key? key, this.index = 0, this.isTyping = false , required this.chat})
       : super(key: key);
   final bool isTyping;
   final int index;
+  final Chat chat;
 
   @override
   State<ChatCard> createState() => _ChatCardState();
@@ -27,6 +33,7 @@ class ChatCard extends StatefulWidget {
 class _ChatCardState extends ThemeState<ChatCard> {
   ValueNotifier<int> typingIndicator = ValueNotifier(0);
   late Timer timer;
+  final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
 
 
   @override
@@ -51,6 +58,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
 
   @override
   Widget build(BuildContext context) {
+    String receiverName= widget.chat.channelMembers!.firstWhere((element) => element.userId!=_prefsRepository.myId).user!.name.toString();
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -67,7 +75,10 @@ class _ChatCardState extends ThemeState<ChatCard> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const SinglePageChat()));
+                      builder: (context) =>  SinglePageChat(
+                        messages: widget.chat.messages ?? [],
+                        receiverName: receiverName,
+                      )));
             },
             child: Slidable(
               endActionPane: ActionPane(
@@ -155,7 +166,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                 child: Row(
                                   children: [
                                     Text(
-                                      'Marie Winter',
+                                      receiverName,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: textTheme.subtitle1?.rr.copyWith(
@@ -164,7 +175,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                     ),
                                     const Spacer(),
                                     Text(
-                                      '01:58',
+                                      HelperFunctions.getDateInFormat(widget.chat.messages!.first.createdAt!),
                                       maxLines: 1,
                                       style: textTheme.caption?.rr.copyWith(
                                           height: 1.33,
@@ -191,10 +202,11 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                       7.horizontalSpace,
                                     },
                                     Flexible(
+                                      fit: FlexFit.tight,
                                       child: SizedBox(
                                         height: widget.isTyping ? 33 : 51,
                                         child: Text(
-                                          'If you’re offered a seat on a rocket ship, don’t ask what seat! Just get on. ',
+                                          widget.chat.messages!.first.mediaMessageContent != null ? 'Photo' : widget.chat.messages!.first.messageContent!.content.toString(),
                                           maxLines: widget.isTyping ? 1 : 3,
                                           textAlign: TextAlign.start,
                                           overflow: TextOverflow.ellipsis,
@@ -288,29 +300,6 @@ class _ChatCardState extends ThemeState<ChatCard> {
                           ),
                         )
                       ],
-                    ),
-                  ),
-                  Transform(
-                    alignment: Alignment.bottomCenter,
-                    transform: Matrix4.identity()..scale(1.0, -1.0),
-                    child: ClipRect(
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                        child: Container(
-                          width: double.infinity,
-                          height: 100.h,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withOpacity(0.5)
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
                     ),
                   ),
                   Positioned(
