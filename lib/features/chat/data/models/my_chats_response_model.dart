@@ -146,7 +146,7 @@ class Message {
     isLockedByAdminForDelete: json["is_locked_by_admin_for_delete"],
     isLockedByAdminForUpdate: json["is_locked_by_admin_for_update"],
     parentMessageId: json["parent_message_id"],
-    isForward: json["is_forward"],
+    isForward: (json["is_forward"] is bool) ? (json["is_forward"] ? 1 : 0) : json["is_forward"],
     senderMobilePhone: json["sender_mobile_phone"],
     senderWhatsappContact: json["sender_whatsapp_contact"],
     isFromWhatsapp: json["is_from_whatsapp"],

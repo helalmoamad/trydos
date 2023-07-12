@@ -36,9 +36,10 @@ abstract class EndPoints {
 
 abstract class Urls {
   static String get baseUrl => _baseUrlDev;
+  static String get baseUrlWithHttp => _baseUrlDevWithHttp;
 
   static Uri get baseUri => Uri.parse(_baseUrlDev);
 
-  static const String _baseUrlDev =
-      'https://chating_staging_trydos.trydos.tech';
+  static const String _baseUrlDev = 'https://chating_staging_trydos.trydos.tech';
+  static const String _baseUrlDevWithHttp = 'http://chating_staging_trydos.trydos.tech';
 }

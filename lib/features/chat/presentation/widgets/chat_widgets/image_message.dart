@@ -107,7 +107,7 @@ class ImageMessage extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
-                                      HelperFunctions.getDateInFormat(time),
+                                      !time.isUtc ? HelperFunctions.getDateInFormat(time) : HelperFunctions.getZonedDateInFormat(time),
                                       style: context.textTheme.overline?.rr
                                           .copyWith(
                                               color: context.colorScheme.white),

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,6 +13,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 
 import '../../../../common/helper/helper_functions.dart';
@@ -19,7 +21,8 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../data/models/my_chats_response_model.dart';
 
 class ChatCard extends StatefulWidget {
-  const ChatCard({Key? key, this.index = 0, this.isTyping = false , required this.chat})
+  const ChatCard(
+      {Key? key, this.index = 0, this.isTyping = false, required this.chat})
       : super(key: key);
   final bool isTyping;
   final int index;
@@ -29,15 +32,15 @@ class ChatCard extends StatefulWidget {
   State<ChatCard> createState() => _ChatCardState();
 }
 
-
 class _ChatCardState extends ThemeState<ChatCard> {
   ValueNotifier<int> typingIndicator = ValueNotifier(0);
   late Timer timer;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
-
+  late DateTime chatTime;
 
   @override
   void initState() {
+    chatTime = widget.chat.messages!.first.createdAt!;
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (typingIndicator.value == 5) {
         typingIndicator.value = 0;
@@ -55,10 +58,18 @@ class _ChatCardState extends ThemeState<ChatCard> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    String receiverName= widget.chat.channelMembers!.firstWhere((element) => element.userId!=_prefsRepository.myId).user!.name.toString();
+    String receiverName = widget.chat.channelMembers!
+        .firstWhere((element) => element.userId != _prefsRepository.myId)
+        .user!
+        .name
+        .toString();
+    return BlocConsumer<ChatBloc, ChatState>(
+  listener: (context, state) {
+    // TODO: implement listener
+  },
+  builder: (context, state) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -75,10 +86,14 @@ class _ChatCardState extends ThemeState<ChatCard> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>  SinglePageChat(
-                        messages: widget.chat.messages ?? [],
-                        receiverName: receiverName,
-                      )));
+                      builder: (context) => BlocBuilder<ChatBloc, ChatState>(
+                            builder: (context, state) {
+                              return SinglePageChat(
+                                messages: state.messages[widget.chat.id] ?? [],
+                                receiverName: receiverName,
+                              );
+                            },
+                          )));
             },
             child: Slidable(
               endActionPane: ActionPane(
@@ -134,7 +149,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Container(
-                          width:60.w,
+                          width: 60.w,
                           height: 80.h,
                           decoration: BoxDecoration(
                             image: DecorationImage(
@@ -170,16 +185,32 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: textTheme.subtitle1?.rr.copyWith(
-                                        height: 1.33,
+                                          height: 1.33,
                                           color: const Color(0xff505050)),
                                     ),
                                     const Spacer(),
-                                    Text(
-                                      HelperFunctions.getDateInFormat(widget.chat.messages!.first.createdAt!),
-                                      maxLines: 1,
-                                      style: textTheme.caption?.rr.copyWith(
-                                          height: 1.33,
-                                          color: const Color(0xff8E8D92)),
+                                    BlocConsumer<ChatBloc, ChatState>(
+                                      listener: (context, state) {
+                                        if (widget
+                                                .chat.messages![0].channelId ==
+                                            state.channelId) {
+                                          chatTime = DateTime.now();
+                                        }
+                                      },
+                                      builder: (context, state) {
+                                        return Text(
+                                          !chatTime.isUtc
+                                              ? HelperFunctions.getDateInFormat(
+                                                  chatTime)
+                                              : HelperFunctions
+                                                  .getZonedDateInFormat(
+                                                      chatTime),
+                                          maxLines: 1,
+                                          style: textTheme.caption?.rr.copyWith(
+                                              height: 1.33,
+                                              color: const Color(0xff8E8D92)),
+                                        );
+                                      },
                                     ),
                                     30.horizontalSpace
                                   ],
@@ -206,13 +237,20 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                       child: SizedBox(
                                         height: widget.isTyping ? 33 : 51,
                                         child: Text(
-                                          widget.chat.messages!.first.mediaMessageContent != null ? 'Photo' : widget.chat.messages!.first.messageContent!.content.toString(),
+                                          state.messages[widget.chat.id]!.first
+                                                      .mediaMessageContent !=
+                                                  null
+                                              ? 'Photo'
+                                              :  state.messages[widget.chat.id]!.first
+                                                  .messageContent!.content
+                                                  .toString(),
                                           maxLines: widget.isTyping ? 1 : 3,
                                           textAlign: TextAlign.start,
                                           overflow: TextOverflow.ellipsis,
-                                          style: textTheme.bodyText2?.lr.copyWith(
-                                            height: 1.22,
-                                              color: colorScheme.grey200),
+                                          style: textTheme.bodyText2?.lr
+                                              .copyWith(
+                                                  height: 1.22,
+                                                  color: colorScheme.grey200),
                                         ),
                                       ),
                                     ),
@@ -276,8 +314,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                             height: 5,
                                                             decoration:
                                                                 BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
+                                                              shape: BoxShape
+                                                                  .circle,
                                                               color: activeIndex ==
                                                                       index
                                                                   ? const Color(
@@ -318,6 +356,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
         ),
       ],
     );
+  },
+);
   }
 }
 

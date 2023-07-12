@@ -14,7 +14,7 @@ abstract class ChatRepository {
   Future<Either<Failure,UploadFileResponseModel>> uploadFile(Map<String , dynamic> params);
   Future<Either<Failure,LoginUserResponseModel>> loginUser(Map<String , dynamic> params);
   Future<Either<Failure,bool>> saveContacts(Map<String , dynamic> params);
-  Future<Either<Failure,bool>> sendMessage(Map<String , dynamic> params);
+  Future<Either<Failure,Message>> sendMessage(Map<String , dynamic> params);
   Future<Either<Failure,MyContactsResponseModel>> getContacts();
   Future<Either<Failure,MyChatsResponseModel>> getChats();
 }

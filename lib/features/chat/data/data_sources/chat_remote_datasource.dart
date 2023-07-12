@@ -63,13 +63,13 @@ class ChatRemoteDataSource{
     );
     return saveContacts();
   }
-  Future<bool> sendMessage(Map<String,dynamic> params){
-    PostClient<bool> sendMessage= PostClient<bool>(
-      requestPrams: RequestConfig<bool>(
+  Future<Message> sendMessage(Map<String,dynamic> params){
+    PostClient<Message> sendMessage= PostClient<Message>(
+      requestPrams: RequestConfig<Message>(
         endpoint: EndPoints.sendMessageEP,
         data: params,
-        response: ResponseValue<bool>(
-          returnValueOnSuccess: true
+        response: ResponseValue<Message>(
+         fromJson: (response) => Message.fromJson(response['data'])
         ),
       ),
     );

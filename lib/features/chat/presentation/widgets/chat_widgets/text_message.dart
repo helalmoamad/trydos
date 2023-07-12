@@ -146,8 +146,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                     child: Row(
                                       children: [
                                         Text(
-                                          HelperFunctions.getDateInFormat(
-                                              widget.time),
+                                    !widget.time.isUtc ? HelperFunctions.getDateInFormat(widget.time) : HelperFunctions.getZonedDateInFormat(widget.time),
                                           style: textTheme.overline?.rr
                                               .copyWith(
                                                   color: widget.withImageShadow

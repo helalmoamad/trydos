@@ -50,9 +50,13 @@ dependencies:
   swipe_to: ^1.0.2
   firebase_messaging: ^14.6.4
   flutter_cache_manager: ^3.3.1
+  wechat_camera_picker: ^3.8.0
   firebase_core: ^2.14.0
   contacts_service: ^0.6.3
   mime: ^1.0.4
+  audioplayers: ^4.1.0
+  uuid: ^3.0.7
+  flutter_sound: ^9.2.13
   mime_type: ^1.0.0
   permission_handler: ^10.2.0
   audio_wave: ^0.1.5

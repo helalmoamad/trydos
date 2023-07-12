@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/di/di_container.dart';
 import 'package:trydos/trydos_application.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import 'core/domin/repositories/prefs_repository.dart';
 
@@ -21,6 +22,8 @@ void main() async{
   await Firebase.initializeApp(
     //options: DefaultFirebaseOptions.currentPlatform,
   );
+  AssetPicker.registerObserve();
+  PhotoManager.setLog(true);
   log( GetIt.I<PrefsRepository>().token.toString());
   // FlutterError.onError = (FlutterErrorDetails error) {};
   // PlatformDispatcher.instance.onError = (error, stack) {

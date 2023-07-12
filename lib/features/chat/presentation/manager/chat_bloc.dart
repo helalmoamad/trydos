@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:dartz/dartz_unsafe.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -34,8 +35,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
     on<SendMessageEvent>(_onSendMessageEvent);
-    on<UploadFileEvent>(_onUploadFileEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<UploadFileEvent>(_onUploadFileEvent);
     on<SaveContactsEvent>(_onSaveContactsEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetChatsEvent>(_onGetChatsEvent,
@@ -44,20 +44,24 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         transformer: throttleDroppable(throttleDuration));
   }
 
+
   final SendMessageUseCase sendMessageUseCase;
   final SaveContactsUseCase saveContactsUseCase;
   final GetContactsUseCase getContactsUseCase;
   final GetMyChatsUseCase getMyChatsUseCase;
   final UploadFileUseCase uploadFileUseCase;
 
+
   FutureOr<void> _onSendMessageEvent(
       SendMessageEvent event, Emitter<ChatState> emit) async {
-    List<int> ids = List.of(state.currentMessage);
+    List<String> ids = List.of(state.currentMessage);
     if (!ids.contains(event.messageId)) {
       ids.add(event.messageId);
     }
     emit(state.copyWith(
-        sendMessageStatus: SendMessageStatus.loading, currentMessage: ids));
+        sendMessageStatus: SendMessageStatus.loading,
+        currentMessage: ids,
+        channelId: event.channelId));
 
     final response = await sendMessageUseCase(
       SendMessageParams(
@@ -73,9 +77,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       (l) => emit(state.copyWith(sendMessageStatus: SendMessageStatus.failure)),
       (r) {
         ids.remove(event.messageId);
+        Map<int , List<Message>> messages=state.messages;
+        messages[state.channelId]!.insert(0,r);
         emit(
           state.copyWith(
               sendMessageStatus: SendMessageStatus.success,
+              messages:messages,
               currentMessage: ids),
         );
       },
@@ -107,11 +114,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     response.fold(
       (l) => emit(state.copyWith(getChatsStatus: GetChatsStatus.failure)),
       (r) {
+        Map<int ,List<Message>> messages={};
+        for(int i=0;i<(r.data!.chats?.length ?? 0);i++){
+          messages[r.data!.chats![i].id!]=List.of(r.data!.chats![i].messages ?? []);
+        }
         emit(
           state.copyWith(
             getChatsStatus: GetChatsStatus.success,
             chats: r.data!.chats,
             pinnedChats: r.data!.pinnedChats,
+            messages: messages
           ),
         );
       },
@@ -136,28 +148,28 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onUploadFileEvent(
       UploadFileEvent event, Emitter<ChatState> emit) async {
-    List<int> ids = List.of(state.currentMessage);
+    List<String> ids = List.of(state.currentMessage);
     if (!ids.contains(event.messageId)) {
       ids.add(event.messageId);
     }
     emit(state.copyWith(
-        sendMessageStatus: SendMessageStatus.loading, currentMessage: ids));
+        sendMessageStatus: SendMessageStatus.loading,
+        currentMessage: ids,
+        channelId: event.channelId));
     final response =
         await uploadFileUseCase(UploadFileParams(event.file, event.filePath));
     response.fold(
         (l) =>
             emit(state.copyWith(sendMessageStatus: SendMessageStatus.failure)),
         (r) {
-          print(r.data!.filePath);
+      print(r.data!.filePath);
       add(SendMessageEvent(
           messageId: event.messageId,
           extraFields: event.extraFields,
           isForward: event.isForward,
+          channelId: event.channelId,
           mediaContent: [
-            {
-              'file_path':r.data!.filePath,
-              'caption':'test image'
-            }
+            {'file_path': r.data!.filePath, 'caption': 'test image'}
           ],
           messageType: event.messageType,
           parentMessageId: event.parentMessageId,
