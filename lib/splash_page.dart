@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:adobe_xd/pinned.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +24,9 @@ class _SplashPageState extends State<SplashPage> {
     Timer(const Duration(seconds: 4), _onSplash);
     super.initState();
   }
+
+
+
 
   _onSplash() {
     Widget child;

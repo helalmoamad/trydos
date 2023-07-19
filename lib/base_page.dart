@@ -1,20 +1,33 @@
+import 'dart:developer';
+import 'dart:convert' as convert;
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/app_bottom_navigation_bar.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_pages.dart';
+import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
+import 'package:trydos/main.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
+
+import 'features/chat/data/models/my_chats_response_model.dart';
+import 'features/chat/presentation/manager/chat_bloc.dart';
+import 'features/chat/presentation/manager/chat_event.dart';
 
 class BasePage extends StatefulWidget {
-  const BasePage({Key? key}) : super(key: key);
-
+  const BasePage({Key? key }) : super(key: key);
   @override
   State<BasePage> createState() => _BasePageState();
 }
 
 class _BasePageState extends State<BasePage> {
+  PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
   final List<Widget> pages = [
     const HomePage(),
     const HomePage(),
@@ -22,6 +35,33 @@ class _BasePageState extends State<BasePage> {
     const HomePage(),
   ];
 
+
+  @override
+  void initState() {
+    onMessage();
+    if(initialMessage != null){
+      AppBloc appBloc =BlocProvider.of<AppBloc>(context);
+      appBloc.add(ChangeBasePage(2));
+    }
+    super.initState();
+  }
+
+  void onMessage() {
+    FirebaseMessaging.onMessage.listen((event) {
+      ChatBloc bloc = BlocProvider.of<ChatBloc>(context);
+      Message message = Message.fromJson(
+          convert.jsonDecode(event.data['message']));
+      bloc.add(ReceiveMessageEvent(message: message));
+      log('object ${event.data}');
+      log('object ${event.senderId}');
+      log('object ${event.notification?.title}');
+      log('object ${event.notification?.body}');
+      log('object ${event.notification?.bodyLocArgs}');
+      log('object ${event.data}');
+      LocalNotificationService().showNotificationWithPayload(message: event);
+      // _handleNotificationForLocal('');
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

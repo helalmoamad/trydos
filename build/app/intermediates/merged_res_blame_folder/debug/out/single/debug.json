@@ -22,5 +22,9 @@
     {
         "merged": "com.example.trydos.app-merged_res-28:/mipmap-mdpi_ic_launcher.png.flat",
         "source": "com.example.trydos.app-main-21:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.example.trydos.app-merged_res-28:/drawable_app_icon.png.flat",
+        "source": "com.example.trydos.app-main-21:/drawable/app_icon.png"
     }
 ]

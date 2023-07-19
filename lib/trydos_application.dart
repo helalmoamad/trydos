@@ -1,5 +1,7 @@
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,9 +18,9 @@ import 'package:trydos/splash_page.dart';
 
 
 class TrydosApplication extends StatefulWidget {
-  const TrydosApplication({Key? key}) : super(key: key);
+  const TrydosApplication({Key? key , required this.navKey }) : super(key: key);
 
-  static final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
+   final GlobalKey<NavigatorState> navKey ;
 
   @override
   State<TrydosApplication> createState() => _TrydosApplicationState();
@@ -40,6 +42,11 @@ class _TrydosApplicationState extends State<TrydosApplication> {
   final botToastBuilder = BotToastInit();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: kDesignSize,
@@ -50,7 +57,7 @@ class _TrydosApplicationState extends State<TrydosApplication> {
             child: Builder(
               builder: (context) {
                 return MaterialApp(
-                    navigatorKey: TrydosApplication.navKey,
+                    navigatorKey: widget.navKey,
                     debugShowCheckedModeBanner: false,
                     theme: AppTheme.light,
                     locale: context.locale,

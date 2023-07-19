@@ -1,0 +1,12 @@
+com.baseflow.permissionhandler.permission_handler_android-jetified-annotation-experimental-1.1.0-0 C:\Users\Mahmoud\.gradle\caches\transforms-3\4b6bc21a8f04f795dd877159185b797a\transformed\jetified-annotation-experimental-1.1.0\res
+com.baseflow.permissionhandler.permission_handler_android-jetified-window-1.0.0-beta04-1 C:\Users\Mahmoud\.gradle\caches\transforms-3\8ba41e27f957bb04334467e70e1bfa6e\transformed\jetified-window-1.0.0-beta04\res
+com.baseflow.permissionhandler.permission_handler_android-core-1.6.0-2 C:\Users\Mahmoud\.gradle\caches\transforms-3\9a42ee025a2a683142a860eb057f75c1\transformed\core-1.6.0\res
+com.baseflow.permissionhandler.permission_handler_android-jetified-window-java-1.0.0-beta04-3 C:\Users\Mahmoud\.gradle\caches\transforms-3\abd584ed4add2cb087d488e42ff8b5a0\transformed\jetified-window-java-1.0.0-beta04\res
+com.baseflow.permissionhandler.permission_handler_android-main-4 C:\Users\Mahmoud\AppData\Local\Pub\Cache\hosted\pub.dev\permission_handler_android-10.3.0\android\src\main\res
+com.baseflow.permissionhandler.permission_handler_android-release-5 C:\Users\Mahmoud\AppData\Local\Pub\Cache\hosted\pub.dev\permission_handler_android-10.3.0\android\src\release\res
+com.baseflow.permissionhandler.permission_handler_android-pngs-6 E:\AndroidStudioProjects\trydos\build\permission_handler_android\generated\res\pngs\release
+com.baseflow.permissionhandler.permission_handler_android-resValues-7 E:\AndroidStudioProjects\trydos\build\permission_handler_android\generated\res\resValues\release
+com.baseflow.permissionhandler.permission_handler_android-rs-8 E:\AndroidStudioProjects\trydos\build\permission_handler_android\generated\res\rs\release
+com.baseflow.permissionhandler.permission_handler_android-mergeReleaseResources-9 E:\AndroidStudioProjects\trydos\build\permission_handler_android\intermediates\incremental\release\mergeReleaseResources\merged.dir
+com.baseflow.permissionhandler.permission_handler_android-mergeReleaseResources-10 E:\AndroidStudioProjects\trydos\build\permission_handler_android\intermediates\incremental\release\mergeReleaseResources\stripped.dir
+com.baseflow.permissionhandler.permission_handler_android-merged_res-11 E:\AndroidStudioProjects\trydos\build\permission_handler_android\intermediates\merged_res\release

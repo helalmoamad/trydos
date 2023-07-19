@@ -8,6 +8,7 @@ class AppState {
       required this.tabIndexInChat,
       required this.showBars,
       this.messageId,
+      this.senderParentMessageId,
       this.time,
       this.message,
       this.imageUrl});
@@ -23,6 +24,7 @@ class AppState {
   final String? messageId;
   final String? imageUrl;
   final DateTime? time;
+  final int? senderParentMessageId;
 
   AppState copyWith(
       {int? currentIndex,
@@ -30,7 +32,8 @@ class AppState {
       final bool? thereIsReply,
       final bool? replyOnMe,
       final String? replyType,
-      int? tabIndexInChat,
+        final int? senderParentMessageId,
+        int? tabIndexInChat,
         final DateTime? time,
         final String? message,
         final String? messageId,
@@ -43,6 +46,7 @@ class AppState {
       thereIsReply: thereIsReply ?? this.thereIsReply,
       replyOnMe: replyOnMe ?? this.replyOnMe,
       tabIndexInChat: tabIndexInChat ?? this.tabIndexInChat,
+      senderParentMessageId: senderParentMessageId ?? this.senderParentMessageId,
       showBars: showBars ?? this.showBars,
       message: message ?? this.message,
       messageId: messageId ?? this.messageId,

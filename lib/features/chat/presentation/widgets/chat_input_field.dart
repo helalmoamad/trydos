@@ -110,8 +110,12 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                 InkWell(
                                   onTap: () {
                                     BlocProvider.of<AppBloc>(context).add(
-                                        RefreshChatInputField(
-                                            false, '', false));
+                                        RefreshChatInputField(false, '', false,
+                                            messageId: null,
+                                            message: null,
+                                            senderParentMessageId: null,
+                                            imageUrl: null,
+                                            time: null));
                                   },
                                   child: SvgPicture.asset(
                                     AppAssets.closeSvg,
@@ -180,7 +184,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     ),
                                     20.horizontalSpace,
-                                    state.imageUrl!.contains('images/test')
+                                    state.imageUrl?.contains('images/test') ?? false
                                         ? MyCachedNetworkImage(
                                             height: 40.sp,
                                             width: 40.sp,

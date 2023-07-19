@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../../core/utils/responsive_padding.dart';
@@ -22,6 +24,8 @@ class ImageMessage extends StatelessWidget {
       this.isLocalMessage = true,
       required this.isSent,
       required this.time,
+      required this.isRead,
+      required this.senderId,
        this.imageFile,
        this.imageUrl,
       required this.messageId,
@@ -35,6 +39,8 @@ class ImageMessage extends StatelessWidget {
   final bool isLocalMessage;
   final String? imageUrl;
   final DateTime time;
+  final bool isRead;
+  final int senderId;
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -53,7 +59,7 @@ class ImageMessage extends StatelessWidget {
               offsetDx: 0.15,
               onRightSwipe: () {
                 print(time);
-                BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(true, 'image', isSent,imageUrl: imageUrl,messageId: messageId,time: time));
+                BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(true, 'image', isSent,senderParentMessageId:senderId  , imageUrl: imageUrl,messageId: messageId,time: time,message: 'Photo'));
               },
               child: Row(
                 mainAxisAlignment:
@@ -117,10 +123,11 @@ class ImageMessage extends StatelessWidget {
                                       SvgPicture.asset(
                                         (state.sendMessageStatus ==
                                                     SendMessageStatus.loading &&
-                                                state.currentMessage.contains(
-                                                    int.parse(messageId)))
+                                                state.currentMessage.contains(messageId))
                                             ? AppAssets.sandClockSvg
-                                            : AppAssets.messageSentArrowSvg,
+                                            : isRead ? AppAssets.messageReadArrowSvg
+                                            :AppAssets
+                                            .messageSentArrowSvg,
                                         color: context.colorScheme.white,
                                         width: 10.sp,
                                         height: 10.sp,

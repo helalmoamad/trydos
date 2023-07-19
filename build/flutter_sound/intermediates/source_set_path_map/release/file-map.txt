@@ -1,0 +1,16 @@
+com.dooboolab.fluttersound.flutter_sound-jetified-annotation-experimental-1.1.0-0 C:\Users\Mahmoud\.gradle\caches\transforms-3\4b6bc21a8f04f795dd877159185b797a\transformed\jetified-annotation-experimental-1.1.0\res
+com.dooboolab.fluttersound.flutter_sound-jetified-window-1.0.0-beta04-1 C:\Users\Mahmoud\.gradle\caches\transforms-3\8ba41e27f957bb04334467e70e1bfa6e\transformed\jetified-window-1.0.0-beta04\res
+com.dooboolab.fluttersound.flutter_sound-core-1.6.0-2 C:\Users\Mahmoud\.gradle\caches\transforms-3\9a42ee025a2a683142a860eb057f75c1\transformed\core-1.6.0\res
+com.dooboolab.fluttersound.flutter_sound-media-1.4.1-3 C:\Users\Mahmoud\.gradle\caches\transforms-3\9a50334196fa9922db04ea5496a0fea4\transformed\media-1.4.1\res
+com.dooboolab.fluttersound.flutter_sound-jetified-flutter_sound_core-9.2.13-4 C:\Users\Mahmoud\.gradle\caches\transforms-3\a08f360c4776249577fe0a1b099da68a\transformed\jetified-flutter_sound_core-9.2.13\res
+com.dooboolab.fluttersound.flutter_sound-jetified-window-java-1.0.0-beta04-5 C:\Users\Mahmoud\.gradle\caches\transforms-3\abd584ed4add2cb087d488e42ff8b5a0\transformed\jetified-window-java-1.0.0-beta04\res
+com.dooboolab.fluttersound.flutter_sound-appcompat-1.2.0-6 C:\Users\Mahmoud\.gradle\caches\transforms-3\e32cde4ef06d3ee553b1884415f22e45\transformed\appcompat-1.2.0\res
+com.dooboolab.fluttersound.flutter_sound-jetified-appcompat-resources-1.2.0-7 C:\Users\Mahmoud\.gradle\caches\transforms-3\f16a35144f7408050adb87c1853e00f2\transformed\jetified-appcompat-resources-1.2.0\res
+com.dooboolab.fluttersound.flutter_sound-main-8 C:\Users\Mahmoud\AppData\Local\Pub\Cache\hosted\pub.dev\flutter_sound-9.2.13\android\src\main\res
+com.dooboolab.fluttersound.flutter_sound-release-9 C:\Users\Mahmoud\AppData\Local\Pub\Cache\hosted\pub.dev\flutter_sound-9.2.13\android\src\release\res
+com.dooboolab.fluttersound.flutter_sound-pngs-10 E:\AndroidStudioProjects\trydos\build\flutter_sound\generated\res\pngs\release
+com.dooboolab.fluttersound.flutter_sound-resValues-11 E:\AndroidStudioProjects\trydos\build\flutter_sound\generated\res\resValues\release
+com.dooboolab.fluttersound.flutter_sound-rs-12 E:\AndroidStudioProjects\trydos\build\flutter_sound\generated\res\rs\release
+com.dooboolab.fluttersound.flutter_sound-mergeReleaseResources-13 E:\AndroidStudioProjects\trydos\build\flutter_sound\intermediates\incremental\release\mergeReleaseResources\merged.dir
+com.dooboolab.fluttersound.flutter_sound-mergeReleaseResources-14 E:\AndroidStudioProjects\trydos\build\flutter_sound\intermediates\incremental\release\mergeReleaseResources\stripped.dir
+com.dooboolab.fluttersound.flutter_sound-merged_res-15 E:\AndroidStudioProjects\trydos\build\flutter_sound\intermediates\merged_res\release

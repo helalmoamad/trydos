@@ -103,12 +103,12 @@ class HelperFunctions {
    }
 
   static Future<List<AssetEntity>?> myMultiAssetPicker (BuildContext context) {
-     const AssetPickerTextDelegate textDelegate = AssetPickerTextDelegate();
+      AssetPickerTextDelegate textDelegate = LanguageService.languageCode!='ar' ?   const EnglishAssetPickerTextDelegate() : const ArabicAssetPickerTextDelegate();
      return AssetPicker.pickAssets(
        context,
        pickerConfig: AssetPickerConfig(
          maxAssets: 1,
-         textDelegate: LanguageService.languageCode!='ar' ?  const EnglishAssetPickerTextDelegate() : const ArabicAssetPickerTextDelegate(),
+         textDelegate: textDelegate,
          themeColor: const Color(0xff137AC9),
          specialItemPosition: SpecialItemPosition.prepend,
          specialItemBuilder: (
@@ -130,8 +130,7 @@ class HelperFunctions {
                  if (result == null) {
                    return;
                  }
-                 final AssetPicker<AssetEntity, AssetPathEntity> picker =
-                 context.findAncestorWidgetOfExactType()!;
+                 final AssetPicker<AssetEntity, AssetPathEntity> picker = context.findAncestorWidgetOfExactType()!;
                  final DefaultAssetPickerBuilderDelegate builder =
                  picker.builder as DefaultAssetPickerBuilderDelegate;
                  final DefaultAssetPickerProvider p = builder.provider;
@@ -155,6 +154,7 @@ class HelperFunctions {
   static Future<AssetEntity?> _pickFromCamera(BuildContext c) {
     return CameraPicker.pickFromCamera(
       c,
+      locale: LanguageService.currentLanguage,
       pickerConfig: const CameraPickerConfig(enableRecording: true),
     );
   }
@@ -168,20 +168,17 @@ class HelperFunctions {
     return input;
   }
   static String getZonedDateInFormat(DateTime date){
-    final dateFormatter = DateFormat('yyy-MM-ddTHH:mmZ').parseUTC(date.toIso8601String()).toLocal();
-    String formattedTime = DateFormat("HH:mm").format(dateFormatter);
+    String formattedTime = DateFormat.Hm().format(date.toLocal());
     return formattedTime;
   }
 
   static String getDateInFormat(DateTime date){
-    String formattedTime = DateFormat("HH:mm").format(date);
+    String formattedTime = DateFormat.Hm().format(date);
     return formattedTime;
   }
 
   static DateTime getZonedDate(DateTime date){
-    final dateFormatter = DateFormat('yyy-MM-ddTHH:mmZ').parseUTC(date.toIso8601String()).toLocal();
-    String formattedTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(dateFormatter);
-    return DateTime.parse(formattedTime);
+    return date.toLocal();
   }
   
   static String getTimeInFormat(Duration duration){

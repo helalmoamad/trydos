@@ -1,5 +1,10 @@
-part of 'chat_bloc.dart';
 
+
+import 'dart:io';
+
+import 'package:equatable/equatable.dart';
+
+import '../../data/models/my_chats_response_model.dart';
 abstract class ChatEvent extends Equatable {
   const ChatEvent();
 }
@@ -42,6 +47,16 @@ class GetContactsEvent extends ChatEvent {
   List<Object?> get props => [];
 }
 
+class ReadAllMessagesEvent extends ChatEvent {
+  final int channelId;
+
+  const ReadAllMessagesEvent(this.channelId);
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [channelId];
+}
+
 class GetChatsEvent extends ChatEvent {
   const GetChatsEvent();
 
@@ -54,20 +69,25 @@ class SendMessageEvent extends ChatEvent {
   final int? receiverUserId;
   final String? content;
   final List<Map<String, dynamic>>? mediaContent;
-  final int? parentMessageId;
+  final String? parentMessageId;
   final String? messageType;
   final bool? isForward;
   final Map<String, dynamic>? extraFields;
   final String messageId;
+  final String? parentMessageContent;
   final int channelId;
-
+  final File? file;
+  final int? senderParentMessageId;
   const SendMessageEvent(
       {this.receiverUserId,
       this.content,
       required this.messageId,
       this.mediaContent,
       this.parentMessageId,
+      this.file,
+      this.senderParentMessageId,
       this.messageType,
+      this.parentMessageContent,
       this.isForward,
       this.extraFields,
       required this.channelId});
@@ -79,7 +99,9 @@ class SendMessageEvent extends ChatEvent {
         content,
         mediaContent,
         parentMessageId,
+        file,
         messageType,
+        parentMessageContent,
         isForward,
         extraFields,
         channelId,
@@ -94,10 +116,12 @@ class UploadFileEvent extends ChatEvent {
   final int? receiverUserId;
   final String? content;
   final List<Map<String, dynamic>>? mediaContent;
-  final int? parentMessageId;
+  final String? parentMessageId;
   final String? messageType;
+  final String? parentMessageContent;
   final bool? isForward;
   final int channelId;
+  final int? senderParentMessageId;
   final Map<String, dynamic>? extraFields;
 
   const UploadFileEvent({
@@ -107,7 +131,9 @@ class UploadFileEvent extends ChatEvent {
     required this.channelId,
     this.receiverUserId,
     this.content,
+    this.senderParentMessageId,
     this.mediaContent,
+    this.parentMessageContent,
     this.parentMessageId,
     this.messageType,
     this.isForward,
@@ -126,6 +152,7 @@ class UploadFileEvent extends ChatEvent {
         messageType,
         isForward,
         extraFields,
+        parentMessageContent,
         messageId,
         channelId
       ];
@@ -141,4 +168,23 @@ class SaveContactsEvent extends ChatEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [contacts];
+}
+
+class ReceiveMessageEvent extends ChatEvent {
+  final Message message;
+
+  const ReceiveMessageEvent({required this.message});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message];
+}
+class NotifyThatIReceivedMessageEvent extends ChatEvent {
+  final int channelId;
+
+  const NotifyThatIReceivedMessageEvent({required this.channelId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [channelId];
 }

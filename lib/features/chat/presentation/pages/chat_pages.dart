@@ -20,6 +20,7 @@ import 'package:trydos/features/chat/presentation/pages/calls_page_content.dart'
 import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
 
 import '../manager/chat_bloc.dart';
+import '../manager/chat_event.dart';
 class ChatPages extends StatefulWidget {
   const ChatPages({Key? key}) : super(key: key);
 

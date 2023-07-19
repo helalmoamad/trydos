@@ -9,6 +9,7 @@ import '../../../../base_page.dart';
 import '../../../../common/constant/countries.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
 import '../../../app/app_elvated_button.dart';
 import '../../../app/app_widgets/app_text_field.dart';
 import '../../../app/app_widgets/phone_input/phone_input_widget.dart';
@@ -158,9 +159,10 @@ class LoginPage extends StatefulWidget {
     final validate = form.key.currentState!.validate() && fullPhone != null;
     if (!validate) return;
     print(fullPhone);
+    String fcmToken=NotificationProcess.myFcmToken!;
     BlocProvider.of<AuthBloc>(context).add(
       LoginEvent(
-          mobilePhone: fullPhone!.substring(1), password: form.controllers[1].text),
+          mobilePhone: fullPhone!.substring(1), password: form.controllers[1].text , fcmToken: fcmToken),
     );
   }
 

@@ -17,6 +17,14 @@
 	<string>Trydos</string>
 	<key>NSContactsUsageDescription</key>
     <string>This app requires contacts access to function properly.</string>
+    <key>FirebaseAppDelegateProxyEnabled</key>
+    <false/>
+    <key>FirebaseMessagingAutoInitEnabled</key>
+    <false/>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>remote-notification</string>
+    </array>
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsArbitraryLoads</key>

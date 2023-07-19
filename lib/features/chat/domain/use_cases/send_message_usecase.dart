@@ -2,7 +2,7 @@
 
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:trydos/features/chat/data/models/create_user_response_model.dart';
+import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/domain/repositories/chat_repository.dart';
 
@@ -26,7 +26,7 @@ class SendMessageParams{
   final int? receiverUserId;
   final String? content;
   final List<Map<String , dynamic>>? mediaContent;
-  final int? parentMessageId;
+  final String? parentMessageId;
   final String? messageType;
   final bool? isForward;
   final Map<String , dynamic >? extraFields;

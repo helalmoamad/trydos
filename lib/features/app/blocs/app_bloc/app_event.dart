@@ -49,9 +49,10 @@ class RefreshChatInputField extends AppEvent{
    final String? messageId;
    final String? imageUrl;
    final DateTime? time;
-   RefreshChatInputField(this.thereIsReply , this.replyType, this.replyOnMe,{this.messageId, this.message, this.imageUrl,this.time});
+   final int? senderParentMessageId;
+   RefreshChatInputField(this.thereIsReply , this.replyType, this.replyOnMe,{this.senderParentMessageId , this.messageId, this.message, this.imageUrl,this.time});
   @override
   // TODO: implement props
-  List<Object?> get props => [thereIsReply , replyType , replyOnMe , messageId , message , imageUrl,time];
+  List<Object?> get props => [thereIsReply , replyType , replyOnMe , senderParentMessageId ,messageId , message , imageUrl,time];
 
 }

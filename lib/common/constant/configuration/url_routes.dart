@@ -11,6 +11,8 @@ extension ScopeApi on String {
   String channelsScope({bool current=false}) => '$_api/${current ? _currentVersion : _previousVersion}/channels/$this';
 
   String messagesScope({bool current=false}) => '$_api/${current ? _currentVersion : _previousVersion}/messages/$this';
+
+  String firebaseTokensScope({bool current=false}) => '$_api/${current ? _currentVersion : _previousVersion}/firebase_tokens${this !='' ? '/$this': ''}';
 }
 
 abstract class EndPoints {
@@ -27,10 +29,16 @@ abstract class EndPoints {
 ///! ----< channels ( chats )  >----
 ///
   static final getMyChatsEP = 'my_channels'.channelsScope(current: true);
+  static String readAllMessagesEP(String channelId) => '$channelId/watched'.channelsScope(current: true);
+  static String receiveMessageEP(String channelId) => '$channelId/received'.channelsScope(current: true);
 
   ///! ----< messages >----
   ///
   static final sendMessageEP = 'send'.messagesScope();
+  ///! ----< firebase tokens >----
+  ///
+  static final storeFcmEP = ''.firebaseTokensScope();
+  static String deleteFcmEP(int id) => id.toString().firebaseTokensScope();
 
 }
 

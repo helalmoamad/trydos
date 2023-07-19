@@ -1,7 +1,7 @@
 
 import 'package:injectable/injectable.dart';
-import 'package:trydos/features/chat/data/models/create_user_response_model.dart';
-import 'package:trydos/features/chat/data/models/login_user_response_model.dart';
+import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
+import 'package:trydos/features/authentication/data/models/login_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
 
@@ -26,6 +26,28 @@ class ChatRemoteDataSource{
     );
     return getContacts();
   }
+  Future<bool> readAllMessages(Map<String,dynamic> params){
+    GetClient<bool> readAllMessages= GetClient<bool>(
+      requestPrams: RequestConfig<bool>(
+        endpoint: EndPoints.readAllMessagesEP(params['id'].toString()),
+        response: ResponseValue<bool>(
+          returnValueOnSuccess: true
+        ),
+      ),
+    );
+    return readAllMessages();
+  }
+  Future<bool> receiveMessage(Map<String,dynamic> params){
+    GetClient<bool> receiveMessage= GetClient<bool>(
+      requestPrams: RequestConfig<bool>(
+        endpoint: EndPoints.receiveMessageEP(params['id']),
+        response: ResponseValue<bool>(
+          returnValueOnSuccess: true
+        ),
+      ),
+    );
+    return receiveMessage();
+  }
 
   Future<MyChatsResponseModel> getChats(){
     PostClient<MyChatsResponseModel> getChats= PostClient<MyChatsResponseModel>(
@@ -43,6 +65,8 @@ class ChatRemoteDataSource{
       requestPrams: RequestConfig<UploadFileResponseModel>(
         endpoint: EndPoints.uploadFileEP,
         data: params['data'],
+        receiveTimeout: const Duration(minutes: 5),
+        sendTimeout: const Duration(minutes: 5),
         response: ResponseValue<UploadFileResponseModel>(
             fromJson: (response)=> UploadFileResponseModel.fromJson(response)
         ),

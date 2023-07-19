@@ -24,10 +24,13 @@ class TextMessage extends StatefulWidget {
       this.isForwarded = false,
       this.sendColor,
       this.receivedColor,
+      this.disableMessageAlignment=false,
       required this.message,
+      required this.isRead,
       required this.time,
       required this.messageId,
       required this.isSent,
+      required this.senderId,
       required this.isFirstMessage})
       : super(key: key);
   final String message;
@@ -40,6 +43,9 @@ class TextMessage extends StatefulWidget {
   final bool withShadow;
   final bool withImageShadow;
   final DateTime time;
+  final bool isRead;
+  final bool disableMessageAlignment;
+  final int senderId;
 
   @override
   State<TextMessage> createState() => _TextMessageState();
@@ -52,15 +58,19 @@ class _TextMessageState extends ThemeState<TextMessage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final RenderBox renderBox =
-          key.currentContext!.findRenderObject() as RenderBox;
-      height = renderBox.size.height;
+      if (mounted) {
+        final RenderBox renderBox =
+            key.currentContext?.findRenderObject() as RenderBox;
+        height = renderBox.size.height;
+      }
     });
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    print('mmm : ${widget.messageId}');
     return BlocBuilder<ChatBloc, ChatState>(
       builder: (context, state) {
         log('rebuild');
@@ -69,8 +79,8 @@ class _TextMessageState extends ThemeState<TextMessage> {
           children: [
             Padding(
               padding: HWEdgeInsets.only(
-                  right: widget.isSent ? 25.w : 0,
-                  left: widget.isSent ? 0 : 25.w),
+                  right: (widget.isSent || widget.disableMessageAlignment) ? 25.w : 0,
+                  left: (widget.isSent || widget.disableMessageAlignment) ? 0 : 25.w),
               child: SwipeTo(
                 iconSize: 0,
                 animationDuration: const Duration(milliseconds: 100),
@@ -78,12 +88,15 @@ class _TextMessageState extends ThemeState<TextMessage> {
                 onRightSwipe: () {
                   BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
                       true, 'text', widget.isSent,
-                      messageId: widget.messageId, message: widget.message,time: widget.time));
+                      messageId: widget.messageId,
+                      senderParentMessageId: widget.senderId,
+                      message: widget.message,
+                      time: widget.time));
                 },
                 child: Directionality(
                   textDirection: TextDirection.ltr,
                   child: Row(
-                    mainAxisAlignment: widget.isSent
+                    mainAxisAlignment: (widget.isSent || widget.disableMessageAlignment)
                         ? MainAxisAlignment.end
                         : MainAxisAlignment.start,
                     children: [
@@ -93,7 +106,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                             : Alignment.centerLeft,
                         children: [
                           Container(
-                            constraints: const BoxConstraints(minHeight: 48),
+                            constraints:  BoxConstraints(minHeight: !widget.withShadow ? 71 : 48 ),
                             decoration: BoxDecoration(
                                 color: widget.isSent
                                     ? (widget.sendColor ??
@@ -112,13 +125,13 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                     : null),
                             child: Padding(
                               padding: HWEdgeInsets.only(
-                                  left: widget.isSent
+                                  left: (widget.isSent || widget.disableMessageAlignment)
                                       ? 20.w
                                       : height < 60
                                           ? 50.w
                                           : 40.w,
                                   top: 10,
-                                  right: widget.isSent
+                                  right: (widget.isSent || widget.disableMessageAlignment)
                                       ? height < 60
                                           ? 50.w
                                           : 40.w
@@ -146,7 +159,12 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                     child: Row(
                                       children: [
                                         Text(
-                                    !widget.time.isUtc ? HelperFunctions.getDateInFormat(widget.time) : HelperFunctions.getZonedDateInFormat(widget.time),
+                                          !widget.time.isUtc
+                                              ? HelperFunctions.getDateInFormat(
+                                                  widget.time)
+                                              : HelperFunctions
+                                                  .getZonedDateInFormat(
+                                                      widget.time),
                                           style: textTheme.overline?.rr
                                               .copyWith(
                                                   color: widget.withImageShadow
@@ -161,12 +179,15 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                         SendMessageStatus
                                                             .loading &&
                                                     state.currentMessage
-                                                        .contains(int.parse(
-                                                            widget.messageId)))
+                                                        .contains(
+                                                            widget.messageId))
                                                 ? AppAssets.sandClockSvg
                                                 : widget.withImageShadow
-                                                    ? AppAssets
-                                                        .messageSentArrowSvg
+                                                    ? widget.isRead
+                                                        ? AppAssets
+                                                            .messageReadArrowSvg
+                                                        : AppAssets
+                                                            .messageSentArrowSvg
                                                     : AppAssets
                                                         .messageReadArrowWithOpacitySvg,
                                             width: 10.sp,

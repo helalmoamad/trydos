@@ -1,10 +1,11 @@
 
 import 'package:injectable/injectable.dart';
+import 'package:trydos/features/authentication/data/models/store_fcm_token_response_model.dart';
 import '../../../../common/constant/configuration/url_routes.dart';
 import '../../../../core/api/client_config.dart';
 import '../../../../core/api/methods/post.dart';
-import '../../../chat/data/models/create_user_response_model.dart';
-import '../../../chat/data/models/login_user_response_model.dart';
+import '../models/create_user_response_model.dart';
+import '../models/login_user_response_model.dart';
 
 @injectable
 class AuthRemoteDatasource {
@@ -20,6 +21,30 @@ class AuthRemoteDatasource {
       ),
     );
     return loginUser();
+  }
+  Future<bool> deleteFcmToken(Map<String,dynamic> params){
+    PostClient<bool> deleteFcmToken= PostClient<bool>(
+      requestPrams: RequestConfig<bool>(
+        endpoint: EndPoints.deleteFcmEP(params['id']),
+        data: params,
+        response: ResponseValue<bool>(
+            returnValueOnSuccess: true
+        ),
+      ),
+    );
+    return deleteFcmToken();
+  }
+  Future<StoreFcmTokenResponseModel> storeFcmToken(Map<String,dynamic> params){
+    PostClient<StoreFcmTokenResponseModel> storeFcmToken= PostClient<StoreFcmTokenResponseModel>(
+      requestPrams: RequestConfig<StoreFcmTokenResponseModel>(
+        endpoint: EndPoints.storeFcmEP,
+        data: params,
+        response: ResponseValue<StoreFcmTokenResponseModel>(
+            fromJson: (response)=> StoreFcmTokenResponseModel.fromJson(response)
+        ),
+      ),
+    );
+    return storeFcmToken();
   }
 
   Future<CreateUserResponseModel> createUser(Map<String,dynamic> params){

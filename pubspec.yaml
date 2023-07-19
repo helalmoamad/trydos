@@ -55,10 +55,12 @@ dependencies:
   contacts_service: ^0.6.3
   mime: ^1.0.4
   audioplayers: ^4.1.0
+  pusher_channels_flutter: ^2.1.2
   uuid: ^3.0.7
   flutter_sound: ^9.2.13
   mime_type: ^1.0.0
   permission_handler: ^10.2.0
+  flutter_local_notifications: ^15.1.0+1
   audio_wave: ^0.1.5
   shared_preferences: ^2.1.2
   get_it: ^7.6.0

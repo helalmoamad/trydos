@@ -59,6 +59,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
           replyOnMe: event.replyOnMe,
           message: event.message,
           messageId: event.messageId,
+          senderParentMessageId: event.senderParentMessageId,
           time: event.time,
           imageUrl: event.imageUrl)
     );
