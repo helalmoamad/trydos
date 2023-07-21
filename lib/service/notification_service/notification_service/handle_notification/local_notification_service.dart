@@ -1,5 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:trydos/main.dart';
 import 'notification_process.dart';
 import '../../../../features/chat/data/models/my_chats_response_model.dart' as chat;
 import 'dart:convert' as convert;
@@ -40,6 +42,7 @@ class LocalNotificationService {
   Future<void> showNotificationWithPayload({required RemoteMessage message}) async {
     chat.Message myMessage = chat.Message.fromJson(
         convert.jsonDecode(message.data['message']));
+    initialMessage=myMessage;
     await _localNotificationPlugin.show(
       0,
       myMessage.senderInfo!.name.toString(),
@@ -50,9 +53,8 @@ class LocalNotificationService {
   }
 
   static void _onSelectNotification(NotificationResponse notificationResponse) {
-    if (notificationResponse.payload != null && (notificationResponse.payload?.isNotEmpty ?? false)) {
-      NotificationProcess().handleNotificationForLocal(notificationResponse.payload);
-    }
+    print('clicked');
+    notificationClicked=true;
   }
   _notificationDetails() {
     final channel = LocalNotificationService().getAndroidChannel;

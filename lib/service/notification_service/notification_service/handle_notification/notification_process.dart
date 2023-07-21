@@ -61,19 +61,17 @@ class NotificationProcess {
     );
   }
 
-  Future<RemoteMessage?> setupInteractedMessage() async {
+  Future<void> setupInteractedMessage() async {
     RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-
     if (initialMessage != null) {
       LocalNotificationService().showNotificationWithPayload(message: initialMessage);
     }
-    return initialMessage;
 
     handleTappedNotificationOnTerminatedState();
 
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
       log('fore ground message');
-      handleNotificationForLocal('');
+     // handleNotificationForLocal('');
     });
   }
 

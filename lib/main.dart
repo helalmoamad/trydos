@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/di/di_container.dart';
+import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/notification_process.dart';
 import 'package:trydos/trydos_application.dart';
@@ -17,13 +18,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-RemoteMessage? initialMessage;
+bool notificationClicked =false;
+Message? initialMessage;
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await configureDependencies();
   await NotificationProcess().init();
-  initialMessage = await  NotificationProcess().setupInteractedMessage();
+  //await  NotificationProcess().setupInteractedMessage();
   NotificationProcess().fcmToken();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   AssetPicker.registerObserve();

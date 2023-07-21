@@ -8,6 +8,8 @@ import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
 
 import '../../../../main.dart';
+import '../../../app/blocs/app_bloc/app_bloc.dart';
+import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../home/presentation/widgets/sliver_list_seprated.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_event.dart';
@@ -25,8 +27,7 @@ class _ChatPageContentState extends State<ChatPageContent> {
   @override
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context)
-      ..add(const GetContactsEvent())
-      ..add(const GetChatsEvent());
+      ..add(const GetContactsEvent());
     super.initState();
   }
 
@@ -34,29 +35,7 @@ class _ChatPageContentState extends State<ChatPageContent> {
   Widget build(BuildContext context) {
     return BlocConsumer<ChatBloc, ChatState>(
       listener: (context, state) {
-        if (initialMessage != null) {
-          Message message = Message.fromJson(initialMessage!.data);
-          chatBloc.add(ReadAllMessagesEvent(message.channelId!));
-          Chat chat = state.chats.firstWhere((element) => element.id == message.channelId);
-          int chatIndex = state.chats.indexWhere((element) => element.id == message.channelId);
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => BlocBuilder<ChatBloc, ChatState>(
-                        builder: (context, state) {
-                          return SinglePageChat(
-                            chatIndex: chatIndex,
-                            receiverName: chat.channelMembers
-                                    ?.firstWhere((element) =>
-                                        element.id == message.senderUserId)
-                                    .user!
-                                    .name
-                                    .toString() ??
-                                '',
-                          );
-                        },
-                      )));
-        }
+
       },
       builder: (context, state) {
         if (state.getChatsStatus == GetChatsStatus.loading) {
