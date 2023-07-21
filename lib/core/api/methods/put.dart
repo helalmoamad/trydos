@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
-import '../../../common/enums/status_code_type.dart';
+import '../../../enums/status_code_type.dart';
 import '../api.dart';
 import '../client_config.dart';
 
@@ -14,12 +14,16 @@ class PutClient<T> extends BaseApi<T> {
         _valueOnSuccess = requestPrams.response.returnValueOnSuccess,
         _data = requestPrams.data,
         _queryParameters = requestPrams.queryParameters,
-        _endpoint = requestPrams.endpoint;
+        _endpoint = requestPrams.endpoint,
+  _receiveTimeout = requestPrams.receiveTimeout,
+  _sendTimeout = requestPrams.sendTimeout;
 
   final RequestConfig<T> requestPrams;
   final Stopwatch stopWatch = Stopwatch();
   final ProgressCallback? onSendProgress;
   final ProgressCallback? onReceiveProgress;
+  final Duration? _receiveTimeout;
+  final Duration? _sendTimeout;
 
   final FromJson<T>? _fromJson;
   final T? _valueOnSuccess;
@@ -39,7 +43,8 @@ class PutClient<T> extends BaseApi<T> {
           path: _endpoint,
           queryParameters: _queryParameters,
         ),
-        options: options,
+        options: options.copyWith(
+            receiveTimeout: _receiveTimeout ?? options.receiveTimeout, sendTimeout: _sendTimeout ?? options.sendTimeout),
         data: _data,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,

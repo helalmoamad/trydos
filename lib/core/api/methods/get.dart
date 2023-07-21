@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import '../../../common/constant/configuration/url_routes.dart';
-import '../../../common/enums/status_code_type.dart';
+import '../../../enums/status_code_type.dart';
 import '../api.dart';
 import '../client_config.dart';
 
@@ -13,7 +13,11 @@ class GetClient<T> extends BaseApi<T> {
   })  : _fromJson = requestPrams.response.fromJson,
         _valueOnSuccess = requestPrams.response.returnValueOnSuccess,
         _endpoint = requestPrams.endpoint,
-        _queryParameters = requestPrams.queryParameters;
+        _queryParameters = requestPrams.queryParameters,
+  _receiveTimeout = requestPrams.receiveTimeout,
+  _sendTimeout = requestPrams.sendTimeout;
+  final Duration? _receiveTimeout;
+  final Duration? _sendTimeout;
   final Stopwatch stopWatch = Stopwatch();
   RequestConfig<T> requestPrams;
   final ProgressCallback? onReceiveProgress;
@@ -36,7 +40,8 @@ class GetClient<T> extends BaseApi<T> {
           path:  _endpoint,
           queryParameters: _queryParameters,
         ),
-        options: options,
+        options: options.copyWith(
+            receiveTimeout: _receiveTimeout ?? options.receiveTimeout, sendTimeout: _sendTimeout ?? options.sendTimeout),
         onReceiveProgress: onReceiveProgress,
       );
 

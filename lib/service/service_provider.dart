@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trydos/app_bloc/app_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import '../features/app/blocs/sensitive_connectivity/sensitive_connectivity_bloc.dart';
+import '../features/chat/presentation/manager/chat_event.dart';
 
 class ServiceProvider extends StatelessWidget {
   final Widget child;
@@ -11,6 +16,9 @@ class ServiceProvider extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (BuildContext context) => AppBloc()),
+        BlocProvider(create: (BuildContext context) => SensitiveConnectivityBloc()),
+        BlocProvider(create: (BuildContext context) => GetIt.I<AuthBloc>()),
+        BlocProvider(create: (BuildContext context) => GetIt.I<ChatBloc>()..add(const GetChatsEvent())),
       ],
       child: child,
     );

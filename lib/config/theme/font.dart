@@ -19,6 +19,7 @@ String get _sFDisplaySemiBoldFamily => 'SF-Pro-Display-Semibold';
 String get _sFDisplayThinFamily => 'SF-Pro-Display-Thin';
 String get _sFDisplayLightFamily => 'SF-Pro-Display-Light';
 String get _sFRoundedLightFamily => 'SF-Pro-Rounded-Light';
+String get _sFRoundedBoldFamily => 'SF-Pro-Rounded-Bold';
 String get _sFRoundedRegularFamily => 'SF-Pro-Rounded-Regular';
 String get _sFRoundedMediumFamily => 'SF-Pro-Rounded-Medium';
 String get _sFDisplayBoldFamily => 'SF-Pro-Display-Bold';
@@ -45,6 +46,8 @@ extension FamilyUtils on TextStyle {
   TextStyle get rr => copyWith(fontWeight: _regular,fontFamily: _sFRoundedRegularFamily);
 
   TextStyle get mr => copyWith(fontWeight: _medium,fontFamily: _sFRoundedMediumFamily);
+
+  TextStyle get br => copyWith(fontWeight: _bold,fontFamily: _sFRoundedBoldFamily);
 
 
 }

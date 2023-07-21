@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "912302743695",
+    "project_id": "trydos-ce234",
+    "storage_bucket": "trydos-ce234.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:912302743695:android:35ac3a3661d583674110fa",
+        "android_client_info": {
+          "package_name": "com.example.trydos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "912302743695-bki4hbh9cs1ihbu952s2etbufnd04eef.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.trydos",
+            "certificate_hash": "78e79d4c38c5b889070cec309c29dda67e9f5fa3"
+          }
+        },
+        {
+          "client_id": "912302743695-h6gal79qdu99ghdavkmvump98sp04e3i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqEbZnQHW-6C8J-xoMJgOyEyqB2ypz9qA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "912302743695-h6gal79qdu99ghdavkmvump98sp04e3i.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "912302743695-t599imjsqacpn6ujnkde71jvu848ra5o.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "Trydos"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

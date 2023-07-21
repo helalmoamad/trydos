@@ -6,12 +6,15 @@ class RequestConfig<T> {
   late final dynamic data;
   late final String endpoint;
   late final ResponseValue<T> response;
-
+  final Duration? receiveTimeout;
+  final Duration? sendTimeout;
   RequestConfig({
     required this.endpoint,
     required this.response,
     this.queryParameters,
     this.data,
+    this.receiveTimeout,
+    this.sendTimeout,
   });
 }
 

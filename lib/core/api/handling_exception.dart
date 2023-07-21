@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
-import '../../common/enums/status_code_type.dart';
+import '../../enums/status_code_type.dart';
 import '../error/exception.dart';
 import '../error/failures.dart';
 

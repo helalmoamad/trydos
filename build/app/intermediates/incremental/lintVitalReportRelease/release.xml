@@ -1,7 +1,7 @@
 <variant
     name="release"
     package="com.example.trydos"
-    minSdkVersion="16"
+    minSdkVersion="21"
     targetSdkVersion="33"
     shrinking="true"
     mergedManifest="E:\AndroidStudioProjects\trydos\build\app\intermediates\merged_manifest\release\AndroidManifest.xml"
@@ -35,6 +35,6 @@
       classOutputs="E:\AndroidStudioProjects\trydos\build\app\intermediates\javac\release\classes;E:\AndroidStudioProjects\trydos\build\app\tmp\kotlin-classes\release;E:\AndroidStudioProjects\trydos\build\app\kotlinToolingMetadata;E:\AndroidStudioProjects\trydos\build\app\intermediates\compile_and_runtime_not_namespaced_r_class_jar\release\R.jar"
       applicationId="com.example.trydos"
       generatedSourceFolders="E:\AndroidStudioProjects\trydos\build\app\generated\source\buildConfig\release;E:\AndroidStudioProjects\trydos\build\app\generated\aidl_source_output_dir\release\out;E:\AndroidStudioProjects\trydos\build\app\generated\renderscript_source_output_dir\release\out;E:\AndroidStudioProjects\trydos\build\app\generated\ap_generated_sources\release\out"
-      generatedResourceFolders="E:\AndroidStudioProjects\trydos\build\app\generated\res\rs\release;E:\AndroidStudioProjects\trydos\build\app\generated\res\resValues\release">
+      generatedResourceFolders="E:\AndroidStudioProjects\trydos\build\app\generated\res\google-services\release;E:\AndroidStudioProjects\trydos\build\app\generated\res\rs\release;E:\AndroidStudioProjects\trydos\build\app\generated\res\resValues\release">
   </mainArtifact>
 </variant>

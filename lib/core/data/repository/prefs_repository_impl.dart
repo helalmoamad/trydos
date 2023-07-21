@@ -24,7 +24,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
       setTheme(defaultAppTheme);
       return defaultAppTheme;
     }
-    return mapAppThemeMode[res]!;
+    return defaultAppTheme;
+    //return mapAppThemeMode[res]!;
   }
 
   @override
@@ -94,6 +95,42 @@ class PrefsRepositoryImpl extends PrefsRepository {
     Map<String, dynamic> data = convert.jsonDecode(requestsJson);
     return List<Map<String, dynamic>>.from(data['requests_data']!.map((x) => x));
   }
+
+  @override
+  Future<bool> setMyId(int id) => _preferences.setInt(PrefsKey.userId, id);
+
+  @override
+  int? get myId => _preferences.getInt(PrefsKey.userId);
+
+  @override
+  int? get fcmTokenId => _preferences.getInt(PrefsKey.fcmTokenId);
+
+  @override
+  Future<bool> setFcmTokenId(int fcmTokenId) => _preferences.setInt(PrefsKey.fcmTokenId, fcmTokenId);
+
+
+  // @override
+  // // TODO: implement localMessages
+  // List<Map<String,dynamic>> get localMessages {
+  //   String? messages = _preferences.getString(PrefsKey.messages);
+  //   if (messages == null) {
+  //     return [];
+  //   }
+  //   Map<String, dynamic> data = convert.jsonDecode(messages);
+  //   return List<Map<String, dynamic>>.from(data['messages']!.map((x) => x));
+  // }
+
+  // @override
+  // void saveMessage(Map<String,dynamic> message) {
+  //   List<Map<String, dynamic>> messages = localMessages ;
+  //   messages.insert(0 , message);
+  //   _preferences.setString(
+  //       'messages',
+  //       convert.jsonEncode({'messages': messages}));
+  // }
+
+  // @override
+  // void clearAllMessages() => _preferences.remove(PrefsKey.messages);
 
   // @override
   // User? get user {
