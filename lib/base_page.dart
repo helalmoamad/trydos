@@ -1,26 +1,67 @@
+import 'dart:developer';
+import 'dart:convert' as convert;
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trydos/app_bloc/app_bloc.dart';
-import 'package:trydos/app_bloc/app_state.dart';
-import 'package:trydos/app_widgets/app_bottom_navigation_bar.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/features/app/app_widgets/app_bottom_navigation_bar.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_pages.dart';
+import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
+import 'package:trydos/main.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
+
+import 'features/chat/data/models/my_chats_response_model.dart';
+import 'features/chat/presentation/manager/chat_bloc.dart';
+import 'features/chat/presentation/manager/chat_event.dart';
 
 class BasePage extends StatefulWidget {
-  const BasePage({Key? key}) : super(key: key);
+  const BasePage({Key? key }) : super(key: key);
 
   @override
   State<BasePage> createState() => _BasePageState();
 }
 
 class _BasePageState extends State<BasePage> {
+  PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
+  late ChatBloc chatBloc;
   final List<Widget> pages = [
     const HomePage(),
     const HomePage(),
     const ChatPages(),
     const HomePage(),
   ];
+
+
+  @override
+  void initState() {
+    initializePusher();
+    chatBloc = BlocProvider.of<ChatBloc>(context);
+    onMessage();
+    super.initState();
+  }
+
+  void onMessage() {
+    FirebaseMessaging.onMessage.listen((event) {
+      ChatBloc bloc = BlocProvider.of<ChatBloc>(context);
+      Message message = Message.fromJson(
+          convert.jsonDecode(event.data['message']));
+      bloc.add(ReceiveMessageEvent(message: message));
+      log('object ${event.data}');
+      log('object ${event.senderId}');
+      log('object ${event.notification?.title}');
+      log('object ${event.notification?.body}');
+      log('object ${event.notification?.bodyLocArgs}');
+      log('object ${event.data}');
+      LocalNotificationService().showNotificationWithPayload(message: event);
+      // _handleNotificationForLocal('');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,12 +76,41 @@ class _BasePageState extends State<BasePage> {
               return const SizedBox.shrink();
             }
           }),
-      body: BlocBuilder<AppBloc, AppState>(
-        buildWhen: (oldState, newState) =>
-            oldState.currentIndex != newState.currentIndex,
-        builder: (_, state) {
-          return pages[state.currentIndex];
+      body: BlocListener<ChatBloc, ChatState>(
+        listener: (context, state) {
+          print('kkkkkkkkkkkkkkk');
+          if (initialMessage != null && state.chats.isNotEmpty) {
+            AppBloc appBloc =BlocProvider.of<AppBloc>(context);
+            appBloc.add(ChangeBasePage(2));
+            chatBloc.add(ReadAllMessagesEvent(initialMessage!.channelId!));
+            Chat chat = state.chats.firstWhere((element) => element.id == initialMessage!.channelId);
+            int chatIndex = state.chats.indexWhere((element) => element.id == initialMessage!.channelId);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => BlocBuilder<ChatBloc, ChatState>(
+                      builder: (context, state) {
+                        return SinglePageChat(
+                          chatIndex: chatIndex,
+                          receiverName: chat.channelMembers
+                              ?.firstWhere((element) =>
+                          element.id == initialMessage!.senderUserId)
+                              .user!
+                              .name
+                              .toString() ??
+                              '',
+                        );
+                      },
+                    )));
+          }
         },
+        child: BlocBuilder<AppBloc, AppState>(
+          buildWhen: (oldState, newState) =>
+          oldState.currentIndex != newState.currentIndex,
+          builder: (_, state) {
+            return pages[state.currentIndex];
+          },
+        ),
       ),
     );
   }
