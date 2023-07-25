@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:get_it/get_it.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
@@ -15,7 +17,9 @@ import '../manager/chat_bloc.dart';
 import '../manager/chat_event.dart';
 
 class ChatPageContent extends StatefulWidget {
-  const ChatPageContent({Key? key}) : super(key: key);
+  const ChatPageContent({Key? key, this.onSendForwardMessage})
+      : super(key: key);
+  final Function(int receiverId)? onSendForwardMessage;
 
   @override
   State<ChatPageContent> createState() => _ChatPageContentState();
@@ -34,9 +38,7 @@ class _ChatPageContentState extends State<ChatPageContent> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ChatBloc, ChatState>(
-      listener: (context, state) {
-
-      },
+      listener: (context, state) {},
       builder: (context, state) {
         if (state.getChatsStatus == GetChatsStatus.loading) {
           return SliverToBoxAdapter(child: TrydosLoader());
@@ -44,13 +46,12 @@ class _ChatPageContentState extends State<ChatPageContent> {
         return SlidableAutoCloseBehavior(
           closeWhenOpened: true,
           child: sliverListSeparated(
-            itemBuilder: (_, index) => Visibility(
-              visible: (state.chats[index].messages?.isNotEmpty ?? false),
-              child: ChatCard(
-                isTyping: false,
-                chat: state.chats[index],
-                index: index,
-              ),
+            itemBuilder: (_, index) => ChatCard(
+              isTyping: false,
+              onSendForwardMessage: widget.onSendForwardMessage,
+              chat: state.chats[index],
+
+              index: index,
             ),
             separator: const SizedBox.shrink(),
             childCount: state.chats.length,

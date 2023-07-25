@@ -19,10 +19,17 @@ import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/pages/calls_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
 
+import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
+import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_event.dart';
+
 class ChatPages extends StatefulWidget {
-  const ChatPages({Key? key}) : super(key: key);
+  const ChatPages({Key? key, this.navigateForForwardMessage = false , this.onSendForwardMessage})
+      : super(key: key);
+  final bool navigateForForwardMessage;
+  final Function(int receiverId)? onSendForwardMessage;
+
 
   @override
   State<ChatPages> createState() => _ChatPagesState();
@@ -32,20 +39,25 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   final ScrollController scrollController = ScrollController();
   late ChatBloc chatBloc;
 
-  List<Widget> chatPages=[
-    const ChatPageContent(),
+  List<Widget> chatPages = [
     const CallsPageContent(),
     const CallsPageContent(),
   ];
-  void saveUserContacts()async{
-    List<Map<String,dynamic>> contacts= await HelperFunctions.getContactsFromDevice();
+
+  void saveUserContacts() async {
+    List<Map<String, dynamic>> contacts =
+        await HelperFunctions.getContactsFromDevice();
     chatBloc.add(SaveContactsEvent(contacts: contacts));
   }
 
   @override
   void initState() {
+    chatPages.insert(0, ChatPageContent(onSendForwardMessage: widget.onSendForwardMessage),);
+    if (widget.navigateForForwardMessage) {
+      BlocProvider.of<AppBloc>(context).add(ChangeTabInChat(0));
+    }
     saveUserContacts();
-    chatBloc=BlocProvider.of<ChatBloc>(context);
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     super.initState();
   }
 
@@ -53,6 +65,41 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF8F8F8),
+      appBar: widget.navigateForForwardMessage ? TrydosAppBar(
+        appBarParams: AppBarParams(
+            dividerBottom: false,
+            hasLeading: false,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            child: SafeArea(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Padding(
+                      padding: HWEdgeInsetsDirectional.fromSTEB(
+                          20.w, 15, 0, 15),
+                      child: SvgPicture.asset(
+                        AppAssets.backFromCallSvg,
+                        width: 8.w,
+                        color: const Color(0xff388CFF),
+                      ),
+                    ),
+                  ),
+                  10.horizontalSpace,
+                  Text(
+                    'Forward To...',
+                    style: textTheme.subtitle1?.rr
+                        .copyWith(color: const Color(0xff388CFF)),
+                  ),
+                ],
+              ),
+            )),
+      ) : null,
       body: SafeArea(
         child: CustomScrollView(
           physics: const ClampingScrollPhysics(),
@@ -64,8 +111,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                 width: 1.sw,
                 height: 50,
                 color: colorScheme.white,
-                padding:
-                HWEdgeInsets.symmetric(horizontal: 10.w, vertical: 5),
+                padding: HWEdgeInsets.symmetric(horizontal: 10.w, vertical: 5),
                 child: AppTextField(
                   controller: form.controllers[0],
                   filledColor: colorScheme.grey50,
@@ -73,12 +119,10 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                   hintText: 'Search, Chat, Contact, Start New Chat',
                   hintTextStyle: textTheme.subtitle2?.lr
                       .copyWith(color: const Color(0xffD3D3D3)),
-
                   contentPadding:
-                  HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
+                      HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
                   prefixIcon: Padding(
-                    padding:
-                    HWEdgeInsetsDirectional.only(top: 10, bottom: 10),
+                    padding: HWEdgeInsetsDirectional.only(top: 10, bottom: 10),
                     child: SvgPicture.asset(
                       AppAssets.searchSvg,
                       height: 20,
@@ -88,50 +132,51 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                 ),
               ),
             ),
-            SliverToBoxAdapter(
-                child: Container(
-                  padding: HWEdgeInsets.symmetric(horizontal: 40.w),
-                  height: 50,
-                  width: 1.sw,
-                  decoration: const BoxDecoration(
-                    color: Color(0xffffffff),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x1a000000),
-                        offset: Offset(0, 0),
-                        blurRadius: 6,
-                      ),
+            if (widget.navigateForForwardMessage) ...{
+              SliverToBoxAdapter(
+                  child: Container(
+                padding: HWEdgeInsets.symmetric(horizontal: 40.w),
+                height: 50,
+                width: 1.sw,
+                decoration: const BoxDecoration(
+                  color: Color(0xffffffff),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x1a000000),
+                      offset: Offset(0, 0),
+                      blurRadius: 6,
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ChatTabItem(
+                          iconUrl: AppAssets.singleChatOutlinedActiveSvg,
+                          activeIconUrl: AppAssets.singleChatSvg,
+                          index: 0,
+                          notificationCount: '9'),
+                      ChatTabItem(
+                          iconUrl: AppAssets.callsOutlinedActiveSvg,
+                          activeIconUrl: AppAssets.callsSvg,
+                          index: 1,
+                          notificationCount: '9'),
+                      ChatTabItem(
+                          iconUrl: AppAssets.storyOutlinedSvg,
+                          activeIconUrl: AppAssets.storyFilledSvg,
+                          index: 2,
+                          notificationCount: '9'),
                     ],
                   ),
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ChatTabItem(
-                            iconUrl: AppAssets.singleChatOutlinedActiveSvg,
-                            activeIconUrl: AppAssets.singleChatSvg,
-                            index: 0,
-                            notificationCount: '9'),
-                        ChatTabItem(
-                            iconUrl: AppAssets.callsOutlinedActiveSvg,
-                            activeIconUrl: AppAssets.callsSvg,
-                            index: 1,
-                            notificationCount: '9'),
-                        ChatTabItem(
-                            iconUrl: AppAssets.storyOutlinedSvg,
-                            activeIconUrl: AppAssets.storyFilledSvg,
-                            index: 2,
-                            notificationCount: '9'),
-                      ],
-                    ),
-                  ),
-                )),
-            BlocBuilder<AppBloc,AppState>(
-              buildWhen: (p,c)=> p.tabIndexInChat!=c.tabIndexInChat,
-              builder: (context , state) {
-                return chatPages[state.tabIndexInChat];
-              }
-            ),
+                ),
+              )),
+            },
+            BlocBuilder<AppBloc, AppState>(
+                buildWhen: (p, c) => p.tabIndexInChat != c.tabIndexInChat,
+                builder: (context, state) {
+                  return chatPages[state.tabIndexInChat];
+                }),
             SliverToBoxAdapter(
               child: 20.verticalSpace,
             ),
@@ -147,11 +192,12 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 }
 
 class ChatTabItem extends StatelessWidget {
-  const ChatTabItem({Key? key,
-    required this.iconUrl,
-    required this.index,
-    required this.activeIconUrl,
-    required this.notificationCount})
+  const ChatTabItem(
+      {Key? key,
+      required this.iconUrl,
+      required this.index,
+      required this.activeIconUrl,
+      required this.notificationCount})
       : super(key: key);
   final String iconUrl;
   final String activeIconUrl;
@@ -180,26 +226,28 @@ class ChatTabItem extends StatelessWidget {
                     width: 25.w,
                   ),
                 ),
-                state.tabIndexInChat != index ? Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        AppAssets.chatNotificationSvg,
-                        height: 12.h,
-                        width: 12.h,
-                      ),
-                      4.horizontalSpace,
-                      Text(
-                        notificationCount,
-                        maxLines: 1,
-                        style: context.textTheme.caption?.rr
-                            .copyWith(color: const Color(0xff007CFF)),
-                      ),
-                    ],
-                  ),
-                ) : const SizedBox.shrink(),
+                state.tabIndexInChat != index
+                    ? Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              AppAssets.chatNotificationSvg,
+                              height: 12.h,
+                              width: 12.h,
+                            ),
+                            4.horizontalSpace,
+                            Text(
+                              notificationCount,
+                              maxLines: 1,
+                              style: context.textTheme.caption?.rr
+                                  .copyWith(color: const Color(0xff007CFF)),
+                            ),
+                          ],
+                        ),
+                      )
+                    : const SizedBox.shrink(),
               ],
             ),
           );

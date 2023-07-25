@@ -15,6 +15,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
+import 'package:trydos/features/chat/presentation/pages/chat_pages.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_input_field.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_messge.dart';
@@ -26,19 +27,22 @@ import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
+import '../../../app/my_cached_network_image.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_event.dart';
+import '../widgets/chat_widgets/no_image_widget.dart';
 import '../widgets/chat_widgets/text_message.dart';
 import '../widgets/chat_widgets/voice_message.dart';
 
 class SinglePageChat extends StatefulWidget {
   const SinglePageChat(
-      {Key? key, required this.chatIndex, required this.receiverName})
+      {Key? key, required this.chatIndex, required this.receiverName , this.receiverImagePath})
       : super(key: key);
 
   final String receiverName;
   final int chatIndex;
+  final String? receiverImagePath;
 
   @override
   State<SinglePageChat> createState() => _SinglePageChatState();
@@ -58,6 +62,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   List<Widget> data = [];
   bool rebuild = true;
   DateTime lastDate = DateTime.now();
+  int countMessagesReceivedToMeNow = 0;
 
   @override
   void initState() {
@@ -92,6 +97,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
     return BlocConsumer<ChatBloc, ChatState>(
       listener: (context, state) {},
       builder: (context, chatState) {
+        if (chatState.currentChannelReceivedMessage ==
+            chatState.chats[widget.chatIndex].id) {
+          countMessagesReceivedToMeNow++;
+        }
+        print('preProcessingOfMessaging');
         preProcessingOfMessaging(
             chatState.chats[widget.chatIndex].messages ?? []);
         return Scaffold(
@@ -121,21 +131,22 @@ class _SinglePageChatState extends State<SinglePageChat> {
                             ),
                           ),
                         ),
-                        10.horizontalSpace,
-                        Text(
-                          '2',
-                          style: textTheme.subtitle1?.rr
-                              .copyWith(color: const Color(0xff388CFF)),
-                        ),
+                        if ((chatState.unReadMessagesFromAllChats -
+                                countMessagesReceivedToMeNow) >
+                            0) ...{
+                          10.horizontalSpace,
+                          Text(
+                            (chatState.unReadMessagesFromAllChats -
+                                    countMessagesReceivedToMeNow)
+                                .toString(),
+                            style: textTheme.subtitle1?.rr
+                                .copyWith(color: const Color(0xff388CFF)),
+                          ),
+                        },
                         20.horizontalSpace,
-                        Container(
-                          height: 40,
-                          width: 40.w,
+                        widget.receiverImagePath != null
+                            ? Container(
                           decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(AppAssets.chatProfile2Jpg),
-                              fit: BoxFit.cover,
-                            ),
                             borderRadius: BorderRadius.circular(12.0),
                             border: Border.all(
                                 width: 1.0, color: const Color(0xff388cff)),
@@ -147,7 +158,21 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               ),
                             ],
                           ),
-                        ),
+                          child: MyCachedNetworkImage(
+                              imageUrl: Urls.baseUrl + widget.receiverImagePath!,
+                              imageFit: BoxFit.cover,
+                            height: 40,
+                            width: 40.w,
+                          ),
+                        )
+                            : NoImageWidget(
+                            height: 40,
+                            width: 40.w,
+                            name: widget.receiverName.split(' ').length == 2
+                                ? widget.receiverName.split(' ')[0][0] +
+                                widget.receiverName.split(' ')[1][0]
+                                : widget.receiverName.split(' ')[0][0] +
+                                widget.receiverName.split(' ')[0][1]),
                         20.horizontalSpace,
                         Text(
                           widget.receiverName,
@@ -196,6 +221,28 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                               (data[index] is TextMessage &&
                                                   (data[index] as TextMessage)
                                                       .isSent);
+                                          String? messageId = (data[index]
+                                                  is TextMessage)
+                                              ? (data[index] as TextMessage)
+                                                  .messageId
+                                              : (data[index] is ImageMessage)
+                                                  ? (data[index]
+                                                          as ImageMessage)
+                                                      .messageId
+                                                  : (data[index]
+                                                          is VoiceMessage)
+                                                      ? (data[index]
+                                                              as VoiceMessage)
+                                                          .messageId
+                                                      : (data[index]
+                                                              is ReplayMessage)
+                                                          ? (data[index]
+                                                                  as ReplayMessage)
+                                                              .messageId
+                                                          : (data[index]
+                                          is ReplayOnMeMessage) ? (data[index]
+                                                                  as ReplayOnMeMessage)
+                                                              .messageId : null;
                                           return Column(
                                             children: [
                                               GestureDetector(
@@ -431,19 +478,26 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                     MainAxisAlignment
                                                                         .spaceBetween,
                                                                 children: [
-                                                                  SvgPicture
-                                                                      .asset(
-                                                                    AppAssets
-                                                                        .goBackIconSvg,
-                                                                    width: focusedIndex ==
-                                                                            0
-                                                                        ? 20.sp
-                                                                        : 15.sp,
-                                                                    height:
-                                                                        focusedIndex ==
-                                                                                0
-                                                                            ? 20
-                                                                            : 15,
+                                                                  InkWell(
+                                                                    onTap: () => forwardMessageMethod(chatState
+                                                                        .chats[widget
+                                                                            .chatIndex]
+                                                                        .messages!
+                                                                        .firstWhere((element) =>
+                                                                            element.id == messageId)),
+                                                                    child: SvgPicture
+                                                                        .asset(
+                                                                      AppAssets
+                                                                          .goBackIconSvg,
+                                                                      width: focusedIndex ==
+                                                                              0
+                                                                          ? 20.sp
+                                                                          : 15.sp,
+                                                                      height: focusedIndex ==
+                                                                              0
+                                                                          ? 20
+                                                                          : 15,
+                                                                    ),
                                                                   ),
                                                                   SvgPicture
                                                                       .asset(
@@ -552,8 +606,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                             ? 'ImageMessage'
                                             : 'VoiceMessage',
                                         isForward: false,
-                                        senderParentMessageId: state.senderParentMessageId,
-                                        parentMessageId: state.thereIsReply ? state.messageId : null,
+                                        senderParentMessageId:
+                                            state.senderParentMessageId,
+                                        parentMessageId: state.thereIsReply
+                                            ? state.messageId
+                                            : null,
                                         messageId: id,
                                         parentMessageContent:
                                             type == 'image' ? 'Photo' : 'Voice',
@@ -585,10 +642,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         messageType: 'TextMessage',
                                         channelId: m.channelId!,
                                         isForward: false,
-                                        parentMessageId: state.thereIsReply ? state.messageId : null,
+                                        parentMessageId: state.thereIsReply
+                                            ? state.messageId
+                                            : null,
                                         content: message,
                                         messageId: id,
-                                        senderParentMessageId: state.senderParentMessageId,
+                                        senderParentMessageId:
+                                            state.senderParentMessageId,
                                         parentMessageContent: state.message,
                                         receiverUserId: m.senderUserId ==
                                                 _prefsRepository.myId
@@ -628,6 +688,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
   }
 
   void preProcessingOfMessaging(List<Message> messages) {
+    if (messages.isEmpty) {
+      return;
+    }
     data = [];
     isISentLastMessage = messages[0].senderUserId == _prefsRepository.myId;
     print('length in data ${messages.length}');
@@ -654,12 +717,16 @@ class _SinglePageChatState extends State<SinglePageChat> {
       }
       print(isFirstMessage);
       print(data.length);
-      data.add(previousIsDate ? 10.verticalSpace : isFirstMessage ? 30.verticalSpace : 10.verticalSpace);
+      data.add(previousIsDate
+          ? 10.verticalSpace
+          : isFirstMessage
+              ? 30.verticalSpace
+              : 10.verticalSpace);
       print(data.length);
 
       previousIsDate = false;
       print('parentMessageId : ${element.parentMessageId}');
-      print(element.parentMessageId=='null');
+      print(element.parentMessageId == 'null');
       if (element.parentMessageId != null) {
         Message parentMessage = element.parentMessage!;
         if (parentMessage.senderUserId.toString() !=
@@ -787,6 +854,49 @@ class _SinglePageChatState extends State<SinglePageChat> {
     data.add(30.verticalSpace);
     rebuildMessage.value = data.length;
     scrollToTheEnd();
+  }
+
+  void forwardMessageMethod(Message message) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => ChatPages(
+                  navigateForForwardMessage: true,
+                  onSendForwardMessage: (int receiverId) {
+                    if (message.messageType!.name == 'TextMessage') {
+                      chatBloc.add(SendMessageEvent(
+                          messageType: message.messageType!.name,
+                          channelId: message.channelId!,
+                          isForward: false,
+                          parentMessageId: null,
+                          content: message.messageContent!.content,
+                          messageId: message.id!,
+                          senderParentMessageId: null,
+                          parentMessageContent: null,
+                          receiverUserId: receiverId));
+                    } else {
+                      chatBloc.add(SendMessageEvent(
+                          channelId: message.channelId!,
+                          mediaContent: [
+                            {'file_path': message.mediaMessageContent?[0].filePath, 'caption': 'test image'}
+                          ],
+                          messageType: message.messageType!.name,
+                          isForward: false,
+                          senderParentMessageId: null,
+                          parentMessageId: null,
+                          messageId: message.id!,
+                          parentMessageContent: null,
+                          receiverUserId: receiverId));
+                    }
+                    BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
+                        false, '', false,
+                        messageId: null,
+                        message: null,
+                        senderParentMessageId: null,
+                        imageUrl: null,
+                        time: null));
+                  },
+                )));
   }
 }
 

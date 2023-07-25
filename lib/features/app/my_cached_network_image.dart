@@ -9,6 +9,7 @@ class MyCachedNetworkImage extends StatelessWidget {
       {Key? key,
       required this.imageUrl,
       required this.width,
+      required this.imageFit,
       required this.height})
       : super(key: key);
 
@@ -19,6 +20,7 @@ class MyCachedNetworkImage extends StatelessWidget {
   final String imageUrl;
   final double width;
   final double height;
+  final BoxFit imageFit;
 
   Widget getErrorImageWidget() {
     return Center(
@@ -44,6 +46,7 @@ class MyCachedNetworkImage extends StatelessWidget {
               height: height,
               child: CachedNetworkImage(
                   imageUrl: imageUrl,
+                  fit: imageFit,
                   cacheManager: CustomCacheManager(),
                   placeholder: (context, url) => TrydosLoader(),
                   errorWidget: (context, url, error) {

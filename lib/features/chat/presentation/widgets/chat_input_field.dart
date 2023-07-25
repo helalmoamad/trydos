@@ -188,6 +188,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         ? MyCachedNetworkImage(
                                             height: 40.sp,
                                             width: 40.sp,
+                                            imageFit: BoxFit.cover,
                                             imageUrl:
                                                 Urls.baseUrl + state.imageUrl!,
                                           )

@@ -4,7 +4,6 @@ import 'dart:convert' as convert;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/app_bottom_navigation_bar.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
@@ -28,7 +27,6 @@ class BasePage extends StatefulWidget {
 }
 
 class _BasePageState extends State<BasePage> {
-  PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
   late ChatBloc chatBloc;
   final List<Widget> pages = [
     const HomePage(),
@@ -37,29 +35,9 @@ class _BasePageState extends State<BasePage> {
     const HomePage(),
   ];
 
-   void initializePusher()async{
-     try {
-       await pusher.init(
-         apiKey: API_KEY,
-         cluster: API_CLUSTER,
-         onConnectionStateChange: onConnectionStateChange,
-         onError: onError,
-         onSubscriptionSucceeded: onSubscriptionSucceeded,
-         onEvent: onEvent,
-         onSubscriptionError: onSubscriptionError,
-         onDecryptionFailure: onDecryptionFailure,
-         onMemberAdded: onMemberAdded,
-         onMemberRemoved: onMemberRemoved,
-       );
-       await pusher.subscribe(channelName: 'presence-chatbox');
-       await pusher.connect();
-     } catch (e) {
-       print("ERROR: $e");
-     }
-   }
+
   @override
   void initState() {
-    initializePusher();
     chatBloc = BlocProvider.of<ChatBloc>(context);
     onMessage();
     super.initState();
@@ -97,8 +75,16 @@ class _BasePageState extends State<BasePage> {
           }),
       body: BlocListener<ChatBloc, ChatState>(
         listener: (context, state) {
+          print(state.getChatsStatus);
+          print(state.sendMessageStatus);
+          print(state.receiveMessageStatus);
+          print(state.saveContactsStatus);
+          print(state.getContactsStatus);
+          print(state.readMessagesStatus);
+          print(state.notifyThatIReceivedMessageStatus);
           print('kkkkkkkkkkkkkkk');
           if (initialMessage != null && state.chats.isNotEmpty) {
+            print('kkkkkkkkkkk2222');
             AppBloc appBloc =BlocProvider.of<AppBloc>(context);
             appBloc.add(ChangeBasePage(2));
             chatBloc.add(ReadAllMessagesEvent(initialMessage!.channelId!));
@@ -111,6 +97,7 @@ class _BasePageState extends State<BasePage> {
                       builder: (context, state) {
                         return SinglePageChat(
                           chatIndex: chatIndex,
+
                           receiverName: chat.channelMembers
                               ?.firstWhere((element) =>
                           element.id == initialMessage!.senderUserId)

@@ -42,19 +42,19 @@ class LocalNotificationService {
   Future<void> showNotificationWithPayload({required RemoteMessage message}) async {
     chat.Message myMessage = chat.Message.fromJson(
         convert.jsonDecode(message.data['message']));
-    initialMessage=myMessage;
     await _localNotificationPlugin.show(
       0,
       myMessage.senderInfo!.name.toString(),
       myMessage.messageType!.name == 'TextMessage' ? myMessage.messageContent!.content.toString() : myMessage.messageType!.name =='ImageMessage' ? 'Photo' : 'Voice',
       _notificationDetails(),
-      payload: '_payLoad',
+      payload: message.data['message'],
     );
   }
 
   static void _onSelectNotification(NotificationResponse notificationResponse) {
-    print('clicked');
-    notificationClicked=true;
+    chat.Message myMessage = chat.Message.fromJson(
+        convert.jsonDecode(notificationResponse.payload!));
+    initialMessage=myMessage;
   }
   _notificationDetails() {
     final channel = LocalNotificationService().getAndroidChannel;
