@@ -29,7 +29,8 @@ class ChatState {
   final int channelId;
   final String? messageType;
   final String? messageContent;
-
+  final int unReadMessagesFromAllChats;
+  final int currentChannelReceivedMessage;
   ChatState({
     this.getContactsStatus = GetContactsStatus.init,
     this.saveContactsStatus = SaveContactsStatus.init,
@@ -40,6 +41,8 @@ class ChatState {
     this.receiveMessageStatus = ReceiveMessageStatus.init,
     this.getChatsStatus = GetChatsStatus.init,
     this.channelId = -1,
+    this.unReadMessagesFromAllChats = 0,
+    this.currentChannelReceivedMessage = -1,
     this.messageType,
     this.messageContent,
     this.contacts = const [],
@@ -56,10 +59,13 @@ class ChatState {
     final GetContactsStatus? getContactsStatus,
     final List<Contact>? contacts,
     final int? channelId,
+    final int? currentOpenedChannelId,
     final ResetReadMessagesStatus? readMessagesStatus,
     final NotifyThatIReceivedMessageStatus? notifyThatIReceivedMessageStatus,
+    final int? currentChannelReceivedMessage,
     final List<Chat>? chats,
     final List<String>? currentMessage,
+    final int? unReadMessagesFromAllChats,
     final String? messageType,
     final String? messageContent,
     final List<Chat>? pinnedChats,
@@ -74,6 +80,8 @@ class ChatState {
           this.notifyThatIReceivedMessageStatus,
       currentMessage: currentMessage ?? this.currentMessage,
       pinnedChats: pinnedChats ?? this.pinnedChats,
+      unReadMessagesFromAllChats: unReadMessagesFromAllChats ?? this.unReadMessagesFromAllChats,
+      currentChannelReceivedMessage: currentChannelReceivedMessage ?? this.currentChannelReceivedMessage,
       saveContactsStatus: saveContactsStatus ?? this.saveContactsStatus,
       channelId: channelId ?? this.channelId,
       messageContent: messageContent ?? this.messageContent,

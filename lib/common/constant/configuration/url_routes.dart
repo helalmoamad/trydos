@@ -29,8 +29,8 @@ abstract class EndPoints {
 ///! ----< channels ( chats )  >----
 ///
   static final getMyChatsEP = 'my_channels'.channelsScope(current: true);
-  static String readAllMessagesEP(String channelId) => '$channelId/watched'.channelsScope(current: true);
-  static String receiveMessageEP(String channelId) => '$channelId/received'.channelsScope(current: true);
+  static String readAllMessagesEP(String channelId) => '$channelId/watched'.channelsScope();
+  static String receiveMessageEP(String channelId) => '$channelId/received'.channelsScope();
 
   ///! ----< messages >----
   ///

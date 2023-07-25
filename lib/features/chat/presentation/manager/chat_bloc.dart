@@ -16,6 +16,7 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../../data/models/my_contacts_response_model.dart';
 import '../../domain/use_cases/upload_file_usecase.dart';
+import '../utils/pusher_chat.dart';
 import 'chat_event.dart';
 
 part 'chat_state.dart';
@@ -52,6 +53,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<GetContactsEvent>(_onGetContactsEvent,
         transformer: throttleDroppable(throttleDuration));
   }
+
   final SendMessageUseCase sendMessageUseCase;
   final SaveContactsUseCase saveContactsUseCase;
   final GetContactsUseCase getContactsUseCase;
@@ -84,11 +86,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               messageType: MessageType(name: event.messageType),
               isForward: (event.isForward ?? false) ? 1 : 0,
               parentMessageId: event.parentMessageId,
+              mediaMessageContent:[
+                MediaMessageContent(
+                    filePath: event.mediaContent?[0]['file_path'],
+                    caption: event.mediaContent?[0]['caption']
+                )
+              ],
               parentMessage: event.parentMessageId != null
                   ? Message(
                       file: event.file,
-                  senderUserId: event.senderParentMessageId,
-                  messageContent:
+                      senderUserId: event.senderParentMessageId,
+                      messageContent:
                           MessageContent(content: event.parentMessageContent))
                   : null));
     }
@@ -105,7 +113,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           return e;
         }).toList(),
         channelId: event.channelId));
-
     final response = await sendMessageUseCase(
       SendMessageParams(
           content: event.content,
@@ -164,12 +171,22 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     response.fold(
       (l) => emit(state.copyWith(getChatsStatus: GetChatsStatus.failure)),
       (r) {
+        PusherChatService pusherChatService =PusherChatService();
+        pusherChatService.initialization();
+        pusherChatService.connectPusher();
+        r.data!.chats?.forEach((element) {
+          pusherChatService.subscribe(element.pusherChannelName.toString());
+        });
+        int unReadMessagesFromAllChats = 0;
+        r.data!.chats?.forEach((element) {
+          unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
+        });
         emit(
           state.copyWith(
-            getChatsStatus: GetChatsStatus.success,
-            chats: r.data!.chats,
-            pinnedChats: r.data!.pinnedChats,
-          ),
+              getChatsStatus: GetChatsStatus.success,
+              chats: r.data!.chats,
+              pinnedChats: r.data!.pinnedChats,
+              unReadMessagesFromAllChats: unReadMessagesFromAllChats),
         );
       },
     );
@@ -256,6 +273,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     log('***** message received *****');
     emit(state.copyWith(
       receiveMessageStatus: ReceiveMessageStatus.loading,
+      unReadMessagesFromAllChats: state.unReadMessagesFromAllChats + 1,
+      currentChannelReceivedMessage: event.message.channelId,
+      channelId: event.message.channelId
     ));
     List<Message> messages = [];
     List<Chat> chats = List.of(state.chats);
@@ -266,11 +286,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       chats.add(event.message.channel!);
     }
     messages = List.of(chat.messages ?? []);
+    log(messages.length.toString());
     messages.insert(0, event.message);
+    log(messages.length.toString());
+
     emit(state.copyWith(
       receiveMessageStatus: ReceiveMessageStatus.success,
       chats: chats.map((e) {
-        if (e.id == state.channelId) {
+        if (e.id == event.message.channelId) {
           return e.copyWith(messages: messages);
         }
         return e;
@@ -288,6 +311,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             readMessagesStatus: ResetReadMessagesStatus.failure)), (r) {
       emit(state.copyWith(
           readMessagesStatus: ResetReadMessagesStatus.success,
+          unReadMessagesFromAllChats: state.unReadMessagesFromAllChats -
+              state.chats
+                  .firstWhere((element) => element.id == event.channelId)
+                  .totalUnreadMessageCount!,
           chats: state.chats.map((e) {
             if (e.id == event.channelId) {
               return e.copyWith(totalUnreadMessageCount: 0);
