@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:trydos/config/theme/my_color_scheme.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 
 class MyCachedNetworkImage extends StatelessWidget {
@@ -10,6 +12,8 @@ class MyCachedNetworkImage extends StatelessWidget {
       required this.imageUrl,
       required this.width,
       required this.imageFit,
+       this.radius=12,
+       this.withImageShadow=false,
       required this.height})
       : super(key: key);
 
@@ -21,6 +25,8 @@ class MyCachedNetworkImage extends StatelessWidget {
   final double width;
   final double height;
   final BoxFit imageFit;
+  final double radius;
+  final bool withImageShadow;
 
   Widget getErrorImageWidget() {
     return Center(
@@ -41,9 +47,21 @@ class MyCachedNetworkImage extends StatelessWidget {
     return ValueListenableBuilder<int>(
         valueListenable: rebuildImage,
         builder: (context, count, _) {
-          return SizedBox(
+          return Container(
               width: width,
               height: height,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(radius),
+                boxShadow: withImageShadow
+                    ? [
+                  BoxShadow(
+                    color: context.colorScheme.black.withOpacity(0.16),
+                    offset: const Offset(0, 3),
+                    blurRadius: 6,
+                  ),
+                ]
+                    : null,
+              ),
               child: CachedNetworkImage(
                   imageUrl: imageUrl,
                   fit: imageFit,

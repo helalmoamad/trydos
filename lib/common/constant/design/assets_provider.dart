@@ -115,6 +115,7 @@ abstract class AppAssets {
   static String get backButtonSvg=>'back_button'.svg;
   static String get supportSvg=>'support'.svg;
   static String get sandClockSvg=>'sand_clock'.svg;
+  static String get documentSvg=>'document'.svg;
 
   ///endregion
 

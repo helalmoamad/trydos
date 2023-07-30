@@ -13,14 +13,21 @@ class ReplayOnMeMessage extends StatefulWidget {
     required this.message,
     required this.messageId,
     required this.messageAnswerId,
+    required this.senderAnswerName,
+    required this.replayedName,
+    this.replayedPhoto,
+    this.senderAnswerPhoto,
      this.messageAnswer,
     this.answeredFile,
     this.answeredFilePath,
     required this.isSent,
     required this.parentSenderId,
     required this.isReplayedMessageRead,
+    required this.isReplayedMessageReceived,
     required this.isAnswerMessageRead,
+    required this.isAnswerMessageReceived,
     required this.messageDate,
+    required this.scrollToMessage,
     required this.isFirstMessage})
       : super(key: key);
   final String message;
@@ -34,7 +41,15 @@ class ReplayOnMeMessage extends StatefulWidget {
   final String? answeredFilePath;
   final bool isReplayedMessageRead;
   final bool isAnswerMessageRead;
+  final bool isAnswerMessageReceived;
+  final bool isReplayedMessageReceived;
   final int parentSenderId;
+  final String? replayedPhoto;
+  final String? senderAnswerPhoto;
+  final String replayedName;
+  final String senderAnswerName;
+  final void Function() scrollToMessage;
+
   @override
   State<ReplayOnMeMessage> createState() => _ReplayOnMeMessageState();
 }
@@ -59,18 +74,24 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
       textDirection: TextDirection.ltr,
       child: Column(
         children: [
-          TextMessage(
-              key: key,
-              sendColor: const Color(0xffF1FDE3),
-              message: widget.message,
-              withShadow: false,
-              senderId: widget.parentSenderId,
-              withImageShadow: false,
-              messageId: widget.messageId,
-              isSent: widget.isSent,
-              isRead: widget.isReplayedMessageRead,
-              time: widget.messageDate,
-              isFirstMessage: true),
+          InkWell(
+            onTap: widget.scrollToMessage,
+            child: TextMessage(
+                key: key,
+                sendColor: widget.isSent ? const Color(0xffF1FDE3) : const Color(0xffD5F6E6),
+                message: widget.message,
+                withShadow: false,
+                senderId: widget.parentSenderId,
+                withImageShadow: false,
+                isReceived: widget.isReplayedMessageRead,
+                userMessageName: widget.replayedName,
+                userMessagePhoto: widget.replayedPhoto,
+                messageId: widget.messageId,
+                isSent: widget.isSent,
+                isRead: widget.isReplayedMessageRead,
+                time: widget.messageDate,
+                isFirstMessage: true),
+          ),
           Transform.translate(
               offset: const Offset(0, -22),
               child: (widget.answeredFile != null || widget.answeredFilePath != null ) ?
@@ -80,7 +101,10 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                 isRead: widget.isAnswerMessageRead,
                 senderId: GetIt.I<PrefsRepository>().myId!,
                 isFirstMessage: widget.isFirstMessage,
-                isLocalMessage: widget.answeredFilePath==null,
+                  isReceived: widget.isAnswerMessageReceived,
+                  userMessageName: widget.senderAnswerName,
+                  userMessagePhoto: widget.senderAnswerPhoto,
+                  isLocalMessage: widget.answeredFilePath==null,
                 imageFile: widget.answeredFile,
                 imageUrl: widget.answeredFilePath
                 ) :
@@ -89,7 +113,10 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                   withImageShadow: true,
                   senderId: GetIt.I<PrefsRepository>().myId!,
                   isRead: widget.isAnswerMessageRead,
+                  isReceived: widget.isAnswerMessageReceived,
                   messageId: widget.messageAnswerId,
+                  userMessageName: widget.senderAnswerName,
+                  userMessagePhoto: widget.senderAnswerPhoto,
                   isSent: widget.isSent,
                   time: widget.messageDate,
                   isFirstMessage: true)),

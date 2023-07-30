@@ -3,10 +3,12 @@ import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -21,8 +23,9 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_mes
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_messge.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_me_message.dart';
 import 'package:uuid/uuid.dart';
-
+import 'dart:ui' as ui;
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../service/language_service.dart';
 import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
@@ -37,12 +40,19 @@ import '../widgets/chat_widgets/voice_message.dart';
 
 class SinglePageChat extends StatefulWidget {
   const SinglePageChat(
-      {Key? key, required this.chatIndex, required this.receiverName , this.receiverImagePath})
+      {Key? key,
+      required this.chatId,
+      required this.receiverName,
+      required this.senderName,
+      this.senderPhoto,
+      this.receiverPhoto})
       : super(key: key);
 
+  final int chatId;
   final String receiverName;
-  final int chatIndex;
-  final String? receiverImagePath;
+  final String senderName;
+  final String? receiverPhoto;
+  final String? senderPhoto;
 
   @override
   State<SinglePageChat> createState() => _SinglePageChatState();
@@ -53,23 +63,34 @@ class _SinglePageChatState extends State<SinglePageChat> {
   late ChatBloc chatBloc;
 
   final ValueNotifier<int> rebuildMessage = ValueNotifier(-1);
-  final ValueNotifier<int> currentFocusedIcon = ValueNotifier(-1);
+  final ValueNotifier<int> currentFocusedIcon = ValueNotifier(-2);
   double currentHoverPosition = -1;
-  double x = -1;
-  final ScrollController scrollController = ScrollController();
+  double x = -1, xActionSubtitle = -1, yActionSubtitle = -1;
+  late final AutoScrollController autoScrollController ;
   final key = GlobalKey();
   bool isISentLastMessage = false;
   List<Widget> data = [];
   bool rebuild = true;
   DateTime lastDate = DateTime.now();
   int countMessagesReceivedToMeNow = 0;
+  late Chat chat;
 
   @override
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    scrollController.addListener(() {
+    autoScrollController=AutoScrollController(
+      // viewportBoundaryGetter: ()=> Rect.fromLTRB(0,0,0,MediaQuery.of(context).padding.bottom),
+      // axis: Axis.vertical
+    );
+    autoScrollController.addListener(() {
       if (rebuild) {
         rebuildMessage.value = -1;
+      }
+      if (autoScrollController.offset <=
+          autoScrollController.position.minScrollExtent + 400 &&
+          autoScrollController.position.userScrollDirection ==
+              ScrollDirection.forward) {
+        _loadMoreMessages();
       }
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -77,33 +98,65 @@ class _SinglePageChatState extends State<SinglePageChat> {
           key.currentContext?.findRenderObject() as RenderBox;
       final position = renderBox.localToGlobal(Offset.zero);
       x = position.dx;
+      xActionSubtitle=x;
+      yActionSubtitle=position.dy;
     });
     super.initState();
   }
 
   void scrollToTheEnd() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      scrollController.animateTo(
-        scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 100),
-        curve: Curves.easeOut,
+      autoScrollController.jumpTo(
+        autoScrollController.position.maxScrollExtent,
       );
     });
   }
 
+  bool isPaginationEvent = false;
+
   @override
   Widget build(BuildContext context) {
-    scrollToTheEnd();
     return BlocConsumer<ChatBloc, ChatState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state.receiveMessageStatus == ReceiveMessageStatus.loading &&
+            widget.chatId == state.currentChannelReceivedMessage) {
+          chatBloc.add(ReadAllMessagesEvent(widget.chatId));
+        }
+      },
       builder: (context, chatState) {
-        if (chatState.currentChannelReceivedMessage ==
-            chatState.chats[widget.chatIndex].id) {
+        chat = chatState.chats.firstWhere(
+            (element) => element.id == widget.chatId,
+            orElse: () => chatState.pinnedChats
+                .firstWhere((element) => element.id == widget.chatId));
+        if (chat.paginationStatus == PaginationStatus.loading) {
+          isPaginationEvent = true;
+        }
+        preProcessingOfMessaging(
+          chat.messages ?? [],
+          !isPaginationEvent,
+          widget.senderName,
+          widget.receiverName,
+          widget.senderPhoto,
+          widget.receiverPhoto,
+        );
+        if (chat.paginationStatus == PaginationStatus.success) {
+          isPaginationEvent = false;
+        } else if (chat.paginationStatus != PaginationStatus.initial) {
+          isPaginationEvent = true;
+        }
+        if (chatState.currentChannelReceivedMessage == chat.id) {
           countMessagesReceivedToMeNow++;
         }
-        print('preProcessingOfMessaging');
-        preProcessingOfMessaging(
-            chatState.chats[widget.chatIndex].messages ?? []);
+        String receiverFullName;
+        if (widget.receiverName == 'UK') {
+          receiverFullName = 'Un Known user';
+        } else {
+          receiverFullName = chat.channelMembers!
+              .firstWhere((element) => element.userId != _prefsRepository.myId)
+              .user!
+              .name
+              .toString();
+        }
         return Scaffold(
             backgroundColor: const Color(0xffEBFFF8),
             appBar: TrydosAppBar(
@@ -124,10 +177,20 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           child: Padding(
                             padding: HWEdgeInsetsDirectional.fromSTEB(
                                 20.w, 15, 0, 15),
-                            child: SvgPicture.asset(
-                              AppAssets.backFromCallSvg,
-                              width: 8.w,
-                              color: const Color(0xff388CFF),
+                            child: Transform(
+                              alignment: Alignment.center,
+                              transform: (Matrix4.identity()
+                                ..scale(
+                                    LanguageService.languageCode == 'ar'
+                                        ? -1.0
+                                        : 1.0,
+                                    1.0,
+                                    1.0)),
+                              child: SvgPicture.asset(
+                                AppAssets.backFromCallSvg,
+                                width: 8.w,
+                                color: const Color(0xff388CFF),
+                              ),
                             ),
                           ),
                         ),
@@ -144,40 +207,60 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           ),
                         },
                         20.horizontalSpace,
-                        widget.receiverImagePath != null
+                        widget.receiverPhoto != null
                             ? Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12.0),
-                            border: Border.all(
-                                width: 1.0, color: const Color(0xff388cff)),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color(0x29388cff),
-                                offset: Offset(0, 3),
-                                blurRadius: 6,
-                              ),
-                            ],
-                          ),
-                          child: MyCachedNetworkImage(
-                              imageUrl: Urls.baseUrl + widget.receiverImagePath!,
-                              imageFit: BoxFit.cover,
-                            height: 40,
-                            width: 40.w,
-                          ),
-                        )
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1.0,
+                                      color: const Color(0xff388cff)),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Color(0x29388cff),
+                                      offset: Offset(0, 3),
+                                      blurRadius: 6,
+                                    ),
+                                  ],
+                                ),
+                                child: MyCachedNetworkImage(
+                                  imageUrl:
+                                      Urls.baseUrl + widget.receiverPhoto!,
+                                  imageFit: BoxFit.cover,
+                                  height: 40,
+                                  width: 40.w,
+                                ),
+                              )
                             : NoImageWidget(
-                            height: 40,
-                            width: 40.w,
-                            name: widget.receiverName.split(' ').length == 2
-                                ? widget.receiverName.split(' ')[0][0] +
-                                widget.receiverName.split(' ')[1][0]
-                                : widget.receiverName.split(' ')[0][0] +
-                                widget.receiverName.split(' ')[0][1]),
+                                height: 40,
+                                width: 40.w,
+                                textStyle: context.textTheme.subtitle1?.br
+                                    .copyWith(
+                                        color: const Color(0xff6638FF),
+                                        letterSpacing: 0.18,
+                                        height: 1.33),
+                                name: widget.receiverName),
                         20.horizontalSpace,
-                        Text(
-                          widget.receiverName,
-                          style: textTheme.subtitle1?.mr
-                              .copyWith(color: const Color(0xff5D5C5D)),
+                        Column(
+                          children: [
+                            Text(
+                              receiverFullName,
+                              style: textTheme.subtitle1?.mr
+                                  .copyWith(color: const Color(0xff5D5C5D)),
+                            ),
+                            BlocBuilder<AppBloc, AppState>(
+                              builder: (context, state) {
+                                if(state.typingIds[widget.chatId]?.contains(_prefsRepository.myId) ?? false) {
+                                  return Text(
+                                    'Typing...',
+                                    style: textTheme.subtitle1?.mr
+                                        .copyWith(
+                                        color: const Color(0xff5D5C5D)),
+                                  );
+                                }else{
+                                  return const SizedBox.shrink();
+                                }
+                              },
+                            ),
+                          ],
                         ),
                         const Spacer(),
                         SvgPicture.asset(
@@ -203,7 +286,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   child: ValueListenableBuilder<int>(
                       valueListenable: rebuildMessage,
                       builder: (context, currentIndex, _) {
-                        currentFocusedIcon.value = -1;
+                        currentFocusedIcon.value = -2;
                         print('data length: ${data.length}');
                         return Column(
                           children: [
@@ -211,7 +294,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               child: ScrollConfiguration(
                                 behavior: const CupertinoScrollBehavior(),
                                 child: ListView.builder(
-                                  controller: scrollController,
+                                  controller: autoScrollController,
+
                                   physics: const ClampingScrollPhysics(),
                                   itemBuilder: (context, index) {
                                     return ValueListenableBuilder<int>(
@@ -240,344 +324,346 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                   as ReplayMessage)
                                                               .messageId
                                                           : (data[index]
-                                          is ReplayOnMeMessage) ? (data[index]
-                                                                  as ReplayOnMeMessage)
-                                                              .messageId : null;
-                                          return Column(
-                                            children: [
-                                              GestureDetector(
-                                                  onLongPress: () {
-                                                    if (index != 0) {
-                                                      rebuild = false;
-                                                      rebuildMessage.value =
-                                                          index;
-                                                      if (rebuildMessage
-                                                              .value ==
-                                                          (data.length - 2)) {
-                                                        scrollController
-                                                            .animateTo(
-                                                          scrollController
-                                                                  .position
-                                                                  .maxScrollExtent +
-                                                              100,
-                                                          duration:
-                                                              const Duration(
-                                                                  milliseconds:
-                                                                      100),
-                                                          curve: Curves.easeOut,
+                                                                  is ReplayOnMeMessage)
+                                                              ? (data[index]
+                                                                      as ReplayOnMeMessage)
+                                                                  .messageId
+                                                              : null;
+                                          return AutoScrollTag(
+                                            key: ValueKey(index),
+                                            index: index,
+                                            controller: autoScrollController,
+                                            child: Column(
+                                              children: [
+                                                GestureDetector(
+                                                    onLongPress: () {
+                                                      if (index != 0) {
+                                                        rebuild = false;
+                                                        rebuildMessage.value =
+                                                            index;
+                                                        if (rebuildMessage
+                                                                .value ==
+                                                            (data.length - 2)) {
+                                                          autoScrollController
+                                                              .animateTo(
+                                                            autoScrollController
+                                                                    .position
+                                                                    .maxScrollExtent +
+                                                                100,
+                                                            duration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        100),
+                                                            curve: Curves.easeOut,
+                                                          );
+                                                        }
+                                                        Future.delayed(
+                                                          const Duration(
+                                                              milliseconds: 150),
+                                                          () => rebuild = true,
                                                         );
                                                       }
-                                                      Future.delayed(
-                                                        const Duration(
-                                                            milliseconds: 150),
-                                                        () => rebuild = true,
-                                                      );
-                                                    }
-                                                  },
-                                                  onTap: () {
-                                                    rebuildMessage.value = -1;
-                                                  },
-                                                  child: data[index]),
-                                              currentIndex == index
-                                                  ? 5.verticalSpace
-                                                  : const SizedBox.shrink(),
-                                              currentIndex == index
-                                                  ? Padding(
-                                                      padding:
-                                                          HWEdgeInsets.only(
-                                                              left: isSent
-                                                                  ? 40.w
-                                                                  : 20.w,
-                                                              top: 10,
-                                                              right: isSent
-                                                                  ? 20.w
-                                                                  : 40.w),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .end,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Column(
-                                                            children: [
-                                                              Container(
-                                                                height: 40,
-                                                                width: 35.w,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  color: const Color(
-                                                                      0xfffafafa),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              12.0),
-                                                                  boxShadow: const [
-                                                                    BoxShadow(
-                                                                      color: Color(
-                                                                          0x29000000),
-                                                                      offset:
-                                                                          Offset(
-                                                                              0,
-                                                                              2),
-                                                                      blurRadius:
-                                                                          10,
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                child: Center(
-                                                                    child: SvgPicture
-                                                                        .asset(
-                                                                  AppAssets
-                                                                      .replyButtonLogoSvg,
-                                                                )),
-                                                              ),
-                                                              7.verticalSpace,
-                                                              Container(
-                                                                width: 50.w,
-                                                                height: 22,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  color: const Color(
-                                                                      0xff404040),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              8.0),
-                                                                  boxShadow: const [
-                                                                    BoxShadow(
-                                                                      color: Color(
-                                                                          0x34000000),
-                                                                      offset:
-                                                                          Offset(
-                                                                              0,
-                                                                              3),
-                                                                      blurRadius:
-                                                                          6,
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                child: Center(
-                                                                  child: Text(
-                                                                    'Replay',
-                                                                    style: textTheme
-                                                                        .overline
-                                                                        ?.rr
-                                                                        .copyWith(
-                                                                            color:
-                                                                                colorScheme.white,
-                                                                            height: 1.4),
-                                                                  ),
-                                                                ),
-                                                              )
-                                                            ],
-                                                          ),
-                                                          5.horizontalSpace,
-                                                          GestureDetector(
-                                                            key: key,
-                                                            onPanDown:
-                                                                (details) {
+                                                    },
+                                                    onTap: () {
+                                                      rebuildMessage.value = -1;
+                                                    },
+                                                    child: data[index]),
+                                                currentIndex == index
+                                                    ? 5.verticalSpace
+                                                    : const SizedBox.shrink(),
+                                                currentIndex == index
+                                                    ? Padding(
+                                                        padding:
+                                                            HWEdgeInsets.only(
+                                                                left: isSent
+                                                                    ? 40.w
+                                                                    : 20.w,
+                                                                top: 10,
+                                                                right: isSent
+                                                                    ? 20.w
+                                                                    : 40.w),
+                                                        child: GestureDetector(
+                                                          key: key,
+                                                          onPanDown: (details) {
+                                                            currentHoverPosition =
+                                                                details
+                                                                    .localPosition
+                                                                    .dx;
+                                                            currentFocusedIcon
+                                                                    .value =
+                                                                (currentHoverPosition -
+                                                                        x) ~/
+                                                                    20;
+                                                          },
+                                                          onPanEnd: (details) {
+                                                            rebuildMessage.value =
+                                                                -1;
+                                                          },
+                                                          onPanUpdate: (details) {
+                                                            print('hi');
+                                                            if (details.localPosition
+                                                                            .dx <
+                                                                        x &&
+                                                                    currentFocusedIcon
+                                                                            .value ==
+                                                                        -1){
+                                                              currentFocusedIcon.value=-1;
+                                                            return;
+                                                            }
+                                                                if(details.localPosition
+                                                                            .dx >
+                                                                        x +
+                                                                            225
+                                                                                .w &&
+                                                                    currentFocusedIcon
+                                                                            .value ==
+                                                                        5) {
+                                                                  currentFocusedIcon
+                                                                      .value = 5;
+                                                              return;
+                                                            }
+                                                            final dragDifference =
+                                                                details.localPosition
+                                                                        .dx -
+                                                                    currentHoverPosition;
+                                                            print(dragDifference);
+                                                            if (dragDifference
+                                                                    .abs() >
+                                                                20) {
                                                               currentHoverPosition =
                                                                   details
                                                                       .localPosition
                                                                       .dx;
-                                                              currentFocusedIcon
-                                                                      .value =
-                                                                  (currentHoverPosition -
-                                                                          x) ~/
-                                                                      25;
-                                                            },
-                                                            onPanEnd:
-                                                                (details) {
-                                                              rebuildMessage
-                                                                  .value = -1;
-                                                            },
-                                                            onPanUpdate:
-                                                                (details) {
-                                                              print('hi');
-                                                              if ((details.localPosition
-                                                                              .dx <
-                                                                          x &&
-                                                                      currentFocusedIcon
-                                                                              .value ==
-                                                                          0) ||
-                                                                  (details.localPosition
-                                                                              .dx >
-                                                                          x +
-                                                                              185
-                                                                                  .w &&
-                                                                      currentFocusedIcon
-                                                                              .value ==
-                                                                          5)) {
-                                                                return;
+                                                              if (dragDifference >
+                                                                  0) {
+                                                                currentFocusedIcon
+                                                                        .value =
+                                                                    min(
+                                                                        5,
+                                                                        currentFocusedIcon
+                                                                                .value +
+                                                                            1);
+                                                              } else {
+                                                                currentFocusedIcon
+                                                                        .value =
+                                                                    max(
+                                                                        -1,
+                                                                        currentFocusedIcon
+                                                                                .value -
+                                                                            1);
                                                               }
-                                                              final dragDifference =
-                                                                  details.localPosition
-                                                                          .dx -
-                                                                      currentHoverPosition;
-                                                              print(
-                                                                  dragDifference);
-                                                              if (dragDifference
-                                                                      .abs() >
-                                                                  20) {
-                                                                currentHoverPosition =
-                                                                    details
-                                                                        .localPosition
-                                                                        .dx;
-                                                                if (dragDifference >
-                                                                    0) {
-                                                                  currentFocusedIcon
-                                                                          .value =
-                                                                      min(
-                                                                          5,
-                                                                          currentFocusedIcon.value +
-                                                                              1);
-                                                                } else {
-                                                                  currentFocusedIcon
-                                                                          .value =
-                                                                      max(
-                                                                          0,
-                                                                          currentFocusedIcon.value -
-                                                                              1);
-                                                                }
-                                                              }
-                                                            },
+                                                            }
+                                                          },
+                                                          child: Directionality(
+                                                            textDirection: ui
+                                                                .TextDirection
+                                                                .ltr,
                                                             child: Container(
-                                                              width: 185.w,
-                                                              height: 40,
-                                                              padding: HWEdgeInsets
-                                                                  .symmetric(
-                                                                      vertical:
-                                                                          12,
-                                                                      horizontal:
-                                                                          10),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                color: const Color(
-                                                                    0xfffafafa),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            12.0),
-                                                                boxShadow: const [
-                                                                  BoxShadow(
-                                                                    color: Color(
-                                                                        0x29000000),
-                                                                    offset:
-                                                                        Offset(
-                                                                            0,
-                                                                            2),
-                                                                    blurRadius:
-                                                                        10,
-                                                                  ),
-                                                                ],
-                                                              ),
                                                               child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
+                                                                mainAxisAlignment: isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
                                                                 children: [
                                                                   InkWell(
-                                                                    onTap: () => forwardMessageMethod(chatState
-                                                                        .chats[widget
-                                                                            .chatIndex]
-                                                                        .messages!
-                                                                        .firstWhere((element) =>
-                                                                            element.id == messageId)),
-                                                                    child: SvgPicture
-                                                                        .asset(
-                                                                      AppAssets
-                                                                          .goBackIconSvg,
-                                                                      width: focusedIndex ==
-                                                                              0
-                                                                          ? 20.sp
-                                                                          : 15.sp,
-                                                                      height: focusedIndex ==
-                                                                              0
-                                                                          ? 20
-                                                                          : 15,
+                                                                    onTap: () => replayMessage(
+                                                                        chat.messages!.firstWhere((element) =>
+                                                                            element
+                                                                                .id ==
+                                                                            messageId),
+                                                                        _prefsRepository
+                                                                            .myId),
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Container(
+                                                                          height:
+                                                                              40,
+                                                                          width:
+                                                                              35.w,
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            color: const Color(
+                                                                                0xfffafafa),
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(12.0),
+                                                                            boxShadow: const [
+                                                                              BoxShadow(
+                                                                                color:
+                                                                                    Color(0x29000000),
+                                                                                offset:
+                                                                                    Offset(0, 2),
+                                                                                blurRadius:
+                                                                                    10,
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                          child: Center(
+                                                                              child: SvgPicture.asset(
+                                                                            AppAssets
+                                                                                .replyButtonLogoSvg,
+                                                                          )),
+                                                                        ),
+                                                                        7.verticalSpace,
+                                                                        focusedIndex ==
+                                                                                -1
+                                                                            ? Container(
+                                                                                width:
+                                                                                    50.w,
+                                                                                height:
+                                                                                    22,
+                                                                                decoration:
+                                                                                    BoxDecoration(
+                                                                                  color: const Color(0xff404040),
+                                                                                  borderRadius: BorderRadius.circular(8.0),
+                                                                                  boxShadow: const [
+                                                                                    BoxShadow(
+                                                                                      color: Color(0x34000000),
+                                                                                      offset: Offset(0, 3),
+                                                                                      blurRadius: 6,
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                                child:
+                                                                                    Center(
+                                                                                  child: Text(
+                                                                                    'Replay',
+                                                                                    style: textTheme.overline?.rr.copyWith(color: colorScheme.white, height: 1.4),
+                                                                                  ),
+                                                                                ),
+                                                                              )
+                                                                            : const SizedBox
+                                                                                .shrink()
+                                                                      ],
                                                                     ),
                                                                   ),
-                                                                  SvgPicture
-                                                                      .asset(
-                                                                    AppAssets
-                                                                        .copyIconSvg,
-                                                                    width: focusedIndex ==
-                                                                            1
-                                                                        ? 20.sp
-                                                                        : 15.sp,
-                                                                    height:
-                                                                        focusedIndex ==
-                                                                                1
-                                                                            ? 20
-                                                                            : 15,
-                                                                  ),
-                                                                  SvgPicture
-                                                                      .asset(
-                                                                    AppAssets
-                                                                        .addToGroupSvg,
-                                                                    width: focusedIndex ==
-                                                                            2
-                                                                        ? 20.sp
-                                                                        : 15.sp,
-                                                                    height:
-                                                                        focusedIndex ==
-                                                                                2
-                                                                            ? 20
-                                                                            : 15,
-                                                                  ),
-                                                                  SvgPicture
-                                                                      .asset(
-                                                                    AppAssets
-                                                                        .removeIconSvg,
-                                                                    width: focusedIndex ==
-                                                                            3
-                                                                        ? 20.sp
-                                                                        : 15.sp,
-                                                                    height:
-                                                                        focusedIndex ==
-                                                                                3
-                                                                            ? 20
-                                                                            : 15,
-                                                                  ),
-                                                                  SvgPicture
-                                                                      .asset(
-                                                                    AppAssets
-                                                                        .editIconSvg,
-                                                                    width: focusedIndex ==
-                                                                            4
-                                                                        ? 20.sp
-                                                                        : 15.sp,
-                                                                    height:
-                                                                        focusedIndex ==
-                                                                                4
-                                                                            ? 20
-                                                                            : 15,
-                                                                  ),
-                                                                  SvgPicture
-                                                                      .asset(
-                                                                    AppAssets
-                                                                        .notificationIconSvg,
-                                                                    width: focusedIndex ==
-                                                                            5
-                                                                        ? 20.sp
-                                                                        : 15.sp,
-                                                                    height:
-                                                                        focusedIndex ==
-                                                                                5
-                                                                            ? 20
-                                                                            : 15,
+                                                                  5.horizontalSpace,
+                                                                  Column(
+                                                                    mainAxisSize:
+                                                                        MainAxisSize
+                                                                            .min,
+                                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                                    children: [
+                                                                      Row(
+                                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                                        children: [
+                                                                          Container(
+                                                                            width:
+                                                                                185.w,
+                                                                            height:
+                                                                                40,
+                                                                            padding: HWEdgeInsets.symmetric(
+                                                                                vertical:
+                                                                                    12,
+                                                                                horizontal:
+                                                                                    10),
+                                                                            decoration:
+                                                                                BoxDecoration(
+                                                                              color: const Color(
+                                                                                  0xfffafafa),
+                                                                              borderRadius:
+                                                                                  BorderRadius.circular(12.0),
+                                                                              boxShadow: const [
+                                                                                BoxShadow(
+                                                                                  color:
+                                                                                      Color(0x29000000),
+                                                                                  offset:
+                                                                                      Offset(0, 2),
+                                                                                  blurRadius:
+                                                                                      10,
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                            child:
+                                                                                Row(
+                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                              children: [
+                                                                                MessageActionWidget(
+                                                                                  onTap: () => forwardMessageMethod(chat.messages!.firstWhere((element) =>
+                                                                                      element.id ==
+                                                                                      messageId)),
+                                                                                  iconUrl:
+                                                                                      AppAssets.goBackIconSvg,
+                                                                                  myIndex:
+                                                                                      0,
+                                                                                  focusedIndex:
+                                                                                      focusedIndex,
+                                                                                ),
+                                                                                MessageActionWidget(
+                                                                                  onTap:
+                                                                                      () {},
+                                                                                  iconUrl:
+                                                                                      AppAssets.copyIconSvg,
+                                                                                  myIndex:
+                                                                                      1,
+                                                                                  focusedIndex:
+                                                                                      focusedIndex,
+                                                                                ),
+                                                                                MessageActionWidget(
+                                                                                  onTap:
+                                                                                      () {},
+                                                                                  iconUrl:
+                                                                                      AppAssets.addToGroupSvg,
+                                                                                  myIndex:
+                                                                                      2,
+                                                                                  focusedIndex:
+                                                                                      focusedIndex,
+                                                                                ),
+                                                                                MessageActionWidget(
+                                                                                  onTap:
+                                                                                      () {},
+                                                                                  iconUrl:
+                                                                                      AppAssets.removeIconSvg,
+                                                                                  myIndex:
+                                                                                      3,
+                                                                                  focusedIndex:
+                                                                                      focusedIndex,
+                                                                                ),
+                                                                                MessageActionWidget(
+                                                                                  onTap:
+                                                                                      () {},
+                                                                                  iconUrl:
+                                                                                      AppAssets.editIconSvg,
+                                                                                  myIndex:
+                                                                                      4,
+                                                                                  focusedIndex:
+                                                                                      focusedIndex,
+                                                                                ),
+                                                                                MessageActionWidget(
+                                                                                  onTap:
+                                                                                      () {},
+                                                                                  iconUrl:
+                                                                                      AppAssets.notificationIconSvg,
+                                                                                  myIndex:
+                                                                                      5,
+                                                                                  focusedIndex:
+                                                                                      focusedIndex,
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      10.verticalSpace,
+                                                                      focusedIndex >=
+                                                                              0
+                                                                          ? Align(
+                                                                          alignment: Alignment(xActionSubtitle , yActionSubtitle +50 ),
+                                                                          child: Transform.translate(
+                                                                              offset: Offset((focusedIndex+1)*22 , 0),
+                                                                              child: MessageSubtitleWidget(focusedIndex: focusedIndex)))
+                                                                          : const SizedBox
+                                                                              .shrink()
+                                                                    ],
                                                                   ),
                                                                 ],
                                                               ),
                                                             ),
                                                           ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  : const SizedBox.shrink(),
-                                            ],
+                                                        ),
+                                                      )
+                                                    : const SizedBox.shrink(),
+                                              ],
+                                            ),
                                           );
                                         });
                                   },
@@ -588,23 +674,28 @@ class _SinglePageChatState extends State<SinglePageChat> {
                             BlocBuilder<AppBloc, AppState>(
                               builder: (context, state) {
                                 return ChatInputField(
+                                  channelId: chat.id!,
+                                  senderName: widget.senderName,
+                                  senderUserImage: widget.senderPhoto,
                                   onSendFile: (File file, String type) {
                                     String id = const Uuid().v4();
-                                    Message m = chatState
-                                        .chats[widget.chatIndex]
-                                        .messages!
-                                        .first;
-                                    print(
-                                        'first : ${m.senderUserId == _prefsRepository.myId ? m.receiverUserId : m.senderUserId}');
+                                    ChannelMember member = chat.channelMembers!
+                                        .firstWhere((element) =>
+                                            element.userId !=
+                                            _prefsRepository.myId);
                                     chatBloc.add(UploadFileEvent(
                                         file: file,
-                                        channelId: m.channelId!,
+                                        channelId: member.channelId!,
                                         filePath: type == 'image'
                                             ? 'images/test'
-                                            : 'voices/test',
+                                            : type == 'file'
+                                                ? 'files/test'
+                                                : 'voices/test',
                                         messageType: type == 'image'
                                             ? 'ImageMessage'
-                                            : 'VoiceMessage',
+                                            : type == 'file'
+                                                ? 'FileMessage'
+                                                : 'VoiceMessage',
                                         isForward: false,
                                         senderParentMessageId:
                                             state.senderParentMessageId,
@@ -612,12 +703,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                             ? state.messageId
                                             : null,
                                         messageId: id,
-                                        parentMessageContent:
-                                            type == 'image' ? 'Photo' : 'Voice',
-                                        receiverUserId: m.senderUserId ==
-                                                _prefsRepository.myId
-                                            ? m.receiverUserId
-                                            : m.senderUserId));
+                                        parentMessageContent: type == 'image'
+                                            ? 'Photo'
+                                            : type == 'file'
+                                                ? 'File'
+                                                : 'Voice',
+                                        receiverUserId: member.userId));
                                     BlocProvider.of<AppBloc>(context).add(
                                         RefreshChatInputField(false, '', false,
                                             messageId: null,
@@ -630,17 +721,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                     print('state: ${state.thereIsReply}');
                                     print('messageId: ${state.messageId}');
                                     String id = const Uuid().v4();
-                                    Message m = chatState
-                                        .chats[widget.chatIndex]
-                                        .messages!
-                                        .first;
-                                    print(m.senderUserId);
-                                    print(m.receiverUserId);
-                                    print(
-                                        'receiver : ${m.senderUserId == _prefsRepository.myId ? m.receiverUserId : m.senderUserId}');
+                                    ChannelMember member = chat.channelMembers!
+                                        .firstWhere((element) =>
+                                            element.userId !=
+                                            _prefsRepository.myId);
                                     chatBloc.add(SendMessageEvent(
                                         messageType: 'TextMessage',
-                                        channelId: m.channelId!,
+                                        channelId: member.channelId!,
                                         isForward: false,
                                         parentMessageId: state.thereIsReply
                                             ? state.messageId
@@ -650,10 +737,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         senderParentMessageId:
                                             state.senderParentMessageId,
                                         parentMessageContent: state.message,
-                                        receiverUserId: m.senderUserId ==
-                                                _prefsRepository.myId
-                                            ? m.receiverUserId
-                                            : m.senderUserId));
+                                        receiverUserId: member.userId));
                                     BlocProvider.of<AppBloc>(context).add(
                                         RefreshChatInputField(false, '', false,
                                             messageId: null,
@@ -675,177 +759,280 @@ class _SinglePageChatState extends State<SinglePageChat> {
     );
   }
 
-  getMessageDate(DateTime lastDate, DateTime zonedDate) {
-    return ((lastDate.day - zonedDate.day).abs() == 0 &&
-            lastDate.month == zonedDate.month &&
-            lastDate.year == zonedDate.year)
-        ? 'TODAY'
-        : ((lastDate.day - zonedDate.day).abs() == 1 &&
-                lastDate.month == zonedDate.month &&
-                lastDate.year == zonedDate.year)
-            ? 'YESTERDAY'
-            : DateFormat("yyyy-MM-dd").format(zonedDate);
+  String formatDate(String dateStr) {
+    DateTime date = DateTime.parse(dateStr);
+    DateTime now = DateTime.now();
+    Duration difference = now.difference(date);
+
+    if (difference.inDays == 0) {
+      return 'TODAY';
+    } else if (difference.inDays == 1) {
+      return 'YESTERDAY';
+    } else {
+      return dateStr;
+    }
   }
 
-  void preProcessingOfMessaging(List<Message> messages) {
+  void preProcessingOfMessaging(
+      List<Message> messages,
+      bool scrollToLastMessage,
+      String senderName,
+      String receiverName,
+      String? senderPhoto,
+      String? receiverPhoto) {
     if (messages.isEmpty) {
       return;
     }
-    data = [];
+    data = [10.verticalSpace];
+    Map<String, List<Message>> messagesByDate = {};
+
     isISentLastMessage = messages[0].senderUserId == _prefsRepository.myId;
-    print('length in data ${messages.length}');
     for (int i = messages.length - 1; i >= 0; i--) {
       Message element = messages[i];
-      bool previousIsDate = false;
-      bool isFirstMessage = element.senderUserId !=
-          messages[min(messages.length - 1, i + 1)].senderUserId;
-      if (i == messages.length - 1) {
-        isFirstMessage = true;
+      final zonedDate = HelperFunctions.replaceArabicNumber(
+          DateFormat("yyyy-MM-dd")
+              .format(HelperFunctions.getZonedDate(element.createdAt!)));
+      if (!messagesByDate.containsKey(zonedDate)) {
+        messagesByDate[zonedDate] = [];
       }
-      final zonedDate = HelperFunctions.getZonedDate(element.createdAt!);
-      if ((zonedDate.day != lastDate.day) ||
-          ((zonedDate.month != lastDate.month) ||
-              (zonedDate.day != lastDate.day))) {
-        data.add(10.verticalSpace);
-        previousIsDate = true;
-        data.add(MessagesDate(date: getMessageDate(lastDate, zonedDate)));
-        lastDate = zonedDate;
-      } else if (i == messages.length - 1) {
-        previousIsDate = true;
-        data.add(10.verticalSpace);
-        data.add(MessagesDate(date: getMessageDate(lastDate, zonedDate)));
-      }
-      print(isFirstMessage);
-      print(data.length);
-      data.add(previousIsDate
-          ? 10.verticalSpace
-          : isFirstMessage
-              ? 30.verticalSpace
-              : 10.verticalSpace);
-      print(data.length);
+      messagesByDate[zonedDate]!.add(element);
+    }
 
-      previousIsDate = false;
-      print('parentMessageId : ${element.parentMessageId}');
-      print(element.parentMessageId == 'null');
-      if (element.parentMessageId != null) {
-        Message parentMessage = element.parentMessage!;
-        if (parentMessage.senderUserId.toString() !=
-            _prefsRepository.myId.toString()) {
-          data.add(ReplayMessage(
-              messageDate: element.createdAt!,
-              messageId: element.parentMessageId!,
-              answeredFilePath: element.mediaMessageContent?[0].filePath,
-              messageAnswer: element.messageContent?.content,
-              isFirstMessage: !isISentLastMessage,
-              isSent: true,
-              parentSenderId: parentMessage.senderUserId!,
-              isReplayedMessageRead:
-                  parentMessage.messageStatus?[0].isWatched ?? false,
-              isAnswerMessageRead: element.messageStatus?[0].isWatched ?? false,
-              answeredFile: element.file,
-              message: parentMessage.messageContent?.content == null
-                  ? parentMessage.messageType!.name == 'ImageMessage'
-                      ? 'Photo'
-                      : 'Voice'
-                  : parentMessage.messageContent!.content.toString(),
-              messageAnswerId: element.id!));
-        } else {
-          data.add(ReplayOnMeMessage(
-              messageDate: element.createdAt!,
-              messageId: element.parentMessageId!,
-              answeredFilePath: element.mediaMessageContent?[0].filePath,
-              messageAnswer: element.messageContent?.content,
-              answeredFile: element.file,
-              isFirstMessage: !isISentLastMessage,
-              parentSenderId: parentMessage.senderUserId!,
-              isReplayedMessageRead:
-                  parentMessage.messageStatus?[1].isWatched ?? false,
-              isAnswerMessageRead: element.messageStatus?[1].isWatched ?? false,
-              isSent: true,
-              message: parentMessage.messageContent?.content == null
-                  ? parentMessage.messageType!.name == 'ImageMessage'
-                      ? 'Photo'
-                      : 'Voice'
-                  : parentMessage.messageContent!.content.toString(),
-              messageAnswerId: element.id!));
+    for (String sendDate in messagesByDate.keys) {
+      data.add(10.verticalSpace);
+      bool thereIsDate = true;
+      data.add(MessagesDate(date: formatDate(sendDate)));
+      for (int i = messagesByDate[sendDate]!.length - 1; i >= 0; i--) {
+        Message element = messages[i];
+        MessageStatus? messageStatus = element.messageStatus
+            ?.firstWhere((element) => element.userId != _prefsRepository.myId);
+        bool isFirstMessage = element.senderUserId !=
+            messages[min(messages.length - 1, i + 1)].senderUserId;
+        if (i == messages.length - 1) {
+          isFirstMessage = true;
         }
-      } else if (element.messageType!.name == 'TextMessage') {
-        data.add(TextMessage(
-          message: element.messageContent!.content.toString(),
-          messageId: element.messageContent!.messageId.toString(),
-          senderId: element.senderUserId!,
-          isSent: element.receiverUserId != _prefsRepository.myId,
-          isRead: element.messageStatus?[1].isWatched ?? false,
-          isFirstMessage: isFirstMessage,
-          time: element.createdAt!,
-          isForwarded: element.isForward == 1,
-        ));
-      } else if (element.messageType!.name == 'VoiceMessage') {
-        if (element.file != null) {
-          data.add(
-            VoiceMessage(
-              isSent: element.receiverUserId != _prefsRepository.myId,
-              file: element.file,
-              messageId: element.id.toString(),
-              senderId: element.senderUserId!,
-              time: element.createdAt!,
-              isRead: element.messageStatus?[1].isWatched ?? false,
-              isFirstMessage: isFirstMessage,
-              isForwarded: element.isForward == 1,
-            ),
-          );
-        } else {
-          for (int i = 0; i < (element.mediaMessageContent?.length ?? 0); i++) {
+        data.add(thereIsDate
+            ? 10.verticalSpace
+            : isFirstMessage
+                ? 30.verticalSpace
+                : 10.verticalSpace);
+        thereIsDate = false;
+        if (element.parentMessageId != null) {
+          Message parentMessage = element.parentMessage!;
+          MessageStatus? parentMessageStatus = parentMessage.messageStatus
+              ?.firstWhere(
+                  (element) => element.userId != _prefsRepository.myId);
+          int index = data.indexWhere((e) {
+            if(e is TextMessage){
+              return e.messageId==element.parentMessageId;
+            }else if(e is ImageMessage){
+
+              return e.messageId==element.parentMessageId;
+            }else if(e is VoiceMessage){
+              return e.messageId==element.parentMessageId;
+            }else {
+              return false;
+            }
+          });
+          if (parentMessage.senderUserId != element.senderUserId) {
+            print('parent message');
+            print( _prefsRepository.myId.toString());
+          print(parentMessage.senderUserId);
+          print(parentMessage.receiverUserId);
+            data.add(ReplayMessage(
+                messageDate: element.createdAt!,
+                scrollToMessage: () =>scrollToIndex(index),
+                messageId: element.parentMessageId!,
+                answeredFilePath: element.mediaMessageContent?[0].filePath,
+                messageAnswer: element.messageContent?.content,
+                isFirstMessage: !isISentLastMessage,
+                replayedPhoto:
+                    parentMessage.id == _prefsRepository.myId.toString()
+                        ? senderPhoto
+                        : receiverPhoto,
+                replayedName:
+                    parentMessage.id == _prefsRepository.myId.toString()
+                        ? senderName
+                        : receiverName,
+                senderAnswerName: senderName,
+                senderAnswerPhoto: senderPhoto,
+                isSent: element.senderUserId == _prefsRepository.myId,
+                parentSenderId: parentMessage.senderUserId!,
+                isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
+                isReplayedMessageReceived:
+                    (parentMessageStatus?.isReceived ?? 0) == 1,
+                isAnswerMessageRead: messageStatus?.isWatched ?? false,
+                isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
+                answeredFile: element.file,
+                message: parentMessage.messageContent?.content == null
+                    ? parentMessage.messageType!.name == 'ImageMessage'
+                        ? 'Photo'
+                        : parentMessage.messageType!.name == 'FileMessage'
+                            ? 'File'
+                            : 'Voice'
+                    : parentMessage.messageContent!.content.toString(),
+                messageAnswerId: element.id!));
+          } else {
+            data.add(ReplayOnMeMessage(
+                messageDate: element.createdAt!,
+                messageId: element.parentMessageId!,
+                answeredFilePath: element.mediaMessageContent?[0].filePath,
+                messageAnswer: element.messageContent?.content,
+                answeredFile: element.file,
+                scrollToMessage: () =>scrollToIndex(index),
+                isFirstMessage: !isISentLastMessage,
+                parentSenderId: parentMessage.senderUserId!,
+                replayedPhoto:
+                    parentMessage.id == _prefsRepository.myId.toString()
+                        ? senderPhoto
+                        : receiverPhoto,
+                replayedName:
+                    parentMessage.id == _prefsRepository.myId.toString()
+                        ? senderName
+                        : receiverName,
+                senderAnswerName: senderName,
+                senderAnswerPhoto: senderPhoto,
+                isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
+                isReplayedMessageReceived:
+                    (parentMessageStatus?.isReceived ?? 0) == 1,
+                isAnswerMessageRead: messageStatus?.isWatched ?? false,
+                isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
+                isSent: element.senderUserId == _prefsRepository.myId,
+                message: parentMessage.messageContent?.content == null
+                    ? parentMessage.messageType!.name == 'ImageMessage'
+                        ? 'Photo'
+                        : parentMessage.messageType!.name == 'FileMessage'
+                            ? 'File'
+                            : 'Voice'
+                    : parentMessage.messageContent!.content.toString(),
+                messageAnswerId: element.id!));
+          }
+        } else if (element.messageType!.name == 'TextMessage') {
+          data.add(TextMessage(
+            message: element.messageContent!.content.toString(),
+            messageId: element.messageContent!.messageId.toString(),
+            senderId: element.senderUserId!,
+            isSent: element.receiverUserId != _prefsRepository.myId,
+            isRead: messageStatus?.isWatched ?? false,
+            userMessageName: element.receiverUserId != _prefsRepository.myId
+                ? senderName
+                : receiverName,
+            userMessagePhoto: element.receiverUserId != _prefsRepository.myId
+                ? senderPhoto
+                : receiverPhoto,
+            isReceived: (messageStatus?.isReceived ?? 0) == 1,
+            isFirstMessage: isFirstMessage,
+            time: element.createdAt!,
+            isForwarded: element.isForward == 1,
+          ));
+        } else if (element.messageType!.name == 'FileMessage') {
+        } else if (element.messageType!.name == 'VoiceMessage') {
+          if (element.file != null) {
             data.add(
               VoiceMessage(
                 isSent: element.receiverUserId != _prefsRepository.myId,
-                fileUrl: element.mediaMessageContent![i].filePath,
-                messageId: element.mediaMessageContent![i].messageId.toString(),
-                time: element.createdAt!,
-                senderId: element.senderUserId!,
                 file: element.file,
+                messageId: element.id.toString(),
+                senderId: element.senderUserId!,
+                userMessageName: element.receiverUserId != _prefsRepository.myId
+                    ? senderName
+                    : receiverName,
+                userMessagePhoto:
+                    element.receiverUserId != _prefsRepository.myId
+                        ? senderPhoto
+                        : receiverPhoto,
+                time: element.createdAt!,
+                isRead: messageStatus?.isWatched ?? false,
+                isReceived: (messageStatus?.isReceived ?? 0) == 1,
                 isFirstMessage: isFirstMessage,
-                isRead: element.messageStatus?[1].isWatched ?? false,
                 isForwarded: element.isForward == 1,
               ),
             );
-            if (i != element.mediaMessageContent!.length - 1) {
-              data.add(10.verticalSpace);
+          } else {
+            for (int i = 0;
+                i < (element.mediaMessageContent?.length ?? 0);
+                i++) {
+              data.add(
+                VoiceMessage(
+                  isSent: element.receiverUserId != _prefsRepository.myId,
+                  fileUrl: element.mediaMessageContent![i].filePath,
+                  messageId:
+                      element.mediaMessageContent![i].messageId.toString(),
+                  time: element.createdAt!,
+                  senderId: element.senderUserId!,
+                  userMessageName:
+                      element.receiverUserId != _prefsRepository.myId
+                          ? senderName
+                          : receiverName,
+                  userMessagePhoto:
+                      element.receiverUserId != _prefsRepository.myId
+                          ? senderPhoto
+                          : receiverPhoto,
+                  file: element.file,
+                  isFirstMessage: isFirstMessage,
+                  isRead: messageStatus?.isWatched ?? false,
+                  isReceived: (messageStatus?.isReceived ?? 0) == 1,
+                  isForwarded: element.isForward == 1,
+                ),
+              );
+              if (i != element.mediaMessageContent!.length - 1) {
+                data.add(10.verticalSpace);
+              }
             }
           }
-        }
-      } else {
-        if (element.file != null) {
-          data.add(
-            ImageMessage(
-              isSent: element.receiverUserId != _prefsRepository.myId,
-              imageFile: element.file,
-              messageId: element.id.toString(),
-              senderId: element.senderUserId!,
-              time: element.createdAt!,
-              isFirstMessage: isFirstMessage,
-              isRead: element.messageStatus?[0].isWatched ?? false,
-              isLocalMessage: true,
-              isForwarded: element.isForward == 1,
-            ),
-          );
         } else {
-          for (int i = 0; i < (element.mediaMessageContent?.length ?? 0); i++) {
+          if (element.file != null) {
             data.add(
               ImageMessage(
                 isSent: element.receiverUserId != _prefsRepository.myId,
-                imageUrl: element.mediaMessageContent![i].filePath,
-                messageId: element.mediaMessageContent![i].messageId.toString(),
-                time: element.createdAt!,
+                imageFile: element.file,
+                messageId: element.id.toString(),
                 senderId: element.senderUserId!,
-                isRead: element.messageStatus?[0].isWatched ?? false,
+                time: element.createdAt!,
+                userMessageName: element.receiverUserId != _prefsRepository.myId
+                    ? senderName
+                    : receiverName,
+                userMessagePhoto:
+                    element.receiverUserId != _prefsRepository.myId
+                        ? senderPhoto
+                        : receiverPhoto,
                 isFirstMessage: isFirstMessage,
-                isLocalMessage: false,
+                isRead: messageStatus?.isWatched ?? false,
+                isReceived: (messageStatus?.isReceived ?? 0) == 1,
+                isLocalMessage: true,
                 isForwarded: element.isForward == 1,
               ),
             );
-            if (i != element.mediaMessageContent!.length - 1) {
-              data.add(10.verticalSpace);
+          } else {
+            for (int i = 0;
+                i < (element.mediaMessageContent?.length ?? 0);
+                i++) {
+              data.add(
+                ImageMessage(
+                  isSent: element.receiverUserId != _prefsRepository.myId,
+                  imageUrl: element.mediaMessageContent![i].filePath,
+                  messageId:
+                      element.mediaMessageContent![i].messageId.toString(),
+                  time: element.createdAt!,
+                  senderId: element.senderUserId!,
+                  userMessageName:
+                      element.receiverUserId != _prefsRepository.myId
+                          ? senderName
+                          : receiverName,
+                  userMessagePhoto:
+                      element.receiverUserId != _prefsRepository.myId
+                          ? senderPhoto
+                          : receiverPhoto,
+                  isRead: messageStatus?.isWatched ?? false,
+                  isReceived: (messageStatus?.isReceived ?? 0) == 1,
+                  isFirstMessage: isFirstMessage,
+                  isLocalMessage: false,
+                  isForwarded: element.isForward == 1,
+                ),
+              );
+              if (i != element.mediaMessageContent!.length - 1) {
+                data.add(10.verticalSpace);
+              }
             }
           }
         }
@@ -853,7 +1040,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
     }
     data.add(30.verticalSpace);
     rebuildMessage.value = data.length;
-    scrollToTheEnd();
+    if (scrollToLastMessage) {
+      print('scrolling');
+      scrollToTheEnd();
+    }
   }
 
   void forwardMessageMethod(Message message) {
@@ -878,7 +1068,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                       chatBloc.add(SendMessageEvent(
                           channelId: message.channelId!,
                           mediaContent: [
-                            {'file_path': message.mediaMessageContent?[0].filePath, 'caption': 'test image'}
+                            {
+                              'file_path':
+                                  message.mediaMessageContent?[0].filePath,
+                              'caption': 'test image'
+                            }
                           ],
                           messageType: message.messageType!.name,
                           isForward: false,
@@ -897,6 +1091,32 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         time: null));
                   },
                 )));
+  }
+
+  void replayMessage(Message message, int? myId) {
+    BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
+        true,
+        message.messageType!.name == 'TextMessage'
+            ? 'text'
+            : message.messageType!.name == 'TextMessage'
+                ? 'image'
+                : 'voice',
+        message.senderUserId == myId,
+        messageId: message.id,
+        senderParentMessageId: message.senderUserId,
+        message: message.messageContent?.content ??
+            (message.messageType!.name == 'TextMessage' ? 'Photo' : 'Voice'),
+        imageUrl:
+            message.mediaMessageContent?.first.filePath ?? message.file?.path,
+        time: message.createdAt));
+  }
+  void scrollToIndex(int index) async{
+    print(index);
+    await autoScrollController.scrollToIndex(index , preferPosition: AutoScrollPosition.middle);
+  }
+  void _loadMoreMessages() {
+    print('reach');
+    chatBloc.add(GetMessagesForChatEvent(channelId: widget.chatId));
   }
 }
 
@@ -926,3 +1146,84 @@ class MessagesDate extends StatelessWidget {
     );
   }
 }
+
+class MessageActionWidget extends StatelessWidget {
+  const MessageActionWidget({
+    Key? key,
+    required this.onTap,
+    required this.focusedIndex,
+    required this.myIndex,
+    required this.iconUrl,
+  }) : super(key: key);
+  final void Function() onTap;
+  final int focusedIndex;
+  final int myIndex;
+  final String iconUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+        onTap: () => onTap,
+        child: SvgPicture.asset(
+          iconUrl,
+          width: focusedIndex == myIndex ? 20.sp : 15.sp,
+          height: focusedIndex == myIndex ? 20 : 15,
+        ));
+  }
+}
+
+class MessageSubtitleWidget extends StatelessWidget {
+  const MessageSubtitleWidget({
+    Key? key,
+    required this.focusedIndex,
+  }) : super(key: key);
+  final int focusedIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    String hoverText = '';
+    switch (focusedIndex) {
+      case 0:
+        hoverText = 'Forward';
+        break;
+      case 1:
+        hoverText = 'Copy';
+        break;
+      case 2:
+        hoverText = 'Category';
+        break;
+      case 3:
+        hoverText = 'Delete';
+        break;
+      case 4:
+        hoverText = 'Edit';
+        break;
+      case 5:
+        hoverText = 'Re-Remind';
+        break;
+    }
+    return Container(
+      width: 50.w,
+      height: 22,
+      decoration: BoxDecoration(
+        color: const Color(0xff404040),
+        borderRadius: BorderRadius.circular(8.0),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x34000000),
+            offset: Offset(0, 3),
+            blurRadius: 6,
+          ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          hoverText,
+          style: context.textTheme.overline?.rr
+              .copyWith(color: context.colorScheme.white, height: 1.4),
+        ),
+      ),
+    );
+  }
+}
+

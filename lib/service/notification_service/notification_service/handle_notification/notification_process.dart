@@ -89,6 +89,7 @@ class NotificationProcess {
     try {
       await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     } catch (e) {
+      print(e);
       rethrow;
     }
 

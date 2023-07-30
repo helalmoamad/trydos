@@ -5,6 +5,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
@@ -43,18 +44,31 @@ class _ChatPageContentState extends State<ChatPageContent> {
         if (state.getChatsStatus == GetChatsStatus.loading) {
           return SliverToBoxAdapter(child: TrydosLoader());
         }
+        print(state.chats.length);
+        print(state.pinnedChats.length);
+        List<Chat> chats = [];
+        chats.addAll(state.pinnedChats);
+        chats.addAll(state.chats);
         return SlidableAutoCloseBehavior(
           closeWhenOpened: true,
-          child: sliverListSeparated(
-            itemBuilder: (_, index) => ChatCard(
-              isTyping: false,
-              onSendForwardMessage: widget.onSendForwardMessage,
-              chat: state.chats[index],
-
-              index: index,
-            ),
-            separator: const SizedBox.shrink(),
-            childCount: state.chats.length,
+          closeWhenTapped: true,
+          child: BlocBuilder<AppBloc, AppState>(
+            builder: (context, appState) {
+              print('this is ${appState.typingIds}');
+              return sliverListSeparated(
+                itemBuilder: (_, index) {
+                  bool isTyping=appState.typingIds.containsKey(chats[index].id);
+                  return ChatCard(
+                    onSendForwardMessage: widget.onSendForwardMessage,
+                    chat: chats[index],
+                    isTyping: isTyping,
+                    index: index,
+                  );
+                },
+                separator: const SizedBox.shrink(),
+                childCount: chats.length,
+              );
+            },
           ),
         );
       },

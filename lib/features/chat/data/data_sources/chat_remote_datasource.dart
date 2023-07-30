@@ -2,6 +2,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/authentication/data/models/login_user_response_model.dart';
+import 'package:trydos/features/chat/data/models/change_chat_property_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
 
@@ -40,7 +41,7 @@ class ChatRemoteDataSource{
   Future<bool> receiveMessage(Map<String,dynamic> params){
     GetClient<bool> receiveMessage= GetClient<bool>(
       requestPrams: RequestConfig<bool>(
-        endpoint: EndPoints.receiveMessageEP(params['id']),
+        endpoint: EndPoints.receiveMessageEP(params['id'].toString()),
         response: ResponseValue<bool>(
           returnValueOnSuccess: true
         ),
@@ -60,6 +61,33 @@ class ChatRemoteDataSource{
     );
     return getChats();
   }
+
+  Future<ChangeChatPropertyModel> changeChatProperty(Map<String,dynamic> params){
+    PostClient<ChangeChatPropertyModel> changeChatProperty= PostClient<ChangeChatPropertyModel>(
+      requestPrams: RequestConfig<ChangeChatPropertyModel>(
+        endpoint: EndPoints.setChatPropertyEP,
+        data: params,
+        response: ResponseValue<ChangeChatPropertyModel>(
+            fromJson: (response)=> ChangeChatPropertyModel.fromJson(response)
+        ),
+      ),
+    );
+    return changeChatProperty();
+  }
+  Future<List<Message>> getMessagesForChat(Map<String,dynamic> params){
+    PostClient<List<Message>> getMessagesForChat= PostClient<List<Message>>(
+      requestPrams: RequestConfig<List<Message>>(
+        endpoint: EndPoints.getMessagesForChatEP(params['params']),
+        data: params['data'],
+        response: ResponseValue<List<Message>>(
+            fromJson: (response)=> List<Message>.from(
+                response["data"]!.map((x) => Message.fromJson(x)))
+        ),
+      ),
+    );
+    return getMessagesForChat();
+  }
+
   Future<UploadFileResponseModel> uploadFile(Map<String,dynamic> params){
     PostClient<UploadFileResponseModel> uploadFile= PostClient<UploadFileResponseModel>(
       requestPrams: RequestConfig<UploadFileResponseModel>(
@@ -86,6 +114,18 @@ class ChatRemoteDataSource{
       ),
     );
     return saveContacts();
+  }
+  Future<bool> deleteChat(Map<String,dynamic> params){
+    PostClient<bool> deleteChat= PostClient<bool>(
+      requestPrams: RequestConfig<bool>(
+        endpoint: EndPoints.deleteChatEP,
+        data: params,
+        response: ResponseValue<bool>(
+          returnValueOnSuccess: true
+        ),
+      ),
+    );
+    return deleteChat();
   }
   Future<Message> sendMessage(Map<String,dynamic> params){
     PostClient<Message> sendMessage= PostClient<Message>(

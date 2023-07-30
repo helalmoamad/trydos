@@ -179,6 +179,29 @@ class ReceiveMessageEvent extends ChatEvent {
   // TODO: implement props
   List<Object?> get props => [message];
 }
+
+class ReceiveMessageFromPusherEvent extends ChatEvent {
+  final int channelId;
+  final int userId;
+  final int lastMessageId;
+  const ReceiveMessageFromPusherEvent(this.channelId , this.userId , this.lastMessageId );
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [channelId , userId , lastMessageId];
+}
+
+class WatchedMessageFromPusherEvent extends ChatEvent {
+
+  final int channelId;
+  final int userId;
+  final int lastMessageId;
+  const WatchedMessageFromPusherEvent(this.channelId , this.userId , this.lastMessageId );
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [channelId , userId , lastMessageId];
+}
 class NotifyThatIReceivedMessageEvent extends ChatEvent {
   final int channelId;
 
@@ -188,3 +211,44 @@ class NotifyThatIReceivedMessageEvent extends ChatEvent {
   // TODO: implement props
   List<Object?> get props => [channelId];
 }
+
+class DeleteChatEvent extends ChatEvent {
+  final int channelId;
+
+  const DeleteChatEvent({required this.channelId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [channelId];
+}
+class ChangeChatPropertyEvent extends ChatEvent {
+  final int channelId;
+  final int? mute;
+  final int? pin;
+  final int? archive;
+  const ChangeChatPropertyEvent({
+    required this.channelId,
+    this.archive,
+    this.mute,
+    this.pin
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [channelId,archive,mute,pin];
+}
+
+class GetMessagesForChatEvent extends ChatEvent {
+  final int limit;
+  final int channelId;
+
+  const GetMessagesForChatEvent({
+    required this.channelId ,
+    this.limit=10
+  });
+  @override
+  // TODO: implement props
+  List<Object?> get props => [limit ,channelId];
+}
+
+

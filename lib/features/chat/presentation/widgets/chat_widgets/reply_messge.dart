@@ -16,9 +16,16 @@ class ReplayMessage extends StatefulWidget {
     required this.isSent,
     required this.parentSenderId,
     required this.isReplayedMessageRead,
+    required this.isReplayedMessageReceived,
     required this.isAnswerMessageRead,
+    required this.isAnswerMessageReceived,
+    required this.senderAnswerName,
+    required this.replayedName,
+     this.replayedPhoto,
+     this.senderAnswerPhoto,
      this.answeredFile,
      this.answeredFilePath,
+     required this.scrollToMessage,
     required this.messageDate,
     required this.isFirstMessage}) : super(key: key);
   final String message;
@@ -30,10 +37,16 @@ class ReplayMessage extends StatefulWidget {
   final DateTime messageDate;
   final File? answeredFile;
   final String? answeredFilePath;
+  final int parentSenderId;
   final bool isReplayedMessageRead;
   final bool isAnswerMessageRead;
-  final int parentSenderId;
-
+  final bool isAnswerMessageReceived;
+  final bool isReplayedMessageReceived;
+  final String? replayedPhoto;
+  final String? senderAnswerPhoto;
+  final String replayedName;
+  final String senderAnswerName;
+  final void Function() scrollToMessage;
   @override
   State<ReplayMessage> createState() => _ReplayMessageState();
 }
@@ -58,19 +71,25 @@ class _ReplayMessageState extends State<ReplayMessage> {
       children: [
         Padding(
           padding: const EdgeInsetsDirectional.only(end: 25.0),
-          child: TextMessage(
-            key: key,
-            receivedColor: const Color(0xffD5F6E6),
-            message:widget.message,
-            withShadow: false,
-            withImageShadow: false,
-            messageId: widget.messageId,
-            isSent: false,
-            disableMessageAlignment: true,
-            senderId: widget.parentSenderId,
-            isRead: widget.isReplayedMessageRead,
-            isFirstMessage: true,
-            time: widget.messageDate,),
+          child: InkWell(
+            onTap: widget.scrollToMessage,
+            child: TextMessage(
+              key: key,
+              receivedColor: widget.isSent ? const Color(0xffD5F6E6) : const Color(0xffF1FDE3),
+              message:widget.message,
+              withShadow: false,
+              withImageShadow: false,
+              messageId: widget.messageId,
+              isSent: false,
+              userMessageName: widget.replayedName,
+              userMessagePhoto: widget.replayedPhoto,
+              isReceived: widget.isReplayedMessageRead,
+              disableMessageAlignment: true,
+              senderId: widget.parentSenderId,
+              isRead: widget.isReplayedMessageRead,
+              isFirstMessage: true,
+              time: widget.messageDate,),
+          ),
         ),
         Transform.translate(
             offset: const Offset( 0 , -22),
@@ -79,7 +98,10 @@ class _ReplayMessageState extends State<ReplayMessage> {
               time: widget.messageDate,
               isRead: widget.isAnswerMessageRead,
               messageId: widget.messageId,
-              isFirstMessage: widget.isFirstMessage,
+                isReceived: widget.isAnswerMessageReceived,
+                isFirstMessage: widget.isFirstMessage,
+                userMessageName: widget.senderAnswerName,
+                userMessagePhoto: widget.senderAnswerPhoto,
               senderId: GetIt.I<PrefsRepository>().myId!,
               isLocalMessage: widget.answeredFilePath==null,
               imageFile: widget.answeredFile,
@@ -87,6 +109,9 @@ class _ReplayMessageState extends State<ReplayMessage> {
                 :TextMessage(message: widget.messageAnswer!,
               withImageShadow: true,
               messageId: widget.messageAnswerId,
+              userMessageName: widget.senderAnswerName,
+              userMessagePhoto: widget.senderAnswerPhoto,
+              isReceived: widget.isAnswerMessageReceived,
               isSent: true,
               senderId: GetIt.I<PrefsRepository>().myId!,
               isRead: widget.isAnswerMessageRead,

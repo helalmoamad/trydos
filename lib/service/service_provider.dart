@@ -15,7 +15,7 @@ class ServiceProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (BuildContext context) => AppBloc()),
+        BlocProvider(create: (BuildContext context) => GetIt.I<AppBloc>()),
         BlocProvider(create: (BuildContext context) => SensitiveConnectivityBloc()),
         BlocProvider(create: (BuildContext context) => GetIt.I<AuthBloc>()),
         BlocProvider(create: (BuildContext context) => GetIt.I<ChatBloc>()..add(const GetChatsEvent())),

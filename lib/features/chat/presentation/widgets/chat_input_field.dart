@@ -1,11 +1,14 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mime/mime.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/common/constant/constant.dart';
@@ -24,6 +27,8 @@ import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
 import '../../../app/my_cached_network_image.dart';
+import '../utils/pusher_chat.dart';
+import 'chat_widgets/no_image_widget.dart';
 import 'chat_widgets/voice_waves_in_recording.dart';
 
 class ChatInputField extends StatefulWidget {
@@ -31,10 +36,15 @@ class ChatInputField extends StatefulWidget {
     Key? key,
     required this.onSendMessage,
     required this.onSendFile,
+    required this.channelId,
+    required this.senderName,
+    required this.senderUserImage,
   }) : super(key: key);
   final void Function(String message) onSendMessage;
-  final void Function(File file , String type) onSendFile;
-
+  final void Function(File file, String type) onSendFile;
+  final int channelId;
+  final String? senderUserImage;
+  final String senderName;
   @override
   State<ChatInputField> createState() => _ChatInputFieldState();
 }
@@ -43,7 +53,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
     with FormStateMinxin {
   final ValueNotifier<bool> thereTextNotifier = ValueNotifier(false);
   final ValueNotifier<bool> recordingNotifier = ValueNotifier(false);
-  final  FlutterSoundRecorder recorder = FlutterSoundRecorder();
+  final FlutterSoundRecorder recorder = FlutterSoundRecorder();
+   Timer _typingTimer =Timer(const Duration(microseconds: 1),() {},);
 
   @override
   void initState() {
@@ -55,19 +66,23 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
     initializeRecorder();
     super.initState();
   }
-  bool recorderReady=false;
-  void initializeRecorder() async{
-    final status=await Permission.microphone.request();
-    if(status != PermissionStatus.granted){
-      return ;
+
+  bool recorderReady = false;
+
+  void initializeRecorder() async {
+    final status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      return;
     }
     await recorder.openRecorder();
-    recorderReady=true;
-    recorder.setSubscriptionDuration( const Duration(milliseconds: 500));
+    recorderReady = true;
+    recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
   }
+
   @override
   void dispose() {
     recorder.closeRecorder();
+    _typingTimer.cancel();
     super.dispose();
   }
 
@@ -135,6 +150,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                   ),
                                 ),
                                 10.horizontalSpace,
+
+
                                 Container(
                                   width: 30.sp,
                                   height: 30.sp,
@@ -184,21 +201,20 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     ),
                                     20.horizontalSpace,
-                                    state.imageUrl?.contains('images/test') ?? false
+                                    state.imageUrl?.contains('images/test') ??
+                                            false
                                         ? MyCachedNetworkImage(
                                             height: 40.sp,
                                             width: 40.sp,
                                             imageFit: BoxFit.cover,
-                                            imageUrl:
-                                                Urls.baseUrl + state.imageUrl!,
+                                            imageUrl: state.imageUrl!,
                                           )
                                         : Container(
                                             width: 40.sp,
                                             height: 40.sp,
                                             decoration: BoxDecoration(
                                               image: DecorationImage(
-                                                image:
-                                                    AssetImage(state.imageUrl!),
+                                                image: AssetImage(state.imageUrl!),
                                                 fit: BoxFit.cover,
                                               ),
                                               borderRadius:
@@ -224,27 +240,23 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     const Spacer(),
-                                    Container(
+                                    widget.senderUserImage != null
+                                        ? MyCachedNetworkImage(
+                                      imageUrl: Urls.baseUrl + widget.senderUserImage!,
+                                      imageFit: BoxFit.cover,
+                                      radius: 8,
                                       width: 30.sp,
-                                      height: 30.sp,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: AssetImage(state.replyOnMe
-                                                ? AppAssets.chatProfileJpg
-                                                : AppAssets.chatProfile2Jpg),
-                                            fit: BoxFit.cover,
-                                            opacity: 0.8),
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: context.colorScheme.black
-                                                .withOpacity(0.16),
-                                            offset: const Offset(0, 3),
-                                            blurRadius: 6,
-                                          ),
-                                        ],
-                                      ),
+                                      height:30.sp
+                                    )
+                                        : NoImageWidget(
+                                        width: 30.sp,
+                                        height:30.sp,
+                                        textStyle:context.textTheme.caption?.br.copyWith(
+                                            color: const Color(0xff6638FF),
+                                            letterSpacing: 0.18,
+                                            height: 1.33),
+                                        radius: 8,
+                                        name:widget.senderName
                                     ),
                                     20.horizontalSpace,
                                   ],
@@ -320,161 +332,191 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                 valueListenable: thereTextNotifier,
                 builder: (context, thereText, _) {
                   return ValueListenableBuilder<bool>(
-                    valueListenable: recordingNotifier,
-                    builder: (context , recording , _) {
-                      return Container(
-                        height: 50,
-                        width: 1.sw,
-                        color: const Color(0xffF6F6F6),
-                        child: recording ? Row(
-                          children: [
-                            10.horizontalSpace,
-                            SvgPicture.asset(
-                              AppAssets.recordingVoiceSvg,
-                              width: 43.w,
-                              height: 40,
-                            ),
-                            32.horizontalSpace,
-                            StreamBuilder<RecordingDisposition>(
-                                stream: recorder.onProgress,
-                                builder: (context,snapShot){
-                                final duration=snapShot.hasData ? snapShot.data!.duration : Duration.zero;
-                                final String minutes=duration.inMinutes.remainder(60).toString();
-                                final String seconds=HelperFunctions.twoDigits(duration.inSeconds.remainder(60));
+                      valueListenable: recordingNotifier,
+                      builder: (context, recording, _) {
+                        return Container(
+                          height: 50,
+                          width: 1.sw,
+                          color: const Color(0xffF6F6F6),
+                          child: recording
+                              ? Row(
+                                  children: [
+                                    10.horizontalSpace,
+                                    SvgPicture.asset(
+                                      AppAssets.recordingVoiceSvg,
+                                      width: 43.w,
+                                      height: 40,
+                                    ),
+                                    32.horizontalSpace,
+                                    StreamBuilder<RecordingDisposition>(
+                                        stream: recorder.onProgress,
+                                        builder: (context, snapShot) {
+                                          final duration = snapShot.hasData
+                                              ? snapShot.data!.duration
+                                              : Duration.zero;
+                                          final String minutes = duration
+                                              .inMinutes
+                                              .remainder(60)
+                                              .toString();
+                                          final String seconds =
+                                              HelperFunctions.twoDigits(duration
+                                                  .inSeconds
+                                                  .remainder(60));
 
-                                return Text('$minutes:$seconds' , style:textTheme.subtitle1?.rr.copyWith(
-                                  color: const Color(0xff404040),
-                                  letterSpacing: 0.18,
-                                  height: 1.11,
-                                ));
-                                }),
-                            const Spacer(),
-                            const VoiceWavesInRecording(),
-                            20.horizontalSpace,
-                            InkWell(
-                              onTap: ()async {
-                                if(!recorderReady){
-                                  initializeRecorder();
-                                  return;
-                                }
-                                recordingNotifier.value=false;
-                                final String path = (await recorder.stopRecorder())!;
-                                recorder.deleteRecord(fileName: path);
-                              },
-                              child: Text(
-                                'Cancel',
-                                style: textTheme.bodyText2?.rr.copyWith(
-                                  letterSpacing: 0.14,
-                                  height: 1.4285714285714286,
-                                  color: const Color(0xff404040)
+                                          return Text('$minutes:$seconds',
+                                              style: textTheme.subtitle1?.rr
+                                                  .copyWith(
+                                                color: const Color(0xff404040),
+                                                letterSpacing: 0.18,
+                                                height: 1.11,
+                                              ));
+                                        }),
+                                    const Spacer(),
+                                    const VoiceWavesInRecording(),
+                                    20.horizontalSpace,
+                                    InkWell(
+                                      onTap: () async {
+                                        if (!recorderReady) {
+                                          initializeRecorder();
+                                          return;
+                                        }
+                                        recordingNotifier.value = false;
+                                        final String path =
+                                            (await recorder.stopRecorder())!;
+                                        recorder.deleteRecord(fileName: path);
+                                      },
+                                      child: Text('Cancel',
+                                          style: textTheme.bodyText2?.rr
+                                              .copyWith(
+                                                  letterSpacing: 0.14,
+                                                  height: 1.4285714285714286,
+                                                  color:
+                                                      const Color(0xff404040))),
+                                    ),
+                                    const Spacer(),
+                                    InkWell(
+                                      onTap: () async {
+                                        final path =
+                                            await recorder.stopRecorder();
+                                        final audioFile = File(path!);
+                                        widget.onSendFile(audioFile, 'voice');
+                                        recordingNotifier.value = false;
+                                      },
+                                      child: SvgPicture.asset(
+                                        AppAssets.messageReadArrowSvg,
+                                        width: 20.w,
+                                        height: 20,
+                                      ),
+                                    ),
+                                    24.horizontalSpace,
+                                  ],
                                 )
-                              ),
-                            ),
-                            const Spacer(),
-                            InkWell(
-                              onTap: () async{
-                                final path= await recorder.stopRecorder();
-                                final audioFile=File(path!);
-                                widget.onSendFile(audioFile , 'voice');
-                                recordingNotifier.value=false;
-                              },
-                              child: SvgPicture.asset(
-                                AppAssets.messageReadArrowSvg,
-                                width: 20.w,
-                                height: 20,
-                              ),
-                            ),
-                            24.horizontalSpace,
-                          ],
-                        ) : Row(
-                          children: [
-                            13.horizontalSpace,
-                            InkWell(
-                              onTap: () {},
-                              child: SvgPicture.asset(
-                                AppAssets.addStickersSvg,
-                                width: 43.w,
-                                height: 40,
-                              ),
-                            ),
-                            5.horizontalSpace,
-                            Expanded(
-                              child: Padding(
-                                padding: HWEdgeInsets.symmetric(vertical: 7.0),
-                                child: AppTextField(
-                                  controller: form.controllers[0],
-                                  contentPadding:
-                                      HWEdgeInsets.symmetric(horizontal: 12)
-                                        ..copyWith(right: 0),
+                              : Row(
+                                  children: [
+                                    13.horizontalSpace,
+                                    InkWell(
+                                      onTap: ()async {
+                                        File? file =  await HelperFunctions.pickDocumentFile();
+                                        if(file != null){
+                                          widget.onSendFile(file, 'file');
+                                        }
+                                      },
+                                      child: SvgPicture.asset(
+                                        AppAssets.addStickersSvg,
+                                        width: 43.w,
+                                        height: 40,
+                                      ),
+                                    ),
+                                    5.horizontalSpace,
+                                    Expanded(
+                                      child: Padding(
+                                        padding: HWEdgeInsets.symmetric(
+                                            vertical: 7.0),
+                                        child: AppTextField(
+                                          controller: form.controllers[0],
+                                          onChange: (text) {
+                                            _typingTimer.cancel();
+                                            PusherChatService  pusherChatService= GetIt.I<PusherChatService>();
+                                            try {
+                                             pusherChatService.sendTypingEvent(widget.channelId , 'Typing...');
+                                            }catch(e){
+                                              print(e);
+                                            }
+                                            _typingTimer = Timer(
+                                                const Duration(seconds: 1), () {
+                                              pusherChatService.sendTypingEvent(widget.channelId , null);
+                                            });
+                                          },
+                                          contentPadding:
+                                              HWEdgeInsets.symmetric(
+                                                  horizontal: 12)
+                                                ..copyWith(right: 0),
+                                        ),
+                                      ),
+                                    ),
+                                    5.horizontalSpace,
+                                    if (!thereText) ...{
+                                      InkWell(
+                                        onTap: () async {
+                                          AssetEntity? assetEntity =
+                                              await HelperFunctions.getAssetFromCamera(context);
+                                          if (assetEntity != null) {
+                                            File file = (await assetEntity.file)!;
+                                            String mimeStr = lookupMimeType(file.absolute.path) ?? '';
+                                            var fileType = mimeStr.split('/');
+                                            log(fileType.toString());
+                                            if (fileType[0] == 'image') {
+                                              widget.onSendFile.call(file, 'image');
+                                            }
+                                          }
+                                        },
+                                        child: SvgPicture.asset(
+                                          AppAssets.takePictureSvg,
+                                          width: 50.w,
+                                          height: 40,
+                                        ),
+                                      ),
+                                      10.horizontalSpace,
+                                      InkWell(
+                                        onTap: () async {
+                                          if (!recorderReady) {
+                                            initializeRecorder();
+                                            return;
+                                          }
+                                          if (recorder.isRecording) {
+                                            return;
+                                          }
+                                          recordingNotifier.value = true;
+                                          await recorder.startRecorder(
+                                            toFile: 'audio.aac',
+                                          );
+                                        },
+                                        child: SvgPicture.asset(
+                                          AppAssets.recordVoiceSvg,
+                                          width: 70.w,
+                                          height: 40,
+                                        ),
+                                      ),
+                                    } else ...{
+                                      InkWell(
+                                        onTap: () {
+                                          String message =
+                                              form.controllers[0].text;
+                                          form.controllers[0].text = '';
+                                          widget.onSendMessage.call(message);
+                                        },
+                                        child: SvgPicture.asset(
+                                          AppAssets.sendMessageSvg,
+                                          width: 58.w,
+                                          height: 40,
+                                        ),
+                                      ),
+                                    },
+                                    5.horizontalSpace,
+                                  ],
                                 ),
-                              ),
-                            ),
-                            5.horizontalSpace,
-                            if (!thereText) ...{
-                              InkWell(
-                                onTap: () async {
-                                  AssetEntity? assetEntity =
-                                      await HelperFunctions.getAssetFromCamera(
-                                          context);
-                                  if (assetEntity != null) {
-                                    File file = (await assetEntity.file)!;
-                                    String mimeStr =
-                                        lookupMimeType(file.absolute.path ?? '') ??
-                                            '';
-                                    var fileType = mimeStr.split('/');
-                                    log(fileType.toString());
-                                    if (fileType[0] == 'image') {
-                                      widget.onSendFile.call(file,'image');
-                                    }
-                                  }
-                                },
-                                child: SvgPicture.asset(
-                                  AppAssets.takePictureSvg,
-                                  width: 50.w,
-                                  height: 40,
-                                ),
-                              ),
-                              10.horizontalSpace,
-                              InkWell(
-                                onTap: () async{
-                                  if(!recorderReady){
-                                    initializeRecorder();
-                                    return ;
-                                  }
-                                  if(recorder.isRecording){
-                                    return ;
-                                  }
-                                  recordingNotifier.value=true;
-                                  await recorder.startRecorder(
-                                    toFile: 'audio.aac',
-                                  );
-                                },
-                                child: SvgPicture.asset(
-                                  AppAssets.recordVoiceSvg,
-                                  width: 70.w,
-                                  height: 40,
-                                ),
-                              ),
-                            } else ...{
-                              InkWell(
-                                onTap: () {
-                                  String message = form.controllers[0].text;
-                                  form.controllers[0].text = '';
-                                  widget.onSendMessage.call(message);
-                                },
-                                child: SvgPicture.asset(
-                                  AppAssets.sendMessageSvg,
-                                  width: 58.w,
-                                  height: 40,
-                                ),
-                              ),
-                            },
-                            5.horizontalSpace,
-                          ],
-                        ),
-                      );
-                    }
-                  );
+                        );
+                      });
                 })
           ],
         );
@@ -485,5 +527,4 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
   @override
   // TODO: implement numberOfFields
   int get numberOfFields => 1;
-
 }
