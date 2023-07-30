@@ -6,10 +6,12 @@ import 'package:trydos/features/authentication/data/models/login_user_response_m
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 
 import '../../../../core/error/failures.dart';
+import '../../data/models/change_chat_property_model.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../../data/models/upload_file_response_model.dart';
 
 abstract class ChatRepository {
+  Future<Either<Failure,ChangeChatPropertyModel>> changeChatProperty(Map<String , dynamic> params);
   Future<Either<Failure,CreateUserResponseModel>> createUser(Map<String , dynamic> params);
   Future<Either<Failure,UploadFileResponseModel>> uploadFile(Map<String , dynamic> params);
   Future<Either<Failure,LoginUserResponseModel>> loginUser(Map<String , dynamic> params);
@@ -17,6 +19,8 @@ abstract class ChatRepository {
   Future<Either<Failure,Message>> sendMessage(Map<String , dynamic> params);
   Future<Either<Failure,bool>> readAllMessages(Map<String , dynamic> params);
   Future<Either<Failure,bool>> receiveMessage(Map<String , dynamic> params);
+  Future<Either<Failure,bool>> deleteChat(Map<String , dynamic> params);
   Future<Either<Failure,MyContactsResponseModel>> getContacts();
   Future<Either<Failure,MyChatsResponseModel>> getChats();
+  Future<Either<Failure,List<Message>>> getMessagesForChat(Map<String , dynamic> params);
 }

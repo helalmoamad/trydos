@@ -16,8 +16,8 @@ enum _StatusType {
 }
 
 class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
-
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (kDebugMode) {
@@ -45,12 +45,15 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       } else {
         statusType = _StatusType.failed;
       }
-      final requestRoute = response.requestOptions.path.substring(Urls.baseUrl.length);
+      final requestRoute =
+          response.requestOptions.path.substring(Urls.baseUrl.length);
 
       if (statusType == _StatusType.failed) {
-        prettyPrinterError('***|| ${statusType.name.toUpperCase()} Response into -> $requestRoute ||***');
+        prettyPrinterError(
+            '***|| ${statusType.name.toUpperCase()} Response into -> $requestRoute ||***');
       } else {
-        prettyPrinterV('***|| ${statusType.name.toUpperCase()} Response into -> $requestRoute ||***');
+        prettyPrinterV(
+            '***|| ${statusType.name.toUpperCase()} Response into -> $requestRoute ||***');
       }
       prettyPrinterWtf(
         "***|| INFO Response Request $requestRoute ${statusType == _StatusType.succeed ? '✊' : ''} ||***"
@@ -59,7 +62,14 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n Data: ${response.data}",
       );
     }
-    _prefsRepository.saveRequestsData(response.requestOptions.path, response.data, response.headers.map, response.statusCode, response.requestOptions.method, response.requestOptions.queryParameters, response.data);
+    _prefsRepository.saveRequestsData(
+        response.requestOptions.path,
+        response.data,
+        response.headers.map,
+        response.statusCode,
+        response.requestOptions.method,
+        response.requestOptions.queryParameters,
+        response.data);
     handler.next(response);
   }
 
@@ -75,12 +85,22 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n stackTrace: ${err.stackTrace}",
       );
     }
-    _prefsRepository.saveRequestsData(err.requestOptions.path, err.response?.data ?? {}, err.response?.headers.map ?? {}, err.response?.statusCode, err.requestOptions.method, err.requestOptions.queryParameters, err.response?.data ?? {});
+    _prefsRepository.saveRequestsData(
+        err.requestOptions.path,
+        err.response?.data ?? {},
+        err.response?.headers.map ?? {},
+        err.response?.statusCode,
+        err.requestOptions.method,
+        err.requestOptions.queryParameters,
+        err.response?.data ?? {});
+    // GetIt.I<Dio>().post('${Urls.baseUrl}/${EndPoints.createBugEP}', data: {
+    //   "user_id": _prefsRepository.myId,
+    //   "title": "request error",
+    //   "description": err.toString()
+    // });
 
     final data = err.response?.data;
-    if (data != null) {
-
-    }
+    if (data != null) {}
 
     handler.next(err);
   }

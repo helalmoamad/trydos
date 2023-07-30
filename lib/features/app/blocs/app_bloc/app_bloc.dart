@@ -1,9 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
-
+@LazySingleton()
 class AppBloc extends Bloc<AppEvent, AppState> {
   AppBloc()
       : super(AppState(
@@ -20,6 +19,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     on<ChangeTabInChat>(_onChangeTabInChat);
     on<ShowOrHideBars>(_onShowOrHideBars);
     on<RefreshChatInputField>(_onRefreshChatInputField);
+    on<AddUserToTypingList>(_onAddUserToTypingList);
+    on<RemoveUserFromTypingList>(_onRemoveUserFromTypingList);
   }
 
   _onChangeBasePage(
@@ -50,7 +51,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     emit(state.copyWith(showBars: event.show));
   }
 
-  FutureOr<void> _onRefreshChatInputField(
+   _onRefreshChatInputField(
       RefreshChatInputField event, Emitter<AppState> emit) {
     emit(
       state.copyWith(
@@ -63,5 +64,29 @@ class AppBloc extends Bloc<AppEvent, AppState> {
           time: event.time,
           imageUrl: event.imageUrl)
     );
+  }
+
+  _onAddUserToTypingList(AddUserToTypingList event, Emitter<AppState> emit) {
+    if(state.typingIds.containsKey(event.chatId)){
+      return ;
+    }
+    Map<int , dynamic> typingIds=Map.of(state.typingIds);
+    typingIds[event.chatId]=event.userId;
+    emit(state.copyWith(
+      typingIds: typingIds,
+    ));
+  }
+   _onRemoveUserFromTypingList(RemoveUserFromTypingList event, Emitter<AppState> emit) {
+     if(!state.typingIds.containsKey(event.chatId)){
+       return ;
+     }
+     print('stop typing');
+     Map<int , dynamic> typingIds=Map.of(state.typingIds);
+     print(typingIds);
+     typingIds.remove(event.chatId);
+     print(typingIds);
+    emit(state.copyWith(
+        typingIds: typingIds,
+    ));
   }
 }

@@ -4,6 +4,8 @@ import 'dart:convert' as convert;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/app_bottom_navigation_bar.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
@@ -20,7 +22,7 @@ import 'features/chat/presentation/manager/chat_bloc.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
 
 class BasePage extends StatefulWidget {
-  const BasePage({Key? key }) : super(key: key);
+  const BasePage({Key? key}) : super(key: key);
 
   @override
   State<BasePage> createState() => _BasePageState();
@@ -35,7 +37,6 @@ class _BasePageState extends State<BasePage> {
     const HomePage(),
   ];
 
-
   @override
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
@@ -43,11 +44,13 @@ class _BasePageState extends State<BasePage> {
     super.initState();
   }
 
+
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
       ChatBloc bloc = BlocProvider.of<ChatBloc>(context);
-      Message message = Message.fromJson(
-          convert.jsonDecode(event.data['message']));
+      Message message =
+          Message.fromJson(convert.jsonDecode(event.data['message']));
+      LocalNotificationService.sendIReceivedTheMessage(message.channelId!);
       bloc.add(ReceiveMessageEvent(message: message));
       log('object ${event.data}');
       log('object ${event.senderId}');
@@ -56,7 +59,6 @@ class _BasePageState extends State<BasePage> {
       log('object ${event.notification?.bodyLocArgs}');
       log('object ${event.data}');
       LocalNotificationService().showNotificationWithPayload(message: event);
-      // _handleNotificationForLocal('');
     });
   }
 
@@ -75,44 +77,63 @@ class _BasePageState extends State<BasePage> {
           }),
       body: BlocListener<ChatBloc, ChatState>(
         listener: (context, state) {
-          print(state.getChatsStatus);
-          print(state.sendMessageStatus);
-          print(state.receiveMessageStatus);
-          print(state.saveContactsStatus);
-          print(state.getContactsStatus);
-          print(state.readMessagesStatus);
-          print(state.notifyThatIReceivedMessageStatus);
-          print('kkkkkkkkkkkkkkk');
           if (initialMessage != null && state.chats.isNotEmpty) {
-            print('kkkkkkkkkkk2222');
-            AppBloc appBloc =BlocProvider.of<AppBloc>(context);
+            AppBloc appBloc = BlocProvider.of<AppBloc>(context);
             appBloc.add(ChangeBasePage(2));
             chatBloc.add(ReadAllMessagesEvent(initialMessage!.channelId!));
-            Chat chat = state.chats.firstWhere((element) => element.id == initialMessage!.channelId);
-            int chatIndex = state.chats.indexWhere((element) => element.id == initialMessage!.channelId);
+            List<Chat> chats = [];
+            chats.addAll(state.pinnedChats);
+            chats.addAll(state.chats);
+            Chat chat = chats.firstWhere(
+                (element) => element.id == initialMessage!.channelId);
+            // int chatIndex = chats.indexWhere((element) => element.id == initialMessage!.channelId);
+            User receiver = chat.channelMembers!
+                .firstWhere((element) => element.userId != GetIt.I<PrefsRepository>().myId)
+                .user!;
+            String receiverName=receiver.name!
+                .split(' ')
+                .length ==
+                2
+                ? receiver.name!.split(' ')[0]
+            [0] +
+                receiver.name!.split(' ')[1]
+                [0]
+                : receiver.name!.split(' ')[0]
+            [0] +
+                receiver.name!.split(' ')[0]
+                [1];
+            ChannelMember me = chat.channelMembers!
+                .firstWhere((element) => element.userId == GetIt.I<PrefsRepository>().myId);
+            User sender=me.user!;
+            String senderName=sender.name!
+                .split(' ')
+                .length ==
+                2
+                ? sender.name!.split(' ')[0]
+            [0] +
+                sender.name!.split(' ')[1]
+                [0]
+                : sender.name!.split(' ')[0]
+            [0] +
+                sender.name!.split(' ')[0]
+                [1];
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => BlocBuilder<ChatBloc, ChatState>(
-                      builder: (context, state) {
-                        return SinglePageChat(
-                          chatIndex: chatIndex,
-
-                          receiverName: chat.channelMembers
-                              ?.firstWhere((element) =>
-                          element.id == initialMessage!.senderUserId)
-                              .user!
-                              .name
-                              .toString() ??
-                              '',
-                        );
-                      },
-                    )));
+                          builder: (context, state) {
+                            return SinglePageChat(
+                              chatId: chat.id!,
+                              receiverName: receiverName,
+                              senderName: senderName,
+                            );
+                          },
+                        )));
           }
         },
         child: BlocBuilder<AppBloc, AppState>(
           buildWhen: (oldState, newState) =>
-          oldState.currentIndex != newState.currentIndex,
+              oldState.currentIndex != newState.currentIndex,
           builder: (_, state) {
             return pages[state.currentIndex];
           },

@@ -30,16 +30,6 @@
     <array>
         <string>remote-notification</string>
     </array>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <true/>
-    </dict>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-    	<key>NSAllowsArbitraryLoads</key>
-    	<true/>
-    </dict>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Replace with your permission description.</string>
 	<key>CFBundlePackageType</key>

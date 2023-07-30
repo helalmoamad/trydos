@@ -6,9 +6,13 @@ extension ScopeApi on String {
 
   String noScope({bool current=false}) => '$_api/${current ? _currentVersion : _previousVersion}/$this';
 
+  String bugsScope({bool current=false}) => '$_api/${current ? _currentVersion : _previousVersion}/bugs/$this';
+
   String usersScope({bool current=false}) => '$_api/${current ? _currentVersion : _previousVersion}/users/$this';
 
   String channelsScope({bool current=false}) => '$_api/${current ? _currentVersion : _previousVersion}/channels/$this';
+
+  String channelMembersScope({bool current=false}) => '$_api/${current ? _currentVersion : _previousVersion}/channel_members/$this';
 
   String messagesScope({bool current=false}) => '$_api/${current ? _currentVersion : _previousVersion}/messages/$this';
 
@@ -26,15 +30,23 @@ abstract class EndPoints {
   static final createUserEP = 'create_user'.noScope();
   static final uploadFileEP = 'upload_file'.noScope();
 
+  ///! ----< bugs >----
+  static final createBugEP = 'create'.noScope();
+
 ///! ----< channels ( chats )  >----
 ///
   static final getMyChatsEP = 'my_channels'.channelsScope(current: true);
+  static final deleteChatEP = 'destroy'.channelsScope();
   static String readAllMessagesEP(String channelId) => '$channelId/watched'.channelsScope();
   static String receiveMessageEP(String channelId) => '$channelId/received'.channelsScope();
 
+  ///! ----< channel Members  >----
+///
+  static final setChatPropertyEP = 'set'.channelMembersScope();
   ///! ----< messages >----
   ///
   static final sendMessageEP = 'send'.messagesScope();
+  static String getMessagesForChatEP(int channelId) => 'messages_of_channel/$channelId'.messagesScope();
   ///! ----< firebase tokens >----
   ///
   static final storeFcmEP = ''.firebaseTokensScope();

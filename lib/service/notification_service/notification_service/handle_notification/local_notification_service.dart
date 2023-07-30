@@ -1,6 +1,11 @@
+import 'dart:developer';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:trydos/features/chat/data/data_sources/chat_remote_datasource.dart';
+import 'package:trydos/features/chat/data/repositories/chat_repository_impl.dart';
+import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.dart';
 import 'package:trydos/main.dart';
 import 'notification_process.dart';
 import '../../../../features/chat/data/models/my_chats_response_model.dart' as chat;
@@ -40,8 +45,10 @@ class LocalNotificationService {
   }
 
   Future<void> showNotificationWithPayload({required RemoteMessage message}) async {
+
     chat.Message myMessage = chat.Message.fromJson(
         convert.jsonDecode(message.data['message']));
+    sendIReceivedTheMessage(myMessage.channelId!);
     await _localNotificationPlugin.show(
       0,
       myMessage.senderInfo!.name.toString(),
@@ -50,7 +57,16 @@ class LocalNotificationService {
       payload: message.data['message'],
     );
   }
+   static void sendIReceivedTheMessage(int channelId)async {
+     final ReceiveMessageUseCase receiveMessageUseCase =ReceiveMessageUseCase(ChatRepositoryImpl(ChatRemoteDataSource()));
+     final response= await receiveMessageUseCase(ReceiveMessageParams(channelId: channelId));
+     response.fold((l) {
+       log('error while sending that i received the message');
+     }, (r) {
+       log('sending that i received the message Success');
 
+     });
+   }
   static void _onSelectNotification(NotificationResponse notificationResponse) {
     chat.Message myMessage = chat.Message.fromJson(
         convert.jsonDecode(notificationResponse.payload!));

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:get_it/get_it.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:trydos/common/constant/constant.dart';
@@ -16,6 +17,8 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
+import '../../../../app/my_cached_network_image.dart';
+import 'no_image_widget.dart';
 
 class ImageMessage extends StatelessWidget {
   const ImageMessage(
@@ -26,9 +29,12 @@ class ImageMessage extends StatelessWidget {
       required this.time,
       required this.isRead,
       required this.senderId,
-       this.imageFile,
-       this.imageUrl,
+      this.userMessagePhoto,
+      this.imageFile,
+      this.imageUrl,
+      required this.userMessageName,
       required this.messageId,
+      required this.isReceived,
       required this.isFirstMessage})
       : super(key: key);
   final bool isSent;
@@ -40,7 +46,11 @@ class ImageMessage extends StatelessWidget {
   final String? imageUrl;
   final DateTime time;
   final bool isRead;
+  final bool isReceived;
   final int senderId;
+  final String? userMessagePhoto;
+  final String userMessageName;
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -59,7 +69,13 @@ class ImageMessage extends StatelessWidget {
               offsetDx: 0.15,
               onRightSwipe: () {
                 print(time);
-                BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(true, 'image', isSent,senderParentMessageId:senderId  , imageUrl: imageUrl,messageId: messageId,time: time,message: 'Photo'));
+                BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
+                    true, 'image', isSent,
+                    senderParentMessageId: senderId,
+                    imageUrl: imageUrl ?? imageFile!.path,
+                    messageId: messageId,
+                    time: time,
+                    message: 'Photo'));
               },
               child: Row(
                 mainAxisAlignment:
@@ -72,23 +88,57 @@ class ImageMessage extends StatelessWidget {
                       Stack(
                         alignment: Alignment.bottomCenter,
                         children: [
-                          Container(
-                            width: 300.w,
-                            height: 600,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: isLocalMessage ? FileImage(imageFile!) : (NetworkImage(Urls.baseUrl+imageUrl!) as ImageProvider),
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: BorderRadius.circular(12.0),
-                              border: Border.all(
-                                width: 3.0,
-                                color: isSent
-                                    ? const Color(0xffFFF9B4)
-                                    : const Color(0xffB4FFD9),
-                              ),
-                            ),
-                          ),
+                          !isLocalMessage
+                              ? FullScreenWidget(
+                            backgroundColor: isSent
+              ? const Color(0xffFFF9B4)
+                    : const Color(0xffB4FFD9),
+                                  child: Hero(
+                                    tag: "hero${DateTime.now()}",
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          width: 3.0,
+                                          color: isSent
+                                              ? const Color(0xffFFF9B4)
+                                              : const Color(0xffB4FFD9),
+                                        ),
+                                      ),
+                                      child: MyCachedNetworkImage(
+                                        imageUrl: imageUrl!,
+                                        imageFit: BoxFit.cover,
+                                        radius: 12,
+                                        width: 300.w,
+                                        height: 600,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : FullScreenWidget(
+                            backgroundColor: isSent
+                                ? const Color(0xffFFF9B4)
+                                : const Color(0xffB4FFD9),
+                                  child: Hero(
+                                    tag: "hero${DateTime.now()}",
+                                    child: Container(
+                                      width: 300.w,
+                                      height: 600,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: FileImage(imageFile!),
+                                          fit: BoxFit.cover,
+                                        ),
+                                        borderRadius: BorderRadius.circular(12.0),
+                                        border: Border.all(
+                                          width: 3.0,
+                                          color: isSent
+                                              ? const Color(0xffFFF9B4)
+                                              : const Color(0xffB4FFD9),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                           Transform.translate(
                             offset: const Offset(0, -3),
                             child: Container(
@@ -107,13 +157,17 @@ class ImageMessage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(12.0),
                               ),
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 5,horizontal: 20),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 20),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
-                                      !time.isUtc ? HelperFunctions.getDateInFormat(time) : HelperFunctions.getZonedDateInFormat(time),
+                                      !time.isUtc
+                                          ? HelperFunctions.getDateInFormat(
+                                              time)
+                                          : HelperFunctions
+                                              .getZonedDateInFormat(time),
                                       style: context.textTheme.overline?.rr
                                           .copyWith(
                                               color: context.colorScheme.white),
@@ -123,11 +177,16 @@ class ImageMessage extends StatelessWidget {
                                       SvgPicture.asset(
                                         (state.sendMessageStatus ==
                                                     SendMessageStatus.loading &&
-                                                state.currentMessage.contains(messageId))
+                                                state.currentMessage
+                                                    .contains(messageId))
                                             ? AppAssets.sandClockSvg
-                                            : isRead ? AppAssets.messageReadArrowSvg
-                                            :AppAssets
-                                            .messageSentArrowSvg,
+                                            : isRead
+                                                ? AppAssets.messageReadArrowSvg
+                                                : isReceived
+                                                    ? AppAssets
+                                                        .messageDeliveredArrowSvg
+                                                    : AppAssets
+                                                        .messageSentArrowSvg,
                                         color: context.colorScheme.white,
                                         width: 10.sp,
                                         height: 10.sp,
@@ -185,27 +244,27 @@ class ImageMessage extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  Container(
-                                    width: 30.w,
-                                    height: 30,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: AssetImage(isSent
-                                            ? AppAssets.chatProfileJpg
-                                            : AppAssets.chatProfile2Jpg),
-                                        fit: BoxFit.cover,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: context.colorScheme.black
-                                              .withOpacity(0.16),
-                                          offset: const Offset(0, 3),
-                                          blurRadius: 6,
-                                        ),
-                                      ],
-                                    ),
-                                  )
+                                  userMessagePhoto != null
+                                      ? MyCachedNetworkImage(
+                                          imageUrl:
+                                              Urls.baseUrl + userMessagePhoto!,
+                                          imageFit: BoxFit.cover,
+                                          radius: 8,
+                                          width: 30.w,
+                                          height: 30,
+                                        )
+                                      : NoImageWidget(
+                                          width: 30.w,
+                                          height: 30,
+                                          textStyle: context
+                                              .textTheme.caption?.br
+                                              .copyWith(
+                                                  color:
+                                                      const Color(0xff6638FF),
+                                                  letterSpacing: 0.18,
+                                                  height: 1.33),
+                                          radius: 8,
+                                          name: userMessageName)
                                 ],
                               ),
                             )

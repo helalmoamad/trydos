@@ -14,23 +14,30 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/no_image_widget.dart';
 
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../service/language_service.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_event.dart';
 
 class ChatCard extends StatefulWidget {
   const ChatCard(
-      {Key? key, this.index = 0, this.isTyping = false, required this.chat , this.onSendForwardMessage})
+      {Key? key,
+      this.index = 0,
+      required this.chat,
+      required this.isTyping,
+      this.onSendForwardMessage})
       : super(key: key);
-  final bool isTyping;
   final int index;
   final Chat chat;
+  final bool isTyping;
   final Function(int receiverId)? onSendForwardMessage;
 
   @override
@@ -52,13 +59,6 @@ class _ChatCardState extends ThemeState<ChatCard> {
     } else {
       chatTime = widget.chat.messages!.first.createdAt!;
     }
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (typingIndicator.value == 5) {
-        typingIndicator.value = 0;
-      } else {
-        typingIndicator.value++;
-      }
-    });
     super.initState();
   }
 
@@ -71,364 +71,492 @@ class _ChatCardState extends ThemeState<ChatCard> {
 
   @override
   Widget build(BuildContext context) {
-    User user = widget.chat.channelMembers!
-        .firstWhere((element) => element.userId != _prefsRepository.myId)
-        .user!;
-    return BlocConsumer<ChatBloc, ChatState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
-      builder: (context, state) {
-        print('rebuild chat card');
-        print(state.chats[widget.index].messages?.length);
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: widget.index == 0 ? 0 : 0.4,
-              color: const Color(0xffC8C7CC),
-              margin: HWEdgeInsetsDirectional.only(start: 94),
-            ),
-            SizedBox(
-              height: 100.h,
-              width: 1.sw,
-              child: InkWell(
-                onTap: () {
-                  widget.onSendForwardMessage?.call(state
-                      .chats[widget.index].channelMembers!
-                      .firstWhere((element) =>
-                  element.userId != GetIt.I<PrefsRepository>().myId)
-                      .userId!);
-                  if(widget.onSendForwardMessage!=null){
-                    Navigator.of(context)..pop()..pop();
-                  }
-                  chatBloc.add(ReadAllMessagesEvent(widget.chat.id!));
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => BlocBuilder<ChatBloc, ChatState>(
-                              builder: (context, state) {
-                                return SinglePageChat(
-                                  chatIndex: widget.index,
-                                  receiverImagePath: user.photoPath,
-                                  receiverName: user.name.toString(),
-                                );
-                              },
-                            )),
-                  );
-                },
-                child: Slidable(
-                  endActionPane: ActionPane(
-                    extentRatio: 0.645,
-                    motion: const ScrollMotion(),
-                    children: [
-                      SlidableActionWidget(
-                        text: 'Archive',
-                        backgroundColor: const Color(0xffF0F0F0),
-                        foregroundColor: colorScheme.grey200,
-                        iconUrl: AppAssets.archiveSvg,
+    User? receiver = widget.chat.channelMembers?.firstWhere((element) => element.userId != _prefsRepository.myId).user;
+    String receiverName;
+    if(receiver==null){
+      receiverName='UK';
+    }else {
+      receiverName = receiver.name== null ? 'UK' : receiver.name!
+          .split(' ')
+          .length ==
+          2
+          ? receiver.name!.split(' ')[0]
+      [0] +
+          receiver.name!.split(' ')[1]
+          [0]
+          : receiver.name!.split(' ')[0]
+      [0] +
+          receiver.name!.split(' ')[0]
+          [1];
+    }
+    ChannelMember me = widget.chat.channelMembers!.firstWhere((element) => element.userId == _prefsRepository.myId);
+    User? sender=me.user;
+    String senderName;
+    if(sender == null){
+      senderName='UK';
+    }else {
+      senderName = sender.name == null ? 'UK' : sender.name!
+          .split(' ')
+          .length ==
+          2
+          ? sender.name!.split(' ')[0]
+      [0] +
+          sender.name!.split(' ')[1]
+          [0]
+          : sender.name!.split(' ')[0]
+      [0] +
+          sender.name!.split(' ')[0]
+          [1];
+    }
+    if (widget.isTyping) {
+      timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (typingIndicator.value == 5) {
+          typingIndicator.value = 0;
+        } else {
+          typingIndicator.value++;
+        }
+      });
+    }
+    return BlocBuilder<AppBloc, AppState>(
+      builder: (context, appState) {
+        print(appState.typingIds);
+        print('rebuild for typing');
+        return BlocConsumer<ChatBloc, ChatState>(
+          listener: (context, state) {
+            // TODO: implement listener
+          },
+          builder: (context, state) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: widget.index == 0 ? 0 : 0.4,
+                  color: const Color(0xffC8C7CC),
+                  margin: HWEdgeInsetsDirectional.only(start: 94),
+                ),
+                SizedBox(
+                  height: 100.h,
+                  width: 1.sw,
+                  child: GestureDetector(
+                    onTap: () {
+                      widget.onSendForwardMessage?.call(state
+                          .chats[widget.index].channelMembers!
+                          .firstWhere((element) =>
+                              element.userId != GetIt.I<PrefsRepository>().myId)
+                          .userId!);
+                      if (widget.onSendForwardMessage != null) {
+                        Navigator.of(context)
+                          ..pop()
+                          ..pop();
+                      }
+                      chatBloc.add(ReadAllMessagesEvent(widget.chat.id!));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SinglePageChat(
+                                  chatId: widget.chat.id!,
+                              receiverName: receiverName,
+                              senderName: senderName,
+                              receiverPhoto: receiver?.photoPath,
+                              senderPhoto: sender?.photoPath,
+                                )),
+                      );
+                    },
+                    child: Slidable(
+                      endActionPane: ActionPane(
+                        extentRatio: 0.645,
+                        motion: const ScrollMotion(),
+                        children: [
+                          SlidableActionWidget(
+                            text: me.archived == 0 ? 'Archive' : 'UnArchive',
+                            onTap: () {
+                              chatBloc.add(ChangeChatPropertyEvent(
+                                  channelId: widget.chat.id!,
+                                  archive: 1 - (me.archived ?? 0)));
+                            },
+                            backgroundColor: const Color(0xffF0F0F0),
+                            foregroundColor: colorScheme.grey200,
+                            iconUrl: AppAssets.archiveSvg,
+                          ),
+                          SlidableActionWidget(
+                            text: 'Delete',
+                            onTap: () {
+                              chatBloc.add(
+                                  DeleteChatEvent(channelId: widget.chat.id!));
+                            },
+                            backgroundColor: const Color(0xffFFE8E8),
+                            foregroundColor: const Color(0xffFA6868),
+                            iconUrl: AppAssets.binSvg,
+                          ),
+                          SlidableActionWidget(
+                            text: me.mute == 0 ? 'Mute' : 'UnMute',
+                            onTap: () {
+                              chatBloc.add(ChangeChatPropertyEvent(
+                                  channelId: widget.chat.id!,
+                                  mute: 1 - (me.mute ?? 0)));
+                            },
+                            backgroundColor: const Color(0xffF6F5FD),
+                            foregroundColor: const Color(0xffC4C2C2),
+                            iconUrl: me.mute == 1
+                                ? AppAssets.unMuteSvg
+                                : AppAssets.muteSvg,
+                          ),
+                        ],
                       ),
-                      SlidableActionWidget(
-                        text: 'Delete',
-                        backgroundColor: const Color(0xffFFE8E8),
-                        foregroundColor: const Color(0xffFA6868),
-                        iconUrl: AppAssets.binSvg,
-                      ),
-                      SlidableActionWidget(
-                        text: 'Mute',
-                        backgroundColor: const Color(0xffF6F5FD),
-                        foregroundColor: const Color(0xffC4C2C2),
-                        iconUrl: AppAssets.muteSvg,
-                      ),
-                    ],
-                  ),
 
-                  // The end action pane is the one at the right or the bottom side.
-                  startActionPane: ActionPane(
-                    extentRatio: 0.43,
-                    motion: const ScrollMotion(),
-                    children: [
-                      SlidableActionWidget(
-                        text: 'Unread',
-                        backgroundColor: const Color(0xffFCF6EF),
-                        foregroundColor: colorScheme.grey200,
-                        iconUrl: AppAssets.unreadSvg,
+                      // The end action pane is the one at the right or the bottom side.
+                      startActionPane: ActionPane(
+                        extentRatio: 0.43,
+                        motion: const ScrollMotion(),
+                        children: [
+                          SlidableActionWidget(
+                            text: 'Read',
+                            onTap: () {
+                              chatBloc
+                                  .add(ReadAllMessagesEvent(widget.chat.id!));
+                            },
+                            backgroundColor: const Color(0xffFCF6EF),
+                            foregroundColor: colorScheme.grey200,
+                            iconUrl: AppAssets.unreadSvg,
+                          ),
+                          SlidableActionWidget(
+                            text: me.pin == 0 ? 'Pin' : 'UnPin',
+                            onTap: () {
+                              chatBloc.add(ChangeChatPropertyEvent(
+                                  channelId: widget.chat.id!,
+                                  pin: 1 - (me.pin ?? 0)));
+                            },
+                            backgroundColor: const Color(0xffEFF8FF),
+                            foregroundColor: colorScheme.grey200,
+                            iconUrl: AppAssets.pinSvg,
+                          ),
+                        ],
                       ),
-                      SlidableActionWidget(
-                        text: 'Pin',
-                        backgroundColor: const Color(0xffEFF8FF),
-                        foregroundColor: colorScheme.grey200,
-                        iconUrl: AppAssets.pinSvg,
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      Container(
-                        padding: HWEdgeInsets.only(left: 15.w, right: 10.w),
-                        color: colorScheme.white,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            user.photoPath != null
-                                ? Container(
-                                    decoration: BoxDecoration(
-                                      boxShadow: widget.isTyping
-                                          ? [
-                                              BoxShadow(
-                                                  color: const Color(0xff007CFF)
-                                                      .withOpacity(0.16),
-                                                  offset: const Offset(0, 3),
-                                                  blurRadius: 6)
-                                            ]
-                                          : null,
-                                      border: widget.isTyping
-                                          ? Border.all(
-                                              color: const Color(0xff007CFF),
-                                              width: 1)
-                                          : null,
-                                      borderRadius: BorderRadius.circular(12.0),
-                                    ),
-                                    child: MyCachedNetworkImage(
-                                        imageUrl: Urls.baseUrl + user.photoPath,
-                                        imageFit: BoxFit.cover,
+                      child: Stack(
+                        children: [
+                          Container(
+                            padding: HWEdgeInsets.only(left: 15.w, right: 10.w),
+                            color: colorScheme.white,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                receiver?.photoPath != null
+                                    ? BlocBuilder<AppBloc, AppState>(
+                                        builder: (context, state) {
+                                          return Container(
+                                            decoration: BoxDecoration(
+                                              boxShadow: widget.isTyping
+                                                  ? [
+                                                      BoxShadow(
+                                                          color: const Color(
+                                                                  0xff007CFF)
+                                                              .withOpacity(
+                                                                  0.16),
+                                                          offset: const Offset(
+                                                              0, 3),
+                                                          blurRadius: 6)
+                                                    ]
+                                                  : null,
+                                              border: widget.isTyping
+                                                  ? Border.all(
+                                                      color: const Color(
+                                                          0xff007CFF),
+                                                      width: 1)
+                                                  : null,
+                                              borderRadius:
+                                                  BorderRadius.circular(12.0),
+                                            ),
+                                            child: MyCachedNetworkImage(
+                                                imageUrl: Urls.baseUrl +
+                                                    receiver?.photoPath,
+                                                imageFit: BoxFit.cover,
+                                                height: 80.h,
+                                                width: 60.w),
+                                          );
+                                        },
+                                      )
+                                    : NoImageWidget(
+                                        width: 60.w,
                                         height: 80.h,
-                                        width: 60.w),
-                                  )
-                                : NoImageWidget(
-                              width: 60.w,
-                                    height: 80.h,
-                                    name: user.name!.split(' ').length == 2
-                                        ? user.name!.split(' ')[0][0] +
-                                            user.name!.split(' ')[1][0]
-                                        : user.name!.split(' ')[0][0] +
-                                            user.name!.split(' ')[0][1]),
-                            18.horizontalSpace,
-                            Flexible(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Flexible(
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          user.name.toString(),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: textTheme.subtitle1?.rr
-                                              .copyWith(
-                                                  height: 1.33,
-                                                  color:
-                                                      const Color(0xff505050)),
-                                        ),
-                                        const Spacer(),
-                                        BlocConsumer<ChatBloc, ChatState>(
-                                          listener: (context, state) {
-                                            print(widget.chat.messages);
-                                            if (widget.chat.id ==
-                                                state.channelId) {
-                                              chatTime = DateTime.now();
-                                            }
-                                          },
-                                          builder: (context, state) {
-                                            return Text(
-                                              !chatTime.isUtc
-                                                  ? HelperFunctions
-                                                      .getDateInFormat(chatTime)
-                                                  : HelperFunctions
-                                                      .getZonedDateInFormat(
-                                                          chatTime),
+                                        textStyle: context.textTheme.subtitle1?.br.copyWith(
+                                            color: const Color(0xff6638FF),
+                                            letterSpacing: 0.18,
+                                            height: 1.33),
+                                        isTyping:widget.isTyping,
+                                        name: receiverName),
+                                18.horizontalSpace,
+                                Flexible(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Flexible(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              receiver?.name ?? receiver?.mobilePhone ?? 'Un Known user',
                                               maxLines: 1,
-                                              style: textTheme.caption?.rr
+                                              overflow: TextOverflow.ellipsis,
+                                              style: textTheme.subtitle1?.rr
                                                   .copyWith(
                                                       height: 1.33,
                                                       color: const Color(
-                                                          0xff8E8D92)),
-                                            );
-                                          },
-                                        ),
-                                        30.horizontalSpace
-                                      ],
-                                    ),
-                                  ),
-                                  7.verticalSpace,
-                                  Flexible(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        if (widget.isTyping) ...{
-                                          Transform.translate(
-                                            offset: const Offset(0, 3),
-                                            child: SvgPicture.asset(
-                                              AppAssets.messageReadArrowSvg,
-                                              height: 12.h,
-                                              width: 12.w,
+                                                          0xff505050)),
                                             ),
-                                          ),
-                                          7.horizontalSpace,
-                                        },
-                                        Flexible(
-                                          fit: FlexFit.tight,
-                                          child: SizedBox(
-                                            height: widget.isTyping ? 33 : 51,
-                                            child: (widget.chat.messages
-                                                        ?.isEmpty ??
-                                                    true)
-                                                ? const SizedBox.shrink()
-                                                : Text(
-                                                    (widget.chat.messages?.first
-                                                                    .mediaMessageContent !=
-                                                                null ||
-                                                            widget
-                                                                    .chat
-                                                                    .messages
-                                                                    ?.first
-                                                                    .file !=
-                                                                null)
-                                                        ? widget
-                                                                    .chat
-                                                                    .messages
-                                                                    ?.first
-                                                                    .messageType
-                                                                    ?.name
-                                                                    .toString() ==
-                                                                'ImageMessage'
-                                                            ? 'Photo'
-                                                            : 'Voice'
-                                                        : widget
-                                                            .chat
-                                                            .messages!
-                                                            .first
-                                                            .messageContent!
-                                                            .content
-                                                            .toString(),
-                                                    maxLines:
-                                                        widget.isTyping ? 1 : 3,
-                                                    textAlign: TextAlign.start,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: textTheme
-                                                        .bodyText2?.lr
-                                                        .copyWith(
-                                                            height: 1.22,
-                                                            color: colorScheme
-                                                                .grey200),
-                                                  ),
-                                          ),
+                                            const Spacer(),
+                                            BlocConsumer<ChatBloc, ChatState>(
+                                              listener: (context, state) {
+                                                if (widget.chat.id ==
+                                                    state.channelId) {
+                                                  chatTime = DateTime.now();
+                                                }
+                                              },
+                                              builder: (context, state) {
+                                                return Text(
+                                                  !chatTime.isUtc
+                                                      ? HelperFunctions
+                                                          .getDateInFormat(
+                                                              chatTime)
+                                                      : HelperFunctions
+                                                          .getZonedDateInFormat(
+                                                              chatTime),
+                                                  maxLines: 1,
+                                                  style: textTheme.caption?.rr
+                                                      .copyWith(
+                                                          height: 1.33,
+                                                          color: const Color(
+                                                              0xff8E8D92)),
+                                                );
+                                              },
+                                            ),
+                                            30.horizontalSpace
+                                          ],
                                         ),
-                                        28.horizontalSpace,
-                                        Row(
+                                      ),
+                                      7.verticalSpace,
+                                      Flexible(
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            if (widget.chat
-                                                        .totalUnreadMessageCount !=
-                                                    0 &&
-                                                widget.chat
-                                                        .totalUnreadMessageCount !=
-                                                    null) ...{
-                                              SvgPicture.asset(
-                                                AppAssets
-                                                    .singleChatFilledActiveSvg,
-                                                height: 15.h,
-                                                width: 15.w,
+                                            if (widget.isTyping) ...{
+                                              Transform.translate(
+                                                offset: const Offset(0, 3),
+                                                child: Transform(
+                                                  alignment: Alignment.center,
+                                                  transform: (Matrix4.identity()
+                                                    ..scale(
+                                                        LanguageService
+                                                            .languageCode ==
+                                                            'ar'
+                                                            ? -1.0
+                                                            : 1.0,
+                                                        1.0,
+                                                        1.0)),
+                                                  child: SvgPicture.asset(
+                                                    AppAssets.messageReadArrowSvg,
+                                                    height: 12.h,
+                                                    width: 12.w,
+                                                  ),
+                                                ),
                                               ),
-                                              10.horizontalSpace,
+                                              7.horizontalSpace,
+                                            },
+                                            Flexible(
+                                              fit: FlexFit.tight,
+                                              child: SizedBox(
+                                                height:
+                                                    widget.isTyping ? 33 : 51,
+                                                child: (widget.chat.messages
+                                                            ?.isEmpty ??
+                                                        true)
+                                                    ? const SizedBox.shrink()
+                                                    : Text(
+                                                        (widget
+                                                                        .chat
+                                                                        .messages
+                                                                        ?.first
+                                                                        .mediaMessageContent !=
+                                                                    null ||
+                                                                widget
+                                                                        .chat
+                                                                        .messages
+                                                                        ?.first
+                                                                        .file !=
+                                                                    null)
+                                                            ? widget
+                                                                        .chat
+                                                                        .messages
+                                                                        ?.first
+                                                                        .messageType
+                                                                        ?.name
+                                                                        .toString() ==
+                                                                    'ImageMessage'
+                                                                ? 'Photo'
+                                                                : 'Voice'
+                                                            : widget
+                                                                .chat
+                                                                .messages!
+                                                                .first
+                                                                .messageContent!
+                                                                .content
+                                                                .toString(),
+                                                        maxLines:
+                                                            widget.isTyping
+                                                                ? 1
+                                                                : 3,
+                                                        textAlign:
+                                                            TextAlign.start,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: textTheme
+                                                            .bodyText2?.lr
+                                                            .copyWith(
+                                                                height: 1.22,
+                                                                color: colorScheme
+                                                                    .grey200),
+                                                      ),
+                                              ),
+                                            ),
+                                            28.horizontalSpace,
+                                            Row(
+                                              children: [
+                                                if (widget.chat
+                                                            .totalUnreadMessageCount !=
+                                                        0 &&
+                                                    widget.chat
+                                                            .totalUnreadMessageCount !=
+                                                        null) ...{
+                                                  SvgPicture.asset(
+                                                    AppAssets
+                                                        .singleChatFilledActiveSvg,
+                                                    height: 15.h,
+                                                    width: 15.w,
+                                                  ),
+                                                  10.horizontalSpace,
+                                                  Text(
+                                                    widget.chat
+                                                        .totalUnreadMessageCount
+                                                        .toString(),
+                                                    maxLines: 1,
+                                                    style: textTheme.caption?.rr
+                                                        .copyWith(
+                                                            color: const Color(
+                                                                0xff007CFF)),
+                                                  ),
+                                                },
+                                                25.horizontalSpace,
+                                                Transform(
+                                                  alignment: Alignment.center,
+                                                  transform: (Matrix4.identity()
+                                                    ..scale(
+                                                        LanguageService
+                                                                    .languageCode ==
+                                                                'ar'
+                                                            ? -1.0
+                                                            : 1.0,
+                                                        1.0,
+                                                        1.0)),
+                                                  child: SvgPicture.asset(
+                                                    AppAssets.forwardArrowRight,
+                                                    width: 3.w,
+                                                    height: 12.h,
+                                                  ),
+                                                )
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                        if (widget.isTyping)... {
+                                           Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
                                               Text(
-                                                widget.chat
-                                                    .totalUnreadMessageCount
-                                                    .toString(),
+                                                'Typing',
                                                 maxLines: 1,
                                                 style: textTheme.caption?.rr
                                                     .copyWith(
                                                         color: const Color(
                                                             0xff007CFF)),
                                               ),
-                                            },
-                                            25.horizontalSpace,
-                                            SvgPicture.asset(
-                                              AppAssets.forwardArrowRight,
-                                              width: 3.w,
-                                              height: 12.h,
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    ),
+                                              8.horizontalSpace,
+                                              Transform.translate(
+                                                offset: const Offset(0, 1),
+                                                child:
+                                                    ValueListenableBuilder<int>(
+                                                        valueListenable:
+                                                            typingIndicator,
+                                                        builder: (context,
+                                                            activeIndex, _) {
+                                                          return SizedBox(
+                                                            width: 50.w,
+                                                            height: 5.h,
+                                                            child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: List
+                                                                    .generate(
+                                                                        6,
+                                                                        (index) =>
+                                                                            Container(
+                                                                              width: 5,
+                                                                              height: 5,
+                                                                              decoration: BoxDecoration(
+                                                                                shape: BoxShape.circle,
+                                                                                color: activeIndex == index ? const Color(0xff007cff) : colorScheme.white,
+                                                                                border: Border.all(width: 1.0, color: const Color(0xff007cff)),
+                                                                              ),
+                                                                            ))),
+                                                          );
+                                                        }),
+                                              )
+                                            ],
+                                          )
+                                        },
+                                    ],
                                   ),
-                                  if (widget.isTyping) ...{
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          'Typing',
-                                          maxLines: 1,
-                                          style: textTheme.caption?.rr.copyWith(
-                                              color: const Color(0xff007CFF)),
-                                        ),
-                                        8.horizontalSpace,
-                                        Transform.translate(
-                                          offset: const Offset(0, 1),
-                                          child: ValueListenableBuilder<int>(
-                                              valueListenable: typingIndicator,
-                                              builder:
-                                                  (context, activeIndex, _) {
-                                                return SizedBox(
-                                                  width: 50.w,
-                                                  height: 5.h,
-                                                  child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: List.generate(
-                                                          6,
-                                                          (index) => Container(
-                                                                width: 5,
-                                                                height: 5,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  shape: BoxShape
-                                                                      .circle,
-                                                                  color: activeIndex ==
-                                                                          index
-                                                                      ? const Color(
-                                                                          0xff007cff)
-                                                                      : colorScheme
-                                                                          .white,
-                                                                  border: Border.all(
-                                                                      width:
-                                                                          1.0,
-                                                                      color: const Color(
-                                                                          0xff007cff)),
-                                                                ),
-                                                              ))),
-                                                );
-                                              }),
-                                        )
-                                      ],
-                                    )
-                                  },
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            right: LanguageService.languageCode != 'ar'
+                                ? 10.sp
+                                : null,
+                            left: LanguageService.languageCode == 'ar'
+                                ? 10.sp
+                                : null,
+                            bottom: 10.sp,
+                            child: Row(
+                              children: [
+                                if (me.pin == 1) ...{
+                                  SvgPicture.asset(
+                                    AppAssets.pinSvg,
+                                    width: 20.w,
+                                    height: 20.h,
+                                  ),
+                                },
+                                if (me.mute == 1) ...{
+                                  10.horizontalSpace,
+                                  SvgPicture.asset(
+                                    AppAssets.muteSvg,
+                                    width: 20.w,
+                                    height: 20.h,
+                                  ),
+                                },
+                              ],
+                            ),
+                          )
+                        ],
                       ),
-                      Positioned(
-                        right: 10.sp,
-                        bottom: 10.sp,
-                        child: SvgPicture.asset(
-                          AppAssets.pinSvg,
-                          width: 20.w,
-                          height: 20.h,
-                        ),
-                      )
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         );
       },
     );
@@ -441,40 +569,48 @@ class SlidableActionWidget extends StatelessWidget {
       required this.backgroundColor,
       required this.foregroundColor,
       required this.iconUrl,
+      required this.onTap,
       required this.text})
       : super(key: key);
   final Color backgroundColor;
   final Color foregroundColor;
   final String iconUrl;
   final String text;
+  final void Function() onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 85.w,
-      height: 92.h,
-      margin: HWEdgeInsets.all(4.r),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(20.0),
-        border: Border.all(width: 0.5, color: const Color(0xffd3d3d3)),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SvgPicture.asset(
-              iconUrl,
-              width: 25.h,
-              height: 25.h,
-            ),
-            8.verticalSpace,
-            Text(
-              text,
-              style: context.textTheme.caption?.rr
-                  .copyWith(color: foregroundColor),
-            )
-          ],
+    return InkWell(
+      onTap: () {
+        onTap.call();
+        Slidable.of(context)?.close();
+      },
+      child: Container(
+        width: 85.w,
+        height: 92.h,
+        margin: HWEdgeInsets.all(4.r),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(20.0),
+          border: Border.all(width: 0.5, color: const Color(0xffd3d3d3)),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgPicture.asset(
+                iconUrl,
+                width: 25.h,
+                height: 25.h,
+              ),
+              8.verticalSpace,
+              Text(
+                text,
+                style: context.textTheme.caption?.rr
+                    .copyWith(color: foregroundColor),
+              )
+            ],
+          ),
         ),
       ),
     );

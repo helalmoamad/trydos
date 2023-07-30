@@ -9,12 +9,16 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
+import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
+import '../../../../app/my_cached_network_image.dart';
+import 'no_image_widget.dart';
 
 class TextMessage extends StatefulWidget {
   const TextMessage(
@@ -24,6 +28,8 @@ class TextMessage extends StatefulWidget {
       this.isForwarded = false,
       this.sendColor,
       this.receivedColor,
+        this.userMessagePhoto,
+        required this.userMessageName,
       this.disableMessageAlignment=false,
       required this.message,
       required this.isRead,
@@ -31,6 +37,7 @@ class TextMessage extends StatefulWidget {
       required this.messageId,
       required this.isSent,
       required this.senderId,
+      required this.isReceived,
       required this.isFirstMessage})
       : super(key: key);
   final String message;
@@ -46,7 +53,9 @@ class TextMessage extends StatefulWidget {
   final bool isRead;
   final bool disableMessageAlignment;
   final int senderId;
-
+  final bool isReceived;
+  final String? userMessagePhoto;
+  final String userMessageName;
   @override
   State<TextMessage> createState() => _TextMessageState();
 }
@@ -64,7 +73,6 @@ class _TextMessageState extends ThemeState<TextMessage> {
         height = renderBox.size.height;
       }
     });
-
     super.initState();
   }
 
@@ -136,79 +144,80 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                           ? 50.w
                                           : 40.w
                                       : 20.w),
-                              child: Column(
-                                crossAxisAlignment: widget.isSent
-                                    ? CrossAxisAlignment.start
-                                    : CrossAxisAlignment.end,
-                                children: [
-                                  Container(
-                                    constraints:
-                                        BoxConstraints(maxWidth: 310.w),
-                                    child: Text(
-                                      widget.message,
-                                      style: textTheme.bodyText2?.rr.copyWith(
-                                          color: widget.withImageShadow
-                                              ? const Color(0xff505050)
-                                              : const Color(0xffC4C2C2),
-                                          height: 1.43),
+                              child: IntrinsicWidth(
+                                child: Column(
+                                  crossAxisAlignment: widget.isSent
+                                      ? CrossAxisAlignment.start
+                                      : CrossAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      constraints: BoxConstraints(maxWidth: 310.w),
+                                      child: Text(
+                                        widget.message,
+                                        style: textTheme.bodyText2?.rr.copyWith(
+                                            color: widget.withImageShadow
+                                                ? const Color(0xff505050)
+                                                : const Color(0xffC4C2C2),
+                                            height: 1.43),
+                                      ),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 5, horizontal: 20),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          !widget.time.isUtc
-                                              ? HelperFunctions.getDateInFormat(
-                                                  widget.time)
-                                              : HelperFunctions
-                                                  .getZonedDateInFormat(
-                                                      widget.time),
-                                          style: textTheme.overline?.rr
-                                              .copyWith(
-                                                  color: widget.withImageShadow
-                                                      ? const Color(0xff505050)
-                                                      : const Color(
-                                                          0xffC4C2C2)),
-                                        ),
-                                        if (widget.isSent) ...{
-                                          10.horizontalSpace,
-                                          SvgPicture.asset(
-                                            (state.sendMessageStatus ==
-                                                        SendMessageStatus
-                                                            .loading &&
-                                                    state.currentMessage
-                                                        .contains(
-                                                            widget.messageId))
-                                                ? AppAssets.sandClockSvg
-                                                : widget.withImageShadow
-                                                    ? widget.isRead
-                                                        ? AppAssets
-                                                            .messageReadArrowSvg
-                                                        : AppAssets
-                                                            .messageSentArrowSvg
-                                                    : AppAssets
-                                                        .messageReadArrowWithOpacitySvg,
-                                            width: 10.sp,
-                                            height: 10.sp,
-                                          )
-                                        },
-                                        if (widget.isForwarded) ...{
-                                          10.horizontalSpace,
-                                          SvgPicture.asset(
-                                            AppAssets.forwardedSvg,
-                                            width: 10.sp,
-                                            height: 10.sp,
-                                          )
-                                        }
-                                      ],
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 5),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            !widget.time.isUtc
+                                                ? HelperFunctions.getDateInFormat(
+                                                    widget.time)
+                                                : HelperFunctions
+                                                    .getZonedDateInFormat(
+                                                        widget.time),
+                                            style: textTheme.overline?.rr
+                                                .copyWith(
+                                                    color: widget.withImageShadow
+                                                        ? const Color(0xff505050)
+                                                        : const Color(
+                                                            0xffC4C2C2)),
+                                          ),
+                                          if (widget.isSent) ...{
+                                            10.horizontalSpace,
+                                            SvgPicture.asset(
+                                              (state.sendMessageStatus ==
+                                                          SendMessageStatus
+                                                              .loading &&
+                                                      state.currentMessage
+                                                          .contains(
+                                                              widget.messageId))
+                                                  ? AppAssets.sandClockSvg
+                                                  : widget.withImageShadow
+                                                      ? widget.isRead
+                                                          ? AppAssets
+                                                              .messageReadArrowSvg
+                                                          : widget.isReceived ? AppAssets.messageDeliveredArrowSvg :AppAssets
+                                                              .messageSentArrowSvg
+                                                      : AppAssets
+                                                          .messageReadArrowWithOpacitySvg,
+                                              width: 10.sp,
+                                              height: 10.sp,
+                                            )
+                                          },
+                                          if (widget.isForwarded) ...{
+                                            10.horizontalSpace,
+                                            SvgPicture.asset(
+                                              AppAssets.forwardedSvg,
+                                              width: 10.sp,
+                                              height: 10.sp,
+                                            )
+                                          }
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  widget.withImageShadow
-                                      ? const SizedBox.shrink()
-                                      : 20.verticalSpace,
-                                ],
+                                    widget.withImageShadow
+                                        ? const SizedBox.shrink()
+                                        : 20.verticalSpace,
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -240,30 +249,27 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                               BorderRadius.circular(12),
                                         ),
                                       ),
-                                      Container(
+                                      widget.userMessagePhoto != null
+                                          ? MyCachedNetworkImage(
+                                        imageUrl: Urls.baseUrl + widget.userMessagePhoto!,
+                                        imageFit: BoxFit.cover,
+                                        radius: 8,
                                         width: widget.withImageShadow ? 30 : 20,
+                                        withImageShadow: widget.withImageShadow,
                                         height:
-                                            widget.withImageShadow ? 30 : 20,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: AssetImage(widget.isSent
-                                                ? AppAssets.chatProfileJpg
-                                                : AppAssets.chatProfile2Jpg),
-                                            fit: BoxFit.cover,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                          boxShadow: widget.withImageShadow
-                                              ? [
-                                                  BoxShadow(
-                                                    color: colorScheme.black
-                                                        .withOpacity(0.16),
-                                                    offset: const Offset(0, 3),
-                                                    blurRadius: 6,
-                                                  ),
-                                                ]
-                                              : null,
-                                        ),
+                                        widget.withImageShadow ? 30 : 20,
+                                      )
+                                          : NoImageWidget(
+                                          width: widget.withImageShadow ? 30 : 20,
+                                          height:
+                                          widget.withImageShadow ? 30 : 20,
+                                          textStyle:context.textTheme.caption?.br.copyWith(
+                                              color: const Color(0xff6638FF),
+                                              letterSpacing: 0.18,
+                                              height: 1.33),
+                                          radius: 8,
+                                          withImageShadow: widget.withImageShadow,
+                                          name:widget.userMessageName
                                       )
                                     ],
                                   ),

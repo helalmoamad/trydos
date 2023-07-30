@@ -1,5 +1,8 @@
 
+import 'dart:io';
+
 import 'package:contacts_service/contacts_service.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -143,7 +146,7 @@ class HelperFunctions {
                  p.selectAsset(result);
                },
                child: const Center(
-                 child: Icon(Icons.camera_enhance, size: 42.0),
+                 child: Icon(Icons.camera_alt_outlined, size: 42.0,color: Colors.white),
                ),
              ),
            );
@@ -151,14 +154,25 @@ class HelperFunctions {
        ),
      );
    }
+   static Future<File?> pickDocumentFile() async{
+     FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+     if (result != null) {
+       File file = File(result.files.single.path!);
+       return file;
+     } else {
+       return null;
+     }
+   }
   static Future<AssetEntity?> _pickFromCamera(BuildContext c) {
+    CameraPickerTextDelegate textDelegate = LanguageService.languageCode!='ar' ?   const EnglishCameraPickerTextDelegate() : const ArabicCameraPickerTextDelegate();
     return CameraPicker.pickFromCamera(
       c,
       locale: LanguageService.currentLanguage,
-      pickerConfig: const CameraPickerConfig(enableRecording: true),
+      pickerConfig: CameraPickerConfig(enableRecording: true, textDelegate:textDelegate ),
     );
   }
-  String _replaceArabicNumber(String input) {
+  static String replaceArabicNumber(String input) {
     const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
 

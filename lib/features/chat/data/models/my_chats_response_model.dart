@@ -61,7 +61,7 @@ class Data {
             : List<Chat>.from(json["channels"]!.map((x) => Chat.fromJson(x))),
         pinnedChats: json["pinned_channels"] == null
             ? []
-            : List<Chat>.from(json["pinned_channels"]!.map((x) => x)),
+            : List<Chat>.from(json["pinned_channels"]!.map((x) => Chat.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -315,6 +315,7 @@ class Message {
       };
 }
 
+enum PaginationStatus { initial, success, failure , loading }
 class Chat {
   final int? id;
   final int? ownerUserId;
@@ -322,7 +323,7 @@ class Chat {
   final dynamic isChatAllowed;
   final dynamic isMaskedByCustomerService;
   final dynamic photoPath;
-  final dynamic opensAt;
+  final DateTime? opensAt;
   final dynamic closesAt;
   final int? channelTypeId;
   final int? ownerRoleId;
@@ -334,6 +335,8 @@ class Chat {
   final List<ChannelMember>? channelMembers;
   final ChannelType? channelType;
   final List<Message>? messages;
+  final PaginationStatus paginationStatus;
+  final bool hasReachedMax;
 
   Chat({
     this.id,
@@ -354,6 +357,8 @@ class Chat {
     this.channelMembers,
     this.channelType,
     this.messages,
+    this.paginationStatus = PaginationStatus.initial,
+    this.hasReachedMax = false,
   });
 
   Chat copyWith({
@@ -363,9 +368,11 @@ class Chat {
     dynamic isChatAllowed,
     dynamic isMaskedByCustomerService,
     dynamic photoPath,
-    dynamic opensAt,
+    DateTime? opensAt,
     dynamic closesAt,
     int? channelTypeId,
+    final PaginationStatus? paginationStatus,
+    final bool? hasReachedMax,
     dynamic ownerRoleId,
     int? isLockedByAdminForDelete,
     int? isLockedByAdminForUpdate,
@@ -388,6 +395,7 @@ class Chat {
         closesAt: closesAt ?? this.closesAt,
         channelTypeId: channelTypeId ?? this.channelTypeId,
         ownerRoleId: ownerRoleId ?? this.ownerRoleId,
+
         isLockedByAdminForDelete:
             isLockedByAdminForDelete ?? this.isLockedByAdminForDelete,
         isLockedByAdminForUpdate:
@@ -399,7 +407,13 @@ class Chat {
         channelMembers: channelMembers ?? this.channelMembers,
         channelType: channelType ?? this.channelType,
         messages: messages ?? this.messages,
+        paginationStatus: paginationStatus ?? this.paginationStatus,
+        hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       );
+
+  bool get isLoading => paginationStatus == PaginationStatus.loading;
+  bool get isFailure => paginationStatus == PaginationStatus.failure;
+  bool get isSuccess => paginationStatus == PaginationStatus.success;
 
   factory Chat.fromJson(Map<String, dynamic> json) => Chat(
         id: json["id"],
@@ -549,7 +563,31 @@ class MessageStatus {
     this.receivedAt,
     this.mobilePhone,
   });
-
+  MessageStatus copyWith({
+    final int? id,
+    final String? messageId,
+    final int? userId,
+    final int? isReceived,
+    final bool? isWatched,
+    final int? isLockedByAdminForDelete,
+    final int? isLockedByAdminForUpdate,
+    final DateTime? watchedAt,
+    final DateTime? receivedAt,
+    final dynamic mobilePhone,
+  } ){
+    return  MessageStatus(
+      id : id ??  this.id,
+      messageId : messageId ?? this.messageId,
+      userId : userId ?? this.userId,
+      isReceived : isReceived ?? this.isReceived,
+      isWatched : isWatched ?? this.isWatched,
+      isLockedByAdminForDelete : isLockedByAdminForDelete ?? this.isLockedByAdminForDelete,
+      isLockedByAdminForUpdate : isLockedByAdminForUpdate ?? this.isLockedByAdminForUpdate,
+      watchedAt : watchedAt ?? this.watchedAt,
+      receivedAt : receivedAt ?? this.receivedAt,
+      mobilePhone : mobilePhone ?? this.mobilePhone,
+    );
+  }
   factory MessageStatus.fromJson(Map<String, dynamic> json) => MessageStatus(
         id: json["id"],
         messageId: json["message_id"].toString(),
@@ -641,6 +679,38 @@ class ChannelMember {
     this.mobilePhone,
     this.user,
   });
+  ChannelMember copyWith({
+    int? id,
+    int? channelId,
+    int? userId,
+    dynamic isAllowedToChat,
+    int? pin,
+    int? archived,
+    int? mute,
+    int? isAdmin,
+    dynamic roleId,
+    int? isLockedByAdminForDelete,
+    int? isLockedByAdminForUpdate,
+    dynamic userType,
+    dynamic mobilePhone,
+    User? user,
+  }) =>
+      ChannelMember(
+        id: id ?? this.id,
+        channelId: channelId ?? this.channelId,
+        userId: userId ?? this.userId,
+        isAllowedToChat: isAllowedToChat ?? this.isAllowedToChat,
+        pin: pin ?? this.pin,
+        archived: archived ?? this.archived,
+        mute: mute ?? this.mute,
+        isAdmin: isAdmin ?? this.isAdmin,
+        roleId: roleId ?? this.roleId,
+        isLockedByAdminForDelete: isLockedByAdminForDelete ?? this.isLockedByAdminForDelete,
+        isLockedByAdminForUpdate: isLockedByAdminForUpdate ?? this.isLockedByAdminForUpdate,
+        userType: userType ?? this.userType,
+        mobilePhone: mobilePhone ?? this.mobilePhone,
+        user: user ?? this.user,
+      );
 
   factory ChannelMember.fromJson(Map<String, dynamic> json) => ChannelMember(
         id: json["id"],

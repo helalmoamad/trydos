@@ -5,6 +5,7 @@ import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/features/chat/data/data_sources/chat_remote_datasource.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/authentication/data/models/login_user_response_model.dart';
+import 'package:trydos/features/chat/data/models/change_chat_property_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
 
@@ -65,6 +66,24 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   @override
   Future<Either<Failure, bool>> receiveMessage(Map<String, dynamic> params) {
     return handlingExceptionRequest(tryCall:()=> dataSource.receiveMessage(params) );
+
+  }
+
+  @override
+  Future<Either<Failure, ChangeChatPropertyModel>> changeChatProperty(Map<String, dynamic> params) {
+    return handlingExceptionRequest(tryCall:()=> dataSource.changeChatProperty(params) );
+
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteChat(Map<String, dynamic> params) {
+    return handlingExceptionRequest(tryCall:()=> dataSource.deleteChat(params) );
+
+  }
+
+  @override
+  Future<Either<Failure, List<Message>>> getMessagesForChat(Map<String, dynamic> params) {
+    return handlingExceptionRequest(tryCall:()=> dataSource.getMessagesForChat(params) );
 
   }
 
