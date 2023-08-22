@@ -57,14 +57,15 @@ class RefreshChatInputField extends AppEvent{
 }
 
 class AddUserToTypingList extends AppEvent{
-  AddUserToTypingList(this.userId , this.chatId);
+  AddUserToTypingList(this.userId , this.chatId, this.description);
 
   final int userId;
   final int chatId;
+  final String? description;
 
   @override
   // TODO: implement props
-  List<Object?> get props =>[userId ,chatId];
+  List<Object?> get props =>[userId ,chatId,description];
 }
 
 class RemoveUserFromTypingList extends AppEvent{

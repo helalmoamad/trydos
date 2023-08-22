@@ -22,6 +22,7 @@ class ReplayOnMeMessage extends StatefulWidget {
     this.answeredFilePath,
     required this.isSent,
     required this.parentSenderId,
+    required this.isISentFirstMessage,
     required this.isReplayedMessageRead,
     required this.isReplayedMessageReceived,
     required this.isAnswerMessageRead,
@@ -34,6 +35,7 @@ class ReplayOnMeMessage extends StatefulWidget {
   final String messageId;
   final String? messageAnswer;
   final String messageAnswerId;
+  final bool isISentFirstMessage;
   final bool isSent;
   final bool isFirstMessage;
   final DateTime messageDate;
@@ -70,58 +72,58 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Column(
-        children: [
-          InkWell(
-            onTap: widget.scrollToMessage,
-            child: TextMessage(
-                key: key,
-                sendColor: widget.isSent ? const Color(0xffF1FDE3) : const Color(0xffD5F6E6),
-                message: widget.message,
-                withShadow: false,
-                senderId: widget.parentSenderId,
-                withImageShadow: false,
-                isReceived: widget.isReplayedMessageRead,
-                userMessageName: widget.replayedName,
-                userMessagePhoto: widget.replayedPhoto,
-                messageId: widget.messageId,
+    return Column(
+      children: [
+        InkWell(
+          onTap: widget.scrollToMessage,
+          child: TextMessage(
+              key: key,
+              sendColor: widget.isISentFirstMessage ? const Color(0xffF1FDE3) : const Color(0xffD5F6E6),
+              message: widget.message,
+              withShadow: false,
+              senderId: widget.parentSenderId,
+              withImageShadow: false,
+              isReceived: widget.isReplayedMessageRead,
+              userMessageName: widget.replayedName,
+              userMessagePhoto: widget.replayedPhoto,
+              messageId: widget.messageId,
+              disableMessageAlignment: false,
+              isSent: widget.isISentFirstMessage,
+              isRead: widget.isReplayedMessageRead,
+              time: widget.messageDate,
+              isFirstMessage: true),
+        ),
+        Transform.translate(
+            offset: const Offset(0, -22),
+            child: (widget.answeredFile != null || widget.answeredFilePath != null ) ?
+            ImageMessage(
                 isSent: widget.isSent,
-                isRead: widget.isReplayedMessageRead,
-                time: widget.messageDate,
-                isFirstMessage: true),
-          ),
-          Transform.translate(
-              offset: const Offset(0, -22),
-              child: (widget.answeredFile != null || widget.answeredFilePath != null ) ?
-              ImageMessage(isSent: widget.isSent,
-                time: DateTime.now(),
-                messageId: widget.messageId,
-                isRead: widget.isAnswerMessageRead,
+              time: DateTime.now(),
+              messageId: widget.messageId,
+              isRead: widget.isAnswerMessageRead,
+              senderId: GetIt.I<PrefsRepository>().myId!,
+              isFirstMessage: widget.isFirstMessage,
+                isReceived: widget.isAnswerMessageReceived,
+                userMessageName: widget.senderAnswerName,
+                userMessagePhoto: widget.senderAnswerPhoto,
+                isLocalMessage: widget.answeredFilePath==null,
+              imageFile: widget.answeredFile,
+              imageUrl: widget.answeredFilePath
+              ) :
+            TextMessage(
+                message: widget.messageAnswer!,
+                withImageShadow: true,
                 senderId: GetIt.I<PrefsRepository>().myId!,
-                isFirstMessage: widget.isFirstMessage,
-                  isReceived: widget.isAnswerMessageReceived,
-                  userMessageName: widget.senderAnswerName,
-                  userMessagePhoto: widget.senderAnswerPhoto,
-                  isLocalMessage: widget.answeredFilePath==null,
-                imageFile: widget.answeredFile,
-                imageUrl: widget.answeredFilePath
-                ) :
-              TextMessage(
-                  message: widget.messageAnswer!,
-                  withImageShadow: true,
-                  senderId: GetIt.I<PrefsRepository>().myId!,
-                  isRead: widget.isAnswerMessageRead,
-                  isReceived: widget.isAnswerMessageReceived,
-                  messageId: widget.messageAnswerId,
-                  userMessageName: widget.senderAnswerName,
-                  userMessagePhoto: widget.senderAnswerPhoto,
-                  isSent: widget.isSent,
-                  time: widget.messageDate,
-                  isFirstMessage: true)),
-        ],
-      ),
+                isRead: widget.isAnswerMessageRead,
+                disableMessageAlignment: false,
+                isReceived: widget.isAnswerMessageReceived,
+                messageId: widget.messageAnswerId,
+                userMessageName: widget.senderAnswerName,
+                userMessagePhoto: widget.senderAnswerPhoto,
+                isSent: widget.isSent,
+                time: widget.messageDate,
+                isFirstMessage: true)),
+      ],
     );
   }
 }

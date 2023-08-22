@@ -46,7 +46,8 @@ abstract class EndPoints {
   ///! ----< messages >----
   ///
   static final sendMessageEP = 'send'.messagesScope();
-  static String getMessagesForChatEP(int channelId) => 'messages_of_channel/$channelId'.messagesScope();
+  static final getMessagesBetweenEP = 'get_all_messages_between_two_messages'.messagesScope();
+  static String getMessagesForChatEP(String channelId) => 'messages_of_channel/$channelId'.messagesScope();
   ///! ----< firebase tokens >----
   ///
   static final storeFcmEP = ''.firebaseTokensScope();

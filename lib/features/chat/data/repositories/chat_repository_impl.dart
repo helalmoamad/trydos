@@ -87,4 +87,10 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
 
   }
 
+  @override
+  Future<Either<Failure, List<Message>>> getMessagesBetween(Map<String, dynamic> params) {
+    return handlingExceptionRequest(tryCall:()=> dataSource.getMessagesBetween(params) );
+
+  }
+
 }

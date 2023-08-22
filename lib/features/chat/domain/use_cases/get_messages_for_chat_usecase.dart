@@ -27,7 +27,7 @@ class GetMessagesForChatUseCase extends UseCase<List<Message> , GetMessagesForCh
 class GetMessagesForChatParams{
   final int lastMessageId;
   final int limit;
-  final int channelId;
+  final String channelId;
   const GetMessagesForChatParams({
     required this.lastMessageId ,
     required this.limit,

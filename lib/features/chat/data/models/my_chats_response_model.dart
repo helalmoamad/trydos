@@ -91,9 +91,11 @@ class SenderInfo {
 
 class Message {
   final String? id;
+  final String? localId;
+  final String? localParentMessageId;
   final int? senderUserId;
   final int? receiverUserId;
-  final int? channelId;
+  final String? channelId;
   final DateTime? createdAt;
   final MessageType? messageType;
   final dynamic predefinedEmotionId;
@@ -125,6 +127,7 @@ class Message {
   Message({
     this.id,
     this.senderUserId,
+    this.localParentMessageId,
     this.senderInfo,
     this.receiverUserId,
     this.channelId,
@@ -139,6 +142,7 @@ class Message {
     this.productId,
     this.serviceId,
     this.offerId,
+    this.localId,
     this.senderRoleId,
     this.isLockedByAdminForDelete,
     this.isLockedByAdminForUpdate,
@@ -158,9 +162,11 @@ class Message {
 
   Message copyWith({
     final String? id,
+    final String? localId,
+    final String? localParentMessageId,
     final int? senderUserId,
     final int? receiverUserId,
-    final int? channelId,
+    final String? channelId,
     final DateTime? createdAt,
     final MessageType? messageType,
     final dynamic predefinedEmotionId,
@@ -191,6 +197,8 @@ class Message {
   } ){
     return Message(
       id: id ?? this.id,
+      localId: localId ?? this.localId,
+      localParentMessageId: localParentMessageId ?? this.localParentMessageId,
       isLockedByAdminForDelete:
       isLockedByAdminForDelete ?? this.isLockedByAdminForDelete,
       isLockedByAdminForUpdate:
@@ -229,7 +237,7 @@ class Message {
         id: json["id"].toString(),
         senderUserId: json["sender_user_id"],
         receiverUserId: json["receiver_user_id"],
-        channelId: json["channel_id"],
+        channelId: json["channel_id"].toString(),
         senderInfo:json['sender_user'] == null ? null : SenderInfo.fromJson(json['sender_user']),
         createdAt: json["created_at"] == null
             ? null
@@ -317,7 +325,8 @@ class Message {
 
 enum PaginationStatus { initial, success, failure , loading }
 class Chat {
-  final int? id;
+  final String? id;
+  final String? localId;
   final int? ownerUserId;
   final dynamic isAllowedByUserId;
   final dynamic isChatAllowed;
@@ -340,6 +349,7 @@ class Chat {
 
   Chat({
     this.id,
+    this.localId,
     this.ownerUserId,
     this.isAllowedByUserId,
     this.isChatAllowed,
@@ -362,7 +372,8 @@ class Chat {
   });
 
   Chat copyWith({
-    int? id,
+    String? id,
+    String? localId,
     int? ownerUserId,
     dynamic isAllowedByUserId,
     dynamic isChatAllowed,
@@ -385,6 +396,7 @@ class Chat {
   }) =>
       Chat(
         id: id ?? this.id,
+        localId: localId ?? this.localId,
         ownerUserId: ownerUserId ?? this.ownerUserId,
         isAllowedByUserId: isAllowedByUserId ?? this.isAllowedByUserId,
         isChatAllowed: isChatAllowed ?? this.isChatAllowed,
@@ -416,7 +428,7 @@ class Chat {
   bool get isSuccess => paginationStatus == PaginationStatus.success;
 
   factory Chat.fromJson(Map<String, dynamic> json) => Chat(
-        id: json["id"],
+        id: json["id"].toString(),
         ownerUserId: json["owner_user_id"],
         isAllowedByUserId: json["is_allowed_by_user_id"],
         isChatAllowed: json["is_chat_allowed"],
@@ -477,6 +489,7 @@ class Chat {
 class MediaMessageContent {
   final int? id;
   final String? filePath;
+  final String? fileName;
   final String? messageId;
   final int? isLockedByAdminForDelete;
   final int? isLockedByAdminForUpdate;
@@ -485,6 +498,7 @@ class MediaMessageContent {
   MediaMessageContent({
     this.id,
     this.filePath,
+    this.fileName,
     this.messageId,
     this.isLockedByAdminForDelete,
     this.isLockedByAdminForUpdate,
@@ -495,6 +509,7 @@ class MediaMessageContent {
       MediaMessageContent(
         id: json["id"],
         filePath: json["file_path"],
+        fileName: json["file_name"],
         messageId: json["message_id"].toString(),
         isLockedByAdminForDelete: json["is_locked_by_admin_for_delete"],
         isLockedByAdminForUpdate: json["is_locked_by_admin_for_update"],
@@ -504,6 +519,7 @@ class MediaMessageContent {
   Map<String, dynamic> toJson() => {
         "id": id,
         "file_path": filePath,
+        "file_name": fileName,
         "message_id": messageId,
         "is_locked_by_admin_for_delete": isLockedByAdminForDelete,
         "is_locked_by_admin_for_update": isLockedByAdminForUpdate,
@@ -649,7 +665,7 @@ class MessageType {
 
 class ChannelMember {
   final int? id;
-  final int? channelId;
+  final String? channelId;
   final int? userId;
   final dynamic isAllowedToChat;
   final int? pin;
@@ -681,7 +697,7 @@ class ChannelMember {
   });
   ChannelMember copyWith({
     int? id,
-    int? channelId,
+    String? channelId,
     int? userId,
     dynamic isAllowedToChat,
     int? pin,
@@ -714,7 +730,7 @@ class ChannelMember {
 
   factory ChannelMember.fromJson(Map<String, dynamic> json) => ChannelMember(
         id: json["id"],
-        channelId: json["channel_id"],
+        channelId: json["channel_id"].toString(),
         userId: json["user_id"],
         isAllowedToChat: json["is_allowed_to_chat"],
         pin: json["pin"],

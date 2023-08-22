@@ -23,7 +23,7 @@ class ReceiveMessageUseCase extends UseCase<bool , ReceiveMessageParams>{
 
 }
 class ReceiveMessageParams{
-  final int channelId;
+  final String channelId;
 
   ReceiveMessageParams({
     required this.channelId,

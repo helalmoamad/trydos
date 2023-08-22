@@ -24,7 +24,7 @@ class ChangeChatPropertyUseCase extends UseCase<ChangeChatPropertyModel , Change
 
 }
 class ChangeChatPropertyParams{
-  final int channelId;
+  final String channelId;
   final int? mute;
   final int? pin;
   final int? archive;

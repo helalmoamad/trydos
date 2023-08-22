@@ -9,7 +9,7 @@ class NoImageWidget extends StatelessWidget {
       {required this.name,
       required this.width,
       required this.textStyle,
-      this.isTyping = false,
+      this.thereActivity = false,
       this.withImageShadow = false,
       this.radius = 12,
       required this.height,
@@ -18,7 +18,7 @@ class NoImageWidget extends StatelessWidget {
   final String name;
   final double width;
   final double height;
-  final bool isTyping;
+  final bool thereActivity;
   final bool withImageShadow;
   final double radius;
   final TextStyle? textStyle;
@@ -29,7 +29,7 @@ class NoImageWidget extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-          boxShadow: isTyping
+          boxShadow: thereActivity
               ? [
                   BoxShadow(
                       color: const Color(0xff007CFF).withOpacity(0.16),
@@ -45,7 +45,7 @@ class NoImageWidget extends StatelessWidget {
                       ),
                     ]
                   : null,
-          border: isTyping
+          border: thereActivity
               ? Border.all(color: const Color(0xff007CFF), width: 1)
               : null,
           borderRadius: BorderRadius.circular(radius),

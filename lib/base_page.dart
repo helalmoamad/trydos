@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/app_bottom_navigation_bar.dart';
@@ -33,7 +34,7 @@ class _BasePageState extends State<BasePage> {
   final List<Widget> pages = [
     const HomePage(),
     const HomePage(),
-    const ChatPages(),
+    const ChatPages(description: ''),
     const HomePage(),
   ];
 
@@ -44,14 +45,12 @@ class _BasePageState extends State<BasePage> {
     super.initState();
   }
 
-
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
       ChatBloc bloc = BlocProvider.of<ChatBloc>(context);
-      Message message =
-          Message.fromJson(convert.jsonDecode(event.data['message']));
-      LocalNotificationService.sendIReceivedTheMessage(message.channelId!);
-      bloc.add(ReceiveMessageEvent(message: message));
+      Message message = Message.fromJson(convert.jsonDecode(event.data['message']));
+      String prevMessageId=event.data['prev_message_id'];
+      bloc.add(ReceiveMessageEvent(message: message,prevMessageId: prevMessageId));
       log('object ${event.data}');
       log('object ${event.senderId}');
       log('object ${event.notification?.title}');
@@ -80,51 +79,36 @@ class _BasePageState extends State<BasePage> {
           if (initialMessage != null && state.chats.isNotEmpty) {
             AppBloc appBloc = BlocProvider.of<AppBloc>(context);
             appBloc.add(ChangeBasePage(2));
-            chatBloc.add(ReadAllMessagesEvent(initialMessage!.channelId!));
+            chatBloc.add(
+                ReadAllMessagesEvent(initialMessage!.channelId!.toString()));
             List<Chat> chats = [];
             chats.addAll(state.pinnedChats);
             chats.addAll(state.chats);
             Chat chat = chats.firstWhere(
                 (element) => element.id == initialMessage!.channelId);
             // int chatIndex = chats.indexWhere((element) => element.id == initialMessage!.channelId);
-            User receiver = chat.channelMembers!
-                .firstWhere((element) => element.userId != GetIt.I<PrefsRepository>().myId)
-                .user!;
-            String receiverName=receiver.name!
-                .split(' ')
-                .length ==
-                2
-                ? receiver.name!.split(' ')[0]
-            [0] +
-                receiver.name!.split(' ')[1]
-                [0]
-                : receiver.name!.split(' ')[0]
-            [0] +
-                receiver.name!.split(' ')[0]
-                [1];
-            ChannelMember me = chat.channelMembers!
-                .firstWhere((element) => element.userId == GetIt.I<PrefsRepository>().myId);
-            User sender=me.user!;
-            String senderName=sender.name!
-                .split(' ')
-                .length ==
-                2
-                ? sender.name!.split(' ')[0]
-            [0] +
-                sender.name!.split(' ')[1]
-                [0]
-                : sender.name!.split(' ')[0]
-            [0] +
-                sender.name!.split(' ')[0]
-                [1];
+            User? receiver = chat.channelMembers!
+                .firstWhere((element) =>
+                    element.userId != GetIt.I<PrefsRepository>().myId)
+                .user;
+            String receiverName = receiver?.name ==null ? 'UK' :HelperFunctions.getTheFirstTwoLettersOfName(receiver!.name!);
+            ChannelMember me = chat.channelMembers!.firstWhere(
+                (element) => element.userId == GetIt.I<PrefsRepository>().myId);
+            User? sender = me.user;
+            String senderName = sender?.name ==null ? 'UK' :HelperFunctions.getTheFirstTwoLettersOfName(sender!.name!);
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => BlocBuilder<ChatBloc, ChatState>(
                           builder: (context, state) {
                             return SinglePageChat(
-                              chatId: chat.id!,
+                              chatId: chat.id!.toString(),
                               receiverName: receiverName,
+                              fullReceiverName: receiver?.name ??
+                                  receiver?.mobilePhone ??
+                                  'Un Known User',
+                              receiverPhone: receiver?.mobilePhone ??
+                                  'Uo Number',
                               senderName: senderName,
                             );
                           },

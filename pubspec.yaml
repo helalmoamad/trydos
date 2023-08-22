@@ -33,6 +33,7 @@ dependencies:
   flutter_screenutil: ^5.8.4
   flutter_svg: ^1.1.6
   tuple: ^2.0.1
+  video_player: ^2.7.0
   intl: ^0.18.0
   cached_network_image: ^3.2.3
   easy_localization: ^3.0.2
@@ -42,10 +43,12 @@ dependencies:
   dartz: ^0.10.1
   intl_phone_number_input: ^0.7.2
   flutter_bloc: ^8.1.2
+  story_view: ^0.15.0
   share_plus: ^7.0.2
   bottom_navy_bar: ^6.0.0
   equatable: ^2.0.5
   flutter_slidable: ^3.0.0
+  path_provider: ^2.0.15
   adobe_xd: ^2.0.1
   swipe_to: ^1.0.2
   firebase_messaging: ^14.6.4
@@ -54,14 +57,16 @@ dependencies:
   firebase_core: ^2.14.0
   contacts_service: ^0.6.3
   mime: ^1.0.4
-  audioplayers: ^4.1.0
+  audioplayers: ^5.0.0
   uuid: ^3.0.7
+  open_file: ^3.3.2
   flutter_sound: ^9.2.13
   mime_type: ^1.0.0
   permission_handler: ^10.2.0
   flutter_local_notifications: ^15.1.0+1
   audio_wave: ^0.1.5
   shared_preferences: ^2.1.2
+  file_saver: ^0.2.7
   get_it: ^7.6.0
   injectable: ^2.1.2
   logger: ^1.4.0

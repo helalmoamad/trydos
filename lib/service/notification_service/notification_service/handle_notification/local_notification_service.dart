@@ -1,12 +1,18 @@
+import 'dart:async';
 import 'dart:developer';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/features/chat/data/data_sources/chat_remote_datasource.dart';
 import 'package:trydos/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.dart';
 import 'package:trydos/main.dart';
+import '../../../../features/app/blocs/sensitive_connectivity/connectivity_observer.dart';
+import '../../../../features/chat/presentation/manager/chat_bloc.dart';
+import '../../../../features/chat/presentation/manager/chat_event.dart';
 import 'notification_process.dart';
 import '../../../../features/chat/data/models/my_chats_response_model.dart' as chat;
 import 'dart:convert' as convert;
@@ -45,19 +51,20 @@ class LocalNotificationService {
   }
 
   Future<void> showNotificationWithPayload({required RemoteMessage message}) async {
-
+    dealWithTimer();
     chat.Message myMessage = chat.Message.fromJson(
         convert.jsonDecode(message.data['message']));
     sendIReceivedTheMessage(myMessage.channelId!);
+    String type=myMessage.messageType!.name.toString();
     await _localNotificationPlugin.show(
       0,
-      myMessage.senderInfo!.name.toString(),
-      myMessage.messageType!.name == 'TextMessage' ? myMessage.messageContent!.content.toString() : myMessage.messageType!.name =='ImageMessage' ? 'Photo' : 'Voice',
+      myMessage.senderInfo!.name ?? myMessage.senderMobilePhone ?? 'Un Known User',
+      type == 'TextMessage' ? myMessage.messageContent!.content.toString() :  type=='ImageMessage' ? 'Photo' :type=='VoiceMessage' ? 'Voice' : type == 'VideoMessage' ? 'Video' :'File',
       _notificationDetails(),
       payload: message.data['message'],
     );
   }
-   static void sendIReceivedTheMessage(int channelId)async {
+   static void sendIReceivedTheMessage(String channelId)async {
      final ReceiveMessageUseCase receiveMessageUseCase =ReceiveMessageUseCase(ChatRepositoryImpl(ChatRemoteDataSource()));
      final response= await receiveMessageUseCase(ReceiveMessageParams(channelId: channelId));
      response.fold((l) {

@@ -1,3 +1,7 @@
 {
-
+  "typing" : "يكتب...",
+  "recording" : "يسجل مقطع صوتي...",
+  "sending_file" : "يرسل ملف...",
+  "sending_picture" : "يرسل صورة...",
+  "sending_video" : "يرسل مقطع فيديو..."
 }

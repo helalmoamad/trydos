@@ -4,13 +4,20 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/chat/presentation/widgets/call_status_widget.dart';
 
-class CreateCallPage extends StatefulWidget {
-  const CreateCallPage({Key? key}) : super(key: key);
+import '../../../../service/language_service.dart';
+import '../../../app/my_cached_network_image.dart';
+import '../widgets/chat_widgets/no_image_widget.dart';
 
+class CreateCallPage extends StatefulWidget {
+  const CreateCallPage({Key? key , required this.receiverName, required this.fullReceiverName , this.receiverPhoto}) : super(key: key);
+  final String fullReceiverName;
+  final String receiverName;
+  final String? receiverPhoto;
   @override
   State<CreateCallPage> createState() => _CreateCallPageState();
 }
@@ -32,6 +39,38 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                       padding: HWEdgeInsets.symmetric(horizontal: 105.w),
                       child: Column(
                         children: [
+                          widget.receiverPhoto != null
+                              ?  Container(
+                                height: 200,
+                                width: 200.w,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  border: Border.all(
+                                      width: 1.0, color: const Color(0xff388cff)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: colorScheme.white.withOpacity(0.35),
+                                        offset: const Offset(0, 10),
+                                        blurRadius: 30,
+                                        spreadRadius: 10
+                                    ),
+                                  ],
+                                ),
+                                child: MyCachedNetworkImage(
+                                    imageUrl: Urls.baseUrl + widget.receiverPhoto!,
+                                    imageFit: BoxFit.cover,
+                                    height: 80.h,
+                                    width: 60.w),
+                          )
+                              : NoImageWidget(
+                              width: 60.w,
+                              height: 80.h,
+                              textStyle: context.textTheme.subtitle1?.br
+                                  .copyWith(
+                                  color: const Color(0xff6638FF),
+                                  letterSpacing: 0.18,
+                                  height: 1.33),
+                              name: widget.receiverName),
                           Container(
                             height: 200,
                             width: 200.w,
@@ -55,7 +94,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                           ),
                           15.verticalSpace,
                           Text(
-                            'Grant Marshall',
+                            widget.fullReceiverName,
                             style: textTheme.headline5?.rr
                                 .copyWith(color: const Color(0xffD3D3D3)),
                           ),
@@ -82,21 +121,24 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                         width: 25.sp,
                         height: 25.sp,
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(
-                            AppAssets.endCallSvg,
-                            width: 25.sp,
-                            height: 25.sp,
-                          ),
-                          10.verticalSpace,
-                          Text(
-                            'End Call',
-                            style: textTheme.bodyText2?.lr
-                                .copyWith(color: const Color(0xffFF5F61)),
-                          ),
-                        ],
+                      InkWell(
+                        onTap: ()=> Navigator.pop(context),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              AppAssets.endCallSvg,
+                              width: 25.sp,
+                              height: 25.sp,
+                            ),
+                            10.verticalSpace,
+                            Text(
+                              'End Call',
+                              style: textTheme.bodyText2?.lr
+                                  .copyWith(color: const Color(0xffFF5F61)),
+                            ),
+                          ],
+                        ),
                       ),
                       SvgPicture.asset(
                         AppAssets.cancelVideoCallSvg,
@@ -115,10 +157,20 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                 onTap: (){
                   Navigator.pop(context);
                 },
-                child: SvgPicture.asset(
-                  AppAssets.backFromCallSvg,
-                  height: 20,
-                  width: 8,
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: (Matrix4.identity()
+                    ..scale(
+                        LanguageService.languageCode == 'ar'
+                            ? -1.0
+                            : 1.0,
+                        1.0,
+                        1.0)),
+                  child: SvgPicture.asset(
+                    AppAssets.backFromCallSvg,
+                    height: 20,
+                    width: 8,
+                  ),
                 ),
               ),
             ),

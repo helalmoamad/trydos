@@ -101,12 +101,19 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   int? get myId => _preferences.getInt(PrefsKey.userId);
+  @override
+  String? get myName => _preferences.getString(PrefsKey.name);
+
 
   @override
   int? get fcmTokenId => _preferences.getInt(PrefsKey.fcmTokenId);
 
   @override
   Future<bool> setFcmTokenId(int fcmTokenId) => _preferences.setInt(PrefsKey.fcmTokenId, fcmTokenId);
+
+  @override
+  Future<bool> setMyName(String name) => _preferences.setString(PrefsKey.name, name);
+
 
 
   // @override

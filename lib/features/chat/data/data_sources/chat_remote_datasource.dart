@@ -88,6 +88,20 @@ class ChatRemoteDataSource{
     return getMessagesForChat();
   }
 
+  Future<List<Message>> getMessagesBetween(Map<String,dynamic> params){
+    PostClient<List<Message>> getMessagesBetween= PostClient<List<Message>>(
+      requestPrams: RequestConfig<List<Message>>(
+        endpoint: EndPoints.getMessagesBetweenEP,
+        data: params,
+        response: ResponseValue<List<Message>>(
+            fromJson: (response)=> List<Message>.from(
+                response["data"]!.map((x) => Message.fromJson(x)))
+        ),
+      ),
+    );
+    return getMessagesBetween();
+  }
+
   Future<UploadFileResponseModel> uploadFile(Map<String,dynamic> params){
     PostClient<UploadFileResponseModel> uploadFile= PostClient<UploadFileResponseModel>(
       requestPrams: RequestConfig<UploadFileResponseModel>(

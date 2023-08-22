@@ -66,7 +66,7 @@ class _TrydosApplicationState extends State<TrydosApplication> {
                     navigatorObservers: [BotToastNavigatorObserver()],
                     builder: (context, child) {
                       LanguageService(context);
-                      ConnectivityObserver(context);
+                      ConnectivityObserver.createInstance(context);
                       ScreenService(context);
                       return botToastBuilder(context, child);
                     },

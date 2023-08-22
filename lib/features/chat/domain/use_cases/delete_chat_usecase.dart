@@ -23,7 +23,7 @@ class DeleteChatUseCase extends UseCase<bool , DeleteChatParams>{
 
 }
 class DeleteChatParams{
-  final int channelId;
+  final String channelId;
 
   DeleteChatParams({
     required this.channelId,

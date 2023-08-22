@@ -1,6 +1,8 @@
 abstract class PrefsKey {
   static const userId = r'__$__userId__$__';
 
+  static const name = r'__$__name__$__';
+
   static const token = r'__$__token__$__';
 
   static const fcmTokenId = r'__$__fcmTokenId__$__';
