@@ -94,6 +94,12 @@ class _TextMessageState extends ThemeState<TextMessage> {
                 animationDuration: const Duration(milliseconds: 100),
                 offsetDx: 0.15,
                 onRightSwipe: () {
+                  if((state.sendMessageStatus ==
+                      SendMessageStatus.loading &&
+                      state.currentMessage
+                          .contains(widget.messageId))){
+                    return ;
+                  }
                   BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
                       true, 'text', widget.isSent,
                       messageId: widget.messageId,
@@ -104,9 +110,9 @@ class _TextMessageState extends ThemeState<TextMessage> {
                 child: Directionality(
                   textDirection: TextDirection.ltr,
                   child: Row(
-                    mainAxisAlignment: (widget.isSent || widget.disableMessageAlignment)
-                        ? MainAxisAlignment.end
-                        : MainAxisAlignment.start,
+                    mainAxisAlignment: widget.disableMessageAlignment
+                        ? widget.isSent ? MainAxisAlignment.start : MainAxisAlignment.end
+                        : widget.isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
                     children: [
                       Stack(
                         alignment: widget.isSent
@@ -182,7 +188,9 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                           ),
                                           if (widget.isSent) ...{
                                             10.horizontalSpace,
-                                            SvgPicture.asset(
+                                            Opacity(
+                                              opacity: !widget.withImageShadow ? 0.4 : 1,
+                                            child: SvgPicture.asset(
                                               (state.sendMessageStatus ==
                                                           SendMessageStatus
                                                               .loading &&
@@ -190,17 +198,15 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                           .contains(
                                                               widget.messageId))
                                                   ? AppAssets.sandClockSvg
-                                                  : widget.withImageShadow
-                                                      ? widget.isRead
+
+                                                      : widget.isRead
                                                           ? AppAssets
                                                               .messageReadArrowSvg
                                                           : widget.isReceived ? AppAssets.messageDeliveredArrowSvg :AppAssets
-                                                              .messageSentArrowSvg
-                                                      : AppAssets
-                                                          .messageReadArrowWithOpacitySvg,
+                                                              .messageSentArrowSvg,
                                               width: 10.sp,
                                               height: 10.sp,
-                                            )
+                                            ))
                                           },
                                           if (widget.isForwarded) ...{
                                             10.horizontalSpace,

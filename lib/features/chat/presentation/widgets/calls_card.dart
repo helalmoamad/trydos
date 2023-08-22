@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -56,7 +55,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
       ),
       InkWell(
         onTap: (){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> const CreateCallPage()));
+          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>  const CreateCallPage(fullReceiverName: 'Mahmoud',receiverName: 'MA',)));
         },
         child: Container(
             height: 75,

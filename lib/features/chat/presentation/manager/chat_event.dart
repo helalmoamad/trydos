@@ -1,10 +1,9 @@
-
-
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 
 import '../../data/models/my_chats_response_model.dart';
+
 abstract class ChatEvent extends Equatable {
   const ChatEvent();
 }
@@ -48,7 +47,7 @@ class GetContactsEvent extends ChatEvent {
 }
 
 class ReadAllMessagesEvent extends ChatEvent {
-  final int channelId;
+  final String channelId;
 
   const ReadAllMessagesEvent(this.channelId);
 
@@ -75,9 +74,11 @@ class SendMessageEvent extends ChatEvent {
   final Map<String, dynamic>? extraFields;
   final String messageId;
   final String? parentMessageContent;
-  final int channelId;
+  final String channelId;
   final File? file;
   final int? senderParentMessageId;
+  final bool createNewChat;
+
   const SendMessageEvent(
       {this.receiverUserId,
       this.content,
@@ -89,6 +90,7 @@ class SendMessageEvent extends ChatEvent {
       this.messageType,
       this.parentMessageContent,
       this.isForward,
+      this.createNewChat = false,
       this.extraFields,
       required this.channelId});
 
@@ -112,6 +114,7 @@ class SendMessageEvent extends ChatEvent {
 class UploadFileEvent extends ChatEvent {
   final File file;
   final String filePath;
+  final String fileName;
   final String messageId;
   final int? receiverUserId;
   final String? content;
@@ -120,13 +123,14 @@ class UploadFileEvent extends ChatEvent {
   final String? messageType;
   final String? parentMessageContent;
   final bool? isForward;
-  final int channelId;
+  final String channelId;
   final int? senderParentMessageId;
   final Map<String, dynamic>? extraFields;
 
   const UploadFileEvent({
     required this.file,
     required this.filePath,
+    required this.fileName,
     required this.messageId,
     required this.channelId,
     this.receiverUserId,
@@ -152,6 +156,7 @@ class UploadFileEvent extends ChatEvent {
         messageType,
         isForward,
         extraFields,
+        fileName,
         parentMessageContent,
         messageId,
         channelId
@@ -172,8 +177,8 @@ class SaveContactsEvent extends ChatEvent {
 
 class ReceiveMessageEvent extends ChatEvent {
   final Message message;
-
-  const ReceiveMessageEvent({required this.message});
+  final String prevMessageId;
+  const ReceiveMessageEvent({required this.message,required this.prevMessageId});
 
   @override
   // TODO: implement props
@@ -181,29 +186,33 @@ class ReceiveMessageEvent extends ChatEvent {
 }
 
 class ReceiveMessageFromPusherEvent extends ChatEvent {
-  final int channelId;
+  final String channelId;
   final int userId;
   final int lastMessageId;
-  const ReceiveMessageFromPusherEvent(this.channelId , this.userId , this.lastMessageId );
+
+  const ReceiveMessageFromPusherEvent(
+      this.channelId, this.userId, this.lastMessageId);
 
   @override
   // TODO: implement props
-  List<Object?> get props => [channelId , userId , lastMessageId];
+  List<Object?> get props => [channelId, userId, lastMessageId];
 }
 
 class WatchedMessageFromPusherEvent extends ChatEvent {
-
-  final int channelId;
+  final String channelId;
   final int userId;
   final int lastMessageId;
-  const WatchedMessageFromPusherEvent(this.channelId , this.userId , this.lastMessageId );
+
+  const WatchedMessageFromPusherEvent(
+      this.channelId, this.userId, this.lastMessageId);
 
   @override
   // TODO: implement props
-  List<Object?> get props => [channelId , userId , lastMessageId];
+  List<Object?> get props => [channelId, userId, lastMessageId];
 }
+
 class NotifyThatIReceivedMessageEvent extends ChatEvent {
-  final int channelId;
+  final String channelId;
 
   const NotifyThatIReceivedMessageEvent({required this.channelId});
 
@@ -213,7 +222,7 @@ class NotifyThatIReceivedMessageEvent extends ChatEvent {
 }
 
 class DeleteChatEvent extends ChatEvent {
-  final int channelId;
+  final String channelId;
 
   const DeleteChatEvent({required this.channelId});
 
@@ -221,34 +230,44 @@ class DeleteChatEvent extends ChatEvent {
   // TODO: implement props
   List<Object?> get props => [channelId];
 }
+
 class ChangeChatPropertyEvent extends ChatEvent {
-  final int channelId;
+  final String channelId;
   final int? mute;
   final int? pin;
   final int? archive;
-  const ChangeChatPropertyEvent({
-    required this.channelId,
-    this.archive,
-    this.mute,
-    this.pin
-  });
+
+  const ChangeChatPropertyEvent(
+      {required this.channelId, this.archive, this.mute, this.pin});
 
   @override
   // TODO: implement props
-  List<Object?> get props => [channelId,archive,mute,pin];
+  List<Object?> get props => [channelId, archive, mute, pin];
 }
 
 class GetMessagesForChatEvent extends ChatEvent {
   final int limit;
-  final int channelId;
+  final String channelId;
 
-  const GetMessagesForChatEvent({
-    required this.channelId ,
-    this.limit=10
-  });
+  const GetMessagesForChatEvent({required this.channelId, this.limit = 10});
+
   @override
   // TODO: implement props
-  List<Object?> get props => [limit ,channelId];
+  List<Object?> get props => [limit, channelId];
 }
 
+class GetAllMessagesBetweenEvent extends ChatEvent {
+  final String channelId;
+  final String firstMessageId;
+  final String secondMessageId;
+  final bool scrollToParentMessage;
+  const GetAllMessagesBetweenEvent(
+      {required this.firstMessageId,
+      required this.secondMessageId,
+      required this.scrollToParentMessage,
+      required this.channelId});
 
+  @override
+  // TODO: implement props
+  List<Object?> get props => [firstMessageId, secondMessageId, channelId,scrollToParentMessage];
+}

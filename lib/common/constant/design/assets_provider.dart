@@ -116,6 +116,15 @@ abstract class AppAssets {
   static String get supportSvg=>'support'.svg;
   static String get sandClockSvg=>'sand_clock'.svg;
   static String get documentSvg=>'document'.svg;
+  static String get gallerySvg=>'gallery'.svg;
+  static String get imageGallerySvg=>'image_gallery'.svg;
+  static String get videoGallerySvg=>'video_gallery'.svg;
+  static String get fileGallerySvg=>'file_gallery'.svg;
+  static String get saveToGallerySvg=>'save_to_gallery'.svg;
+  static String get lastMessageImageSvg=>'last_message_image_icon'.svg;
+  static String get lastMessageVideoSvg=>'last_message_video_icon'.svg;
+  static String get lastMessageAudioSvg=>'last_message_audio_icon'.svg;
+  static String get replaySwappedSvg=>'replay_icon_on_swap'.svg;
 
   ///endregion
 

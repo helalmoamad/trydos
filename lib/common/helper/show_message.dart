@@ -42,16 +42,18 @@ FToast fToast = FToast();
 // }
 
 showMessage(
-  String message, {
-  bool hasError = true,
-  Toast timeShowing = Toast.LENGTH_LONG,
-}) {
+    String message, {
+      bool hasError = true,
+      Color? backGroundColor,
+      Color? foreGroundColor,
+      Toast timeShowing = Toast.LENGTH_LONG,
+    }) {
   Fluttertoast.cancel().then((value) => Fluttertoast.showToast(
-        msg: message,
-        backgroundColor: hasError ? Colors.red : Colors.blueAccent,
-        textColor: Colors.white,
-        fontSize: 16,
-        toastLength: timeShowing,
-        gravity: ToastGravity.BOTTOM,
-      ));
+    msg: message,
+    backgroundColor: Colors.white,
+    textColor: foreGroundColor ?? Colors.red,
+    fontSize: 16,
+    toastLength: timeShowing,
+    gravity: ToastGravity.BOTTOM,
+  ));
 }

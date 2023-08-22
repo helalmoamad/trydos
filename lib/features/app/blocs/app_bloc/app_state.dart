@@ -8,7 +8,8 @@ class AppState {
       required this.tabIndexInChat,
       required this.showBars,
       this.messageId,
-      this.typingIds=const {},
+      this.pusherActivityIds=const {},
+      this.pusherActivityDescription=const {},
       this.senderParentMessageId,
       this.time,
       this.message,
@@ -28,7 +29,8 @@ class AppState {
   final String? imageUrl;
   final DateTime? time;
   final int? senderParentMessageId;
-  final Map<int , dynamic> typingIds;
+  final Map<int , dynamic> pusherActivityIds;
+  final Map<int , String?> pusherActivityDescription;
 
   AppState copyWith(
       {int? currentIndex,
@@ -40,7 +42,8 @@ class AppState {
         int? tabIndexInChat,
         final DateTime? time,
         final String? message,
-        final Map<int , dynamic>? typingIds,
+        final Map<int , dynamic>? pusherActivityIds,
+        final Map<int , String?>? pusherActivityDescription,
         final String? messageId,
         final String? imageUrl,
       final bool? showBars}) {
@@ -54,7 +57,8 @@ class AppState {
       senderParentMessageId: senderParentMessageId ?? this.senderParentMessageId,
       showBars: showBars ?? this.showBars,
       message: message ?? this.message,
-      typingIds: typingIds ?? this.typingIds,
+      pusherActivityIds: pusherActivityIds ?? this.pusherActivityIds,
+      pusherActivityDescription: pusherActivityDescription ?? this.pusherActivityDescription,
       messageId: messageId ?? this.messageId,
       imageUrl: imageUrl ?? this.imageUrl,
       time: time ?? this.time,

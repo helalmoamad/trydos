@@ -18,17 +18,19 @@ import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/pages/calls_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
-
+import 'package:trydos/features/chat/presentation/pages/story_page_content.dart';
 import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_event.dart';
+import 'contacts_page.dart';
 
 class ChatPages extends StatefulWidget {
-  const ChatPages({Key? key, this.navigateForForwardMessage = false , this.onSendForwardMessage})
+  const ChatPages({Key? key, this.hideCallsAndStories = false , required this.description ,this.onSendForwardMessage})
       : super(key: key);
-  final bool navigateForForwardMessage;
-  final Function(int receiverId)? onSendForwardMessage;
+  final bool hideCallsAndStories;
+  final Function(int receiverId , String channelId)? onSendForwardMessage;
+  final String description;
 
 
   @override
@@ -41,19 +43,18 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 
   List<Widget> chatPages = [
     const CallsPageContent(),
-    const CallsPageContent(),
+    const StoryPageContent(),
   ];
 
   void saveUserContacts() async {
-    List<Map<String, dynamic>> contacts =
-        await HelperFunctions.getContactsFromDevice();
+    List<Map<String, dynamic>> contacts = await HelperFunctions.getContactsFromDevice();
     chatBloc.add(SaveContactsEvent(contacts: contacts));
   }
 
   @override
   void initState() {
     chatPages.insert(0, ChatPageContent(onSendForwardMessage: widget.onSendForwardMessage),);
-    if (widget.navigateForForwardMessage) {
+    if (widget.hideCallsAndStories) {
       BlocProvider.of<AppBloc>(context).add(ChangeTabInChat(0));
     }
     saveUserContacts();
@@ -64,8 +65,15 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          Navigator.push(context, MaterialPageRoute(builder: (_)=> const MyContactsPage()));
+        },
+        backgroundColor: const Color(0xff388cff),
+        child: Center(child: Icon(Icons.message_rounded , size: 25.sp , color: colorScheme.white)),
+      ),
       backgroundColor: const Color(0xffF8F8F8),
-      appBar: widget.navigateForForwardMessage ? TrydosAppBar(
+      appBar: widget.hideCallsAndStories ? TrydosAppBar(
         appBarParams: AppBarParams(
             dividerBottom: false,
             hasLeading: false,
@@ -92,7 +100,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                   ),
                   10.horizontalSpace,
                   Text(
-                    'Forward To...',
+                    widget.description,
                     style: textTheme.subtitle1?.rr
                         .copyWith(color: const Color(0xff388CFF)),
                   ),
@@ -119,6 +127,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                   hintText: 'Search, Chat, Contact, Start New Chat',
                   hintTextStyle: textTheme.subtitle2?.lr
                       .copyWith(color: const Color(0xffD3D3D3)),
+                  onChange: ChatPageContentState.searchInChats,
                   contentPadding:
                       HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
                   prefixIcon: Padding(
@@ -132,7 +141,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                 ),
               ),
             ),
-            if (widget.navigateForForwardMessage) ...{
+            if (!widget.hideCallsAndStories) ...{
               SliverToBoxAdapter(
                   child: Container(
                 padding: HWEdgeInsets.symmetric(horizontal: 40.w),

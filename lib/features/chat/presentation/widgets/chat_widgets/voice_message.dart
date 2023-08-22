@@ -14,6 +14,7 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/voice_waves.dart';
 
+import '../../../../../common/helper/file_saving.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
@@ -21,7 +22,7 @@ import '../../../../app/my_cached_network_image.dart';
 import 'no_image_widget.dart';
 
 class VoiceMessage extends StatefulWidget {
-  const VoiceMessage(
+   VoiceMessage(
       {Key? key,
       required this.isSent,
       required this.messageId,
@@ -40,7 +41,7 @@ class VoiceMessage extends StatefulWidget {
   final bool isFirstMessage;
   final bool isForwarded;
   final String messageId;
-  final File? file;
+   File? file;
   final String? fileUrl;
   final DateTime time;
   final bool isRead;
@@ -60,6 +61,8 @@ class _VoiceMessageState extends State<VoiceMessage> {
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
   late final Source audioSource;
+  final ValueNotifier<int> _loadingFile =  ValueNotifier(0);
+
 
   getAudioDuration() async {
     if (widget.file != null) {
@@ -115,10 +118,16 @@ class _VoiceMessageState extends State<VoiceMessage> {
           padding: HWEdgeInsets.only(
               right: widget.isSent ? 25.w : 0, left: widget.isSent ? 0 : 25.w),
           child: SwipeTo(
-            iconSize: 0,
-            animationDuration: const Duration(milliseconds: 100),
+            animationDuration: const Duration(milliseconds: 150),
             offsetDx: 0.15,
-            onRightSwipe: () {
+            iconSize: 0,
+            onLeftSwipe: () {
+              if((state.sendMessageStatus ==
+                  SendMessageStatus.loading &&
+                  state.currentMessage
+                      .contains(widget.messageId))){
+                return ;
+              }
               BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
                   true,
                   'voice',
@@ -250,7 +259,43 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                                   true,
                                                               fit: BoxFit.fill,
                                                             ),
-                                                            const VoiceWaves()
+                                                            const VoiceWaves(),
+                                                            if (widget.file == null) ...{
+                                                              10.horizontalSpace,
+                                                              ValueListenableBuilder<int>(
+                                                                  valueListenable: _loadingFile,
+                                                                  builder: (context, status, _) {
+                                                                    if (status == 0) {
+                                                                      return InkWell(
+                                                                        onTap: () async{
+                                                                          _loadingFile.value = 1;
+                                                                        },
+                                                                        child: Icon(
+                                                                            Icons
+                                                                                .save_alt_outlined,
+                                                                            color: const Color(
+                                                                                0xff388CFF),
+                                                                            size: 20.sp),
+                                                                      );
+                                                                    } else if (status == 1) {
+                                                                      FileSaving().downloadFileToLocalStorage(widget.fileUrl!,action: (File? file){
+                                                                        _loadingFile.value=2;
+                                                                        widget.file=file;
+                                                                        getAudioDuration();
+                                                                        setState(() {
+
+                                                                        });
+                                                                      });
+                                                                      return  CircularProgressIndicator(
+                                                                        backgroundColor: Colors.grey.shade100,
+                                                                        color:
+                                                                        const  Color(0xff388CFF),
+                                                                      );
+                                                                    }else{
+                                                                      return const SizedBox.shrink();
+                                                                    }
+                                                                  }),
+                                                            }
                                                           ],
                                                         ),
                                                       )
@@ -348,7 +393,43 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                                   true,
                                                               fit: BoxFit.fill,
                                                             ),
-                                                            const VoiceWaves()
+                                                            const VoiceWaves(),
+                                                            if (widget.file == null) ...{
+                                                              10.horizontalSpace,
+                                                              ValueListenableBuilder<int>(
+                                                                  valueListenable: _loadingFile,
+                                                                  builder: (context, status, _) {
+                                                                    if (status == 0) {
+                                                                      return InkWell(
+                                                                        onTap: () async{
+                                                                          _loadingFile.value = 1;
+                                                                        },
+                                                                        child: Icon(
+                                                                            Icons
+                                                                                .save_alt_outlined,
+                                                                            color: const Color(
+                                                                                0xff388CFF),
+                                                                            size: 20.sp),
+                                                                      );
+                                                                    } else if (status == 1) {
+                                                                      FileSaving().downloadFileToLocalStorage(widget.fileUrl!,action: (File? file){
+                                                                        _loadingFile.value=2;
+                                                                        widget.file=file;
+                                                                        getAudioDuration();
+                                                                        setState(() {
+
+                                                                        });
+                                                                      });
+                                                                      return  CircularProgressIndicator(
+                                                                        backgroundColor: Colors.grey.shade100,
+                                                                        color:
+                                                                        const  Color(0xff388CFF),
+                                                                      );
+                                                                    }else{
+                                                                      return const SizedBox.shrink();
+                                                                    }
+                                                                  }),
+                                                            }
                                                           ],
                                                         ),
                                                       )

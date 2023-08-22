@@ -26,11 +26,13 @@ class SensitiveConnectivityBloc extends Bloc<SensitiveConnectivityEvent, Sensiti
     prettyPrinterI("***|| 🌐 ${event.connectivityResult.name.toUpperCase()} 🌐 ||***");
 
     if (event.connectivityResult == ConnectivityResult.mobile) {
+      showMessage('Internet connected',foreGroundColor: Colors.green,timeShowing: Toast.LENGTH_SHORT);
       emit(ConnectivityCellularState());
     } else if (event.connectivityResult == ConnectivityResult.wifi) {
+      showMessage('Internet connected',foreGroundColor: Colors.green,timeShowing: Toast.LENGTH_SHORT);
       emit(ConnectivityWifiState());
-    } else {
-      showMessage('No Internet connection.',timeShowing: Toast.LENGTH_SHORT);
+    } else if(event.connectivityResult == ConnectivityResult.none){
+      showMessage('No Internet connection.',timeShowing: Toast.LENGTH_LONG);
       emit(ConnectivityOfflineState());
     }
   }

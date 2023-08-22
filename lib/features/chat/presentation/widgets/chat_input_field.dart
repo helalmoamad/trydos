@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +21,8 @@ import 'package:trydos/core/utils/form_state_mixin.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:uuid/uuid.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../app/app_widgets/app_text_field.dart';
@@ -38,13 +41,16 @@ class ChatInputField extends StatefulWidget {
     required this.onSendFile,
     required this.channelId,
     required this.senderName,
+    required this.channelPusherName,
     required this.senderUserImage,
   }) : super(key: key);
   final void Function(String message) onSendMessage;
   final void Function(File file, String type) onSendFile;
-  final int channelId;
+  final String channelId;
   final String? senderUserImage;
+  final String channelPusherName;
   final String senderName;
+
   @override
   State<ChatInputField> createState() => _ChatInputFieldState();
 }
@@ -54,8 +60,11 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
   final ValueNotifier<bool> thereTextNotifier = ValueNotifier(false);
   final ValueNotifier<bool> recordingNotifier = ValueNotifier(false);
   final FlutterSoundRecorder recorder = FlutterSoundRecorder();
-   Timer _typingTimer =Timer(const Duration(microseconds: 1),() {},);
-
+  Timer _typingTimer = Timer(
+    const Duration(microseconds: 1),
+    () {},
+  );
+  PusherChatService pusherChatService =GetIt.I<PusherChatService>();
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -150,29 +159,24 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                   ),
                                 ),
                                 10.horizontalSpace,
-
-
-                                Container(
-                                  width: 30.sp,
-                                  height: 30.sp,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: AssetImage(state.replyOnMe
-                                            ? AppAssets.chatProfileJpg
-                                            : AppAssets.chatProfile2Jpg),
-                                        fit: BoxFit.cover,
-                                        opacity: 0.8),
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: context.colorScheme.black
-                                            .withOpacity(0.16),
-                                        offset: const Offset(0, 3),
-                                        blurRadius: 6,
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                widget.senderUserImage != null
+                                    ? MyCachedNetworkImage(
+                                        imageUrl: Urls.baseUrl +
+                                            widget.senderUserImage!,
+                                        imageFit: BoxFit.cover,
+                                        radius: 8,
+                                        width: 30.sp,
+                                        height: 30.sp)
+                                    : NoImageWidget(
+                                        width: 30.sp,
+                                        height: 30.sp,
+                                        textStyle: context.textTheme.caption?.br
+                                            .copyWith(
+                                                color: const Color(0xff6638FF),
+                                                letterSpacing: 0.18,
+                                                height: 1.33),
+                                        radius: 8,
+                                        name: widget.senderName),
                                 20.horizontalSpace,
                               ],
                             )
@@ -214,7 +218,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             height: 40.sp,
                                             decoration: BoxDecoration(
                                               image: DecorationImage(
-                                                image: AssetImage(state.imageUrl!),
+                                                image: FileImage(
+                                                    File(state.imageUrl!)),
                                                 fit: BoxFit.cover,
                                               ),
                                               borderRadius:
@@ -242,89 +247,234 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     const Spacer(),
                                     widget.senderUserImage != null
                                         ? MyCachedNetworkImage(
-                                      imageUrl: Urls.baseUrl + widget.senderUserImage!,
-                                      imageFit: BoxFit.cover,
-                                      radius: 8,
-                                      width: 30.sp,
-                                      height:30.sp
-                                    )
+                                            imageUrl: Urls.baseUrl +
+                                                widget.senderUserImage!,
+                                            imageFit: BoxFit.cover,
+                                            radius: 8,
+                                            width: 30.sp,
+                                            height: 30.sp)
                                         : NoImageWidget(
-                                        width: 30.sp,
-                                        height:30.sp,
-                                        textStyle:context.textTheme.caption?.br.copyWith(
-                                            color: const Color(0xff6638FF),
-                                            letterSpacing: 0.18,
-                                            height: 1.33),
-                                        radius: 8,
-                                        name:widget.senderName
-                                    ),
+                                            width: 30.sp,
+                                            height: 30.sp,
+                                            textStyle: context
+                                                .textTheme.caption?.br
+                                                .copyWith(
+                                                    color:
+                                                        const Color(0xff6638FF),
+                                                    letterSpacing: 0.18,
+                                                    height: 1.33),
+                                            radius: 8,
+                                            name: widget.senderName),
                                     20.horizontalSpace,
                                   ],
                                 )
-                              : Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    20.horizontalSpace,
-                                    SvgPicture.asset(
-                                      AppAssets.replyOnMessageSvg,
-                                      width: 20.w,
-                                      height: 20,
-                                    ),
-                                    15.horizontalSpace,
-                                    InkWell(
-                                      onTap: () {
-                                        BlocProvider.of<AppBloc>(context).add(
-                                            RefreshChatInputField(
-                                                false, '', false));
-                                      },
-                                      child: SvgPicture.asset(
-                                        AppAssets.closeSvg,
-                                        width: 15.w,
-                                        height: 15,
-                                      ),
-                                    ),
-                                    20.horizontalSpace,
-                                    SvgPicture.asset(
-                                      AppAssets.voicePlayedSvg,
-                                      width: 40.sp,
-                                      height: 40.sp,
-                                    ),
-                                    10.horizontalSpace,
-                                    Text(
-                                      'Voice',
-                                      style: textTheme.caption?.lr.copyWith(
-                                          color: colorScheme.grey200,
-                                          height: 1.66),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const Spacer(),
-                                    Container(
-                                      width: 30.sp,
-                                      height: 30.sp,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: AssetImage(state.replyOnMe
-                                                ? AppAssets.chatProfileJpg
-                                                : AppAssets.chatProfile2Jpg),
-                                            fit: BoxFit.cover,
-                                            opacity: 0.8),
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: context.colorScheme.black
-                                                .withOpacity(0.16),
-                                            offset: const Offset(0, 3),
-                                            blurRadius: 6,
+                              : state.replyType == 'file'
+                                  ? Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        20.horizontalSpace,
+                                        SvgPicture.asset(
+                                          AppAssets.replyOnMessageSvg,
+                                          width: 20.w,
+                                          height: 20,
+                                        ),
+                                        15.horizontalSpace,
+                                        InkWell(
+                                          onTap: () {
+                                            BlocProvider.of<AppBloc>(context)
+                                                .add(RefreshChatInputField(
+                                                    false, '', false));
+                                          },
+                                          child: SvgPicture.asset(
+                                            AppAssets.closeSvg,
+                                            width: 15.w,
+                                            height: 15,
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                    20.horizontalSpace,
-                                  ],
-                                ),
+                                        ),
+                                        20.horizontalSpace,
+                                        SvgPicture.asset(
+                                          AppAssets.documentSvg,
+                                          width: 25,
+                                          height: 25,
+                                        ),
+                                        10.horizontalSpace,
+                                        SizedBox(
+                                          width: 200.w,
+                                          child: Text(
+                                            state.message.toString(),
+                                            style: textTheme.caption?.lr
+                                                .copyWith(
+                                                    color: colorScheme.grey200,
+                                                    height: 1.66),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        widget.senderUserImage != null
+                                            ? MyCachedNetworkImage(
+                                                imageUrl: Urls.baseUrl +
+                                                    widget.senderUserImage!,
+                                                imageFit: BoxFit.cover,
+                                                radius: 8,
+                                                width: 30.sp,
+                                                height: 30.sp)
+                                            : NoImageWidget(
+                                                width: 30.sp,
+                                                height: 30.sp,
+                                                textStyle: context
+                                                    .textTheme.caption?.br
+                                                    .copyWith(
+                                                        color: const Color(
+                                                            0xff6638FF),
+                                                        letterSpacing: 0.18,
+                                                        height: 1.33),
+                                                radius: 8,
+                                                name: widget.senderName),
+                                        20.horizontalSpace,
+                                      ],
+                                    )
+                                  : state.replyType == 'video'
+                                      ? Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            20.horizontalSpace,
+                                            SvgPicture.asset(
+                                              AppAssets.replyOnMessageSvg,
+                                              width: 20.w,
+                                              height: 20,
+                                            ),
+                                            15.horizontalSpace,
+                                            InkWell(
+                                              onTap: () {
+                                                BlocProvider.of<AppBloc>(
+                                                        context)
+                                                    .add(RefreshChatInputField(
+                                                        false, '', false));
+                                              },
+                                              child: SvgPicture.asset(
+                                                AppAssets.closeSvg,
+                                                width: 15.w,
+                                                height: 15,
+                                              ),
+                                            ),
+                                            20.horizontalSpace,
+                                            SvgPicture.asset(
+                                              AppAssets.lastMessageVideoSvg,
+                                              width: 25,
+                                              height: 25,
+                                            ),
+                                            10.horizontalSpace,
+                                            SizedBox(
+                                              width: 200.w,
+                                              child: Text(
+                                                state.message.toString(),
+                                                style: textTheme.caption?.lr
+                                                    .copyWith(
+                                                        color:
+                                                            colorScheme.grey200,
+                                                        height: 1.66),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            const Spacer(),
+                                            widget.senderUserImage != null
+                                                ? MyCachedNetworkImage(
+                                                    imageUrl: Urls.baseUrl +
+                                                        widget.senderUserImage!,
+                                                    imageFit: BoxFit.cover,
+                                                    radius: 8,
+                                                    width: 30.sp,
+                                                    height: 30.sp)
+                                                : NoImageWidget(
+                                                    width: 30.sp,
+                                                    height: 30.sp,
+                                                    textStyle: context
+                                                        .textTheme.caption?.br
+                                                        .copyWith(
+                                                            color: const Color(
+                                                                0xff6638FF),
+                                                            letterSpacing: 0.18,
+                                                            height: 1.33),
+                                                    radius: 8,
+                                                    name: widget.senderName),
+                                            20.horizontalSpace,
+                                          ],
+                                        )
+                                      : Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            20.horizontalSpace,
+                                            SvgPicture.asset(
+                                              AppAssets.replyOnMessageSvg,
+                                              width: 20.w,
+                                              height: 20,
+                                            ),
+                                            15.horizontalSpace,
+                                            InkWell(
+                                              onTap: () {
+                                                BlocProvider.of<AppBloc>(
+                                                        context)
+                                                    .add(RefreshChatInputField(
+                                                        false, '', false));
+                                              },
+                                              child: SvgPicture.asset(
+                                                AppAssets.closeSvg,
+                                                width: 15.w,
+                                                height: 15,
+                                              ),
+                                            ),
+                                            20.horizontalSpace,
+                                            SvgPicture.asset(
+                                              AppAssets.voicePlayedSvg,
+                                              width: 40.sp,
+                                              height: 40.sp,
+                                            ),
+                                            10.horizontalSpace,
+                                            Text(
+                                              'Voice',
+                                              style: textTheme.caption?.lr
+                                                  .copyWith(
+                                                      color:
+                                                          colorScheme.grey200,
+                                                      height: 1.66),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const Spacer(),
+                                            widget.senderUserImage != null
+                                                ? MyCachedNetworkImage(
+                                                    imageUrl: Urls.baseUrl +
+                                                        widget.senderUserImage!,
+                                                    imageFit: BoxFit.cover,
+                                                    radius: 8,
+                                                    width: 30.sp,
+                                                    height: 30.sp)
+                                                : NoImageWidget(
+                                                    width: 30.sp,
+                                                    height: 30.sp,
+                                                    textStyle: context
+                                                        .textTheme.caption?.br
+                                                        .copyWith(
+                                                            color: const Color(
+                                                                0xff6638FF),
+                                                            letterSpacing: 0.18,
+                                                            height: 1.33),
+                                                    radius: 8,
+                                                    name: widget.senderName),
+                                            20.horizontalSpace,
+                                          ],
+                                        ),
                     ),
                   )
                 : const SizedBox.shrink(),
@@ -381,6 +531,10 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           return;
                                         }
                                         recordingNotifier.value = false;
+                                        pusherChatService.sendActivityEvent(
+                                            widget.channelId,
+                                            widget.channelPusherName,
+                                            null);
                                         final String path =
                                             (await recorder.stopRecorder())!;
                                         recorder.deleteRecord(fileName: path);
@@ -396,9 +550,12 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     const Spacer(),
                                     InkWell(
                                       onTap: () async {
-                                        final path =
-                                            await recorder.stopRecorder();
+                                        final path = await recorder.stopRecorder();
                                         final audioFile = File(path!);
+                                        pusherChatService.sendActivityEvent(
+                                            widget.channelId,
+                                            widget.channelPusherName,
+                                            null);
                                         widget.onSendFile(audioFile, 'voice');
                                         recordingNotifier.value = false;
                                       },
@@ -415,9 +572,18 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                   children: [
                                     13.horizontalSpace,
                                     InkWell(
-                                      onTap: ()async {
-                                        File? file =  await HelperFunctions.pickDocumentFile();
-                                        if(file != null){
+                                      onTap: () async {
+                                        pusherChatService.sendActivityEvent(
+                                            widget.channelId,
+                                            widget.channelPusherName,
+                                            'Sending file...');
+                                        File? file = await HelperFunctions
+                                            .pickDocumentFile();
+                                        if (file != null) {
+                                          pusherChatService.sendActivityEvent(
+                                              widget.channelId,
+                                              widget.channelPusherName,
+                                              null);
                                           widget.onSendFile(file, 'file');
                                         }
                                       },
@@ -436,15 +602,20 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           controller: form.controllers[0],
                                           onChange: (text) {
                                             _typingTimer.cancel();
-                                            PusherChatService  pusherChatService= GetIt.I<PusherChatService>();
                                             try {
-                                             pusherChatService.sendTypingEvent(widget.channelId , 'Typing...');
-                                            }catch(e){
+                                              pusherChatService.sendActivityEvent(
+                                                  widget.channelId,
+                                                  widget.channelPusherName,
+                                                   'Typing...');
+                                            } catch (e) {
                                               print(e);
                                             }
                                             _typingTimer = Timer(
                                                 const Duration(seconds: 1), () {
-                                              pusherChatService.sendTypingEvent(widget.channelId , null);
+                                              pusherChatService.sendActivityEvent(
+                                                  widget.channelId,
+                                                  widget.channelPusherName,
+                                                  null);
                                             });
                                           },
                                           contentPadding:
@@ -458,17 +629,34 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     if (!thereText) ...{
                                       InkWell(
                                         onTap: () async {
+                                          pusherChatService.sendActivityEvent(
+                                              widget.channelId,
+                                              widget.channelPusherName,
+                                              'Sending file...');
                                           AssetEntity? assetEntity =
-                                              await HelperFunctions.getAssetFromCamera(context);
+                                              await HelperFunctions
+                                                  .getAssetFromCamera(context);
+
                                           if (assetEntity != null) {
-                                            File file = (await assetEntity.file)!;
-                                            String mimeStr = lookupMimeType(file.absolute.path) ?? '';
+                                            File file =
+                                                (await assetEntity.file)!;
+                                            String mimeStr = lookupMimeType(
+                                                    file.absolute.path) ??
+                                                '';
                                             var fileType = mimeStr.split('/');
                                             log(fileType.toString());
                                             if (fileType[0] == 'image') {
-                                              widget.onSendFile.call(file, 'image');
+                                              widget.onSendFile
+                                                  .call(file, 'image');
+                                            }else{
+                                              widget.onSendFile
+                                                  .call(file, 'video');
                                             }
                                           }
+                                          pusherChatService.sendActivityEvent(
+                                              widget.channelId,
+                                              widget.channelPusherName,
+                                              null);
                                         },
                                         child: SvgPicture.asset(
                                           AppAssets.takePictureSvg,
@@ -487,8 +675,13 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             return;
                                           }
                                           recordingNotifier.value = true;
+                                          pusherChatService.sendActivityEvent(
+                                              widget.channelId,
+                                              widget.channelPusherName,
+                                              'Recording...');
                                           await recorder.startRecorder(
-                                            toFile: 'audio.aac',
+                                            toFile:
+                                                'audio${const Uuid().v4()}.aac',
                                           );
                                         },
                                         child: SvgPicture.asset(

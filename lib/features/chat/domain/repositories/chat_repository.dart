@@ -23,4 +23,5 @@ abstract class ChatRepository {
   Future<Either<Failure,MyContactsResponseModel>> getContacts();
   Future<Either<Failure,MyChatsResponseModel>> getChats();
   Future<Either<Failure,List<Message>>> getMessagesForChat(Map<String , dynamic> params);
+  Future<Either<Failure,List<Message>>> getMessagesBetween(Map<String , dynamic> params);
 }

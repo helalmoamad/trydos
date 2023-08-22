@@ -8,8 +8,12 @@ abstract class PrefsRepository {
 
   int? get myId;
 
+  String? get myName;
+
 
   Future<bool> setToken(String token);
+
+  Future<bool> setMyName(String name);
 
   Future<void> setFcmTokenId(int fcmTokenId);
 

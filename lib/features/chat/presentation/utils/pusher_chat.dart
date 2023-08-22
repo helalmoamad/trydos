@@ -3,7 +3,9 @@ import 'package:injectable/injectable.dart';
 import 'package:pusher_client/pusher_client.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/service/language_service.dart';
 import 'dart:convert' as convert;
+import '../../../../main.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../manager/chat_event.dart';
@@ -42,42 +44,51 @@ class PusherChatService {
   subscribe(String channelName) async {
     Channel channel = pusher.subscribe(channelName);
     channel.bind('ChannelReceivedEvent', (event) {
+      dealWithTimer();
       print(event?.data ?? 'ChannelReceivedEvent');
       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
       chatBloc.add(ReceiveMessageFromPusherEvent(
-          data['channel_id'], data['auth_user_id'], data['last_message_id']));
+          data['channel_id'].toString(), data['auth_user_id'], data['last_message_id']));
     });
 
     channel.bind('ChannelWatchedEvent', (event) {
+      dealWithTimer();
       print(event?.data ?? 'ChannelWatchedEvent');
       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
       chatBloc.add(WatchedMessageFromPusherEvent(
-          data['channel_id'], data['auth_user_id'], data['last_message_id']));
+          data['channel_id'].toString(), data['auth_user_id'], data['last_message_id']));
     });
   }
-
-  createPresenceChannel(int channelId) async {
-    Channel channel = pusher.subscribe("presence-typing-$channelId");
-    presenceChannels["presence-typing-$channelId"] = channel;
+Map<String,String> descTranslation={
+    "Typing...": "يكتب...",
+    "Recording...": "يسجل مقطع صوتي...",
+    "Sending file...": "يرسل ملف...",
+};
+  createPresenceChannel(String channelName) async {
+    Channel channel = pusher.subscribe("presence-typing-$channelName");
+    presenceChannels["presence-typing-$channelName"] = channel;
     channel.bind('client-TypingEvent', (event) {
-      print(event?.data ?? 'No Data');
+      dealWithTimer();
       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
-      if (data['desc'] == null) {
+      print(data['desc']);
+      if (data['desc'] == 'null') {
         print('yes it is');
         GetIt.I<AppBloc>().add(RemoveUserFromTypingList(int.parse(data['id'].toString())));
         return;
       }
-      GetIt.I<AppBloc>().add(AddUserToTypingList(int.parse(data['uid'].toString()), int.parse(data['id'].toString())));
+      if(LanguageService.languageCode=='ar'){
+        data['desc']=descTranslation[data['desc']];
+      }
+      GetIt.I<AppBloc>().add(AddUserToTypingList(int.parse(data['uid'].toString()), int.parse(data['id'].toString()),data['desc']));
     });
   }
 
-  void sendTypingEvent(int channelId, String? description) async {
-    print('send typing');
-    var y = await presenceChannels["presence-typing-$channelId"]!.trigger(
+  void sendActivityEvent(String channelId ,String channelName, String? description) async {
+    var y = await presenceChannels["presence-typing-$channelName"]!.trigger(
         'client-TypingEvent',
         convert.jsonEncode({
           "uid": _prefsRepository.myId.toString(),
-          "id": channelId.toString(),
+          "id": channelId,
           "desc": "$description"
         }));
   }

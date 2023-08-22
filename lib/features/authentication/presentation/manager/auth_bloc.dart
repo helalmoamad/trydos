@@ -72,11 +72,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (r) {
         final id = r.data!.id;
         final token = r.data!.accessToken;
+        final name = r.data!.name;
         final checkToken = token?.isNotEmpty ?? false;
 
         if (checkToken) {
           _prefsRepository.setToken(token!);
           _prefsRepository.setMyId(id!);
+          _prefsRepository.setMyName(name!);
         }
         add(StoreFcmTokenEvent(userId: id!, fcmToken: event.fcmToken));
       },

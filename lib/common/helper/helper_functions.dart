@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:contacts_service/contacts_service.dart';
@@ -15,8 +14,11 @@ import 'package:permission_handler/permission_handler.dart';
 
 class HelperFunctions {
   static changeAppStatus(ThemeMode theme) {
-    final color = theme == ThemeMode.dark ? const Color(0xFF191C1D) : const Color(0xFFFBFDFD);
-    final brightness = theme == ThemeMode.light ? Brightness.dark : Brightness.light;
+    final color = theme == ThemeMode.dark
+        ? const Color(0xFF191C1D)
+        : const Color(0xFFFBFDFD);
+    final brightness =
+        theme == ThemeMode.light ? Brightness.dark : Brightness.light;
 
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
@@ -25,10 +27,11 @@ class HelperFunctions {
       ),
     );
   }
-  static Future<String> changeSvgColor(String svgPath , String newColor) async {
-    String svgCode =await rootBundle.loadString(svgPath);
 
-    svgCode=svgCode.replaceAll("CC3333", newColor.toUpperCase());
+  static Future<String> changeSvgColor(String svgPath, String newColor) async {
+    String svgCode = await rootBundle.loadString(svgPath);
+
+    svgCode = svgCode.replaceAll("CC3333", newColor.toUpperCase());
     return svgCode;
   }
 
@@ -38,7 +41,8 @@ class HelperFunctions {
       return await launchUrl(
         uri,
         mode: LaunchMode.externalApplication,
-        webViewConfiguration: const WebViewConfiguration(enableDomStorage: false, enableJavaScript: false),
+        webViewConfiguration: const WebViewConfiguration(
+            enableDomStorage: false, enableJavaScript: false),
       );
     } else {
       throw Exception('Unable to launch url');
@@ -51,7 +55,8 @@ class HelperFunctions {
       return await launchUrl(
         uri,
         mode: LaunchMode.inAppWebView,
-        webViewConfiguration: const WebViewConfiguration(enableDomStorage: true, enableJavaScript: true),
+        webViewConfiguration: const WebViewConfiguration(
+            enableDomStorage: true, enableJavaScript: true),
       );
     } else {
       throw Exception('Unable to launch url');
@@ -60,6 +65,7 @@ class HelperFunctions {
 
   static Locale getInitLocale() {
     final deviceLanguage = WidgetsBinding.instance.window.locale.languageCode;
+    print(deviceLanguage);
     return mpaLanguageCodeToLocale[deviceLanguage] ?? defaultLocal;
   }
 
@@ -79,7 +85,8 @@ class HelperFunctions {
         const end = Offset.zero;
         const curve = Curves.ease;
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
         return SlideTransition(
           position: animation.drive(tween),
@@ -88,90 +95,118 @@ class HelperFunctions {
       },
     );
   }
-  static Future<List<Map<String,dynamic>>> getContactsFromDevice() async {
+
+
+
+  static Future<List<Map<String, dynamic>>> getContactsFromDevice() async {
     final PermissionStatus permissionStatus =
-    await Permission.contacts.request();
-    List<Contact> contacts =[];
+        await Permission.contacts.request();
+    List<Contact> contacts = [];
     if (permissionStatus == PermissionStatus.granted) {
-      contacts =  await ContactsService.getContacts(withThumbnails: false);
+      contacts = await ContactsService.getContacts(withThumbnails: false);
     }
-    return contacts.map((e) => {
-      "mobile_phone":(e.phones?.isNotEmpty ??  false) ?e.phones!.first.value : '',
-      "name":e.displayName,
-    }).toList();
+    List<Contact> myContacts=[];
+    for (Contact contact in contacts ){
+      if(contact.phones?.isNotEmpty ?? false){
+        myContacts.add(contact);
+      }
+    }
+    return myContacts
+        .map((e) => {
+              "mobile_phone": e.phones!.first.value,
+              "name": e.displayName ?? 'No Name',
+            })
+        .toList();
   }
-   static Future<AssetEntity?> getAssetFromCamera(BuildContext context) async{
-     final List<AssetEntity>? assets = await myMultiAssetPicker(context);
-     return assets?[0];
-   }
 
-  static Future<List<AssetEntity>?> myMultiAssetPicker (BuildContext context) {
-      AssetPickerTextDelegate textDelegate = LanguageService.languageCode!='ar' ?   const EnglishAssetPickerTextDelegate() : const ArabicAssetPickerTextDelegate();
-     return AssetPicker.pickAssets(
-       context,
-       pickerConfig: AssetPickerConfig(
-         maxAssets: 1,
-         textDelegate: textDelegate,
-         themeColor: const Color(0xff137AC9),
-         specialItemPosition: SpecialItemPosition.prepend,
-         specialItemBuilder: (
-             BuildContext context,
-             AssetPathEntity? path,
-             int length,
-             ) {
-           if (path?.isAll != true) {
-             return null;
-           }
-           return Semantics(
-             label: textDelegate.sActionUseCameraHint,
-             button: true,
-             onTapHint: textDelegate.sActionUseCameraHint,
-             child: GestureDetector(
-               behavior: HitTestBehavior.opaque,
-               onTap: () async {
-                 final AssetEntity? result = await _pickFromCamera(context);
-                 if (result == null) {
-                   return;
-                 }
-                 final AssetPicker<AssetEntity, AssetPathEntity> picker = context.findAncestorWidgetOfExactType()!;
-                 final DefaultAssetPickerBuilderDelegate builder =
-                 picker.builder as DefaultAssetPickerBuilderDelegate;
-                 final DefaultAssetPickerProvider p = builder.provider;
-                 await p.switchPath(
-                   PathWrapper<AssetPathEntity>(
-                     path:
-                     await p.currentPath!.path.obtainForNewProperties(),
-                   ),
-                 );
-                 p.selectAsset(result);
-               },
-               child: const Center(
-                 child: Icon(Icons.camera_alt_outlined, size: 42.0,color: Colors.white),
-               ),
-             ),
-           );
-         },
-       ),
-     );
-   }
-   static Future<File?> pickDocumentFile() async{
-     FilePickerResult? result = await FilePicker.platform.pickFiles();
+  static Future<AssetEntity?> getAssetFromCamera(BuildContext context) async {
+    final List<AssetEntity>? assets = await myMultiAssetPicker(context);
+    return assets?[0];
+  }
 
-     if (result != null) {
-       File file = File(result.files.single.path!);
-       return file;
-     } else {
-       return null;
-     }
-   }
+  static Future<List<AssetEntity>?> myMultiAssetPicker(BuildContext context) {
+    AssetPickerTextDelegate textDelegate = LanguageService.languageCode != 'ar'
+        ? const EnglishAssetPickerTextDelegate()
+        : const ArabicAssetPickerTextDelegate();
+    return AssetPicker.pickAssets(
+      context,
+      pickerConfig: AssetPickerConfig(
+        maxAssets: 1,
+        textDelegate: textDelegate,
+        themeColor: const Color(0xff137AC9),
+        specialItemPosition: SpecialItemPosition.prepend,
+        specialItemBuilder: (
+          BuildContext context,
+          AssetPathEntity? path,
+          int length,
+        ) {
+          if (path?.isAll != true) {
+            return null;
+          }
+          return Semantics(
+            label: textDelegate.sActionUseCameraHint,
+            button: true,
+            onTapHint: textDelegate.sActionUseCameraHint,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () async {
+                final AssetEntity? result = await _pickFromCamera(context);
+                if (result == null) {
+                  return;
+                }
+                final AssetPicker<AssetEntity, AssetPathEntity> picker =
+                    context.findAncestorWidgetOfExactType()!;
+                final DefaultAssetPickerBuilderDelegate builder =
+                    picker.builder as DefaultAssetPickerBuilderDelegate;
+                final DefaultAssetPickerProvider p = builder.provider;
+                await p.switchPath(
+                  PathWrapper<AssetPathEntity>(
+                    path: await p.currentPath!.path.obtainForNewProperties(),
+                  ),
+                );
+                p.selectAsset(result);
+              },
+              child: const Center(
+                child: Icon(Icons.camera_alt_outlined,
+                    size: 42.0, color: Colors.white),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  static String getTheFirstTwoLettersOfName(String name) {
+    return name.split(' ').length == 2
+        ? name.split(' ')[0][0] + name.split(' ')[1][0]
+        : name.split(' ').first.length >1 ? (name.split(' ')[0][0] + name.split(' ')[0][1]):name.split(' ').first ;
+  }
+
+  static Future<File?> pickDocumentFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      File file = File(result.files.single.path!);
+      return file;
+    } else {
+      return null;
+    }
+  }
+
   static Future<AssetEntity?> _pickFromCamera(BuildContext c) {
-    CameraPickerTextDelegate textDelegate = LanguageService.languageCode!='ar' ?   const EnglishCameraPickerTextDelegate() : const ArabicCameraPickerTextDelegate();
+    CameraPickerTextDelegate textDelegate = LanguageService.languageCode != 'ar'
+        ? const EnglishCameraPickerTextDelegate()
+        : const ArabicCameraPickerTextDelegate();
     return CameraPicker.pickFromCamera(
       c,
       locale: LanguageService.currentLanguage,
-      pickerConfig: CameraPickerConfig(enableRecording: true, textDelegate:textDelegate ),
+
+      pickerConfig:
+          CameraPickerConfig(enableRecording: true, textDelegate: textDelegate),
     );
   }
+
   static String replaceArabicNumber(String input) {
     const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
@@ -181,28 +216,30 @@ class HelperFunctions {
     }
     return input;
   }
-  static String getZonedDateInFormat(DateTime date){
+
+  static String getZonedDateInFormat(DateTime date) {
     String formattedTime = DateFormat.Hm().format(date.toLocal());
     return formattedTime;
   }
 
-  static String getDateInFormat(DateTime date){
+  static String getDateInFormat(DateTime date) {
     String formattedTime = DateFormat.Hm().format(date);
     return formattedTime;
   }
 
-  static DateTime getZonedDate(DateTime date){
+  static DateTime getZonedDate(DateTime date) {
     return date.toLocal();
   }
-  
-  static String getTimeInFormat(Duration duration){
-    String? hours= duration.inHours > 0 ? twoDigits(duration.inHours.remainder(60)) : null;
-    String minutes=twoDigits(duration.inMinutes.remainder(60));
-    String seconds=twoDigits(duration.inSeconds.remainder(60));
+
+  static String getTimeInFormat(Duration duration) {
+    String? hours =
+        duration.inHours > 0 ? twoDigits(duration.inHours.remainder(60)) : null;
+    String minutes = twoDigits(duration.inMinutes.remainder(60));
+    String seconds = twoDigits(duration.inSeconds.remainder(60));
     return '${hours ?? ''}$minutes:$seconds';
   }
-  static String twoDigits(int n){
-    return n.toString().padLeft(2,'0');
+
+  static String twoDigits(int n) {
+    return n.toString().padLeft(2, '0');
   }
-  
 }

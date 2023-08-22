@@ -67,26 +67,32 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   _onAddUserToTypingList(AddUserToTypingList event, Emitter<AppState> emit) {
-    if(state.typingIds.containsKey(event.chatId)){
+    if(state.pusherActivityIds.containsKey(event.chatId)){
       return ;
     }
-    Map<int , dynamic> typingIds=Map.of(state.typingIds);
-    typingIds[event.chatId]=event.userId;
+    Map<int , dynamic> pusherActivityIds=Map.of(state.pusherActivityIds);
+    Map<int , String?> pusherActivityDescription=Map.of(state.pusherActivityDescription);
+    pusherActivityIds[event.chatId]=event.userId;
+    pusherActivityDescription[event.chatId]=event.description;
     emit(state.copyWith(
-      typingIds: typingIds,
+      pusherActivityIds: pusherActivityIds,
+      pusherActivityDescription: pusherActivityDescription,
     ));
   }
    _onRemoveUserFromTypingList(RemoveUserFromTypingList event, Emitter<AppState> emit) {
-     if(!state.typingIds.containsKey(event.chatId)){
+     if(!state.pusherActivityIds.containsKey(event.chatId)){
        return ;
      }
      print('stop typing');
-     Map<int , dynamic> typingIds=Map.of(state.typingIds);
-     print(typingIds);
-     typingIds.remove(event.chatId);
-     print(typingIds);
+     Map<int , dynamic> pusherActivityIds=Map.of(state.pusherActivityIds);
+     Map<int , String?> pusherActivityDescription=Map.of(state.pusherActivityDescription);
+     pusherActivityDescription[event.chatId]=null;
+     print(pusherActivityIds);
+     pusherActivityIds.remove(event.chatId);
+     print(pusherActivityIds);
     emit(state.copyWith(
-        typingIds: typingIds,
+      pusherActivityIds: pusherActivityIds,
+      pusherActivityDescription: pusherActivityDescription,
     ));
   }
 }

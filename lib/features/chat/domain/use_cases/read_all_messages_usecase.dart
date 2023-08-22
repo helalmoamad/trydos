@@ -23,7 +23,7 @@ class ReadAllMessagesUseCase extends UseCase<bool , ReadAllMessagesParams>{
 
 }
 class ReadAllMessagesParams{
-  final int channelId;
+  final String channelId;
 
   ReadAllMessagesParams({
     required this.channelId,

@@ -1,3 +1,7 @@
 {
-
+  "typing" : "Typing...",
+  "recording" : "Recording...",
+  "sending_file" : "sending file...",
+  "sending_picture" : "sending photo...",
+  "sending_video" : "sending video..."
 }
