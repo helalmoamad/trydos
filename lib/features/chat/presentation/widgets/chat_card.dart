@@ -53,7 +53,6 @@ class _ChatCardState extends ThemeState<ChatCard> {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   late DateTime chatTime;
   late ChatBloc chatBloc;
-  int countMessagesReceivedToMeNow = 0;
 
   @override
   void initState() {
@@ -111,9 +110,6 @@ class _ChatCardState extends ThemeState<ChatCard> {
         // TODO: implement listener
       },
       builder: (context, state) {
-        if (state.currentChannelReceivedMessage == widget.chat.id) {
-          countMessagesReceivedToMeNow++;
-        }
         String messageType='';
         if(!widget.chat.messages.isNullOrEmpty) {
           messageType = (widget.chat.messages!.first.messageType?.name).toString();
@@ -386,37 +382,39 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                 .lastMessageAudioSvg,width: 20.w,height: 20.h,),
                                                         10.horizontalSpace,
                                                       },
-                                                      Text(
-                                                          messageType !=
-                                                              'TextMessage' ? (messageType ==
-                                                              'ImageMessage'
-                                                                ? 'Photo'
-                                                                : messageType ==
-                                                              'VideoMessage'
-                                                              ? 'Video' : messageType ==
-                                                              'FileMessage'
-                                                              ?'File' : 'Voice')
-                                                            : widget
-                                                                .chat
-                                                                .messages!
-                                                                .first
-                                                                .messageContent!
-                                                                .content
-                                                                .toString(),
-                                                        maxLines:
-                                                            widget.thereActivity
-                                                                ? 1
-                                                                : 3,
-                                                        textAlign:
-                                                            TextAlign.start,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: textTheme
-                                                            .bodyText2?.lr
-                                                            .copyWith(
-                                                                height: 1.22,
-                                                                color: colorScheme
-                                                                    .grey200),
+                                                      Flexible(
+                                                        child: Text(
+                                                            messageType !=
+                                                                'TextMessage' ? (messageType ==
+                                                                'ImageMessage'
+                                                                  ? 'Photo'
+                                                                  : messageType ==
+                                                                'VideoMessage'
+                                                                ? 'Video' : messageType ==
+                                                                'FileMessage'
+                                                                ?'File' : 'Voice')
+                                                              : widget
+                                                                  .chat
+                                                                  .messages!
+                                                                  .first
+                                                                  .messageContent!
+                                                                  .content
+                                                                  .toString(),
+                                                          maxLines:
+                                                              widget.thereActivity
+                                                                  ? 1
+                                                                  : 3,
+                                                          textAlign:
+                                                              TextAlign.start,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: textTheme
+                                                              .bodyText2?.lr
+                                                              .copyWith(
+                                                                  height: 1.22,
+                                                                  color: colorScheme
+                                                                      .grey200),
+                                                        ),
                                                       ),
                                                     ],
                                                   ),
@@ -425,7 +423,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                         28.horizontalSpace,
                                         Row(
                                           children: [
-                                            if (((widget.chat.totalUnreadMessageCount ?? 0)-countMessagesReceivedToMeNow) >
+                                            if (((widget.chat.totalUnreadMessageCount ?? 0)) >
                                                     0 &&
                                                 widget.chat
                                                         .totalUnreadMessageCount !=
@@ -439,7 +437,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                               10.horizontalSpace,
                                               Text(
                                               (widget.chat
-                                                    .totalUnreadMessageCount!-countMessagesReceivedToMeNow)
+                                                    .totalUnreadMessageCount!)
                                                     .toString(),
                                                 maxLines: 1,
                                                 style: textTheme.caption?.rr

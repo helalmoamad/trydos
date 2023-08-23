@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/main.dart';
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
 import 'sensitive_connectivity_bloc.dart';
 
@@ -13,11 +14,11 @@ class ConnectivityObserver {
   static ConnectivityResult previousEvent = ConnectivityResult.other;
   static ConnectivityResult? currentEvent ;
   static ConnectivityObserver? instance;
-
+  static  PrefsRepository prefs = GetIt.I<PrefsRepository>();
   static createInstance(BuildContext context) {
     instance ??= ConnectivityObserver();
     Connectivity().onConnectivityChanged.listen((event) {
-      if(previousEvent== ConnectivityResult.none){
+      if(previousEvent== ConnectivityResult.none && prefs.token!=null){
         GetIt.I<ChatBloc>().add(const GetChatsEvent());
       }
       currentEvent=event;

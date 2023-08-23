@@ -60,6 +60,9 @@ class _BasePageState extends State<BasePage> {
       LocalNotificationService().showNotificationWithPayload(message: event);
     });
   }
+  void navigation(){
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,8 +77,10 @@ class _BasePageState extends State<BasePage> {
               return const SizedBox.shrink();
             }
           }),
-      body: BlocListener<ChatBloc, ChatState>(
-        listener: (context, state) {
+      body: BlocBuilder<ChatBloc, ChatState>(
+        builder: (context, state) {
+          print(initialMessage);
+          print(state.chats.isNotEmpty);
           if (initialMessage != null && state.chats.isNotEmpty) {
             AppBloc appBloc = BlocProvider.of<AppBloc>(context);
             appBloc.add(ChangeBasePage(2));
@@ -85,21 +90,31 @@ class _BasePageState extends State<BasePage> {
             chats.addAll(state.pinnedChats);
             chats.addAll(state.chats);
             Chat chat = chats.firstWhere(
-                (element) => element.id == initialMessage!.channelId);
+                    (element) => element.id == initialMessage!.channelId);
             // int chatIndex = chats.indexWhere((element) => element.id == initialMessage!.channelId);
             User? receiver = chat.channelMembers!
                 .firstWhere((element) =>
-                    element.userId != GetIt.I<PrefsRepository>().myId)
+            element.userId != GetIt
+                .I<PrefsRepository>()
+                .myId)
                 .user;
-            String receiverName = receiver?.name ==null ? 'UK' :HelperFunctions.getTheFirstTwoLettersOfName(receiver!.name!);
+            String receiverName = receiver?.name == null
+                ? 'UK'
+                : HelperFunctions.getTheFirstTwoLettersOfName(receiver!.name!);
             ChannelMember me = chat.channelMembers!.firstWhere(
-                (element) => element.userId == GetIt.I<PrefsRepository>().myId);
+                    (element) =>
+                element.userId == GetIt
+                    .I<PrefsRepository>()
+                    .myId);
             User? sender = me.user;
-            String senderName = sender?.name ==null ? 'UK' :HelperFunctions.getTheFirstTwoLettersOfName(sender!.name!);
+            String senderName = sender?.name == null ? 'UK' : HelperFunctions
+                .getTheFirstTwoLettersOfName(sender!.name!);
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => BlocBuilder<ChatBloc, ChatState>(
+                    builder: (context) =>
+                        BlocBuilder<ChatBloc, ChatState>(
                           builder: (context, state) {
                             return SinglePageChat(
                               chatId: chat.id!.toString(),
@@ -113,16 +128,17 @@ class _BasePageState extends State<BasePage> {
                             );
                           },
                         )));
+            });
           }
-        },
-        child: BlocBuilder<AppBloc, AppState>(
-          buildWhen: (oldState, newState) =>
-              oldState.currentIndex != newState.currentIndex,
-          builder: (_, state) {
-            return pages[state.currentIndex];
-          },
-        ),
-      ),
+
+          return BlocBuilder<AppBloc, AppState>(
+            buildWhen: (oldState, newState) =>
+            oldState.currentIndex != newState.currentIndex,
+            builder: (_, state) {
+              return pages[state.currentIndex];
+            },
+          );
+        }),
     );
   }
 }

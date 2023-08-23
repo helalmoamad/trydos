@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as fln;
 import 'package:trydos/main.dart';
+import '../../../../base_page.dart';
 import '../../../../features/chat/presentation/pages/single_page_chat.dart';
 import '../../../../firebase_options.dart';
 import 'i_notification_factory.dart';
@@ -13,6 +14,9 @@ import 'local_notification_service.dart';
 import 'notification_type.dart';
 import '../notification_utils/payload_model.dart';
 import 'notificaton_factory_impl.dart';
+import '../../../../features/chat/data/models/my_chats_response_model.dart' as chat;
+import 'package:trydos/main.dart' as main;
+import 'dart:convert' as convert;
 class NotificationProcess {
   static NotificationProcess? _instance;
   static String? myFcmToken;
@@ -70,8 +74,12 @@ class NotificationProcess {
     handleTappedNotificationOnTerminatedState();
 
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      log('fore ground message');
-     // handleNotificationForLocal('');
+      print('foreground message');
+      print('onMessageOpenedApp');
+      chat.Message myMessage = chat.Message.fromJson(
+          convert.jsonDecode(event.data['message']));
+      main.initialMessage=myMessage;
+      navigatorKey.currentState!.pushAndRemoveUntil(MaterialPageRoute(builder: (_)=> const BasePage()),(route) => false,);
     });
   }
 

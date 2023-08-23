@@ -24,7 +24,6 @@ class LoginPage extends StatefulWidget {
 }
 
  class _LoginPageState extends ThemeState<LoginPage> with FormStateMinxin {
-  final termsAndConditionsNotifier = ValueNotifier(true);
   final showPasswordNotifier = ValueNotifier(true);
   late final ValueNotifier<bool> filledPasswordNotifier;
   late final ValueNotifier<Country?> countryNotifier;
@@ -70,19 +69,14 @@ class LoginPage extends StatefulWidget {
                 ),
               ),
               22.verticalSpace,
-                ValueListenableBuilder<bool>(
-                    valueListenable: termsAndConditionsNotifier,
-                    builder: (context, value, _) {
-                      return PhoneInputField(
-                        phoneController: form.controllers[0],
-                        onInputChanged: (phone) {
-                          log('phone is $phone');
-                          log('phone is ${phone.phoneNumber!.substring(phone.dialCode!.length)}');
-                          fullPhone=phone.phoneNumber;
-                        },
-                      );
-                },
-              ),
+                PhoneInputField(
+                  phoneController: form.controllers[0],
+                  onInputChanged: (phone) {
+                    log('phone is $phone');
+                    log('phone is ${phone.phoneNumber!.substring(phone.dialCode!.length)}');
+                    fullPhone=phone.phoneNumber;
+                  },
+                ),
               10.verticalSpace,
               BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
                 return AppTextField(
@@ -123,27 +117,22 @@ class LoginPage extends StatefulWidget {
                 },
                 builder: (context, state) {
                   return ValueListenableBuilder<bool>(
-                        valueListenable: termsAndConditionsNotifier,
-                        builder: (context, isCheckedTerms, child) {
-                          return ValueListenableBuilder<bool>(
-                              valueListenable: filledPasswordNotifier,
-                              builder: (context, isFilledPassword, _) {
-                                return SizedBox(
-                                  width: 1.sw,
-                                  child: AppElevatedButton(
-                                    appButtonStyle: AppButtonStyle.primary,
-                                    onPressed: isCheckedTerms &&
-                                            isFilledPassword
-                                        ? _onLogIn
-                                        : null,
-                                    text: 'Login',
-                                    sensitiveNetwork: true,
-                                    isLoading:
-                                        state.loginUserStatus == LoginUserStatus.loading,
-                                  ),
-                                );
-                              });
-                        });
+                      valueListenable: filledPasswordNotifier,
+                      builder: (context, isFilledPassword, _) {
+                        return SizedBox(
+                          width: 1.sw,
+                          child: AppElevatedButton(
+                            appButtonStyle: AppButtonStyle.primary,
+                            onPressed:
+                                    isFilledPassword
+                                ? _onLogIn
+                                : null,
+                            text: 'Login',
+                            isLoading:
+                                state.loginUserStatus == LoginUserStatus.loading,
+                          ),
+                        );
+                      });
                   },
               ),
               60.verticalSpace,
@@ -155,10 +144,10 @@ class LoginPage extends StatefulWidget {
   }
 
   void _onLogIn() {
+    print('hellooooooooooooo');
     form.key.currentState!.save();
     final validate = form.key.currentState!.validate() && fullPhone != null;
     if (!validate) return;
-    print(fullPhone);
     String fcmToken=NotificationProcess.myFcmToken!;
     BlocProvider.of<AuthBloc>(context).add(
       LoginEvent(

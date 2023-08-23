@@ -415,10 +415,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     if (state.chats.any(
           (e) => e.id == event.message.channelId,
     )) {
-      chats=state.chats;
+      chats=List.of(state.chats);
     }else{
       fromPinned=true;
-      chats=state.pinnedChats;
+      chats=List.of(state.pinnedChats);
 
     }
     Chat chat = chats.firstWhere(
@@ -435,14 +435,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       chats.removeWhere((element) => element.id == chat.id);
       chats.insert(
           0,
-          chat.copyWith(totalUnreadMessageCount: (chat.totalUnreadMessageCount ?? 0) + 1));
+          chat.copyWith(totalUnreadMessageCount: (chat.totalUnreadMessageCount ?? 0) + event.message.senderUserId! !=_prefsRepository.myId ? 1 : 0));
     }
-    int index=messages.indexWhere((element) => element.id==event.prevMessageId);
     messages = List.of(chat.messages ?? []);
     messages.insert(0, event.message);
+    int index=messages.indexWhere((element) => element.id==event.prevMessageId);
     emit(state.copyWith(
       receiveMessageStatus: ReceiveMessageStatus.success,
-        unReadMessagesFromAllChats: state.unReadMessagesFromAllChats + 1,
+        unReadMessagesFromAllChats: state.unReadMessagesFromAllChats + event.message.senderUserId! !=_prefsRepository.myId ? 1 : 0,
         currentChannelReceivedMessage: event.message.channelId,
         channelId: event.message.channelId,
       chats: fromPinned ? state.chats : chats.map((e) {
@@ -686,6 +686,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   FutureOr<void> _onWatchedMessageFromPusherEvent(
       WatchedMessageFromPusherEvent event, Emitter<ChatState> emit) {
     emit(state.copyWith(
+      unReadMessagesFromAllChats: state.unReadMessagesFromAllChats -1,
       chats: getChatsAfterEditPropertyOfMessage(state.chats, null, true,
           event.channelId, event.lastMessageId, event.userId),
       pinnedChats: getChatsAfterEditPropertyOfMessage(state.pinnedChats, null,
@@ -700,6 +701,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         ? chats.map((e) {
             if (e.id == channelId) {
               return e.copyWith(
+                totalUnreadMessageCount: watched != null ? e.totalUnreadMessageCount!-1 : e.totalUnreadMessageCount,
                   messages: e.messages?.map((m) {
                 return m.copyWith(
                     messageStatus: m.messageStatus?.map((s) {

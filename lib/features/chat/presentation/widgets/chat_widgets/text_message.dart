@@ -78,10 +78,8 @@ class _TextMessageState extends ThemeState<TextMessage> {
 
   @override
   Widget build(BuildContext context) {
-    print('mmm : ${widget.messageId}');
     return BlocBuilder<ChatBloc, ChatState>(
       builder: (context, state) {
-        log('rebuild');
         return Column(
           key: key,
           children: [
