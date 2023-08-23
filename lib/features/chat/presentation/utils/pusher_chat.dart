@@ -71,7 +71,7 @@ Map<String,String> descTranslation={
       dealWithTimer();
       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
       print(data['desc']);
-      if (data['desc'] == 'null') {
+      if (data['desc'] == null) {
         print('yes it is');
         GetIt.I<AppBloc>().add(RemoveUserFromTypingList(int.parse(data['id'].toString())));
         return;

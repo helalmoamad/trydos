@@ -110,11 +110,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
   }
 
   bool isPaginationEvent = false;
-  bool rebuildScreen = true, fromPagination = false,getChats=false,getMessagesBetween=false;
+  bool rebuildScreen = true,
+      fromPagination = false,
+      getChats = false,
+      getMessagesBetween = false;
 
   @override
   Widget build(BuildContext context) {
-    print('kkkkkkkkkkkkkkkkkkkkkkkkkkk');
     scrollToIndex(3 * data.length, preferPosition: AutoScrollPosition.end);
     return BlocConsumer<ChatBloc, ChatState>(
       listener: (context, state) {
@@ -136,8 +138,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
             (previousChat.messages?.length != currentChat.messages?.length);
         fromPagination =
             previousChat.paginationStatus != currentChat.paginationStatus;
-        getChats=p.getChatsStatus != c.getChatsStatus;
-        getMessagesBetween=p.getMessagesBetweenStatus != c.getMessagesBetweenStatus;
+        getChats = p.getChatsStatus != c.getChatsStatus;
+        getMessagesBetween =
+            p.getMessagesBetweenStatus != c.getMessagesBetweenStatus;
         return rebuildScreen ||
             p.unReadMessagesFromAllChats != c.unReadMessagesFromAllChats;
       },
@@ -149,6 +152,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   (element) => element.id.toString() == widget.chatId));
 
           if (data.isEmpty) {
+            print('data empty');
             preProcessingOfMessaging(
               chat.messages ?? [],
               0,
@@ -158,11 +162,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
               widget.senderPhoto,
               widget.receiverPhoto,
             );
-          }else if(getChats){
+          } else if (getChats) {
+            print('get chats');
             data.clear();
-            previousMessageSenderId=null;
-            currentMessageSenderId=null;
-            messagesByDate={};
+            previousMessageSenderId = null;
+            currentMessageSenderId = null;
+            messagesByDate = {};
             lastDate = DateTime.now();
             preProcessingOfMessaging(
               chat.messages ?? [],
@@ -173,39 +178,29 @@ class _SinglePageChatState extends State<SinglePageChat> {
               widget.senderPhoto,
               widget.receiverPhoto,
             );
-          } else if(getMessagesBetween){
+          } else if (getMessagesBetween) {
+            print('messages between');
             List<Message> messages = [];
-            bool enableAdd=false;
-            for (int i = 0;
-            i < chat.messages!.length;
-            i++) {
-              if(chat.messages![i].id==chatState.firstMessageId){
-                enableAdd=true;
-              }
-              if(!enableAdd)continue;
-              messages.add(chat.messages![i]);
-              if(chat.messages![i].id==chatState.secondMessageId){
+            for (int i = chat.messages!.length - 1; i >= 0; i--) {
+              if (getMessageIndex(chat.messages![i].id,null)!=-1) {
                 break;
               }
+              print('id is: ${chat.messages![i].id}');
+              messages.insert(0, chat.messages![i]);
             }
-            preProcessingOfMessaging(
-              messages,
-              0,
-              false,
-              widget.senderName,
-              widget.receiverName,
-              widget.senderPhoto,
-              widget.receiverPhoto,
-              scrollToParentMessage: chatState.scrollToParentMessage,
-              fromGetMessagesBetween: true
-            );
-          }else if ((chatState.sendMessageStatus ==
+             preProcessingOfMessaging(messages, 0, false, widget.senderName,
+                widget.receiverName, widget.senderPhoto, widget.receiverPhoto,
+                fromGetMessagesBetween: true , replacedReplyMessage: chat.messages!.firstWhere(
+                         (element) => element.id == chatState.secondMessageId));
+
+          } else if ((chatState.sendMessageStatus ==
                       SendMessageStatus.loading ||
                   chatState.receiveMessageStatus ==
                           ReceiveMessageStatus.success &&
-                      widget.chatId == chatState.currentChannelReceivedMessage.toString()) &&
+                      widget.chatId ==
+                          chatState.currentChannelReceivedMessage.toString()) &&
               !chat.messages.isNullOrEmpty) {
-            print('execute');
+            print('sending or receive');
             preProcessingOfMessaging(
               [chat.messages![0]],
               -1,
@@ -218,7 +213,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
             rebuildMessage.value = -1;
           }
           if (fromPagination) {
-            print('t3');
+            print('pagination');
             List<Message> messages = [];
             for (int i = chat.messages!.length - 10;
                 i < chat.messages!.length;
@@ -350,7 +345,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                           int.parse(widget.chatId)] !=
                                       null) {
                                     return Text(
-                                      state.pusherActivityDescription[int.parse(widget.chatId)].toString(),
+                                      state.pusherActivityDescription[
+                                              int.parse(widget.chatId)]
+                                          .toString(),
                                       overflow: TextOverflow.ellipsis,
                                       style: textTheme.caption?.mr.copyWith(
                                           color: const Color(0xff007CFF)),
@@ -926,6 +923,23 @@ class _SinglePageChatState extends State<SinglePageChat> {
     }
   }
 
+  void dealWithExistMessage(
+    String senderName,
+    String receiverName,
+    String? senderPhoto,
+    String? receiverPhoto, {
+    required Message element,
+  }) async {
+    int index = getMessageIndex(element.id, null);
+    data.removeAt(index);
+    data.removeAt(index - 1);
+    bool thereIsDate = (data[index - 2] is MessagesDate);
+    await addTheMessageWidget(index - 1, element, senderName, receiverName,
+        senderPhoto, receiverPhoto, getIsFirstMessage(element.id), thereIsDate);
+    index = getMessageIndex(element.parentMessageId, element.localParentMessageId);
+    scrollToIndex(index);
+  }
+
   void preProcessingOfMessaging(
       List<Message> messages,
       int insertPosition,
@@ -934,9 +948,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       String receiverName,
       String? senderPhoto,
       String? receiverPhoto,
-  {bool scrollToParentMessage=false,bool fromGetMessagesBetween=false}
-      ) async {
-    print('calling');
+      {bool fromGetMessagesBetween = false , Message? replacedReplyMessage}) async {
     if (messages.isEmpty) {
       return;
     }
@@ -962,11 +974,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
         data.insert(data.length, MessagesDate(date: formatDate(sendDate)));
         messagesByDate[sendDate] = newMessagesByDate[sendDate] ?? [];
       }
-      int index=-1;
+      bool isFirstMessage = false;
       for (int i = 0; i < newMessagesByDate[sendDate]!.length; i++) {
         Message element = newMessagesByDate[sendDate]![i];
-        index=getMessageIndex(element.id,null);
-        bool isFirstMessage = false;
+        isFirstMessage = false;
         if (insertPosition == 0) {
           isFirstMessage = newMessagesByDate[sendDate]![
                       min(i + 1, newMessagesByDate[sendDate]!.length - 1)]
@@ -974,7 +985,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
               element.senderUserId;
         } else {
           isFirstMessage = !(element.senderUserId == currentMessageSenderId);
-          print('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
         }
         if (currentMessageSenderId == null && insertPosition == -1) {
           isFirstMessage = true;
@@ -984,27 +994,16 @@ class _SinglePageChatState extends State<SinglePageChat> {
           isFirstMessage = true;
           thereIsDate = true;
         }
-        if(index!=-1){
-          data.removeAt(index);
-          data.removeAt(index-1);
-          //thereIsDate = data[index-2] is MessagesDate;
-        }
         print('$i : $isFirstMessage');
         await addTheMessageWidget(
-            index!=-1 ? index-1 : insertPosition,
+            insertPosition,
             element,
             senderName,
             receiverName,
             senderPhoto,
             receiverPhoto,
-            //index != -1 ? getIsFirstMessage(element.id):
             isFirstMessage,
             thereIsDate);
-        if(i==newMessagesByDate[sendDate]!.length-1 && scrollToParentMessage){
-          index=getMessageIndex(element.id,null);
-          scrollToIndex(index);
-        }
-        index=-1;
       }
       thereIsDate = false;
       if (!messagesByDate.containsKey(sendDate) && insertPosition == 0) {
@@ -1013,7 +1012,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         messagesByDate[sendDate] = newMessagesByDate[sendDate] ?? [];
       }
     }
-    if(!fromGetMessagesBetween) {
+    if (!fromGetMessagesBetween) {
       currentMessageSenderId = messages[0].senderUserId;
     }
     data.add(30.verticalSpace);
@@ -1022,6 +1021,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
       print('scrolling');
       scrollToTheEnd();
     }
+   if(fromGetMessagesBetween){
+     dealWithExistMessage(widget.senderName, widget.receiverName,
+         widget.senderPhoto, widget.receiverPhoto,
+         element: replacedReplyMessage!);
+   }
   }
 
   addTheMessageWidget(
@@ -1038,26 +1042,28 @@ class _SinglePageChatState extends State<SinglePageChat> {
         ?.firstWhere((e) => e.userId != _prefsRepository.myId);
     print('ee: ${element.parentMessageId}');
     print('ee: ${element.parentMessage}');
-    if(insertPosition==-1) {
+    if (insertPosition == -1) {
       data.insert(
           data.length,
           thereIsDate
               ? 10.verticalSpace
               : isFirstMessage
-              ? 30.verticalSpace
-              : 10.verticalSpace);
+                  ? 30.verticalSpace
+                  : 10.verticalSpace);
     }
     if (element.parentMessageId != null && element.parentMessage != null) {
       Message parentMessage = element.parentMessage!;
       MessageStatus? parentMessageStatus = parentMessage.messageStatus
           ?.firstWhere((e) => e.userId != _prefsRepository.myId);
-      int index = getMessageIndex(element.parentMessageId,element.localParentMessageId);
+      int index = getMessageIndex(element.parentMessageId, element.localParentMessageId);
       if (parentMessage.senderUserId != element.senderUserId) {
         data.insert(
             insertPosition == -1 ? data.length : insertPosition,
             ReplayMessage(
                 messageDate: element.createdAt!,
-                scrollToMessage: () => scrollToIndex(index,currentId: element.id! ,parentMessageId: element.parentMessageId!),
+                scrollToMessage: () => scrollToIndex(index,
+                    currentId: element.id!,
+                    parentMessageId: element.parentMessageId!),
                 messageId: element.parentMessageId!,
                 answeredFilePath: element.mediaMessageContent?[0].filePath,
                 messageAnswer: element.messageContent?.content,
@@ -1093,6 +1099,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     : parentMessage.messageContent!.content.toString(),
                 messageAnswerId: element.id!));
       } else {
+        if(element.id=='1535'){
+          print('parent $index');
+        }
         data.insert(
             insertPosition == -1 ? data.length : insertPosition,
             ReplayOnMeMessage(
@@ -1101,7 +1110,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 answeredFilePath: element.mediaMessageContent?[0].filePath,
                 messageAnswer: element.messageContent?.content,
                 answeredFile: element.file,
-                scrollToMessage: () => scrollToIndex(index,currentId: element.id! ,parentMessageId: element.parentMessageId!),
+                scrollToMessage: () => scrollToIndex(index,
+                    currentId: element.id!,
+                    parentMessageId: element.parentMessageId!),
                 isISentFirstMessage:
                     parentMessage.senderUserId == _prefsRepository.myId,
                 isSent: element.senderUserId == _prefsRepository.myId,
@@ -1133,7 +1144,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     : parentMessage.messageContent!.content.toString(),
                 messageAnswerId: element.id!));
       }
-    }else {
+    } else {
       switch (messageType) {
         case 'TextMessage':
           data.insert(
@@ -1147,10 +1158,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 userMessageName: element.receiverUserId != _prefsRepository.myId
                     ? senderName
                     : receiverName,
-                userMessagePhoto: element.receiverUserId !=
-                    _prefsRepository.myId
-                    ? senderPhoto
-                    : receiverPhoto,
+                userMessagePhoto:
+                    element.receiverUserId != _prefsRepository.myId
+                        ? senderPhoto
+                        : receiverPhoto,
                 isReceived: (messageStatus?.isReceived ?? 0) == 1,
                 isFirstMessage: isFirstMessage,
                 time: element.createdAt!,
@@ -1170,10 +1181,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 userMessageName: element.receiverUserId != _prefsRepository.myId
                     ? senderName
                     : receiverName,
-                userMessagePhoto: element.receiverUserId !=
-                    _prefsRepository.myId
-                    ? senderPhoto
-                    : receiverPhoto,
+                userMessagePhoto:
+                    element.receiverUserId != _prefsRepository.myId
+                        ? senderPhoto
+                        : receiverPhoto,
                 isFirstMessage: isFirstMessage,
                 isRead: messageStatus?.isWatched ?? false,
                 isReceived: (messageStatus?.isReceived ?? 0) == 1,
@@ -1183,8 +1194,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
             );
           } else {
             print('length : ${element.mediaMessageContent?.length}');
-            for (int i = 0; i <
-                (element.mediaMessageContent?.length ?? 0); i++) {
+            for (int i = 0;
+                i < (element.mediaMessageContent?.length ?? 0);
+                i++) {
               File? file = await FileSaving().checkExistence(
                   element.mediaMessageContent![i].filePath,
                   element.mediaMessageContent![i].fileName!,
@@ -1195,18 +1207,18 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   isSent: element.receiverUserId != _prefsRepository.myId,
                   imageUrl: element.mediaMessageContent![i].filePath,
                   imageFile: file,
-                  messageId: element.mediaMessageContent![i].messageId
-                      .toString(),
+                  messageId:
+                      element.mediaMessageContent![i].messageId.toString(),
                   time: element.createdAt!,
                   senderId: element.senderUserId!,
-                  userMessageName: element.receiverUserId !=
-                      _prefsRepository.myId
-                      ? senderName
-                      : receiverName,
+                  userMessageName:
+                      element.receiverUserId != _prefsRepository.myId
+                          ? senderName
+                          : receiverName,
                   userMessagePhoto:
-                  element.receiverUserId != _prefsRepository.myId
-                      ? senderPhoto
-                      : receiverPhoto,
+                      element.receiverUserId != _prefsRepository.myId
+                          ? senderPhoto
+                          : receiverPhoto,
                   isRead: messageStatus?.isWatched ?? false,
                   isReceived: (messageStatus?.isReceived ?? 0) == 1,
                   isFirstMessage: isFirstMessage,
@@ -1215,8 +1227,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 ),
               );
               if (i != element.mediaMessageContent!.length - 1) {
-                data.insert(
-                    insertPosition == -1 ? data.length : insertPosition,
+                data.insert(insertPosition == -1 ? data.length : insertPosition,
                     10.verticalSpace);
               }
             }
@@ -1235,10 +1246,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 userMessageName: element.receiverUserId != _prefsRepository.myId
                     ? senderName
                     : receiverName,
-                userMessagePhoto: element.receiverUserId !=
-                    _prefsRepository.myId
-                    ? senderPhoto
-                    : receiverPhoto,
+                userMessagePhoto:
+                    element.receiverUserId != _prefsRepository.myId
+                        ? senderPhoto
+                        : receiverPhoto,
                 isFirstMessage: isFirstMessage,
                 isRead: messageStatus?.isWatched ?? false,
                 isReceived: (messageStatus?.isReceived ?? 0) == 1,
@@ -1248,8 +1259,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
             );
           } else {
             print('length : ${element.mediaMessageContent?.length}');
-            for (int i = 0; i <
-                (element.mediaMessageContent?.length ?? 0); i++) {
+            for (int i = 0;
+                i < (element.mediaMessageContent?.length ?? 0);
+                i++) {
               File? file = await FileSaving().checkExistence(
                   element.mediaMessageContent![i].filePath,
                   element.mediaMessageContent![i].fileName!,
@@ -1260,18 +1272,18 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   isSent: element.receiverUserId != _prefsRepository.myId,
                   videoUrl: element.mediaMessageContent![i].filePath,
                   videoFile: file,
-                  messageId: element.mediaMessageContent![i].messageId
-                      .toString(),
+                  messageId:
+                      element.mediaMessageContent![i].messageId.toString(),
                   time: element.createdAt!,
                   senderId: element.senderUserId!,
-                  userMessageName: element.receiverUserId !=
-                      _prefsRepository.myId
-                      ? senderName
-                      : receiverName,
+                  userMessageName:
+                      element.receiverUserId != _prefsRepository.myId
+                          ? senderName
+                          : receiverName,
                   userMessagePhoto:
-                  element.receiverUserId != _prefsRepository.myId
-                      ? senderPhoto
-                      : receiverPhoto,
+                      element.receiverUserId != _prefsRepository.myId
+                          ? senderPhoto
+                          : receiverPhoto,
                   isRead: messageStatus?.isWatched ?? false,
                   isReceived: (messageStatus?.isReceived ?? 0) == 1,
                   isFirstMessage: isFirstMessage,
@@ -1280,8 +1292,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 ),
               );
               if (i != element.mediaMessageContent!.length - 1) {
-                data.insert(
-                    insertPosition == -1 ? data.length : insertPosition,
+                data.insert(insertPosition == -1 ? data.length : insertPosition,
                     10.verticalSpace);
               }
             }
@@ -1299,10 +1310,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 userMessageName: element.receiverUserId != _prefsRepository.myId
                     ? senderName
                     : receiverName,
-                userMessagePhoto: element.receiverUserId !=
-                    _prefsRepository.myId
-                    ? senderPhoto
-                    : receiverPhoto,
+                userMessagePhoto:
+                    element.receiverUserId != _prefsRepository.myId
+                        ? senderPhoto
+                        : receiverPhoto,
                 time: element.createdAt!,
                 isRead: messageStatus?.isWatched ?? false,
                 isReceived: (messageStatus?.isReceived ?? 0) == 1,
@@ -1311,8 +1322,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
               ),
             );
           } else {
-            for (int i = 0; i <
-                (element.mediaMessageContent?.length ?? 0); i++) {
+            for (int i = 0;
+                i < (element.mediaMessageContent?.length ?? 0);
+                i++) {
               File? file = await FileSaving().checkExistence(
                   element.mediaMessageContent![i].filePath,
                   element.mediaMessageContent![i].fileName!,
@@ -1322,18 +1334,18 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 VoiceMessage(
                   isSent: element.receiverUserId != _prefsRepository.myId,
                   fileUrl: element.mediaMessageContent![i].filePath,
-                  messageId: element.mediaMessageContent![i].messageId
-                      .toString(),
+                  messageId:
+                      element.mediaMessageContent![i].messageId.toString(),
                   time: element.createdAt!,
                   senderId: element.senderUserId!,
-                  userMessageName: element.receiverUserId !=
-                      _prefsRepository.myId
-                      ? senderName
-                      : receiverName,
+                  userMessageName:
+                      element.receiverUserId != _prefsRepository.myId
+                          ? senderName
+                          : receiverName,
                   userMessagePhoto:
-                  element.receiverUserId != _prefsRepository.myId
-                      ? senderPhoto
-                      : receiverPhoto,
+                      element.receiverUserId != _prefsRepository.myId
+                          ? senderPhoto
+                          : receiverPhoto,
                   file: file,
                   isFirstMessage: isFirstMessage,
                   isRead: messageStatus?.isWatched ?? false,
@@ -1342,8 +1354,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 ),
               );
               if (i != element.mediaMessageContent!.length - 1) {
-                data.insert(
-                    insertPosition == -1 ? data.length : insertPosition,
+                data.insert(insertPosition == -1 ? data.length : insertPosition,
                     10.verticalSpace);
               }
             }
@@ -1351,10 +1362,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
           break;
         case 'FileMessage':
           if (element.file != null) {
-            String fileName = element.file!
-                .path
-                .split('/')
-                .last;
+            String fileName = element.file!.path.split('/').last;
             data.insert(
               insertPosition == -1 ? data.length : insertPosition,
               DocumentMessage(
@@ -1366,10 +1374,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 userMessageName: element.receiverUserId != _prefsRepository.myId
                     ? senderName
                     : receiverName,
-                userMessagePhoto: element.receiverUserId !=
-                    _prefsRepository.myId
-                    ? senderPhoto
-                    : receiverPhoto,
+                userMessagePhoto:
+                    element.receiverUserId != _prefsRepository.myId
+                        ? senderPhoto
+                        : receiverPhoto,
                 time: element.createdAt!,
                 isRead: messageStatus?.isWatched ?? false,
                 isReceived: (messageStatus?.isReceived ?? 0) == 1,
@@ -1378,19 +1386,16 @@ class _SinglePageChatState extends State<SinglePageChat> {
               ),
             );
           } else {
-            for (int i = 0; i <
-                (element.mediaMessageContent?.length ?? 0); i++) {
+            for (int i = 0;
+                i < (element.mediaMessageContent?.length ?? 0);
+                i++) {
               File? file = await FileSaving().checkExistence(
                   element.mediaMessageContent![i].filePath,
                   element.mediaMessageContent![i].fileName!,
                   download: false);
 
-              String fileName = file?.path
-                  .split('/')
-                  .last ??
-                  element.mediaMessageContent![i].filePath
-                      ?.split('/')
-                      .last ??
+              String fileName = file?.path.split('/').last ??
+                  element.mediaMessageContent![i].filePath?.split('/').last ??
                   'FILE';
               data.insert(
                 insertPosition == -1 ? data.length : insertPosition,
@@ -1399,18 +1404,18 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   documentFile: file,
                   documentFileUrl: element.mediaMessageContent![i].filePath,
                   fileName: fileName,
-                  messageId: element.mediaMessageContent![i].messageId
-                      .toString(),
+                  messageId:
+                      element.mediaMessageContent![i].messageId.toString(),
                   time: element.createdAt!,
                   senderId: element.senderUserId!,
-                  userMessageName: element.receiverUserId !=
-                      _prefsRepository.myId
-                      ? senderName
-                      : receiverName,
+                  userMessageName:
+                      element.receiverUserId != _prefsRepository.myId
+                          ? senderName
+                          : receiverName,
                   userMessagePhoto:
-                  element.receiverUserId != _prefsRepository.myId
-                      ? senderPhoto
-                      : receiverPhoto,
+                      element.receiverUserId != _prefsRepository.myId
+                          ? senderPhoto
+                          : receiverPhoto,
                   isFirstMessage: isFirstMessage,
                   isRead: messageStatus?.isWatched ?? false,
                   isReceived: (messageStatus?.isReceived ?? 0) == 1,
@@ -1418,61 +1423,63 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 ),
               );
               if (i != element.mediaMessageContent!.length - 1) {
-                data.insert(
-                    insertPosition == -1 ? data.length : insertPosition,
+                data.insert(insertPosition == -1 ? data.length : insertPosition,
                     10.verticalSpace);
               }
             }
           }
       }
     }
-    if(insertPosition==0) {
+    if (insertPosition != -1) {
       data.insert(
-          0,
+          insertPosition,
           thereIsDate
               ? 10.verticalSpace
               : isFirstMessage
-              ? 30.verticalSpace
-              : 10.verticalSpace);
+                  ? 30.verticalSpace
+                  : 10.verticalSpace);
     }
   }
 
-  int getMessageIndex(String? messageId,String? localParentMessageId) {
+  int getMessageIndex(String? messageId, String? localParentMessageId) {
     return data.indexWhere((e) {
       if (e is TextMessage) {
-        return e.messageId == messageId || e.messageId==localParentMessageId;
+        return e.messageId == messageId || e.messageId == localParentMessageId;
       } else if (e is ImageMessage) {
-        return e.messageId == messageId || e.messageId==localParentMessageId;
+        return e.messageId == messageId || e.messageId == localParentMessageId;
       } else if (e is VoiceMessage) {
-        return e.messageId == messageId|| e.messageId==localParentMessageId;
+        return e.messageId == messageId || e.messageId == localParentMessageId;
       } else if (e is VideoMessage) {
-        return e.messageId == messageId|| e.messageId==localParentMessageId;
+        return e.messageId == messageId || e.messageId == localParentMessageId;
       } else if (e is DocumentMessage) {
-        return e.messageId == messageId|| e.messageId==localParentMessageId;
-      }  else if (e is ReplayMessage) {
-      return e.messageAnswerId == messageId|| e.messageAnswerId==localParentMessageId;
-      }else if (e is ReplayOnMeMessage) {
-        return e.messageAnswerId == messageId|| e.messageAnswerId==localParentMessageId;
-      }else {
+        return e.messageId == messageId || e.messageId == localParentMessageId;
+      } else if (e is ReplayMessage) {
+        return e.messageAnswerId == messageId ||
+            e.messageAnswerId == localParentMessageId;
+      } else if (e is ReplayOnMeMessage) {
+        return e.messageAnswerId == messageId ||
+            e.messageAnswerId == localParentMessageId;
+      } else {
         return false;
       }
     });
   }
+
   bool getIsFirstMessage(String? messageId) {
-     for (var e in data) {
-      if (e is TextMessage && e.messageId==messageId) {
+    for (var e in data) {
+      if (e is TextMessage && e.messageId == messageId) {
         return e.isFirstMessage;
-      } else if (e is ImageMessage&& e.messageId==messageId) {
+      } else if (e is ImageMessage && e.messageId == messageId) {
         return e.isFirstMessage;
-      }else if (e is VoiceMessage&& e.messageId==messageId) {
+      } else if (e is VoiceMessage && e.messageId == messageId) {
         return e.isFirstMessage;
-      }else if (e is VideoMessage&& e.messageId==messageId) {
+      } else if (e is VideoMessage && e.messageId == messageId) {
         return e.isFirstMessage;
-      } else if (e is DocumentMessage&& e.messageId==messageId) {
+      } else if (e is DocumentMessage && e.messageId == messageId) {
         return e.isFirstMessage;
-      } else if (e is ReplayMessage&& e.messageId==messageId) {
+      } else if (e is ReplayMessage && e.messageId == messageId) {
         return e.isFirstMessage;
-      }else if (e is ReplayOnMeMessage&& e.messageId==messageId) {
+      } else if (e is ReplayOnMeMessage && e.messageId == messageId) {
         return e.isFirstMessage;
       }
     }
@@ -1557,10 +1564,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
         time: message.createdAt));
   }
 
-  void scrollToIndex(int index,{String? currentId , String? parentMessageId, AutoScrollPosition? preferPosition}) {
+  void scrollToIndex(int index,
+      {String? currentId,
+      String? parentMessageId,
+      AutoScrollPosition? preferPosition}) {
     print('iii:  $index');
-    if(index==-1){
-      chatBloc.add(GetAllMessagesBetweenEvent(firstMessageId: parentMessageId!,scrollToParentMessage: true, secondMessageId: currentId!, channelId: widget.chatId));
+    if (index == -1) {
+      chatBloc.add(GetAllMessagesBetweenEvent(
+          firstMessageId: parentMessageId!,
+          scrollToParentMessage: true,
+          secondMessageId: currentId!,
+          channelId: widget.chatId));
       return;
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {

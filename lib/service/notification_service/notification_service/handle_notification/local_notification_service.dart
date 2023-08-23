@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/base_page.dart';
 import 'package:trydos/features/chat/data/data_sources/chat_remote_datasource.dart';
 import 'package:trydos/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.dart';
@@ -77,7 +78,10 @@ class LocalNotificationService {
   static void _onSelectNotification(NotificationResponse notificationResponse) {
     chat.Message myMessage = chat.Message.fromJson(
         convert.jsonDecode(notificationResponse.payload!));
+    print('ok');
     initialMessage=myMessage;
+    navigatorKey.currentState!.pushAndRemoveUntil(MaterialPageRoute(builder: (_)=> const BasePage()),(route) => false,);
+    print('ok');
   }
   _notificationDetails() {
     final channel = LocalNotificationService().getAndroidChannel;

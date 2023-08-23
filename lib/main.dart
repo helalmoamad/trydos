@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -18,8 +17,13 @@ import 'core/domin/repositories/prefs_repository.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  if(!isDependencyInitialized){
+    await configureDependencies();
+    isDependencyInitialized=true;
+  }
   LocalNotificationService().showNotificationWithPayload(message: message);
 }
+bool isDependencyInitialized=false;
  Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 bool notificationClicked =false;
@@ -34,7 +38,6 @@ void main() async{
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   AssetPicker.registerObserve();
   PhotoManager.setLog(true);
-  log( GetIt.I<PrefsRepository>().token.toString());
   // FlutterError.onError = (FlutterErrorDetails error) {
   //   GetIt.I<Dio>().post(EndPoints.createBugEP, data: {
   //     "user_id": GetIt.I<PrefsRepository>().myId,
@@ -46,14 +49,19 @@ void main() async{
   //   final List<dynamic> errorAndStacktrace = pair;
   // }).sendPort);
   HttpOverrides.global =  MyHttpOverrides();
-  dealWithTimer();
+  await dealWithTimer();
   runApp( TrydosApplication(navKey: navigatorKey,));
 }
 
-void dealWithTimer(){
+ dealWithTimer() async{
+  if(!isDependencyInitialized){
+    await configureDependencies();
+    isDependencyInitialized=true;
+  }
+  final  PrefsRepository prefs = GetIt.I<PrefsRepository>();
   timer?.cancel();
   timer=Timer.periodic(const Duration(minutes: 2 ), (timer) {
-    if(ConnectivityObserver.currentEvent==ConnectivityResult.wifi || ConnectivityObserver.currentEvent==ConnectivityResult.mobile) {
+    if((ConnectivityObserver.currentEvent==ConnectivityResult.wifi || ConnectivityObserver.currentEvent==ConnectivityResult.mobile)) {
       GetIt.I<ChatBloc>().add(const GetChatsEvent());
     }
   });

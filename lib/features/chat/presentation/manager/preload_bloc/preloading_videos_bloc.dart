@@ -54,6 +54,8 @@ class PreloadingVideosBloc extends Bloc<PreloadingVideosEvent ,PreloadingVideosS
     controllers = await _initializeControllerAtIndex(index + 1);
     emit(state.copyWith(controllers: controllers));
   }
+
+
   void _playPrevious(int index)async {
     Map<int, VideoPlayerController> controllers;
     /// Stop [index + 1] controller
@@ -91,6 +93,7 @@ class PreloadingVideosBloc extends Bloc<PreloadingVideosEvent ,PreloadingVideosS
       log('🚀🚀🚀 PLAYING $index');
     }
   }
+
   void _stopControllerAtIndex(int index) {
     if (state.urls.length > index && index >= 0) {
       /// Get controller at [index]
