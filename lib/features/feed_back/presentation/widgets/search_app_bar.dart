@@ -32,7 +32,7 @@ class _SearchRequestsAppBarState extends ThemeState<SearchRequestsAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: colorScheme.background,
+      backgroundColor: Colors.grey.shade200,
       systemOverlayStyle: SystemUiOverlayStyle.light,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(

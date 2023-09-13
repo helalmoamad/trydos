@@ -21,7 +21,7 @@ import '../../../../app/my_cached_network_image.dart';
 import 'no_image_widget.dart';
 
 class TextMessage extends StatefulWidget {
-  const TextMessage(
+   TextMessage(
       {Key? key,
       this.withShadow = true,
       this.withImageShadow = true,
@@ -50,10 +50,10 @@ class TextMessage extends StatefulWidget {
   final bool withShadow;
   final bool withImageShadow;
   final DateTime time;
-  final bool isRead;
+   bool isRead;
   final bool disableMessageAlignment;
   final int senderId;
-  final bool isReceived;
+   bool isReceived;
   final String? userMessagePhoto;
   final String userMessageName;
   @override
@@ -78,7 +78,26 @@ class _TextMessageState extends ThemeState<TextMessage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChatBloc, ChatState>(
+    return BlocConsumer<ChatBloc, ChatState>(
+      listenWhen: (p, c) =>
+      p.changeMessageStateFromPusherStatus !=
+          c.changeMessageStateFromPusherStatus &&
+          c.changeMessageStateFromPusherStatus !=
+              ChangeMessageStateFromPusherStatus.init,
+      listener: (context, state) {
+        if (state.changeMessageStateFromPusherStatus==ChangeMessageStateFromPusherStatus.watched){
+          if(widget.isRead){
+            return;
+          }
+          setState(() {
+            widget.isRead=true;
+          });
+        }else if(!widget.isReceived){
+          setState(() {
+            widget.isReceived=true;
+          });
+        }
+      },
       builder: (context, state) {
         return Column(
           key: key,
@@ -189,15 +208,14 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                             Opacity(
                                               opacity: !widget.withImageShadow ? 0.4 : 1,
                                             child: SvgPicture.asset(
-                                              (state.sendMessageStatus ==
-                                                          SendMessageStatus
-                                                              .loading &&
-                                                      state.currentMessage
+                                              (state.currentMessage
                                                           .contains(
                                                               widget.messageId))
-                                                  ? AppAssets.sandClockSvg
-
-                                                      : widget.isRead
+                                                  ? AppAssets.sandClockSvg :
+                                              (state.currentFailedMessage
+                                                  .contains(
+                                                  widget.messageId)) ?
+                                                      AppAssets.MessageFailedSvg: widget.isRead
                                                           ? AppAssets
                                                               .messageReadArrowSvg
                                                           : widget.isReceived ? AppAssets.messageDeliveredArrowSvg :AppAssets

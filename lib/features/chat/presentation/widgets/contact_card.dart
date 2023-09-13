@@ -58,6 +58,7 @@ class ContactCard extends StatelessWidget {
                       builder: (context) => BlocBuilder<AppBloc, AppState>(
                             builder: (context, state) {
                               return BlocBuilder<ChatBloc, ChatState>(
+                                buildWhen: (p,c)=> p.getChatsStatus != c.getChatsStatus,
                                 builder: (context, chatState) {
                                   Chat? chat;
                                   User? sender,receiver;

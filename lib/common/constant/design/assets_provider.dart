@@ -3,6 +3,8 @@ extension AssetsUtils on String {
   /// assets/svg/$this.svg
   String get svg => 'assets/svg/$this.svg';
 
+  String get flagSvg => 'assets/flags/$this.svg';
+
   /// assets/images/$this.png
   String get png => 'assets/images/$this.png';
 
@@ -105,6 +107,7 @@ abstract class AppAssets {
   static String get recordVoiceSvg=>'record_voice'.svg;
   static String get recordingVoiceSvg=>'recording_voice'.svg;
   static String get replyButtonLogoSvg=>'reply_button_logo'.svg;
+  static String get MessageFailedSvg=>'message_failed'.svg;
 
   static String get copyIconSvg=>'copy_icon'.svg;
   static String get removeIconSvg=>'remove_icon'.svg;
@@ -125,6 +128,20 @@ abstract class AppAssets {
   static String get lastMessageVideoSvg=>'last_message_video_icon'.svg;
   static String get lastMessageAudioSvg=>'last_message_audio_icon'.svg;
   static String get replaySwappedSvg=>'replay_icon_on_swap'.svg;
+  static String get cancelSvg=>'cancel'.svg;
+  static String get editPenSvg=>'edit_pen'.svg;
+  static String get enterSvg=>'enter'.svg;
+  static String get phoneCallSvg=>'phone_call'.svg;
+  static String get phoneCallOutlinedSvg=>'phone_call_outlined'.svg;
+  static String get phoneOtpSvg=>'phone_otp'.svg;
+  static String get privacySvg=>'privacy'.svg;
+  static String get registerInfoSvg=>'register_info'.svg;
+  static String get smsSvg=>'sms'.svg;
+  static String get submitArrowSvg=>'submit_arrow'.svg;
+  static String get whatsappSvg=>'whatsapp'.svg;
+  static String get verifiedNumberSvg=>'verified_number'.svg;
+  static String get termsSvg=>'terms'.svg;
+  static String getFlagPath(String name) => name.flagSvg;
 
   ///endregion
 
@@ -139,6 +156,9 @@ abstract class AppAssets {
   static String get color1Png=>'color1'.png;
   static String get color2Png=>'color2'.png;
   static String get color3Png=>'color3'.png;
+  static String get trydosWelcomePng=>'trydos_welcome'.png;
+
+
   static String get profileJpg=>'profile'.jpg;
   static String get backgroundJpg=>'background'.jpg;
   static String get chatProfileJpg=>'chat_profile_image'.jpg;

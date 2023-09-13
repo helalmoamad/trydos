@@ -5,8 +5,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as fln;
+import 'package:get_it/get_it.dart';
 import 'package:trydos/main.dart';
 import '../../../../base_page.dart';
+import '../../../../features/chat/presentation/manager/chat_bloc.dart';
+import '../../../../features/chat/presentation/manager/chat_event.dart';
 import '../../../../features/chat/presentation/pages/single_page_chat.dart';
 import '../../../../firebase_options.dart';
 import 'i_notification_factory.dart';
@@ -66,13 +69,11 @@ class NotificationProcess {
   }
 
   Future<void> setupInteractedMessage() async {
-    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-    if (initialMessage != null) {
-      LocalNotificationService().showNotificationWithPayload(message: initialMessage);
-    }
+    // if (initialMessage != null) {
+    //   LocalNotificationService().showNotificationWithPayload(message: initialMessage);
+    // }
 
-    handleTappedNotificationOnTerminatedState();
-
+    // handleTappedNotificationOnTerminatedState();
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
       print('foreground message');
       print('onMessageOpenedApp');

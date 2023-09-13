@@ -12,6 +12,7 @@
         android:label="Trydos"
         android:usesCleartextTraffic="true"
         android:name="${applicationName}"
+        android:exported="true"
         android:icon="@mipmap/ic_launcher"
            tools:targetApi="m">
            <service

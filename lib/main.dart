@@ -15,7 +15,8 @@ import 'package:trydos/trydos_application.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
-
+import 'dart:convert' as convert;
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if(!isDependencyInitialized){
     await configureDependencies();
@@ -28,17 +29,35 @@ bool isDependencyInitialized=false;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 bool notificationClicked =false;
 Message? initialMessage;
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await configureDependencies();
+  isDependencyInitialized=true;
   await NotificationProcess().init();
+  RemoteMessage? openedMessage = await FirebaseMessaging.instance.getInitialMessage();
+  if(initialMessage != null){
+    print('hello');
+    initialMessage = Message.fromJson(
+        convert.jsonDecode(openedMessage!.data['message']));
+  }
   await  NotificationProcess().setupInteractedMessage();
   NotificationProcess().fcmToken();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   AssetPicker.registerObserve();
   PhotoManager.setLog(true);
-  // FlutterError.onError = (FlutterErrorDetails error) {
+  FlutterError.onError = (FlutterErrorDetails error) {
+    GetIt.I<PrefsRepository>().saveRequestsData(
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        error: error.toString());
+  };
   //   GetIt.I<Dio>().post(EndPoints.createBugEP, data: {
   //     "user_id": GetIt.I<PrefsRepository>().myId,
   //     "title": "flutter error",
@@ -54,14 +73,10 @@ void main() async{
 }
 
  dealWithTimer() async{
-  if(!isDependencyInitialized){
-    await configureDependencies();
-    isDependencyInitialized=true;
-  }
   final  PrefsRepository prefs = GetIt.I<PrefsRepository>();
   timer?.cancel();
   timer=Timer.periodic(const Duration(minutes: 2 ), (timer) {
-    if((ConnectivityObserver.currentEvent==ConnectivityResult.wifi || ConnectivityObserver.currentEvent==ConnectivityResult.mobile)) {
+    if((ConnectivityObserver.currentEvent==ConnectivityResult.wifi || ConnectivityObserver.currentEvent==ConnectivityResult.mobile) && prefs.token!=null) {
       GetIt.I<ChatBloc>().add(const GetChatsEvent());
     }
   });

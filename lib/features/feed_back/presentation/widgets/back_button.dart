@@ -16,7 +16,7 @@ class DefaultBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: HelperFunctions.changeSvgColor(AppAssets.backButtonSvg,"F9B732"),
+        future: HelperFunctions.changeSvgColor(AppAssets.backButtonSvg,"EB6713"),
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
           if (!snapshot.hasData) return const SizedBox.shrink();
           return GestureDetector(

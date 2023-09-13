@@ -22,6 +22,7 @@ class FeedBackScreen extends StatelessWidget {
     data= _prefsRepository.getRequestsData();
     searchedData.addAll(data);
     return Scaffold(
+      backgroundColor: context.colorScheme.background,
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(56.0.h),
           child: SearchRequestsAppBar(
@@ -109,7 +110,7 @@ class FeedBackScreen extends StatelessWidget {
               child: Padding(
                 padding:  EdgeInsets.symmetric(horizontal: 15.0.w),
                 child: AppElevatedButton(
-                    text: '',
+                    text: 'Clear',
                     onPressed: () {
                       _prefsRepository.clearAllRequests();
                       searchedData.clear();

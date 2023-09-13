@@ -45,11 +45,12 @@ class VideoMessage extends StatefulWidget {
   final bool isLocalMessage;
   final String? videoUrl;
   final DateTime time;
-  final bool isRead;
-  final bool isReceived;
+   bool isRead;
+   bool isReceived;
   final int senderId;
   final String? userMessagePhoto;
   final String userMessageName;
+
 
   @override
   State<VideoMessage> createState() => _VideoMessageState();
@@ -62,8 +63,24 @@ class _VideoMessageState extends State<VideoMessage> {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: BlocConsumer<ChatBloc, ChatState>(
+        listenWhen: (p, c) =>
+        p.changeMessageStateFromPusherStatus !=
+            c.changeMessageStateFromPusherStatus &&
+            c.changeMessageStateFromPusherStatus !=
+                ChangeMessageStateFromPusherStatus.init,
         listener: (context, state) {
-          // TODO: implement listener
+          if (state.changeMessageStateFromPusherStatus==ChangeMessageStateFromPusherStatus.watched){
+            if(widget.isRead){
+              return;
+            }
+            setState(() {
+              widget.isRead=true;
+            });
+          }else if(!widget.isReceived){
+            setState(() {
+              widget.isReceived=true;
+            });
+          }
         },
         builder: (context, state) {
           return Padding(
@@ -149,12 +166,14 @@ class _VideoMessageState extends State<VideoMessage> {
                                       if (widget.isSent) ...{
                                         10.horizontalSpace,
                                         SvgPicture.asset(
-                                          (state.sendMessageStatus ==
-                                              SendMessageStatus.loading &&
-                                              state.currentMessage
-                                                  .contains(widget.messageId))
-                                              ? AppAssets.sandClockSvg
-                                              : widget.isRead
+                                          (state.currentMessage
+                                              .contains(
+                                              widget.messageId))
+                                              ? AppAssets.sandClockSvg :
+                                          (state.currentFailedMessage
+                                              .contains(
+                                              widget.messageId)) ?
+                                          AppAssets.MessageFailedSvg: widget.isRead
                                               ? AppAssets.messageReadArrowSvg
                                               : widget.isReceived
                                               ? AppAssets

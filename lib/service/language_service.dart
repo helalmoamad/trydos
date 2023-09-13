@@ -27,7 +27,7 @@ final languageNameAndLanguageCode = <String, LangCode>{
 
 class LanguageService {
   static late Locale currentLanguage;
-  static late String languageCode;
+  static  String languageCode = 'en';
   static late bool rtl;
 
   final BuildContext context;

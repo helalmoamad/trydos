@@ -2,7 +2,7 @@
 const List<Country> countries = [
   Country(
     name: "Afghanistan",
-    flag: "🇦🇫",
+    flag: "af",
     code: "AF",
     dialCode: "+93",
     minLength: 9,
@@ -18,7 +18,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Albania",
-    flag: "🇦🇱",
+    flag: "al",
     code: "AL",
     dialCode: "+355",
     minLength: 9,
@@ -26,7 +26,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Algeria",
-    flag: "🇩🇿",
+    flag: "dz",
     code: "DZ",
     dialCode: "+213",
     minLength: 9,
@@ -34,7 +34,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "American Samoa",
-    flag: "🇦🇸",
+    flag: "as",
     code: "AS",
     dialCode: "+1684",
     minLength: 7,
@@ -42,7 +42,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Andorra",
-    flag: "🇦🇩",
+    flag: "ad",
     code: "AD",
     dialCode: "+376",
     minLength: 9,
@@ -50,7 +50,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Angola",
-    flag: "🇦🇴",
+    flag: "ao",
     code: "AO",
     dialCode: "+244",
     minLength: 9,
@@ -58,7 +58,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Anguilla",
-    flag: "🇦🇮",
+    flag: "ai",
     code: "AI",
     dialCode: "+1264",
     minLength: 7,
@@ -74,7 +74,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Antigua and Barbuda",
-    flag: "🇦🇬",
+    flag: "ag",
     code: "AG",
     dialCode: "+1268",
     minLength: 7,
@@ -82,7 +82,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Argentina",
-    flag: "🇦🇷",
+    flag: "ar",
     code: "AR",
     dialCode: "+54",
     minLength: 12,
@@ -90,7 +90,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Armenia",
-    flag: "🇦🇲",
+    flag: "am",
     code: "AM",
     dialCode: "+374",
     minLength: 8,
@@ -98,7 +98,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Aruba",
-    flag: "🇦🇼",
+    flag: "aw",
     code: "AW",
     dialCode: "+297",
     minLength: 7,
@@ -106,7 +106,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Australia",
-    flag: "🇦🇺",
+    flag: "au",
     code: "AU",
     dialCode: "+61",
     minLength: 9,
@@ -114,7 +114,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Austria",
-    flag: "🇦🇹",
+    flag: "at",
     code: "AT",
     dialCode: "+43",
     minLength: 13,
@@ -122,7 +122,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Azerbaijan",
-    flag: "🇦🇿",
+    flag: "az",
     code: "AZ",
     dialCode: "+994",
     minLength: 9,
@@ -130,7 +130,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Bahamas",
-    flag: "🇧🇸",
+    flag: "bs",
     code: "BS",
     dialCode: "+1242",
     minLength: 7,
@@ -138,7 +138,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Bahrain",
-    flag: "🇧🇭",
+    flag: "bh",
     code: "BH",
     dialCode: "+973",
     minLength: 8,
@@ -146,7 +146,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Bangladesh",
-    flag: "🇧🇩",
+    flag: "bd",
     code: "BD",
     dialCode: "+880",
     minLength: 10,
@@ -154,7 +154,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Barbados",
-    flag: "🇧🇧",
+    flag: "bb",
     code: "BB",
     dialCode: "+1246",
     minLength: 7,
@@ -162,7 +162,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Belarus",
-    flag: "🇧🇾",
+    flag: "by",
     code: "BY",
     dialCode: "+375",
     minLength: 10,
@@ -170,7 +170,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Belgium",
-    flag: "🇧🇪",
+    flag: "be",
     code: "BE",
     dialCode: "+32",
     minLength: 9,
@@ -178,7 +178,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Belize",
-    flag: "🇧🇿",
+    flag: "bz",
     code: "BZ",
     dialCode: "+501",
     minLength: 7,
@@ -186,7 +186,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Benin",
-    flag: "🇧🇯",
+    flag: "bj",
     code: "BJ",
     dialCode: "+229",
     minLength: 8,
@@ -194,7 +194,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Bermuda",
-    flag: "🇧🇲",
+    flag: "bm",
     code: "BM",
     dialCode: "+1441",
     minLength: 7,
@@ -202,7 +202,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Bhutan",
-    flag: "🇧🇹",
+    flag: "bt",
     code: "BT",
     dialCode: "+975",
     minLength: 8,
@@ -210,7 +210,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Bolivia, Plurinational State of bolivia",
-    flag: "🇧🇴",
+    flag: "bo",
     code: "BO",
     dialCode: "+591",
     minLength: 8,
@@ -218,7 +218,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Bosnia and Herzegovina",
-    flag: "🇧🇦",
+    flag: "ba",
     code: "BA",
     dialCode: "+387",
     minLength: 9,
@@ -226,7 +226,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Botswana",
-    flag: "🇧🇼",
+    flag: "bw",
     code: "BW",
     dialCode: "+267",
     minLength: 8,
@@ -242,7 +242,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Brazil",
-    flag: "🇧🇷",
+    flag: "br",
     code: "BR",
     dialCode: "+55",
     minLength: 11,
@@ -250,7 +250,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "British Indian Ocean Territory",
-    flag: "🇮🇴",
+    flag: "io",
     code: "IO",
     dialCode: "+246",
     minLength: 7,
@@ -258,7 +258,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Brunei Darussalam",
-    flag: "🇧🇳",
+    flag: "bn",
     code: "BN",
     dialCode: "+673",
     minLength: 7,
@@ -266,7 +266,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Bulgaria",
-    flag: "🇧🇬",
+    flag: "bg",
     code: "BG",
     dialCode: "+359",
     minLength: 9,
@@ -274,7 +274,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Burkina Faso",
-    flag: "🇧🇫",
+    flag: "bf",
     code: "BF",
     dialCode: "+226",
     minLength: 8,
@@ -282,7 +282,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Burundi",
-    flag: "🇧🇮",
+    flag: "bi",
     code: "BI",
     dialCode: "+257",
     minLength: 8,
@@ -290,7 +290,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Cambodia",
-    flag: "🇰🇭",
+    flag: "kh",
     code: "KH",
     dialCode: "+855",
     minLength: 9,
@@ -298,7 +298,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Cameroon",
-    flag: "🇨🇲",
+    flag: "cm",
     code: "CM",
     dialCode: "+237",
     minLength: 9,
@@ -315,7 +315,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Canada",
-    flag: "🇨🇦",
+    flag: "ca",
     code: "CA",
     dialCode: "+1",
     minLength: 10,
@@ -323,7 +323,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Cape Verde",
-    flag: "🇨🇻",
+    flag: "cv",
     code: "CV",
     dialCode: "+238",
     minLength: 7,
@@ -331,7 +331,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Cayman Islands",
-    flag: "🇰🇾",
+    flag: "ky",
     code: "KY",
     dialCode: "+345",
     minLength: 7,
@@ -339,7 +339,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Central African Republic",
-    flag: "🇨🇫",
+    flag: "cf",
     code: "CF",
     dialCode: "+236",
     minLength: 8,
@@ -347,7 +347,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Chad",
-    flag: "🇹🇩",
+    flag: "td",
     code: "TD",
     dialCode: "+235",
     minLength: 7,
@@ -355,7 +355,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Chile",
-    flag: "🇨🇱",
+    flag: "cl",
     code: "CL",
     dialCode: "+56",
     minLength: 9,
@@ -363,7 +363,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "China",
-    flag: "🇨🇳",
+    flag: "cn",
     code: "CN",
     dialCode: "+86",
     minLength: 12,
@@ -371,7 +371,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Christmas Island",
-    flag: "🇨🇽",
+    flag: "cx",
     code: "CX",
     dialCode: "+61",
     minLength: 15,
@@ -379,7 +379,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Cocos (Keeling) Islands",
-    flag: "🇨🇨",
+    flag: "cc",
     code: "CC",
     dialCode: "+61",
     minLength: 15,
@@ -387,7 +387,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Colombia",
-    flag: "🇨🇴",
+    flag: "co",
     code: "CO",
     dialCode: "+57",
     minLength: 10,
@@ -395,7 +395,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Comoros",
-    flag: "🇰🇲",
+    flag: "km",
     code: "KM",
     dialCode: "+269",
     minLength: 7,
@@ -403,7 +403,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Congo",
-    flag: "🇨🇬",
+    flag: "cg",
     code: "CG",
     dialCode: "+242",
     minLength: 7,
@@ -411,7 +411,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Congo, The Democratic Republic of the Congo",
-    flag: "🇨🇩",
+    flag: "cd",
     code: "CD",
     dialCode: "+243",
     minLength: 9,
@@ -419,7 +419,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Cook Islands",
-    flag: "🇨🇰",
+    flag: "ck",
     code: "CK",
     dialCode: "+682",
     minLength: 5,
@@ -427,7 +427,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Costa Rica",
-    flag: "🇨🇷",
+    flag: "cr",
     code: "CR",
     dialCode: "+506",
     minLength: 8,
@@ -443,7 +443,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Croatia",
-    flag: "🇭🇷",
+    flag: "hr",
     code: "HR",
     dialCode: "+385",
     minLength: 12,
@@ -451,7 +451,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Cuba",
-    flag: "🇨🇺",
+    flag: "cu",
     code: "CU",
     dialCode: "+53",
     minLength: 8,
@@ -459,7 +459,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Cyprus",
-    flag: "🇨🇾",
+    flag: "cy",
     code: "CY",
     dialCode: "+357",
     minLength: 8,
@@ -467,7 +467,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Czech Republic",
-    flag: "🇨🇿",
+    flag: "cz",
     code: "CZ",
     dialCode: "+420",
     minLength: 9,
@@ -475,7 +475,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Denmark",
-    flag: "🇩🇰",
+    flag: "dk",
     code: "DK",
     dialCode: "+45",
     minLength: 8,
@@ -483,7 +483,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Djibouti",
-    flag: "🇩🇯",
+    flag: "dj",
     code: "DJ",
     dialCode: "+253",
     minLength: 6,
@@ -491,7 +491,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Dominica",
-    flag: "🇩🇲",
+    flag: "dm",
     code: "DM",
     dialCode: "+1767",
     minLength: 7,
@@ -499,7 +499,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Dominican Republic",
-    flag: "🇩🇴",
+    flag: "do",
     code: "DO",
     dialCode: "+1849",
     minLength: 12,
@@ -507,7 +507,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Ecuador",
-    flag: "🇪🇨",
+    flag: "ec",
     code: "EC",
     dialCode: "+593",
     minLength: 8,
@@ -515,7 +515,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Egypt",
-    flag: "🇪🇬",
+    flag: "eg",
     code: "EG",
     dialCode: "+20",
     minLength: 10,
@@ -523,7 +523,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "El Salvador",
-    flag: "🇸🇻",
+    flag: "sv",
     code: "SV",
     dialCode: "+503",
     minLength: 11,
@@ -531,7 +531,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Equatorial Guinea",
-    flag: "🇬🇶",
+    flag: "gq",
     code: "GQ",
     dialCode: "+240",
     minLength: 6,
@@ -539,7 +539,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Eritrea",
-    flag: "🇪🇷",
+    flag: "er",
     code: "ER",
     dialCode: "+291",
     minLength: 7,
@@ -547,7 +547,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Estonia",
-    flag: "🇪🇪",
+    flag: "ee",
     code: "EE",
     dialCode: "+372",
     minLength: 10,
@@ -555,7 +555,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Ethiopia",
-    flag: "🇪🇹",
+    flag: "et",
     code: "ET",
     dialCode: "+251",
     minLength: 9,
@@ -563,7 +563,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Falkland Islands (Malvinas)",
-    flag: "🇫🇰",
+    flag: "fk",
     code: "FK",
     dialCode: "+500",
     minLength: 5,
@@ -579,7 +579,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Fiji",
-    flag: "🇫🇯",
+    flag: "fj",
     code: "FJ",
     dialCode: "+679",
     minLength: 7,
@@ -587,7 +587,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Finland",
-    flag: "🇫🇮",
+    flag: "fi",
     code: "FI",
     dialCode: "+358",
     minLength: 12,
@@ -595,7 +595,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "France",
-    flag: "🇫🇷",
+    flag: "fr",
     code: "FR",
     dialCode: "+33",
     minLength: 9,
@@ -611,7 +611,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "French Polynesia",
-    flag: "🇵🇫",
+    flag: "pf",
     code: "PF",
     dialCode: "+689",
     minLength: 6,
@@ -627,7 +627,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Gabon",
-    flag: "🇬🇦",
+    flag: "ga",
     code: "GA",
     dialCode: "+241",
     minLength: 9,
@@ -635,7 +635,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Gambia",
-    flag: "🇬🇲",
+    flag: "gm",
     code: "GM",
     dialCode: "+220",
     minLength: 7,
@@ -651,7 +651,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Germany",
-    flag: "🇩🇪",
+    flag: "de",
     code: "DE",
     dialCode: "+49",
     minLength: 9,
@@ -659,7 +659,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Ghana",
-    flag: "🇬🇭",
+    flag: "gh",
     code: "GH",
     dialCode: "+233",
     minLength: 10,
@@ -667,7 +667,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Gibraltar",
-    flag: "🇬🇮",
+    flag: "gi",
     code: "GI",
     dialCode: "+350",
     minLength: 8,
@@ -675,7 +675,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Greece",
-    flag: "🇬🇷",
+    flag: "gr",
     code: "GR",
     dialCode: "+30",
     minLength: 10,
@@ -683,7 +683,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Greenland",
-    flag: "🇬🇱",
+    flag: "gl",
     code: "GL",
     dialCode: "+299",
     minLength: 6,
@@ -691,7 +691,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Grenada",
-    flag: "🇬🇩",
+    flag: "gd",
     code: "GD",
     dialCode: "+1473",
     minLength: 7,
@@ -707,7 +707,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Guam",
-    flag: "🇬🇺",
+    flag: "gu",
     code: "GU",
     dialCode: "+1671",
     minLength: 7,
@@ -715,7 +715,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Guatemala",
-    flag: "🇬🇹",
+    flag: "gt",
     code: "GT",
     dialCode: "+502",
     minLength: 8,
@@ -723,7 +723,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Guernsey",
-    flag: "🇬🇬",
+    flag: "gg",
     code: "GG",
     dialCode: "+44",
     regionCode: "1481",
@@ -732,7 +732,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Guinea",
-    flag: "🇬🇳",
+    flag: "gn",
     code: "GN",
     dialCode: "+224",
     minLength: 8,
@@ -740,7 +740,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Guinea-Bissau",
-    flag: "🇬🇼",
+    flag: "gw",
     code: "GW",
     dialCode: "+245",
     minLength: 7,
@@ -756,7 +756,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Haiti",
-    flag: "🇭🇹",
+    flag: "ht",
     code: "HT",
     dialCode: "+509",
     minLength: 8,
@@ -772,7 +772,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Holy See (Vatican City State)",
-    flag: "🇻🇦",
+    flag: "va",
     code: "VA",
     dialCode: "+379",
     minLength: 10,
@@ -780,7 +780,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Honduras",
-    flag: "🇭🇳",
+    flag: "hn",
     code: "HN",
     dialCode: "+504",
     minLength: 8,
@@ -788,7 +788,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Hong Kong",
-    flag: "🇭🇰",
+    flag: "hk",
     code: "HK",
     dialCode: "+852",
     minLength: 8,
@@ -796,7 +796,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Hungary",
-    flag: "🇭🇺",
+    flag: "hu",
     code: "HU",
     dialCode: "+36",
     minLength: 9,
@@ -804,7 +804,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Iceland",
-    flag: "🇮🇸",
+    flag: "is",
     code: "IS",
     dialCode: "+354",
     minLength: 7,
@@ -812,7 +812,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "India",
-    flag: "🇮🇳",
+    flag: "in",
     code: "IN",
     dialCode: "+91",
     minLength: 10,
@@ -820,7 +820,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Indonesia",
-    flag: "🇮🇩",
+    flag: "id",
     code: "ID",
     dialCode: "+62",
     minLength: 10,
@@ -828,7 +828,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Iran, Islamic Republic of Persian Gulf",
-    flag: "🇮🇷",
+    flag: "ir",
     code: "IR",
     dialCode: "+98",
     minLength: 10,
@@ -836,7 +836,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Iraq",
-    flag: "🇮🇶",
+    flag: "iq",
     code: "IQ",
     dialCode: "+964",
     minLength: 10,
@@ -844,7 +844,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Ireland",
-    flag: "🇮🇪",
+    flag: "ie",
     code: "IE",
     dialCode: "+353",
     minLength: 7,
@@ -852,7 +852,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Isle of Man",
-    flag: "🇮🇲",
+    flag: "im",
     code: "IM",
     dialCode: "+44",
     regionCode: "1624",
@@ -861,7 +861,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Israel",
-    flag: "🇮🇱",
+    flag: "il",
     code: "IL",
     dialCode: "+972",
     minLength: 9,
@@ -869,7 +869,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Italy",
-    flag: "🇮🇹",
+    flag: "it",
     code: "IT",
     dialCode: "+39",
     minLength: 13,
@@ -877,7 +877,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Jamaica",
-    flag: "🇯🇲",
+    flag: "jm",
     code: "JM",
     dialCode: "+1876",
     minLength: 7,
@@ -885,7 +885,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Japan",
-    flag: "🇯🇵",
+    flag: "jp",
     code: "JP",
     dialCode: "+81",
     minLength: 10,
@@ -893,7 +893,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Jersey",
-    flag: "🇯🇪",
+    flag: "je",
     code: "JE",
     dialCode: "+44",
     regionCode: "1534",
@@ -902,7 +902,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Jordan",
-    flag: "🇯🇴",
+    flag: "jo",
     code: "JO",
     dialCode: "+962",
     minLength: 9,
@@ -910,7 +910,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Kazakhstan",
-    flag: "🇰🇿",
+    flag: "kz",
     code: "KZ",
     dialCode: "+7",
     minLength: 10,
@@ -918,7 +918,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Kenya",
-    flag: "🇰🇪",
+    flag: "ke",
     code: "KE",
     dialCode: "+254",
     minLength: 10,
@@ -926,7 +926,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Kiribati",
-    flag: "🇰🇮",
+    flag: "ki",
     code: "KI",
     dialCode: "+686",
     minLength: 5,
@@ -934,7 +934,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Korea, Democratic People's Republic of Korea",
-    flag: "🇰🇵",
+    flag: "kp",
     code: "KP",
     dialCode: "+850",
     minLength: 10,
@@ -942,7 +942,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Korea, Republic of South Korea",
-    flag: "🇰🇷",
+    flag: "kr",
     code: "KR",
     dialCode: "+82",
     minLength: 11,
@@ -950,7 +950,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Kosovo",
-    flag: "🇽🇰",
+    flag: "xk",
     code: "XK",
     dialCode: "+383",
     minLength: 8,
@@ -958,7 +958,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Kuwait",
-    flag: "🇰🇼",
+    flag: "kw",
     code: "KW",
     dialCode: "+965",
     minLength: 8,
@@ -966,7 +966,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Kyrgyzstan",
-    flag: "🇰🇬",
+    flag: "kg",
     code: "KG",
     dialCode: "+996",
     minLength: 9,
@@ -974,7 +974,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Laos",
-    flag: "🇱🇦",
+    flag: "la",
     code: "LA",
     dialCode: "+856",
     minLength: 10,
@@ -982,7 +982,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Latvia",
-    flag: "🇱🇻",
+    flag: "lv",
     code: "LV",
     dialCode: "+371",
     minLength: 8,
@@ -990,7 +990,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Lebanon",
-    flag: "🇱🇧",
+    flag: "lb",
     code: "LB",
     dialCode: "+961",
     minLength: 8,
@@ -998,7 +998,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Lesotho",
-    flag: "🇱🇸",
+    flag: "ls",
     code: "LS",
     dialCode: "+266",
     minLength: 8,
@@ -1006,7 +1006,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Liberia",
-    flag: "🇱🇷",
+    flag: "lr",
     code: "LR",
     dialCode: "+231",
     minLength: 8,
@@ -1014,7 +1014,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Libyan Arab Jamahiriya",
-    flag: "🇱🇾",
+    flag: "ly",
     code: "LY",
     dialCode: "+218",
     minLength: 9,
@@ -1022,7 +1022,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Liechtenstein",
-    flag: "🇱🇮",
+    flag: "li",
     code: "LI",
     dialCode: "+423",
     minLength: 9,
@@ -1030,7 +1030,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Lithuania",
-    flag: "🇱🇹",
+    flag: "lt",
     code: "LT",
     dialCode: "+370",
     minLength: 8,
@@ -1038,7 +1038,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Luxembourg",
-    flag: "🇱🇺",
+    flag: "lu",
     code: "LU",
     dialCode: "+352",
     minLength: 11,
@@ -1046,7 +1046,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Macao",
-    flag: "🇲🇴",
+    flag: "mo",
     code: "MO",
     dialCode: "+853",
     minLength: 8,
@@ -1054,7 +1054,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Macedonia",
-    flag: "🇲🇰",
+    flag: "mk",
     code: "MK",
     dialCode: "+389",
     minLength: 8,
@@ -1062,7 +1062,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Madagascar",
-    flag: "🇲🇬",
+    flag: "mg",
     code: "MG",
     dialCode: "+261",
     minLength: 10,
@@ -1070,7 +1070,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Malawi",
-    flag: "🇲🇼",
+    flag: "mw",
     code: "MW",
     dialCode: "+265",
     minLength: 7,
@@ -1078,7 +1078,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Malaysia",
-    flag: "🇲🇾",
+    flag: "my",
     code: "MY",
     dialCode: "+60",
     minLength: 11,
@@ -1086,7 +1086,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Maldives",
-    flag: "🇲🇻",
+    flag: "mv",
     code: "MV",
     dialCode: "+960",
     minLength: 7,
@@ -1094,7 +1094,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Mali",
-    flag: "🇲🇱",
+    flag: "ml",
     code: "ML",
     dialCode: "+223",
     minLength: 8,
@@ -1102,7 +1102,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Malta",
-    flag: "🇲🇹",
+    flag: "mt",
     code: "MT",
     dialCode: "+356",
     minLength: 8,
@@ -1110,7 +1110,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Marshall Islands",
-    flag: "🇲🇭",
+    flag: "mh",
     code: "MH",
     dialCode: "+692",
     minLength: 7,
@@ -1118,7 +1118,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Martinique",
-    flag: "🇲🇶",
+    flag: "mq",
     code: "MQ",
     dialCode: "+596",
     minLength: 15,
@@ -1126,7 +1126,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Mauritania",
-    flag: "🇲🇷",
+    flag: "mr",
     code: "MR",
     dialCode: "+222",
     minLength: 8,
@@ -1134,7 +1134,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Mauritius",
-    flag: "🇲🇺",
+    flag: "mu",
     code: "MU",
     dialCode: "+230",
     minLength: 7,
@@ -1150,7 +1150,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Mexico",
-    flag: "🇲🇽",
+    flag: "mx",
     code: "MX",
     dialCode: "+52",
     minLength: 10,
@@ -1158,7 +1158,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Micronesia, Federated States of Micronesia",
-    flag: "🇫🇲",
+    flag: "fm",
     code: "FM",
     dialCode: "+691",
     minLength: 7,
@@ -1166,7 +1166,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Moldova",
-    flag: "🇲🇩",
+    flag: "md",
     code: "MD",
     dialCode: "+373",
     minLength: 8,
@@ -1174,7 +1174,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Monaco",
-    flag: "🇲🇨",
+    flag: "mc",
     code: "MC",
     dialCode: "+377",
     minLength: 9,
@@ -1182,7 +1182,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Mongolia",
-    flag: "🇲🇳",
+    flag: "mn",
     code: "MN",
     dialCode: "+976",
     minLength: 8,
@@ -1190,7 +1190,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Montenegro",
-    flag: "🇲🇪",
+    flag: "me",
     code: "ME",
     dialCode: "+382",
     minLength: 12,
@@ -1198,7 +1198,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Montserrat",
-    flag: "🇲🇸",
+    flag: "ms",
     code: "MS",
     dialCode: "+1664",
     minLength: 7,
@@ -1206,7 +1206,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Morocco",
-    flag: "🇲🇦",
+    flag: "ma",
     code: "MA",
     dialCode: "+212",
     minLength: 9,
@@ -1214,7 +1214,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Mozambique",
-    flag: "🇲🇿",
+    flag: "mz",
     code: "MZ",
     dialCode: "+258",
     minLength: 9,
@@ -1222,7 +1222,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Myanmar",
-    flag: "🇲🇲",
+    flag: "mm",
     code: "MM",
     dialCode: "+95",
     minLength: 9,
@@ -1230,7 +1230,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Namibia",
-    flag: "🇳🇦",
+    flag: "na",
     code: "NA",
     dialCode: "+264",
     minLength: 10,
@@ -1238,7 +1238,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Nauru",
-    flag: "🇳🇷",
+    flag: "nr",
     code: "NR",
     dialCode: "+674",
     minLength: 7,
@@ -1246,7 +1246,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Nepal",
-    flag: "🇳🇵",
+    flag: "np",
     code: "NP",
     dialCode: "+977",
     minLength: 10,
@@ -1254,7 +1254,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Netherlands",
-    flag: "🇳🇱",
+    flag: "nl",
     code: "NL",
     dialCode: "+31",
     minLength: 9,
@@ -1278,7 +1278,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "New Zealand",
-    flag: "🇳🇿",
+    flag: "nz",
     code: "NZ",
     dialCode: "+64",
     minLength: 10,
@@ -1286,7 +1286,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Nicaragua",
-    flag: "🇳🇮",
+    flag: "ni",
     code: "NI",
     dialCode: "+505",
     minLength: 8,
@@ -1294,7 +1294,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Niger",
-    flag: "🇳🇪",
+    flag: "ne",
     code: "NE",
     dialCode: "+227",
     minLength: 8,
@@ -1302,7 +1302,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Nigeria",
-    flag: "🇳🇬",
+    flag: "ng",
     code: "NG",
     dialCode: "+234",
     minLength: 10,
@@ -1310,7 +1310,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Niue",
-    flag: "🇳🇺",
+    flag: "nu",
     code: "NU",
     dialCode: "+683",
     minLength: 4,
@@ -1318,7 +1318,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Norfolk Island",
-    flag: "🇳🇫",
+    flag: "nf",
     code: "NF",
     dialCode: "+672",
     minLength: 15,
@@ -1326,7 +1326,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Northern Mariana Islands",
-    flag: "🇲🇵",
+    flag: "mp",
     code: "MP",
     dialCode: "+1670",
     minLength: 7,
@@ -1334,7 +1334,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Norway",
-    flag: "🇳🇴",
+    flag: "no",
     code: "NO",
     dialCode: "+47",
     minLength: 8,
@@ -1342,7 +1342,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Oman",
-    flag: "🇴🇲",
+    flag: "om",
     code: "OM",
     dialCode: "+968",
     minLength: 8,
@@ -1350,7 +1350,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Pakistan",
-    flag: "🇵🇰",
+    flag: "pk",
     code: "PK",
     dialCode: "+92",
     minLength: 10,
@@ -1358,7 +1358,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Palau",
-    flag: "🇵🇼",
+    flag: "pw",
     code: "PW",
     dialCode: "+680",
     minLength: 7,
@@ -1366,7 +1366,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Palestinian Territory, Occupied",
-    flag: "🇵🇸",
+    flag: "ps",
     code: "PS",
     dialCode: "+970",
     minLength: 9,
@@ -1374,7 +1374,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Panama",
-    flag: "🇵🇦",
+    flag: "pa",
     code: "PA",
     dialCode: "+507",
     minLength: 8,
@@ -1382,7 +1382,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Papua New Guinea",
-    flag: "🇵🇬",
+    flag: "pg",
     code: "PG",
     dialCode: "+675",
     minLength: 11,
@@ -1390,7 +1390,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Paraguay",
-    flag: "🇵🇾",
+    flag: "py",
     code: "PY",
     dialCode: "+595",
     minLength: 10,
@@ -1398,7 +1398,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Peru",
-    flag: "🇵🇪",
+    flag: "pe",
     code: "PE",
     dialCode: "+51",
     minLength: 11,
@@ -1406,7 +1406,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Philippines",
-    flag: "🇵🇭",
+    flag: "ph",
     code: "PH",
     dialCode: "+63",
     minLength: 10,
@@ -1414,7 +1414,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Pitcairn",
-    flag: "🇵🇳",
+    flag: "pn",
     code: "PN",
     dialCode: "+64",
     minLength: 10,
@@ -1422,7 +1422,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Poland",
-    flag: "🇵🇱",
+    flag: "pl",
     code: "PL",
     dialCode: "+48",
     minLength: 9,
@@ -1430,7 +1430,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Portugal",
-    flag: "🇵🇹",
+    flag: "pt",
     code: "PT",
     dialCode: "+351",
     minLength: 9,
@@ -1438,7 +1438,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Puerto Rico",
-    flag: "🇵🇷",
+    flag: "pr",
     code: "PR",
     dialCode: "+1939",
     minLength: 15,
@@ -1446,7 +1446,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Qatar",
-    flag: "🇶🇦",
+    flag: "qa",
     code: "QA",
     dialCode: "+974",
     minLength: 8,
@@ -1454,7 +1454,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Romania",
-    flag: "🇷🇴",
+    flag: "ro",
     code: "RO",
     dialCode: "+40",
     minLength: 9,
@@ -1462,7 +1462,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Russia",
-    flag: "🇷🇺",
+    flag: "ru",
     code: "RU",
     dialCode: "+7",
     minLength: 10,
@@ -1470,7 +1470,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Rwanda",
-    flag: "🇷🇼",
+    flag: "rw",
     code: "RW",
     dialCode: "+250",
     minLength: 9,
@@ -1502,7 +1502,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Saint Kitts and Nevis",
-    flag: "🇰🇳",
+    flag: "kn",
     code: "KN",
     dialCode: "+1869",
     minLength: 7,
@@ -1510,7 +1510,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Saint Lucia",
-    flag: "🇱🇨",
+    flag: "lc",
     code: "LC",
     dialCode: "+1758",
     minLength: 7,
@@ -1534,7 +1534,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Saint Vincent and the Grenadines",
-    flag: "🇻🇨",
+    flag: "vc",
     code: "VC",
     dialCode: "+1784",
     minLength: 7,
@@ -1542,7 +1542,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Samoa",
-    flag: "🇼🇸",
+    flag: "ws",
     code: "WS",
     dialCode: "+685",
     minLength: 7,
@@ -1558,7 +1558,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Sao Tome and Principe",
-    flag: "🇸🇹",
+    flag: "st",
     code: "ST",
     dialCode: "+239",
     minLength: 7,
@@ -1566,7 +1566,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Saudi Arabia",
-    flag: "🇸🇦",
+    flag: "sa",
     code: "SA",
     dialCode: "+966",
     minLength: 9,
@@ -1574,7 +1574,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Senegal",
-    flag: "🇸🇳",
+    flag: "sn",
     code: "SN",
     dialCode: "+221",
     minLength: 9,
@@ -1582,7 +1582,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Serbia",
-    flag: "🇷🇸",
+    flag: "rs",
     code: "RS",
     dialCode: "+381",
     minLength: 12,
@@ -1590,7 +1590,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Seychelles",
-    flag: "🇸🇨",
+    flag: "sc",
     code: "SC",
     dialCode: "+248",
     minLength: 6,
@@ -1598,7 +1598,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Sierra Leone",
-    flag: "🇸🇱",
+    flag: "sl",
     code: "SL",
     dialCode: "+232",
     minLength: 8,
@@ -1606,7 +1606,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Singapore",
-    flag: "🇸🇬",
+    flag: "sg",
     code: "SG",
     dialCode: "+65",
     minLength: 8,
@@ -1614,7 +1614,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Slovakia",
-    flag: "🇸🇰",
+    flag: "sk ",
     code: "SK",
     dialCode: "+421",
     minLength: 9,
@@ -1622,7 +1622,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Slovenia",
-    flag: "🇸🇮",
+    flag: "si",
     code: "SI",
     dialCode: "+386",
     minLength: 8,
@@ -1630,7 +1630,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Solomon Islands",
-    flag: "🇸🇧",
+    flag: "sb",
     code: "SB",
     dialCode: "+677",
     minLength: 5,
@@ -1638,7 +1638,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Somalia",
-    flag: "🇸🇴",
+    flag: "so",
     code: "SO",
     dialCode: "+252",
     minLength: 8,
@@ -1646,7 +1646,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "South Africa",
-    flag: "🇿🇦",
+    flag: "za",
     code: "ZA",
     dialCode: "+27",
     minLength: 9,
@@ -1654,7 +1654,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "South Sudan",
-    flag: "🇸🇸",
+    flag: "ss",
     code: "SS",
     dialCode: "+211",
     minLength: 9,
@@ -1670,7 +1670,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Spain",
-    flag: "🇪🇸",
+    flag: "es",
     code: "ES",
     dialCode: "+34",
     minLength: 9,
@@ -1678,7 +1678,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Sri Lanka",
-    flag: "🇱🇰",
+    flag: "lk",
     code: "LK",
     dialCode: "+94",
     minLength: 9,
@@ -1686,7 +1686,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Sudan",
-    flag: "🇸🇩",
+    flag: "sd",
     code: "SD",
     dialCode: "+249",
     minLength: 9,
@@ -1694,7 +1694,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Suriname",
-    flag: "🇸🇷",
+    flag: "sr",
     code: "SR",
     dialCode: "+597",
     minLength: 7,
@@ -1718,7 +1718,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Sweden",
-    flag: "🇸🇪",
+    flag: "se",
     code: "SE",
     dialCode: "+46",
     minLength: 7,
@@ -1726,7 +1726,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Switzerland",
-    flag: "🇨🇭",
+    flag: "ch",
     code: "CH",
     dialCode: "+41",
     minLength: 12,
@@ -1734,7 +1734,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Syrian Arab Republic",
-    flag: "🇸🇾",
+    flag: "sy",
     code: "SY",
     dialCode: "+963",
     minLength: 10,
@@ -1742,7 +1742,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Taiwan",
-    flag: "🇹🇼",
+    flag: "tw",
     code: "TW",
     dialCode: "+886",
     minLength: 9,
@@ -1750,7 +1750,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Tajikistan",
-    flag: "🇹🇯",
+    flag: "tj",
     code: "TJ",
     dialCode: "+992",
     minLength: 9,
@@ -1758,7 +1758,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Tanzania, United Republic of Tanzania",
-    flag: "🇹🇿",
+    flag: "tz",
     code: "TZ",
     dialCode: "+255",
     minLength: 9,
@@ -1766,7 +1766,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Thailand",
-    flag: "🇹🇭",
+    flag: "th",
     code: "TH",
     dialCode: "+66",
     minLength: 9,
@@ -1774,7 +1774,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Timor-Leste",
-    flag: "🇹🇱",
+    flag: "tl",
     code: "TL",
     dialCode: "+670",
     minLength: 7,
@@ -1782,7 +1782,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Togo",
-    flag: "🇹🇬",
+    flag: "tg",
     code: "TG",
     dialCode: "+228",
     minLength: 8,
@@ -1790,7 +1790,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Tokelau",
-    flag: "🇹🇰",
+    flag: "tk",
     code: "TK",
     dialCode: "+690",
     minLength: 4,
@@ -1798,7 +1798,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Tonga",
-    flag: "🇹🇴",
+    flag: "to",
     code: "TO",
     dialCode: "+676",
     minLength: 7,
@@ -1806,7 +1806,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Trinidad and Tobago",
-    flag: "🇹🇹",
+    flag: "tt",
     code: "TT",
     dialCode: "+1868",
     minLength: 7,
@@ -1814,7 +1814,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Tunisia",
-    flag: "🇹🇳",
+    flag: "tn",
     code: "TN",
     dialCode: "+216",
     minLength: 8,
@@ -1822,7 +1822,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Turkey",
-    flag: "🇹🇷",
+    flag: "tr",
     code: "TR",
     dialCode: "+90",
     minLength: 10,
@@ -1830,7 +1830,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Turkmenistan",
-    flag: "🇹🇲",
+    flag: "tm",
     code: "TM",
     dialCode: "+993",
     minLength: 8,
@@ -1838,7 +1838,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Turks and Caicos Islands",
-    flag: "🇹🇨",
+    flag: "tc",
     code: "TC",
     dialCode: "+1649",
     minLength: 7,
@@ -1846,7 +1846,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Tuvalu",
-    flag: "🇹🇻",
+    flag: "tv",
     code: "TV",
     dialCode: "+688",
     minLength: 6,
@@ -1854,7 +1854,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Uganda",
-    flag: "🇺🇬",
+    flag: "ug",
     code: "UG",
     dialCode: "+256",
     minLength: 9,
@@ -1862,7 +1862,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Ukraine",
-    flag: "🇺🇦",
+    flag: "ua",
     code: "UA",
     dialCode: "+380",
     minLength: 9,
@@ -1870,7 +1870,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "United Arab Emirates",
-    flag: "🇦🇪",
+    flag: "ae",
     code: "AE",
     dialCode: "+971",
     minLength: 9,
@@ -1878,7 +1878,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "United Kingdom",
-    flag: "🇬🇧",
+    flag: "gb",
     code: "GB",
     dialCode: "+44",
     minLength: 10,
@@ -1886,7 +1886,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "United States",
-    flag: "🇺🇸",
+    flag: "us",
     code: "US",
     dialCode: "+1",
     minLength: 10,
@@ -1894,7 +1894,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Uruguay",
-    flag: "🇺🇾",
+    flag: "uy",
     code: "UY",
     dialCode: "+598",
     minLength: 9,
@@ -1902,7 +1902,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Uzbekistan",
-    flag: "🇺🇿",
+    flag: "uz",
     code: "UZ",
     dialCode: "+998",
     minLength: 9,
@@ -1910,7 +1910,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Vanuatu",
-    flag: "🇻🇺",
+    flag: "vu",
     code: "VU",
     dialCode: "+678",
     minLength: 7,
@@ -1918,7 +1918,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Venezuela, Bolivarian Republic of Venezuela",
-    flag: "🇻🇪",
+    flag: "ve",
     code: "VE",
     dialCode: "+58",
     minLength: 10,
@@ -1926,7 +1926,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Vietnam",
-    flag: "🇻🇳",
+    flag: "vn",
     code: "VN",
     dialCode: "+84",
     minLength: 11,
@@ -1934,7 +1934,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Virgin Islands, British",
-    flag: "🇻🇬",
+    flag: "vg",
     code: "VG",
     dialCode: "+1284",
     minLength: 7,
@@ -1958,7 +1958,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Yemen",
-    flag: "🇾🇪",
+    flag: "ye",
     code: "YE",
     dialCode: "+967",
     minLength: 9,
@@ -1974,7 +1974,7 @@ const List<Country> countries = [
   ),
   Country(
     name: "Zimbabwe",
-    flag: "🇿🇼",
+    flag: "zw",
     code: "ZW",
     dialCode: "+263",
     minLength: 9,
@@ -1985,7 +1985,7 @@ const List<Country> countries = [
 
 const defaultCountry =  Country(
   name: "Turkey",
-  flag: "🇹🇷",
+  flag: "tr",
   code: "TR",
   dialCode: "+90",
   minLength: 10,

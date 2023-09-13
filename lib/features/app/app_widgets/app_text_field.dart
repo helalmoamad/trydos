@@ -53,6 +53,7 @@ class AppTextField extends StatelessWidget {
     this.hintText,
     this.labelText,
     this.inputFormatters,
+    this.autoFocus,
     this.contentPadding,
     this.filledColor,
     this.bordersColor,
@@ -91,6 +92,7 @@ class AppTextField extends StatelessWidget {
   final String? titleField;
   final bool showLength;
   final bool obscure;
+  final bool? autoFocus;
   final Widget? prefixIcon;
   final Widget? icon;
   final Widget? suffixIcon;
@@ -132,6 +134,7 @@ class AppTextField extends StatelessWidget {
       scrollPhysics: scrollPhysics,
       scrollController: scrollController,
       autocorrect: false,
+      autofocus: autoFocus ?? false,
       cursorColor: context.colorScheme.primary,
       initialValue: initialValue,
       keyboardAppearance: keyboardAppearance,

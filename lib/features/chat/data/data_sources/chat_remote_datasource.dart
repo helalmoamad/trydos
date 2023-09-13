@@ -93,6 +93,8 @@ class ChatRemoteDataSource{
       requestPrams: RequestConfig<List<Message>>(
         endpoint: EndPoints.getMessagesBetweenEP,
         data: params,
+        receiveTimeout: const Duration(minutes: 2),
+        sendTimeout: const Duration(minutes: 2),
         response: ResponseValue<List<Message>>(
             fromJson: (response)=> List<Message>.from(
                 response["data"]!.map((x) => Message.fromJson(x)))

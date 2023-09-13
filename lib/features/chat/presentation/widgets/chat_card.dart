@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/configuration/url_routes.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -23,6 +24,7 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/no_image_
 
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../routes/router.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../data/models/my_chats_response_model.dart';
@@ -41,7 +43,7 @@ class ChatCard extends StatefulWidget {
   final Chat chat;
   final bool thereActivity;
   final String? activityDescription;
-  final Function(int receiverId , String channelId)? onSendForwardMessage;
+  final Function(int receiverId, String channelId)? onSendForwardMessage;
 
   @override
   State<ChatCard> createState() => _ChatCardState();
@@ -49,19 +51,13 @@ class ChatCard extends StatefulWidget {
 
 class _ChatCardState extends ThemeState<ChatCard> {
   ValueNotifier<int> typingIndicator = ValueNotifier(0);
-   Timer? timer;
+  Timer? timer;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
-  late DateTime chatTime;
+  DateTime? chatTime;
   late ChatBloc chatBloc;
-
   @override
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    if (widget.chat.messages?.isEmpty ?? true) {
-      chatTime = widget.chat.closesAt ?? DateTime.now();
-    } else {
-      chatTime = widget.chat.messages!.first.createdAt!;
-    }
     super.initState();
   }
 
@@ -74,6 +70,10 @@ class _ChatCardState extends ThemeState<ChatCard> {
 
   @override
   Widget build(BuildContext context) {
+    chatTime = null;
+    if (!(widget.chat.messages?.isEmpty ?? true)) {
+      chatTime = widget.chat.messages!.first.createdAt!;
+    }
     User? receiver = widget.chat.channelMembers
         ?.firstWhere((element) => element.userId != _prefsRepository.myId)
         .user;
@@ -85,6 +85,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
           ? 'UK'
           : HelperFunctions.getTheFirstTwoLettersOfName(receiver.name!);
     }
+    print(receiverName);
+    print(chatTime);
     ChannelMember me = widget.chat.channelMembers!
         .firstWhere((element) => element.userId == _prefsRepository.myId);
     User? sender = me.user;
@@ -105,213 +107,183 @@ class _ChatCardState extends ThemeState<ChatCard> {
         }
       });
     }
-    return BlocConsumer<ChatBloc, ChatState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
-      builder: (context, state) {
-        String messageType='';
-        if(!widget.chat.messages.isNullOrEmpty) {
-          messageType = (widget.chat.messages!.first.messageType?.name).toString();
-        }
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: widget.index == 0 ? 0 : 0.4,
-              color: const Color(0xffC8C7CC),
-              margin: HWEdgeInsetsDirectional.only(start: 94),
-            ),
-            SizedBox(
-              height: 100.h,
-              width: 1.sw,
-              child: InkWell(
-                onTap: () {
-                  chatBloc.add(ReadAllMessagesEvent(widget.chat.id!.toString()));
-                  if (widget.onSendForwardMessage != null) {
-                    Navigator.of(context)
-                      ..pop()
-                      ..pop();
-                  }
-                  widget.onSendForwardMessage?.call(widget.chat.channelMembers!
-                      .firstWhere((element) =>
-                  element.userId != GetIt.I<PrefsRepository>().myId)
-                      .userId!,widget.chat.id.toString());
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SinglePageChat(
-                              chatId: widget.chat.id!.toString(),
-                              receiverName: receiverName,
-                              senderName: senderName,
-                              fullReceiverName: receiver?.name ??
-                                  receiver?.mobilePhone ??
-                                  'Un Known User',
-                              receiverPhone:
-                                  receiver?.mobilePhone ?? 'Uo Number',
-                              receiverPhoto: receiver?.photoPath,
-                              senderPhoto: sender?.photoPath,
-                            )),
-                  );
-                },
-                child: Slidable(
-                  endActionPane: ActionPane(
-                    extentRatio: 0.645,
-                    motion: const ScrollMotion(),
-                    children: [
-                      SlidableActionWidget(
-                        text: me.archived == 0 ? 'Archive' : 'UnArchive',
-                        onTap: () {
-                          chatBloc.add(ChangeChatPropertyEvent(
-                              channelId: widget.chat.id!,
-                              archive: 1 - (me.archived ?? 0)));
-                        },
-                        backgroundColor: const Color(0xffF0F0F0),
-                        foregroundColor: colorScheme.grey200,
-                        iconUrl: AppAssets.archiveSvg,
-                      ),
-                      SlidableActionWidget(
-                        text: 'Delete',
-                        onTap: () {
-                          chatBloc
-                              .add(DeleteChatEvent(channelId: widget.chat.id!));
-                        },
-                        backgroundColor: const Color(0xffFFE8E8),
-                        foregroundColor: const Color(0xffFA6868),
-                        iconUrl: AppAssets.binSvg,
-                      ),
-                      SlidableActionWidget(
-                        text: me.mute == 0 ? 'Mute' : 'UnMute',
-                        onTap: () {
-                          chatBloc.add(ChangeChatPropertyEvent(
-                              channelId: widget.chat.id!,
-                              mute: 1 - (me.mute ?? 0)));
-                        },
-                        backgroundColor: const Color(0xffF6F5FD),
-                        foregroundColor: const Color(0xffC4C2C2),
-                        iconUrl: me.mute == 1
-                            ? AppAssets.unMuteSvg
-                            : AppAssets.muteSvg,
-                      ),
-                    ],
-                  ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: widget.index == 0 ? 0 : 0.4,
+          color: const Color(0xffC8C7CC),
+          margin: HWEdgeInsetsDirectional.only(start: 94),
+        ),
+        SizedBox(
+          height: 100.h,
+          width: 1.sw,
+          child: Container(
+            child: InkWell(
+              onTap: () {
+                chatBloc.add(ReadAllMessagesEvent(widget.chat.id!.toString()));
+                // if (widget.onSendForwardMessage != null) {
+                //   Navigator.of(context)
+                //     ..pop()
+                //     ..pop();
+                // }
+                widget.onSendForwardMessage?.call(
+                    widget.chat.channelMembers!
+                        .firstWhere((element) =>
+                            element.userId != GetIt.I<PrefsRepository>().myId)
+                        .userId!,
+                    widget.chat.id.toString());
+                context.go(GRouter
+                        .config.applicationRoutes.kSinglePageChatPagePath +
+                    '?chatId=${widget.chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${receiver?.name ?? receiver?.mobilePhone ?? 'Un Known User'}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}&receiverPhoto=${receiver?.photoPath}&senderPhoto=${sender?.photoPath}');
+              },
+              child: Slidable(
+                endActionPane: ActionPane(
+                  extentRatio: 0.645,
+                  motion: const ScrollMotion(),
+                  children: [
+                    SlidableActionWidget(
+                      text: me.archived == 0 ? 'Archive' : 'UnArchive',
+                      onTap: () {
+                        chatBloc.add(ChangeChatPropertyEvent(
+                            channelId: widget.chat.id!,
+                            archive: 1 - (me.archived ?? 0)));
+                      },
+                      backgroundColor: const Color(0xffF0F0F0),
+                      foregroundColor: colorScheme.grey200,
+                      iconUrl: AppAssets.archiveSvg,
+                    ),
+                    SlidableActionWidget(
+                      text: 'Delete',
+                      onTap: () {
+                        chatBloc.add(DeleteChatEvent(channelId: widget.chat.id!));
+                      },
+                      backgroundColor: const Color(0xffFFE8E8),
+                      foregroundColor: const Color(0xffFA6868),
+                      iconUrl: AppAssets.binSvg,
+                    ),
+                    SlidableActionWidget(
+                      text: me.mute == 0 ? 'Mute' : 'UnMute',
+                      onTap: () {
+                        chatBloc.add(ChangeChatPropertyEvent(
+                            channelId: widget.chat.id!,
+                            mute: 1 - (me.mute ?? 0)));
+                      },
+                      backgroundColor: const Color(0xffF6F5FD),
+                      foregroundColor: const Color(0xffC4C2C2),
+                      iconUrl:
+                          me.mute == 1 ? AppAssets.unMuteSvg : AppAssets.muteSvg,
+                    ),
+                  ],
+                ),
 
-                  // The end action pane is the one at the right or the bottom side.
-                  startActionPane: ActionPane(
-                    extentRatio: 0.43,
-                    motion: const ScrollMotion(),
-                    children: [
-                      SlidableActionWidget(
-                        text: 'Read',
-                        onTap: () {
-                          chatBloc.add(
-                              ReadAllMessagesEvent(widget.chat.id!.toString()));
-                        },
-                        backgroundColor: const Color(0xffFCF6EF),
-                        foregroundColor: colorScheme.grey200,
-                        iconUrl: AppAssets.unreadSvg,
-                      ),
-                      SlidableActionWidget(
-                        text: me.pin == 0 ? 'Pin' : 'UnPin',
-                        onTap: () {
-                          chatBloc.add(ChangeChatPropertyEvent(
-                              channelId: widget.chat.id!,
-                              pin: 1 - (me.pin ?? 0)));
-                        },
-                        backgroundColor: const Color(0xffEFF8FF),
-                        foregroundColor: colorScheme.grey200,
-                        iconUrl: AppAssets.pinSvg,
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      Container(
-                        padding: HWEdgeInsets.only(left: 15.w, right: 10.w),
-                        color: colorScheme.white,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            receiver?.photoPath != null
-                                ? BlocBuilder<AppBloc, AppState>(
-                                    builder: (context, state) {
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          boxShadow: widget.thereActivity
-                                              ? [
-                                                  BoxShadow(
-                                                      color: const Color(
-                                                              0xff007CFF)
-                                                          .withOpacity(0.16),
-                                                      offset:
-                                                          const Offset(0, 3),
-                                                      blurRadius: 6)
-                                                ]
-                                              : null,
-                                          border: widget.thereActivity
-                                              ? Border.all(
-                                                  color:
-                                                      const Color(0xff007CFF),
-                                                  width: 1)
-                                              : null,
-                                          borderRadius:
-                                              BorderRadius.circular(12.0),
-                                        ),
-                                        child: MyCachedNetworkImage(
-                                            imageUrl: Urls.baseUrl +
-                                                receiver?.photoPath,
-                                            imageFit: BoxFit.cover,
-                                            height: 80.h,
-                                            width: 60.w),
-                                      );
-                                    },
-                                  )
-                                : NoImageWidget(
-                                    width: 60.w,
-                                    height: 80.h,
-                                    textStyle: context.textTheme.subtitle1?.br
-                                        .copyWith(
-                                            color: const Color(0xff6638FF),
-                                            letterSpacing: 0.18,
-                                            height: 1.33),
-                                thereActivity: widget.thereActivity,
-                                    name: receiverName),
-                            18.horizontalSpace,
-                            Flexible(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Flexible(
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          receiver?.name ??
-                                              receiver?.mobilePhone ??
-                                              'Un Known user',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: textTheme.subtitle1?.rr
-                                              .copyWith(
-                                                  height: 1.33,
-                                                  color:
-                                                      const Color(0xff505050)),
-                                        ),
-                                        const Spacer(),
+                // The end action pane is the one at the right or the bottom side.
+                startActionPane: ActionPane(
+                  extentRatio: 0.43,
+                  motion: const ScrollMotion(),
+                  children: [
+                    SlidableActionWidget(
+                      text: 'Read',
+                      onTap: () {
+                        chatBloc.add(
+                            ReadAllMessagesEvent(widget.chat.id!.toString()));
+                      },
+                      backgroundColor: const Color(0xffFCF6EF),
+                      foregroundColor: colorScheme.grey200,
+                      iconUrl: AppAssets.unreadSvg,
+                    ),
+                    SlidableActionWidget(
+                      text: me.pin == 0 ? 'Pin' : 'UnPin',
+                      onTap: () {
+                        chatBloc.add(ChangeChatPropertyEvent(
+                            channelId: widget.chat.id!, pin: 1 - (me.pin ?? 0)));
+                      },
+                      backgroundColor: const Color(0xffEFF8FF),
+                      foregroundColor: colorScheme.grey200,
+                      iconUrl: AppAssets.pinSvg,
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
+                    Container(
+                      padding: HWEdgeInsets.only(left: 15.w, right: 10.w),
+                      color: colorScheme.white,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          receiver?.photoPath != null
+                              ? BlocBuilder<AppBloc, AppState>(
+                                  builder: (context, state) {
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        boxShadow: widget.thereActivity
+                                            ? [
+                                                BoxShadow(
+                                                    color: const Color(0xff007CFF)
+                                                        .withOpacity(0.16),
+                                                    offset: const Offset(0, 3),
+                                                    blurRadius: 6)
+                                              ]
+                                            : null,
+                                        border: widget.thereActivity
+                                            ? Border.all(
+                                                color: const Color(0xff007CFF),
+                                                width: 1)
+                                            : null,
+                                        borderRadius: BorderRadius.circular(12.0),
+                                      ),
+                                      child: MyCachedNetworkImage(
+                                          imageUrl:
+                                              Urls.baseUrl + receiver?.photoPath,
+                                          imageFit: BoxFit.cover,
+                                          height: 80.h,
+                                          width: 60.w),
+                                    );
+                                  },
+                                )
+                              : NoImageWidget(
+                                  width: 60.w,
+                                  height: 80.h,
+                                  textStyle: context.textTheme.subtitle1?.br
+                                      .copyWith(
+                                          color: const Color(0xff6638FF),
+                                          letterSpacing: 0.18,
+                                          height: 1.33),
+                                  thereActivity: widget.thereActivity,
+                                  name: receiverName),
+                          18.horizontalSpace,
+                          Flexible(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Flexible(
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        receiver?.name ??
+                                            receiver?.mobilePhone ??
+                                            'Un Known user',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: textTheme.subtitle1?.rr.copyWith(
+                                            height: 1.33,
+                                            color: const Color(0xff505050)),
+                                      ),
+                                      const Spacer(),
+                                      if (chatTime == null)
+                                        const SizedBox.shrink()
+                                      else
                                         BlocConsumer<ChatBloc, ChatState>(
-                                          listener: (context, state) {
-                                            if (widget.chat.id ==
-                                                state.channelId) {
-                                              chatTime = DateTime.now();
-                                            }
-                                          },
+                                          listener: (context, state) {},
                                           builder: (context, state) {
                                             return Text(
-                                              !chatTime.isUtc
+                                              !chatTime!.isUtc
                                                   ? HelperFunctions
-                                                      .getDateInFormat(chatTime)
+                                                      .getDateInFormat(chatTime!)
                                                   : HelperFunctions
                                                       .getZonedDateInFormat(
-                                                          chatTime),
+                                                          chatTime!),
                                               maxLines: 1,
                                               style: textTheme.caption?.rr
                                                   .copyWith(
@@ -321,247 +293,263 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                             );
                                           },
                                         ),
-                                        30.horizontalSpace
-                                      ],
-                                    ),
+                                      30.horizontalSpace
+                                    ],
                                   ),
-                                  7.verticalSpace,
-                                  Flexible(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        if (widget.thereActivity) ...{
-                                          Transform.translate(
-                                            offset: const Offset(0, 3),
-                                            child: Transform(
-                                              alignment: Alignment.center,
-                                              transform: (Matrix4.identity()
-                                                ..scale(
-                                                    LanguageService
-                                                                .languageCode ==
-                                                            'ar'
-                                                        ? -1.0
-                                                        : 1.0,
-                                                    1.0,
-                                                    1.0)),
-                                              child: SvgPicture.asset(
-                                                AppAssets.messageReadArrowSvg,
-                                                height: 12.h,
-                                                width: 12.w,
-                                              ),
+                                ),
+                                7.verticalSpace,
+                                Flexible(
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (widget.thereActivity) ...{
+                                        Transform.translate(
+                                          offset: const Offset(0, 3),
+                                          child: Transform(
+                                            alignment: Alignment.center,
+                                            transform: (Matrix4.identity()
+                                              ..scale(
+                                                  LanguageService.languageCode ==
+                                                          'ar'
+                                                      ? -1.0
+                                                      : 1.0,
+                                                  1.0,
+                                                  1.0)),
+                                            child: SvgPicture.asset(
+                                              AppAssets.messageReadArrowSvg,
+                                              height: 12.h,
+                                              width: 12.w,
                                             ),
                                           ),
-                                          7.horizontalSpace,
-                                        },
-                                        Flexible(
-                                          fit: FlexFit.tight,
-                                          child: SizedBox(
-                                            height: widget.thereActivity ? 33 : 51,
-                                            child: (widget.chat.messages
-                                                        ?.isEmpty ??
-                                                    true)
-                                                ? const SizedBox.shrink()
-                                                : Row(
-                                                    children: [
-                                                      if(widget.chat.messages?.first.mediaMessageContent?.isNotEmpty ?? false)...{
-                                                        SvgPicture.asset(
+                                        ),
+                                        7.horizontalSpace,
+                                      },
+                                      BlocBuilder<ChatBloc, ChatState>(
+                                        builder: (context, state) {
+                                          String messageType = '';
+                                          if (!widget
+                                              .chat.messages.isNullOrEmpty) {
+                                            messageType = (widget.chat.messages!
+                                                    .first.messageType?.name)
+                                                .toString();
+                                          }
+                                          return Flexible(
+                                            fit: FlexFit.tight,
+                                            child: SizedBox(
+                                              height:
+                                                  widget.thereActivity ? 33 : 51,
+                                              child: (widget.chat.messages
+                                                          ?.isEmpty ??
+                                                      true)
+                                                  ? const SizedBox.shrink()
+                                                  : Row(
+                                                      children: [
+                                                        if (widget
+                                                                .chat
+                                                                .messages
+                                                                ?.first
+                                                                .mediaMessageContent
+                                                                ?.isNotEmpty ??
+                                                            false) ...{
+                                                          SvgPicture.asset(
                                                             messageType ==
-                                                                'ImageMessage'
+                                                                    'ImageMessage'
                                                                 ? AppAssets
-                                                                .lastMessageImageSvg
+                                                                    .lastMessageImageSvg
                                                                 : messageType ==
-                                                                'VideoMessage'
-                                                                ? AppAssets
-                                                                .lastMessageVideoSvg
-                                                                : messageType ==
-                                                                'FileMessage'
-                                                                ? AppAssets
-                                                                .documentSvg
-                                                                : AppAssets
-                                                                .lastMessageAudioSvg,width: 20.w,height: 20.h,),
-                                                        10.horizontalSpace,
-                                                      },
-                                                      Flexible(
-                                                        child: Text(
+                                                                        'VideoMessage'
+                                                                    ? AppAssets
+                                                                        .lastMessageVideoSvg
+                                                                    : messageType ==
+                                                                            'FileMessage'
+                                                                        ? AppAssets
+                                                                            .documentSvg
+                                                                        : AppAssets
+                                                                            .lastMessageAudioSvg,
+                                                            width: 20.w,
+                                                            height: 20.h,
+                                                          ),
+                                                          10.horizontalSpace,
+                                                        },
+                                                        Flexible(
+                                                          child: Text(
                                                             messageType !=
-                                                                'TextMessage' ? (messageType ==
-                                                                'ImageMessage'
-                                                                  ? 'Photo'
-                                                                  : messageType ==
-                                                                'VideoMessage'
-                                                                ? 'Video' : messageType ==
-                                                                'FileMessage'
-                                                                ?'File' : 'Voice')
-                                                              : widget
-                                                                  .chat
-                                                                  .messages!
-                                                                  .first
-                                                                  .messageContent!
-                                                                  .content
-                                                                  .toString(),
-                                                          maxLines:
-                                                              widget.thereActivity
-                                                                  ? 1
-                                                                  : 3,
-                                                          textAlign:
-                                                              TextAlign.start,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style: textTheme
-                                                              .bodyText2?.lr
-                                                              .copyWith(
-                                                                  height: 1.22,
-                                                                  color: colorScheme
-                                                                      .grey200),
+                                                                    'TextMessage'
+                                                                ? (messageType ==
+                                                                        'ImageMessage'
+                                                                    ? 'Photo'
+                                                                    : messageType ==
+                                                                            'VideoMessage'
+                                                                        ? 'Video'
+                                                                        : messageType ==
+                                                                                'FileMessage'
+                                                                            ? 'File'
+                                                                            : 'Voice')
+                                                                : widget
+                                                                    .chat
+                                                                    .messages!
+                                                                    .first
+                                                                    .messageContent!
+                                                                    .content
+                                                                    .toString(),
+                                                            maxLines: widget
+                                                                    .thereActivity
+                                                                ? 1
+                                                                : 3,
+                                                            textAlign:
+                                                                TextAlign.start,
+                                                            overflow: TextOverflow
+                                                                .ellipsis,
+                                                            style: textTheme
+                                                                .bodyText2?.lr
+                                                                .copyWith(
+                                                                    height: 1.22,
+                                                                    color: colorScheme
+                                                                        .grey200),
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                          ),
-                                        ),
-                                        28.horizontalSpace,
-                                        Row(
-                                          children: [
-                                            if (((widget.chat.totalUnreadMessageCount ?? 0)) >
-                                                    0 &&
-                                                widget.chat
-                                                        .totalUnreadMessageCount !=
-                                                    null) ...{
-                                              SvgPicture.asset(
-                                                AppAssets
-                                                    .singleChatFilledActiveSvg,
-                                                height: 15.h,
-                                                width: 15.w,
-                                              ),
-                                              10.horizontalSpace,
-                                              Text(
+                                                      ],
+                                                    ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      28.horizontalSpace,
+                                      Row(
+                                        children: [
+                                          if (((widget.chat
+                                                          .totalUnreadMessageCount ??
+                                                      0)) >
+                                                  0 &&
+                                              widget.chat
+                                                      .totalUnreadMessageCount !=
+                                                  null) ...{
+                                            SvgPicture.asset(
+                                              AppAssets.singleChatFilledActiveSvg,
+                                              height: 15.h,
+                                              width: 15.w,
+                                            ),
+                                            10.horizontalSpace,
+                                            Text(
                                               (widget.chat
-                                                    .totalUnreadMessageCount!)
-                                                    .toString(),
-                                                maxLines: 1,
-                                                style: textTheme.caption?.rr
-                                                    .copyWith(
-                                                        color: const Color(
-                                                            0xff007CFF)),
-                                              ),
-                                            },
-                                            25.horizontalSpace,
-                                            Transform(
-                                              alignment: Alignment.center,
-                                              transform: (Matrix4.identity()
-                                                ..scale(
-                                                    LanguageService
-                                                                .languageCode ==
-                                                            'ar'
-                                                        ? -1.0
-                                                        : 1.0,
-                                                    1.0,
-                                                    1.0)),
-                                              child: SvgPicture.asset(
-                                                AppAssets.forwardArrowRight,
-                                                width: 3.w,
-                                                height: 12.h,
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    ),
+                                                      .totalUnreadMessageCount!)
+                                                  .toString(),
+                                              maxLines: 1,
+                                              style: textTheme.caption?.rr
+                                                  .copyWith(
+                                                      color: const Color(
+                                                          0xff007CFF)),
+                                            ),
+                                          },
+                                          25.horizontalSpace,
+                                          Transform(
+                                            alignment: Alignment.center,
+                                            transform: (Matrix4.identity()
+                                              ..scale(
+                                                  LanguageService.languageCode ==
+                                                          'ar'
+                                                      ? -1.0
+                                                      : 1.0,
+                                                  1.0,
+                                                  1.0)),
+                                            child: SvgPicture.asset(
+                                              AppAssets.forwardArrowRight,
+                                              width: 3.w,
+                                              height: 12.h,
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    ],
                                   ),
-                                  if (widget.thereActivity) ...{
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          widget.activityDescription.toString(),
-                                          maxLines: 1,
-                                          style: textTheme.caption?.rr.copyWith(
-                                              color: const Color(0xff007CFF)),
-                                        ),
-                                        8.horizontalSpace,
-                                        Transform.translate(
-                                          offset: const Offset(0, 1),
-                                          child: ValueListenableBuilder<int>(
-                                              valueListenable: typingIndicator,
-                                              builder:
-                                                  (context, activeIndex, _) {
-                                                return SizedBox(
-                                                  width: 50.w,
-                                                  height: 5.h,
-                                                  child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: List.generate(
-                                                          6,
-                                                          (index) => Container(
-                                                                width: 5,
-                                                                height: 5,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  shape: BoxShape
-                                                                      .circle,
-                                                                  color: activeIndex ==
-                                                                          index
-                                                                      ? const Color(
-                                                                          0xff007cff)
-                                                                      : colorScheme
-                                                                          .white,
-                                                                  border: Border.all(
-                                                                      width:
-                                                                          1.0,
-                                                                      color: const Color(
-                                                                          0xff007cff)),
-                                                                ),
-                                                              ))),
-                                                );
-                                              }),
-                                        )
-                                      ],
-                                    )
-                                  },
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
+                                ),
+                                if (widget.thereActivity) ...{
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        widget.activityDescription.toString(),
+                                        maxLines: 1,
+                                        style: textTheme.caption?.rr.copyWith(
+                                            color: const Color(0xff007CFF)),
+                                      ),
+                                      8.horizontalSpace,
+                                      Transform.translate(
+                                        offset: const Offset(0, 1),
+                                        child: ValueListenableBuilder<int>(
+                                            valueListenable: typingIndicator,
+                                            builder: (context, activeIndex, _) {
+                                              return SizedBox(
+                                                width: 50.w,
+                                                height: 5.h,
+                                                child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: List.generate(
+                                                        6,
+                                                        (index) => Container(
+                                                              width: 5,
+                                                              height: 5,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                color: activeIndex ==
+                                                                        index
+                                                                    ? const Color(
+                                                                        0xff007cff)
+                                                                    : colorScheme
+                                                                        .white,
+                                                                border: Border.all(
+                                                                    width: 1.0,
+                                                                    color: const Color(
+                                                                        0xff007cff)),
+                                                              ),
+                                                            ))),
+                                              );
+                                            }),
+                                      )
+                                    ],
+                                  )
+                                },
+                              ],
+                            ),
+                          )
+                        ],
                       ),
-                      Positioned(
-                        right:
-                            LanguageService.languageCode != 'ar' ? 10.sp : null,
-                        left:
-                            LanguageService.languageCode == 'ar' ? 10.sp : null,
-                        bottom: 10.sp,
-                        child: Row(
-                          children: [
-                            if (me.pin == 1) ...{
-                              SvgPicture.asset(
-                                AppAssets.pinSvg,
-                                width: 20.w,
-                                height: 20.h,
-                              ),
-                            },
-                            if (me.mute == 1) ...{
-                              10.horizontalSpace,
-                              SvgPicture.asset(
-                                AppAssets.muteSvg,
-                                width: 20.w,
-                                height: 20.h,
-                              ),
-                            },
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                    ),
+                    Positioned(
+                      right: LanguageService.languageCode != 'ar' ? 10.sp : null,
+                      left: LanguageService.languageCode == 'ar' ? 10.sp : null,
+                      bottom: 10.sp,
+                      child: Row(
+                        children: [
+                          if (me.pin == 1) ...{
+                            SvgPicture.asset(
+                              AppAssets.pinSvg,
+                              width: 20.w,
+                              height: 20.h,
+                            ),
+                          },
+                          if (me.mute == 1) ...{
+                            10.horizontalSpace,
+                            SvgPicture.asset(
+                              AppAssets.muteSvg,
+                              width: 20.w,
+                              height: 20.h,
+                            ),
+                          },
+                        ],
+                      ),
+                    )
+                  ],
                 ),
               ),
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ],
     );
   }
 }

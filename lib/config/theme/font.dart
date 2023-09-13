@@ -23,6 +23,9 @@ String get _sFRoundedBoldFamily => 'SF-Pro-Rounded-Bold';
 String get _sFRoundedRegularFamily => 'SF-Pro-Rounded-Regular';
 String get _sFRoundedMediumFamily => 'SF-Pro-Rounded-Medium';
 String get _sFDisplayBoldFamily => 'SF-Pro-Display-Bold';
+String get _sFAdobeCleanLightFamily => 'AdobeCleanLight';
+String get _sFAdobeCleanRegularFamily => 'AdobeCleanRegular';
+String get _sFAdobeCleanBoldFamily => 'AdobeCleanBold';
 
 extension FamilyUtils on TextStyle {
 
@@ -49,6 +52,12 @@ extension FamilyUtils on TextStyle {
 
   TextStyle get br => copyWith(fontWeight: _bold,fontFamily: _sFRoundedBoldFamily);
 
+  TextStyle get la => copyWith(fontWeight: _light,fontFamily: _sFAdobeCleanLightFamily);
+
+  TextStyle get ra => copyWith(fontWeight: _regular,fontFamily: _sFAdobeCleanRegularFamily);
+
+  TextStyle get ba => copyWith(fontWeight: _bold,fontFamily: _sFAdobeCleanBoldFamily);
+
 
 }
 
@@ -69,7 +78,7 @@ abstract class _FontSize {
 
   static double get heading_03 => _heading_03FontSize.sp;
 
-  static const double _heading_03FontSize = 26;
+  static const double _heading_03FontSize = 30;
 
   static double get heading_04 => _heading_04FontSize.sp;
 

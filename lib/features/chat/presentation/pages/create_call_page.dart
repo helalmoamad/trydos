@@ -71,27 +71,6 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                   letterSpacing: 0.18,
                                   height: 1.33),
                               name: widget.receiverName),
-                          Container(
-                            height: 200,
-                            width: 200.w,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(AppAssets.chatProfileJpg),
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: BorderRadius.circular(12.0),
-                              border: Border.all(
-                                  width: 1.0, color: const Color(0xff388cff)),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: colorScheme.white.withOpacity(0.35),
-                                  offset: const Offset(0, 10),
-                                  blurRadius: 30,
-                                  spreadRadius: 10
-                                ),
-                              ],
-                            ),
-                          ),
                           15.verticalSpace,
                           Text(
                             widget.fullReceiverName,

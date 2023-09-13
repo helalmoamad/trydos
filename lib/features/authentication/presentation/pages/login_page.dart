@@ -3,16 +3,21 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/form_utils.dart';
-import '../../../../base_page.dart';
 import '../../../../common/constant/countries.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../../routes/router.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
 import '../../../app/app_elvated_button.dart';
 import '../../../app/app_widgets/app_text_field.dart';
 import '../../../app/app_widgets/phone_input/phone_input_widget.dart';
+import '../../../app/blocs/app_bloc/app_bloc.dart';
+import '../../../app/blocs/app_bloc/app_event.dart';
+import '../../../chat/presentation/manager/chat_bloc.dart';
+import '../../../chat/presentation/manager/chat_event.dart' as chatEvents;
 import '../manager/auth_bloc.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 
@@ -28,10 +33,11 @@ class LoginPage extends StatefulWidget {
   late final ValueNotifier<bool> filledPasswordNotifier;
   late final ValueNotifier<Country?> countryNotifier;
   String? fullPhone;
-
+  late ChatBloc chatBloc;
   @override
   void initState() {
     super.initState();
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     filledPasswordNotifier = ValueNotifier(false);
     countryNotifier = ValueNotifier(null);
     form.controllers[1].addListener(() {
@@ -109,10 +115,9 @@ class LoginPage extends StatefulWidget {
                     if (!mounted) {
                       return;
                     }
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                          builder: (_) => const BasePage()),
-                    );
+                    context.go(GRouter.config.applicationRoutes.kBasePage);
+                    chatBloc.add(const chatEvents.GetChatsEvent());
+                    BlocProvider.of<AppBloc>(context).add(ChangeBasePage(2));
                   }
                 },
                 builder: (context, state) {
@@ -144,7 +149,6 @@ class LoginPage extends StatefulWidget {
   }
 
   void _onLogIn() {
-    print('hellooooooooooooo');
     form.key.currentState!.save();
     final validate = form.key.currentState!.validate() && fullPhone != null;
     if (!validate) return;

@@ -13,6 +13,7 @@ import '../manager/chat_event.dart';
 @LazySingleton()
 class PusherChatService {
   Map<String, Channel> presenceChannels = {};
+  Map<String, bool> publicChannels = {};
   late PusherClient pusher;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   ChatBloc chatBloc = GetIt.I<ChatBloc>();
@@ -42,6 +43,7 @@ class PusherChatService {
   }
 
   subscribe(String channelName) async {
+    if(publicChannels.containsKey(channelName))return ;
     Channel channel = pusher.subscribe(channelName);
     channel.bind('ChannelReceivedEvent', (event) {
       dealWithTimer();
@@ -58,6 +60,7 @@ class PusherChatService {
       chatBloc.add(WatchedMessageFromPusherEvent(
           data['channel_id'].toString(), data['auth_user_id'], data['last_message_id']));
     });
+    publicChannels[channelName]=true;
   }
 Map<String,String> descTranslation={
     "Typing...": "يكتب...",
@@ -65,31 +68,34 @@ Map<String,String> descTranslation={
     "Sending file...": "يرسل ملف...",
 };
   createPresenceChannel(String channelName) async {
+    if(presenceChannels.containsKey(channelName)) return;
     Channel channel = pusher.subscribe("presence-typing-$channelName");
     presenceChannels["presence-typing-$channelName"] = channel;
     channel.bind('client-TypingEvent', (event) {
       dealWithTimer();
       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
-      print(data['desc']);
-      if (data['desc'] == null) {
+      if (data['desc']== 'null' || data['desc']==null) {
         print('yes it is');
         GetIt.I<AppBloc>().add(RemoveUserFromTypingList(int.parse(data['id'].toString())));
         return;
       }
       if(LanguageService.languageCode=='ar'){
-        data['desc']=descTranslation[data['desc']];
+        data['desc']=descTranslation[data['desc']] ?? data['desc'];
       }
       GetIt.I<AppBloc>().add(AddUserToTypingList(int.parse(data['uid'].toString()), int.parse(data['id'].toString()),data['desc']));
     });
   }
 
   void sendActivityEvent(String channelId ,String channelName, String? description) async {
+    if(int.tryParse(channelId)==null){
+      return;
+    }
     var y = await presenceChannels["presence-typing-$channelName"]!.trigger(
         'client-TypingEvent',
         convert.jsonEncode({
           "uid": _prefsRepository.myId.toString(),
-          "id": channelId,
-          "desc": "$description"
+          "id": channelId.toString(),
+          "desc": description.toString()
         }));
   }
 }

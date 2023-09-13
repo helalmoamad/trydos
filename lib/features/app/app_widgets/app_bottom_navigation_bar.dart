@@ -3,11 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
-
+import 'package:trydos/features/authentication/presentation/pages/login_page.dart';
+import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/theme_state.dart';
+import '../../../routes/router.dart';
+import '../../authentication/presentation/pages/first_registeration_page.dart';
+import '../../chat/presentation/manager/chat_bloc.dart';
+import '../../chat/presentation/manager/chat_event.dart';
 import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
 import '../blocs/app_bloc/app_state.dart';
@@ -21,6 +28,7 @@ class AppBottomNavBar extends StatefulWidget {
 
 class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
   late AppBloc appBloc;
+  PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
   @override
   void initState() {
@@ -208,7 +216,6 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                 child: InkWell(
                   onTap: () => appBloc.add(ChangeBasePage(0)),
                   child: Column(
-                    //crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       state.currentIndex == 0 ? activeLogo : inActiveLogo,
@@ -250,8 +257,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                             color: state.currentIndex != 1
                                 ? colorScheme.grey200
                                 : colorScheme.black,
-                        letterSpacing: 0.28
-                        ),
+                            letterSpacing: 0.28),
                       ),
                     ],
                   ),
@@ -259,7 +265,13 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               ),
               Expanded(
                 child: InkWell(
-                  onTap: () => appBloc.add(ChangeBasePage(2)),
+                  onTap: () {
+                    if (!prefsRepository.registeredUser) {
+                      context.go(GRouter.config.applicationRoutes.kLoginPagePath);
+                    }else{
+                      appBloc.add(ChangeBasePage(2));
+                    }
+                  },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -288,7 +300,13 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               ),
               Expanded(
                 child: InkWell(
-                  onTap: () => appBloc.add(ChangeBasePage(3)),
+                  onLongPress: (){
+                    context.go(GRouter.config.applicationRoutes.kFeedBackPagePath);
+                  },
+                  onTap: () {
+                    appBloc.add(ChangeBasePage(0));
+                    context.go(GRouter.config.applicationRoutes.kRegistrationPage);
+                  },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

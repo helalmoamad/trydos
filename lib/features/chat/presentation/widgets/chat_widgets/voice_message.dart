@@ -11,6 +11,7 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/voice_waves.dart';
 
@@ -44,12 +45,13 @@ class VoiceMessage extends StatefulWidget {
    File? file;
   final String? fileUrl;
   final DateTime time;
-  final bool isRead;
-  final bool isReceived;
+   bool isRead;
+   bool isReceived;
   final int senderId;
   final String? userMessagePhoto;
   final String userMessageName;
-  @override
+
+   @override
   State<VoiceMessage> createState() => _VoiceMessageState();
 }
 
@@ -84,6 +86,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
     //   print(duration);
     //
     // });
+    audioPlayer.audioCache = AudioCache();
     audioPlayer.onPlayerComplete.listen((event) {
       position = Duration.zero;
       audioPlayingNotifier.value = false;
@@ -112,7 +115,26 @@ class _VoiceMessageState extends State<VoiceMessage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChatBloc, ChatState>(
+    return BlocConsumer<ChatBloc, ChatState>(
+      listenWhen: (p, c) =>
+      p.changeMessageStateFromPusherStatus !=
+          c.changeMessageStateFromPusherStatus &&
+          c.changeMessageStateFromPusherStatus !=
+              ChangeMessageStateFromPusherStatus.init,
+      listener: (context, state) {
+        if (state.changeMessageStateFromPusherStatus==ChangeMessageStateFromPusherStatus.watched){
+          if(widget.isRead){
+            return;
+          }
+          setState(() {
+            widget.isRead=true;
+          });
+        }else if(!widget.isReceived){
+          setState(() {
+            widget.isReceived=true;
+          });
+        }
+      },
       builder: (context, state) {
         return Padding(
           padding: HWEdgeInsets.only(
@@ -172,7 +194,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                             child: Padding(
                               padding: HWEdgeInsets.only(
                                   left: widget.isSent ? 20.w : 27.w,
-                                  top: 4,
+                                  top: 8,
                                   right: widget.isSent ? 27.w : 20.w),
                               child: ValueListenableBuilder<bool>(
                                   valueListenable: audioPlayingNotifier,
@@ -203,7 +225,10 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      Container(
+                                                      duration==Duration.zero ? Padding(
+                                                        padding: HWEdgeInsets.only(top: 5.0),
+                                                        child: TrydosLoader(size: 15.sp,),
+                                                      ) :Container(
                                                           width: 47.w,
                                                           height: 20,
                                                           decoration:
@@ -260,42 +285,42 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                               fit: BoxFit.fill,
                                                             ),
                                                             const VoiceWaves(),
-                                                            if (widget.file == null) ...{
-                                                              10.horizontalSpace,
-                                                              ValueListenableBuilder<int>(
-                                                                  valueListenable: _loadingFile,
-                                                                  builder: (context, status, _) {
-                                                                    if (status == 0) {
-                                                                      return InkWell(
-                                                                        onTap: () async{
-                                                                          _loadingFile.value = 1;
-                                                                        },
-                                                                        child: Icon(
-                                                                            Icons
-                                                                                .save_alt_outlined,
-                                                                            color: const Color(
-                                                                                0xff388CFF),
-                                                                            size: 20.sp),
-                                                                      );
-                                                                    } else if (status == 1) {
-                                                                      FileSaving().downloadFileToLocalStorage(widget.fileUrl!,action: (File? file){
-                                                                        _loadingFile.value=2;
-                                                                        widget.file=file;
-                                                                        getAudioDuration();
-                                                                        setState(() {
-
-                                                                        });
-                                                                      });
-                                                                      return  CircularProgressIndicator(
-                                                                        backgroundColor: Colors.grey.shade100,
-                                                                        color:
-                                                                        const  Color(0xff388CFF),
-                                                                      );
-                                                                    }else{
-                                                                      return const SizedBox.shrink();
-                                                                    }
-                                                                  }),
-                                                            }
+                                                            // if (widget.file == null) ...{
+                                                            //   10.horizontalSpace,
+                                                            //   ValueListenableBuilder<int>(
+                                                            //       valueListenable: _loadingFile,
+                                                            //       builder: (context, status, _) {
+                                                            //         if (status == 0) {
+                                                            //           return InkWell(
+                                                            //             onTap: () async{
+                                                            //               _loadingFile.value = 1;
+                                                            //             },
+                                                            //             child: Icon(
+                                                            //                 Icons
+                                                            //                     .save_alt_outlined,
+                                                            //                 color: const Color(
+                                                            //                     0xff388CFF),
+                                                            //                 size: 20.sp),
+                                                            //           );
+                                                            //         } else if (status == 1) {
+                                                            //           FileSaving().downloadFileToLocalStorage(widget.fileUrl!,action: (File? file){
+                                                            //             _loadingFile.value=2;
+                                                            //             widget.file=file;
+                                                            //             getAudioDuration();
+                                                            //             setState(() {
+                                                            //
+                                                            //             });
+                                                            //           });
+                                                            //           return  CircularProgressIndicator(
+                                                            //             backgroundColor: Colors.grey.shade100,
+                                                            //             color:
+                                                            //             const  Color(0xff388CFF),
+                                                            //           );
+                                                            //         }else{
+                                                            //           return const SizedBox.shrink();
+                                                            //         }
+                                                            //       }),
+                                                            // }
                                                           ],
                                                         ),
                                                       )
@@ -337,7 +362,10 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      Container(
+                                                      duration==Duration.zero ? Padding(
+                                                        padding: HWEdgeInsets.only(top: 5.0),
+                                                        child: TrydosLoader(size: 15.sp,),
+                                                      ) :Container(
                                                           width: 47.w,
                                                           height: 20,
                                                           decoration:
@@ -394,42 +422,42 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                               fit: BoxFit.fill,
                                                             ),
                                                             const VoiceWaves(),
-                                                            if (widget.file == null) ...{
-                                                              10.horizontalSpace,
-                                                              ValueListenableBuilder<int>(
-                                                                  valueListenable: _loadingFile,
-                                                                  builder: (context, status, _) {
-                                                                    if (status == 0) {
-                                                                      return InkWell(
-                                                                        onTap: () async{
-                                                                          _loadingFile.value = 1;
-                                                                        },
-                                                                        child: Icon(
-                                                                            Icons
-                                                                                .save_alt_outlined,
-                                                                            color: const Color(
-                                                                                0xff388CFF),
-                                                                            size: 20.sp),
-                                                                      );
-                                                                    } else if (status == 1) {
-                                                                      FileSaving().downloadFileToLocalStorage(widget.fileUrl!,action: (File? file){
-                                                                        _loadingFile.value=2;
-                                                                        widget.file=file;
-                                                                        getAudioDuration();
-                                                                        setState(() {
-
-                                                                        });
-                                                                      });
-                                                                      return  CircularProgressIndicator(
-                                                                        backgroundColor: Colors.grey.shade100,
-                                                                        color:
-                                                                        const  Color(0xff388CFF),
-                                                                      );
-                                                                    }else{
-                                                                      return const SizedBox.shrink();
-                                                                    }
-                                                                  }),
-                                                            }
+                                                            // if (widget.file == null) ...{
+                                                            //   10.horizontalSpace,
+                                                            //   ValueListenableBuilder<int>(
+                                                            //       valueListenable: _loadingFile,
+                                                            //       builder: (context, status, _) {
+                                                            //         if (status == 0) {
+                                                            //           return InkWell(
+                                                            //             onTap: () async{
+                                                            //               _loadingFile.value = 1;
+                                                            //             },
+                                                            //             child: Icon(
+                                                            //                 Icons
+                                                            //                     .save_alt_outlined,
+                                                            //                 color: const Color(
+                                                            //                     0xff388CFF),
+                                                            //                 size: 20.sp),
+                                                            //           );
+                                                            //         } else if (status == 1) {
+                                                            //           FileSaving().downloadFileToLocalStorage(widget.fileUrl!,action: (File? file){
+                                                            //             _loadingFile.value=2;
+                                                            //             widget.file=file;
+                                                            //             getAudioDuration();
+                                                            //             setState(() {
+                                                            //
+                                                            //             });
+                                                            //           });
+                                                            //           return  CircularProgressIndicator(
+                                                            //             backgroundColor: Colors.grey.shade100,
+                                                            //             color:
+                                                            //             const  Color(0xff388CFF),
+                                                            //           );
+                                                            //         }else{
+                                                            //           return const SizedBox.shrink();
+                                                            //         }
+                                                            //       }),
+                                                            // }
                                                           ],
                                                         ),
                                                       )
@@ -439,8 +467,8 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                               ],
                                             )),
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5),
+                                          padding: const EdgeInsets.only(
+                                              top: 0),
                                           child: Directionality(
                                             textDirection: TextDirection.ltr,
                                             child: Row(
@@ -465,14 +493,14 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                 if (widget.isSent) ...{
                                                   10.horizontalSpace,
                                                   SvgPicture.asset(
-                                                    (state.sendMessageStatus ==
-                                                                SendMessageStatus
-                                                                    .loading &&
-                                                            state.currentMessage
-                                                                .contains(widget
-                                                                    .messageId))
-                                                        ? AppAssets.sandClockSvg
-                                                        : widget.isRead
+                                                    (state.currentMessage
+                                                        .contains(
+                                                        widget.messageId))
+                                                        ? AppAssets.sandClockSvg :
+                                                    (state.currentFailedMessage
+                                                        .contains(
+                                                        widget.messageId)) ?
+                                                    AppAssets.MessageFailedSvg: widget.isRead
                                                         ? AppAssets
                                                         .messageReadArrowSvg
                                                         : widget.isReceived ? AppAssets.messageDeliveredArrowSvg :AppAssets
@@ -564,6 +592,9 @@ class _VoiceMessageState extends State<VoiceMessage> {
   }
 
   void audioToggle() async {
+    if(duration==Duration.zero){
+      return;
+    }
     if (audioPlayerState == PlayerState.playing) {
       await audioPlayer.pause();
       audioPlayingNotifier.value = false;
