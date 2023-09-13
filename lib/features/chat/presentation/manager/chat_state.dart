@@ -16,6 +16,8 @@ enum ResetReadMessagesStatus { init, loading, success, failure }
 
 enum NotifyThatIReceivedMessageStatus { init, loading, success, failure }
 
+enum ChangeMessageStateFromPusherStatus { init, received , watched }
+
 class ChatState {
   final GetChatsStatus getChatsStatus;
   final SendMessageStatus sendMessageStatus;
@@ -25,10 +27,12 @@ class ChatState {
   final ResetReadMessagesStatus readMessagesStatus;
   final GetMessagesBetweenStatus getMessagesBetweenStatus;
   final NotifyThatIReceivedMessageStatus notifyThatIReceivedMessageStatus;
+  final ChangeMessageStateFromPusherStatus changeMessageStateFromPusherStatus;
   final List<Contact> contacts;
   final List<Chat> chats;
   final List<Chat> pinnedChats;
   final List<String> currentMessage;
+  final List<String> currentFailedMessage;
   final String channelId;
   final String? messageType;
   final String? messageContent;
@@ -40,6 +44,7 @@ class ChatState {
 
   ChatState({
     this.getContactsStatus = GetContactsStatus.init,
+    this.changeMessageStateFromPusherStatus = ChangeMessageStateFromPusherStatus.init,
     this.getMessagesBetweenStatus = GetMessagesBetweenStatus.init,
     this.saveContactsStatus = SaveContactsStatus.init,
     this.sendMessageStatus = SendMessageStatus.init,
@@ -60,6 +65,7 @@ class ChatState {
     this.chats = const [],
     this.pinnedChats = const [],
     this.currentMessage = const [],
+    this.currentFailedMessage = const [],
   });
 
   ChatState copyWith({
@@ -77,9 +83,11 @@ class ChatState {
     final int? currentOpenedChannelId,
     final ResetReadMessagesStatus? readMessagesStatus,
     final NotifyThatIReceivedMessageStatus? notifyThatIReceivedMessageStatus,
+    final ChangeMessageStateFromPusherStatus? changeMessageStateFromPusherStatus,
     final String? currentChannelReceivedMessage,
     final List<Chat>? chats,
     final List<String>? currentMessage,
+    final List<String>? currentFailedMessage,
     final int? unReadMessagesFromAllChats,
     final String? messageType,
     final String? messageContent,
@@ -91,6 +99,8 @@ class ChatState {
       getContactsStatus: getContactsStatus ?? this.getContactsStatus,
       contacts: contacts ?? this.contacts,
       chats: chats ?? this.chats,
+      currentFailedMessage: currentFailedMessage ?? this.currentFailedMessage,
+      changeMessageStateFromPusherStatus: changeMessageStateFromPusherStatus ?? this.changeMessageStateFromPusherStatus,
       scrollToParentMessage: scrollToParentMessage ?? this.scrollToParentMessage,
       notifyThatIReceivedMessageStatus: notifyThatIReceivedMessageStatus ??
           this.notifyThatIReceivedMessageStatus,

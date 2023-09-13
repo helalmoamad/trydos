@@ -12,4 +12,6 @@ abstract class PrefsKey {
   static const user = r'__$__user__$__';
 
   static const messages = r'__$__messages__$__';
+
+  static const error = r'__$__error__$__';
 }

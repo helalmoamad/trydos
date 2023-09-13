@@ -31,85 +31,94 @@ class RequestAndResponseCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               10.verticalSpace,
-              Expanded(
-                  child: TitledTextWidget(
-                title: 'URL: ',
-                body: data['url'],
-                maxLines: 2,
-              )),
-              4.verticalSpace,
-              Expanded(
-                  child: TitledTextWidget(
-                title: 'Request: ',
-                body: data['request'].toString(),
-              )),
-              4.verticalSpace,
-              Expanded(
-                  child: TitledTextWidget(
-                title: 'Header: ',
-                body: data['headers'].toString(),
-                maxLines: 2,
-              )),
-              if (data['query'] != null) ...{
+              if(data.containsKey('flutter_error'))...{
+                Expanded(
+                    child: TitledTextWidget(
+                      title: 'Flutter Error: ',
+                      body: data['flutter_error'].toString(),
+                    )),
+              }
+              else ...{
+                Expanded(
+                    child: TitledTextWidget(
+                      title: 'URL: ',
+                      body: data['url'],
+                      maxLines: 2,
+                    )),
                 4.verticalSpace,
                 Expanded(
                     child: TitledTextWidget(
-                  title: 'query: ',
-                  body: data['query'].toString(),
-                )),
-              },
-              if (data['body'] != null) ...{
+                      title: 'Request: ',
+                      body: data['request'].toString(),
+                    )),
                 4.verticalSpace,
                 Expanded(
                     child: TitledTextWidget(
-                  title: 'body: ',
-                  body: data['body'].toString(),
-                )),
-              },
-              4.verticalSpace,
-              Expanded(
-                child: TitledTextWidget(
-                  title: 'Response: ',
-                  body: data['response'].toString(),
-                  maxLines: 2,
-                ),
-              ),
-              8.verticalSpace,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                      width: 0.4.sw,
-                      child: AppElevatedButton(
-                          text: 'share',
-                          onPressed: () async {
-                            String text = "";
-                            data.forEach((key, value) {
-                              if (value != null) {
-                                text += ('${key.toUpperCase()}: $value');
-                                text += '\n';
-                              }
-                            });
-                            log(text);
-                            await Share.share(text);
-                          })),
-                  15.horizontalSpace,
-                  SizedBox(
-                      width: 0.4.sw,
-                      child: AppElevatedButton(
-                        text: 'show details',
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) =>
-                                      RequestAndResponseDetailsLayout(
-                                        data: data,
-                                      )));
-                        },
+                      title: 'Header: ',
+                      body: data['headers'].toString(),
+                      maxLines: 2,
+                    )),
+                if (data['query'] != null) ...{
+                  4.verticalSpace,
+                  Expanded(
+                      child: TitledTextWidget(
+                        title: 'query: ',
+                        body: data['query'].toString(),
                       )),
-                ],
-              )
+                },
+                if (data['body'] != null) ...{
+                  4.verticalSpace,
+                  Expanded(
+                      child: TitledTextWidget(
+                        title: 'body: ',
+                        body: data['body'].toString(),
+                      )),
+                },
+                4.verticalSpace,
+                Expanded(
+                  child: TitledTextWidget(
+                    title: 'Response: ',
+                    body: data['response'].toString(),
+                    maxLines: 2,
+                  ),
+                ),
+              },
+                8.verticalSpace,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                        width: 0.4.sw,
+                        child: AppElevatedButton(
+                            text: 'share',
+                            onPressed: () async {
+                              String text = "";
+                              data.forEach((key, value) {
+                                if (value != null) {
+                                  text += ('${key.toUpperCase()}: $value');
+                                  text += '\n';
+                                }
+                              });
+                              log(text);
+                              await Share.share(text);
+                            })),
+                    15.horizontalSpace,
+                    SizedBox(
+                        width: 0.4.sw,
+                        child: AppElevatedButton(
+                          text: 'show details',
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) =>
+                                        RequestAndResponseDetailsLayout(
+                                          data: data,
+                                        )));
+                          },
+                        )),
+                  ],
+                )
             ],
           ),
         ),

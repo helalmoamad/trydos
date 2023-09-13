@@ -127,7 +127,7 @@ class RequestAndResponseDetailsLayout extends StatelessWidget {
               child: Padding(
                 padding:  EdgeInsets.symmetric(horizontal: 15.0.w),
                 child: AppElevatedButton(
-                    text: '',
+                    text: 'Share',
                     onPressed: () async {
                       String text = "";
                       data.forEach((key, value) {

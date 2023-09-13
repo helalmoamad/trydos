@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 abstract class PrefsRepository {
   String? get token;
 
@@ -9,7 +8,6 @@ abstract class PrefsRepository {
   int? get myId;
 
   String? get myName;
-
 
   Future<bool> setToken(String token);
 
@@ -20,9 +18,6 @@ abstract class PrefsRepository {
   Future<bool> setMyId(int id);
 
   Future<bool> setTheme(ThemeMode themeMode);
-
-
-
 
   // Future<bool> setUser(User user);
   //
@@ -35,13 +30,14 @@ abstract class PrefsRepository {
   bool get registeredUser;
 
   void saveRequestsData(
-      String url,
-      Map<String, dynamic> response,
-      Map<String, dynamic> headers,
+      String? url,
+      Map<String, dynamic>? response,
+      Map<String, dynamic>? headers,
       int? statusCode,
-      String request,
+      String? request,
       Map<String, dynamic>? query,
-      Map<String, dynamic>? body);
+      Map<String, dynamic>? body,
+      {String? error});
 
   void clearAllRequests();
 

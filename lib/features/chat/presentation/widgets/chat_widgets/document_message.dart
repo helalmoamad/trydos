@@ -18,33 +18,32 @@ import '../../../../app/my_cached_network_image.dart';
 import 'no_image_widget.dart';
 
 class DocumentMessage extends StatefulWidget {
-   DocumentMessage(
-      {Key? key,
-      this.isForwarded = false,
-      this.isLocalMessage = true,
-      required this.isSent,
-      required this.time,
-      required this.isRead,
-      required this.senderId,
-      required this.fileName,
-      this.userMessagePhoto,
-      this.documentFile,
-      this.documentFileUrl,
-      required this.userMessageName,
-      required this.messageId,
-      required this.isReceived,
-      required this.isFirstMessage})
+  DocumentMessage({Key? key,
+    this.isForwarded = false,
+    this.isLocalMessage = true,
+    required this.isSent,
+    required this.time,
+    required this.isRead,
+    required this.senderId,
+    required this.fileName,
+    this.userMessagePhoto,
+    this.documentFile,
+    this.documentFileUrl,
+    required this.userMessageName,
+    required this.messageId,
+    required this.isReceived,
+    required this.isFirstMessage})
       : super(key: key);
   final bool isSent;
   final bool isFirstMessage;
   final bool isForwarded;
   final String messageId;
-   File? documentFile;
+  File? documentFile;
   final bool isLocalMessage;
   final String? documentFileUrl;
   final DateTime time;
-  final bool isRead;
-  final bool isReceived;
+   bool isRead;
+   bool isReceived;
   final int senderId;
   final String? userMessagePhoto;
   final String userMessageName;
@@ -55,30 +54,47 @@ class DocumentMessage extends StatefulWidget {
 }
 
 class _DocumentMessageState extends State<DocumentMessage> {
-  final ValueNotifier<int> _loadingFile =  ValueNotifier(0);
+  final ValueNotifier<int> _loadingFile = ValueNotifier(0);
 
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: BlocConsumer<ChatBloc, ChatState>(
+        listenWhen: (p, c) =>
+        p.changeMessageStateFromPusherStatus !=
+            c.changeMessageStateFromPusherStatus &&
+            c.changeMessageStateFromPusherStatus !=
+                ChangeMessageStateFromPusherStatus.init,
         listener: (context, state) {
-          // TODO: implement listener
+          if (state.changeMessageStateFromPusherStatus==ChangeMessageStateFromPusherStatus.watched){
+            if(widget.isRead){
+              return;
+            }
+            setState(() {
+              widget.isRead=true;
+            });
+          }else if(!widget.isReceived){
+            setState(() {
+              widget.isReceived=true;
+            });
+          }
         },
         builder: (context, state) {
           return Padding(
             padding: HWEdgeInsets.only(
-                right: widget.isSent ? 25.w : 0, left: widget.isSent ? 0 : 25.w),
+                right: widget.isSent ? 25.w : 0,
+                left: widget.isSent ? 0 : 25.w),
             child: SwipeTo(
               iconSize: 0,
               animationDuration: const Duration(milliseconds: 100),
               offsetDx: 0.15,
               onRightSwipe: () {
-                if((state.sendMessageStatus ==
+                if ((state.sendMessageStatus ==
                     SendMessageStatus.loading &&
                     state.currentMessage
-                        .contains(widget.messageId))){
-                  return ;
+                        .contains(widget.messageId))) {
+                  return;
                 }
                 print(widget.time);
                 BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
@@ -90,11 +106,12 @@ class _DocumentMessageState extends State<DocumentMessage> {
               },
               child: Row(
                 mainAxisAlignment:
-                    widget.isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+                widget.isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
                 children: [
                   Stack(
                     alignment:
-                        widget.isSent ? Alignment.centerRight : Alignment.centerLeft,
+                    widget.isSent ? Alignment.centerRight : Alignment
+                        .centerLeft,
                     children: [
                       InkWell(
                         onTap: () {
@@ -122,7 +139,8 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                     : CrossAxisAlignment.end,
                                 children: [
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .center,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       SvgPicture.asset(
@@ -133,18 +151,19 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                       10.horizontalSpace,
                                       Container(
                                         constraints:
-                                            BoxConstraints(maxWidth: 310.w),
+                                        BoxConstraints(maxWidth: 310.w),
                                         child: SizedBox(
                                           width: 200.w,
                                           child: Text(
                                             widget.fileName,
                                             maxLines: 3,
-                                            style: context.textTheme.bodyText2?.rr
+                                            style: context.textTheme.bodyText2
+                                                ?.rr
                                                 .copyWith(
-                                                    color:
-                                                        const Color(0xffC4C2C2),
+                                                color:
+                                                const Color(0xffC4C2C2),
                                                 overflow: TextOverflow.ellipsis,
-                                                    height: 1.43),
+                                                height: 1.43),
                                           ),
                                         ),
                                       ),
@@ -155,7 +174,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                             builder: (context, status, _) {
                                               if (status == 0) {
                                                 return InkWell(
-                                                  onTap: () async{
+                                                  onTap: () async {
                                                     _loadingFile.value = 1;
                                                   },
                                                   child: Icon(
@@ -166,19 +185,24 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                                       size: 35.sp),
                                                 );
                                               } else if (status == 1) {
-                                                 FileSaving().downloadFileToLocalStorage(widget.documentFileUrl!,action: (File? file){
-                                                   _loadingFile.value=2;
-                                                   widget.documentFile=file;
-                                                   setState(() {
+                                                FileSaving()
+                                                    .downloadFileToLocalStorage(
+                                                    widget.documentFileUrl!,
+                                                    action: (File? file) {
+                                                      _loadingFile.value = 2;
+                                                      widget.documentFile =
+                                                          file;
+                                                      setState(() {
 
-                                                   });
-                                                 });
-                                                return  CircularProgressIndicator(
-                                                  backgroundColor: Colors.grey.shade100,
+                                                      });
+                                                    });
+                                                return CircularProgressIndicator(
+                                                  backgroundColor: Colors.grey
+                                                      .shade100,
                                                   color:
-                                                     const  Color(0xff388CFF),
+                                                  const Color(0xff388CFF),
                                                 );
-                                              }else{
+                                              } else {
                                                 return const SizedBox.shrink();
                                               }
                                             }),
@@ -187,37 +211,39 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                   ),
                                   Padding(
                                     padding:
-                                        const EdgeInsets.symmetric(vertical: 5),
+                                    const EdgeInsets.symmetric(vertical: 5),
                                     child: Row(
                                       children: [
                                         Text(
                                           !widget.time.isUtc
                                               ? HelperFunctions.getDateInFormat(
-                                                  widget.time)
+                                              widget.time)
                                               : HelperFunctions
-                                                  .getZonedDateInFormat(widget.time),
+                                              .getZonedDateInFormat(
+                                              widget.time),
                                           style: context.textTheme.overline?.rr
                                               .copyWith(
-                                                  color:
-                                                      const Color(0xffC4C2C2)),
+                                              color:
+                                              const Color(0xffC4C2C2)),
                                         ),
                                         if (widget.isSent) ...{
                                           10.horizontalSpace,
                                           SvgPicture.asset(
-                                            (state.sendMessageStatus ==
-                                                        SendMessageStatus
-                                                            .loading &&
-                                                    state.currentMessage
-                                                        .contains(widget.messageId))
-                                                ? AppAssets.sandClockSvg
-                                                : widget.isRead
-                                                    ? AppAssets
-                                                        .messageReadArrowSvg
-                                                    : widget.isReceived
-                                                        ? AppAssets
-                                                            .messageDeliveredArrowSvg
-                                                        : AppAssets
-                                                            .messageSentArrowSvg,
+                                            (state.currentMessage
+                                                .contains(
+                                                widget.messageId))
+                                                ? AppAssets.sandClockSvg :
+                                            (state.currentFailedMessage
+                                                .contains(
+                                                widget.messageId)) ?
+                                            AppAssets.MessageFailedSvg: widget.isRead
+                                                ? AppAssets
+                                                .messageReadArrowSvg
+                                                : widget.isReceived
+                                                ? AppAssets
+                                                .messageDeliveredArrowSvg
+                                                : AppAssets
+                                                .messageSentArrowSvg,
                                             width: 10.sp,
                                             height: 10.sp,
                                           )
@@ -241,65 +267,65 @@ class _DocumentMessageState extends State<DocumentMessage> {
                       ),
                       widget.isFirstMessage
                           ? Transform.translate(
-                              offset: Offset(widget.isSent ? 15.w : -15.w, 0),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Stack(
-                                    alignment: widget.isSent
-                                        ? Alignment.centerRight
-                                        : Alignment.centerLeft,
-                                    children: [
-                                      Container(
-                                        width: 40.w,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xffEBFFF8),
-                                          border: Border.all(
-                                            width: 3.0,
-                                            color: widget.isSent
-                                                ? const Color(0xffFFF9B4)
-                                                : const Color(0xffB4FFD9),
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                      ),
-                                      Container(
-                                        width: 20.w,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xffEBFFF8),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                      ),
-                                    ],
+                        offset: Offset(widget.isSent ? 15.w : -15.w, 0),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Stack(
+                              alignment: widget.isSent
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                              children: [
+                                Container(
+                                  width: 40.w,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xffEBFFF8),
+                                    border: Border.all(
+                                      width: 3.0,
+                                      color: widget.isSent
+                                          ? const Color(0xffFFF9B4)
+                                          : const Color(0xffB4FFD9),
+                                    ),
+                                    borderRadius:
+                                    BorderRadius.circular(12),
                                   ),
-                                  widget.userMessagePhoto != null
-                                      ? MyCachedNetworkImage(
-                                          imageUrl:
-                                              Urls.baseUrl + widget.userMessagePhoto!,
-                                          imageFit: BoxFit.cover,
-                                          radius: 8,
-                                          width: 30.w,
-                                          height: 30,
-                                        )
-                                      : NoImageWidget(
-                                          width: 30.w,
-                                          height: 30,
-                                          textStyle: context
-                                              .textTheme.caption?.br
-                                              .copyWith(
-                                                  color:
-                                                      const Color(0xff6638FF),
-                                                  letterSpacing: 0.18,
-                                                  height: 1.33),
-                                          radius: 8,
-                                          name: widget.userMessageName)
-                                ],
-                              ),
+                                ),
+                                Container(
+                                  width: 20.w,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xffEBFFF8),
+                                    borderRadius:
+                                    BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            widget.userMessagePhoto != null
+                                ? MyCachedNetworkImage(
+                              imageUrl:
+                              Urls.baseUrl + widget.userMessagePhoto!,
+                              imageFit: BoxFit.cover,
+                              radius: 8,
+                              width: 30.w,
+                              height: 30,
                             )
+                                : NoImageWidget(
+                                width: 30.w,
+                                height: 30,
+                                textStyle: context
+                                    .textTheme.caption?.br
+                                    .copyWith(
+                                    color:
+                                    const Color(0xff6638FF),
+                                    letterSpacing: 0.18,
+                                    height: 1.33),
+                                radius: 8,
+                                name: widget.userMessageName)
+                          ],
+                        ),
+                      )
                           : const SizedBox.shrink()
                     ],
                   ),

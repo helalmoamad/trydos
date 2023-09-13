@@ -23,6 +23,7 @@ class ChatPageContent extends StatefulWidget {
 
 class ChatPageContentState extends State<ChatPageContent> {
   late ChatBloc chatBloc;
+
   @override
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
@@ -38,7 +39,7 @@ class ChatPageContentState extends State<ChatPageContent> {
       List<Chat> search=[];
       for(Chat chat in initialChats){
         ChannelMember member=chat.channelMembers!.firstWhere((element) => element.userId!=GetIt.I<PrefsRepository>().myId);
-        if((member.user?.name ?? 'Un Known User').contains(text?.toLowerCase() ?? '') || (member.user?.mobilePhone ?? 'No Number').toLowerCase().contains(text?.toLowerCase() ?? '')){
+        if((member.user?.name ?? 'Un Known User').toLowerCase().contains(text?.toLowerCase() ?? '') || (member.user?.mobilePhone ?? 'No Number').toLowerCase().contains(text?.toLowerCase() ?? '')){
           search.add(chat);
         }
       }
@@ -49,8 +50,9 @@ class ChatPageContentState extends State<ChatPageContent> {
   Widget build(BuildContext context) {
     return BlocConsumer<ChatBloc, ChatState>(
       listener: (context, state) {},
+      buildWhen: (p,c)=> p.getChatsStatus != c.getChatsStatus,
       builder: (context, state) {
-        if (state.getChatsStatus == GetChatsStatus.loading) {
+        if (state.getChatsStatus == GetChatsStatus.loading && state.chats.isEmpty && state.pinnedChats.isEmpty) {
           return SliverToBoxAdapter(child: TrydosLoader());
         }
         List<Chat> chats = [];
@@ -58,15 +60,15 @@ class ChatPageContentState extends State<ChatPageContent> {
         chats.addAll(state.chats);
         chats.removeWhere((element) => int.tryParse(element.id.toString())==null && (element.messages?.isEmpty ?? true));
         initialChats=chats;
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) { searchChats.value=chats;});
-
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          searchChats.value=chats;
+        });
         return SlidableAutoCloseBehavior(
           closeWhenOpened: true,
           closeWhenTapped: true,
           child: BlocBuilder<AppBloc, AppState>(
             buildWhen: (p,c)=> p.pusherActivityIds.length != c.pusherActivityIds.length,
             builder: (context, appState) {
-              print('this is ${appState.pusherActivityIds}');
               return ValueListenableBuilder<List<Chat>>(
                 valueListenable: searchChats,
                 builder: (context , searchedChats , _) {

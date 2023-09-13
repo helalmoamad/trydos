@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -19,6 +20,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/pages/calls_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/story_page_content.dart';
+import '../../../../routes/router.dart';
 import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../manager/chat_bloc.dart';
@@ -43,7 +45,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 
   List<Widget> chatPages = [
     const CallsPageContent(),
-    const StoryPageContent(),
+    const CallsPageContent(),
   ];
 
   void saveUserContacts() async {
@@ -67,7 +69,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (_)=> const MyContactsPage()));
+          context.go(GRouter.config.applicationRoutes.kMyContactsPagePath);
         },
         backgroundColor: const Color(0xff388cff),
         child: Center(child: Icon(Icons.message_rounded , size: 25.sp , color: colorScheme.white)),
@@ -86,7 +88,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                 children: [
                   InkWell(
                     onTap: () {
-                      Navigator.pop(context);
+                      GoRouter.of(context).pop();
                     },
                     child: Padding(
                       padding: HWEdgeInsetsDirectional.fromSTEB(

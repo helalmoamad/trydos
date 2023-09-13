@@ -44,13 +44,14 @@ class ImageMessage extends StatefulWidget {
   final bool isLocalMessage;
   final String? imageUrl;
   final DateTime time;
-  final bool isRead;
-  final bool isReceived;
+   bool isRead;
+   bool isReceived;
   final int senderId;
   final String? userMessagePhoto;
   final String userMessageName;
 
-  @override
+
+   @override
   State<ImageMessage> createState() => _ImageMessageState();
 }
 
@@ -70,8 +71,24 @@ class _ImageMessageState extends State<ImageMessage> {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: BlocConsumer<ChatBloc, ChatState>(
+        listenWhen: (p, c) =>
+        p.changeMessageStateFromPusherStatus !=
+            c.changeMessageStateFromPusherStatus &&
+            c.changeMessageStateFromPusherStatus !=
+                ChangeMessageStateFromPusherStatus.init,
         listener: (context, state) {
-          // TODO: implement listener
+          if (state.changeMessageStateFromPusherStatus==ChangeMessageStateFromPusherStatus.watched){
+            if(widget.isRead){
+              return;
+            }
+            setState(() {
+              widget.isRead=true;
+            });
+          }else if(!widget.isReceived){
+            setState(() {
+              widget.isReceived=true;
+            });
+          }
         },
         builder: (context, state) {
           return Padding(
@@ -169,7 +186,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
                                       image: FileImage(widget.imageFile!),
-                                      fit: BoxFit.cover,
+                                      fit: BoxFit.fitWidth,
                                     ),
                                     borderRadius:
                                     BorderRadius.circular(12.0),
@@ -219,12 +236,14 @@ class _ImageMessageState extends State<ImageMessage> {
                                       if (widget.isSent) ...{
                                         10.horizontalSpace,
                                         SvgPicture.asset(
-                                          (state.sendMessageStatus ==
-                                              SendMessageStatus.loading &&
-                                              state.currentMessage
-                                                  .contains(widget.messageId))
-                                              ? AppAssets.sandClockSvg
-                                              : widget.isRead
+                                          (state.currentMessage
+                                              .contains(
+                                              widget.messageId))
+                                              ? AppAssets.sandClockSvg :
+                                          (state.currentFailedMessage
+                                              .contains(
+                                              widget.messageId)) ?
+                                          AppAssets.MessageFailedSvg: widget.isRead
                                               ? AppAssets.messageReadArrowSvg
                                               : widget.isReceived
                                               ? AppAssets
@@ -293,7 +312,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                       ? MyCachedNetworkImage(
                                           imageUrl:
                                               Urls.baseUrl + widget.userMessagePhoto!,
-                                          imageFit: BoxFit.cover,
+                                          imageFit: BoxFit.fitWidth,
                                           radius: 8,
                                           width: 30.w,
                                           height: 30,

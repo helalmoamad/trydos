@@ -1,16 +1,20 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trydos/base_page.dart';
 import 'package:trydos/features/chat/data/data_sources/chat_remote_datasource.dart';
 import 'package:trydos/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.dart';
 import 'package:trydos/main.dart';
+import 'package:trydos/routes/router.dart';
+import '../../../../core/di/di_container.dart';
 import '../../../../features/app/blocs/sensitive_connectivity/connectivity_observer.dart';
 import '../../../../features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../features/chat/presentation/manager/chat_event.dart';
@@ -53,35 +57,35 @@ class LocalNotificationService {
 
   Future<void> showNotificationWithPayload({required RemoteMessage message}) async {
     dealWithTimer();
+    print('hello');
     chat.Message myMessage = chat.Message.fromJson(
         convert.jsonDecode(message.data['message']));
     sendIReceivedTheMessage(myMessage.channelId!);
     String type=myMessage.messageType!.name.toString();
+    String prevMessageId=message.data['prev_message_id'];
     await _localNotificationPlugin.show(
       0,
       myMessage.senderInfo!.name ?? myMessage.senderMobilePhone ?? 'Un Known User',
       type == 'TextMessage' ? myMessage.messageContent!.content.toString() :  type=='ImageMessage' ? 'Photo' :type=='VoiceMessage' ? 'Voice' : type == 'VideoMessage' ? 'Video' :'File',
       _notificationDetails(),
-      payload: message.data['message'],
+      payload: '${message.data['message']},,${prevMessageId}'
     );
   }
    static void sendIReceivedTheMessage(String channelId)async {
-     final ReceiveMessageUseCase receiveMessageUseCase =ReceiveMessageUseCase(ChatRepositoryImpl(ChatRemoteDataSource()));
-     final response= await receiveMessageUseCase(ReceiveMessageParams(channelId: channelId));
-     response.fold((l) {
-       log('error while sending that i received the message');
-     }, (r) {
-       log('sending that i received the message Success');
-
-     });
+     HttpOverrides.global =  MyHttpOverrides();
+    GetIt.I<ChatBloc>().add(NotifyThatIReceivedMessageEvent(channelId: channelId));
    }
+
+
   static void _onSelectNotification(NotificationResponse notificationResponse) {
+    print('tapped');
     chat.Message myMessage = chat.Message.fromJson(
-        convert.jsonDecode(notificationResponse.payload!));
+        convert.jsonDecode(notificationResponse.payload!.split(',,')[0]));
+    String prevMessageId=notificationResponse.payload!.split(',,')[1];
     print('ok');
     initialMessage=myMessage;
-    navigatorKey.currentState!.pushAndRemoveUntil(MaterialPageRoute(builder: (_)=> const BasePage()),(route) => false,);
-    print('ok');
+    GetIt.I<ChatBloc>().add(ReceiveMessageEvent(message: myMessage,prevMessageId: prevMessageId));
+    navigatorKey.currentState!.context.go(GRouter.config.applicationRoutes.kBasePage);
   }
   _notificationDetails() {
     final channel = LocalNotificationService().getAndroidChannel;

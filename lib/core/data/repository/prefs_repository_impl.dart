@@ -42,22 +42,31 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   void saveRequestsData(
-      String url,
-      Map<String, dynamic> response,
-      Map<String, dynamic> headers,
+      String? url,
+      Map<String, dynamic>? response,
+      Map<String, dynamic>? headers,
       int? statusCode,
-      String request,
+      String? request,
       Map<String, dynamic>? query,
-      Map<String, dynamic>? body) {
-    Map<String, dynamic> requestAndResponse = {
-      'url': url,
-      'request': request,
-      'response': response,
-      'headers': headers,
-      'query': query,
-      'body': body,
-      'statusCode': statusCode
-    };
+      Map<String, dynamic>? body,
+  {String? error}
+      ) {
+    Map<String, dynamic> requestAndResponse ;
+    if(error == null || error == 'null'){
+      requestAndResponse={
+        'url': url,
+        'request': request,
+        'response': response,
+        'headers': headers,
+        'query': query,
+        'body': body,
+        'statusCode': statusCode
+      };
+    }else{
+      requestAndResponse={
+        'flutter_error': error,
+      };
+    }
     List<Map<String, dynamic>> previousRequests = getRequestsData();
     if (previousRequests.length == 60) {
       previousRequests.removeAt(0);
@@ -113,6 +122,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setMyName(String name) => _preferences.setString(PrefsKey.name, name);
+
 
 
 

@@ -23,12 +23,16 @@ static String savePath='/storage/emulated/0/Android/data/com.example.trydos/file
     if(fileUrl==null){
       return null;
     }
+    String fileName=fileUrl.split('/').last;
     String path = await getFilePath(fileName);
+    print('check path : $path');
     File file = File(path);
     bool exist = await file.exists();
+    print('exist? : $exist');
     if(exist){
       return file;
-    }else if(download){
+    }
+    else if(download){
       print('go to download');
       await downloadFileToLocalStorage(fileUrl , action : action);
       return null;
