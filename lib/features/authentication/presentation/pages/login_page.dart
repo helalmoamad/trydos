@@ -3,8 +3,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import '../../../../common/constant/countries.dart';
 import '../../../../core/utils/form_state_mixin.dart';
@@ -32,6 +34,7 @@ class LoginPage extends StatefulWidget {
   final showPasswordNotifier = ValueNotifier(true);
   late final ValueNotifier<bool> filledPasswordNotifier;
   late final ValueNotifier<Country?> countryNotifier;
+  String? fullPhoneToSave;
   String? fullPhone;
   late ChatBloc chatBloc;
   @override
@@ -115,6 +118,7 @@ class LoginPage extends StatefulWidget {
                     if (!mounted) {
                       return;
                     }
+                    GetIt.I<PrefsRepository>().setPhoneNumber(fullPhoneToSave!);
                     context.go(GRouter.config.applicationRoutes.kBasePage);
                     chatBloc.add(const chatEvents.GetChatsEvent());
                     BlocProvider.of<AppBloc>(context).add(ChangeBasePage(2));
@@ -153,6 +157,7 @@ class LoginPage extends StatefulWidget {
     final validate = form.key.currentState!.validate() && fullPhone != null;
     if (!validate) return;
     String fcmToken=NotificationProcess.myFcmToken!;
+    fullPhoneToSave=fullPhone;
     BlocProvider.of<AuthBloc>(context).add(
       LoginEvent(
           mobilePhone: fullPhone!.substring(1), password: form.controllers[1].text , fcmToken: fcmToken),

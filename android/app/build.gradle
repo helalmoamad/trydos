@@ -24,6 +24,7 @@ if (flutterVersionName == null) {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.smartlook.crash-gradle-plugin'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 
@@ -77,4 +78,9 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.1.1')
     implementation 'com.pusher:pusher-java-client:2.2.8'
 
+}
+
+smartlookCrashGradlePlugin {
+    apiKey = "29b28f3bd01e6abb7b17a18878c9d42573ecfe5f91aff2c0d163638a33ade7e6"
+    force = true
 }

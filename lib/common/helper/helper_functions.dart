@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:contacts_service/contacts_service.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -241,5 +242,17 @@ class HelperFunctions {
 
   static String twoDigits(int n) {
     return n.toString().padLeft(2, '0');
+  }
+
+  static Future<String?> getDeviceId() async {
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) {
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      return iosDeviceInfo.identifierForVendor;
+    } else if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      return androidInfo.id.toString() + '_' + androidInfo.model.toString();
+    }
+    return 'other_os';
   }
 }
