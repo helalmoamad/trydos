@@ -5,6 +5,8 @@ abstract class PrefsKey {
 
   static const token = r'__$__token__$__';
 
+  static const phoneNumber = r'__$__phoneNumber__$__';
+
   static const fcmTokenId = r'__$__fcmTokenId__$__';
 
   static const theme = r'__$__theme__$__';

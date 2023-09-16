@@ -123,6 +123,13 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> setMyName(String name) => _preferences.setString(PrefsKey.name, name);
 
+  @override
+  // TODO: implement myPhoneNumber
+  String? get myPhoneNumber => _preferences.getString(PrefsKey.phoneNumber);
+
+  @override
+  Future<bool> setPhoneNumber(String phoneNumber) => _preferences.setString(PrefsKey.phoneNumber, phoneNumber);
+
 
 
 

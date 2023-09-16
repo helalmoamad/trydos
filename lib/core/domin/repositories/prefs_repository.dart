@@ -9,9 +9,13 @@ abstract class PrefsRepository {
 
   String? get myName;
 
+  String? get myPhoneNumber;
+
   Future<bool> setToken(String token);
 
   Future<bool> setMyName(String name);
+
+  Future<bool> setPhoneNumber(String phoneNumber);
 
   Future<void> setFcmTokenId(int fcmTokenId);
 
