@@ -12,10 +12,22 @@ class PrefsRepositoryImpl extends PrefsRepository {
   final SharedPreferences _preferences;
 
   @override
-  Future<bool> setToken(String token) => _preferences.setString(PrefsKey.token, token);
+  Future<bool> setChatToken(String token) => _preferences.setString(PrefsKey.chatToken, token);
 
   @override
-  String? get token => _preferences.getString(PrefsKey.token);
+  String? get chatToken => _preferences.getString(PrefsKey.chatToken);
+
+  @override
+  String? get marketToken => _preferences.getString(PrefsKey.marketToken);
+
+  @override
+  Future<bool> setMarketToken(String token) => _preferences.setString(PrefsKey.marketToken, token);
+
+  @override
+  Future<bool> setStoriesToken(String token) => _preferences.setString(PrefsKey.storiesToken, token);
+
+  @override
+  String? get storiesToken => _preferences.getString(PrefsKey.storiesToken);
 
   @override
   ThemeMode get getTheme {
@@ -33,12 +45,14 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> clearUser() async {
-    await _preferences.remove(PrefsKey.token);
+    await _preferences.remove(PrefsKey.chatToken);
+    await _preferences.remove(PrefsKey.marketToken);
+    await _preferences.remove(PrefsKey.storiesToken);
     return _preferences.remove(PrefsKey.user);
   }
 
   @override
-  bool get registeredUser => token != null;
+  bool get registeredUser => chatToken != null;
 
   @override
   void saveRequestsData(
@@ -129,6 +143,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setPhoneNumber(String phoneNumber) => _preferences.setString(PrefsKey.phoneNumber, phoneNumber);
+
 
 
 

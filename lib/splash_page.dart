@@ -29,7 +29,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     Timer(const Duration(seconds: 4), _onSplash);
-    if(prefsRepository.token != null){
+    if(prefsRepository.chatToken != null){
       BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
     }
     super.initState();

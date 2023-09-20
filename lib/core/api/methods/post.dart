@@ -4,10 +4,12 @@ import 'package:logger/logger.dart';
 import '../../../enums/status_code_type.dart';
 import '../api.dart';
 import '../client_config.dart';
+import 'detect_server.dart';
 
 class PostClient<T> extends BaseApi<T> {
   PostClient({
     required this.requestPrams,
+    required this.serverName,
     this.onSendProgress,
     this.onReceiveProgress,
   })  : _fromJson = requestPrams.response.fromJson,
@@ -16,7 +18,7 @@ class PostClient<T> extends BaseApi<T> {
         _data = requestPrams.data,
         _endpoint = requestPrams.endpoint,
   _receiveTimeout = requestPrams.receiveTimeout,
-  _sendTimeout = requestPrams.sendTimeout;
+  _sendTimeout = requestPrams.sendTimeout, super(serverName);
   final Stopwatch stopWatch = Stopwatch();
   final RequestConfig<T> requestPrams;
 
@@ -30,16 +32,17 @@ class PostClient<T> extends BaseApi<T> {
   final dynamic _queryParameters;
   final dynamic _data;
   final String _endpoint;
+  final ServerName serverName ;
 
   @override
   Future<T> call() async {
     try {
-      final uri = Uri.parse(client.options.baseUrl);
+      final baseUri = getBaseUriForSpecificServer(serverName);
       stopWatch.start();
       final Response response = await client.postUri(
         Uri(
-          host: uri.host,
-          scheme: uri.scheme,
+          host: baseUri.host,
+          scheme: baseUri.scheme,
           path: _endpoint,
           queryParameters: _queryParameters,
         ),

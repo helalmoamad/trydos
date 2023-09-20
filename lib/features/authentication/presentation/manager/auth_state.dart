@@ -1,24 +1,49 @@
 part of 'auth_bloc.dart';
 
 enum CreateUserStatus { init, loading, success, failure }
-enum LoginUserStatus { init, loading, success, failure }
+enum LoginToChatStatus { init, loading, success, failure }
+enum LoginToStoreStatus { init, loading, success, failure }
+enum SendOtpStatus { init, loading, success, failure }
+enum VerifyOtpSignUpStatus { init, loading, success, failure }
+enum VerifyOtpSignInStatus { init, loading, success, failure }
+enum VerifyGuestPhoneStatus { init, loading, success, failure }
 
 
 class AuthState {
   const AuthState({
     this.createUserStatus = CreateUserStatus.init,
-    this.loginUserStatus = LoginUserStatus.init,
+    this.loginToChatStatus = LoginToChatStatus.init,
+    this.sendOtpStatus = SendOtpStatus.init,
+    this.verifyOtpSignUpStatus = VerifyOtpSignUpStatus.init,
+    this.verifyOtpSignInStatus = VerifyOtpSignInStatus.init,
+    this.verifyGuestPhoneStatus = VerifyGuestPhoneStatus.init,
+    this.loginToStoreStatus = LoginToStoreStatus.init,
   });
 
   final CreateUserStatus createUserStatus;
-  final LoginUserStatus loginUserStatus;
+  final LoginToChatStatus loginToChatStatus;
+  final LoginToStoreStatus loginToStoreStatus;
+  final SendOtpStatus sendOtpStatus;
+  final VerifyOtpSignUpStatus verifyOtpSignUpStatus;
+  final VerifyOtpSignInStatus verifyOtpSignInStatus;
+  final VerifyGuestPhoneStatus verifyGuestPhoneStatus;
   AuthState copyWith({
     final CreateUserStatus? createUserStatus,
-    final LoginUserStatus? loginUserStatus
+    final LoginToChatStatus? loginToChatStatus,
+    final LoginToStoreStatus? loginToStoreStatus,
+    final SendOtpStatus? sendOtpStatus,
+    final VerifyOtpSignUpStatus? verifyOtpSignUpStatus,
+    final VerifyOtpSignInStatus? verifyOtpSignInStatus,
+    final VerifyGuestPhoneStatus? verifyGuestPhoneStatus
   }) {
     return AuthState(
       createUserStatus: createUserStatus ?? this.createUserStatus,
-      loginUserStatus: loginUserStatus ?? this.loginUserStatus,
+      loginToChatStatus: loginToChatStatus ?? this.loginToChatStatus,
+      loginToStoreStatus: loginToStoreStatus ?? this.loginToStoreStatus,
+      sendOtpStatus: sendOtpStatus ?? this.sendOtpStatus,
+      verifyOtpSignUpStatus: verifyOtpSignUpStatus ?? this.verifyOtpSignUpStatus,
+      verifyOtpSignInStatus: verifyOtpSignInStatus ?? this.verifyOtpSignInStatus,
+      verifyGuestPhoneStatus: verifyGuestPhoneStatus ?? this.verifyGuestPhoneStatus,
     );
   }
 }

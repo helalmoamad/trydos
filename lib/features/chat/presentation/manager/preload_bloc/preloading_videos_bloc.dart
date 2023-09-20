@@ -72,10 +72,10 @@ class PreloadingVideosBloc extends Bloc<PreloadingVideosEvent ,PreloadingVideosS
 
    _initializeControllerAtIndex(int index) async {
     Map<int, VideoPlayerController> controllers=Map.of(state.controllers);
-    if (state.urls.length > index && index >= 0) {
+    if (state.ChatUrls.length > index && index >= 0) {
       /// Create new controller
       final VideoPlayerController controller =
-      VideoPlayerController.networkUrl(Uri.parse(state.urls[index]));
+      VideoPlayerController.networkUrl(Uri.parse(state.ChatUrls[index]));
       /// Add to [controllers] list
       controllers[index] = controller;
       /// Initialize
@@ -85,7 +85,7 @@ class PreloadingVideosBloc extends Bloc<PreloadingVideosEvent ,PreloadingVideosS
     return controllers;
   }
   void _playControllerAtIndex(int index) {
-    if (state.urls.length > index && index >= 0) {
+    if (state.ChatUrls.length > index && index >= 0) {
       /// Get controller at [index]
       final VideoPlayerController controller = state.controllers[index]!;
       /// Play controller
@@ -95,7 +95,7 @@ class PreloadingVideosBloc extends Bloc<PreloadingVideosEvent ,PreloadingVideosS
   }
 
   void _stopControllerAtIndex(int index) {
-    if (state.urls.length > index && index >= 0) {
+    if (state.ChatUrls.length > index && index >= 0) {
       /// Get controller at [index]
       final VideoPlayerController controller = state.controllers[index]!;
       /// Pause
@@ -107,7 +107,7 @@ class PreloadingVideosBloc extends Bloc<PreloadingVideosEvent ,PreloadingVideosS
   }
   Map<int, VideoPlayerController> _disposeControllerAtIndex(int index) {
     Map<int, VideoPlayerController> controllers=Map.of(state.controllers);
-    if (state.urls.length > index && index >= 0) {
+    if (state.ChatUrls.length > index && index >= 0) {
       /// Get controller at controller
       final VideoPlayerController controller = state.controllers[index]!;
       /// Dispose controller

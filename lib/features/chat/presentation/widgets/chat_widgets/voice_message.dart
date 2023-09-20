@@ -544,7 +544,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                       ),
                                        widget.userMessagePhoto != null
                                           ? MyCachedNetworkImage(
-                                        imageUrl: Urls.baseUrl + widget.userMessagePhoto!,
+                                        imageUrl: ChatUrls.baseUrl + widget.userMessagePhoto!,
                                         imageFit: BoxFit.cover,
                                         radius: 8,
                                         width: 30.w,

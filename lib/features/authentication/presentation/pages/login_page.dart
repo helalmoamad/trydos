@@ -90,7 +90,7 @@ class LoginPage extends StatefulWidget {
               BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
                 return AppTextField(
                   controller: form.controllers[1],
-                  enabled: state.loginUserStatus != LoginUserStatus.loading,
+                  enabled: state.loginToChatStatus != LoginToChatStatus.loading,
                   hintText: 'password',
                   contentPadding:
                       HWEdgeInsets.symmetric(horizontal: 5),
@@ -114,7 +114,7 @@ class LoginPage extends StatefulWidget {
               const Spacer(),
               BlocConsumer<AuthBloc, AuthState>(
                 listener: (context, state) {
-                  if (state.loginUserStatus == LoginUserStatus.success) {
+                  if (state.loginToChatStatus == LoginToChatStatus.success) {
                     if (!mounted) {
                       return;
                     }
@@ -138,7 +138,7 @@ class LoginPage extends StatefulWidget {
                                 : null,
                             text: 'Login',
                             isLoading:
-                                state.loginUserStatus == LoginUserStatus.loading,
+                                state.loginToChatStatus == LoginToChatStatus.loading,
                           ),
                         );
                       });
@@ -159,7 +159,7 @@ class LoginPage extends StatefulWidget {
     String fcmToken=NotificationProcess.myFcmToken!;
     fullPhoneToSave=fullPhone;
     BlocProvider.of<AuthBloc>(context).add(
-      LoginEvent(
+      LoginToChatEvent(
           mobilePhone: fullPhone!.substring(1), password: form.controllers[1].text , fcmToken: fcmToken),
     );
   }

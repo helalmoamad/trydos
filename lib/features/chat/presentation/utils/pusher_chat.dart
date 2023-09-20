@@ -25,7 +25,7 @@ class PusherChatService {
       auth: PusherAuth(
         'http://chating_staging_trydos.trydos.tech/broadcasting/auth',
         headers: {
-          'Authorization': 'Bearer ${_prefsRepository.token}',
+          'Authorization': 'Bearer ${_prefsRepository.chatToken}',
         },
       ),
     );

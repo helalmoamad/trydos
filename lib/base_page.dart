@@ -143,8 +143,7 @@ class _BasePageState extends State<BasePage> {
       Message message =
           Message.fromJson(convert.jsonDecode(event.data['message']));
       String prevMessageId = event.data['prev_message_id'];
-      bloc.add(
-          ReceiveMessageEvent(message: message, prevMessageId: prevMessageId));
+      bloc.add(ReceiveMessageEvent(message: message, prevMessageId: prevMessageId));
       log('object ${event.data}');
       log('object ${event.senderId}');
       log('object ${event.notification?.title}');

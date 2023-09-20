@@ -216,7 +216,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                 ),
                                 child: MyCachedNetworkImage(
                                   imageUrl:
-                                      Urls.baseUrl + widget.receiverPhoto!,
+                                      ChatUrls.baseUrl + widget.receiverPhoto!,
                                   imageFit: BoxFit.cover,
                                   height: 40,
                                   width: 40.w,

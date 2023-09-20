@@ -8,7 +8,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trydos/common/constant/configuration/url_routes.dart';
+import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -235,7 +235,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                       ),
                                       child: MyCachedNetworkImage(
                                           imageUrl:
-                                              Urls.baseUrl + receiver?.photoPath,
+                                              ChatUrls.baseUrl + receiver?.photoPath,
                                           imageFit: BoxFit.cover,
                                           height: 80.h,
                                           width: 60.w),

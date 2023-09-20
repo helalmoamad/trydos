@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -9,6 +10,7 @@ import 'package:trydos/features/authentication/presentation/widgets/create_accou
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
+import '../manager/auth_bloc.dart';
 import '../widgets/welcome_section.dart';
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
@@ -32,8 +34,10 @@ class _RegistrationPageState extends State<RegistrationPage>
   String phoneNumber = '';
 Duration animationDuration = Duration(milliseconds: 500);
 final FocusNode focusNode = FocusNode();
+late AuthBloc authBloc;
   @override
   void initState() {
+    authBloc=BlocProvider.of<AuthBloc>(context);
     super.initState();
   }
   @override
@@ -161,6 +165,7 @@ final FocusNode focusNode = FocusNode();
                                 pageController.animateToPage(4,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.easeInOut);
+                                authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));
                               },
                               goBackToPhone: () {
                                 pageController.animateToPage(2,
@@ -173,6 +178,7 @@ final FocusNode focusNode = FocusNode();
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.easeInOut);
                                 pageContent.value = 5;
+                                authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));
                               },
                             ),
                             VerifyOtp(

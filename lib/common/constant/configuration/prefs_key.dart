@@ -3,7 +3,11 @@ abstract class PrefsKey {
 
   static const name = r'__$__name__$__';
 
-  static const token = r'__$__token__$__';
+  static const chatToken = r'__$__chatToken__$__';
+
+  static const marketToken = r'__$__marketToken__$__';
+
+  static const storiesToken = r'__$__storiesToken__$__';
 
   static const phoneNumber = r'__$__phoneNumber__$__';
 

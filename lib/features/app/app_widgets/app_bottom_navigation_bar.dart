@@ -241,17 +241,16 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     children: [
                       state.currentIndex == 1
                           ? SvgPicture.asset(
-                              AppAssets.emptySvg,
-                              color: colorScheme.black,
+                              AppAssets.bagsSvg,
                               height: 30.h,
                             )
                           : SvgPicture.asset(
-                              AppAssets.emptySvg,
+                              AppAssets.cartSvg,
                               height: 30.h,
                             ),
                       10.verticalSpace,
                       Text(
-                        'Empty',
+                        'Cart',
                         maxLines: 1,
                         style: textTheme.overline?.lr.copyWith(
                             color: state.currentIndex != 1

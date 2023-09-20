@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import '../../../common/constant/configuration/url_routes.dart';
+import '../../../common/constant/configuration/chat_url_routes.dart';
 import '../../common/helper/show_message.dart';
 import '../../enums/status_code_type.dart';
 import '../domin/repositories/prefs_repository.dart';
@@ -21,9 +21,9 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (kDebugMode) {
-      log(_prefsRepository.token.toString());
+      log(_prefsRepository.chatToken.toString());
       prettyPrinterI(
-        "***|| INFO Request ${options.path.substring(Urls.baseUrl.length)} ||***"
+        "***|| INFO Request ${options.path.substring(ChatUrls.baseUrl.length)} ||***"
         "\n HTTP Method: ${options.method}"
         "\n token : ${options.headers[HttpHeaders.authorizationHeader]?.substring(0, 20)}"
         "\n param : ${options.data}"
@@ -46,7 +46,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         statusType = _StatusType.failed;
       }
       final requestRoute =
-          response.requestOptions.path.substring(Urls.baseUrl.length);
+          response.requestOptions.path.substring(ChatUrls.baseUrl.length);
 
       if (statusType == _StatusType.failed) {
         prettyPrinterError(
@@ -93,7 +93,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         err.requestOptions.method,
         err.requestOptions.queryParameters,
         err.response?.data ?? {});
-    // GetIt.I<Dio>().post('${Urls.baseUrl}/${EndPoints.createBugEP}', data: {
+    // GetIt.I<Dio>().post('${ChatUrls.baseUrl}/${ChatEndPoints.createBugEP}', data: {
     //   "user_id": _prefsRepository.myId,
     //   "title": "request error",
     //   "description": err.toString()

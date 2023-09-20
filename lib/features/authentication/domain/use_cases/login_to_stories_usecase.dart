@@ -7,28 +7,28 @@ import '../../data/models/login_user_response_model.dart';
 import '../repositories/auth_repository.dart';
 
 @injectable
-class LoginUseCase implements UseCase<LoginUserResponseModel, LoginParams> {
-  LoginUseCase(this.repository);
+class LoginToStoriesUseCase implements UseCase<LoginUserResponseModel, LoginToStoriesParams> {
+  LoginToStoriesUseCase(this.repository);
 
   final AuthRepository repository;
 
   @override
   Future<Either<Failure, LoginUserResponseModel>> call(
-      LoginParams params) async {
-    return repository.loginUser(params.map);
+      LoginToStoriesParams params) async {
+    return repository.loginToStories(params.map);
   }
 }
 
-class LoginParams {
-  String? mobilePhone;
-  String? password;
+class LoginToStoriesParams {
+  String? otpIdToken;
+  String? phone;
 
-  LoginParams({
-    this.mobilePhone,
-    this.password,
+  LoginToStoriesParams({
+    this.phone,
+    this.otpIdToken,
   });
   Map<String, dynamic> get map =>{
-    "mobile_phone" :mobilePhone,
-    "password" :password,
+    "otp_id_token" :phone,
+    "mobile_phone" :phone,
   };
 }

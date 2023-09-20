@@ -103,7 +103,7 @@ class ContactCard extends StatelessWidget {
                           //         BorderRadius.circular(12.0),
                           //       ),
                           //       child: MyCachedNetworkImage(
-                          //           imageUrl: Urls.baseUrl +
+                          //           imageUrl: ChatChatUrls.baseUrl +
                           //               receiver?.photoPath,
                           //           imageFit: BoxFit.cover,
                           //           height: 80.h,

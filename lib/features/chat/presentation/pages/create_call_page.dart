@@ -57,7 +57,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                   ],
                                 ),
                                 child: MyCachedNetworkImage(
-                                    imageUrl: Urls.baseUrl + widget.receiverPhoto!,
+                                    imageUrl: ChatUrls.baseUrl + widget.receiverPhoto!,
                                     imageFit: BoxFit.cover,
                                     height: 80.h,
                                     width: 60.w),
