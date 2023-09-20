@@ -4,13 +4,10 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../common/constant/configuration/url_routes.dart';
 import '../api/log_interceptor.dart';
 import '../data/repository/prefs_repository_impl.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'di_container.config.dart';
-
-
 final GetIt _getIt = GetIt.I;
 
 @InjectableInit(
@@ -23,7 +20,6 @@ Future<GetIt> configureDependencies() async => $initGetIt(_getIt);
 @module
 abstract class AppModule {
   BaseOptions get dioOption => BaseOptions(
-        baseUrl: Urls.baseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         contentType: 'application/json',

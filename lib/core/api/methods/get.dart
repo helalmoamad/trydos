@@ -1,21 +1,23 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
-import '../../../common/constant/configuration/url_routes.dart';
+import '../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../enums/status_code_type.dart';
 import '../api.dart';
 import '../client_config.dart';
+import 'detect_server.dart';
 
 class GetClient<T> extends BaseApi<T> {
   GetClient({
     required this.requestPrams,
+    required this.serverName,
     this.onReceiveProgress,
   })  : _fromJson = requestPrams.response.fromJson,
         _valueOnSuccess = requestPrams.response.returnValueOnSuccess,
         _endpoint = requestPrams.endpoint,
         _queryParameters = requestPrams.queryParameters,
   _receiveTimeout = requestPrams.receiveTimeout,
-  _sendTimeout = requestPrams.sendTimeout;
+  _sendTimeout = requestPrams.sendTimeout, super(serverName);
   final Duration? _receiveTimeout;
   final Duration? _sendTimeout;
   final Stopwatch stopWatch = Stopwatch();
@@ -26,17 +28,16 @@ class GetClient<T> extends BaseApi<T> {
   final T? _valueOnSuccess;
   final String _endpoint;
   final Map<String, dynamic>? _queryParameters;
-
+  final ServerName serverName ;
   @override
   Future<T> call() async {
     try {
-
       stopWatch.start();
-
+      final baseUri = getBaseUriForSpecificServer(serverName);
       final Response response = await client.getUri(
         Uri(
-          host: Urls.baseUri.host,
-          scheme: Urls.baseUri.scheme,
+          host: baseUri.host,
+          scheme: baseUri.scheme,
           path:  _endpoint,
           queryParameters: _queryParameters,
         ),

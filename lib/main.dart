@@ -58,7 +58,7 @@ void main() async{
         null,
         error: error.toString());
   };
-  //   GetIt.I<Dio>().post(EndPoints.createBugEP, data: {
+  //   GetIt.I<Dio>().post(ChatEndPoints.createBugEP, data: {
   //     "user_id": GetIt.I<PrefsRepository>().myId,
   //     "title": "flutter error",
   //     "description": error.toString()
@@ -76,7 +76,7 @@ void main() async{
   final  PrefsRepository prefs = GetIt.I<PrefsRepository>();
   timer?.cancel();
   timer=Timer.periodic(const Duration(minutes: 2 ), (timer) {
-    if((ConnectivityObserver.currentEvent==ConnectivityResult.wifi || ConnectivityObserver.currentEvent==ConnectivityResult.mobile) && prefs.token!=null) {
+    if((ConnectivityObserver.currentEvent==ConnectivityResult.wifi || ConnectivityObserver.currentEvent==ConnectivityResult.mobile) && prefs.chatToken!=null) {
       GetIt.I<ChatBloc>().add(const GetChatsEvent());
     }
   });

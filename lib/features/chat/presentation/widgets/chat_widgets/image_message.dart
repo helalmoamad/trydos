@@ -311,7 +311,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                   widget.userMessagePhoto != null
                                       ? MyCachedNetworkImage(
                                           imageUrl:
-                                              Urls.baseUrl + widget.userMessagePhoto!,
+                                              ChatUrls.baseUrl + widget.userMessagePhoto!,
                                           imageFit: BoxFit.fitWidth,
                                           radius: 8,
                                           width: 30.w,

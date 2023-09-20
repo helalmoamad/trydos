@@ -13,11 +13,11 @@ import 'package:dio/dio.dart' as _i7;
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 import 'package:logger/logger.dart' as _i18;
-import 'package:shared_preferences/shared_preferences.dart' as _i28;
+import 'package:shared_preferences/shared_preferences.dart' as _i31;
 
 import '../../features/app/blocs/app_bloc/app_bloc.dart' as _i3;
 import '../../features/app/blocs/sensitive_connectivity/sensitive_connectivity_bloc.dart'
-    as _i27;
+    as _i30;
 import '../../features/authentication/data/data_sources/auth_remote_datasource.dart'
     as _i4;
 import '../../features/authentication/data/repositories/auth_repository_impl.dart'
@@ -28,19 +28,31 @@ import '../../features/authentication/domain/use_cases/create_user_usecase.dart'
     as _i11;
 import '../../features/authentication/domain/use_cases/delete_fcm_usecase.dart'
     as _i13;
-import '../../features/authentication/domain/use_cases/login_usecase.dart'
+import '../../features/authentication/domain/use_cases/login_to_chat_usecase.dart'
     as _i19;
-import '../../features/authentication/domain/use_cases/store_fcm_usecase.dart'
+import '../../features/authentication/domain/use_cases/login_to_market_usecase.dart'
+    as _i20;
+import '../../features/authentication/domain/use_cases/login_to_stories_usecase.dart'
+    as _i21;
+import '../../features/authentication/domain/use_cases/send_otp_usecase.dart'
     as _i29;
+import '../../features/authentication/domain/use_cases/store_fcm_usecase.dart'
+    as _i32;
+import '../../features/authentication/domain/use_cases/verify_guest_phone_usecase.dart'
+    as _i34;
+import '../../features/authentication/domain/use_cases/verify_otp_signin_usecase.dart'
+    as _i35;
+import '../../features/authentication/domain/use_cases/verify_otp_signup_usecase.dart'
+    as _i36;
 import '../../features/authentication/presentation/manager/auth_bloc.dart'
-    as _i31;
+    as _i37;
 import '../../features/chat/data/data_sources/chat_remote_datasource.dart'
     as _i8;
 import '../../features/chat/data/repositories/chat_repository_impl.dart'
     as _i10;
 import '../../features/chat/domain/repositories/chat_repository.dart' as _i9;
 import '../../features/chat/domain/use_cases/change_chat_property_usecase.dart'
-    as _i32;
+    as _i38;
 import '../../features/chat/domain/use_cases/delete_chat_usecase.dart' as _i12;
 import '../../features/chat/domain/use_cases/get_contacts_usecase.dart' as _i14;
 import '../../features/chat/domain/use_cases/get_messages_between_usecase.dart'
@@ -49,22 +61,20 @@ import '../../features/chat/domain/use_cases/get_messages_for_chat_usecase.dart'
     as _i16;
 import '../../features/chat/domain/use_cases/get_my_chats_usecase.dart' as _i17;
 import '../../features/chat/domain/use_cases/read_all_messages_usecase.dart'
-    as _i23;
-import '../../features/chat/domain/use_cases/receive_message_usecase.dart'
-    as _i24;
-import '../../features/chat/domain/use_cases/save_contacts_usecase.dart'
     as _i25;
-import '../../features/chat/domain/use_cases/send_message_usecase.dart' as _i26;
-import '../../features/chat/domain/use_cases/upload_file_usecase.dart' as _i30;
-import '../../features/chat/presentation/manager/chat_bloc.dart' as _i33;
+import '../../features/chat/domain/use_cases/receive_message_usecase.dart'
+    as _i26;
+import '../../features/chat/domain/use_cases/save_contacts_usecase.dart'
+    as _i27;
+import '../../features/chat/domain/use_cases/send_message_usecase.dart' as _i28;
+import '../../features/chat/domain/use_cases/upload_file_usecase.dart' as _i33;
+import '../../features/chat/presentation/manager/chat_bloc.dart' as _i39;
 import '../../features/chat/presentation/manager/preload_bloc/preloading_videos_bloc.dart'
-    as _i21;
-import '../../features/chat/presentation/utils/pusher_chat.dart' as _i22;
-import '../domin/repositories/prefs_repository.dart' as _i20;
-import 'di_container.dart' as _i34;
+    as _i23;
+import '../../features/chat/presentation/utils/pusher_chat.dart' as _i24;
+import '../domin/repositories/prefs_repository.dart' as _i22;
+import 'di_container.dart' as _i40;
 
-// ignore_for_file: unnecessary_lambdas
-// ignore_for_file: lines_longer_than_80_chars
 // initializes the registration of main-scope dependencies inside of GetIt
 Future<_i1.GetIt> $initGetIt(
   _i1.GetIt getIt, {
@@ -100,51 +110,69 @@ Future<_i1.GetIt> $initGetIt(
   gh.factory<_i17.GetMyChatsUseCase>(
       () => _i17.GetMyChatsUseCase(gh<_i9.ChatRepository>()));
   gh.singleton<_i18.Logger>(appModule.logger);
-  gh.factory<_i19.LoginUseCase>(
-      () => _i19.LoginUseCase(gh<_i5.AuthRepository>()));
-  await gh.singletonAsync<_i20.PrefsRepository>(
+  gh.factory<_i19.LoginToChatUseCase>(
+      () => _i19.LoginToChatUseCase(gh<_i5.AuthRepository>()));
+  gh.factory<_i20.LoginToMarketUseCase>(
+      () => _i20.LoginToMarketUseCase(gh<_i5.AuthRepository>()));
+  gh.factory<_i21.LoginToStoriesUseCase>(
+      () => _i21.LoginToStoriesUseCase(gh<_i5.AuthRepository>()));
+  await gh.singletonAsync<_i22.PrefsRepository>(
     () => appModule.prefsRepository,
     preResolve: true,
   );
-  gh.factory<_i21.PreloadingVideosBloc>(() => _i21.PreloadingVideosBloc());
-  gh.lazySingleton<_i22.PusherChatService>(() => _i22.PusherChatService());
-  gh.factory<_i23.ReadAllMessagesUseCase>(
-      () => _i23.ReadAllMessagesUseCase(gh<_i9.ChatRepository>()));
-  gh.factory<_i24.ReceiveMessageUseCase>(
-      () => _i24.ReceiveMessageUseCase(gh<_i9.ChatRepository>()));
-  gh.factory<_i25.SaveContactsUseCase>(
-      () => _i25.SaveContactsUseCase(gh<_i9.ChatRepository>()));
-  gh.factory<_i26.SendMessageUseCase>(
-      () => _i26.SendMessageUseCase(gh<_i9.ChatRepository>()));
-  gh.factory<_i27.SensitiveConnectivityBloc>(
-      () => _i27.SensitiveConnectivityBloc());
-  await gh.singletonAsync<_i28.SharedPreferences>(
+  gh.factory<_i23.PreloadingVideosBloc>(() => _i23.PreloadingVideosBloc());
+  gh.lazySingleton<_i24.PusherChatService>(() => _i24.PusherChatService());
+  gh.factory<_i25.ReadAllMessagesUseCase>(
+      () => _i25.ReadAllMessagesUseCase(gh<_i9.ChatRepository>()));
+  gh.factory<_i26.ReceiveMessageUseCase>(
+      () => _i26.ReceiveMessageUseCase(gh<_i9.ChatRepository>()));
+  gh.factory<_i27.SaveContactsUseCase>(
+      () => _i27.SaveContactsUseCase(gh<_i9.ChatRepository>()));
+  gh.factory<_i28.SendMessageUseCase>(
+      () => _i28.SendMessageUseCase(gh<_i9.ChatRepository>()));
+  gh.factory<_i29.SendOtpUseCase>(
+      () => _i29.SendOtpUseCase(gh<_i5.AuthRepository>()));
+  gh.factory<_i30.SensitiveConnectivityBloc>(
+      () => _i30.SensitiveConnectivityBloc());
+  await gh.singletonAsync<_i31.SharedPreferences>(
     () => appModule.sharedPreferences,
     preResolve: true,
   );
-  gh.factory<_i29.StoreFcmUseCase>(
-      () => _i29.StoreFcmUseCase(gh<_i5.AuthRepository>()));
-  gh.factory<_i30.UploadFileUseCase>(
-      () => _i30.UploadFileUseCase(gh<_i9.ChatRepository>()));
-  gh.factory<_i31.AuthBloc>(() => _i31.AuthBloc(
+  gh.factory<_i32.StoreFcmUseCase>(
+      () => _i32.StoreFcmUseCase(gh<_i5.AuthRepository>()));
+  gh.factory<_i33.UploadFileUseCase>(
+      () => _i33.UploadFileUseCase(gh<_i9.ChatRepository>()));
+  gh.factory<_i34.VerifyGuestPhoneUseCase>(
+      () => _i34.VerifyGuestPhoneUseCase(gh<_i5.AuthRepository>()));
+  gh.factory<_i35.VerifyOtpSignInUseCase>(
+      () => _i35.VerifyOtpSignInUseCase(gh<_i5.AuthRepository>()));
+  gh.factory<_i36.VerifyOtpSignUpUseCase>(
+      () => _i36.VerifyOtpSignUpUseCase(gh<_i5.AuthRepository>()));
+  gh.factory<_i37.AuthBloc>(() => _i37.AuthBloc(
         gh<_i11.CreateUserUseCase>(),
-        gh<_i19.LoginUseCase>(),
-        gh<_i29.StoreFcmUseCase>(),
+        gh<_i19.LoginToChatUseCase>(),
+        gh<_i20.LoginToMarketUseCase>(),
+        gh<_i21.LoginToStoriesUseCase>(),
+        gh<_i32.StoreFcmUseCase>(),
+        gh<_i29.SendOtpUseCase>(),
+        gh<_i34.VerifyGuestPhoneUseCase>(),
+        gh<_i35.VerifyOtpSignInUseCase>(),
+        gh<_i36.VerifyOtpSignUpUseCase>(),
       ));
-  gh.factory<_i32.ChangeChatPropertyUseCase>(
-      () => _i32.ChangeChatPropertyUseCase(gh<_i9.ChatRepository>()));
-  gh.lazySingleton<_i33.ChatBloc>(() => _i33.ChatBloc(
+  gh.factory<_i38.ChangeChatPropertyUseCase>(
+      () => _i38.ChangeChatPropertyUseCase(gh<_i9.ChatRepository>()));
+  gh.lazySingleton<_i39.ChatBloc>(() => _i39.ChatBloc(
         gh<_i14.GetContactsUseCase>(),
         gh<_i17.GetMyChatsUseCase>(),
-        gh<_i25.SaveContactsUseCase>(),
-        gh<_i26.SendMessageUseCase>(),
+        gh<_i27.SaveContactsUseCase>(),
+        gh<_i28.SendMessageUseCase>(),
         gh<_i15.GetMessagesBetweenUseCase>(),
-        gh<_i30.UploadFileUseCase>(),
+        gh<_i33.UploadFileUseCase>(),
         gh<_i16.GetMessagesForChatUseCase>(),
         gh<_i12.DeleteChatUseCase>(),
-        gh<_i32.ChangeChatPropertyUseCase>(),
-        gh<_i23.ReadAllMessagesUseCase>(),
-        gh<_i24.ReceiveMessageUseCase>(),
+        gh<_i38.ChangeChatPropertyUseCase>(),
+        gh<_i25.ReadAllMessagesUseCase>(),
+        gh<_i26.ReceiveMessageUseCase>(),
       ));
   gh.singleton<_i7.Dio>(appModule.dio(
     gh<_i7.BaseOptions>(),
@@ -153,4 +181,4 @@ Future<_i1.GetIt> $initGetIt(
   return getIt;
 }
 
-class _$AppModule extends _i34.AppModule {}
+class _$AppModule extends _i40.AppModule {}

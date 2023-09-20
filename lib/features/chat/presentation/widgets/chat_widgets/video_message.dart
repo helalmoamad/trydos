@@ -9,7 +9,7 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/vedio_player.dart';
-import '../../../../../common/constant/configuration/url_routes.dart';
+import '../../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/utils/responsive_padding.dart';
@@ -240,7 +240,7 @@ class _VideoMessageState extends State<VideoMessage> {
                             widget.userMessagePhoto != null
                                 ? MyCachedNetworkImage(
                               imageUrl:
-                              Urls.baseUrl + widget.userMessagePhoto!,
+                              ChatUrls.baseUrl + widget.userMessagePhoto!,
                               imageFit: BoxFit.cover,
                               radius: 8,
                               width: 30.w,

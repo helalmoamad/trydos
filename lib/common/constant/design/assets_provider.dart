@@ -141,6 +141,10 @@ abstract class AppAssets {
   static String get whatsappSvg=>'whatsapp'.svg;
   static String get verifiedNumberSvg=>'verified_number'.svg;
   static String get termsSvg=>'terms'.svg;
+  static String get storyFilmSvg=>'story_film'.svg;
+  static String get bagsSvg=>'bags'.svg;
+  static String get searchOutlinedSvg=>'search_outlined'.svg;
+  static String get storeIconInactiveSvg=>'store_icon_inactive'.svg;
   static String getFlagPath(String name) => name.flagSvg;
 
   ///endregion
@@ -164,6 +168,8 @@ abstract class AppAssets {
   static String get chatProfileJpg=>'chat_profile_image'.jpg;
   static String get chatProfile2Jpg=>'chat_profile2'.jpg;
   static String get chatImageJpg=>'chat_image'.jpg;
+  static String get storyImageJpg=>'story_image'.jpg;
+  static String get storyImageMinJpg=>'story_image_min'.jpg;
 
 
 

@@ -19,7 +19,7 @@ extension ScopeApi on String {
   String firebaseTokensScope({bool current=false}) => '$_api/${current ? _currentVersion : _previousVersion}/firebase_tokens${this !='' ? '/$this': ''}';
 }
 
-abstract class EndPoints {
+abstract class ChatEndPoints {
   ///! ----< user >----
   ///
   static final loginEP = 'login'.usersScope();
@@ -55,7 +55,7 @@ abstract class EndPoints {
 
 }
 
-abstract class Urls {
+abstract class ChatUrls {
   static String get baseUrl => _baseUrlDev;
   static String get baseUrlWithHttp => _baseUrlDevWithHttp;
 

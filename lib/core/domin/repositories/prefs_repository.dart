@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 abstract class PrefsRepository {
-  String? get token;
+  String? get chatToken;
+  String? get marketToken;
+  String? get storiesToken;
 
   int? get fcmTokenId;
 
@@ -11,7 +13,11 @@ abstract class PrefsRepository {
 
   String? get myPhoneNumber;
 
-  Future<bool> setToken(String token);
+  Future<bool> setChatToken(String token);
+
+  Future<bool> setMarketToken(String token);
+
+  Future<bool> setStoriesToken(String token);
 
   Future<bool> setMyName(String name);
 

@@ -28,7 +28,7 @@ class _StoryPageContentState extends State<StoryPageContent> {
         return SizedBox(
           height: 1.sh-150.h,
           child: PageView.builder(
-              itemCount: state.urls.length,
+              itemCount: state.ChatUrls.length,
               scrollDirection: Axis.horizontal,
               onPageChanged: (index) {
                 BlocProvider.of<PreloadingVideosBloc>(context)

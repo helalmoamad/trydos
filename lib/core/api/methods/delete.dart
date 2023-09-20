@@ -1,20 +1,22 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
-import '../../../common/constant/configuration/url_routes.dart';
+import '../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../enums/status_code_type.dart';
 import '../base_api.dart';
 import '../client_config.dart';
+import 'detect_server.dart';
 
 class DeleteClient<T> extends BaseApi<T> {
   DeleteClient({
     required this.requestPrams,
+    required this.serverName,
   })  : _fromJson = requestPrams.response.fromJson,
         _valueOnSuccess = requestPrams.response.returnValueOnSuccess,
         _queryParameters = requestPrams.queryParameters,
         _endpoint = requestPrams.endpoint,
         _receiveTimeout = requestPrams.receiveTimeout,
-        _sendTimeout = requestPrams.sendTimeout;
+        _sendTimeout = requestPrams.sendTimeout, super(serverName);
 
   final RequestConfig<T> requestPrams;
   final FromJson<T>? _fromJson;
@@ -24,13 +26,16 @@ class DeleteClient<T> extends BaseApi<T> {
   final Stopwatch stopWatch = Stopwatch();
   final Duration? _receiveTimeout;
   final Duration? _sendTimeout;
+  final ServerName serverName ;
 
   @override
   Future<T> call() async {
     try {
+      final baseUri = getBaseUriForSpecificServer(serverName);
+
       final Uri uri = Uri(
-        host: Urls.baseUri.host,
-        scheme: Urls.baseUri.scheme,
+        host: baseUri.host,
+        scheme: baseUri.scheme,
         path: _endpoint,
         queryParameters: _queryParameters,
       );

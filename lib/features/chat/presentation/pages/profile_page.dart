@@ -7,7 +7,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 
-import '../../../../common/constant/configuration/url_routes.dart';
+import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../service/language_service.dart';
@@ -56,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       child: MyCachedNetworkImage(
                         imageUrl:
-                        Urls.baseUrl + widget.receiverPhoto!,
+                        ChatUrls.baseUrl + widget.receiverPhoto!,
                         imageFit: BoxFit.cover,
                         height: 150.h,
                         width: 150.w,

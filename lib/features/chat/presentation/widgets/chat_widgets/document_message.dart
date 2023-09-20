@@ -305,7 +305,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                             widget.userMessagePhoto != null
                                 ? MyCachedNetworkImage(
                               imageUrl:
-                              Urls.baseUrl + widget.userMessagePhoto!,
+                              ChatUrls.baseUrl + widget.userMessagePhoto!,
                               imageFit: BoxFit.cover,
                               radius: 8,
                               width: 30.w,
