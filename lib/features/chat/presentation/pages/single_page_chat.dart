@@ -102,7 +102,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   @override
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    autoScrollController = AutoScrollController();
+    autoScrollController = AutoScrollController(initialScrollOffset: autoScrollController.position.maxScrollExtent );
     autoScrollController.addListener(() {
       if (rebuild) {
         rebuildMessage.value = -1;
