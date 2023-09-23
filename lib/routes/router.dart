@@ -7,7 +7,6 @@ import 'package:trydos/features/authentication/presentation/pages/first_register
 import 'package:trydos/features/authentication/presentation/pages/login_page.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/authentication/presentation/pages/register_completed.dart';
-import 'package:trydos/features/authentication/presentation/pages/verification_page.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/splash_page.dart';
