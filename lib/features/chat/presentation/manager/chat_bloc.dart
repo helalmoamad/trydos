@@ -125,7 +125,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                   ? MessageContent(
                       messageId: event.messageId, content: event.content)
                   : null,
-              senderUserId: _prefsRepository.myId,
+              senderUserId: _prefsRepository.myChatId,
               messageType: MessageType(name: event.messageType),
               isForward: (event.isForward ?? false) ? 1 : 0,
               parentMessageId: parentMessageId,
@@ -334,8 +334,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                   user: User(id: contact.contactUserId,name: contact.name)
                 ),
                 ChannelMember(
-                  userId: _prefsRepository.myId,
-                  user: User(id: _prefsRepository.myId,name: _prefsRepository.myName)
+                  userId: _prefsRepository.myChatId,
+                  user: User(id: _prefsRepository.myChatId,name: _prefsRepository.myChatName)
                 ),
               ]
             ));
@@ -389,7 +389,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             file: event.file,
             createdAt: DateTime.now(),
             receiverUserId: event.receiverUserId,
-            senderUserId: _prefsRepository.myId,
+            senderUserId: _prefsRepository.myChatId,
             messageType: MessageType(name: event.messageType),
             isForward: (event.isForward ?? false) ? 1 : 0,
             parentMessageId: parentMessageId,
@@ -466,7 +466,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       chats.removeWhere((element) => element.id == chat.id);
       chats.insert(
           0,
-          chat.copyWith(totalUnreadMessageCount: (chat.totalUnreadMessageCount ?? 0) + event.message.senderUserId! !=_prefsRepository.myId ? 1 : 0));
+          chat.copyWith(totalUnreadMessageCount: (chat.totalUnreadMessageCount ?? 0) + event.message.senderUserId! !=_prefsRepository.myChatId ? 1 : 0));
     }
     messages=List.of(chat.messages ?? []);
     print('be ${messages.length}');
@@ -476,7 +476,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     int index=messages.indexWhere((element) => element.id==event.prevMessageId);
     emit(state.copyWith(
       receiveMessageStatus: ReceiveMessageStatus.success,
-        unReadMessagesFromAllChats: state.unReadMessagesFromAllChats + event.message.senderUserId! !=_prefsRepository.myId ? 1 : 0,
+        unReadMessagesFromAllChats: state.unReadMessagesFromAllChats + event.message.senderUserId! !=_prefsRepository.myChatId ? 1 : 0,
         currentChannelReceivedMessage: event.message.channelId,
         channelId: event.message.channelId,
       chats: fromPinned ? state.chats : chats.map((e) {
@@ -582,7 +582,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         pinnedChats.removeWhere((e) => e.id == changedChat.id);
         members = changedChat.channelMembers!;
         members = members.map((e) {
-          if (e.userId == _prefsRepository.myId) {
+          if (e.userId == _prefsRepository.myChatId) {
             return e.copyWith(pin: 0);
           }
           return e;
@@ -594,7 +594,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             chats.firstWhere((element) => element.id == event.channelId);
         members = changedChat.channelMembers!;
         members = members.map((e) {
-          if (e.userId == _prefsRepository.myId) {
+          if (e.userId == _prefsRepository.myChatId) {
             return e.copyWith(pin: 1);
           }
           return e;
@@ -609,7 +609,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               .firstWhere((element) => element.id == event.channelId));
       members = changedChat.channelMembers!;
       members = members.map((e) {
-        if (e.userId == _prefsRepository.myId) {
+        if (e.userId == _prefsRepository.myChatId) {
           return e.copyWith(
             mute: event.mute ?? e.mute,
             archived: event.archive ?? e.archived,
@@ -639,7 +639,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       if (event.pin != null) {
         members = changedChat.channelMembers!;
         members = members.map((e) {
-          if (e.userId == _prefsRepository.myId) {
+          if (e.userId == _prefsRepository.myChatId) {
             return e.copyWith(pin: 1 - event.pin!);
           }
           return e;
@@ -656,7 +656,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       } else {
         members = changedChat.channelMembers!;
         members = members.map((e) {
-          if (e.userId == _prefsRepository.myId) {
+          if (e.userId == _prefsRepository.myChatId) {
             return e.copyWith(
               mute: 1 - e.mute!,
               archived: 1 - e.archived!,

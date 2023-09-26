@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
@@ -8,6 +9,7 @@ import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
+import '../../../../routes/router.dart';
 
 class LoginSuccessfully extends StatefulWidget {
   const LoginSuccessfully({required this.phoneNumber, Key? key})
@@ -20,7 +22,18 @@ class LoginSuccessfully extends StatefulWidget {
 
 class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
 
-
+@override
+  void didChangeDependencies() {
+  Future.delayed(
+    Duration(seconds: 1),
+        () {
+      if(mounted)
+        context.go(GRouter.config
+            .applicationRoutes.kBasePage);
+    },
+  );
+    super.didChangeDependencies();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

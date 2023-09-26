@@ -2,7 +2,7 @@
 
 import 'package:dartz/dartz.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
-import 'package:trydos/features/authentication/data/models/login_user_response_model.dart';
+import 'package:trydos/features/authentication/data/models/login_to_chat_response_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 
 import '../../../../core/error/failures.dart';
@@ -14,7 +14,6 @@ abstract class ChatRepository {
   Future<Either<Failure,ChangeChatPropertyModel>> changeChatProperty(Map<String , dynamic> params);
   Future<Either<Failure,CreateUserResponseModel>> createUser(Map<String , dynamic> params);
   Future<Either<Failure,UploadFileResponseModel>> uploadFile(Map<String , dynamic> params);
-  Future<Either<Failure,LoginUserResponseModel>> loginUser(Map<String , dynamic> params);
   Future<Either<Failure,bool>> saveContacts(Map<String , dynamic> params);
   Future<Either<Failure,Message>> sendMessage(Map<String , dynamic> params);
   Future<Either<Failure,bool>> readAllMessages(Map<String , dynamic> params);

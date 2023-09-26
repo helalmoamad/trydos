@@ -75,7 +75,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
       chatTime = widget.chat.messages!.first.createdAt!;
     }
     User? receiver = widget.chat.channelMembers
-        ?.firstWhere((element) => element.userId != _prefsRepository.myId)
+        ?.firstWhere((element) => element.userId != _prefsRepository.myChatId)
         .user;
     String receiverName;
     if (receiver == null) {
@@ -88,7 +88,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
     print(receiverName);
     print(chatTime);
     ChannelMember me = widget.chat.channelMembers!
-        .firstWhere((element) => element.userId == _prefsRepository.myId);
+        .firstWhere((element) => element.userId == _prefsRepository.myChatId);
     User? sender = me.user;
     String senderName;
     if (sender == null) {
@@ -130,7 +130,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                 widget.onSendForwardMessage?.call(
                     widget.chat.channelMembers!
                         .firstWhere((element) =>
-                            element.userId != GetIt.I<PrefsRepository>().myId)
+                            element.userId != GetIt.I<PrefsRepository>().myChatId)
                         .userId!,
                     widget.chat.id.toString());
                 context.go(GRouter

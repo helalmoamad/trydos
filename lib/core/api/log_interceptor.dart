@@ -32,7 +32,6 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n timeout: ${options.connectTimeout! ~/ 1000}s",
       );
     }
-
     handler.next(options);
   }
 
@@ -62,14 +61,8 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n Data: ${response.data}",
       );
     }
-    _prefsRepository.saveRequestsData(
-        response.requestOptions.path,
-        response.data,
-        response.headers.map,
-        response.statusCode,
-        response.requestOptions.method,
-        response.requestOptions.queryParameters,
-        response.data);
+    _prefsRepository.saveRequestsData(response.requestOptions.path, response.data, response.headers.map, response.statusCode, response.requestOptions.method, response.requestOptions.queryParameters, response.data);
+
     handler.next(response);
   }
 
@@ -85,14 +78,8 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n stackTrace: ${err.stackTrace}",
       );
     }
-    _prefsRepository.saveRequestsData(
-        err.requestOptions.path,
-        err.response?.data ?? {},
-        err.response?.headers.map ?? {},
-        err.response?.statusCode,
-        err.requestOptions.method,
-        err.requestOptions.queryParameters,
-        err.response?.data ?? {});
+    _prefsRepository.saveRequestsData(err.requestOptions.path, err.response?.data ?? {}, err.response?.headers.map ?? {}, err.response?.statusCode, err.requestOptions.method, err.requestOptions.queryParameters, err.response?.data ?? {});
+
     // GetIt.I<Dio>().post('${ChatUrls.baseUrl}/${ChatEndPoints.createBugEP}', data: {
     //   "user_id": _prefsRepository.myId,
     //   "title": "request error",

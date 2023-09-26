@@ -17,6 +17,7 @@ import 'package:trydos/features/authentication/presentation/widgets/verify_otp.d
 import '../../../../common/constant/design/assets_provider.dart';
 import '../widgets/adding_name.dart';
 import '../widgets/verification_methods.dart';
+
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({Key? key}) : super(key: key);
 
@@ -32,14 +33,16 @@ class _RegistrationPageState extends State<RegistrationPage>
   final PageController pageController = PageController();
   bool fromLogin = false;
   String phoneNumber = '';
-Duration animationDuration = Duration(milliseconds: 500);
-final FocusNode focusNode = FocusNode();
-late AuthBloc authBloc;
+  Duration animationDuration = Duration(milliseconds: 500);
+  final FocusNode focusNode = FocusNode();
+  late AuthBloc authBloc;
+
   @override
   void initState() {
-    authBloc=BlocProvider.of<AuthBloc>(context);
+    authBloc = BlocProvider.of<AuthBloc>(context);
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,9 +58,10 @@ late AuthBloc authBloc;
                   child: AnimatedPositioned(
                       left: yes ? 40 : null,
                       right: yes ? 40 : null,
-                      top: yes ?  50 : null,
+                      top: yes ? 50 : null,
                       bottom: yes ? null : 456,
-                      duration: animationDuration, child: logo),
+                      duration: animationDuration,
+                      child: logo),
                 );
               }),
           Positioned(
@@ -66,7 +70,7 @@ late AuthBloc authBloc;
             child: ValueListenableBuilder<int>(
                 valueListenable: pageContent,
                 builder: (context, index, _) {
-                  if (index >1)
+                  if (index > 1)
                     return InkWell(
                       highlightColor: Colors.transparent,
                       splashColor: Colors.transparent,
@@ -78,7 +82,7 @@ late AuthBloc authBloc;
                               curve: Curves.easeInOut);
                           return;
                         }
-                        if (index >= 3 && index <=5) {
+                        if (index >= 3 && index <= 5) {
                           pageContent.value = 2;
                           pageController.animateToPage(2,
                               duration: Duration(milliseconds: 500),
@@ -101,8 +105,8 @@ late AuthBloc authBloc;
           ),
           ValueListenableBuilder<int>(
               valueListenable: pageContent,
-              builder: (context, index, _) {
-                if(index==0){
+              builder: (ctx, index, _) {
+                if (index == 0) {
                   focusNode.unfocus();
                 }
                 return Column(
@@ -120,18 +124,17 @@ late AuthBloc authBloc;
                           children: [
                             WelcomeSection(
                               goToLoginSection: () {
-                                fromLogin=true;
-                                animationDuration=Duration(seconds: 1);
-                                animate.value=true;
+                                fromLogin = true;
+                                animationDuration = Duration(seconds: 1);
+                                animate.value = true;
                                 pageContent.value = 2;
                                 pageController.animateToPage(2,
                                     duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut
-                                );
+                                    curve: Curves.easeInOut);
                               },
                               goToCreateAccount: () {
-                                fromLogin=false;
-                                animate.value=true;
+                                fromLogin = false;
+                                animate.value = true;
                                 pageContent.value = 1;
                                 pageController.animateToPage(1,
                                     duration: Duration(milliseconds: 500),
@@ -151,7 +154,8 @@ late AuthBloc authBloc;
                               fromLogin: fromLogin,
                               focusNode: focusNode,
                               moveToNextStep: (String phoneNumber) {
-                                this.phoneNumber = phoneNumber;
+                                this.phoneNumber =
+                                    phoneNumber.replaceAll(' ', '');
                                 pageContent.value = 3;
                                 pageController.animateToPage(3,
                                     duration: Duration(milliseconds: 500),
@@ -165,7 +169,8 @@ late AuthBloc authBloc;
                                 pageController.animateToPage(4,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.easeInOut);
-                                authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));
+                                authBloc.add(SendOtpEvent(
+                                    phone: phoneNumber, isViaWhatsApp: 1));
                               },
                               goBackToPhone: () {
                                 pageController.animateToPage(2,
@@ -178,26 +183,27 @@ late AuthBloc authBloc;
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.easeInOut);
                                 pageContent.value = 5;
-                                authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));
+                                authBloc.add(SendOtpEvent(
+                                    phone: phoneNumber, isViaWhatsApp: 0));
                               },
                             ),
                             VerifyOtp(
                                 navigateToAddName: () {
                                   print('fromLogin:  $fromLogin');
                                   if (fromLogin) {
-                                    context.go(GRouter.config.applicationRoutes.kLoginSuccessfullyPage+'?phoneNumber=$phoneNumber');
+                                    context.go(GRouter.config.applicationRoutes
+                                            .kLoginSuccessfullyPage +
+                                        '?phoneNumber=$phoneNumber');
                                     return;
                                   }
                                   pageController.animateToPage(5,
-                                      duration:
-                                      Duration(milliseconds: 500),
+                                      duration: Duration(milliseconds: 500),
                                       curve: Curves.easeInOut);
                                   pageContent.value = 6;
                                 },
                                 goBack: () {
                                   pageController.animateToPage(3,
-                                      duration:
-                                      Duration(milliseconds: 500),
+                                      duration: Duration(milliseconds: 500),
                                       curve: Curves.easeInOut);
                                   pageContent.value = 3;
                                 },

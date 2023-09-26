@@ -36,7 +36,7 @@ class NotificationProcess {
     }
   }
 
-   void fcmToken() async {
+    fcmToken() async {
       myFcmToken = await FirebaseMessaging.instance.getToken();
       log(myFcmToken.toString());
   }

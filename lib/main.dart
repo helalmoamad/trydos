@@ -43,7 +43,7 @@ void main() async{
         convert.jsonDecode(openedMessage!.data['message']));
   }
   await  NotificationProcess().setupInteractedMessage();
-  NotificationProcess().fcmToken();
+  await NotificationProcess().fcmToken();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   AssetPicker.registerObserve();
   PhotoManager.setLog(true);

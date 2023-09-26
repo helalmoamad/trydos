@@ -1,7 +1,7 @@
 
 import 'package:injectable/injectable.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
-import 'package:trydos/features/authentication/data/models/login_user_response_model.dart';
+import 'package:trydos/features/authentication/data/models/login_to_chat_response_model.dart';
 import 'package:trydos/features/chat/data/models/change_chat_property_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
@@ -166,20 +166,6 @@ class ChatRemoteDataSource{
       ),
     );
     return sendMessage();
-  }
-
-  Future<LoginUserResponseModel> loginUser(Map<String,dynamic> params){
-    PostClient<LoginUserResponseModel> loginUser= PostClient<LoginUserResponseModel>(
-      serverName: ServerName.chat,
-      requestPrams: RequestConfig<LoginUserResponseModel>(
-        endpoint: ChatEndPoints.loginEP,
-        data: params,
-        response: ResponseValue<LoginUserResponseModel>(
-          fromJson: (response) => LoginUserResponseModel.fromJson(response)
-        ),
-      ),
-    );
-    return loginUser();
   }
 
   Future<CreateUserResponseModel> createUser(Map<String,dynamic> params){

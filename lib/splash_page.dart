@@ -37,12 +37,11 @@ class _SplashPageState extends State<SplashPage> {
 
   _onSplash() {
 
-    context.go(GRouter.config.applicationRoutes.kRegistrationPage);
-    // if (prefsRepository.registeredUser) {
-    //   context.go(GRouter.config.applicationRoutes.kBasePage);
-    // } else {
-    //   context.go(GRouter.config.applicationRoutes.kLoginPage);
-    // }
+    if (prefsRepository.registeredUser) {
+      context.go(GRouter.config.applicationRoutes.kBasePage);
+    } else {
+      context.go(GRouter.config.applicationRoutes.kRegistrationPage);
+    }
   }
   @override
   Widget build(BuildContext context) {

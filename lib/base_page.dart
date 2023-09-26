@@ -183,13 +183,13 @@ class _BasePageState extends State<BasePage> {
           // int chatIndex = chats.indexWhere((element) => element.id == initialMessage!.channelId);
           User? receiver = chat.channelMembers!
               .firstWhere((element) =>
-                  element.userId != GetIt.I<PrefsRepository>().myId)
+                  element.userId != GetIt.I<PrefsRepository>().myChatId)
               .user;
           String receiverName = receiver?.name == null
               ? 'UK'
               : HelperFunctions.getTheFirstTwoLettersOfName(receiver!.name!);
           ChannelMember me = chat.channelMembers!.firstWhere(
-              (element) => element.userId == GetIt.I<PrefsRepository>().myId);
+              (element) => element.userId == GetIt.I<PrefsRepository>().myChatId);
           User? sender = me.user;
           String senderName = sender?.name == null
               ? 'UK'

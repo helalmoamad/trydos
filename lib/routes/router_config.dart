@@ -11,8 +11,8 @@ class _ApplicationRoutes{
   final String kSinglePageChatPageName = 'SinglePageChatPage';
   final String kSinglePageChatPagePath = '/BasePage/SinglePageChatPage';
   final String kLoginPage = '/LoginPage';
-  final String kLoginPageName = 'LoginPage';
-  final String kLoginPagePath = '/BasePage/LoginPage';
+  final String kRegistrationPageName = 'RegistrationPage';
+  final String kRegistrationPagePath = '/BasePage/RegistrationPage';
   final String kMyContactsPageName = 'MyContacts';
   final String kMyContactsPagePath = '/BasePage/MyContacts';
   final String kLoginSuccessfullyPage = '/LoginSuccessfullyPage';

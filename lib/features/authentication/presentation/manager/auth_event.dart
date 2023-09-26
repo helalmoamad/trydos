@@ -21,17 +21,19 @@ class CreateUserEvent extends AuthEvent {
 
 class LoginToChatEvent extends AuthEvent {
   final String? mobilePhone;
-  final String? password;
+  final String? otpIdToken;
+  final String? originalUserId;
   final String fcmToken;
   const LoginToChatEvent({
     this.mobilePhone,
-    this.password,
+    this.otpIdToken,
+    this.originalUserId,
     required this.fcmToken,
   });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [mobilePhone, password, fcmToken];
+  List<Object?> get props => [mobilePhone, otpIdToken, fcmToken,originalUserId];
 }
 class StoreFcmTokenEvent extends AuthEvent {
   final int userId;
@@ -75,14 +77,16 @@ class SendOtpEvent extends AuthEvent{
 class VerifyOtpSignInEvent extends AuthEvent{
   final String verificationId;
   final String otp;
+  final String phone;
 
   VerifyOtpSignInEvent({
     required this.verificationId,
     required this.otp,
+    required this.phone,
   });
   @override
   // TODO: implement props
-  List<Object?> get props => [otp, verificationId];
+  List<Object?> get props => [otp, verificationId , phone];
 }
 
 class VerifyOtpSignUpEvent extends AuthEvent{
@@ -129,13 +133,15 @@ class LoginToMarketEvent extends AuthEvent {
 class LoginToStoriesEvent extends AuthEvent {
   final String? otpIdToken;
   final String? phone;
+  final String? originalUserId;
 
   LoginToStoriesEvent({
     this.phone,
     this.otpIdToken,
+    this.originalUserId,
   });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [otpIdToken , phone];
+  List<Object?> get props => [otpIdToken , phone,originalUserId];
 }

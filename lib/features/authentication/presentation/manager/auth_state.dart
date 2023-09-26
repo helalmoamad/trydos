@@ -2,7 +2,7 @@ part of 'auth_bloc.dart';
 
 enum CreateUserStatus { init, loading, success, failure }
 enum LoginToChatStatus { init, loading, success, failure }
-enum LoginToStoreStatus { init, loading, success, failure }
+enum LoginToStoriesStatus { init, loading, success, failure }
 enum SendOtpStatus { init, loading, success, failure }
 enum VerifyOtpSignUpStatus { init, loading, success, failure }
 enum VerifyOtpSignInStatus { init, loading, success, failure }
@@ -17,12 +17,12 @@ class AuthState {
     this.verifyOtpSignUpStatus = VerifyOtpSignUpStatus.init,
     this.verifyOtpSignInStatus = VerifyOtpSignInStatus.init,
     this.verifyGuestPhoneStatus = VerifyGuestPhoneStatus.init,
-    this.loginToStoreStatus = LoginToStoreStatus.init,
+    this.loginToStoriesStatus = LoginToStoriesStatus.init,
   });
 
   final CreateUserStatus createUserStatus;
   final LoginToChatStatus loginToChatStatus;
-  final LoginToStoreStatus loginToStoreStatus;
+  final LoginToStoriesStatus loginToStoriesStatus;
   final SendOtpStatus sendOtpStatus;
   final VerifyOtpSignUpStatus verifyOtpSignUpStatus;
   final VerifyOtpSignInStatus verifyOtpSignInStatus;
@@ -30,7 +30,7 @@ class AuthState {
   AuthState copyWith({
     final CreateUserStatus? createUserStatus,
     final LoginToChatStatus? loginToChatStatus,
-    final LoginToStoreStatus? loginToStoreStatus,
+    final LoginToStoriesStatus? loginToStoriesStatus,
     final SendOtpStatus? sendOtpStatus,
     final VerifyOtpSignUpStatus? verifyOtpSignUpStatus,
     final VerifyOtpSignInStatus? verifyOtpSignInStatus,
@@ -39,7 +39,7 @@ class AuthState {
     return AuthState(
       createUserStatus: createUserStatus ?? this.createUserStatus,
       loginToChatStatus: loginToChatStatus ?? this.loginToChatStatus,
-      loginToStoreStatus: loginToStoreStatus ?? this.loginToStoreStatus,
+      loginToStoriesStatus: loginToStoriesStatus ?? this.loginToStoriesStatus,
       sendOtpStatus: sendOtpStatus ?? this.sendOtpStatus,
       verifyOtpSignUpStatus: verifyOtpSignUpStatus ?? this.verifyOtpSignUpStatus,
       verifyOtpSignInStatus: verifyOtpSignInStatus ?? this.verifyOtpSignInStatus,

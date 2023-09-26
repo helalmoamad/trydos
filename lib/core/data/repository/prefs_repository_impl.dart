@@ -66,7 +66,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
   {String? error}
       ) {
     Map<String, dynamic> requestAndResponse ;
-    if(error == null || error == 'null'){
+    if(error == null || error == 'null' || error == ''){
       requestAndResponse={
         'url': url,
         'request': request,
@@ -120,12 +120,12 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  Future<bool> setMyId(int id) => _preferences.setInt(PrefsKey.userId, id);
+  Future<bool> setMyChatId(int id) => _preferences.setInt(PrefsKey.userChatId, id);
 
   @override
-  int? get myId => _preferences.getInt(PrefsKey.userId);
+  int? get myChatId => _preferences.getInt(PrefsKey.userChatId);
   @override
-  String? get myName => _preferences.getString(PrefsKey.name);
+  String? get myChatName => _preferences.getString(PrefsKey.chatName);
 
 
   @override
@@ -135,7 +135,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> setFcmTokenId(int fcmTokenId) => _preferences.setInt(PrefsKey.fcmTokenId, fcmTokenId);
 
   @override
-  Future<bool> setMyName(String name) => _preferences.setString(PrefsKey.name, name);
+  Future<bool> setMyChatName(String name) => _preferences.setString(PrefsKey.chatName, name);
 
   @override
   // TODO: implement myPhoneNumber
@@ -143,6 +143,27 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setPhoneNumber(String phoneNumber) => _preferences.setString(PrefsKey.phoneNumber, phoneNumber);
+
+  @override
+  Future<bool> clearVerificationId() => _preferences.remove(PrefsKey.verificationId);
+
+  @override
+  Future<bool> setVerificationId(String verificationId) => _preferences.setString(PrefsKey.verificationId, verificationId);
+
+  @override
+  String? get verificationId => _preferences.getString(PrefsKey.verificationId);
+
+  @override
+  String? get otpIdToken => _preferences.getString(PrefsKey.otpIdToken);
+
+  @override
+  Future<bool> setOtpIdToken(String otpIdToken) => _preferences.setString(PrefsKey.otpIdToken, otpIdToken);
+
+  @override
+  int? get myStoriesId => _preferences.getInt(PrefsKey.userStoriesId);
+
+  @override
+  Future<bool> setMyStoriesId(int id) => _preferences.setInt(PrefsKey.userStoriesId, id);
 
 
 

@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
-import 'package:trydos/features/authentication/presentation/pages/login_page.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/authentication/presentation/pages/register_completed.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
@@ -34,15 +33,6 @@ class GRouter {
               state: state,
             );
           }),
-      GoRoute(
-        path: _config.applicationRoutes.kLoginPage,
-        pageBuilder: (BuildContext context, GoRouterState state) {
-          return _builderPage(
-            child: const LoginPage(),
-            state: state,
-          );
-        },
-      ),
       GoRoute(
         path: _config.applicationRoutes.kRegistrationCompletedPage,
         pageBuilder: (BuildContext context, GoRouterState state) {
@@ -116,19 +106,19 @@ class GRouter {
               },
             ),
             GoRoute(
-              path: _config.applicationRoutes.kFeedBackPageName,
+              path: _config.applicationRoutes.kRegistrationPageName,
               pageBuilder: (BuildContext context, GoRouterState state) {
                 return _builderPage(
-                  child:  FeedBackScreen(),
+                  child: const RegistrationPage(),
                   state: state,
                 );
               },
             ),
             GoRoute(
-              path: _config.applicationRoutes.kLoginPageName,
+              path: _config.applicationRoutes.kFeedBackPageName,
               pageBuilder: (BuildContext context, GoRouterState state) {
                 return _builderPage(
-                  child: const LoginPage(),
+                  child:  FeedBackScreen(),
                   state: state,
                 );
               },

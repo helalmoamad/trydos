@@ -68,25 +68,29 @@ class HomePageCard extends StatelessWidget {
             ),
           ),
 
-          Container(
-            width: 75,
-            height: 200,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: LanguageService.languageCode=='ar' ?const Alignment(-1, 0) : const Alignment(1, 0),
-                end:  LanguageService.languageCode=='ar' ?  const Alignment(1, 0) :const Alignment(-1, 0),
-                colors: showWhite ? [
-                const Color(0x00ffffff),
-                const Color(0xcbffffff),
-                const Color(0xe5ffffff)
-                ] :[const Color(0x00000000), const Color(0xb2000000)],
-                stops: showWhite ? [0.0, 0.559, 1.0] : [0.0, 1.0],
-              ),
-              borderRadius:  BorderRadius.only(
-                topLeft: Radius.circular(LanguageService.languageCode=='ar' ? 0 :20.0),
-                bottomLeft: Radius.circular(LanguageService.languageCode=='ar' ? 0 :20.0),
-                bottomRight: Radius.circular(LanguageService.languageCode!='ar' ? 0 :20.0),
-                topRight: Radius.circular(LanguageService.languageCode!='ar' ? 0 :20.0),
+          Positioned(
+            right: LanguageService.languageCode=='ar' ? 0 : null,
+            left: LanguageService.languageCode!='ar' ? 0 : null,
+            child: Container(
+              width: 75,
+              height: 200,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: LanguageService.languageCode=='ar' ?const Alignment(-1, 0) : const Alignment(1, 0),
+                  end:  LanguageService.languageCode=='ar' ?  const Alignment(1, 0) :const Alignment(-1, 0),
+                  colors: showWhite ? [
+                  const Color(0x00ffffff),
+                  const Color(0xcbffffff),
+                  const Color(0xe5ffffff)
+                  ] :[const Color(0x00000000), const Color(0xb2000000)],
+                  stops: showWhite ? [0.0, 0.559, 1.0] : [0.0, 1.0],
+                ),
+                borderRadius:  BorderRadius.only(
+                  topLeft: Radius.circular(LanguageService.languageCode=='ar' ? 0 :20.0),
+                  bottomLeft: Radius.circular(LanguageService.languageCode=='ar' ? 0 :20.0),
+                  bottomRight: Radius.circular(LanguageService.languageCode!='ar' ? 0 :20.0),
+                  topRight: Radius.circular(LanguageService.languageCode!='ar' ? 0 :20.0),
+                ),
               ),
             ),
           ),

@@ -7,11 +7,21 @@ abstract class PrefsRepository {
 
   int? get fcmTokenId;
 
-  int? get myId;
+  int? get myChatId;
 
-  String? get myName;
+  int? get myStoriesId;
+
+  String? get myChatName;
 
   String? get myPhoneNumber;
+
+  String? get verificationId;
+
+  String? get otpIdToken;
+
+  Future<bool> setVerificationId(String verificationId);
+
+  Future<bool> setOtpIdToken(String otpIdToken);
 
   Future<bool> setChatToken(String token);
 
@@ -19,13 +29,15 @@ abstract class PrefsRepository {
 
   Future<bool> setStoriesToken(String token);
 
-  Future<bool> setMyName(String name);
+  Future<bool> setMyChatName(String name);
 
   Future<bool> setPhoneNumber(String phoneNumber);
 
   Future<void> setFcmTokenId(int fcmTokenId);
 
-  Future<bool> setMyId(int id);
+  Future<bool> setMyChatId(int id);
+
+  Future<bool> setMyStoriesId(int id);
 
   Future<bool> setTheme(ThemeMode themeMode);
 
@@ -34,6 +46,8 @@ abstract class PrefsRepository {
   // User? get user;
 
   Future<bool> clearUser();
+
+  Future<bool> clearVerificationId();
 
   ThemeMode get getTheme;
 

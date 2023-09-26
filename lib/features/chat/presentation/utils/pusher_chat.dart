@@ -93,7 +93,7 @@ Map<String,String> descTranslation={
     var y = await presenceChannels["presence-typing-$channelName"]!.trigger(
         'client-TypingEvent',
         convert.jsonEncode({
-          "uid": _prefsRepository.myId.toString(),
+          "uid": _prefsRepository.myChatId.toString(),
           "id": channelId.toString(),
           "desc": description.toString()
         }));

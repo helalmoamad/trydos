@@ -443,7 +443,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         playSound();
                       }
                       if (chat.messages![0].senderUserId !=
-                          _prefsRepository.myId) {
+                          _prefsRepository.myChatId) {
                         chatBloc.add(ReadAllMessagesEvent(widget.chatId));
                       }
                     }
@@ -902,7 +902,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     String id = const Uuid().v4();
                     FileSaving().saveFileToSpecificDirectory(file);
                     ChannelMember member = chat.channelMembers!.firstWhere(
-                        (element) => element.userId != _prefsRepository.myId);
+                        (element) => element.userId != _prefsRepository.myChatId);
                     String fileName = 'Trydos-${DateTime.now()}';
                     chatBloc.add(UploadFileEvent(
                         file: file,
@@ -946,7 +946,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   onSendMessage: (String message) {
                     String id = const Uuid().v4();
                     ChannelMember member = chat.channelMembers!.firstWhere(
-                        (element) => element.userId != _prefsRepository.myId);
+                        (element) => element.userId != _prefsRepository.myChatId);
                     print('there : ${state.thereIsReply}');
                     chatBloc.add(SendMessageEvent(
                         messageType: 'TextMessage',
@@ -1115,7 +1115,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       bool thereIsDate) async {
     String messageType = element.messageType!.name.toString();
     MessageStatus? messageStatus = element.messageStatus
-        ?.firstWhere((e) => e.userId != _prefsRepository.myId);
+        ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
     print('ee: ${element.parentMessageId}');
     print('ee: ${element.parentMessage}');
     if (insertPosition == -1) {
@@ -1130,7 +1130,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
     if (element.parentMessageId != null && element.parentMessage != null) {
       Message parentMessage = element.parentMessage!;
       MessageStatus? parentMessageStatus = parentMessage.messageStatus
-          ?.firstWhere((e) => e.userId != _prefsRepository.myId);
+          ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
       int index = getMessageIndex(
           element.parentMessageId, element.localParentMessageId);
       if (parentMessage.senderUserId != element.senderUserId) {
@@ -1146,18 +1146,18 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 messageAnswer: element.messageContent?.content,
                 isFirstMessage: isFirstMessage,
                 replayedPhoto:
-                    parentMessage.id == _prefsRepository.myId.toString()
+                    parentMessage.id == _prefsRepository.myChatId.toString()
                         ? senderPhoto
                         : receiverPhoto,
                 replayedName:
-                    parentMessage.id == _prefsRepository.myId.toString()
+                    parentMessage.id == _prefsRepository.myChatId.toString()
                         ? senderName
                         : receiverName,
                 senderAnswerName: senderName,
                 senderAnswerPhoto: senderPhoto,
                 isISentFirstMessage:
-                    parentMessage.senderUserId == _prefsRepository.myId,
-                isSent: element.senderUserId == _prefsRepository.myId,
+                    parentMessage.senderUserId == _prefsRepository.myChatId,
+                isSent: element.senderUserId == _prefsRepository.myChatId,
                 parentSenderId: parentMessage.senderUserId!,
                 isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
                 isReplayedMessageReceived:
@@ -1188,16 +1188,16 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     currentId: element.id!,
                     parentMessageId: element.parentMessageId!),
                 isISentFirstMessage:
-                    parentMessage.senderUserId == _prefsRepository.myId,
-                isSent: element.senderUserId == _prefsRepository.myId,
+                    parentMessage.senderUserId == _prefsRepository.myChatId,
+                isSent: element.senderUserId == _prefsRepository.myChatId,
                 isFirstMessage: isFirstMessage,
                 parentSenderId: parentMessage.senderUserId!,
                 replayedPhoto:
-                    parentMessage.id == _prefsRepository.myId.toString()
+                    parentMessage.id == _prefsRepository.myChatId.toString()
                         ? senderPhoto
                         : receiverPhoto,
                 replayedName:
-                    parentMessage.id == _prefsRepository.myId.toString()
+                    parentMessage.id == _prefsRepository.myChatId.toString()
                         ? senderName
                         : receiverName,
                 senderAnswerName: senderName,
@@ -1227,13 +1227,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 message: element.messageContent!.content.toString(),
                 messageId: element.messageContent!.messageId.toString(),
                 senderId: element.senderUserId!,
-                isSent: element.receiverUserId != _prefsRepository.myId,
+                isSent: element.receiverUserId != _prefsRepository.myChatId,
                 isRead: messageStatus?.isWatched ?? false,
-                userMessageName: element.receiverUserId != _prefsRepository.myId
+                userMessageName: element.receiverUserId != _prefsRepository.myChatId
                     ? senderName
                     : receiverName,
                 userMessagePhoto:
-                    element.receiverUserId != _prefsRepository.myId
+                    element.receiverUserId != _prefsRepository.myChatId
                         ? senderPhoto
                         : receiverPhoto,
                 isReceived: (messageStatus?.isReceived ?? 0) == 1,
@@ -1247,16 +1247,16 @@ class _SinglePageChatState extends State<SinglePageChat> {
             data.insert(
               insertPosition == -1 ? data.length : insertPosition,
               ImageMessage(
-                isSent: element.receiverUserId != _prefsRepository.myId,
+                isSent: element.receiverUserId != _prefsRepository.myChatId,
                 imageFile: element.file,
                 messageId: element.id.toString(),
                 senderId: element.senderUserId!,
                 time: element.createdAt!,
-                userMessageName: element.receiverUserId != _prefsRepository.myId
+                userMessageName: element.receiverUserId != _prefsRepository.myChatId
                     ? senderName
                     : receiverName,
                 userMessagePhoto:
-                    element.receiverUserId != _prefsRepository.myId
+                    element.receiverUserId != _prefsRepository.myChatId
                         ? senderPhoto
                         : receiverPhoto,
                 isFirstMessage: isFirstMessage,
@@ -1278,7 +1278,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
               data.insert(
                 insertPosition == -1 ? data.length : insertPosition,
                 ImageMessage(
-                  isSent: element.receiverUserId != _prefsRepository.myId,
+                  isSent: element.receiverUserId != _prefsRepository.myChatId,
                   imageUrl: element.mediaMessageContent![i].filePath,
                   imageFile: file,
                   messageId:
@@ -1286,11 +1286,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   time: element.createdAt!,
                   senderId: element.senderUserId!,
                   userMessageName:
-                      element.receiverUserId != _prefsRepository.myId
+                      element.receiverUserId != _prefsRepository.myChatId
                           ? senderName
                           : receiverName,
                   userMessagePhoto:
-                      element.receiverUserId != _prefsRepository.myId
+                      element.receiverUserId != _prefsRepository.myChatId
                           ? senderPhoto
                           : receiverPhoto,
                   isRead: messageStatus?.isWatched ?? false,
@@ -1312,16 +1312,16 @@ class _SinglePageChatState extends State<SinglePageChat> {
             data.insert(
               insertPosition == -1 ? data.length : insertPosition,
               VideoMessage(
-                isSent: element.receiverUserId != _prefsRepository.myId,
+                isSent: element.receiverUserId != _prefsRepository.myChatId,
                 videoFile: element.file,
                 messageId: element.id.toString(),
                 senderId: element.senderUserId!,
                 time: element.createdAt!,
-                userMessageName: element.receiverUserId != _prefsRepository.myId
+                userMessageName: element.receiverUserId != _prefsRepository.myChatId
                     ? senderName
                     : receiverName,
                 userMessagePhoto:
-                    element.receiverUserId != _prefsRepository.myId
+                    element.receiverUserId != _prefsRepository.myChatId
                         ? senderPhoto
                         : receiverPhoto,
                 isFirstMessage: isFirstMessage,
@@ -1343,7 +1343,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
               data.insert(
                 insertPosition == -1 ? data.length : insertPosition,
                 VideoMessage(
-                  isSent: element.receiverUserId != _prefsRepository.myId,
+                  isSent: element.receiverUserId != _prefsRepository.myChatId,
                   videoUrl: element.mediaMessageContent![i].filePath,
                   videoFile: file,
                   messageId:
@@ -1351,11 +1351,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   time: element.createdAt!,
                   senderId: element.senderUserId!,
                   userMessageName:
-                      element.receiverUserId != _prefsRepository.myId
+                      element.receiverUserId != _prefsRepository.myChatId
                           ? senderName
                           : receiverName,
                   userMessagePhoto:
-                      element.receiverUserId != _prefsRepository.myId
+                      element.receiverUserId != _prefsRepository.myChatId
                           ? senderPhoto
                           : receiverPhoto,
                   isRead: messageStatus?.isWatched ?? false,
@@ -1377,15 +1377,15 @@ class _SinglePageChatState extends State<SinglePageChat> {
             data.insert(
               insertPosition == -1 ? data.length : insertPosition,
               VoiceMessage(
-                isSent: element.receiverUserId != _prefsRepository.myId,
+                isSent: element.receiverUserId != _prefsRepository.myChatId,
                 file: element.file,
                 messageId: element.id.toString(),
                 senderId: element.senderUserId!,
-                userMessageName: element.receiverUserId != _prefsRepository.myId
+                userMessageName: element.receiverUserId != _prefsRepository.myChatId
                     ? senderName
                     : receiverName,
                 userMessagePhoto:
-                    element.receiverUserId != _prefsRepository.myId
+                    element.receiverUserId != _prefsRepository.myChatId
                         ? senderPhoto
                         : receiverPhoto,
                 time: element.createdAt!,
@@ -1407,18 +1407,18 @@ class _SinglePageChatState extends State<SinglePageChat> {
               data.insert(
                 insertPosition == -1 ? data.length : insertPosition,
                 VoiceMessage(
-                  isSent: element.receiverUserId != _prefsRepository.myId,
+                  isSent: element.receiverUserId != _prefsRepository.myChatId,
                   fileUrl: element.mediaMessageContent![i].filePath,
                   messageId:
                       element.mediaMessageContent![i].messageId.toString(),
                   time: element.createdAt!,
                   senderId: element.senderUserId!,
                   userMessageName:
-                      element.receiverUserId != _prefsRepository.myId
+                      element.receiverUserId != _prefsRepository.myChatId
                           ? senderName
                           : receiverName,
                   userMessagePhoto:
-                      element.receiverUserId != _prefsRepository.myId
+                      element.receiverUserId != _prefsRepository.myChatId
                           ? senderPhoto
                           : receiverPhoto,
                   file: file,
@@ -1441,16 +1441,16 @@ class _SinglePageChatState extends State<SinglePageChat> {
             data.insert(
               insertPosition == -1 ? data.length : insertPosition,
               DocumentMessage(
-                isSent: element.receiverUserId != _prefsRepository.myId,
+                isSent: element.receiverUserId != _prefsRepository.myChatId,
                 documentFile: element.file,
                 fileName: fileName,
                 messageId: element.id.toString(),
                 senderId: element.senderUserId!,
-                userMessageName: element.receiverUserId != _prefsRepository.myId
+                userMessageName: element.receiverUserId != _prefsRepository.myChatId
                     ? senderName
                     : receiverName,
                 userMessagePhoto:
-                    element.receiverUserId != _prefsRepository.myId
+                    element.receiverUserId != _prefsRepository.myChatId
                         ? senderPhoto
                         : receiverPhoto,
                 time: element.createdAt!,
@@ -1472,7 +1472,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
               data.insert(
                 insertPosition == -1 ? data.length : insertPosition,
                 DocumentMessage(
-                  isSent: element.receiverUserId != _prefsRepository.myId,
+                  isSent: element.receiverUserId != _prefsRepository.myChatId,
                   documentFile: file,
                   documentFileUrl: element.mediaMessageContent![i].filePath,
                   fileName: fileName,
@@ -1481,11 +1481,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   time: element.createdAt!,
                   senderId: element.senderUserId!,
                   userMessageName:
-                      element.receiverUserId != _prefsRepository.myId
+                      element.receiverUserId != _prefsRepository.myChatId
                           ? senderName
                           : receiverName,
                   userMessagePhoto:
-                      element.receiverUserId != _prefsRepository.myId
+                      element.receiverUserId != _prefsRepository.myChatId
                           ? senderPhoto
                           : receiverPhoto,
                   isFirstMessage: isFirstMessage,
@@ -1563,7 +1563,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
     if (index == -1) {
       replayMessage(
           chat.messages!.firstWhere((element) => element.id == messageId),
-          _prefsRepository.myId);
+          _prefsRepository.myChatId);
     } else if (index == 0) {
       forwardMessageMethod(
           chat.messages!.firstWhere((element) => element.id == messageId));
@@ -1612,7 +1612,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
     },);
   }
 
-  void replayMessage(Message message, int? myId) {
+  void replayMessage(Message message, int? myChatId) {
     BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
         true,
         message.messageType!.name == 'TextMessage'
@@ -1620,7 +1620,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
             : message.messageType!.name == 'TextMessage'
                 ? 'image'
                 : 'voice',
-        message.senderUserId == myId,
+        message.senderUserId == myChatId,
         messageId: message.id,
         senderParentMessageId: message.senderUserId,
         message: message.messageContent?.content ??

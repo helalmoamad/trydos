@@ -135,7 +135,7 @@ class _ReplayMessageState extends State<ReplayMessage> {
                     isFirstMessage: widget.isFirstMessage,
                     userMessageName: widget.senderAnswerName,
                     userMessagePhoto: widget.senderAnswerPhoto,
-                  senderId: GetIt.I<PrefsRepository>().myId!,
+                  senderId: GetIt.I<PrefsRepository>().myChatId!,
                   isLocalMessage: widget.answeredFilePath==null,
                   imageFile: widget.answeredFile,
                   imageUrl: widget.answeredFilePath)
@@ -146,7 +146,7 @@ class _ReplayMessageState extends State<ReplayMessage> {
                   userMessagePhoto: widget.senderAnswerPhoto,
                   isReceived: widget.isAnswerMessageReceived,
                   isSent: widget.isSent,
-                  senderId: GetIt.I<PrefsRepository>().myId!,
+                  senderId: GetIt.I<PrefsRepository>().myChatId!,
                   isRead: widget.isAnswerMessageRead,
                   isFirstMessage: true,
                   time: DateTime.now(),)),

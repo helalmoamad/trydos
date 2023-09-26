@@ -1,7 +1,9 @@
 abstract class PrefsKey {
-  static const userId = r'__$__userId__$__';
+  static const userChatId = r'__$__userChatId__$__';
 
-  static const name = r'__$__name__$__';
+  static const userStoriesId = r'__$__userStoriesId__$__';
+
+  static const chatName = r'__$__chatName__$__';
 
   static const chatToken = r'__$__chatToken__$__';
 
@@ -10,6 +12,10 @@ abstract class PrefsKey {
   static const storiesToken = r'__$__storiesToken__$__';
 
   static const phoneNumber = r'__$__phoneNumber__$__';
+
+  static const verificationId = r'__$__verificationId__$__';
+
+  static const otpIdToken = r'__$__otpIdToken__$__';
 
   static const fcmTokenId = r'__$__fcmTokenId__$__';
 
