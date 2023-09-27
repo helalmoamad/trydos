@@ -271,10 +271,13 @@ class _ImageMessageState extends State<ImageMessage> {
                           ],
                         ),
                       },
+                      //todo until i solve the translate
                       widget.isFirstMessage
-                          ? Transform.translate(
-                              offset: Offset(widget.isSent ? 15.w : -15.w, 0),
-                              child: Stack(
+                          ?
+//                          Transform.translate(
+//                              offset: Offset(widget.isSent ? 15.w : -15.w, 0),
+//                              child:
+                              Stack(
                                 alignment: Alignment.center,
                                 children: [
                                   Stack(
@@ -330,8 +333,9 @@ class _ImageMessageState extends State<ImageMessage> {
                                           radius: 8,
                                           name: widget.userMessageName)
                                 ],
-                              ),
-                            )
+                              )
+//                      ,
+//                            )
                           : const SizedBox.shrink()
                     ],
                   ),

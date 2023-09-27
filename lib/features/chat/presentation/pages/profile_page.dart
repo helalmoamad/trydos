@@ -48,15 +48,17 @@ class _ProfilePageState extends State<ProfilePage> {
 
                         boxShadow:  [
                           BoxShadow(
-                            color: colorScheme.black.withOpacity(0.16),
+                            color:
+                            Color.fromARGB(2, 0, 0, 0)
+//                            colorScheme.black.withOpacity(0.16)
+                            ,
                             offset: const Offset(0, 3),
                             blurRadius: 10,
                           ),
                         ],
                       ),
                       child: MyCachedNetworkImage(
-                        imageUrl:
-                        ChatUrls.baseUrl + widget.receiverPhoto!,
+                        imageUrl: ChatUrls.baseUrl + widget.receiverPhoto!,
                         imageFit: BoxFit.cover,
                         height: 150.h,
                         width: 150.w,

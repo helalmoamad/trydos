@@ -44,6 +44,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   late ChatBloc chatBloc;
 
   List<Widget> chatPages = [
+
     const CallsPageContent(),
     const CallsPageContent(),
   ];
@@ -184,10 +185,11 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
               )),
             },
             BlocBuilder<AppBloc, AppState>(
-                buildWhen: (p, c) => p.tabIndexInChat != c.tabIndexInChat,
+                buildWhen: (p, c) => p.tabIndexInChat != c.tabIndexInChat  ,
                 builder: (context, state) {
                   return chatPages[state.tabIndexInChat];
                 }),
+
             SliverToBoxAdapter(
               child: 20.verticalSpace,
             ),

@@ -16,6 +16,7 @@ import 'package:trydos/features/chat/domain/use_cases/read_all_messages_usecase.
 import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/save_contacts_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart';
+import 'package:trydos/features/chat/presentation/manager/helper_function_for_chat_bloc/merge_the_old_chat_with_new.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../data/models/my_chats_response_model.dart';
@@ -23,6 +24,7 @@ import '../../data/models/my_contacts_response_model.dart';
 import '../../domain/use_cases/upload_file_usecase.dart';
 import '../utils/pusher_chat.dart';
 import 'chat_event.dart';
+import 'helper_function_for_chat_bloc/group_received_message_on_days.dart';
 
 part 'chat_state.dart';
 
@@ -60,7 +62,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<WatchedMessageFromPusherEvent>(_onWatchedMessageFromPusherEvent);
     on<ChangeChatPropertyEvent>(_onChangeChatPropertyEvent);
     on<GetMessagesForChatEvent>(_onGetMessagesForChatEvent);
-    on<GetAllMessagesBetweenEvent>(_onGetAllMessagesBetweenEvent,transformer: throttleDroppable(const Duration(minutes: 2)));
+    on<GetAllMessagesBetweenEvent>(_onGetAllMessagesBetweenEvent,
+        transformer: throttleDroppable(const Duration(minutes: 2)));
     on<SaveContactsEvent>(_onSaveContactsEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetChatsEvent>(_onGetChatsEvent,
@@ -81,37 +84,40 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetMessagesForChatUseCase getMessagesForChatUseCase;
   final GetMessagesBetweenUseCase getMessagesBetweenUseCase;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
+
   FutureOr<void> _onSendMessageEvent(
       SendMessageEvent event, Emitter<ChatState> emit) async {
     List<String> ids = List.of(state.currentMessage);
     List<Message> messages;
-    bool fromPinned=false;
-      if (state.chats.any(
-            (e) => e.id == event.channelId,
-      )) {
-        messages = List.of(state.chats
-            .firstWhere((element) => element.id == event.channelId)
-            .messages ??
-            []);
-      } else {
-        fromPinned = true;
-        messages = List.of(state.pinnedChats
-            .firstWhere((element) => element.id == event.channelId)
-            .messages ??
-            []);
-      }
+    bool fromPinned = false;
+    if (state.chats.any(
+      (e) => e.id == event.channelId,
+    )) {
+      messages = List.of(state.chats
+              .firstWhere((element) => element.id == event.channelId)
+              .messages ??
+          []);
+    } else {
+      fromPinned = true;
+      messages = List.of(state.pinnedChats
+              .firstWhere((element) => element.id == event.channelId)
+              .messages ??
+          []);
+    }
     String? parentMessageId;
-    print('count  ${messages.length}');
+//    print('count  ${messages.length}');
     if (!ids.contains(event.messageId)) {
       ids.add(event.messageId);
-      int index = messages.indexWhere((element) => element.localId==event.parentMessageId && event.parentMessageId!=null);
-      print('index $index');
-       parentMessageId=event.parentMessageId;
-      if(index!=-1){
-        print(messages[index].id);
-        parentMessageId=messages[index].id;
-        print('parent sneder id: ${event.senderParentMessageId}');
-        print('parent sneder id2: $parentMessageId');
+      int index = messages.indexWhere((element) =>
+          element.localId == event.parentMessageId &&
+          event.parentMessageId != null);
+//      print('index $index');
+      parentMessageId = event.parentMessageId;
+      if (index != -1) {
+//        print(messages[index].id);
+        parentMessageId = messages[index].id;
+//        print('parent sneder id: ${event.senderParentMessageId}');
+//        print('parent sneder id2: $parentMessageId');
       }
       messages.insert(
           0,
@@ -123,32 +129,37 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               receiverUserId: event.receiverUserId,
               messageContent: event.messageType == 'TextMessage'
                   ? MessageContent(
-                      messageId: event.messageId, content: event.content)
+                      messageId: int.tryParse(event.messageId),
+                      content: event.content)
                   : null,
               senderUserId: _prefsRepository.myChatId,
               messageType: MessageType(name: event.messageType),
               isForward: (event.isForward ?? false) ? 1 : 0,
               parentMessageId: parentMessageId,
               localParentMessageId: event.parentMessageId,
-              mediaMessageContent:event.messageType != 'TextMessage' ? [
-                MediaMessageContent(
-                    filePath: event.mediaContent?[0]['file_path'],
-                    caption: event.mediaContent?[0]['caption'])
-              ] : null,
+              mediaMessageContent: event.messageType != 'TextMessage'
+                  ? [
+                      MediaMessageContent(
+                          filePath: event.mediaContent?[0]['file_path'],
+                          caption: event.mediaContent?[0]['caption'])
+                    ]
+                  : null,
               parentMessage: parentMessageId != null
                   ? Message(
                       file: event.file,
-                      senderUserId: index!=-1 ? messages[index].senderUserId : event.senderParentMessageId,
+                      senderUserId: index != -1
+                          ? messages[index].senderUserId
+                          : event.senderParentMessageId,
                       messageContent:
                           MessageContent(content: event.parentMessageContent))
                   : null));
     }
     List<Chat> chats;
-      if (fromPinned) {
-        chats = sortChats(state.pinnedChats, event.channelId, messages);
-      } else {
-        chats = sortChats(state.chats, event.channelId, messages);
-      }
+    if (fromPinned) {
+      chats = sortChats(state.pinnedChats, event.channelId, messages);
+    } else {
+      chats = sortChats(state.chats, event.channelId, messages);
+    }
     emit(state.copyWith(
         sendMessageStatus: SendMessageStatus.loading,
         currentMessage: ids,
@@ -170,43 +181,47 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         List<String> currentFailedMessage = List.of(state.currentFailedMessage);
         ids.remove(event.messageId);
         currentFailedMessage.add(event.messageId);
-        emit(state.copyWith(sendMessageStatus: SendMessageStatus.failure,currentMessage: ids,currentFailedMessage: currentFailedMessage));
+        emit(state.copyWith(
+            sendMessageStatus: SendMessageStatus.failure,
+            currentMessage: ids,
+            currentFailedMessage: currentFailedMessage));
       },
       (r) {
-        print('count  ${messages.length}');
+//        print('count  ${messages.length}');
         ids.remove(event.messageId);
         emit(
           state.copyWith(
               sendMessageStatus: SendMessageStatus.success,
               chats: state.chats.map((e) {
-                if(e.id==event.channelId && int.tryParse(event.channelId)==null){
-                  final PusherChatService pusherChatService = GetIt.I<PusherChatService>();
-                  pusherChatService.subscribe(r.channel!.pusherChannelName.toString());
-                   pusherChatService.createPresenceChannel(r.channel!.pusherChannelName!);
-                  return r.channel!.copyWith(
-                    localId: event.channelId
-                  );
-                }
-                else if (e.id == event.channelId) {
+                if (e.id == event.channelId &&
+                    int.tryParse(event.channelId) == null) {
+                  final PusherChatService pusherChatService =
+                      GetIt.I<PusherChatService>();
+                  pusherChatService
+                      .subscribe(r.channel!.pusherChannelName.toString());
+                  pusherChatService
+                      .createPresenceChannel(r.channel!.pusherChannelName!);
+                  return r.channel!.copyWith(localId: event.channelId);
+                } else if (e.id == event.channelId) {
                   List<Message> messages = List.of(e.messages ?? []);
                   int index = messages
                       .indexWhere((element) => element.id == event.messageId);
-                  messages[index] = r.copyWith(file: event.file,localId: event.messageId);
+                  messages[index] =
+                      r.copyWith(file: event.file, localId: event.messageId);
                   return e.copyWith(messages: messages);
                 }
                 return e;
               }).toList(),
               pinnedChats: state.pinnedChats.map((e) {
-                if(e.id==event.channelId && int.tryParse(event.channelId)==null){
-                  return r.channel!.copyWith(
-                      localId: event.channelId
-                  );
-                }
-                else if (e.id == event.channelId) {
+                if (e.id == event.channelId &&
+                    int.tryParse(event.channelId) == null) {
+                  return r.channel!.copyWith(localId: event.channelId);
+                } else if (e.id == event.channelId) {
                   List<Message> messages = List.of(e.messages ?? []);
                   int index = messages
                       .indexWhere((element) => element.id == event.messageId);
-                  messages[index] = r.copyWith(file: event.file,localId: event.messageId);
+                  messages[index] =
+                      r.copyWith(file: event.file, localId: event.messageId);
                   return e.copyWith(messages: messages);
                 }
                 return e;
@@ -219,8 +234,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onSaveContactsEvent(
       SaveContactsEvent event, Emitter<ChatState> emit) async {
-    if(state.saveContactsStatus!=SaveContactsStatus.init){
-      return ;
+    if (state.saveContactsStatus != SaveContactsStatus.init) {
+      return;
     }
     emit(state.copyWith(saveContactsStatus: SaveContactsStatus.loading));
     final response =
@@ -246,16 +261,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     response.fold(
       (l) => emit(state.copyWith(getChatsStatus: GetChatsStatus.failure)),
       (r) {
-        final PusherChatService pusherChatService = GetIt.I<PusherChatService>();
+        final PusherChatService pusherChatService =
+            GetIt.I<PusherChatService>();
         pusherChatService.initialization();
         r.data!.chats?.forEach((element) async {
           await pusherChatService
               .subscribe(element.pusherChannelName.toString());
-          await pusherChatService.createPresenceChannel(element.pusherChannelName!);
+          await pusherChatService
+              .createPresenceChannel(element.pusherChannelName!);
         });
         r.data!.pinnedChats?.forEach((element) async {
-          await pusherChatService.subscribe(element.pusherChannelName.toString());
-          await pusherChatService.createPresenceChannel(element.pusherChannelName!);
+          await pusherChatService
+              .subscribe(element.pusherChannelName.toString());
+          await pusherChatService
+              .createPresenceChannel(element.pusherChannelName!);
         });
         int unReadMessagesFromAllChats = 0;
         r.data!.chats?.forEach((element) {
@@ -264,37 +283,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         r.data!.pinnedChats?.forEach((element) {
           unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
         });
-        List<Message> prevMessages,currMessages;
-        String? lastNewId;
+
+        //todo set the value of new chat in those variables to reuse it in calculating the newSortedChatsByDate
+        var chat_after_merge_with_new = MergeOldMessageWithNew(newChats: r.data!.chats!, previousChats: state.chats);
+        var pinned_chat_after_merge_with_the_new = MergeOldMessageWithNew(newChats: r.data!.pinnedChats!, previousChats: state.pinnedChats);
         emit(
           state.copyWith(
               getChatsStatus: GetChatsStatus.success,
-              chats: (state.chats.isNotEmpty && state.chats.any((element) => int.tryParse(element.id.toString())!=null)) ? r.data!.chats!.map((chat){
-                currMessages = List.of(chat.messages ?? []);
-                lastNewId=currMessages[currMessages.length-1].id;
-                currMessages=[];
-              prevMessages=List.of(state.chats.firstWhere((element) => element.id==chat.id).messages ?? []);
-              for(int i= prevMessages.length -1 ; i >=0 ;i--){
-                if(prevMessages[i].id == lastNewId) break;
-                currMessages.insert(0, prevMessages[i]);
-              }
-                return chat.copyWith(
-                  messages: [...chat.messages! , ...currMessages]
-                );
-              }).toList() : r.data!.chats,
-              pinnedChats: (state.pinnedChats.isNotEmpty && state.pinnedChats.any((element) => int.tryParse(element.id.toString())!=null)) ? r.data!.pinnedChats!.map((pinnedChat){
-                currMessages = List.of(pinnedChat.messages ?? []);
-                lastNewId=currMessages[currMessages.length-1].id;
-                currMessages=[];
-                prevMessages=List.of(state.pinnedChats.firstWhere((element) => element.id==pinnedChat.id).messages ?? []);
-                for(int i= prevMessages.length -1 ; i >=0 ;i--){
-                  if(prevMessages[i].id == lastNewId) break;
-                  currMessages.insert(0, prevMessages[i]);
-                }
-                return pinnedChat.copyWith(
-                    messages: [...pinnedChat.messages! , ...currMessages]
-                );
-              }).toList() : r.data!.pinnedChats,
+              chats: chat_after_merge_with_new,
+              newSortedChatsByDate:
+                  groupReceivedMessageOnDays(chats: chat_after_merge_with_new),
+              pinnedChats: pinned_chat_after_merge_with_the_new,
               unReadMessagesFromAllChats: unReadMessagesFromAllChats),
         );
       },
@@ -308,42 +307,50 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     response.fold(
       (l) => emit(state.copyWith(getContactsStatus: GetContactsStatus.failure)),
       (r) {
-        List<Chat> newChats=List.of(state.chats);
-        bool changed=false;
-        List<Chat> chats=List.of(state.chats);
+        List<Chat> newChats = List.of(state.chats);
+        bool changed = false;
+        List<Chat> chats = List.of(state.chats);
         chats.addAll(state.pinnedChats);
-        print('long : ${r.contacts?.length}');
-        for(int i=0;i<(r.contacts?.length ?? 0);i++){
+//        print('long : ${r.contacts?.length}');
+        for (int i = 0; i < (r.contacts?.length ?? 0); i++) {
           Contact contact = r.contacts![i];
-          if(contact.contactUserId==null){
+          if (contact.contactUserId == null) {
             break;
           }
-          int index=chats.indexWhere((element) => element.channelMembers?.firstWhere((element) => element.userId==contact.contactUserId,orElse: ()=> ChannelMember(userId: -1)).userId!=-1);
-          print('index : $index');
-          if(index==-1){
-            changed=true;
-            String uuid=const Uuid().v4();
-            newChats.insert(0, Chat(
-              id: uuid,
-              localId: uuid,
-              messages: [],
-              paginationStatus: PaginationStatus.initial,
-              channelMembers: [
-                ChannelMember(
-                  userId: contact.contactUserId,
-                  user: User(id: contact.contactUserId,name: contact.name)
-                ),
-                ChannelMember(
-                  userId: _prefsRepository.myChatId,
-                  user: User(id: _prefsRepository.myChatId,name: _prefsRepository.myChatName)
-                ),
-              ]
-            ));
+          int index = chats.indexWhere((element) =>
+              element.channelMembers
+                  ?.firstWhere(
+                      (element) => element.userId == contact.contactUserId,
+                      orElse: () => ChannelMember(userId: -1))
+                  .userId !=
+              -1);
+//          print('index : $index');
+          if (index == -1) {
+            changed = true;
+            String uuid = const Uuid().v4();
+            newChats.insert(
+                0,
+                Chat(
+                    id: uuid,
+                    localId: uuid,
+                    messages: [],
+                    paginationStatus: PaginationStatus.initial,
+                    channelMembers: [
+                      ChannelMember(
+                          userId: contact.contactUserId,
+                          user: User(
+                              id: contact.contactUserId, name: contact.name)),
+                      ChannelMember(
+                          userId: _prefsRepository.myChatId,
+                          user: User(
+                              id: _prefsRepository.myChatId,
+                              name: _prefsRepository.myChatName)),
+                    ]));
           }
         }
         emit(
           state.copyWith(
-            chats: changed ? newChats :state.chats,
+              chats: changed ? newChats : state.chats,
               getContactsStatus: GetContactsStatus.success,
               contacts: r.contacts),
         );
@@ -357,27 +364,29 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     ids.add(event.messageId);
     List<Message> messages;
     String? parentMessageId;
-    bool fromPinned=false;
+    bool fromPinned = false;
     if (state.chats.any(
-          (e) => e.id == event.channelId,
+      (e) => e.id == event.channelId,
     )) {
       messages = List.of(state.chats
-          .firstWhere((element) => element.id == event.channelId)
-          .messages ??
+              .firstWhere((element) => element.id == event.channelId)
+              .messages ??
           []);
-    }else{
-      fromPinned=true;
+    } else {
+      fromPinned = true;
       messages = List.of(state.pinnedChats
-          .firstWhere((element) => element.id == event.channelId)
-          .messages ??
+              .firstWhere((element) => element.id == event.channelId)
+              .messages ??
           []);
     }
-    int index = messages.indexWhere((element) => element.localId==event.parentMessageId && event.parentMessageId!=null);
-    print('index $index');
-    parentMessageId=event.parentMessageId;
-    if(index!=-1){
+    int index = messages.indexWhere((element) =>
+        element.localId == event.parentMessageId &&
+        event.parentMessageId != null);
+//    print('index $index');
+    parentMessageId = event.parentMessageId;
+    if (index != -1) {
       print(messages[index].id);
-      parentMessageId=messages[index].id;
+      parentMessageId = messages[index].id;
     }
     print('parent sneder id: ${event.senderParentMessageId}');
     print('parent sneder id2: $parentMessageId');
@@ -396,16 +405,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             parentMessage: parentMessageId != null
                 ? Message(
                     file: event.file,
-                senderUserId: index!=-1 ? messages[index].senderUserId : event.senderParentMessageId,
-                messageContent:
+                    senderUserId: index != -1
+                        ? messages[index].senderUserId
+                        : event.senderParentMessageId,
+                    messageContent:
                         MessageContent(content: event.parentMessageContent))
                 : null));
 
     List<Chat> chats;
-    if(fromPinned){
-      chats= sortChats(state.pinnedChats, event.channelId, messages);
-    }else{
-      chats= sortChats(state.chats, event.channelId, messages);
+    if (fromPinned) {
+      chats = sortChats(state.pinnedChats, event.channelId, messages);
+    } else {
+      chats = sortChats(state.chats, event.channelId, messages);
     }
 
     emit(state.copyWith(
@@ -429,7 +440,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           file: event.file,
           parentMessageContent: event.parentMessageContent,
           mediaContent: [
-            {'file_path': r.data!.filePath, 'file_name': event.fileName, 'caption': 'test image'}
+            {
+              'file_path': r.data!.filePath,
+              'file_name': event.fileName,
+              'caption': 'test image'
+            }
           ],
           messageType: event.messageType,
           parentMessageId: event.parentMessageId,
@@ -442,15 +457,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     log('***** message received *****');
     print('message ${event.message}');
     List<Message> messages = [];
-    bool fromPinned=false;
-    List<Chat> chats ;
+    bool fromPinned = false;
+    List<Chat> chats;
     if (state.chats.any(
-          (e) => e.id == event.message.channelId,
+      (e) => e.id == event.message.channelId,
     )) {
-      chats=List.of(state.chats);
-    }else{
-      fromPinned=true;
-      chats=List.of(state.pinnedChats);
+      chats = List.of(state.chats);
+    } else {
+      fromPinned = true;
+      chats = List.of(state.pinnedChats);
     }
     Chat chat = chats.firstWhere(
         (element) => element.id == event.message.channelId,
@@ -466,35 +481,53 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       chats.removeWhere((element) => element.id == chat.id);
       chats.insert(
           0,
-          chat.copyWith(totalUnreadMessageCount: (chat.totalUnreadMessageCount ?? 0) + event.message.senderUserId! !=_prefsRepository.myChatId ? 1 : 0));
+          chat.copyWith(
+              totalUnreadMessageCount: (chat.totalUnreadMessageCount ?? 0) +
+                          event.message.senderUserId! !=
+                      _prefsRepository.myChatId
+                  ? 1
+                  : 0));
     }
-    messages=List.of(chat.messages ?? []);
+    messages = List.of(chat.messages ?? []);
     print('be ${messages.length}');
     messages.insert(0, event.message);
     print('af ${messages.length}');
 
-    int index=messages.indexWhere((element) => element.id==event.prevMessageId);
+    int index =
+        messages.indexWhere((element) => element.id == event.prevMessageId);
     emit(state.copyWith(
       receiveMessageStatus: ReceiveMessageStatus.success,
-        unReadMessagesFromAllChats: state.unReadMessagesFromAllChats + event.message.senderUserId! !=_prefsRepository.myChatId ? 1 : 0,
-        currentChannelReceivedMessage: event.message.channelId,
-        channelId: event.message.channelId,
-      chats: fromPinned ? state.chats : chats.map((e) {
-        if (e.id == event.message.channelId) {
-          return e.copyWith(messages: messages);
-        }
-        return e;
-      }).toList(),
-      pinnedChats: !fromPinned ? state.pinnedChats : chats.map((e) {
-        if (e.id == event.message.channelId) {
-          return e.copyWith(messages: messages);
-        }
-        return e;
-      }).toList(),
+      unReadMessagesFromAllChats:
+          state.unReadMessagesFromAllChats + event.message.senderUserId! !=
+                  _prefsRepository.myChatId
+              ? 1
+              : 0,
+      currentChannelReceivedMessage: event.message.channelId,
+      channelId: event.message.channelId,
+      chats: fromPinned
+          ? state.chats
+          : chats.map((e) {
+              if (e.id == event.message.channelId) {
+                return e.copyWith(messages: messages);
+              }
+              return e;
+            }).toList(),
+      pinnedChats: !fromPinned
+          ? state.pinnedChats
+          : chats.map((e) {
+              if (e.id == event.message.channelId) {
+                return e.copyWith(messages: messages);
+              }
+              return e;
+            }).toList(),
     ));
     add(NotifyThatIReceivedMessageEvent(channelId: event.message.channelId!));
-    if(index==-1){
-      add(GetAllMessagesBetweenEvent(firstMessageId: event.prevMessageId, secondMessageId: event.message.id.toString(), scrollToParentMessage: false, channelId: event.message.channelId.toString()));
+    if (index == -1) {
+      add(GetAllMessagesBetweenEvent(
+          firstMessageId: event.prevMessageId,
+          secondMessageId: event.message.id.toString(),
+          scrollToParentMessage: false,
+          channelId: event.message.channelId.toString()));
     }
   }
 
@@ -509,7 +542,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       emit(state.copyWith(
           readMessagesStatus: ResetReadMessagesStatus.success,
           unReadMessagesFromAllChats: state.unReadMessagesFromAllChats -
-              state.chats.firstWhere((element) => element.id == event.channelId , orElse: ()=> state.pinnedChats.firstWhere((element) => element.id == event.channelId))
+              state.chats
+                  .firstWhere((element) => element.id == event.channelId,
+                      orElse: () => state.pinnedChats.firstWhere(
+                          (element) => element.id == event.channelId))
                   .totalUnreadMessageCount!,
           chats: state.chats.map((e) {
             if (e.id == event.channelId) {
@@ -522,8 +558,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               return e.copyWith(totalUnreadMessageCount: 0);
             }
             return e;
-          }).toList()
-      ));
+          }).toList()));
     });
   }
 
@@ -543,29 +578,34 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onDeleteChatEvent(
       DeleteChatEvent event, Emitter<ChatState> emit) async {
-    bool fromPinned=false;
-    List<Chat> chats ;
-    if(state.chats.any((element) => element.id==event.channelId)){
-      chats= List.of(state.chats);
-    }else{
-      fromPinned=true;
-      chats= List.of(state.pinnedChats);
+    bool fromPinned = false;
+    List<Chat> chats;
+    if (state.chats.any((element) => element.id == event.channelId)) {
+      chats = List.of(state.chats);
+    } else {
+      fromPinned = true;
+      chats = List.of(state.pinnedChats);
     }
     chats.removeWhere((element) => element.id == event.channelId);
-    emit(state.copyWith(chats: fromPinned ? state.chats : chats , pinnedChats: !fromPinned ? state.pinnedChats : chats));
+    emit(state.copyWith(
+        chats: fromPinned ? state.chats : chats,
+        pinnedChats: !fromPinned ? state.pinnedChats : chats));
     final response =
         await deleteChatUseCase(DeleteChatParams(channelId: event.channelId));
     response.fold((l) {
-      if(state.chats.any((element) => element.id==event.channelId)){
-        chats= List.of(state.chats);
-      }else{
-        fromPinned=true;
-        chats= List.of(state.pinnedChats);
+      if (state.chats.any((element) => element.id == event.channelId)) {
+        chats = List.of(state.chats);
+      } else {
+        fromPinned = true;
+        chats = List.of(state.pinnedChats);
       }
-      Chat removedChat = chats.firstWhere((element) => element.id == event.channelId);
+      Chat removedChat =
+          chats.firstWhere((element) => element.id == event.channelId);
       int index = chats.indexOf(removedChat);
       chats.insert(index, removedChat);
-      emit(state.copyWith(chats: fromPinned ? state.chats : chats , pinnedChats: !fromPinned ? state.pinnedChats : chats));
+      emit(state.copyWith(
+          chats: fromPinned ? state.chats : chats,
+          pinnedChats: !fromPinned ? state.pinnedChats : chats));
     }, (r) {});
   }
 
@@ -690,16 +730,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   List<Chat> sortChatsByTime(List<Chat> unSortedChats) {
-    if(unSortedChats.length==1){
+    if (unSortedChats.length == 1) {
       return unSortedChats;
     }
     unSortedChats.sort((a, b) {
       if ((a.messages?.isEmpty ?? true) || (b.messages?.isEmpty ?? true)) {
-        if(a.messages?.isEmpty  ?? true){
+        if (a.messages?.isEmpty ?? true) {
           return -1;
-        }else if (b.messages?.isEmpty  ?? true){
+        } else if (b.messages?.isEmpty ?? true) {
           return 1;
-        }else{
+        } else {
           return 0;
         }
       }
@@ -711,11 +751,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onReceiveMessageFromPusherEvent(
       ReceiveMessageFromPusherEvent event, Emitter<ChatState> emit) {
-    emit(state.copyWith(changeMessageStateFromPusherStatus: ChangeMessageStateFromPusherStatus.init));
+    emit(state.copyWith(
+        changeMessageStateFromPusherStatus:
+            ChangeMessageStateFromPusherStatus.init));
     emit(state.copyWith(
       chats: getChatsAfterEditPropertyOfMessage(state.chats, 1, null,
           event.channelId, event.lastMessageId, event.userId),
-      changeMessageStateFromPusherStatus: ChangeMessageStateFromPusherStatus.received,
+      changeMessageStateFromPusherStatus:
+          ChangeMessageStateFromPusherStatus.received,
       pinnedChats: getChatsAfterEditPropertyOfMessage(state.pinnedChats, 1,
           null, event.channelId, event.lastMessageId, event.userId),
     ));
@@ -723,12 +766,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onWatchedMessageFromPusherEvent(
       WatchedMessageFromPusherEvent event, Emitter<ChatState> emit) {
-    emit(state.copyWith(changeMessageStateFromPusherStatus: ChangeMessageStateFromPusherStatus.init));
     emit(state.copyWith(
-      unReadMessagesFromAllChats: state.unReadMessagesFromAllChats -1,
+        changeMessageStateFromPusherStatus:
+            ChangeMessageStateFromPusherStatus.init));
+    emit(state.copyWith(
+      unReadMessagesFromAllChats: state.unReadMessagesFromAllChats - 1,
       chats: getChatsAfterEditPropertyOfMessage(state.chats, null, true,
           event.channelId, event.lastMessageId, event.userId),
-        changeMessageStateFromPusherStatus: ChangeMessageStateFromPusherStatus.watched,
+      changeMessageStateFromPusherStatus:
+          ChangeMessageStateFromPusherStatus.watched,
       pinnedChats: getChatsAfterEditPropertyOfMessage(state.pinnedChats, null,
           true, event.channelId, event.lastMessageId, event.userId),
     ));
@@ -736,20 +782,25 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   List<Chat> getChatsAfterEditPropertyOfMessage(List<Chat> chats, int? received,
       bool? watched, String channelId, int lastMessageId, int userId) {
-    return chats.firstWhere((element) => element.id == channelId, orElse: () => Chat(id: "-1")).id !=
+    return chats
+                .firstWhere((element) => element.id == channelId,
+                    orElse: () => Chat(id: "-1"))
+                .id !=
             "-1"
         ? chats.map((e) {
             if (e.id == channelId) {
               return e.copyWith(
-                totalUnreadMessageCount: watched != null ? e.totalUnreadMessageCount!-1 : e.totalUnreadMessageCount,
+                  totalUnreadMessageCount: watched != null
+                      ? e.totalUnreadMessageCount! - 1
+                      : e.totalUnreadMessageCount,
                   messages: e.messages?.map((m) {
-                return m.copyWith(
-                    messageStatus: m.messageStatus?.map((s) {
-                  return s.copyWith(
-                      isWatched: watched ?? s.isWatched,
-                      isReceived: received ?? s.isReceived);
-                }).toList());
-              }).toList());
+                    return m.copyWith(
+                        messageStatus: m.messageStatus?.map((s) {
+                      return s.copyWith(
+                          isWatched: watched ?? s.isWatched,
+                          isReceived: received ?? s.isReceived);
+                    }).toList());
+                  }).toList());
             }
             return e;
           }).toList()
@@ -760,13 +811,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       GetMessagesForChatEvent event, Emitter<ChatState> emit) async {
     bool fromPinned = false;
     Chat chat;
-    chat = state.chats.firstWhere((element) => element.id.toString() == event.channelId,
+//todo check if the  chat is pinned Chat or not
+    chat = state.chats.firstWhere(
+        (element) => element.id.toString() == event.channelId,
         orElse: () => Chat(id: "-1"));
     if (chat.id == "-1") {
       fromPinned = true;
       chat = state.pinnedChats
           .firstWhere((element) => element.id == event.channelId);
     }
+
     String lastMessageId = chat.messages!.last.id!;
     if (chat.hasReachedMax || chat.isLoading) {
       return;
@@ -821,8 +875,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       chat = chat.copyWith(
           messages: messages,
           hasReachedMax: r.length < event.limit,
-          paginationStatus: PaginationStatus.success
-      );
+          paginationStatus: PaginationStatus.success);
       emit(state.copyWith(
           chats: fromPinned
               ? state.chats
@@ -843,13 +896,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     });
   }
 
-  FutureOr<void> _onGetAllMessagesBetweenEvent(GetAllMessagesBetweenEvent event, Emitter<ChatState> emit)  async{
-    if(state.getMessagesBetweenStatus==GetMessagesBetweenStatus.loading){
+  FutureOr<void> _onGetAllMessagesBetweenEvent(
+      GetAllMessagesBetweenEvent event, Emitter<ChatState> emit) async {
+    if (state.getMessagesBetweenStatus == GetMessagesBetweenStatus.loading) {
       return;
     }
     bool fromPinned = false;
     Chat chat;
-    chat = state.chats.firstWhere((element) => element.id.toString() == event.channelId,
+    chat = state.chats.firstWhere(
+        (element) => element.id.toString() == event.channelId,
         orElse: () => Chat(id: "-1"));
     if (chat.id == "-1") {
       fromPinned = true;
@@ -870,27 +925,28 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       ));
     }, (r) {
       List<Message> messages = List.of(chat.messages ?? []);
-      int index  = messages.indexWhere((element) => element.id == event.secondMessageId);
-      String? lastMessageId = messages[messages.length-1].id;
-      for(int i=r.length -1 ; i > 0;i--){
-        if(r[i].id==lastMessageId){
+      int index =
+          messages.indexWhere((element) => element.id == event.secondMessageId);
+      String? lastMessageId = messages[messages.length - 1].id;
+      for (int i = r.length - 1; i > 0; i--) {
+        if (r[i].id == lastMessageId) {
           break;
         }
 
-        messages.insert(r.length == 2 ?index+1 : messages.length,r[i]);
+        messages.insert(r.length == 2 ? index + 1 : messages.length, r[i]);
       }
       chat = chat.copyWith(
-          messages: messages,
+        messages: messages,
       );
       emit(state.copyWith(
           chats: fromPinned
               ? state.chats
               : state.chats.map((e) {
-            if (e.id == event.channelId) {
-              return chat;
-            }
-            return e;
-          }).toList(),
+                  if (e.id == event.channelId) {
+                    return chat;
+                  }
+                  return e;
+                }).toList(),
           getMessagesBetweenStatus: GetMessagesBetweenStatus.success,
           firstMessageId: event.firstMessageId,
           secondMessageId: event.secondMessageId,
@@ -898,11 +954,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           pinnedChats: !fromPinned
               ? state.pinnedChats
               : state.pinnedChats.map((e) {
-            if (e.id == event.channelId) {
-              return chat;
-            }
-            return e;
-          }).toList()));
+                  if (e.id == event.channelId) {
+                    return chat;
+                  }
+                  return e;
+                }).toList()));
     });
   }
 }

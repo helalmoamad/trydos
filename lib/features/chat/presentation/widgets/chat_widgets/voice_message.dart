@@ -63,7 +63,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
   late final Source audioSource;
-  final ValueNotifier<int> _loadingFile =  ValueNotifier(0);
+//  final ValueNotifier<int> _loadingFile =  ValueNotifier(0);
 
 
   getAudioDuration() async {
@@ -143,7 +143,8 @@ class _VoiceMessageState extends State<VoiceMessage> {
             animationDuration: const Duration(milliseconds: 150),
             offsetDx: 0.15,
             iconSize: 0,
-            onLeftSwipe: () {
+            onLeftSwipe: ()
+               {
               if((state.sendMessageStatus ==
                   SendMessageStatus.loading &&
                   state.currentMessage
@@ -186,8 +187,11 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                      color: context.colorScheme.black
-                                          .withOpacity(0.05),
+                                    //todo change the commented opacity to fromARGB for better performance
+                                      color:Color.fromARGB(50,0, 0, 0)
+//                                      context.colorScheme.black
+//                                          .withOpacity(0.05)
+                                      ,
                                       offset: const Offset(0, 3),
                                       blurRadius: 6)
                                 ]),
@@ -332,19 +336,27 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                     width: 25.w,
                                                     height: 28,
                                                   )
-                                                } else ...{
-                                                  Transform(
-                                                      alignment:
-                                                          Alignment.center,
-                                                      transform: Matrix4
-                                                          .diagonal3Values(
-                                                              -1.0, 1.0, 1.0),
-                                                      child: SvgPicture.asset(
-                                                        AppAssets
-                                                            .voicePlayedSvg,
-                                                        width: 25.w,
-                                                        height: 28,
-                                                      )),
+                                                }
+                                                else ...{
+                                                  //todo these transform cost a lot of resources i make a trick to avoid use this transformer
+//                                                  Transform(
+//                                                      alignment:
+//                                                          Alignment.center,
+//                                                      transform: Matrix4
+//                                                          .diagonal3Values(
+//                                                              -1.0, 1.0, 2.0),
+//                                                      child: SvgPicture.asset(
+//                                                        AppAssets
+//                                                            .voicePlayedSvg,
+//                                                        width: 25.w,
+//                                                        height: 28,
+//                                                      )),
+                                                  SvgPicture.asset(
+                                                    AppAssets
+                                                        .voicePlayedSvg,
+                                                    width: 25.w,
+                                                    height: 28,
+                                                  ),
                                                   15.horizontalSpace,
                                                   InkWell(
                                                     onTap: audioToggle,
@@ -596,8 +608,9 @@ class _VoiceMessageState extends State<VoiceMessage> {
       return;
     }
     if (audioPlayerState == PlayerState.playing) {
-      await audioPlayer.pause();
       audioPlayingNotifier.value = false;
+      await audioPlayer.pause();
+
     } else if (audioPlayerState == PlayerState.paused) {
       audioPlayingNotifier.value = true;
       await audioPlayer.resume();

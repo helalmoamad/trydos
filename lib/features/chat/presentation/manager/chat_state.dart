@@ -41,8 +41,9 @@ class ChatState {
   final int unReadMessagesFromAllChats;
   final String currentChannelReceivedMessage;
   final bool scrollToParentMessage;
-
+  Map<String, Map<String,List<Message>>>? newSortedChatsByDate;
   ChatState({
+    this.newSortedChatsByDate=const {},
     this.getContactsStatus = GetContactsStatus.init,
     this.changeMessageStateFromPusherStatus = ChangeMessageStateFromPusherStatus.init,
     this.getMessagesBetweenStatus = GetMessagesBetweenStatus.init,
@@ -69,6 +70,7 @@ class ChatState {
   });
 
   ChatState copyWith({
+    final Map<String, Map<String,List<Message>>>?  newSortedChatsByDate,
     final GetChatsStatus? getChatsStatus,
     final SendMessageStatus? sendMessageStatus,
     final ReceiveMessageStatus? receiveMessageStatus,
@@ -94,6 +96,7 @@ class ChatState {
     final List<Chat>? pinnedChats,
   }) {
     return ChatState(
+      newSortedChatsByDate:newSortedChatsByDate??this.newSortedChatsByDate,
       getChatsStatus: getChatsStatus ?? this.getChatsStatus,
       sendMessageStatus: sendMessageStatus ?? this.sendMessageStatus,
       getContactsStatus: getContactsStatus ?? this.getContactsStatus,

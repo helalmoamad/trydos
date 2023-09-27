@@ -22,13 +22,16 @@ class ChatPageContent extends StatefulWidget {
 }
 
 class ChatPageContentState extends State<ChatPageContent> {
-  late ChatBloc chatBloc;
 
-  @override
-  void initState() {
-    chatBloc = BlocProvider.of<ChatBloc>(context);
-    super.initState();
-  }
+// todo 9/21 unused code
+//  late ChatBloc chatBloc;
+
+//  @override
+//  void initState() {
+//
+//    chatBloc = BlocProvider.of<ChatBloc>(context);
+//    super.initState();
+//  }
   static ValueNotifier<List<Chat>> searchChats=ValueNotifier([]);
   static List<Chat> initialChats=[];
 
@@ -47,23 +50,29 @@ class ChatPageContentState extends State<ChatPageContent> {
     }
   }
   @override
+// ! asd
   Widget build(BuildContext context) {
-    return BlocConsumer<ChatBloc, ChatState>(
-      listener: (context, state) {},
+    //todo  9/21  change it to BlocBuilder
+    return BlocBuilder<ChatBloc, ChatState>(
       buildWhen: (p,c)=> p.getChatsStatus != c.getChatsStatus,
       builder: (context, state) {
         if (state.getChatsStatus == GetChatsStatus.loading && state.chats.isEmpty && state.pinnedChats.isEmpty) {
           return SliverToBoxAdapter(child: TrydosLoader());
         }
+        // todo (future update) here we can return try again if the status failure
+
         List<Chat> chats = [];
         chats.addAll(state.pinnedChats);
         chats.addAll(state.chats);
+
+        // todo  (future update) remove this from here handle it in the back of in bloc
         chats.removeWhere((element) => int.tryParse(element.id.toString())==null && (element.messages?.isEmpty ?? true));
         initialChats=chats;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           searchChats.value=chats;
         });
         return SlidableAutoCloseBehavior(
+
           closeWhenOpened: true,
           closeWhenTapped: true,
           child: BlocBuilder<AppBloc, AppState>(
@@ -75,13 +84,15 @@ class ChatPageContentState extends State<ChatPageContent> {
                   return sliverListSeparated(
                     itemBuilder: (_, index) {
                       bool thereActivity=appState.pusherActivityIds.containsKey(int.parse(searchedChats[index].id.toString()));
-                      return ChatCard(
-                        onSendForwardMessage: widget.onSendForwardMessage,
-                        chat: searchedChats[index],
-                        thereActivity: thereActivity,
-                        index: index,
-                        activityDescription: thereActivity ? appState.pusherActivityDescription[int.parse(searchedChats[index].id.toString())]: null,
-                      );
+                      return
+                        ChatCard(
+                          onSendForwardMessage: widget.onSendForwardMessage,
+                          chat: searchedChats[index],
+                          thereActivity: thereActivity,
+                          index: index,
+                          activityDescription: thereActivity ? appState.pusherActivityDescription[int.parse(searchedChats[index].id.toString())]: null,
+                        )
+                      ;
                     },
                     separator: const SizedBox.shrink(),
                     childCount: searchedChats.length,
