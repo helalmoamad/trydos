@@ -11,6 +11,7 @@ import 'package:trydos/features/authentication/domain/use_cases/verify_guest_pho
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_signin_usecase.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
+import '../../data/models/verify_otp_sign_up_and_in_response_model.dart';
 import '../../domain/use_cases/create_user_usecase.dart';
 import '../../domain/use_cases/login_to_chat_usecase.dart';
 import '../../domain/use_cases/login_to_market_usecase.dart';
@@ -31,8 +32,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 
 @injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc(
-      this.createUserUseCase,
+  AuthBloc(this.createUserUseCase,
       this.loginToChatUseCase,
       this.loginToMarketUseCase,
       this.loginToStoriesUseCase,
@@ -74,8 +74,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final VerifyGuestPhoneUseCase verifyGuestPhoneUseCase;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
 
-  FutureOr<void> _onCreateUserEvent(
-      CreateUserEvent event, Emitter<AuthState> emit) async {
+  FutureOr<void> _onCreateUserEvent(CreateUserEvent event,
+      Emitter<AuthState> emit) async {
     emit(state.copyWith(createUserStatus: CreateUserStatus.loading));
 
     final response = await createUserUseCase(
@@ -85,8 +85,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           name: event.name),
     );
     response.fold(
-      (l) => emit(state.copyWith(createUserStatus: CreateUserStatus.failure)),
-      (r) {
+          (l) =>
+          emit(state.copyWith(createUserStatus: CreateUserStatus.failure)),
+          (r) {
         emit(
           state.copyWith(createUserStatus: CreateUserStatus.success),
         );
@@ -94,17 +95,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  FutureOr<void> _onLoginToChatEvent(
-      LoginToChatEvent event, Emitter<AuthState> emit) async {
+  FutureOr<void> _onLoginToChatEvent(LoginToChatEvent event,
+      Emitter<AuthState> emit) async {
     emit(state.copyWith(loginToChatStatus: LoginToChatStatus.loading));
 
     final response = await loginToChatUseCase(
       LoginToChatParams(
-          mobilePhone: event.mobilePhone, otpIdToken: event.otpIdToken,originalUserId: event.originalUserId),
+          mobilePhone: event.mobilePhone,
+          otpIdToken: event.otpIdToken,
+          originalUserId: event.originalUserId),
     );
     response.fold(
-      (l) => emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure)),
-      (r) {
+          (l) =>
+          emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure)),
+          (r) {
         final id = r.data!.id;
         final token = r.data!.accessToken;
         final name = r.data!.name;
@@ -120,44 +124,46 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  FutureOr<void> _onStoreFcmTokenEvent(
-      StoreFcmTokenEvent event, Emitter<AuthState> emit) async {
+  FutureOr<void> _onStoreFcmTokenEvent(StoreFcmTokenEvent event,
+      Emitter<AuthState> emit) async {
     final response = await storeFcmUseCase(
       StoreFcmParams(userId: event.userId, fcmToken: event.fcmToken),
     );
     response.fold(
-        (l) =>
+            (l) =>
             emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure)),
-        (r) {
-      final id = r.data!.id;
-      _prefsRepository.setFcmTokenId(id!);
-      emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
-    });
+            (r) {
+          final id = r.data!.id;
+          _prefsRepository.setFcmTokenId(id!);
+          emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
+        });
   }
 
-  FutureOr<void> _onSendOtpEvent(
-      SendOtpEvent event, Emitter<AuthState> emit) async {
+  FutureOr<void> _onSendOtpEvent(SendOtpEvent event,
+      Emitter<AuthState> emit) async {
     emit(state.copyWith(sendOtpStatus: SendOtpStatus.loading));
     final response = await sendOtpUseCase(
       SendOtpParams(isViaWhatsApp: event.isViaWhatsApp, phone: event.phone),
     );
     response.fold(
-        (l) => emit(state.copyWith(sendOtpStatus: SendOtpStatus.failure)), (r) {
+            (l) => emit(state.copyWith(sendOtpStatus: SendOtpStatus.failure)), (
+        r) {
       _prefsRepository.setVerificationId(r.data!.verificationId!);
       emit(state.copyWith(sendOtpStatus: SendOtpStatus.success));
     });
   }
 
-  FutureOr<void> _onVerifyGuestPhoneEvent(
-      VerifyGuestPhoneEvent event, Emitter<AuthState> emit) async {
+  FutureOr<void> _onVerifyGuestPhoneEvent(VerifyGuestPhoneEvent event,
+      Emitter<AuthState> emit) async {
     emit(
         state.copyWith(verifyGuestPhoneStatus: VerifyGuestPhoneStatus.loading));
     final response = await verifyGuestPhoneUseCase(
       VerifyGuestPhoneParams(idToken: event.idToken),
     );
     response.fold(
-        (l) => emit(state.copyWith(
-            verifyGuestPhoneStatus: VerifyGuestPhoneStatus.failure)), (r) {
+            (l) =>
+            emit(state.copyWith(
+                verifyGuestPhoneStatus: VerifyGuestPhoneStatus.failure)), (r) {
       emit(state.copyWith(
           verifyGuestPhoneStatus: VerifyGuestPhoneStatus.success));
     });
@@ -165,16 +171,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onLoginToMarketEvent(event, Emitter<AuthState> emit) async {}
 
-  FutureOr<void> _onLoginToStoriesEvent(
-      LoginToStoriesEvent event, Emitter<AuthState> emit) async {
+  FutureOr<void> _onLoginToStoriesEvent(LoginToStoriesEvent event,
+      Emitter<AuthState> emit) async {
     emit(state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.loading));
 
     final response = await loginToStoriesUseCase(
       LoginToStoriesParams(
-          phone: event.phone, otpIdToken: event.otpIdToken,originalUserId: event.originalUserId),
+          phone: event.phone,
+          otpIdToken: event.otpIdToken,
+          originalUserId: event.originalUserId),
     );
     response.fold(
-          (l) => emit(state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.failure)),
+          (l) =>
+          emit(
+              state.copyWith(
+                  loginToStoriesStatus: LoginToStoriesStatus.failure)),
           (r) {
         final id = r.data!.id;
         final token = r.data!.accessToken;
@@ -188,16 +199,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  FutureOr<void> _onVerifyOtpSignInEvent(
-      VerifyOtpSignInEvent event, Emitter<AuthState> emit) async {
+  FutureOr<void> _onVerifyOtpSignInEvent(VerifyOtpSignInEvent event,
+      Emitter<AuthState> emit) async {
     emit(state.copyWith(verifyOtpSignInStatus: VerifyOtpSignInStatus.loading));
     final response = await verifyOtpSignInUseCase(
       VerifyOtpSignInParams(
           verificationId: event.verificationId, otp: event.otp),
     );
     response.fold(
-        (l) => emit(state.copyWith(
-            verifyOtpSignInStatus: VerifyOtpSignInStatus.failure)), (r) {
+            (l) {
+              _prefsRepository.setOtpCode(event.otp);
+          emit(state.copyWith(
+              verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
+              signInErrorMessage: l.message));
+        }, (r) {
       _prefsRepository.setMarketToken(r.data!.token!);
       //_prefsRepository.setOtpIdToken(r.data!.idToken!);
       add(LoginToChatEvent(
@@ -206,24 +221,43 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           originalUserId: r.data!.user!.id!.toString(),
           otpIdToken: r.data!.idToken!));
       add(LoginToStoriesEvent(
-          phone: event.phone, originalUserId: r.data!.user!.id!.toString(),otpIdToken: r.data!.idToken!));
-      emit(
-          state.copyWith(verifyOtpSignInStatus: VerifyOtpSignInStatus.success));
+          phone: event.phone,
+          originalUserId: r.data!.user!.id!.toString(),
+          otpIdToken: r.data!.idToken!));
+      emit(state.copyWith(
+          verifyOtpSignInStatus: VerifyOtpSignInStatus.success,
+          marketUser: r.data!.user));
     });
   }
 
-  FutureOr<void> _onVerifyOtpSignUpEvent(
-      VerifyOtpSignUpEvent event, Emitter<AuthState> emit) async {
+  FutureOr<void> _onVerifyOtpSignUpEvent(VerifyOtpSignUpEvent event,
+      Emitter<AuthState> emit) async {
     emit(state.copyWith(verifyOtpSignUpStatus: VerifyOtpSignUpStatus.loading));
     final response = await verifyOtpSignUpUseCase(
       VerifyOtpSignUpParams(
-          verificationId: event.verificationId, otp: event.otp),
+          verificationId: event.verificationId,
+          otp: event.otp,
+          name: event.name),
     );
     response.fold(
-        (l) => emit(state.copyWith(
-            verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure)), (r) {
-      emit(
-          state.copyWith(verifyOtpSignUpStatus: VerifyOtpSignUpStatus.success));
+            (l) =>
+            emit(state.copyWith(
+                verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
+                signUpErrorMessage: l.message)), (r) {
+      _prefsRepository.setMarketToken(r.data!.token!);
+      //_prefsRepository.setOtpIdToken(r.data!.idToken!);
+      add(LoginToChatEvent(
+          fcmToken: NotificationProcess.myFcmToken!,
+          mobilePhone: r.data!.user!.phone,
+          originalUserId: r.data!.user!.id!.toString(),
+          otpIdToken: r.data!.idToken!));
+      add(LoginToStoriesEvent(
+          phone: r.data!.user!.phone,
+          originalUserId: r.data!.user!.id!.toString(),
+          otpIdToken: r.data!.idToken!));
+      emit(state.copyWith(
+          verifyOtpSignUpStatus: VerifyOtpSignUpStatus.success,
+          marketUser: r.data!.user));
     });
   }
 }

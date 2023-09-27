@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -33,6 +34,8 @@ class _RegistrationPageState extends State<RegistrationPage>
   final PageController pageController = PageController();
   bool fromLogin = false;
   String phoneNumber = '';
+  String verificationId = '';
+  String otp = '';
   Duration animationDuration = Duration(milliseconds: 500);
   final FocusNode focusNode = FocusNode();
   late AuthBloc authBloc;
@@ -44,72 +47,83 @@ class _RegistrationPageState extends State<RegistrationPage>
   }
 
   @override
+  void didChangeDependencies() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color(0xffFFFFFF),
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.dark,
+    ));
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.colorScheme.background,
-      body: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          ValueListenableBuilder<bool>(
-              valueListenable: animate,
-              builder: (context, yes, _) {
-                return Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: AnimatedPositioned(
-                      left: yes ? 40 : null,
-                      right: yes ? 40 : null,
-                      top: yes ? 50 : null,
-                      bottom: yes ? null : 456,
-                      duration: animationDuration,
-                      child: logo),
-                );
-              }),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: ValueListenableBuilder<int>(
-                valueListenable: pageContent,
-                builder: (context, index, _) {
-                  if (index > 1)
-                    return InkWell(
-                      highlightColor: Colors.transparent,
-                      splashColor: Colors.transparent,
-                      onTap: () {
-                        if (index == 2) {
-                          pageContent.value = 0;
-                          pageController.animateToPage(0,
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.easeInOut);
-                          return;
-                        }
-                        if (index >= 3 && index <= 5) {
-                          pageContent.value = 2;
-                          pageController.animateToPage(2,
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.easeInOut);
-                          return;
-                        }
-                        pageContent.value = 2;
-                        pageController.animateToPage(2,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.easeInOut);
-                      },
-                      child: Padding(
-                        padding: HWEdgeInsets.only(
-                            top: 60.0, right: 30, left: 30, bottom: 60),
-                        child: SvgPicture.asset(AppAssets.cancelSvg),
-                      ),
-                    );
-                  return const SizedBox.shrink();
-                }),
-          ),
-          ValueListenableBuilder<int>(
-              valueListenable: pageContent,
-              builder: (ctx, index, _) {
-                if (index == 0) {
-                  focusNode.unfocus();
-                }
-                return Column(
+    return ValueListenableBuilder<int>(
+        valueListenable: pageContent,
+        builder: (ctx, index, _) {
+          if (index == 0) {
+            focusNode.unfocus();
+          }
+          return Scaffold(
+            backgroundColor:
+                index != 6 ? context.colorScheme.background : Color(0xffF4FFF4),
+            body: Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                ValueListenableBuilder<bool>(
+                    valueListenable: animate,
+                    builder: (context, yes, _) {
+                      return Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: AnimatedPositioned(
+                            left: yes ? 40 : null,
+                            right: yes ? 40 : null,
+                            top: yes ? 50 : null,
+                            bottom: yes ? null : 456,
+                            duration: animationDuration,
+                            child: logo),
+                      );
+                    }),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: ValueListenableBuilder<int>(
+                      valueListenable: pageContent,
+                      builder: (context, index, _) {
+                        if (index > 1)
+                          return InkWell(
+                            highlightColor: Colors.transparent,
+                            splashColor: Colors.transparent,
+                            onTap: () {
+                              if (index == 2) {
+                                pageContent.value = 0;
+                                pageController.animateToPage(0,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut);
+                                return;
+                              }
+                              if (index >= 3 && index <= 5) {
+                                pageContent.value = 2;
+                                pageController.animateToPage(2,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut);
+                                return;
+                              }
+                              pageContent.value = 2;
+                              pageController.animateToPage(2,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.easeInOut);
+                            },
+                            child: Padding(
+                              padding: HWEdgeInsets.only(
+                                  top: 60.0, right: 30, left: 30, bottom: 60),
+                              child: SvgPicture.asset(AppAssets.cancelSvg),
+                            ),
+                          );
+                        return const SizedBox.shrink();
+                      }),
+                ),
+                Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     SizedBox(
@@ -201,6 +215,13 @@ class _RegistrationPageState extends State<RegistrationPage>
                                       curve: Curves.easeInOut);
                                   pageContent.value = 6;
                                 },
+                                onLoginFailed: () {
+                                  print('yes executed');
+                                  pageController.animateToPage(5,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                  pageContent.value = 6;
+                                },
                                 goBack: () {
                                   pageController.animateToPage(3,
                                       duration: Duration(milliseconds: 500),
@@ -215,10 +236,10 @@ class _RegistrationPageState extends State<RegistrationPage>
                           ]),
                     )
                   ],
-                );
-              }),
-        ],
-      ),
-    );
+                )
+              ],
+            ),
+          );
+        });
   }
 }

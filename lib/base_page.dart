@@ -4,6 +4,7 @@ import 'dart:convert' as convert;
 import 'package:adobe_xd/pinned.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -136,7 +137,15 @@ class _BasePageState extends State<BasePage> {
     onMessage();
     super.initState();
   }
-
+  @override
+  void didChangeDependencies() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color(0xffFFFFFF),
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.dark,
+    ));
+    super.didChangeDependencies();
+  }
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
       ChatBloc bloc = BlocProvider.of<ChatBloc>(context);

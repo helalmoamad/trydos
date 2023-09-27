@@ -17,11 +17,11 @@ abstract class PrefsRepository {
 
   String? get verificationId;
 
-  String? get otpIdToken;
+  String? get otpCode;
 
   Future<bool> setVerificationId(String verificationId);
 
-  Future<bool> setOtpIdToken(String otpIdToken);
+  Future<bool> setOtpCode(String otpToken);
 
   Future<bool> setChatToken(String token);
 

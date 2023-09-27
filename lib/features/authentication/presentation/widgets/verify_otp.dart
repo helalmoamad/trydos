@@ -7,6 +7,7 @@ import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -17,6 +18,7 @@ import 'package:trydos/features/authentication/presentation/widgets/pin_item.dar
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../../routes/router.dart';
 import '../manager/auth_bloc.dart';
 
 class VerifyOtp extends StatefulWidget {
@@ -24,11 +26,13 @@ class VerifyOtp extends StatefulWidget {
       {Key? key,
       required this.methodIcon,
       required this.navigateToAddName,
+      required this.onLoginFailed,
       required this.goBack,
       required this.phoneNumber})
       : super(key: key);
   final String methodIcon;
   final String phoneNumber;
+  final void Function() onLoginFailed;
   final void Function() goBack;
   final void Function() navigateToAddName;
 
@@ -72,6 +76,13 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
     return BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state.verifyOtpSignInStatus == VerifyOtpSignInStatus.failure) {
+            if (state.signInErrorMessage == 'user not found') {
+              context.go(
+                  GRouter.config.applicationRoutes.kNumberNotRegisteredPage +
+                      '?phoneNumber=${widget.phoneNumber}',
+                  extra: widget.onLoginFailed);
+              return;
+            }
             checkOtp.value = 2;
           } else if (state.verifyOtpSignInStatus ==
               VerifyOtpSignInStatus.success) {
@@ -460,6 +471,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
     form.controllers[2].text = text[2];
     form.controllers[3].text = text[3];
     form.controllers[4].text = text[4];
+    form.controllers[5].text = text[5];
   }
 
   void _onResendSucceed() {
