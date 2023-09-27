@@ -153,17 +153,18 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   String? get verificationId => _preferences.getString(PrefsKey.verificationId);
 
-  @override
-  String? get otpIdToken => _preferences.getString(PrefsKey.otpIdToken);
-
-  @override
-  Future<bool> setOtpIdToken(String otpIdToken) => _preferences.setString(PrefsKey.otpIdToken, otpIdToken);
 
   @override
   int? get myStoriesId => _preferences.getInt(PrefsKey.userStoriesId);
 
   @override
   Future<bool> setMyStoriesId(int id) => _preferences.setInt(PrefsKey.userStoriesId, id);
+
+  @override
+  String? get otpCode => _preferences.getString(PrefsKey.otpCode);
+
+  @override
+  Future<bool> setOtpCode(String otpCode) => _preferences.setString(PrefsKey.otpCode, otpCode);
 
 
 

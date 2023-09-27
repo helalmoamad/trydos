@@ -26,13 +26,16 @@ class VerifyOtpSignUpUseCase implements UseCase<VerifyOtpSignUpAndInResponseMode
 class VerifyOtpSignUpParams {
   String verificationId;
   String otp;
+  String? name;
 
   VerifyOtpSignUpParams({
     required this.verificationId,
     required this.otp,
+    this.name,
   });
   Map<String, dynamic> get map =>{
     "otp" :otp,
+    "name" :name,
     "verificationId" :verificationId,
   };
 }

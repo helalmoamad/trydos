@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -24,6 +25,11 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
 
 @override
   void didChangeDependencies() {
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Color(0xffE0FFEE),
+    statusBarBrightness: Brightness.light,
+    statusBarIconBrightness: Brightness.dark,
+  ));
   Future.delayed(
     Duration(seconds: 1),
         () {

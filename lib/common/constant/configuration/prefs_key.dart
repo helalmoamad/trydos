@@ -15,7 +15,7 @@ abstract class PrefsKey {
 
   static const verificationId = r'__$__verificationId__$__';
 
-  static const otpIdToken = r'__$__otpIdToken__$__';
+  static const otpCode = r'__$__otpCode__$__';
 
   static const fcmTokenId = r'__$__fcmTokenId__$__';
 
