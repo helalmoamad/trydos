@@ -63,8 +63,7 @@ class _ReplayMessageState extends State<ReplayMessage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final RenderBox renderBox =
-      key.currentContext?.findRenderObject() as RenderBox;
+      final RenderBox renderBox =key.currentContext?.findRenderObject() as RenderBox;
       height = renderBox.size.height;
     });
     super.initState();
@@ -74,12 +73,11 @@ class _ReplayMessageState extends State<ReplayMessage> {
   Widget build(BuildContext context) {
     return BlocListener<ChatBloc, ChatState>(
       listenWhen: (p, c) =>
-      p.changeMessageStateFromPusherStatus !=
-          c.changeMessageStateFromPusherStatus &&
-          c.changeMessageStateFromPusherStatus !=
-              ChangeMessageStateFromPusherStatus.init,
+      p.changeMessageStateFromPusherStatus !=c.changeMessageStateFromPusherStatus &&
+          c.changeMessageStateFromPusherStatus !=ChangeMessageStateFromPusherStatus.init,
       listener: (context, state) {
-        if (state.changeMessageStateFromPusherStatus==ChangeMessageStateFromPusherStatus.watched){
+        if (state.changeMessageStateFromPusherStatus==ChangeMessageStateFromPusherStatus.watched)
+        {
           if(widget.isAnswerMessageRead){
             return;
           }
@@ -87,13 +85,15 @@ class _ReplayMessageState extends State<ReplayMessage> {
             widget.isAnswerMessageRead=true;
             widget.isReplayedMessageRead=true;
           });
-        }else if(!widget.isAnswerMessageReceived){
+        }
+        else if(!widget.isAnswerMessageReceived){
           setState(() {
             widget.isAnswerMessageReceived=true;
             widget.isReplayedMessageReceived=true;
           });
         }
       },
+      //todo here i remove the Transformer.translate and put FractionTransaction to have better performance
   child: Column(
     children: [
       Stack(
@@ -123,33 +123,31 @@ class _ReplayMessageState extends State<ReplayMessage> {
                   time: widget.messageDate,),
               ),
             ),
-            Transform.translate(
-                offset: const Offset( 0 , 25),
-                child: (widget.answeredFile != null || widget.answeredFilePath != null) ?
-                ImageMessage(
-                    isSent: widget.isSent,
-                  time: widget.messageDate,
-                  isRead: widget.isAnswerMessageRead,
-                  messageId: widget.messageId,
-                    isReceived: widget.isAnswerMessageReceived,
-                    isFirstMessage: widget.isFirstMessage,
-                    userMessageName: widget.senderAnswerName,
-                    userMessagePhoto: widget.senderAnswerPhoto,
-                  senderId: GetIt.I<PrefsRepository>().myChatId!,
-                  isLocalMessage: widget.answeredFilePath==null,
-                  imageFile: widget.answeredFile,
-                  imageUrl: widget.answeredFilePath)
-                    :TextMessage(message: widget.messageAnswer!,
-                  withImageShadow: true,
-                  messageId: widget.messageAnswerId,
-                  userMessageName: widget.senderAnswerName,
-                  userMessagePhoto: widget.senderAnswerPhoto,
-                  isReceived: widget.isAnswerMessageReceived,
-                  isSent: widget.isSent,
-                  senderId: GetIt.I<PrefsRepository>().myChatId!,
-                  isRead: widget.isAnswerMessageRead,
-                  isFirstMessage: true,
-                  time: DateTime.now(),)),
+FractionalTranslation(translation: Offset(0.0,0.43),child: (widget.answeredFile != null || widget.answeredFilePath != null) ?
+ImageMessage(
+    isSent: widget.isSent,
+    time: widget.messageDate,
+    isRead: widget.isAnswerMessageRead,
+    messageId: widget.messageId,
+    isReceived: widget.isAnswerMessageReceived,
+    isFirstMessage: widget.isFirstMessage,
+    userMessageName: widget.senderAnswerName,
+    userMessagePhoto: widget.senderAnswerPhoto,
+    senderId: GetIt.I<PrefsRepository>().myChatId!,
+    isLocalMessage: widget.answeredFilePath==null,
+    imageFile: widget.answeredFile,
+    imageUrl: widget.answeredFilePath)
+    :TextMessage(message: widget.messageAnswer!,
+  withImageShadow: true,
+  messageId: widget.messageAnswerId,
+  userMessageName: widget.senderAnswerName,
+  userMessagePhoto: widget.senderAnswerPhoto,
+  isReceived: widget.isAnswerMessageReceived,
+  isSent: widget.isSent,
+  senderId: GetIt.I<PrefsRepository>().myChatId!,
+  isRead: widget.isAnswerMessageRead,
+  isFirstMessage: true,
+  time: DateTime.now(),),)
           ],
         ),
       const SizedBox(height: 25,),

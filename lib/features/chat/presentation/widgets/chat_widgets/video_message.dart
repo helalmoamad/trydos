@@ -59,7 +59,7 @@ class VideoMessage extends StatefulWidget {
 class _VideoMessageState extends State<VideoMessage> {
   @override
   Widget build(BuildContext context) {
-    print('widget.isLocalMessage ${widget.isLocalMessage}');
+
     return Directionality(
       textDirection: TextDirection.ltr,
       child: BlocConsumer<ChatBloc, ChatState>(

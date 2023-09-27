@@ -8,7 +8,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -22,6 +21,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/no_image_widget.dart';
 
+import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
@@ -115,12 +115,17 @@ class _ChatCardState extends ThemeState<ChatCard> {
           color: const Color(0xffC8C7CC),
           margin: HWEdgeInsetsDirectional.only(start: 94),
         ),
+
+
+        //todo
         SizedBox(
           height: 100.h,
           width: 1.sw,
           child: Container(
             child: InkWell(
               onTap: () {
+//                if(state.)
+              //todo (future update) call just when The totalUnreadMessage one or more
                 chatBloc.add(ReadAllMessagesEvent(widget.chat.id!.toString()));
                 // if (widget.onSendForwardMessage != null) {
                 //   Navigator.of(context)
@@ -135,7 +140,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                     widget.chat.id.toString());
                 context.go(GRouter
                         .config.applicationRoutes.kSinglePageChatPagePath +
-                    '?chatId=${widget.chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${receiver?.name ?? receiver?.mobilePhone ?? 'Un Known User'}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}&receiverPhoto=${receiver?.photoPath}&senderPhoto=${sender?.photoPath}');
+                    '?chatId=${widget.chat.id!.toString()}&data_length=${widget.chat.messages!.length}&receiverName=$receiverName&fullReceiverName=${receiver?.name ?? receiver?.mobilePhone ?? 'Un Known User'}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}&receiverPhoto=${receiver?.photoPath}&senderPhoto=${sender?.photoPath}');
               },
               child: Slidable(
                 endActionPane: ActionPane(
@@ -303,25 +308,28 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       if (widget.thereActivity) ...{
-                                        Transform.translate(
-                                          offset: const Offset(0, 3),
-                                          child: Transform(
-                                            alignment: Alignment.center,
-                                            transform: (Matrix4.identity()
-                                              ..scale(
-                                                  LanguageService.languageCode ==
-                                                          'ar'
-                                                      ? -1.0
-                                                      : 1.0,
-                                                  1.0,
-                                                  1.0)),
-                                            child: SvgPicture.asset(
+//                                        Transform.translate(
+//                                          offset: const Offset(0, 3),
+//                                          child: Transform(
+//                                            alignment: Alignment.center,
+//                                            transform: (Matrix4.identity()
+//                                              ..scale(
+//                                                  LanguageService.languageCode ==
+//                                                          'ar'
+//                                                      ? -1.0
+//                                                      : 1.0,
+//                                                  1.0,
+//                                                  1.0)),
+//                                            child:
+                                            SvgPicture.asset(
                                               AppAssets.messageReadArrowSvg,
                                               height: 12.h,
                                               width: 12.w,
-                                            ),
-                                          ),
-                                        ),
+                                            )
+//                                            ,
+//                                          ),
+//                                        )
+                                        ,
                                         7.horizontalSpace,
                                       },
                                       BlocBuilder<ChatBloc, ChatState>(
@@ -474,42 +482,44 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                             color: const Color(0xff007CFF)),
                                       ),
                                       8.horizontalSpace,
-                                      Transform.translate(
-                                        offset: const Offset(0, 1),
-                                        child: ValueListenableBuilder<int>(
-                                            valueListenable: typingIndicator,
-                                            builder: (context, activeIndex, _) {
-                                              return SizedBox(
-                                                width: 50.w,
-                                                height: 5.h,
-                                                child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: List.generate(
-                                                        6,
-                                                        (index) => Container(
-                                                              width: 5,
-                                                              height: 5,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                shape: BoxShape
-                                                                    .circle,
-                                                                color: activeIndex ==
-                                                                        index
-                                                                    ? const Color(
-                                                                        0xff007cff)
-                                                                    : colorScheme
-                                                                        .white,
-                                                                border: Border.all(
-                                                                    width: 1.0,
-                                                                    color: const Color(
-                                                                        0xff007cff)),
-                                                              ),
-                                                            ))),
-                                              );
-                                            }),
-                                      )
+//                                      Transform.translate(
+//                                        offset: const Offset(0, 1),
+//                                        child:
+//                                        ,
+//                                      )
+                                      ValueListenableBuilder<int>(
+                                          valueListenable: typingIndicator,
+                                          builder: (context, activeIndex, _) {
+                                            return SizedBox(
+                                              width: 50.w,
+                                              height: 5.h,
+                                              child: Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                                  children: List.generate(
+                                                      6,
+                                                          (index) => Container(
+                                                        width: 5,
+                                                        height: 5,
+                                                        decoration:
+                                                        BoxDecoration(
+                                                          shape: BoxShape
+                                                              .circle,
+                                                          color: activeIndex ==
+                                                              index
+                                                              ? const Color(
+                                                              0xff007cff)
+                                                              : colorScheme
+                                                              .white,
+                                                          border: Border.all(
+                                                              width: 1.0,
+                                                              color: const Color(
+                                                                  0xff007cff)),
+                                                        ),
+                                                      ))),
+                                            );
+                                          })
                                     ],
                                   )
                                 },

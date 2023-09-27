@@ -111,7 +111,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                         boxShadow: [
                           BoxShadow(
                               offset: const Offset(0, 2),
-                              color: colorScheme.black.withOpacity(0.16),
+                              color: Color.fromARGB(41, 255, 255, 255),
+//                              colorScheme.black.withOpacity(0.16)
                               blurRadius: 10)
                         ]),
                     child: Align(
@@ -223,9 +224,12 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                   BorderRadius.circular(12.0),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: context
-                                                      .colorScheme.black
-                                                      .withOpacity(0.05),
+                                                  color: Color.fromARGB(1,0,0,0)
+//                                                  context
+//                                                      .colorScheme.black
+//                                                      .withOpacity(0.05)
+
+                                                  ,
                                                   offset: const Offset(0, 3),
                                                   blurRadius: 6,
                                                 ),

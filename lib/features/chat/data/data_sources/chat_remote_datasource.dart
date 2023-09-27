@@ -1,14 +1,14 @@
 
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:injectable/injectable.dart';
+import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
-import 'package:trydos/features/authentication/data/models/login_to_chat_response_model.dart';
 import 'package:trydos/features/chat/data/models/change_chat_property_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../core/api/client_config.dart';
-import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/api/methods/get.dart';
 import '../../../../core/api/methods/post.dart';
 import '../models/my_chats_response_model.dart';
@@ -60,7 +60,10 @@ class ChatRemoteDataSource{
       requestPrams: RequestConfig<MyChatsResponseModel>(
         endpoint: ChatEndPoints.getMyChatsEP,
         response: ResponseValue<MyChatsResponseModel>(
-            fromJson: (response)=> MyChatsResponseModel.fromJson(response)
+            fromJson: (response){
+  return MyChatsResponseModel.fromJson(response);
+//return MyChatsResponseModel();
+            }
         ),
       ),
     );
@@ -168,7 +171,8 @@ class ChatRemoteDataSource{
     return sendMessage();
   }
 
-  Future<CreateUserResponseModel> createUser(Map<String,dynamic> params){
+
+      Future<CreateUserResponseModel> createUser(Map<String,dynamic> params){
     PostClient<CreateUserResponseModel> createUser= PostClient<CreateUserResponseModel>(
       serverName: ServerName.chat,
       requestPrams: RequestConfig<CreateUserResponseModel>(
@@ -181,4 +185,5 @@ class ChatRemoteDataSource{
     );
     return createUser();
   }
+
 }

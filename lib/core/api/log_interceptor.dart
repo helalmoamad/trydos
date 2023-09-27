@@ -81,7 +81,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     _prefsRepository.saveRequestsData(err.requestOptions.path, err.response?.data ?? {}, err.response?.headers.map ?? {}, err.response?.statusCode, err.requestOptions.method, err.requestOptions.queryParameters, err.response?.data ?? {});
 
     // GetIt.I<Dio>().post('${ChatUrls.baseUrl}/${ChatEndPoints.createBugEP}', data: {
-    //   "user_id": _prefsRepository.myId,
+    //   "user_id": _prefsRepository.myChatId,
     //   "title": "request error",
     //   "description": err.toString()
     // });

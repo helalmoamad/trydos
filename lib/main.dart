@@ -59,7 +59,7 @@ void main() async{
         error: error.toString());
   };
   //   GetIt.I<Dio>().post(ChatEndPoints.createBugEP, data: {
-  //     "user_id": GetIt.I<PrefsRepository>().myId,
+  //     "user_id": GetIt.I<PrefsRepository>().myChatId,
   //     "title": "flutter error",
   //     "description": error.toString()
   //   });
