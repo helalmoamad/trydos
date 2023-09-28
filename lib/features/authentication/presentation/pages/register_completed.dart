@@ -134,7 +134,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  SizedBox(height: 5,),
+                  SizedBox(height: 54,),
                 ]),
           ),
         ],

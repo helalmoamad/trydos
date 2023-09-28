@@ -16,7 +16,7 @@ import '../../../../core/utils/responsive_padding.dart';
 double offset = 0;
 
 class PhoneFormField extends StatelessWidget {
-   PhoneFormField({
+  PhoneFormField({
     Key? key,
     this.controller,
     this.onTap,
@@ -51,7 +51,7 @@ class PhoneFormField extends StatelessWidget {
     this.titleField,
     this.obscure = false,
     this.prefixIcon,
-    this.ready=false,
+    this.ready = false,
     this.icon,
     this.hintTextStyle,
     this.textStyle,
@@ -113,21 +113,21 @@ class PhoneFormField extends StatelessWidget {
   final EdgeInsetsGeometry? contentPadding;
   final Color? filledColor;
   final Color? bordersColor;
-   bool ready=false;
+  bool ready = false;
 
   final ValueNotifier<bool> rebuildCursor = ValueNotifier(false);
 
   final ValueNotifier<bool> showCursor = ValueNotifier(true);
 
-  late Timer timer ;
+  late Timer timer;
 
   @override
   Widget build(BuildContext context) {
-    timer=Timer.periodic(Duration(milliseconds: 500), (timer) {
-      showCursor.value=!showCursor.value;
+    timer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      showCursor.value = !showCursor.value;
     });
-    if(controller?.text.isEmpty ?? true){
-      offset=0;
+    if (controller?.text.isEmpty ?? true) {
+      offset = 0;
     }
     return DottedBorder(
       borderPadding: EdgeInsets.zero,
@@ -148,10 +148,10 @@ class PhoneFormField extends StatelessWidget {
               controller: controller,
               onTap: onTap,
               onChanged: (String? text) {
-                if(text != null) {
-                   onChange?.call(text) ?? false;
+                if (text != null) {
+                  onChange?.call(text) ?? false;
                   offset = (controller!.text.length * 9).w;
-                    rebuildCursor.value = !rebuildCursor.value;
+                  rebuildCursor.value = !rebuildCursor.value;
                 }
               },
               onFieldSubmitted: onFieldSubmitted,
@@ -180,15 +180,12 @@ class PhoneFormField extends StatelessWidget {
               cursorColor: Color(0xff5D5C5D),
               cursorHeight: 0,
               cursorWidth: 0.w,
-
               initialValue: initialValue,
               keyboardAppearance: keyboardAppearance,
               textAlignVertical: TextAlignVertical.center,
               textCapitalization: textCapitalization,
               toolbarOptions: toolbarOptions,
-              inputFormatters: [
-                PhoneNumberFormatter()
-              ],
+              inputFormatters: [PhoneNumberFormatter()],
               style: context.textTheme.headline5?.ra.copyWith(
                 color: const Color(0xff5D5C5D),
                 height: 0.6,
@@ -209,21 +206,23 @@ class PhoneFormField extends StatelessWidget {
             ),
           ),
           ValueListenableBuilder<bool>(
-            valueListenable: showCursor,
-            builder: (context , show ,_) {
-              return show ? ValueListenableBuilder<bool>(
-                  valueListenable: rebuildCursor,
-                  builder: (context, rebuild, _) {
-                    print(rebuild);
-                    return Container(
-                      margin: HWEdgeInsets.only(left: 95+offset, bottom: 20),
-                      width: 10.w,
-                      height: 1,
-                      color: const Color(0xff5D5C5D),
-                    );
-                  }) : const SizedBox.shrink();
-            }
-          )
+              valueListenable: showCursor,
+              builder: (context, show, _) {
+                return show
+                    ? ValueListenableBuilder<bool>(
+                        valueListenable: rebuildCursor,
+                        builder: (context, rebuild, _) {
+                          print(rebuild);
+                          return Container(
+                            margin: HWEdgeInsets.only(
+                                left: 95 + offset, bottom: 20),
+                            width: 10.w,
+                            height: 1,
+                            color: const Color(0xff5D5C5D),
+                          );
+                        })
+                    : const SizedBox.shrink();
+              })
         ],
       ),
     );
@@ -232,68 +231,52 @@ class PhoneFormField extends StatelessWidget {
 
 class PhoneNumberFormatter extends TextInputFormatter {
   final validationRegex = RegExp(r'[ 0-9]');
-  @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
-    print(newValue.text);
-    if(newValue.text.isEmpty){
-      return newValue;
-    }
-    if (!validationRegex.hasMatch(newValue.text) || (newValue.text[newValue.text.length-1]==' ' && newValue.text.length > oldValue.text.length)) {
-      return oldValue;
-    }
-    if((newValue.text[newValue.text.length-1]==' ' || oldValue.text[max(0 , oldValue.text.length-1)]==' ') && newValue.text.length < oldValue.text.length) {
-      return newValue.copyWith(
-          text: newValue.text.substring(0 ,newValue.text.length-1 ),
-          selection: TextSelection.collapsed(offset:newValue.selection.baseOffset -1)
-      );
-    }
-    Country newCountry = countries.firstWhere(
-            (element) => '+${newValue.text.toLowerCase()}'
-            .startsWith(
-            element.dialCode.toLowerCase()),
-        orElse: () => Country(
-            name: '',
-            flag: '',
-            code: '',
-            dialCode: '',
-            minLength: 0,
-            maxLength: 0));
-    Country prevCountry = countries.firstWhere(
-            (element) => '+${oldValue.text.toLowerCase()}'
-            .startsWith(
-            element.dialCode.toLowerCase()),
-        orElse: () => Country(
-            name: '',
-            flag: '',
-            code: '',
-            dialCode: '',
-            minLength: 0,
-            maxLength: 0));
-    if(newValue.text.replaceAll(' ', '').length > newCountry.maxLength+newCountry.dialCode.length-1 && newCountry.flag!=''){
-      return oldValue;
-    }
-    bool justCode = countries.any(
-            (element) => element.dialCode == '+${newValue.text}');
-    if(justCode && newValue.text.length < oldValue.text.length){
-      return newValue.copyWith(
-          text: newValue.text.substring(0 ,newValue.text.length-1 ),
-          selection: TextSelection.collapsed(offset:newValue.selection.baseOffset -1)
-      );
-    }
-    if(newCountry.dialCode != prevCountry.dialCode && newCountry.flag!=''){
-      return newValue.copyWith(
-        text: newValue.text + ' ',
-        selection: TextSelection.collapsed(offset:newValue.selection.baseOffset + 1)
-      );
-    }
-    int spaceIndex = max(0 ,newValue.text.lastIndexOf(' '));
-    if((newValue.text.length-spaceIndex) == 4){
-      return newValue.copyWith(
-          text: newValue.text + ' ',
-          selection: TextSelection.collapsed(offset:newValue.selection.baseOffset + 1)
-      );
-    }
-    return newValue;
-  }
 
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    String result  = getFormattedText(oldValue.text, newValue.text);
+      return newValue.copyWith(
+          text: result,
+          selection: TextSelection.collapsed(
+              offset: result.length));
+    }
+
+  String getFormattedText(String oldText, String newText) {
+    if(newText.length < oldText.length){
+        if(oldText[oldText.length-1]==' '){
+          return newText.substring(0,newText.length-1);
+        }
+    }
+    newText = newText.replaceAll(' ', '');
+    oldText = oldText.replaceAll(' ', '');
+    if (!validationRegex.hasMatch(newText)){
+      return oldText;
+    }
+    Country country = countries.firstWhere(
+            (element) => '+${newText.toLowerCase()}'
+            .startsWith(element.dialCode.toLowerCase()),
+        orElse: () => Country(
+            name: '',
+            flag: '',
+            code: '',
+            dialCode: '',
+            minLength: 0,
+            maxLength: 0));
+    String needEdit=newText;
+    if(newText.length > (country.dialCode.length + country.maxLength-2)){
+      needEdit =  oldText;
+    }
+    if((oldText.length+1) == country.dialCode.length && newText[newText.length-1]=='0'){
+      needEdit =  oldText;
+    }
+      String result = '';
+    for(int i=0 ; i < needEdit.length ; i++){
+      result+=needEdit[i];
+      if((i+1)%3==0){
+        result+=' ';
+      }
+    }
+    return result;
+  }
 }

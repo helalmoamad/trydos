@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
+import 'package:trydos/features/authentication/domain/use_cases/register_guest_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/send_otp_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/store_fcm_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_guest_phone_usecase.dart';
@@ -38,6 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       this.loginToMarketUseCase,
       this.loginToStoriesUseCase,
       this.storeFcmUseCase,
+      this.registerGuestUseCase,
       this.sendOtpUseCase,
       this.verifyGuestPhoneUseCase,
       this.verifyOtpSignInUseCase,
@@ -60,7 +62,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         transformer: throttleDroppable(throttleDuration));
     on<VerifyOtpSignUpEvent>(_onVerifyOtpSignUpEvent,
         transformer: throttleDroppable(throttleDuration));
-    on<VerifyGuestPhoneEvent>(_onVerifyGuestPhoneEvent,
+    on<VerifyGuestPhoneEvent>(_onVerifyGuestPhoneEvent, transformer: throttleDroppable(throttleDuration));
+    on<RegisterGuestEvent>(_onRegisterGuestEvent,
         transformer: throttleDroppable(throttleDuration));
   }
 
@@ -73,6 +76,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final VerifyOtpSignInUseCase verifyOtpSignInUseCase;
   final VerifyOtpSignUpUseCase verifyOtpSignUpUseCase;
   final VerifyGuestPhoneUseCase verifyGuestPhoneUseCase;
+  final RegisterGuestUseCase registerGuestUseCase;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
 
   FutureOr<void> _onCreateUserEvent(CreateUserEvent event,
@@ -104,6 +108,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       LoginToChatParams(
           mobilePhone: event.mobilePhone,
           otpIdToken: event.otpIdToken,
+          name: event.name,
           originalUserId: event.originalUserId),
     );
     response.fold(
@@ -220,6 +225,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       add(LoginToChatEvent(
           fcmToken: NotificationProcess.myFcmToken!,
           mobilePhone: event.phone,
+          name: r.data?.user?.name,
           originalUserId: r.data!.user!.id!.toString(),
           otpIdToken: r.data!.idToken!));
       add(LoginToStoriesEvent(
@@ -247,7 +253,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
                 verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
                 signUpErrorMessage: l.message)), (r) {
       _prefsRepository.setMarketToken(r.data!.token!);
-      //_prefsRepository.setOtpIdToken(r.data!.idToken!);
       add(LoginToChatEvent(
           fcmToken: NotificationProcess.myFcmToken!,
           mobilePhone: r.data!.user!.phone,
@@ -261,5 +266,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           verifyOtpSignUpStatus: VerifyOtpSignUpStatus.success,
           marketUser: r.data!.user));
     });
+  }
+
+  FutureOr<void> _onRegisterGuestEvent(RegisterGuestEvent event, Emitter<AuthState> emit) async {
+
+    emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.loading));
+    final response = await registerGuestUseCase(
+      RegisterGuestParams(deviceId: event.deviceId),
+    );
+    response.fold((l) => emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.failure)),
+    (r) {
+      _prefsRepository.setMarketToken(r.data!.token!);
+      emit(state.copyWith(
+          registerGuestStatus: RegisterGuestStatus.success,
+          marketUser: r.data!.user));
+    }
+    );
   }
 }

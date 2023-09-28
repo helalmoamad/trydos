@@ -137,6 +137,19 @@ class AuthRemoteDatasource {
     );
     return loginToMarket();
   }
+  Future<VerifyOtpSignUpAndInResponseModel> registerGuest(Map<String,dynamic> params){
+    PostClient<VerifyOtpSignUpAndInResponseModel> registerGuest= PostClient<VerifyOtpSignUpAndInResponseModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
+        endpoint: MarketEndPoints.registerGuestEP,
+        data: params,
+        response: ResponseValue<VerifyOtpSignUpAndInResponseModel>(
+            fromJson: (response) => VerifyOtpSignUpAndInResponseModel.fromJson(response)
+        ),
+      ),
+    );
+    return registerGuest();
+  }
   Future<LoginToStoriesResponseModel> loginToStories(Map<String,dynamic> params){
     PostClient<LoginToStoriesResponseModel> loginToStories= PostClient<LoginToStoriesResponseModel>(
       serverName: ServerName.stories,
