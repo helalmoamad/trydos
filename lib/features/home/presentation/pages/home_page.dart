@@ -12,7 +12,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_card.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import '../../../../common/constant/design/assets_provider.dart';
-import '../../../stories/presentation/widgets/stories_list.dart';
+import '../../../story/presentation/widget/stories_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

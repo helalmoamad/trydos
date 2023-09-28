@@ -1,17 +1,20 @@
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/story/data/models/get_stories_model.dart';
+import 'package:trydos/features/story/helper_functions/check_showing_stories.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
 
 class StoryItemWidget extends StatelessWidget {
-  const StoryItemWidget({Key? key , required this.resize}) : super(key: key);
+  const StoryItemWidget({Key? key , required this.resize,required this.stories}) : super(key: key);
   final bool resize;
+  final List<Story> stories;
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return InkWell(child: SizedBox(
       width: resize ? 150 : 110,
       child: Directionality(
         textDirection: TextDirection.ltr,
@@ -24,10 +27,10 @@ class StoryItemWidget extends StatelessWidget {
                 width:resize ? 140 : 100,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20.0),
-                  image: DecorationImage(
-                    image:  AssetImage(AppAssets.storyImageJpg),
-                    fit: BoxFit.fill,
-                  ),
+//                  image: DecorationImage(
+//                    image:  AssetImage(AppAssets.storyImageJpg),
+//                    fit: BoxFit.fill,
+//                  ),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0x805d5d5d),
@@ -36,6 +39,7 @@ class StoryItemWidget extends StatelessWidget {
                     ),
                   ],
                 ),
+                child: CachedNetworkImage(imageUrl: stories[firstWhereNotShowed(stories)].photoPath!,),
               ),
               Container(
                 height: resize ? 208 : 150,
@@ -60,8 +64,8 @@ class StoryItemWidget extends StatelessWidget {
                     width:resize ? 100 : 30,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image:  AssetImage(resize ? AppAssets.storyImageJpg :AppAssets.storyImageMinJpg),
-                        fit: BoxFit.fill
+                          image:  AssetImage(resize ? AppAssets.storyImageJpg :AppAssets.storyImageMinJpg),
+                          fit: BoxFit.fill
                       ),
                       borderRadius: BorderRadius.circular(180),
                       boxShadow: [
@@ -81,6 +85,6 @@ class StoryItemWidget extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ),onTap:(){} ,);
   }
 }

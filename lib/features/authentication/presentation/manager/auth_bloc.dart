@@ -11,6 +11,7 @@ import 'package:trydos/features/authentication/domain/use_cases/verify_guest_pho
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_signin_usecase.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
+import '../../../story/presentation/bloc/story_bloc.dart';
 import '../../data/models/verify_otp_sign_up_and_in_response_model.dart';
 import '../../domain/use_cases/create_user_usecase.dart';
 import '../../domain/use_cases/login_to_chat_usecase.dart';
@@ -170,7 +171,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   FutureOr<void> _onLoginToMarketEvent(event, Emitter<AuthState> emit) async {}
-
+//todo _onLoginToStoriesEvent
   FutureOr<void> _onLoginToStoriesEvent(LoginToStoriesEvent event,
       Emitter<AuthState> emit) async {
     emit(state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.loading));
@@ -195,6 +196,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setStoriesToken(token!);
           _prefsRepository.setMyStoriesId(id!);
         }
+        GetIt.I<StoryBloc>().add(GetStoryEvent());
       },
     );
   }

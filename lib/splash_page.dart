@@ -16,6 +16,7 @@ import 'package:trydos/routes/router_config.dart';
 
 import 'core/domin/repositories/prefs_repository.dart';
 import 'features/chat/presentation/manager/chat_bloc.dart';
+import 'features/story/presentation/bloc/story_bloc.dart';
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
 
@@ -32,6 +33,10 @@ class _SplashPageState extends State<SplashPage> {
     if(prefsRepository.chatToken != null){
       BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
     }
+    BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
+//    if(prefsRepository.storiesToken != null){
+//
+//    }
     super.initState();
   }
 
