@@ -265,7 +265,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               Expanded(
                 child: InkWell(
                   onTap: () {
-                    if (!prefsRepository.registeredUser) {
+                    if (!prefsRepository.registeredToChat) {
                       context.go(GRouter.config.applicationRoutes.kRegistrationPagePath);
                     }else{
                       appBloc.add(ChangeBasePage(2));

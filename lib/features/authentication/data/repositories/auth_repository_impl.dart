@@ -83,4 +83,9 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
         tryCall: () => dataSource.verifyOtpSignUp(params));
   }
 
-}
+  @override
+  Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> registerGuest(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.registerGuest(params));
+  }
+  }

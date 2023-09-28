@@ -156,15 +156,15 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                         if (text?.isNotEmpty ?? false) {
                           displaySubmit.value = text!.replaceAll(' ', '').length >=
                                   (newCountry.minLength +
-                                      newCountry.dialCode.length - 1) &&
+                                      newCountry.dialCode.length - 2) &&
                               text.replaceAll(' ', '').length <=
                                   (newCountry.maxLength +
-                                      newCountry.dialCode.length - 1);
+                                      newCountry.dialCode.length - 2);
                         }
                         countryChanged.value = newCountry;
                         return form.controllers[0].text.isNotEmpty ? form.controllers[0].text[form.controllers[0].text.length-1]==' ' : false;
                       },
-                      maxLength: maxLength,
+                      maxLength: maxLength-1,
                       prefixIcon: Padding(
                         padding: HWEdgeInsets.only(left: 20.0, top: 15),
                         child: Row(
@@ -209,7 +209,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                             : InkWell(
                                 onTap: () {
                                   widget.moveToNextStep.call(
-                                      '+${form.controllers[0].text}');
+                                      '${form.controllers[0].text}');
                                 },
                                 child: Row(
                                     mainAxisSize: MainAxisSize.min,

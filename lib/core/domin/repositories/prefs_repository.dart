@@ -51,7 +51,7 @@ abstract class PrefsRepository {
 
   ThemeMode get getTheme;
 
-  bool get registeredUser;
+  bool get registeredToChat;
 
   void saveRequestsData(
       String? url,
