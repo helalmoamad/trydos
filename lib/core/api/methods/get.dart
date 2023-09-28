@@ -45,11 +45,10 @@ class GetClient<T> extends BaseApi<T> {
             receiveTimeout: _receiveTimeout ?? options.receiveTimeout, sendTimeout: _sendTimeout ?? options.sendTimeout),
         onReceiveProgress: onReceiveProgress,
       );
-      Logger(printer: PrettyPrinter(methodCount: 0)).wtf(response.data);
 
       stopWatch.stop();
 
-      Logger(printer: PrettyPrinter(methodCount: 0)).wtf(stopWatch.elapsed.toString());
+      prettyPrinterI(stopWatch.elapsed.toString());
 
       if (response.statusCode == StatusCode.operationSucceeded.code) {
         if (_fromJson == null) {

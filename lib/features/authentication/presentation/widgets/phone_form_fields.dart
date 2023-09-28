@@ -264,7 +264,7 @@ class PhoneNumberFormatter extends TextInputFormatter {
             minLength: 0,
             maxLength: 0));
     String needEdit=newText;
-    if(newText.length > (country.dialCode.length + country.maxLength-2)){
+    if(newText.length > (country.dialCode.length + country.maxLength-2) && country.name != ''){
       needEdit =  oldText;
     }
     if((oldText.length+1) == country.dialCode.length && newText[newText.length-1]=='0'){

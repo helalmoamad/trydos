@@ -25,7 +25,7 @@ import '../../domain/use_cases/upload_file_usecase.dart';
 import '../utils/pusher_chat.dart';
 import 'chat_event.dart';
 import 'helper_function_for_chat_bloc/group_received_message_on_days.dart';
-
+import 'package:logger/logger.dart';
 part 'chat_state.dart';
 
 const throttleDuration = Duration(milliseconds: 1000);
@@ -285,7 +285,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         });
 
         //todo set the value of new chat in those variables to reuse it in calculating the newSortedChatsByDate
-        var chat_after_merge_with_new = MergeOldMessageWithNew(newChats: r.data!.chats!, previousChats: state.chats);
+        List<Chat> chat_after_merge_with_new = MergeOldMessageWithNew(newChats: r.data!.chats!, previousChats: state.chats);
         var pinned_chat_after_merge_with_the_new = MergeOldMessageWithNew(newChats: r.data!.pinnedChats!, previousChats: state.pinnedChats);
         emit(
           state.copyWith(
