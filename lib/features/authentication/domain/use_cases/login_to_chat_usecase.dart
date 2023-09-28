@@ -23,15 +23,18 @@ class LoginToChatParams {
   String? mobilePhone;
   String? otpIdToken;
   String? originalUserId;
+  String? name;
 
   LoginToChatParams({
     this.mobilePhone,
     this.otpIdToken,
     this.originalUserId,
+    this.name,
   });
   Map<String, dynamic> get map =>{
     "mobile_phone" :mobilePhone,
     "otp_id_token" :otpIdToken,
+    "name" :name,
     "original_user_id" :originalUserId,
   };
 }

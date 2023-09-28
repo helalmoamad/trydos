@@ -8,7 +8,9 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/base_page.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_page.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/routes/router.dart';
@@ -16,6 +18,7 @@ import 'package:trydos/routes/router_config.dart';
 
 import 'core/domin/repositories/prefs_repository.dart';
 import 'features/chat/presentation/manager/chat_bloc.dart';
+
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
 
@@ -28,28 +31,34 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   void initState() {
-    Timer(const Duration(seconds: 4), _onSplash);
-    if(prefsRepository.chatToken != null){
+    registerGuest();
+    if (prefsRepository.chatToken != null) {
       BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
     }
     super.initState();
   }
 
-  _onSplash() {
 
-    if (prefsRepository.registeredUser) {
-      context.go(GRouter.config.applicationRoutes.kBasePage);
-    } else {
-      context.go(GRouter.config.applicationRoutes.kRegistrationPage);
-    }
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colorScheme.background,
-      body: Center(
-        child: logo
-      )
-    );
+        backgroundColor: context.colorScheme.background,
+        body: BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if(state.registerGuestStatus == RegisterGuestStatus.success){
+              if(state.marketUser?.isPhoneVerified == 1){
+                context.go(GRouter.config.applicationRoutes.kBasePage);
+              }else{
+                context.go(GRouter.config.applicationRoutes.kRegistrationPage);
+              }
+            }
+          },
+          child: Center(child: logo),
+        ));
+  }
+
+  void registerGuest()async {
+    String? deviceId = await HelperFunctions.getDeviceId();
+    BlocProvider.of<AuthBloc>(context).add(RegisterGuestEvent(deviceId: deviceId!));
   }
 }

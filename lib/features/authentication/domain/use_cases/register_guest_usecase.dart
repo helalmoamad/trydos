@@ -6,28 +6,25 @@ import '../../data/models/verify_otp_sign_up_and_in_response_model.dart';
 import '../repositories/auth_repository.dart';
 
 @injectable
-class VerifyOtpSignInUseCase implements UseCase<VerifyOtpSignUpAndInResponseModel, VerifyOtpSignInParams> {
-  VerifyOtpSignInUseCase(this.repository);
+class RegisterGuestUseCase implements UseCase<VerifyOtpSignUpAndInResponseModel, RegisterGuestParams> {
+  RegisterGuestUseCase(this.repository);
 
   final AuthRepository repository;
 
   @override
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> call(
-      VerifyOtpSignInParams params) async {
-    return repository.verifyOtpSignIn(params.map);
+      RegisterGuestParams params) async {
+    return repository.registerGuest(params.map);
   }
 }
 
-class VerifyOtpSignInParams {
-  String verificationId;
-  String otp;
+class RegisterGuestParams {
+  String deviceId;
 
-  VerifyOtpSignInParams({
-    required this.verificationId,
-    required this.otp,
+  RegisterGuestParams({
+    required this.deviceId,
   });
   Map<String, dynamic> get map =>{
-    "otp" :otp,
-    "verificationId" :verificationId,
+    "device_id" :deviceId,
   };
 }

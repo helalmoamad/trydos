@@ -24,16 +24,18 @@ class LoginToChatEvent extends AuthEvent {
   final String? otpIdToken;
   final String? originalUserId;
   final String fcmToken;
+  final String? name;
   const LoginToChatEvent({
     this.mobilePhone,
     this.otpIdToken,
     this.originalUserId,
+    this.name,
     required this.fcmToken,
   });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [mobilePhone, otpIdToken, fcmToken,originalUserId];
+  List<Object?> get props => [mobilePhone, otpIdToken, fcmToken,originalUserId , name];
 }
 class StoreFcmTokenEvent extends AuthEvent {
   final int userId;
@@ -114,6 +116,17 @@ class VerifyGuestPhoneEvent extends AuthEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [idToken];
+}
+class RegisterGuestEvent extends AuthEvent {
+  final String deviceId;
+
+  RegisterGuestEvent({
+    required this.deviceId,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [deviceId];
 }
 
 class LoginToMarketEvent extends AuthEvent {

@@ -165,7 +165,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          5.verticalSpace,
+                          SizedBox(height: 54,),
                         ]),
                   ),
                   AddingName()

@@ -52,7 +52,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  bool get registeredUser => chatToken != null;
+  bool get registeredToChat => chatToken != null;
 
   @override
   void saveRequestsData(

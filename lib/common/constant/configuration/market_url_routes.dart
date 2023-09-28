@@ -15,6 +15,7 @@ abstract class MarketEndPoints {
   static final verifyOtpFromGuestEP = 'verify_otp_from_guest'.phoneScope();
   static final verifyGuestPhoneEP = 'verify-guest-phone'.authFirebaseScope();
   static final registerEP = 'register'.authScope();
+  static final registerGuestEP = 'register-guest'.authScope();
   static final loginEP = 'login'.phoneScope();
 }
 

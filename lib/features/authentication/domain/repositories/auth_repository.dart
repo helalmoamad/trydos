@@ -12,6 +12,7 @@ abstract class AuthRepository {
   Future<Either<Failure,CreateUserResponseModel>> createUser(Map<String , dynamic> params);
   Future<Either<Failure,LoginToChatResponseModel>> loginToChat(Map<String , dynamic> params);
   Future<Either<Failure,VerifyOtpSignUpAndInResponseModel>> loginToMarket(Map<String , dynamic> params);
+  Future<Either<Failure,VerifyOtpSignUpAndInResponseModel>> registerGuest(Map<String , dynamic> params);
   Future<Either<Failure,LoginToStoriesResponseModel>> loginToStories(Map<String , dynamic> params);
   Future<Either<Failure,bool>> deleteFcmToken(Map<String , dynamic> params);
   Future<Either<Failure,StoreFcmTokenResponseModel>> storeFcmToken(Map<String , dynamic> params);
