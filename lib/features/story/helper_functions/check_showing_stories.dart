@@ -18,6 +18,8 @@ int firstWhereNotShowed(List<Story> stories) {
     if (element.isSeen!) {
       index++;
     }
+//    todo  remember to break when meat first story not seen
+//    else break;
   });
 
   if (stories.length == index) return index - 1;

@@ -9,12 +9,12 @@ import 'package:trydos/features/story/helper_functions/check_showing_stories.dar
 import '../../../../common/constant/design/assets_provider.dart';
 
 class StoryItemWidget extends StatelessWidget {
-  const StoryItemWidget({Key? key , required this.resize,required this.stories}) : super(key: key);
+  const StoryItemWidget({Key? key , required this.resize,required this.firstPhotoNotShowed}) : super(key: key);
   final bool resize;
-  final List<Story> stories;
+final String firstPhotoNotShowed;
   @override
   Widget build(BuildContext context) {
-    return InkWell(child: SizedBox(
+    return SizedBox(
       width: resize ? 150 : 110,
       child: Directionality(
         textDirection: TextDirection.ltr,
@@ -39,7 +39,8 @@ class StoryItemWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: CachedNetworkImage(imageUrl: stories[firstWhereNotShowed(stories)].photoPath!,),
+                child:
+                CachedNetworkImage(imageUrl:firstPhotoNotShowed,),
               ),
               Container(
                 height: resize ? 208 : 150,
@@ -85,6 +86,6 @@ class StoryItemWidget extends StatelessWidget {
           ),
         ),
       ),
-    ),onTap:(){} ,);
+    );
   }
 }
