@@ -53,7 +53,7 @@ class PostClient<T> extends BaseApi<T> {
         onReceiveProgress: onReceiveProgress,
       );
       stopWatch.stop();
-      Logger(printer: PrettyPrinter(methodCount: 0)).wtf(stopWatch.elapsed.toString());
+      prettyPrinterI(stopWatch.elapsed.toString());
       if (response.statusCode == StatusCode.operationSucceeded.code) {
         if (_fromJson == null) {
           return Future.value(_valueOnSuccess);

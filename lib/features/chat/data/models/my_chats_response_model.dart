@@ -123,12 +123,12 @@ class Message {
   final Message? parentMessage;
   final SenderInfo? senderInfo;
   final File? file;
-   bool? is_first_message_for_today=false;
-    bool? is_first_message=false;
+   bool isFirstMessageForThisDay;
+    bool isFirstMessage;
 
   Message({
-    this.is_first_message_for_today,
-    this.is_first_message,
+    this.isFirstMessageForThisDay=false,
+    this.isFirstMessage = false,
     this.id,
     this.senderUserId,
     this.localParentMessageId,
@@ -165,8 +165,8 @@ class Message {
   });
 
   Message copyWith({
-    final bool?is_first_message_for_today,
-    final bool?is_first_message,
+    final bool?isFirstMessageForThisDay,
+    final bool?isFirstMessage,
     final String? id,
     final String? localId,
     final String? localParentMessageId,
@@ -233,6 +233,8 @@ class Message {
       isFromWhatsapp : isFromWhatsapp ?? this.isFromWhatsapp,
       messageContent : messageContent ?? this.messageContent,
       body :  body ?? this.body,
+      isFirstMessageForThisDay : isFirstMessageForThisDay ?? this.isFirstMessageForThisDay,
+      isFirstMessage : isFirstMessage ?? this.isFirstMessage,
       image : image ?? this.image,
       messageStatus :  messageStatus ?? this.messageStatus,
       mediaMessageContent : mediaMessageContent ?? this.mediaMessageContent,

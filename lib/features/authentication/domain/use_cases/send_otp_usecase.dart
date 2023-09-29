@@ -30,7 +30,7 @@ class SendOtpParams {
     required this.isViaWhatsApp,
   });
   Map<String, dynamic> get map =>{
-    "phone" :'${phone.substring(1)}',
+    "phone" :'${phone}',
     "is_via_whatsapp" :isViaWhatsApp.toString(),
   };
 }
