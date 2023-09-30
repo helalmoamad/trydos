@@ -48,27 +48,33 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     var initialStory =
         state.stories[event.selected].stories![event.initialStory];
     if (initialStory.isPhoto == 1) {
+//todo debug
       Fluttertoast.showToast(msg: 'msg');
       //todo bring the real width and height for selected photo
       final response = await getWidthAndHeightUseCase(
           widthAndHeightParams(url: initialStory.photoPath!));
       response.fold((l) {
-        emit(state.copyWith(selectedStoriesStatus: SelectedStoriesStatus.failure));
+        emit(state.copyWith(
+            selectedStoriesStatus: SelectedStoriesStatus.failure));
       }, (r) {
+        //todo debug
         Fluttertoast.showToast(msg: '${r.width}');
+//todo make the story seen
+  state.stories[event.selected].stories![event.initialStory].isSeen = true;
 
-        state.stories[state.selectedStory!].stories![state.initialStory!]
-            .isSeen = true;
-
-         emit(state.copyWith(
-             selectedStoriesStatus: SelectedStoriesStatus.success,
+        emit(state.copyWith(
+            selectedStoriesStatus: SelectedStoriesStatus.success,
             stories: state.stories,
             imageDetail: r));
       });
     } else {
       //todo it's a video all what i will do is make it seen
-      state.stories[state.selectedStory!].stories![state.initialStory!].isSeen =true;
-      emit(state.copyWith(selectedStoriesStatus: SelectedStoriesStatus.success, stories: state.stories));
+      //todo make the story video seen
+      state.stories[state.selectedStory!].stories![state.initialStory!].isSeen =
+          true;
+      emit(state.copyWith(
+          selectedStoriesStatus: SelectedStoriesStatus.success,
+          stories: state.stories));
     }
   }
 

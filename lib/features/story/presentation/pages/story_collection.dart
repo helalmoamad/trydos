@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/features/story/data/models/get_stories_model.dart';
+import 'package:trydos/features/story/helper_functions/check_showing_stories.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:video_player/video_player.dart';
 
@@ -29,14 +31,116 @@ class _StoryCollectionState extends State<StoryCollection>
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<StoryBloc, StoryState>(
-      buildWhen:  (previous, current) => previous.getStoriesStatus!=current.getStoriesStatus,
+//      buildWhen:  (previous, current) => previous.getStoriesStatus!=current.getStoriesStatus,
       builder: (context, state) {
-        if(state.selectedStoriesStatus ==SelectedStoriesStatus.loading)
-          return Text('${state.getStoriesStatus}');
-        if(state.selectedStoriesStatus==SelectedStoriesStatus.success)
-          return Text('${state.imageDetail!.width}');
-        return Text('');
+        print(state.selectedStoriesStatus);
+
+
+        int currentInitialIndex=firstWhereNotShowed(state.stories[state.selectedStory!].stories!);
+        List<Story> collectionOfSelectedStory=state.stories[state.selectedStory!].stories!;
+        var initialStory = collectionOfSelectedStory[currentInitialIndex];
+        return Stack(children: [
+
+//          Text('${state.selectedStoriesStatus}'),
+//          state.selectedStoriesStatus==SelectedStoriesStatus.success?Text('${state.imageDetail!.width}'):Text('data')
+          Positioned(
+          top: 40.0,
+          left: 10.0,
+          right: 10.0,
+          child: Column(
+              children: <Widget>[
+          Row(
+          children: collectionOfSelectedStory
+              .asMap()
+              .map((i, e) {
+            return MapEntry(
+              i,
+              AnimatedBar(
+                animController: animatedController,
+                position: i,
+                currentIndex: currentInitialIndex,
+              ),
+            );
+          })
+              .values
+              .toList(),
+        ),])),
+
+
+
+
+
+
+
+          ],);
+        },
+    );
+  }
+}
+
+class AnimatedBar extends StatelessWidget {
+  final AnimationController animController;
+  final int position;
+  final int currentIndex;
+
+  const AnimatedBar({
+    Key? key,
+    required this.animController,
+    required this.position,
+    required this.currentIndex,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<StoryBloc, StoryState>(
+      builder: (context1, state) {
+          return Flexible(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 1.5),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Stack(
+                    children: <Widget>[
+                      _buildContainer(
+                        double.infinity,
+                        position < state.initialStory!
+                            ? Colors.white
+                            : Colors.white.withOpacity(0.5),
+                      ),
+                      position == state.initialStory
+                          ? AnimatedBuilder(
+                        animation: animController,
+                        builder: (context, child) {
+                          return _buildContainer(
+                            constraints.maxWidth * animController.value,
+                            Colors.white,
+                          );
+                        },
+                      )
+                          : const SizedBox.shrink(),
+                    ],
+                  );
+                },
+              ),
+            ),
+          );
+
       },
+    );
+  }
+
+  Container _buildContainer(double width, Color color) {
+    return Container(
+      height: 5.0,
+      width: width,
+      decoration: BoxDecoration(
+        color: color,
+        border: Border.all(
+          color: Colors.black26,
+          width: 0.8,
+        ),
+        borderRadius: BorderRadius.circular(3.0),
+      ),
     );
   }
 }
