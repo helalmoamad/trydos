@@ -163,6 +163,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(state.copyWith(
         sendMessageStatus: SendMessageStatus.loading,
         currentMessage: ids,
+        newSortedChatsByDate: groupReceivedMessageOnDays(chats : [...chats , ...(fromPinned ? state.chats : state.pinnedChats)]),
         chats: fromPinned ? state.chats : chats,
         pinnedChats: !fromPinned ? state.pinnedChats : chats,
         channelId: event.channelId));
@@ -396,6 +397,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             channelId: event.channelId,
             id: event.messageId,
             file: event.file,
+            checkedExistence: true,
             createdAt: DateTime.now(),
             receiverUserId: event.receiverUserId,
             senderUserId: _prefsRepository.myChatId,
@@ -422,6 +424,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(state.copyWith(
         sendMessageStatus: SendMessageStatus.loading,
         currentMessage: ids,
+        newSortedChatsByDate: groupReceivedMessageOnDays(chats: [...chats , ...(fromPinned ? state.chats : state.pinnedChats)]),
         chats: fromPinned ? state.chats : chats,
         pinnedChats: !fromPinned ? state.pinnedChats : chats,
         channelId: event.channelId));
@@ -495,6 +498,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     int index =
         messages.indexWhere((element) => element.id == event.prevMessageId);
+    if (fromPinned) {
+      chats = sortChats(chats, event.message.channelId, messages);
+    } else {
+      chats = sortChats(chats, event.message.channelId, messages);
+    }
     emit(state.copyWith(
       receiveMessageStatus: ReceiveMessageStatus.success,
       unReadMessagesFromAllChats:
@@ -502,6 +510,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                   _prefsRepository.myChatId
               ? 1
               : 0,
+       newSortedChatsByDate: groupReceivedMessageOnDays(chats : [...chats , ...(fromPinned ? state.chats : state.pinnedChats)]),
       currentChannelReceivedMessage: event.message.channelId,
       channelId: event.message.channelId,
       chats: fromPinned

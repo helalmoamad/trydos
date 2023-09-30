@@ -4,23 +4,28 @@ MergeOldMessageWithNew(
     {required List<Chat> newChats, required List<Chat> previousChats}) {
   List<Message> currMessages;
   List<Message> prevMessages;
-  String? lastNewId;
+  List<Message> resultMessages=[];
   return (previousChats.isNotEmpty &&
           previousChats
               .any((element) => int.tryParse(element.id.toString()) != null))
       ? newChats.map((chat) {
+    prevMessages = List.of(previousChats
+        .firstWhere((element) => element.id == chat.id)
+        .messages ??
+        []);
+    resultMessages=[];
           currMessages = List.of(chat.messages ?? []);
-          lastNewId = currMessages[currMessages.length - 1].id;
-          currMessages = [];
-          prevMessages = List.of(previousChats
-                  .firstWhere((element) => element.id == chat.id)
-                  .messages ??
-              []);
-          for (int i = prevMessages.length - 1; i >= 0; i--) {
-            if (prevMessages[i].id == lastNewId) break;
-            currMessages.insert(0, prevMessages[i]);
+          for(int i=0;i<currMessages.length ; i++){
+            if(currMessages[i].id == prevMessages[i].id){
+              resultMessages[i] = prevMessages[i];
+            }else {
+              resultMessages[i]=currMessages[i];
+            }
           }
-          return chat.copyWith(messages: [...chat.messages!, ...currMessages]);
+          for(int i= currMessages.length ; i< prevMessages.length ;i++){
+            resultMessages[i] = prevMessages[i];
+          }
+          return chat.copyWith(messages: [...chat.messages!, ...resultMessages]);
         }).toList()
       : newChats;
 }
