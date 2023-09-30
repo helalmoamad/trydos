@@ -25,6 +25,7 @@ class StoriesList extends StatelessWidget {
             ValueListenableBuilder<int>(
                 valueListenable: resizeStories,
                 builder: (context, focused, _) {
+Fluttertoast.showToast(msg: state.stories.length.toString());
                   return SizedBox(
                       width: 90,
                       height: 120,
@@ -32,7 +33,6 @@ class StoriesList extends StatelessWidget {
                           controller: listViewController,
                           itemBuilder: (context, index) {
                             var indexOfInitialStory = firstWhereNotShowed(state.stories[index].stories!);
-
                             var initialStory = state.stories[index].stories![indexOfInitialStory];
                             return GestureDetector(
                               onTap: () async {
@@ -62,11 +62,7 @@ class StoriesList extends StatelessWidget {
                                   height: focused == -1 ? 170 : 228,
                                   child: (initialStory.isPhoto == 1)
                                       ? StoryItemWidget(
-                                          resize: index == focused,
-                                          firstPhotoNotShowed: state
-                                              .stories[0]
-                                              .stories![firstWhereNotShowed(
-                                                  state.stories[0].stories!)]
+                                          resize: index == focused,firstPhotoNotShowed: state.stories[index].stories![firstWhereNotShowed(state.stories[index].stories!)]
                                               .photoPath!,
                                         )
                                       : Text('ibrahem')

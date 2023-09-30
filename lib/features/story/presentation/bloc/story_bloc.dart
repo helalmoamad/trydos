@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
@@ -60,21 +61,28 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
         //todo debug
         Fluttertoast.showToast(msg: '${r.width}');
 //todo make the story seen
-  state.stories[event.selected].stories![event.initialStory].isSeen = true;
 
+
+        state.stories[event.selected].stories![event.initialStory].isSeen =true;
+//todo debug
+        Fluttertoast.showToast(msg:state.stories.length.toString(),backgroundColor: Colors.red );
         emit(state.copyWith(
             selectedStoriesStatus: SelectedStoriesStatus.success,
             stories: state.stories,
+            initialStory: event.initialStory,
+            selectedStory: event.selected,
             imageDetail: r));
       });
     } else {
       //todo it's a video all what i will do is make it seen
       //todo make the story video seen
-      state.stories[state.selectedStory!].stories![state.initialStory!].isSeen =
-          true;
+      state.stories[event.selected].stories![event.initialStory].isSeen =true;
       emit(state.copyWith(
-          selectedStoriesStatus: SelectedStoriesStatus.success,
-          stories: state.stories));
+        selectedStoriesStatus: SelectedStoriesStatus.success,
+        stories: state.stories,
+        initialStory: event.initialStory,
+        selectedStory: event.selected,
+      ));
     }
   }
 
