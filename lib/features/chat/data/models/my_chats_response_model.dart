@@ -90,6 +90,7 @@ class SenderInfo {
 }
 
 class Message {
+  final bool checkedExistence;
   final String? id;
   final String? localId;
   final String? localParentMessageId;
@@ -128,6 +129,7 @@ class Message {
 
   Message({
     this.isFirstMessageForThisDay=false,
+    this.checkedExistence=false,
     this.isFirstMessage = false,
     this.id,
     this.senderUserId,
@@ -176,6 +178,7 @@ class Message {
     final DateTime? createdAt,
     final MessageType? messageType,
     final dynamic predefinedEmotionId,
+    final bool? checkedExistence,
     final String? predefinedMessageId,
     final dynamic messageStatusId,
     final dynamic taskId,
@@ -213,6 +216,7 @@ class Message {
       senderUserId :  senderUserId ??this.senderUserId,
       senderInfo : senderInfo ?? this.senderInfo,
       receiverUserId : receiverUserId ?? this.receiverUserId,
+      checkedExistence : checkedExistence ?? this.checkedExistence,
       channelId : channelId ??this.channelId,
       createdAt : createdAt ??this.createdAt,
       messageType : messageType ?? this.messageType,

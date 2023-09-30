@@ -126,7 +126,6 @@ class _ChatCardState extends ThemeState<ChatCard> {
               onTap: () {
 //                if(state.)
               //todo (future update) call just when The totalUnreadMessage one or more
-                chatBloc.add(ReadAllMessagesEvent(widget.chat.id!.toString()));
                 // if (widget.onSendForwardMessage != null) {
                 //   Navigator.of(context)
                 //     ..pop()
