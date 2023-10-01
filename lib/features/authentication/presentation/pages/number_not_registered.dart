@@ -168,7 +168,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                           SizedBox(height: 54,),
                         ]),
                   ),
-                  AddingName()
+                  AddingName(fromLogin: true,)
                 ],
               ),
             ],

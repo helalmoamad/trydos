@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import '../../service/language_service.dart';
-import '../domin/repositories/prefs_repository.dart';
 import 'handling_exception.dart';
 
 abstract class BaseApi<T> with HandlingExceptionRequest {
@@ -16,7 +15,9 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
     }
 
     headers = client.options.headers..[HttpHeaders.acceptLanguageHeader] = LanguageService.languageCode;
-
+    headers.addAll({
+      'User-Agent':'device OS:'+(Platform.isAndroid ? 'Android' : 'IOS')+' , application version: 1.0.0',
+    });
     options = Options(headers: headers);
   }
   final ServerName serverName ;

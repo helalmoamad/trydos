@@ -25,12 +25,14 @@ class VerifyOtp extends StatefulWidget {
   VerifyOtp(
       {Key? key,
       required this.methodIcon,
+      required this.fromLogin,
       required this.navigateToAddName,
       required this.onLoginFailed,
       required this.goBack,
       required this.phoneNumber})
       : super(key: key);
   final String methodIcon;
+  final bool fromLogin;
   final String phoneNumber;
   final void Function() onLoginFailed;
   final void Function() goBack;
@@ -74,9 +76,11 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
+        listenWhen: (p, c) =>
+            p.verifyOtpSignInStatus != c.verifyOtpSignInStatus,
         listener: (context, state) {
           if (state.verifyOtpSignInStatus == VerifyOtpSignInStatus.failure) {
-            if (state.signInErrorMessage == 'user not found') {
+            if (state.signInErrorMessage == 'auth-001') {
               context.go(
                   GRouter.config.applicationRoutes.kNumberNotRegisteredPage +
                       '?phoneNumber=${widget.phoneNumber}',
@@ -95,147 +99,195 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
             );
           }
         },
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding: HWEdgeInsets.symmetric(horizontal: 40.0),
-                child: Column(children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SvgPicture.asset(AppAssets.phoneOtpSvg,
-                          width: 15, height: 15),
-                      10.horizontalSpace,
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'We Have Sent A Verification Code:',
-                            style: context.textTheme.caption?.ra.copyWith(
-                                color: Color(0xff5D5C5D), height: 1.42),
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: HWEdgeInsets.only(top: 3.0),
-                                child: SvgPicture.asset(AppAssets.phoneCallSvg,
+        child: BlocListener<AuthBloc, AuthState>(
+          listenWhen: (p, c) =>
+              p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus,
+          listener: (context, state) {
+            if (state.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.failure) {
+              if (state.signInErrorMessage == 'user-exists') {
+                context.go(
+                    GRouter.config.applicationRoutes.kUserExistPage +
+                        '?phoneNumber=${widget.phoneNumber}',
+                    );
+                return;
+              }
+              checkOtp.value = 2;
+            } else if (state.verifyOtpSignUpStatus ==
+                VerifyOtpSignUpStatus.success) {
+              checkOtp.value = 1;
+              Future.delayed(
+                Duration(milliseconds: 700),
+                () {
+                  widget.navigateToAddName.call();
+                },
+              );
+            }
+          },
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: HWEdgeInsets.symmetric(horizontal: 40.0),
+                  child: Column(children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SvgPicture.asset(AppAssets.phoneOtpSvg,
+                            width: 15, height: 15),
+                        10.horizontalSpace,
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'We Have Sent A Verification Code:',
+                              style: context.textTheme.caption?.ra.copyWith(
+                                  color: Color(0xff5D5C5D), height: 1.42),
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: HWEdgeInsets.only(top: 3.0),
+                                  child: SvgPicture.asset(
+                                      AppAssets.phoneCallSvg,
+                                      width: 10,
+                                      height: 10),
+                                ),
+                                5.horizontalSpace,
+                                Text(
+                                  widget.phoneNumber,
+                                  textAlign: TextAlign.start,
+                                  style: context.textTheme.caption?.ra.copyWith(
+                                      color: Color(0xffC4C2C2), height: 1.25),
+                                ),
+                              ],
+                            ),
+                            5.verticalSpace,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SvgPicture.asset(widget.methodIcon,
                                     width: 10, height: 10),
-                              ),
-                              5.horizontalSpace,
-                              Text(
-                                widget.phoneNumber,
-                                textAlign: TextAlign.start,
-                                style: context.textTheme.caption?.ra.copyWith(
-                                    color: Color(0xffC4C2C2), height: 1.25),
-                              ),
-                            ],
-                          ),
-                          5.verticalSpace,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              SvgPicture.asset(widget.methodIcon,
-                                  width: 10, height: 10),
-                              5.horizontalSpace,
-                              Text(
-                                'Please Enter The Verification Code Sent To Your ${widget.methodIcon == AppAssets.whatsappSvg ? 'Whatsapp' : 'SMS'}',
-                                style: context.textTheme.caption?.ra.copyWith(
-                                    color: Color(0xffC4C2C2), height: 1.25),
-                              )
-                            ],
-                          ),
-                          4.verticalSpace,
-                          ValueListenableBuilder<bool>(
-                              valueListenable: _enabledResendNotifier,
-                              builder: (context, resend, _) {
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        SvgPicture.asset(
-                                            AppAssets.registerInfoSvg,
-                                            width: 10,
-                                            height: 10),
-                                        5.horizontalSpace,
-                                        Text(
-                                          resend
-                                              ? 'You Can Resend The Code After'
-                                              : 'Didn’t You Receive A Code?',
-                                          style: context.textTheme.caption?.ra
-                                              .copyWith(
-                                                  color: Color(0xffC4C2C2),
-                                                  height: 1.25),
-                                        ),
-                                        4.horizontalSpace,
-                                        ValueListenableBuilder<bool>(
-                                            valueListenable:
-                                                _enabledResendNotifier,
-                                            builder:
-                                                (context, enabledResend, _) {
-                                              if (!enabledResend)
-                                                return CountdownTimer(
-                                                  widgetBuilder:
-                                                      (_, remainingTime) {
-                                                    String seconds = (remainingTime
-                                                                    ?.sec ??
-                                                                0) <
-                                                            10
-                                                        ? '0${remainingTime?.sec}'
-                                                        : '${remainingTime?.sec}';
-                                                    return Text(
-                                                      '0${remainingTime?.min ?? '0'} : $seconds ',
-                                                      style: context
-                                                          .textTheme.caption?.ra
-                                                          .copyWith(
-                                                              color: Color(
-                                                                  0xff4D84FF),
-                                                              height: 1.25),
-                                                    );
-                                                  },
-                                                  controller: controller,
-                                                  onEnd: onEnd,
-                                                  endTime: endTime,
-                                                  endWidget: const SizedBox(),
+                                5.horizontalSpace,
+                                Text(
+                                  'Please Enter The Verification Code Sent To Your ${widget.methodIcon == AppAssets.whatsappSvg ? 'Whatsapp' : 'SMS'}',
+                                  style: context.textTheme.caption?.ra.copyWith(
+                                      color: Color(0xffC4C2C2), height: 1.25),
+                                )
+                              ],
+                            ),
+                            4.verticalSpace,
+                            ValueListenableBuilder<bool>(
+                                valueListenable: _enabledResendNotifier,
+                                builder: (context, resend, _) {
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          SvgPicture.asset(
+                                              AppAssets.registerInfoSvg,
+                                              width: 10,
+                                              height: 10),
+                                          5.horizontalSpace,
+                                          Text(
+                                            resend
+                                                ? 'You Can Resend The Code After'
+                                                : 'Didn’t You Receive A Code?',
+                                            style: context.textTheme.caption?.ra
+                                                .copyWith(
+                                                    color: Color(0xffC4C2C2),
+                                                    height: 1.25),
+                                          ),
+                                          4.horizontalSpace,
+                                          ValueListenableBuilder<bool>(
+                                              valueListenable:
+                                                  _enabledResendNotifier,
+                                              builder:
+                                                  (context, enabledResend, _) {
+                                                if (!enabledResend)
+                                                  return CountdownTimer(
+                                                    widgetBuilder:
+                                                        (_, remainingTime) {
+                                                      String seconds = (remainingTime
+                                                                      ?.sec ??
+                                                                  0) <
+                                                              10
+                                                          ? '0${remainingTime?.sec}'
+                                                          : '${remainingTime?.sec}';
+                                                      return Text(
+                                                        '0${remainingTime?.min ?? '0'} : $seconds ',
+                                                        style: context.textTheme
+                                                            .caption?.ra
+                                                            .copyWith(
+                                                                color: Color(
+                                                                    0xff4D84FF),
+                                                                height: 1.25),
+                                                      );
+                                                    },
+                                                    controller: controller,
+                                                    onEnd: onEnd,
+                                                    endTime: endTime,
+                                                    endWidget: const SizedBox(),
+                                                  );
+                                                return InkWell(
+                                                  onTap: _onResendSucceed,
+                                                  child: Text(
+                                                    'Resend Code',
+                                                    style: context
+                                                        .textTheme.caption?.ra
+                                                        .copyWith(
+                                                            color: Color(
+                                                                0xff4D84FF),
+                                                            height: 1.25),
+                                                  ),
                                                 );
-                                              return InkWell(
-                                                onTap: _onResendSucceed,
-                                                child: Text(
-                                                  'Resend Code',
+                                              }),
+                                          resend
+                                              ? Text(
+                                                  ' Or ',
                                                   style: context
                                                       .textTheme.caption?.ra
                                                       .copyWith(
                                                           color:
-                                                              Color(0xff4D84FF),
+                                                              Color(0xff5D5C5D),
                                                           height: 1.25),
-                                                ),
-                                              );
-                                            }),
-                                        resend
-                                            ? Text(
-                                                ' Or ',
-                                                style: context
-                                                    .textTheme.caption?.ra
-                                                    .copyWith(
-                                                        color:
-                                                            Color(0xff5D5C5D),
-                                                        height: 1.25),
-                                              )
-                                            : const SizedBox.shrink(),
-                                        resend
-                                            ? InkWell(
+                                                )
+                                              : const SizedBox.shrink(),
+                                          resend
+                                              ? InkWell(
+                                                  onTap: widget.goBack,
+                                                  child: Text(
+                                                    'Change',
+                                                    maxLines: 2,
+                                                    softWrap: true,
+                                                    style: context
+                                                        .textTheme.caption?.ra
+                                                        .copyWith(
+                                                            color: Color(
+                                                                0xff4D84FF),
+                                                            height: 1.25),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink()
+                                        ],
+                                      ),
+                                      resend
+                                          ? Padding(
+                                              padding:
+                                                  HWEdgeInsets.only(left: 15.0),
+                                              child: InkWell(
                                                 onTap: widget.goBack,
                                                 child: Text(
-                                                  'Change',
+                                                  'The Method Of Receiving',
                                                   maxLines: 2,
                                                   softWrap: true,
                                                   style: context
@@ -245,222 +297,213 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                               Color(0xff4D84FF),
                                                           height: 1.25),
                                                 ),
-                                              )
-                                            : const SizedBox.shrink()
-                                      ],
-                                    ),
-                                    resend
-                                        ? Padding(
-                                            padding:
-                                                HWEdgeInsets.only(left: 15.0),
-                                            child: InkWell(
-                                              onTap: widget.goBack,
-                                              child: Text(
-                                                'The Method Of Receiving',
-                                                maxLines: 2,
-                                                softWrap: true,
-                                                style: context
-                                                    .textTheme.caption?.ra
-                                                    .copyWith(
-                                                        color:
-                                                            Color(0xff4D84FF),
-                                                        height: 1.25),
                                               ),
-                                            ),
-                                          )
-                                        : const SizedBox.shrink()
-                                  ],
-                                );
-                              }),
-                        ],
-                      )
-                    ],
-                  ),
-                ]),
-              ),
-              25.verticalSpace,
-              Padding(
-                padding: HWEdgeInsets.symmetric(horizontal: 20.0),
-                child: ValueListenableBuilder<bool>(
-                    valueListenable: _enabledResendNotifier,
-                    builder: (context, isExpired, _) {
-                      return ValueListenableBuilder<int>(
-                          valueListenable: checkOtp,
-                          builder: (context, codeStatus, _) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                PinItem(
-                                    borderColor: codeStatus == 1
-                                        ? Color(0xff35CE3F)
-                                        : codeStatus == 2
-                                            ? Color(0xffFF5F61)
-                                            : isExpired
-                                                ? Color(0xffFFBC26)
-                                                : Color(0xff4D84FF),
-                                    contentColor: codeStatus == 1
-                                        ? Color(0xffF4FFF4)
-                                        : codeStatus == 2
-                                            ? Color(0xffFDF5F5)
-                                            : Color(0xffFAFAFA),
-                                    controller: form.controllers[0],
-                                    wrongCode: codeStatus == 2,
-                                    index: 0,
-                                    pasteOtpCode: pasteOtpCode,
-                                    onChange: () {
-                                      checkOtp.value = 0;
-                                    },
-                                    autoFocus: true),
-                                PinItem(
-                                    borderColor: codeStatus == 1
-                                        ? Color(0xff35CE3F)
-                                        : codeStatus == 2
-                                            ? Color(0xffFF5F61)
-                                            : isExpired
-                                                ? Color(0xffFFBC26)
-                                                : Color(0xff4D84FF),
-                                    contentColor: codeStatus == 1
-                                        ? Color(0xffF4FFF4)
-                                        : codeStatus == 2
-                                            ? Color(0xffFDF5F5)
-                                            : Color(0xffFAFAFA),
-                                    controller: form.controllers[1],
-                                    wrongCode: codeStatus == 2,
-                                    index: 1,
-                                    onChange: () {
-                                      checkOtp.value = 0;
-                                    },
-                                    autoFocus: false),
-                                PinItem(
-                                    borderColor: codeStatus == 1
-                                        ? Color(0xff35CE3F)
-                                        : codeStatus == 2
-                                            ? Color(0xffFF5F61)
-                                            : isExpired
-                                                ? Color(0xffFFBC26)
-                                                : Color(0xff4D84FF),
-                                    contentColor: codeStatus == 1
-                                        ? Color(0xffF4FFF4)
-                                        : codeStatus == 2
-                                            ? Color(0xffFDF5F5)
-                                            : Color(0xffFAFAFA),
-                                    index: 2,
-                                    wrongCode: codeStatus == 2,
-                                    onChange: () {
-                                      checkOtp.value = 0;
-                                    },
-                                    controller: form.controllers[2],
-                                    autoFocus: false),
-                                PinItem(
-                                    borderColor: codeStatus == 1
-                                        ? Color(0xff35CE3F)
-                                        : codeStatus == 2
-                                            ? Color(0xffFF5F61)
-                                            : isExpired
-                                                ? Color(0xffFFBC26)
-                                                : Color(0xff4D84FF),
-                                    contentColor: codeStatus == 1
-                                        ? Color(0xffF4FFF4)
-                                        : codeStatus == 2
-                                            ? Color(0xffFDF5F5)
-                                            : Color(0xffFAFAFA),
-                                    index: 3,
-                                    wrongCode: codeStatus == 2,
-                                    onChange: () {
-                                      checkOtp.value = 0;
-                                    },
-                                    controller: form.controllers[3],
-                                    autoFocus: false),
-                                PinItem(
-                                    borderColor: codeStatus == 1
-                                        ? Color(0xff35CE3F)
-                                        : codeStatus == 2
-                                            ? Color(0xffFF5F61)
-                                            : isExpired
-                                                ? Color(0xffFFBC26)
-                                                : Color(0xff4D84FF),
-                                    contentColor: codeStatus == 1
-                                        ? Color(0xffF4FFF4)
-                                        : codeStatus == 2
-                                            ? Color(0xffFDF5F5)
-                                            : Color(0xffFAFAFA),
-                                    index: 4,
-                                    wrongCode: codeStatus == 2,
-                                    onChange: () {
-                                      checkOtp.value = 0;
-                                    },
-                                    controller: form.controllers[4],
-                                    autoFocus: false),
-                                PinItem(
-                                    borderColor: codeStatus == 1
-                                        ? Color(0xff35CE3F)
-                                        : codeStatus == 2
-                                            ? Color(0xffFF5F61)
-                                            : isExpired
-                                                ? Color(0xffFFBC26)
-                                                : Color(0xff4D84FF),
-                                    contentColor: codeStatus == 1
-                                        ? Color(0xffF4FFF4)
-                                        : codeStatus == 2
-                                            ? Color(0xffFDF5F5)
-                                            : Color(0xffFAFAFA),
-                                    index: 5,
-                                    wrongCode: codeStatus == 2,
-                                    onChange: () {
-                                      checkOtp.value = 0;
-                                    },
-                                    checkOtp: () {
-                                      if (prefsRepository.verificationId !=
-                                          null) {
-                                        String insertedCode =
-                                            form.controllers[0].text +
-                                                form.controllers[1].text +
-                                                form.controllers[2].text +
-                                                form.controllers[3].text +
-                                                form.controllers[4].text +
-                                                form.controllers[5].text;
-                                        authBloc.add(VerifyOtpSignInEvent(
-                                            verificationId:
-                                                prefsRepository.verificationId!,
-                                            otp: insertedCode,
-                                            phone: widget.phoneNumber));
-                                      } else {
-                                        checkOtp.value = 2;
-                                      }
-                                    },
-                                    controller: form.controllers[5],
-                                    autoFocus: false),
-                              ],
-                            );
+                                            )
+                                          : const SizedBox.shrink()
+                                    ],
+                                  );
+                                }),
+                          ],
+                        )
+                      ],
+                    ),
+                  ]),
+                ),
+                25.verticalSpace,
+                Padding(
+                  padding: HWEdgeInsets.symmetric(horizontal: 20.0),
+                  child: ValueListenableBuilder<bool>(
+                      valueListenable: _enabledResendNotifier,
+                      builder: (context, isExpired, _) {
+                        return ValueListenableBuilder<int>(
+                            valueListenable: checkOtp,
+                            builder: (context, codeStatus, _) {
+                              if(codeStatus == 2 || isExpired){
+                                clearPinCode();
+                              }
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  PinItem(
+                                      borderColor: codeStatus == 1
+                                          ? Color(0xff35CE3F)
+                                          : codeStatus == 2
+                                              ? Color(0xffFF5F61)
+                                              : isExpired
+                                                  ? Color(0xffFFBC26)
+                                                  : Color(0xff4D84FF),
+                                      contentColor: codeStatus == 1
+                                          ? Color(0xffF4FFF4)
+                                          : codeStatus == 2
+                                              ? Color(0xffFDF5F5)
+                                              : Color(0xffFAFAFA),
+                                      controller: form.controllers[0],
+                                      wrongCode: codeStatus == 2,
+                                      index: 0,
+                                      pasteOtpCode: pasteOtpCode,
+                                      onChange: () {
+                                        checkOtp.value = 0;
+                                      },
+                                      autoFocus: true),
+                                  PinItem(
+                                      borderColor: codeStatus == 1
+                                          ? Color(0xff35CE3F)
+                                          : codeStatus == 2
+                                              ? Color(0xffFF5F61)
+                                              : isExpired
+                                                  ? Color(0xffFFBC26)
+                                                  : Color(0xff4D84FF),
+                                      contentColor: codeStatus == 1
+                                          ? Color(0xffF4FFF4)
+                                          : codeStatus == 2
+                                              ? Color(0xffFDF5F5)
+                                              : Color(0xffFAFAFA),
+                                      controller: form.controllers[1],
+                                      wrongCode: codeStatus == 2,
+                                      index: 1,
+                                      onChange: () {
+                                        checkOtp.value = 0;
+                                      },
+                                      autoFocus: false),
+                                  PinItem(
+                                      borderColor: codeStatus == 1
+                                          ? Color(0xff35CE3F)
+                                          : codeStatus == 2
+                                              ? Color(0xffFF5F61)
+                                              : isExpired
+                                                  ? Color(0xffFFBC26)
+                                                  : Color(0xff4D84FF),
+                                      contentColor: codeStatus == 1
+                                          ? Color(0xffF4FFF4)
+                                          : codeStatus == 2
+                                              ? Color(0xffFDF5F5)
+                                              : Color(0xffFAFAFA),
+                                      index: 2,
+                                      wrongCode: codeStatus == 2,
+                                      onChange: () {
+                                        checkOtp.value = 0;
+                                      },
+                                      controller: form.controllers[2],
+                                      autoFocus: false),
+                                  PinItem(
+                                      borderColor: codeStatus == 1
+                                          ? Color(0xff35CE3F)
+                                          : codeStatus == 2
+                                              ? Color(0xffFF5F61)
+                                              : isExpired
+                                                  ? Color(0xffFFBC26)
+                                                  : Color(0xff4D84FF),
+                                      contentColor: codeStatus == 1
+                                          ? Color(0xffF4FFF4)
+                                          : codeStatus == 2
+                                              ? Color(0xffFDF5F5)
+                                              : Color(0xffFAFAFA),
+                                      index: 3,
+                                      wrongCode: codeStatus == 2,
+                                      onChange: () {
+                                        checkOtp.value = 0;
+                                      },
+                                      controller: form.controllers[3],
+                                      autoFocus: false),
+                                  PinItem(
+                                      borderColor: codeStatus == 1
+                                          ? Color(0xff35CE3F)
+                                          : codeStatus == 2
+                                              ? Color(0xffFF5F61)
+                                              : isExpired
+                                                  ? Color(0xffFFBC26)
+                                                  : Color(0xff4D84FF),
+                                      contentColor: codeStatus == 1
+                                          ? Color(0xffF4FFF4)
+                                          : codeStatus == 2
+                                              ? Color(0xffFDF5F5)
+                                              : Color(0xffFAFAFA),
+                                      index: 4,
+                                      wrongCode: codeStatus == 2,
+                                      onChange: () {
+                                        checkOtp.value = 0;
+                                      },
+                                      controller: form.controllers[4],
+                                      autoFocus: false),
+                                  PinItem(
+                                      borderColor: codeStatus == 1
+                                          ? Color(0xff35CE3F)
+                                          : codeStatus == 2
+                                              ? Color(0xffFF5F61)
+                                              : isExpired
+                                                  ? Color(0xffFFBC26)
+                                                  : Color(0xff4D84FF),
+                                      contentColor: codeStatus == 1
+                                          ? Color(0xffF4FFF4)
+                                          : codeStatus == 2
+                                              ? Color(0xffFDF5F5)
+                                              : Color(0xffFAFAFA),
+                                      index: 5,
+                                      wrongCode: codeStatus == 2,
+                                      onChange: () {
+                                        checkOtp.value = 0;
+                                      },
+                                      checkOtp: () {
+                                        if (prefsRepository.verificationId !=
+                                            null) {
+                                          String insertedCode =
+                                              form.controllers[0].text +
+                                                  form.controllers[1].text +
+                                                  form.controllers[2].text +
+                                                  form.controllers[3].text +
+                                                  form.controllers[4].text +
+                                                  form.controllers[5].text;
+                                          if (widget.fromLogin) {
+                                            authBloc.add(VerifyOtpSignInEvent(
+                                                verificationId: prefsRepository
+                                                    .verificationId!,
+                                                otp: insertedCode,
+                                                phone: widget.phoneNumber));
+                                          } else {
+                                            authBloc.add(VerifyOtpSignUpEvent(
+                                                verificationId: prefsRepository
+                                                    .verificationId!,
+                                                otp: insertedCode));
+                                          }
+                                        } else {
+                                          checkOtp.value = 2;
+                                        }
+                                      },
+                                      controller: form.controllers[5],
+                                      autoFocus: false),
+                                ],
+                              );
+                            });
+                      }),
+                ),
+                10.verticalSpace,
+                ValueListenableBuilder<int>(
+                    valueListenable: checkOtp,
+                    builder: (context, codeStatus, _) {
+                      return ValueListenableBuilder<bool>(
+                          valueListenable: _enabledResendNotifier,
+                          builder: (context, isExpired, _) {
+                            return codeStatus == 2 || isExpired
+                                ? Column(
+                                    children: [
+                                      Text(
+                                        codeStatus == 2
+                                            ? 'Please Enter The Correct Code Sent To Your Phone'
+                                            : 'The Code Sent Has Expired',
+                                        style: context.textTheme.caption?.ra
+                                            .copyWith(
+                                                color: Color(0xff5D5C5D),
+                                                height: 1.25),
+                                      ),
+                                      10.verticalSpace,
+                                    ],
+                                  )
+                                : const SizedBox.shrink();
                           });
                     }),
-              ),
-              10.verticalSpace,
-              ValueListenableBuilder<int>(
-                  valueListenable: checkOtp,
-                  builder: (context, codeStatus, _) {
-                    return ValueListenableBuilder<bool>(
-                        valueListenable: _enabledResendNotifier,
-                        builder: (context, isExpired, _) {
-                          return codeStatus == 2 || isExpired
-                              ? Column(
-                                  children: [
-                                    Text(
-                                      codeStatus == 2
-                                          ? 'Please Enter The Correct Code Sent To Your Phone'
-                                          : 'The Code Sent Has Expired',
-                                      style: context.textTheme.caption?.ra
-                                          .copyWith(
-                                              color: Color(0xff5D5C5D),
-                                              height: 1.25),
-                                    ),
-                                    10.verticalSpace,
-                                  ],
-                                )
-                              : const SizedBox.shrink();
-                        });
-                  }),
-            ],
+              ],
+            ),
           ),
         ));
   }
@@ -472,6 +515,15 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
     form.controllers[3].text = text[3];
     form.controllers[4].text = text[4];
     form.controllers[5].text = text[5];
+  }
+
+  clearPinCode() {
+    form.controllers[0].text = '';
+    form.controllers[1].text = '';
+    form.controllers[2].text = '';
+    form.controllers[3].text = '';
+    form.controllers[4].text = '';
+    form.controllers[5].text = '';
   }
 
   void _onResendSucceed() {

@@ -85,8 +85,7 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
     }
     return BlocBuilder<AuthBloc, AuthState>(
       buildWhen: (p, c) =>
-          p.verifyOtpSignInStatus != c.verifyOtpSignInStatus &&
-          c.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading,
+          p.verifyOtpSignInStatus != c.verifyOtpSignInStatus || p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus,
       builder: (context, state) {
         return AnimatedBuilder(
             animation: animationController,
@@ -106,16 +105,16 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
                     dashPattern: [3, 3],
                     radius: Radius.circular(15.0),
                     color: (withBorder &&
-                            state.verifyOtpSignInStatus !=
-                                VerifyOtpSignInStatus.loading)
+                        (state.verifyOtpSignInStatus !=
+                                VerifyOtpSignInStatus.loading && state.verifyOtpSignUpStatus != VerifyOtpSignUpStatus.loading ))
                         ? widget.borderColor
                         : Color(0xffF5F5F5),
                     child: ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(15)),
                       child: TextFormField(
                         controller: widget.controller,
-                        enabled: state.verifyOtpSignInStatus !=
-                            VerifyOtpSignInStatus.loading,
+                        enabled: (state.verifyOtpSignInStatus !=
+                            VerifyOtpSignInStatus.loading && state.verifyOtpSignUpStatus != VerifyOtpSignUpStatus.loading ),
                         focusNode: focusNodes[widget.index],
                         onTap: () {
                           if (widget.index != currentToType) {
@@ -177,8 +176,8 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
                           focusedBorder: InputBorder.none,
                           filled: true,
                           fillColor: !(withBorder &&
-                                  state.verifyOtpSignInStatus !=
-                                      VerifyOtpSignInStatus.loading)
+                              (state.verifyOtpSignInStatus !=
+                                  VerifyOtpSignInStatus.loading && state.verifyOtpSignUpStatus != VerifyOtpSignUpStatus.loading ))
                               ? Color(0xffF5F5F5)
                               : Color(0xffFAFAFA),
                         ),

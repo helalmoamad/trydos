@@ -8,6 +8,7 @@ enum VerifyOtpSignUpStatus { init, loading, success, failure }
 enum VerifyOtpSignInStatus { init, loading, success, failure }
 enum VerifyGuestPhoneStatus { init, loading, success, failure }
 enum RegisterGuestStatus { init, loading, success, failure }
+enum UpdateNameStatus { init, loading, success, failure }
 
 
 class AuthState {
@@ -23,6 +24,7 @@ class AuthState {
     this.verifyOtpSignInStatus = VerifyOtpSignInStatus.init,
     this.verifyGuestPhoneStatus = VerifyGuestPhoneStatus.init,
     this.loginToStoriesStatus = LoginToStoriesStatus.init,
+    this.updateNameStatus = UpdateNameStatus.init,
   });
 
   final CreateUserStatus createUserStatus;
@@ -33,6 +35,7 @@ class AuthState {
   final VerifyOtpSignInStatus verifyOtpSignInStatus;
   final VerifyGuestPhoneStatus verifyGuestPhoneStatus;
   final RegisterGuestStatus registerGuestStatus;
+  final UpdateNameStatus updateNameStatus;
   final User? marketUser;
   final String? signInErrorMessage;
   final String? signUpErrorMessage;
@@ -44,6 +47,7 @@ class AuthState {
     final String? signInErrorMessage,
     final RegisterGuestStatus? registerGuestStatus,
     final String? signUpErrorMessage,
+    final UpdateNameStatus? updateNameStatus,
     final User? marketUser,
     final VerifyOtpSignUpStatus? verifyOtpSignUpStatus,
     final VerifyOtpSignInStatus? verifyOtpSignInStatus,
@@ -58,6 +62,7 @@ class AuthState {
       signUpErrorMessage: signUpErrorMessage ?? this.signUpErrorMessage,
       signInErrorMessage: signInErrorMessage ?? this.signInErrorMessage,
       marketUser: marketUser ?? this.marketUser,
+      updateNameStatus: updateNameStatus ?? this.updateNameStatus,
       verifyOtpSignUpStatus: verifyOtpSignUpStatus ?? this.verifyOtpSignUpStatus,
       verifyOtpSignInStatus: verifyOtpSignInStatus ?? this.verifyOtpSignInStatus,
       verifyGuestPhoneStatus: verifyGuestPhoneStatus ?? this.verifyGuestPhoneStatus,

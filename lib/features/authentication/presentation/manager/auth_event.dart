@@ -129,6 +129,18 @@ class RegisterGuestEvent extends AuthEvent {
   List<Object?> get props => [deviceId];
 }
 
+class UpdateNameEvent extends AuthEvent {
+  final String name;
+
+  UpdateNameEvent({
+    required this.name,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [name];
+}
+
 class LoginToMarketEvent extends AuthEvent {
   final String? phone;
   final String? deviceId;
