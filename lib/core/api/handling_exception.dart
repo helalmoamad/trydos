@@ -42,7 +42,7 @@ abstract class HandlingExceptionRequest {
       return const Left(ServerFailure());
     } on DioError catch (e, s) {
       prettyPrinterError("***|| DioError ||*** \n $s");
-      return Left(DioFailure(message: e.response!.data['message']));
+      return Left(DioFailure(message: e.response?.data['errors']?[0]['code']));
     } catch (e, stackTrace) {
       prettyPrinterError(
         "***|| CATCH ERROR ||***"

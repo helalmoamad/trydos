@@ -88,4 +88,10 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
     return handlingExceptionRequest(
         tryCall: () => dataSource.registerGuest(params));
   }
+
+  @override
+  Future<Either<Failure, bool>> updateName(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateName(params));
+  }
   }
