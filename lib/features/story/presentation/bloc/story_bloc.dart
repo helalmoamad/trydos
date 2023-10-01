@@ -41,8 +41,17 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     on<LoadFailureEvent>(((event, emit) =>
         emit(state.copyWith(getStoriesStatus: GetStoriesStatus.failure))));
     on<StorySelectedEvent>(_onStorySelectedEvent);
+    on<LoadingVideoEvent>(_onLoadingVideoEvent);
+    on<LoadedVideoEvent>(_onLoadedVideoEvent);
+    on<FailureVideoEvent>(_onFailureVideoEvent);
   }
-
+  _onLoadingVideoEvent(LoadingVideoEvent event,Emitter<StoryState>emit){
+    emit(state.copyWith(selectedVideoStatus: SelectedVideoStatus.loading));
+  } _onLoadedVideoEvent(LoadedVideoEvent event,Emitter<StoryState>emit){
+    emit(state.copyWith(selectedVideoStatus: SelectedVideoStatus.success));
+  } _onFailureVideoEvent(FailureVideoEvent event,Emitter<StoryState>emit){
+    emit(state.copyWith(selectedVideoStatus: SelectedVideoStatus.failure));
+  }
   _onStorySelectedEvent(
       StorySelectedEvent event, Emitter<StoryState> emit) async {
     emit(state.copyWith(selectedStoriesStatus: SelectedStoriesStatus.loading));
@@ -50,7 +59,7 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
         state.stories[event.selected].stories![event.initialStory];
     if (initialStory.isPhoto == 1) {
 //todo debug
-      Fluttertoast.showToast(msg: 'msg');
+//      Fluttertoast.showToast(msg: 'msg');
       //todo bring the real width and height for selected photo
       final response = await getWidthAndHeightUseCase(
           widthAndHeightParams(url: initialStory.photoPath!));
@@ -59,13 +68,13 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
             selectedStoriesStatus: SelectedStoriesStatus.failure));
       }, (r) {
         //todo debug
-        Fluttertoast.showToast(msg: '${r.width}');
+//        Fluttertoast.showToast(msg: '${r.width}');
 //todo make the story seen
 
 
         state.stories[event.selected].stories![event.initialStory].isSeen =true;
 //todo debug
-        Fluttertoast.showToast(msg:state.stories.length.toString(),backgroundColor: Colors.red );
+//        Fluttertoast.showToast(msg:state.stories.length.toString(),backgroundColor: Colors.red );
         emit(state.copyWith(
             selectedStoriesStatus: SelectedStoriesStatus.success,
             stories: state.stories,

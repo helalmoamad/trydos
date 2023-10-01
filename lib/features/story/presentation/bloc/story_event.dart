@@ -32,3 +32,28 @@ class StorySelectedEvent extends StoryEvent
   // TODO: implement props
   List<Object?> get props => [selected,initialStory];
 }
+
+class LoadingVideoEvent extends StoryEvent
+{
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+
+
+}
+class LoadedVideoEvent extends StoryEvent
+{
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+
+
+}
+class FailureVideoEvent extends StoryEvent
+{
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+
+
+}
