@@ -108,9 +108,8 @@ class StoryItemWidget extends StatelessWidget {
                   child: Transform.translate(
                     offset: resize ? Offset(-10, -5) : Offset(-10, -10),
                     child: Container(
-                      child:
 
-                      state.stories[index].photoPath==null?Image.asset('assets/images/default_story_avatar.png',fit: BoxFit.contain,)
+                      child:state.stories[index].photoPath==null?Image.asset('assets/images/default_story_avatar.png',fit: BoxFit.cover,)
                       :
                       CachedNetworkImage(   imageUrl:state.stories[index].photoPath)
                     ,
