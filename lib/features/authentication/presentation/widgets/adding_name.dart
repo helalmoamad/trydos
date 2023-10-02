@@ -19,7 +19,8 @@ import '../../../../routes/router.dart';
 import '../manager/auth_bloc.dart';
 
 class AddingName extends StatefulWidget {
-  const AddingName({Key? key}) : super(key: key);
+  const AddingName({required this.fromLogin, Key? key}) : super(key: key);
+  final bool fromLogin;
 
   @override
   State<AddingName> createState() => _AddingNameState();
@@ -42,6 +43,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
+      listenWhen: (p, c) => p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus,
       listener: (context, state) {
         if (state.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.failure) {
           showMessage(state.signUpErrorMessage ?? 'No Error Message');
@@ -53,114 +55,137 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                   '?userName=${form.controllers[0].text}');
         }
       },
-      child: Directionality(
-        textDirection: TextDirection.ltr,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Padding(
-              padding: HWEdgeInsets.symmetric(horizontal: 40.0),
-              child: Column(children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SvgPicture.asset(AppAssets.verifiedNumberSvg,
-                        width: 15, height: 15),
-                    10.horizontalSpace,
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'The Number Verified Successfully !',
-                          style: context.textTheme.caption?.ra
-                              .copyWith(color: Color(0xff5D5C5D), height: 1.42),
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: HWEdgeInsets.only(top: 3.0),
-                              child: SvgPicture.asset(AppAssets.registerInfoSvg,
+      child: BlocListener<AuthBloc, AuthState>(
+        listenWhen: (p, c) => p.updateNameStatus != c.updateNameStatus,
+        listener: (context, state) {
+          if (state.updateNameStatus == UpdateNameStatus.failure) {
+            showMessage('failed to save name');
+            return;
+          }
+          if (state.updateNameStatus == UpdateNameStatus.success) {
+            context.go(
+                GRouter.config.applicationRoutes.kRegistrationCompletedPage +
+                    '?userName=${form.controllers[0].text}');
+          }
+        },
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: HWEdgeInsets.symmetric(horizontal: 40.0),
+                child: Column(children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SvgPicture.asset(AppAssets.verifiedNumberSvg,
+                          width: 15, height: 15),
+                      10.horizontalSpace,
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'The Number Verified Successfully !',
+                            style: context.textTheme.caption?.ra.copyWith(
+                                color: Color(0xff5D5C5D), height: 1.42),
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: HWEdgeInsets.only(top: 3.0),
+                                child: SvgPicture.asset(
+                                    AppAssets.registerInfoSvg,
+                                    width: 10,
+                                    height: 10),
+                              ),
+                              5.horizontalSpace,
+                              Text(
+                                'Last Step And Enjoy Our Services',
+                                textAlign: TextAlign.start,
+                                style: context.textTheme.caption?.ra.copyWith(
+                                    color: Color(0xffC4C2C2), height: 1.25),
+                              ),
+                            ],
+                          ),
+                          5.verticalSpace,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SvgPicture.asset(AppAssets.privacySvg,
                                   width: 10, height: 10),
-                            ),
-                            5.horizontalSpace,
-                            Text(
-                              'Last Step And Enjoy Our Services',
-                              textAlign: TextAlign.start,
-                              style: context.textTheme.caption?.ra.copyWith(
-                                  color: Color(0xffC4C2C2), height: 1.25),
-                            ),
-                          ],
-                        ),
-                        5.verticalSpace,
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SvgPicture.asset(AppAssets.privacySvg,
-                                width: 10, height: 10),
-                            5.horizontalSpace,
-                            Text(
-                              'Your Privacy Is Completely Safe, We Not Share Your\nInformation With Anyone',
-                              style: context.textTheme.caption?.ra.copyWith(
-                                  color: Color(0xffC4C2C2), height: 1.25),
-                            )
-                          ],
-                        ),
-                        3.verticalSpace,
-                      ],
-                    )
-                  ],
-                ),
-              ]),
-            ),
-            28.verticalSpace,
-            Padding(
-                padding: HWEdgeInsets.symmetric(horizontal: 20.0),
-                child: ValueListenableBuilder<bool>(
-                    valueListenable: displaySubmit,
-                    builder: (context, display, _) {
-                      return NameFormField(
-                        autoFocus: true,
-                        ready: display,
-                        onChange: (String? text) {
-                          displaySubmit.value = text!.length > 8;
-                        },
-                        controller: form.controllers[0],
-                        suffixIcon: Padding(
-                          padding: HWEdgeInsets.only(right: 20.0, top: 22),
-                          child: !display
-                              ? SizedBox(
-                                  width: 22,
-                                  height: 15,
-                                )
-                              : InkWell(
-                                  onTap: () {
-                                    BlocProvider.of<AuthBloc>(context)
-                                        .add(VerifyOtpSignUpEvent(
-                                      name: form.controllers[0].text,
-                                      otp: prefsRepository.otpCode!,
-                                      verificationId:
-                                          prefsRepository.verificationId!,
-                                    ));
-                                  },
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        SvgPicture.asset(
-                                          AppAssets.submitArrowSvg,
-                                          width: 10,
-                                          height: 20,
-                                        ),
-                                      ]),
-                                ),
-                        ),
-                      );
-                    })),
-            10.verticalSpace,
-          ],
+                              5.horizontalSpace,
+                              Text(
+                                'Your Privacy Is Completely Safe, We Not Share Your\nInformation With Anyone',
+                                style: context.textTheme.caption?.ra.copyWith(
+                                    color: Color(0xffC4C2C2), height: 1.25),
+                              )
+                            ],
+                          ),
+                          3.verticalSpace,
+                        ],
+                      )
+                    ],
+                  ),
+                ]),
+              ),
+              28.verticalSpace,
+              Padding(
+                  padding: HWEdgeInsets.symmetric(horizontal: 20.0),
+                  child: ValueListenableBuilder<bool>(
+                      valueListenable: displaySubmit,
+                      builder: (context, display, _) {
+                        return NameFormField(
+                          autoFocus: true,
+                          ready: display,
+                          onChange: (String? text) {
+                            displaySubmit.value = text!.length > 8;
+                          },
+                          controller: form.controllers[0],
+                          suffixIcon: Padding(
+                            padding: HWEdgeInsets.only(right: 20.0, top: 22),
+                            child: !display
+                                ? SizedBox(
+                                    width: 22,
+                                    height: 15,
+                                  )
+                                : InkWell(
+                                    onTap: () {
+                                      if (widget.fromLogin) {
+                                        BlocProvider.of<AuthBloc>(context)
+                                            .add(VerifyOtpSignUpEvent(
+                                          name: form.controllers[0].text,
+                                          otp: prefsRepository.otpCode!,
+                                          verificationId:
+                                              prefsRepository.verificationId!,
+                                        ));
+                                      } else {
+                                        BlocProvider.of<AuthBloc>(context)
+                                            .add(UpdateNameEvent(
+                                          name: form.controllers[0].text,
+                                        ));
+                                      }
+                                    },
+                                    child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          SvgPicture.asset(
+                                            AppAssets.submitArrowSvg,
+                                            width: 10,
+                                            height: 20,
+                                          ),
+                                        ]),
+                                  ),
+                          ),
+                        );
+                      })),
+              10.verticalSpace,
+            ],
+          ),
         ),
       ),
     );

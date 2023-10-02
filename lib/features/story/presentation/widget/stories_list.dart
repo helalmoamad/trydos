@@ -152,7 +152,7 @@ class StoriesList extends StatelessWidget {
                                                                     .stories[
                                                                         index]
                                                                     .stories!)]
-                                                        .fullVideoPath),
+                                                        .fullVideoPath!),
                                                     builder:
                                                         (context, snapshot) {
                                                       if (snapshot.connectionState ==

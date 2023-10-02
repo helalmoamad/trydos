@@ -4,6 +4,9 @@
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 GetStoriesModel getStoriesModelFromJson(String str) => GetStoriesModel.fromJson(json.decode(str));
 
 String getStoriesModelToJson(GetStoriesModel data) => json.encode(data.toJson());
@@ -42,14 +45,17 @@ class GetStoriesModel {
         data: data ?? this.data,
       );
 
-  factory GetStoriesModel.fromJson(Map<String, dynamic> json) => GetStoriesModel(
-    isSuccessful: json["isSuccessful"],
-    hasContent: json["hasContent"],
-    code: json["code"],
-    message: json["message"],
-    detailedError: json["detailed_error"],
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
-  );
+  factory GetStoriesModel.fromJson(Map<String, dynamic> json) {
+    Fluttertoast.showToast(msg: json["data"].runtimeType.toString(),textColor: Colors.red);
+    return GetStoriesModel(
+      isSuccessful: json["isSuccessful"],
+      hasContent: json["hasContent"],
+      code: json["code"],
+      message: json["message"],
+      detailedError: json["detailed_error"],
+      data: json["data"] == null ? null : Data.fromJson(json["data"]),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "isSuccessful": isSuccessful,
@@ -69,10 +75,10 @@ class Data {
   int? lastPage;
   String? lastPageUrl;
   List<Link>? links;
-  dynamic nextPageUrl;
+  String? nextPageUrl;
   String? path;
   int? perPage;
-  dynamic prevPageUrl;
+  String? prevPageUrl;
   int? to;
   int? total;
 
@@ -100,10 +106,10 @@ class Data {
     int? lastPage,
     String? lastPageUrl,
     List<Link>? links,
-    dynamic nextPageUrl,
+    String? nextPageUrl,
     String? path,
     int? perPage,
-    dynamic prevPageUrl,
+    String? prevPageUrl,
     int? to,
     int? total,
   }) =>
@@ -124,19 +130,22 @@ class Data {
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    currentPage: json["current_page"],
-    data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
-    firstPageUrl: json["first_page_url"],
-    from: json["from"],
-    lastPage: json["last_page"],
-    lastPageUrl: json["last_page_url"],
-    links: json["links"] == null ? [] : List<Link>.from(json["links"]!.map((x) => Link.fromJson(x))),
-    nextPageUrl: json["next_page_url"],
-    path: json["path"],
-    perPage: json["per_page"],
-    prevPageUrl: json["prev_page_url"],
-    to: json["to"],
-    total: json["total"],
+    currentPage: 2,
+    data:[],
+//    json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+    firstPageUrl: "",
+    from: 2,
+    lastPage: 2,
+    lastPageUrl: "ssss",
+    links:[],
+//    json["links"] == null ? [] : List<Link>.from(json["links"]!.map((x) => Link.fromJson(x))),
+    nextPageUrl: "",
+
+    path:"",
+    perPage:1,
+    prevPageUrl:"",
+    to: 2,
+    total: 2,
   );
 
   Map<String, dynamic> toJson() => {
@@ -160,17 +169,10 @@ class Datum {
   int? id;
   String? mobilePhone;
   dynamic photoPath;
-  DateTime? createdAt;
-  DateTime? updatedAt;
-  dynamic deletedAt;
-  int? isLockedByAdminForDelete;
-  int? isLockedByAdminForUpdate;
   String? name;
   dynamic username;
   dynamic originalUserId;
   dynamic email;
-  dynamic emailVerifiedAt;
-  dynamic rememberToken;
   List<Story>? stories;
   List<dynamic>? media;
 
@@ -178,17 +180,10 @@ class Datum {
     this.id,
     this.mobilePhone,
     this.photoPath,
-    this.createdAt,
-    this.updatedAt,
-    this.deletedAt,
-    this.isLockedByAdminForDelete,
-    this.isLockedByAdminForUpdate,
     this.name,
     this.username,
     this.originalUserId,
     this.email,
-    this.emailVerifiedAt,
-    this.rememberToken,
     this.stories,
     this.media,
   });
@@ -197,17 +192,10 @@ class Datum {
     int? id,
     String? mobilePhone,
     dynamic photoPath,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    dynamic deletedAt,
-    int? isLockedByAdminForDelete,
-    int? isLockedByAdminForUpdate,
     String? name,
     dynamic username,
     dynamic originalUserId,
     dynamic email,
-    dynamic emailVerifiedAt,
-    dynamic rememberToken,
     List<Story>? stories,
     List<dynamic>? media,
   }) =>
@@ -215,17 +203,10 @@ class Datum {
         id: id ?? this.id,
         mobilePhone: mobilePhone ?? this.mobilePhone,
         photoPath: photoPath ?? this.photoPath,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-        deletedAt: deletedAt ?? this.deletedAt,
-        isLockedByAdminForDelete: isLockedByAdminForDelete ?? this.isLockedByAdminForDelete,
-        isLockedByAdminForUpdate: isLockedByAdminForUpdate ?? this.isLockedByAdminForUpdate,
         name: name ?? this.name,
         username: username ?? this.username,
         originalUserId: originalUserId ?? this.originalUserId,
         email: email ?? this.email,
-        emailVerifiedAt: emailVerifiedAt ?? this.emailVerifiedAt,
-        rememberToken: rememberToken ?? this.rememberToken,
         stories: stories ?? this.stories,
         media: media ?? this.media,
       );
@@ -234,36 +215,22 @@ class Datum {
     id: json["id"],
     mobilePhone: json["mobile_phone"],
     photoPath: json["photo_path"],
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-    deletedAt: json["deleted_at"],
-    isLockedByAdminForDelete: json["is_locked_by_admin_for_delete"],
-    isLockedByAdminForUpdate: json["is_locked_by_admin_for_update"],
     name: json["name"],
     username: json["username"],
     originalUserId: json["original_user_id"],
     email: json["email"],
-    emailVerifiedAt: json["email_verified_at"],
-    rememberToken: json["remember_token"],
-    stories: json["stories"] == null ? [] : List<Story>.from(json["stories"]!.map((x) => Story.fromJson(x))),
-    media: json["media"] == null ? [] : List<dynamic>.from(json["media"]!.map((x) => x)),
+//    stories: json["stories"] == null ? [] : List<Story>.from(json["stories"]!.map((x) => Story.fromJson(x))),
+//    media: json["media"] == null ? [] : List<dynamic>.from(json["media"]!.map((x) => x)),
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "mobile_phone": mobilePhone,
     "photo_path": photoPath,
-    "created_at": createdAt?.toIso8601String(),
-    "updated_at": updatedAt?.toIso8601String(),
-    "deleted_at": deletedAt,
-    "is_locked_by_admin_for_delete": isLockedByAdminForDelete,
-    "is_locked_by_admin_for_update": isLockedByAdminForUpdate,
     "name": name,
     "username": username,
     "original_user_id": originalUserId,
     "email": email,
-    "email_verified_at": emailVerifiedAt,
-    "remember_token": rememberToken,
     "stories": stories == null ? [] : List<dynamic>.from(stories!.map((x) => x.toJson())),
     "media": media == null ? [] : List<dynamic>.from(media!.map((x) => x)),
   };
@@ -274,7 +241,7 @@ class Story {
   dynamic cutVideoName;
   dynamic cutVideoPath;
   dynamic fullVideoName;
-  dynamic fullVideoPath;
+  String? fullVideoPath;
   dynamic storageVideoPath;
   int? userId;
   int? isPhoto;
@@ -307,7 +274,7 @@ class Story {
     dynamic cutVideoName,
     dynamic cutVideoPath,
     dynamic fullVideoName,
-    dynamic fullVideoPath,
+    String? fullVideoPath,
     dynamic storageVideoPath,
     int? userId,
     int? isPhoto,

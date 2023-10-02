@@ -883,23 +883,26 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           messages: messages,
           hasReachedMax: r.length < event.limit,
           paginationStatus: PaginationStatus.success);
+      List<Chat> pinnedChat = !fromPinned
+          ? state.pinnedChats
+          : state.pinnedChats.map((e) {
+        if (e.id == event.channelId) {
+          return chat;
+        }
+        return e;
+      }).toList();
+      List<Chat> chats = fromPinned
+          ? state.chats
+          : state.chats.map((e) {
+        if (e.id == event.channelId) {
+          return chat;
+        }
+        return e;
+      }).toList();
       emit(state.copyWith(
-          chats: fromPinned
-              ? state.chats
-              : state.chats.map((e) {
-                  if (e.id == event.channelId) {
-                    return chat;
-                  }
-                  return e;
-                }).toList(),
-          pinnedChats: !fromPinned
-              ? state.pinnedChats
-              : state.pinnedChats.map((e) {
-                  if (e.id == event.channelId) {
-                    return chat;
-                  }
-                  return e;
-                }).toList()));
+          chats: chats,
+          newSortedChatsByDate: groupReceivedMessageOnDays(chats: [...chats , ...pinnedChat]),
+          pinnedChats:pinnedChat));
     });
   }
 

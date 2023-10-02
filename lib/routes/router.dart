@@ -10,6 +10,7 @@ import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/splash_page.dart';
 import '../base_page.dart';
+import '../features/authentication/presentation/pages/already_exist_account.dart';
 import '../features/authentication/presentation/pages/number_not_registered.dart';
 import '../features/chat/presentation/pages/chat_pages.dart';
 import '../features/chat/presentation/pages/contacts_page.dart';
@@ -126,6 +127,16 @@ class GRouter {
                     pageBuilder: (BuildContext context, GoRouterState state) {
                       return _builderPage(
                         child: NumberNotRegistered(
+                            phoneNumber: state.uri.queryParameters['phoneNumber']!,
+                        ),
+                        state: state,
+                      );
+                    }),
+                GoRoute(
+                    path: _config.applicationRoutes.kUserExistName,
+                    pageBuilder: (BuildContext context, GoRouterState state) {
+                      return _builderPage(
+                        child: AlreadyExistAccount(
                             phoneNumber: state.uri.queryParameters['phoneNumber']!,
                         ),
                         state: state,

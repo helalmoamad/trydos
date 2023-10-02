@@ -215,8 +215,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                                       curve: Curves.easeInOut);
                                   pageContent.value = 6;
                                 },
+                                fromLogin: fromLogin,
                                 onLoginFailed: () {
-                                  print('yes executed');
                                   pageController.animateToPage(5,
                                       duration: Duration(milliseconds: 500),
                                       curve: Curves.easeInOut);
@@ -232,7 +232,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                     ? AppAssets.whatsappSvg
                                     : AppAssets.smsSvg,
                                 phoneNumber: phoneNumber),
-                            AddingName()
+                            AddingName(fromLogin: false,)
                           ]),
                     )
                   ],

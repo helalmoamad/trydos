@@ -98,6 +98,21 @@ class AuthRemoteDatasource {
     );
     return verifyOtpSignUp();
   }
+
+  Future<bool> updateName(Map<String,dynamic> params){
+    PostClient<bool> updateName= PostClient<bool>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<bool>(
+        endpoint: MarketEndPoints.updateNameEP,
+        data: params,
+        response: ResponseValue<bool>(
+            returnValueOnSuccess: true
+        ),
+      ),
+    );
+    return updateName();
+  }
+
   Future<VerifyOtpSignUpAndInResponseModel> verifyOtpSignIn(Map<String,dynamic> params){
     GetClient<VerifyOtpSignUpAndInResponseModel> verifyOtpSignIn= GetClient<VerifyOtpSignUpAndInResponseModel>(
       serverName: ServerName.market,
