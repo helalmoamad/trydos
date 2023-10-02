@@ -87,6 +87,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onSendMessageEvent(
       SendMessageEvent event, Emitter<ChatState> emit) async {
+    //waiting messages
     List<String> ids = List.of(state.currentMessage);
     List<Message> messages;
     bool fromPinned = false;
@@ -421,15 +422,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       chats = sortChats(state.chats, event.channelId, messages);
     }
 
-    emit(state.copyWith(
-        sendMessageStatus: SendMessageStatus.loading,
-        currentMessage: ids,
+    emit(state.copyWith(sendMessageStatus: SendMessageStatus.loading,currentMessage: ids,
         newSortedChatsByDate: groupReceivedMessageOnDays(chats: [...chats , ...(fromPinned ? state.chats : state.pinnedChats)]),
         chats: fromPinned ? state.chats : chats,
         pinnedChats: !fromPinned ? state.pinnedChats : chats,
         channelId: event.channelId));
-    final response =
-        await uploadFileUseCase(UploadFileParams(event.file, event.filePath));
+    final response =await uploadFileUseCase(UploadFileParams(event.file, event.filePath));
     response.fold(
         (l) =>
             emit(state.copyWith(sendMessageStatus: SendMessageStatus.failure)),

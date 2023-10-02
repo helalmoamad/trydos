@@ -49,6 +49,20 @@ class LoadedVideoEvent extends StoryEvent
 
 
 }
+class UploadStoryEvent extends StoryEvent
+{
+File file;
+
+
+UploadStoryEvent(this.file);
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+
+
+
+}
 class FailureVideoEvent extends StoryEvent
 {
   @override

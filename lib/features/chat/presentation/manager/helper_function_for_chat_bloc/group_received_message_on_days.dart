@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:math' as math;
 import '../../../../../common/helper/file_saving.dart';
 import '../../../../../common/helper/helper_functions.dart';
@@ -14,10 +15,12 @@ groupReceivedMessageOnDays({required List<Chat> chats}) {
     Map<String, List<Message>> newMessagesByDate = {};
     for (int i = 0; i < chat.messages!.length; i++) {
       if (chat.messages![i].mediaMessageContent?[0].filePath!=null && !chat.messages![i].checkedExistence) {
-        File? file = await checkFileExistence(
-            chat.messages![i].mediaMessageContent![0].filePath,
-            chat.messages![i].mediaMessageContent![0].fileName ?? chat.messages![i].mediaMessageContent![0].filePath!.split('/').last);
-        chat.messages![i] = chat.messages![i].copyWith(file: file , checkedExistence: true);
+//        File? file = await checkFileExistence(
+//            chat.messages![i].mediaMessageContent![0].filePath,
+//            chat.messages![i].mediaMessageContent![0].fileName ?? chat.messages![i].mediaMessageContent![0].filePath!.split('/').last);
+        File? file=await checkFileExists(      chat.messages![i].mediaMessageContent![0].fileName ?? chat.messages![i].mediaMessageContent![0].filePath!.split('/').last);
+
+    chat.messages![i] = chat.messages![i].copyWith(file: file , checkedExistence: true);
       }
       final zonedDate = HelperFunctions.replaceArabicNumber(
           DateFormat("yyyy-MM-dd").format(
@@ -51,5 +54,12 @@ groupReceivedMessageOnDays({required List<Chat> chats}) {
 checkFileExistence(String? filePath, String? fileName) async {
   File? file =
       await FileSaving().checkExistence(filePath, fileName!, download: false);
+  return file;
+}
+ checkFileExists(String fileName) async {
+  var directory = await getApplicationDocumentsDirectory();
+  var filePath = '${directory.path}/$fileName';
+
+  var file = File(filePath);
   return file;
 }

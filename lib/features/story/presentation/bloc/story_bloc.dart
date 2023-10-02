@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz_unsafe.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,9 +14,12 @@ import 'package:meta/meta.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/story/data/models/image_detail.dart';
+import 'package:trydos/features/story/data/models/upload_story_response_model.dart';
 import 'package:trydos/features/story/domain/useCases/get_stories_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
+import 'package:trydos/features/story/domain/useCases/upload_story_usecase.dart';
 
+import '../../../../core/error/failures.dart';
 import '../../data/models/get_stories_model.dart';
 
 part 'story_event.dart';
@@ -31,10 +37,13 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 @LazySingleton()
 class StoryBloc extends Bloc<StoryEvent, StoryState> {
   final GetStoryUseCase getStoryUseCase;
+  final UploadStoryUseCase uploadStoryUseCase;
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
 
-  StoryBloc(this.getStoryUseCase, this.getWidthAndHeightUseCase)
+  StoryBloc(this.getStoryUseCase, this.getWidthAndHeightUseCase,
+      this.uploadStoryUseCase)
       : super(StoryState()) {
+    on<UploadStoryEvent>(_uploadStoryEvent);
     on<StoryEvent>((event, emit) {});
     on<GetStoryEvent>(_onGetStoryEvent,
         transformer: throttleDroppable(throttleDuration));
@@ -45,13 +54,38 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     on<LoadedVideoEvent>(_onLoadedVideoEvent);
     on<FailureVideoEvent>(_onFailureVideoEvent);
   }
-  _onLoadingVideoEvent(LoadingVideoEvent event,Emitter<StoryState>emit){
+
+  _onLoadingVideoEvent(LoadingVideoEvent event, Emitter<StoryState> emit) {
     emit(state.copyWith(selectedVideoStatus: SelectedVideoStatus.loading));
-  } _onLoadedVideoEvent(LoadedVideoEvent event,Emitter<StoryState>emit){
+  }
+
+  _onLoadedVideoEvent(LoadedVideoEvent event, Emitter<StoryState> emit) {
     emit(state.copyWith(selectedVideoStatus: SelectedVideoStatus.success));
-  } _onFailureVideoEvent(FailureVideoEvent event,Emitter<StoryState>emit){
+  }
+
+  _onFailureVideoEvent(FailureVideoEvent event, Emitter<StoryState> emit) {
     emit(state.copyWith(selectedVideoStatus: SelectedVideoStatus.failure));
   }
+
+  _uploadStoryEvent(UploadStoryEvent event, Emitter<StoryState> emit) async {
+    emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.loading));
+    final response =await uploadStoryUseCase.call(UploadStoryParams(file: event.file));
+Fluttertoast.showToast(msg: 'msg');
+
+    response.fold((l) {
+      Fluttertoast.showToast(msg: 'ssssssss',backgroundColor: Colors.blue);
+      emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.failure));
+    }, (r) {
+//      Fluttertoast.showToast(msg: 'zzzzzzzzzzzzzzzzz',backgroundColor: Colors.blue);
+//      List<Story> o=List.of(state.stories.first.stories!);
+//      o.insert(o.length, r.data!);
+//      //todo check if the use exist in the array and the story to it's stories
+//      state.stories.first.stories=o;
+      emit(state.copyWith(
+          uploadStoryStatus: UploadStoryStatus.success));
+    });
+  }
+
   _onStorySelectedEvent(
       StorySelectedEvent event, Emitter<StoryState> emit) async {
     emit(state.copyWith(selectedStoriesStatus: SelectedStoriesStatus.loading));
@@ -71,8 +105,8 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
 //        Fluttertoast.showToast(msg: '${r.width}');
 //todo make the story seen
 
-
-        state.stories[event.selected].stories![event.initialStory].isSeen =true;
+        state.stories[event.selected].stories![event.initialStory].isSeen =
+            true;
 //todo debug
 //        Fluttertoast.showToast(msg:state.stories.length.toString(),backgroundColor: Colors.red );
         emit(state.copyWith(
@@ -85,7 +119,7 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     } else {
       //todo it's a video all what i will do is make it seen
       //todo make the story video seen
-      state.stories[event.selected].stories![event.initialStory].isSeen =true;
+      state.stories[event.selected].stories![event.initialStory].isSeen = true;
       emit(state.copyWith(
         selectedStoriesStatus: SelectedStoriesStatus.success,
         stories: state.stories,
