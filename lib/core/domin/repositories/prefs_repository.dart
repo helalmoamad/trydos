@@ -45,6 +45,12 @@ abstract class PrefsRepository {
 
   Future<bool> setTheme(ThemeMode themeMode);
 
+  Future<bool> setAFilePathExist(String filePath);
+
+  List<String> getExistenceFiles();
+
+  bool isAFilePathExist(String filePath);
+
   // Future<bool> setUser(User user);
   //
   // User? get user;
@@ -72,4 +78,5 @@ abstract class PrefsRepository {
   void removeRequestFromCache(Map<String, dynamic> request);
 
   List<Map<String, dynamic>> getRequestsData();
+
 }
