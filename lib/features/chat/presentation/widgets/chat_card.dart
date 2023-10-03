@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
@@ -55,6 +56,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   DateTime? chatTime;
   late ChatBloc chatBloc;
+
   @override
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
@@ -81,12 +83,20 @@ class _ChatCardState extends ThemeState<ChatCard> {
     if (receiver == null) {
       receiverName = 'UK';
     } else {
-      receiverName = receiver.name == null
-          ? 'UK'
-          : HelperFunctions.getTheFirstTwoLettersOfName(receiver.name!);
+      receiverName = receiver.contactUser == null
+          ? receiver.name == null
+              ? 'UK'
+              : HelperFunctions.getTheFirstTwoLettersOfName(receiver.name!)
+          : receiver.contactUser!.name == null
+              ? 'UK'
+              : HelperFunctions.getTheFirstTwoLettersOfName(
+                  receiver.contactUser!.name!);
     }
-    print(receiverName);
-    print(chatTime);
+
+    if(receiver!.contactUser!=null)
+       if(receiver.contactUser!.name!=null)
+    Fluttertoast.showToast(msg: receiver.contactUser!.name!,backgroundColor: Colors.green);
+
     ChannelMember me = widget.chat.channelMembers!
         .firstWhere((element) => element.userId == _prefsRepository.myChatId);
     User? sender = me.user;
@@ -116,7 +126,6 @@ class _ChatCardState extends ThemeState<ChatCard> {
           margin: HWEdgeInsetsDirectional.only(start: 94),
         ),
 
-
         //todo
         SizedBox(
           height: 100.h,
@@ -125,7 +134,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
             child: InkWell(
               onTap: () {
 //                if(state.)
-              //todo (future update) call just when The totalUnreadMessage one or more
+                //todo (future update) call just when The totalUnreadMessage one or more
                 // if (widget.onSendForwardMessage != null) {
                 //   Navigator.of(context)
                 //     ..pop()
@@ -134,7 +143,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                 widget.onSendForwardMessage?.call(
                     widget.chat.channelMembers!
                         .firstWhere((element) =>
-                            element.userId != GetIt.I<PrefsRepository>().myChatId)
+                            element.userId !=
+                            GetIt.I<PrefsRepository>().myChatId)
                         .userId!,
                     widget.chat.id.toString());
                 context.go(GRouter
@@ -160,7 +170,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                     SlidableActionWidget(
                       text: 'Delete',
                       onTap: () {
-                        chatBloc.add(DeleteChatEvent(channelId: widget.chat.id!));
+                        chatBloc
+                            .add(DeleteChatEvent(channelId: widget.chat.id!));
                       },
                       backgroundColor: const Color(0xffFFE8E8),
                       foregroundColor: const Color(0xffFA6868),
@@ -175,8 +186,9 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       },
                       backgroundColor: const Color(0xffF6F5FD),
                       foregroundColor: const Color(0xffC4C2C2),
-                      iconUrl:
-                          me.mute == 1 ? AppAssets.unMuteSvg : AppAssets.muteSvg,
+                      iconUrl: me.mute == 1
+                          ? AppAssets.unMuteSvg
+                          : AppAssets.muteSvg,
                     ),
                   ],
                 ),
@@ -200,7 +212,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       text: me.pin == 0 ? 'Pin' : 'UnPin',
                       onTap: () {
                         chatBloc.add(ChangeChatPropertyEvent(
-                            channelId: widget.chat.id!, pin: 1 - (me.pin ?? 0)));
+                            channelId: widget.chat.id!,
+                            pin: 1 - (me.pin ?? 0)));
                       },
                       backgroundColor: const Color(0xffEFF8FF),
                       foregroundColor: colorScheme.grey200,
@@ -224,8 +237,9 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                         boxShadow: widget.thereActivity
                                             ? [
                                                 BoxShadow(
-                                                    color: const Color(0xff007CFF)
-                                                        .withOpacity(0.16),
+                                                    color:
+                                                        const Color(0xff007CFF)
+                                                            .withOpacity(0.16),
                                                     offset: const Offset(0, 3),
                                                     blurRadius: 6)
                                               ]
@@ -235,11 +249,12 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                 color: const Color(0xff007CFF),
                                                 width: 1)
                                             : null,
-                                        borderRadius: BorderRadius.circular(12.0),
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
                                       ),
                                       child: MyCachedNetworkImage(
-                                          imageUrl:
-                                              ChatUrls.baseUrl + receiver?.photoPath,
+                                          imageUrl: ChatUrls.baseUrl +
+                                              receiver?.photoPath,
                                           imageFit: BoxFit.cover,
                                           height: 80.h,
                                           width: 60.w),
@@ -284,7 +299,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                             return Text(
                                               !chatTime!.isUtc
                                                   ? HelperFunctions
-                                                      .getDateInFormat(chatTime!)
+                                                      .getDateInFormat(
+                                                          chatTime!)
                                                   : HelperFunctions
                                                       .getZonedDateInFormat(
                                                           chatTime!),
@@ -304,7 +320,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                 7.verticalSpace,
                                 Flexible(
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       if (widget.thereActivity) ...{
 //                                        Transform.translate(
@@ -320,11 +337,11 @@ class _ChatCardState extends ThemeState<ChatCard> {
 //                                                  1.0,
 //                                                  1.0)),
 //                                            child:
-                                            SvgPicture.asset(
-                                              AppAssets.messageReadArrowSvg,
-                                              height: 12.h,
-                                              width: 12.w,
-                                            )
+                                        SvgPicture.asset(
+                                          AppAssets.messageReadArrowSvg,
+                                          height: 12.h,
+                                          width: 12.w,
+                                        )
 //                                            ,
 //                                          ),
 //                                        )
@@ -343,80 +360,84 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                           return Flexible(
                                             fit: FlexFit.tight,
                                             child: SizedBox(
-                                              height:
-                                                  widget.thereActivity ? 33 : 51,
-                                              child: (widget.chat.messages
-                                                          ?.isEmpty ??
-                                                      true)
-                                                  ? const SizedBox.shrink()
-                                                  : Row(
-                                                      children: [
-                                                        if (widget
-                                                                .chat
-                                                                .messages
-                                                                ?.first
-                                                                .mediaMessageContent
-                                                                ?.isNotEmpty ??
-                                                            false) ...{
-                                                          SvgPicture.asset(
-                                                            messageType ==
-                                                                    'ImageMessage'
-                                                                ? AppAssets
-                                                                    .lastMessageImageSvg
-                                                                : messageType ==
-                                                                        'VideoMessage'
-                                                                    ? AppAssets
-                                                                        .lastMessageVideoSvg
-                                                                    : messageType ==
-                                                                            'FileMessage'
-                                                                        ? AppAssets
-                                                                            .documentSvg
-                                                                        : AppAssets
-                                                                            .lastMessageAudioSvg,
-                                                            width: 20.w,
-                                                            height: 20.h,
-                                                          ),
-                                                          10.horizontalSpace,
-                                                        },
-                                                        Flexible(
-                                                          child: Text(
-                                                            messageType !=
-                                                                    'TextMessage'
-                                                                ? (messageType ==
+                                              height: widget.thereActivity
+                                                  ? 33
+                                                  : 51,
+                                              child:
+                                                  (widget.chat.messages
+                                                              ?.isEmpty ??
+                                                          true)
+                                                      ? const SizedBox.shrink()
+                                                      : Row(
+                                                          children: [
+                                                            if (widget
+                                                                    .chat
+                                                                    .messages
+                                                                    ?.first
+                                                                    .mediaMessageContent
+                                                                    ?.isNotEmpty ??
+                                                                false) ...{
+                                                              SvgPicture.asset(
+                                                                messageType ==
                                                                         'ImageMessage'
-                                                                    ? 'Photo'
+                                                                    ? AppAssets
+                                                                        .lastMessageImageSvg
                                                                     : messageType ==
                                                                             'VideoMessage'
-                                                                        ? 'Video'
+                                                                        ? AppAssets
+                                                                            .lastMessageVideoSvg
                                                                         : messageType ==
                                                                                 'FileMessage'
-                                                                            ? 'File'
-                                                                            : 'Voice')
-                                                                : widget
-                                                                    .chat
-                                                                    .messages!
-                                                                    .first
-                                                                    .messageContent!
-                                                                    .content
-                                                                    .toString(),
-                                                            maxLines: widget
-                                                                    .thereActivity
-                                                                ? 1
-                                                                : 3,
-                                                            textAlign:
-                                                                TextAlign.start,
-                                                            overflow: TextOverflow
-                                                                .ellipsis,
-                                                            style: textTheme
-                                                                .bodyText2?.lr
-                                                                .copyWith(
-                                                                    height: 1.22,
-                                                                    color: colorScheme
-                                                                        .grey200),
-                                                          ),
+                                                                            ? AppAssets.documentSvg
+                                                                            : AppAssets.lastMessageAudioSvg,
+                                                                width: 20.w,
+                                                                height: 20.h,
+                                                              ),
+                                                              10.horizontalSpace,
+                                                            },
+                                                            Flexible(
+                                                              child: Text(
+                                                                messageType !=
+                                                                        'TextMessage'
+                                                                    ? (messageType ==
+                                                                            'ImageMessage'
+                                                                        ? 'Photo'
+                                                                        : messageType ==
+                                                                                'VideoMessage'
+                                                                            ? 'Video'
+                                                                            : messageType ==
+                                                                                    'FileMessage'
+                                                                                ? 'File'
+                                                                                : 'Voice')
+                                                                    : widget
+                                                                        .chat
+                                                                        .messages!
+                                                                        .first
+                                                                        .messageContent!
+                                                                        .content
+                                                                        .toString(),
+                                                                maxLines: widget
+                                                                        .thereActivity
+                                                                    ? 1
+                                                                    : 3,
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .start,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: textTheme
+                                                                    .bodyText2
+                                                                    ?.lr
+                                                                    .copyWith(
+                                                                        height:
+                                                                            1.22,
+                                                                        color: colorScheme
+                                                                            .grey200),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
-                                                      ],
-                                                    ),
                                             ),
                                           );
                                         },
@@ -432,7 +453,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                       .totalUnreadMessageCount !=
                                                   null) ...{
                                             SvgPicture.asset(
-                                              AppAssets.singleChatFilledActiveSvg,
+                                              AppAssets
+                                                  .singleChatFilledActiveSvg,
                                               height: 15.h,
                                               width: 15.w,
                                             ),
@@ -453,7 +475,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                             alignment: Alignment.center,
                                             transform: (Matrix4.identity()
                                               ..scale(
-                                                  LanguageService.languageCode ==
+                                                  LanguageService
+                                                              .languageCode ==
                                                           'ar'
                                                       ? -1.0
                                                       : 1.0,
@@ -472,7 +495,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                 ),
                                 if (widget.thereActivity) ...{
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Text(
                                         widget.activityDescription.toString(),
@@ -494,29 +518,29 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                               height: 5.h,
                                               child: Row(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: List.generate(
                                                       6,
-                                                          (index) => Container(
-                                                        width: 5,
-                                                        height: 5,
-                                                        decoration:
-                                                        BoxDecoration(
-                                                          shape: BoxShape
-                                                              .circle,
-                                                          color: activeIndex ==
-                                                              index
-                                                              ? const Color(
-                                                              0xff007cff)
-                                                              : colorScheme
-                                                              .white,
-                                                          border: Border.all(
-                                                              width: 1.0,
-                                                              color: const Color(
-                                                                  0xff007cff)),
-                                                        ),
-                                                      ))),
+                                                      (index) => Container(
+                                                            width: 5,
+                                                            height: 5,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                              color: activeIndex ==
+                                                                      index
+                                                                  ? const Color(
+                                                                      0xff007cff)
+                                                                  : colorScheme
+                                                                      .white,
+                                                              border: Border.all(
+                                                                  width: 1.0,
+                                                                  color: const Color(
+                                                                      0xff007cff)),
+                                                            ),
+                                                          ))),
                                             );
                                           })
                                     ],
@@ -529,7 +553,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       ),
                     ),
                     Positioned(
-                      right: LanguageService.languageCode != 'ar' ? 10.sp : null,
+                      right:
+                          LanguageService.languageCode != 'ar' ? 10.sp : null,
                       left: LanguageService.languageCode == 'ar' ? 10.sp : null,
                       bottom: 10.sp,
                       child: Row(

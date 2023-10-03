@@ -135,7 +135,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                           _videoController = null;
                           _videoController?.dispose();
                           _videoController = VideoPlayerController.networkUrl(
-                              Uri.parse(initialStory.fullVideoPath));
+                              Uri.parse(initialStory.fullVideoPath!));
 
                           Future<void> init =
                               _videoController!.initialize().then((_) {

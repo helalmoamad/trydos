@@ -776,7 +776,55 @@ class ChannelMember {
   };
 }
 
+class ContactUser {
+  int? id;
+  int? userId;
+  String? name;
+  String? mobilePhone;
+  int? contactUserId;
+
+  ContactUser({
+    this.id,
+    this.userId,
+    this.name,
+    this.mobilePhone,
+    this.contactUserId,
+  });
+
+  ContactUser copyWith({
+    int? id,
+    int? userId,
+    String? name,
+    String? mobilePhone,
+    int? contactUserId,
+  }) =>
+      ContactUser(
+        id: id ?? this.id,
+        userId: userId ?? this.userId,
+        name: name ?? this.name,
+        mobilePhone: mobilePhone ?? this.mobilePhone,
+        contactUserId: contactUserId ?? this.contactUserId,
+      );
+
+  factory ContactUser.fromJson(Map<String, dynamic> json) => ContactUser(
+    id: json["id"],
+    userId: json["user_id"],
+    name: json["name"],
+    mobilePhone: json["mobile_phone"],
+    contactUserId: json["contact_user_id"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "user_id": userId,
+    "name": name,
+    "mobile_phone": mobilePhone,
+    "contact_user_id": contactUserId,
+  };
+}
 class User {
+  ContactUser? contactUser;
+
   final int? id;
   final String? mobilePhone;
   final dynamic photoPath;
@@ -789,6 +837,8 @@ class User {
   final dynamic username;
 
   User({
+    this.contactUser,
+
     this.id,
     this.mobilePhone,
     this.photoPath,
@@ -802,6 +852,8 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
+    contactUser: json["contact_user"] == null ? null : ContactUser.fromJson(json["contact_user"]),
+
     id: json["id"],
     mobilePhone: json["mobile_phone"],
     photoPath: json["photo_path"],
@@ -819,6 +871,8 @@ class User {
   );
 
   Map<String, dynamic> toJson() => {
+    "contact_user": contactUser?.toJson(),
+
     "id": id,
     "mobile_phone": mobilePhone,
     "photo_path": photoPath,

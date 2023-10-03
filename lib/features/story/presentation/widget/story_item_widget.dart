@@ -52,40 +52,40 @@ class StoryItemWidget extends StatelessWidget {
               children: [
                 firstPhotoNotShowed == null
                     ? Container(
-                        height: resize ? 190 : 150,
-                        width: resize ? 140 : 100,
+                  height: resize ? 190 : 150,
+                  width: resize ? 140 : 100,
 
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.0),
-                          image: DecorationImage(
-                            image: MemoryImage(videoData!),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    image: DecorationImage(
+                      image: MemoryImage(videoData!),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
 //                                    child: snapshot.data.,
-                      )
+                )
                     : Container(
-                        height: resize ? 190 : 150,
-                        width: resize ? 140 : 100,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.0),
+                  height: resize ? 190 : 150,
+                  width: resize ? 140 : 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
 //                  image: DecorationImage(
 //                    image:  AssetImage(AppAssets.storyImageJpg),
 //                    fit: BoxFit.fill,
 //                  ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0x805d5d5d),
-                              offset: Offset(0, 3),
-                              blurRadius: 6,
-                            ),
-                          ],
-                        ),
-                        child: CachedNetworkImage(
-                          fit: BoxFit.contain,
-                          imageUrl: firstPhotoNotShowed!,
-                        ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0x805d5d5d),
+                        offset: Offset(0, 3),
+                        blurRadius: 6,
                       ),
+                    ],
+                  ),
+                  child: CachedNetworkImage(
+                    fit: BoxFit.contain,
+                    imageUrl: firstPhotoNotShowed!,
+                  ),
+                ),
                 Container(
                   height: resize ? 190 : 150,
                   width: resize ? 140 : 100,

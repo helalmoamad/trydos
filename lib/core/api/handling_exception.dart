@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:logger/logger.dart';
 import '../../enums/status_code_type.dart';
 import '../error/exception.dart';
@@ -38,12 +40,17 @@ abstract class HandlingExceptionRequest {
       T response = await tryCall();
       return Right(response);
     } on ServerException {
+      Fluttertoast.showToast(msg: 'sssssss',backgroundColor: Colors.yellow);
       prettyPrinterError("***|| ServerException ||*** ");
       return const Left(ServerFailure());
     } on DioError catch (e, s) {
+      Fluttertoast.showToast(msg: 'aaaaaaaaaaaa',backgroundColor: Colors.yellow);
+
       prettyPrinterError("***|| DioError ||*** \n $s");
       return Left(DioFailure(message: e.response?.data['errors']?[0]['code']));
     } catch (e, stackTrace) {
+      Fluttertoast.showToast(msg: 'dddddddd',backgroundColor: Colors.yellow);
+
       prettyPrinterError(
         "***|| CATCH ERROR ||***"
         "\n $e"

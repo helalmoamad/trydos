@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/api.dart';
 import 'package:trydos/features/story/data/models/get_stories_model.dart';
+import 'package:trydos/features/story/data/models/upload_story_response_model.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 
 import '../../../../core/error/failures.dart';
@@ -31,6 +32,12 @@ class StoryRepositoryImpl extends StoryRepository
           GetIt.I<StoryBloc>().add(LoadFailureEvent());
         });
     return Right(result);
+
+  }
+
+  @override
+  Future<Either<Failure, UploadStoryResponseModel>> uploadStory(Map<String, dynamic> params) {
+    return handlingExceptionRequest(tryCall:()=> storyDataSource.uploadStory(params) );
 
   }
 

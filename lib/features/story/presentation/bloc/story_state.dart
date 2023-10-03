@@ -3,9 +3,12 @@ part of 'story_bloc.dart';
 enum GetStoriesStatus { init, loading, success, failure }
 enum SelectedStoriesStatus { init, loading, success, failure }
 enum SelectedVideoStatus { init, loading, success, failure }
+enum UploadStoryStatus { init, loading, success, failure }
 
 class StoryState {
-   GetStoriesStatus getStoriesStatus;
+  UploadStoryStatus uploadStoryStatus;
+
+  GetStoriesStatus getStoriesStatus;
    SelectedStoriesStatus selectedStoriesStatus;
    SelectedVideoStatus selectedVideoStatus;
   List<Datum> stories;
@@ -15,7 +18,7 @@ class StoryState {
   ImageDetail? imageDetail;
 
   StoryState(
-      {
+      {this.uploadStoryStatus=UploadStoryStatus.init,
         this.selectedVideoStatus=SelectedVideoStatus.init,
         this.selectedStoriesStatus=SelectedStoriesStatus.init,
         this.imageDetail,
@@ -25,7 +28,9 @@ class StoryState {
       this.selectedStory});
 
   StoryState copyWith(
-      {SelectedVideoStatus? selectedVideoStatus,
+      {
+        UploadStoryStatus? uploadStoryStatus,
+        SelectedVideoStatus? selectedVideoStatus,
         SelectedStoriesStatus? selectedStoriesStatus,
         GetStoriesStatus? getStoriesStatus,
       List<Datum>? stories,
@@ -34,6 +39,7 @@ class StoryState {
       ImageDetail? imageDetail
       }) {
     return StoryState(
+      uploadStoryStatus: uploadStoryStatus??this.uploadStoryStatus,
       selectedVideoStatus: selectedVideoStatus??this.selectedVideoStatus,
       selectedStoriesStatus: selectedStoriesStatus??this.selectedStoriesStatus,
       imageDetail: imageDetail??this.imageDetail,

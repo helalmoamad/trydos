@@ -640,14 +640,11 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           if (assetEntity != null) {
                                             File file =
                                                 (await assetEntity.file)!;
-                                            String mimeStr = lookupMimeType(
-                                                    file.absolute.path) ??
-                                                '';
+                                            String mimeStr = lookupMimeType(file.absolute.path) ??'';
                                             var fileType = mimeStr.split('/');
                                             log(fileType.toString());
                                             if (fileType[0] == 'image') {
-                                              widget.onSendFile
-                                                  .call(file, 'image');
+                                              widget.onSendFile.call(file, 'image');
                                             }else{
                                               widget.onSendFile
                                                   .call(file, 'video');

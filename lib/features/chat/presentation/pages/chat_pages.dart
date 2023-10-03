@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
@@ -51,6 +52,8 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 
   void saveUserContacts() async {
     List<Map<String, dynamic>> contacts = await HelperFunctions.getContactsFromDevice();
+    //todo debug
+//    Fluttertoast.showToast(msg: contacts.toString(),toastLength: Toast.LENGTH_LONG);
     chatBloc.add(SaveContactsEvent(contacts: contacts));
   }
 
