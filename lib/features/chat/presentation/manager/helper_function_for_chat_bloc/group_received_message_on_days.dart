@@ -18,7 +18,7 @@ groupReceivedMessageOnDays({required List<Chat> chats}) {
 //        File? file = await checkFileExistence(
 //            chat.messages![i].mediaMessageContent![0].filePath,
 //            chat.messages![i].mediaMessageContent![0].fileName ?? chat.messages![i].mediaMessageContent![0].filePath!.split('/').last);
-        File? file=await checkFileExists(      chat.messages![i].mediaMessageContent![0].fileName ?? chat.messages![i].mediaMessageContent![0].filePath!.split('/').last);
+        File? file=await checkFileExistence(      chat.messages![i].mediaMessageContent![0].fileName ?? chat.messages![i].mediaMessageContent![0].filePath!.split('/').last);
 
     chat.messages![i] = chat.messages![i].copyWith(file: file , checkedExistence: true);
       }
@@ -50,13 +50,13 @@ groupReceivedMessageOnDays({required List<Chat> chats}) {
   print('thereeeeveev : $newSortedChatsByDate');
   return newSortedChatsByDate;
 }
-
-checkFileExistence(String? filePath, String? fileName) async {
-  File? file =
-      await FileSaving().checkExistence(filePath, fileName!, download: false);
-  return file;
-}
- checkFileExists(String fileName) async {
+//
+//checkFileExistence(String? filePath, String? fileName) async {
+//  File? file =
+//      await FileSaving().checkExistence(filePath, fileName!, download: false);
+//  return file;
+//}
+checkFileExistence(String fileName) async {
   var directory = await getApplicationDocumentsDirectory();
   var filePath = '${directory.path}/$fileName';
 

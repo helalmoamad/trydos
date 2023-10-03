@@ -4,9 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
 GetStoriesModel getStoriesModelFromJson(String str) => GetStoriesModel.fromJson(json.decode(str));
 
 String getStoriesModelToJson(GetStoriesModel data) => json.encode(data.toJson());
@@ -45,17 +42,14 @@ class GetStoriesModel {
         data: data ?? this.data,
       );
 
-  factory GetStoriesModel.fromJson(Map<String, dynamic> json) {
-    Fluttertoast.showToast(msg: json["data"].runtimeType.toString(),textColor: Colors.red);
-    return GetStoriesModel(
-      isSuccessful: json["isSuccessful"],
-      hasContent: json["hasContent"],
-      code: json["code"],
-      message: json["message"],
-      detailedError: json["detailed_error"],
-      data: json["data"] == null ? null : Data.fromJson(json["data"]),
-    );
-  }
+  factory GetStoriesModel.fromJson(Map<String, dynamic> json) => GetStoriesModel(
+    isSuccessful: json["isSuccessful"],
+    hasContent: json["hasContent"],
+    code: json["code"],
+    message: json["message"],
+    detailedError: json["detailed_error"],
+    data: json["data"] == null ? null : Data.fromJson(json["data"]),
+  );
 
   Map<String, dynamic> toJson() => {
     "isSuccessful": isSuccessful,
@@ -78,7 +72,7 @@ class Data {
   String? nextPageUrl;
   String? path;
   int? perPage;
-  String? prevPageUrl;
+  dynamic prevPageUrl;
   int? to;
   int? total;
 
@@ -109,7 +103,7 @@ class Data {
     String? nextPageUrl,
     String? path,
     int? perPage,
-    String? prevPageUrl,
+    dynamic prevPageUrl,
     int? to,
     int? total,
   }) =>
@@ -130,22 +124,19 @@ class Data {
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    currentPage: 2,
-    data:[],
-//    json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
-    firstPageUrl: "",
-    from: 2,
-    lastPage: 2,
-    lastPageUrl: "ssss",
-    links:[],
-//    json["links"] == null ? [] : List<Link>.from(json["links"]!.map((x) => Link.fromJson(x))),
-    nextPageUrl: "",
-
-    path:"",
-    perPage:1,
-    prevPageUrl:"",
-    to: 2,
-    total: 2,
+    currentPage: json["current_page"],
+    data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+    firstPageUrl: json["first_page_url"],
+    from: json["from"],
+    lastPage: json["last_page"],
+    lastPageUrl: json["last_page_url"],
+    links: json["links"] == null ? [] : List<Link>.from(json["links"]!.map((x) => Link.fromJson(x))),
+    nextPageUrl: json["next_page_url"],
+    path: json["path"],
+    perPage: json["per_page"],
+    prevPageUrl: json["prev_page_url"],
+    to: json["to"],
+    total: json["total"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -219,8 +210,8 @@ class Datum {
     username: json["username"],
     originalUserId: json["original_user_id"],
     email: json["email"],
-//    stories: json["stories"] == null ? [] : List<Story>.from(json["stories"]!.map((x) => Story.fromJson(x))),
-//    media: json["media"] == null ? [] : List<dynamic>.from(json["media"]!.map((x) => x)),
+    stories: json["stories"] == null ? [] : List<Story>.from(json["stories"]!.map((x) => Story.fromJson(x))),
+    media: json["media"] == null ? [] : List<dynamic>.from(json["media"]!.map((x) => x)),
   );
 
   Map<String, dynamic> toJson() => {
