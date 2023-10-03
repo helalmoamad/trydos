@@ -61,7 +61,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                 state.stories[state.selectedStory!].stories!.length) {
               GetIt.I<StoryBloc>().add(StorySelectedEvent(
                   selected: state.selectedStory!, initialStory: 0));
-
+              Navigator.of(context).pop();
             } else {
               GetIt.I<StoryBloc>().add(StorySelectedEvent(
                   selected: state.selectedStory!,
@@ -99,6 +99,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                           context.read<StoryBloc>().add(StorySelectedEvent(
                               initialStory: 0, selected: state.selectedStory!));
                           Navigator.of(context).pop();
+
 
                         }
                       } else if (dx < screenWidth * 1 / 3) {

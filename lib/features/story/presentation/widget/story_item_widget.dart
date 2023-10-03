@@ -33,14 +33,7 @@ class StoryItemWidget extends StatelessWidget {
     return BlocBuilder<StoryBloc, StoryState>(builder: (context, state) {
       bool isLastStoryShowed = state.stories[index].stories!.length ==
           firstWhereNotShowed(state.stories[index].stories!) + 1;
-      if (index == 1) {
-//        Fluttertoast.showToast(
-//            msg: state.stories[index].stories!.length.toString(),
-//            backgroundColor: Colors.green);
-//        Fluttertoast.showToast(
-//            msg: firstWhereNotShowed(state.stories[index].stories!).toString(),
-//            backgroundColor: Colors.green);
-      }
+
       return SizedBox(
         height: resize ? 190 : 150,
         width: resize ? 150 : 110,
@@ -50,78 +43,44 @@ class StoryItemWidget extends StatelessWidget {
             alignment: Alignment.center,
             child: Stack(
               children: [
-                firstPhotoNotShowed == null
-                    ? Container(
-                  height: resize ? 190 : 150,
-                  width: resize ? 140 : 100,
-
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
-                    image: DecorationImage(
-                      image: MemoryImage(videoData!),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-//                                    child: snapshot.data.,
-                )
-                    : Container(
+               Container(
+                 clipBehavior: Clip.hardEdge,
                   height: resize ? 190 : 150,
                   width: resize ? 140 : 100,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.0),
 //                  image: DecorationImage(
 //                    image:  AssetImage(AppAssets.storyImageJpg),
-//                    fit: BoxFit.fill,
 //                  ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0x805d5d5d),
-                        offset: Offset(0, 3),
-                        blurRadius: 6,
-                      ),
-                    ],
+//                    boxShadow: [
+//                      BoxShadow(
+//                        color: const Color(0x805d5d5d),
+//                        offset: Offset(0, 3),
+//                        blurRadius: 6,
+//                      ),
+//                    ],
                   ),
                   child: CachedNetworkImage(
-                    fit: BoxFit.contain,
+                    fit: BoxFit.cover,
                     imageUrl: firstPhotoNotShowed!,
                   ),
                 ),
-                Container(
-                  height: resize ? 190 : 150,
-                  width: resize ? 140 : 100,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment(0.0, -1.0),
-                      end: Alignment(0.0, 2.026),
-                      colors: [
-                        const Color(0x00000000),
-                        const Color(0xff000000)
-                      ],
-                      stops: [0.0, 1.0],
-                    ),
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                ),
+
+
                 Positioned(
                   left: 0,
                   top: 0,
                   child: Transform.translate(
                     offset: resize ? Offset(-10, -5) : Offset(-10, -10),
                     child: Container(
-
-                      child:state.stories[index].photoPath==null?Image.asset('assets/images/default_story_avatar.png',fit: BoxFit.cover,)
-                      :
-                      CachedNetworkImage(   imageUrl:state.stories[index].photoPath)
-                    ,
                       clipBehavior: Clip.hardEdge,
+                      child:state.stories[index].photoPath==null?Image.asset('assets/images/default_story_avatar.png',fit: BoxFit.cover,)
+                      :CachedNetworkImage(   imageUrl:state.stories[index].photoPath,fit: BoxFit.cover,)
+                    ,
                       height: resize ? 50 : 30,
                       width: resize ? 50 : 30,
                       decoration: BoxDecoration(
-//                        image: DecorationImage(
-//                            image: AssetImage(resize
-//                                ? AppAssets.storyImageJpg
-//                                : AppAssets.storyImageMinJpg),
-//                            fit: BoxFit.fill),
+
                         borderRadius: BorderRadius.circular(180),
                         boxShadow: [
                           BoxShadow(

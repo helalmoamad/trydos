@@ -59,10 +59,11 @@ class StoriesList extends StatelessWidget {
                                           height: 100,
                                           child: InkWell(
                                             child: Container(
+                                              child: Center(child: Text('uplaod')),
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(20.0),
-                                                color: Colors.green,
+                                                color: Colors.grey,
                                               ),
                                               width: 100,
                                               height: 120,
@@ -115,8 +116,7 @@ class StoriesList extends StatelessWidget {
                                         onLongPressStart: (details) {
                                           resizeStories.value = (details
                                                       .globalPosition.dx +
-                                                  listViewController.offset) ~/
-                                              115;
+                                                  listViewController.offset) ~/230;
                                         },
                                         onLongPressUp: () {
                                           resizeStories.value = -1;
@@ -125,7 +125,7 @@ class StoriesList extends StatelessWidget {
                                           resizeStories.value = (details
                                                       .globalPosition.dx +
                                                   listViewController.offset) ~/
-                                              115;
+                                              230;
                                         },
                                         child: SizedBox(
                                             height: focused == -1 ? 170 : 190,
@@ -143,63 +143,19 @@ class StoriesList extends StatelessWidget {
                                                                     .stories!)]
                                                         .photoPath!,
                                                   )
-                                                : FutureBuilder<Uint8List>(
-                                                    future: generateThumbnail(state
-                                                        .stories[index]
-                                                        .stories![
-                                                            firstWhereNotShowed(
-                                                                state
-                                                                    .stories[
-                                                                        index]
-                                                                    .stories!)]
-                                                        .fullVideoPath!),
-                                                    builder:
-                                                        (context, snapshot) {
-                                                      if (snapshot.connectionState ==
-                                                              ConnectionState
-                                                                  .done &&
-                                                          snapshot.hasData) {
-                                                        // Use the generated thumbnail as the background image
-                                                        return StoryItemWidget(
-                                                          index: index,
-                                                          resize:
-                                                              index == focused,
-                                                          videoData:
-                                                              snapshot.data!,
-                                                        );
-                                                      } else {
-                                                        // Display a placeholder or loading indicator while generating the thumbnail
-                                                        return Container(
-                                                          child: Shimmer
-                                                              .fromColors(
-                                                            baseColor:
-                                                                Colors.grey,
-                                                            highlightColor:
-                                                                Color.fromARGB(
-                                                                    31,
-                                                                    146,
-                                                                    144,
-                                                                    144),
-                                                            child: Container(
-                                                              width:
-                                                                  size.width *
-                                                                      0.23,
-                                                              height:
-                                                                  size.height *
-                                                                      0.01,
-                                                              decoration: BoxDecoration(
-                                                                  color: Colors
-                                                                      .amber,
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              20)),
-                                                            ),
-                                                          ),
-                                                        );
-                                                      }
-                                                    },
-                                                  )
+                                                : StoryItemWidget(
+                                              index: index,
+                                              resize: index == focused,
+                                              firstPhotoNotShowed: state
+                                                  .stories[index]
+                                                  .stories![
+                                              firstWhereNotShowed(
+                                                  state
+                                                      .stories[
+                                                  index]
+                                                      .stories!)]
+                                                  .fullVideoPath!.replaceAll('mp4', 'png'),
+                                            )
 //      }
 
                                             ),

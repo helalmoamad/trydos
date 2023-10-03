@@ -77,11 +77,12 @@ Fluttertoast.showToast(msg: 'msg');
       emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.failure));
     }, (r) {
 //      Fluttertoast.showToast(msg: 'zzzzzzzzzzzzzzzzz',backgroundColor: Colors.blue);
-//      List<Story> o=List.of(state.stories.first.stories!);
-//      o.insert(o.length, r.data!);
+      List<Story> o=List.of(state.stories.first.stories!);
+      o.insert(o.length, r.data!);
 //      //todo check if the use exist in the array and the story to it's stories
-//      state.stories.first.stories=o;
+      state.stories.first.stories=o;
       emit(state.copyWith(
+        stories: state.stories,
           uploadStoryStatus: UploadStoryStatus.success));
     });
   }

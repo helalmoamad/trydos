@@ -15,10 +15,10 @@ groupReceivedMessageOnDays({required List<Chat> chats}) {
     Map<String, List<Message>> newMessagesByDate = {};
     for (int i = 0; i < chat.messages!.length; i++) {
       if (chat.messages![i].mediaMessageContent?[0].filePath!=null && !chat.messages![i].checkedExistence) {
-//        File? file = await checkFileExistence(
-//            chat.messages![i].mediaMessageContent![0].filePath,
-//            chat.messages![i].mediaMessageContent![0].fileName ?? chat.messages![i].mediaMessageContent![0].filePath!.split('/').last);
-        File? file=await checkFileExistence(      chat.messages![i].mediaMessageContent![0].fileName ?? chat.messages![i].mediaMessageContent![0].filePath!.split('/').last);
+        File? file = await checkFileExistence(
+            chat.messages![i].mediaMessageContent![0].filePath,
+            chat.messages![i].mediaMessageContent![0].fileName ?? chat.messages![i].mediaMessageContent![0].filePath!.split('/').last);
+//        File? file=await checkFileExistence(      chat.messages![i].mediaMessageContent![0].fileName ?? chat.messages![i].mediaMessageContent![0].filePath!.split('/').last);
 
     chat.messages![i] = chat.messages![i].copyWith(file: file , checkedExistence: true);
       }
@@ -51,15 +51,15 @@ groupReceivedMessageOnDays({required List<Chat> chats}) {
   return newSortedChatsByDate;
 }
 //
-//checkFileExistence(String? filePath, String? fileName) async {
-//  File? file =
-//      await FileSaving().checkExistence(filePath, fileName!, download: false);
-//  return file;
-//}
-checkFileExistence(String fileName) async {
-  var directory = await getApplicationDocumentsDirectory();
-  var filePath = '${directory.path}/$fileName';
-
-  var file = File(filePath);
+checkFileExistence(String? filePath, String? fileName) async {
+  File? file =
+      await FileSaving().checkExistence(filePath, fileName!, download: false);
   return file;
 }
+//checkFileExistence(String fileName) async {
+//  var directory = await getApplicationDocumentsDirectory();
+//  var filePath = '${directory.path}/$fileName';
+//
+//  var file = File(filePath);
+//  return file;
+//}
