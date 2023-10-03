@@ -100,7 +100,7 @@ class CreateAccountSection extends StatelessWidget {
                       width: 1.sw,
                       height: 60,
                       decoration: BoxDecoration(
-                        color: const Color(0xfffafafa),
+                        color: index == 0 ? Colors.white : const Color(0xfffafafa),
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       child: Center(

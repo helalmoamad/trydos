@@ -98,6 +98,18 @@ class AuthRemoteDatasource {
     );
     return verifyOtpSignUp();
   }
+  Future<User> getCustomerInfo(){
+    GetClient<User> getCustomerInfo= GetClient<User>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<User>(
+        endpoint: MarketEndPoints.getCustomerInfoEP,
+        response: ResponseValue<User>(
+            fromJson: (response) => User.fromJson(response['data']['customer_info'])
+        ),
+      ),
+    );
+    return getCustomerInfo();
+  }
 
   Future<bool> updateName(Map<String,dynamic> params){
     PostClient<bool> updateName= PostClient<bool>(

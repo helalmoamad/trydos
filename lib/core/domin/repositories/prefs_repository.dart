@@ -11,6 +11,8 @@ abstract class PrefsRepository {
 
   int? get myStoriesId;
 
+  bool? get isVerifiedPhone;
+
   String? get myChatName;
 
   String? get myPhoneNumber;
@@ -18,6 +20,8 @@ abstract class PrefsRepository {
   String? get verificationId;
 
   String? get otpCode;
+
+  Future<bool> setVerifiedPhone(bool verifiedPhone);
 
   Future<bool> setVerificationId(String verificationId);
 

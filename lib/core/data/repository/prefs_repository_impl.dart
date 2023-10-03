@@ -82,7 +82,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
       };
     }
     List<Map<String, dynamic>> previousRequests = getRequestsData();
-    if (previousRequests.length == 60) {
+    if (previousRequests.length == 80) {
       previousRequests.removeAt(0);
     }
     previousRequests.add(requestAndResponse);
@@ -165,6 +165,12 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setOtpCode(String otpCode) => _preferences.setString(PrefsKey.otpCode, otpCode);
+
+  @override
+  bool? get isVerifiedPhone => _preferences.getBool(PrefsKey.verifiedPhone);
+
+  @override
+  Future<bool> setVerifiedPhone(bool verifiedPhone) => _preferences.setBool(PrefsKey.verifiedPhone, verifiedPhone);
 
 
 

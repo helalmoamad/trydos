@@ -24,6 +24,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/pages/create_call_page.dart';
 import 'package:trydos/features/chat/presentation/pages/profile_page.dart';
@@ -122,8 +123,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
       if (rebuild) {
         rebuildMessage.value = -1;
       }
-      if (autoScrollController.offset <=
-              autoScrollController.position.minScrollExtent + 400 &&
+      print('rebuild............');
+      if ((autoScrollController.offset <=
+              autoScrollController.position.minScrollExtent + 400 ) &&
           autoScrollController.position.userScrollDirection ==
               ScrollDirection.forward) {
         _loadMoreMessages();
@@ -399,7 +401,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 //       getMessagesBetween;
                 // },
                 builder: (context, chatState) {
-                  chat = chat = chatState.chats.firstWhere(
+                   chat = chatState.chats.firstWhere(
                       (element) => element.id.toString() == widget.chatId,
                       orElse: () => chatState.pinnedChats.firstWhere(
                           (element) => element.id.toString() == widget.chatId));
@@ -537,6 +539,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                 currentFocusedIcon.value = -2;
                                 return Column(
                                   children: [
+                                    chat.paginationStatus == PaginationStatus.loading ? TrydosLoader() : SizedBox.shrink(),
+                                    chat.paginationStatus == PaginationStatus.loading ? 8.verticalSpace : SizedBox.shrink(),
                                     Expanded(
                                       child: ListView.builder(
                                         controller: autoScrollController,
@@ -1490,7 +1494,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         case 'TextMessage':
           return TextMessage(
             message: message.messageContent!.content.toString(),
-            messageId: message.messageContent!.messageId.toString(),
+            messageId: message.id!,
             senderId: message.senderUserId!,
             isSent: message.receiverUserId != _prefsRepository.myChatId,
             isRead: messageStatus?.isWatched ?? false,

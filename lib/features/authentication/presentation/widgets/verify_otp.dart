@@ -104,7 +104,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
               p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus,
           listener: (context, state) {
             if (state.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.failure) {
-              if (state.signInErrorMessage == 'user-exists') {
+              if (state.signUpErrorMessage == 'auth-001') {
                 context.go(
                     GRouter.config.applicationRoutes.kUserExistPage +
                         '?phoneNumber=${widget.phoneNumber}',
@@ -318,9 +318,6 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                         return ValueListenableBuilder<int>(
                             valueListenable: checkOtp,
                             builder: (context, codeStatus, _) {
-                              if(codeStatus == 2 || isExpired){
-                                clearPinCode();
-                              }
                               return Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -333,6 +330,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                               : isExpired
                                                   ? Color(0xffFFBC26)
                                                   : Color(0xff4D84FF),
+                              isExpired : isExpired,
                                       contentColor: codeStatus == 1
                                           ? Color(0xffF4FFF4)
                                           : codeStatus == 2
@@ -359,6 +357,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                           : codeStatus == 2
                                               ? Color(0xffFDF5F5)
                                               : Color(0xffFAFAFA),
+                                      isExpired : isExpired,
                                       controller: form.controllers[1],
                                       wrongCode: codeStatus == 2,
                                       index: 1,
@@ -374,6 +373,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                               : isExpired
                                                   ? Color(0xffFFBC26)
                                                   : Color(0xff4D84FF),
+                                      isExpired : isExpired,
                                       contentColor: codeStatus == 1
                                           ? Color(0xffF4FFF4)
                                           : codeStatus == 2
@@ -394,6 +394,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                               : isExpired
                                                   ? Color(0xffFFBC26)
                                                   : Color(0xff4D84FF),
+                                      isExpired : isExpired,
                                       contentColor: codeStatus == 1
                                           ? Color(0xffF4FFF4)
                                           : codeStatus == 2
@@ -419,6 +420,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                           : codeStatus == 2
                                               ? Color(0xffFDF5F5)
                                               : Color(0xffFAFAFA),
+                                      isExpired : isExpired,
                                       index: 4,
                                       wrongCode: codeStatus == 2,
                                       onChange: () {
@@ -434,6 +436,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                               : isExpired
                                                   ? Color(0xffFFBC26)
                                                   : Color(0xff4D84FF),
+                                      isExpired : isExpired,
                                       contentColor: codeStatus == 1
                                           ? Color(0xffF4FFF4)
                                           : codeStatus == 2
@@ -515,15 +518,18 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
     form.controllers[3].text = text[3];
     form.controllers[4].text = text[4];
     form.controllers[5].text = text[5];
-  }
-
-  clearPinCode() {
-    form.controllers[0].text = '';
-    form.controllers[1].text = '';
-    form.controllers[2].text = '';
-    form.controllers[3].text = '';
-    form.controllers[4].text = '';
-    form.controllers[5].text = '';
+    if (widget.fromLogin) {
+      authBloc.add(VerifyOtpSignInEvent(
+          verificationId: prefsRepository
+              .verificationId!,
+          otp: text,
+          phone: widget.phoneNumber));
+    } else {
+      authBloc.add(VerifyOtpSignUpEvent(
+          verificationId: prefsRepository
+              .verificationId!,
+          otp: text));
+    }
   }
 
   void _onResendSucceed() {
