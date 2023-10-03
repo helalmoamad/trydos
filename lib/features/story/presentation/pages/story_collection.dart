@@ -78,31 +78,26 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
               switch (state.getStoriesStatus) {
                 case GetStoriesStatus.success:
                   return GestureDetector(
-//onLongPress: () => animatedController.stop(),
+onLongPress: () => animatedController.stop(),
+                      onLongPressUp: () => animatedController.forward(),
                     onTapDown: (details) {
                       final double screenWidth =
                           MediaQuery.of(context).size.width;
                       final double dx = details.globalPosition.dx;
-                      if (dx > screenWidth * 2 / 3) {
+                      if (dx > screenWidth * 1/2) {
                         animatedController.stop();
                         animatedController.reset();
-                        if ((state.initialStory! + 1) <
-                            collectionOfSelectedStory.length) {
-                          context.read<StoryBloc>().add(StorySelectedEvent(
-                              initialStory: state.initialStory! + 1,
-                              selected: state.selectedStory!));
-
-
-
-                        } else {
-
-                          context.read<StoryBloc>().add(StorySelectedEvent(
-                              initialStory: 0, selected: state.selectedStory!));
+                        if ((state.initialStory! + 1) >=
+                            state.stories[state.selectedStory!].stories!.length) {
+                          GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                              selected: state.selectedStory!, initialStory: 0));
                           Navigator.of(context).pop();
-
-
+                        } else {
+                          GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                              selected: state.selectedStory!,
+                              initialStory: state.initialStory! + 1));
                         }
-                      } else if (dx < screenWidth * 1 / 3) {
+                      } else if (dx < screenWidth * 1 / 2) {
                         animatedController.stop();
 
                         animatedController.reset();
