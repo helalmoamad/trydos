@@ -5,7 +5,6 @@ MergeOldMessageWithNew(
   List<Message> currMessages;
   List<Message> prevMessages;
   List<Message> resultMessages=[];
-  int lastPrevIndex = 0;
   return (previousChats.isNotEmpty &&
           previousChats
               .any((element) => int.tryParse(element.id.toString()) != null))
@@ -15,9 +14,10 @@ MergeOldMessageWithNew(
         .messages ??
         []);
     resultMessages=[];
+    int lastPrevIndex = 0;
           currMessages = List.of(chat.messages ?? []);
-          for(int i=0;i<currMessages.length ; i++){
-            if(lastPrevIndex < prevMessages.length && currMessages[i].id == prevMessages[lastPrevIndex].id){
+          for(int i=0;i<currMessages.length  && lastPrevIndex < prevMessages.length; i++){
+            if( currMessages[i].id == prevMessages[lastPrevIndex].id){
               resultMessages.add( prevMessages[lastPrevIndex]);
               lastPrevIndex++;
             }else {
@@ -25,9 +25,9 @@ MergeOldMessageWithNew(
             }
           }
           for(int i= lastPrevIndex ; i< prevMessages.length ;i++){
-            resultMessages.add( prevMessages[lastPrevIndex]);
+            resultMessages.add( prevMessages[i]);
           }
-          return chat.copyWith(messages: [...chat.messages!, ...resultMessages]);
+          return chat.copyWith(messages: resultMessages);
         }).toList()
       : newChats;
 }

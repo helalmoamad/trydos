@@ -172,6 +172,23 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> setVerifiedPhone(bool verifiedPhone) => _preferences.setBool(PrefsKey.verifiedPhone, verifiedPhone);
 
+  @override
+  List<String> getExistenceFiles() => _preferences.getStringList(PrefsKey.existenceFiles) ?? [];
+
+  @override
+  bool isAFilePathExist(String filePath) {
+    List<String> files = getExistenceFiles();
+    return files.contains(filePath);
+  }
+
+  @override
+  Future<bool> setAFilePathExist(String filePath) {
+    List<String> files = getExistenceFiles();
+    files.add(filePath);
+    return _preferences.setStringList(PrefsKey.existenceFiles , files);
+  }
+
+
 
 
 

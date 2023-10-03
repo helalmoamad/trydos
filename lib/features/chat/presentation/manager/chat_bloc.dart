@@ -288,7 +288,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               getChatsStatus: GetChatsStatus.success,
               chats: chat_after_merge_with_new,
               newSortedChatsByDate:
-                  groupReceivedMessageOnDays(chats: chat_after_merge_with_new),
+                  groupReceivedMessageOnDays(chats: [...chat_after_merge_with_new , ...pinned_chat_after_merge_with_the_new]),
               pinnedChats: pinned_chat_after_merge_with_the_new,
               unReadMessagesFromAllChats: unReadMessagesFromAllChats),
         );
@@ -426,6 +426,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         (l) =>
             emit(state.copyWith(sendMessageStatus: SendMessageStatus.failure)),
         (r) {
+          _prefsRepository.setAFilePathExist(r.data!.filePath!);
       add(SendMessageEvent(
           messageId: event.messageId,
           extraFields: event.extraFields,
