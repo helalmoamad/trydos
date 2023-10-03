@@ -138,7 +138,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (checkToken) {
           _prefsRepository.setChatToken(token!);
           _prefsRepository.setMyChatId(id!);
-          _prefsRepository.setMyChatName(name!);
+          _prefsRepository.setMyChatName(name ?? 'No Name');
         }
         add(StoreFcmTokenEvent(userId: id!, fcmToken: event.fcmToken));
         GetIt.I<ChatBloc>().add(GetChatsEvent());
