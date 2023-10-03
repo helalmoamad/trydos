@@ -32,13 +32,18 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   void initState() {
-    registerGuest();
     if (prefsRepository.chatToken != null) {
       BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
     }
-   if(prefsRepository.storiesToken != null){
-     BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
-   }
+    if (prefsRepository.storiesToken != null) {
+      BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
+    }
+    if (prefsRepository.marketToken != null) {
+      BlocProvider.of<AuthBloc>(context).add(GetCustomerInfoEvent());
+      return;
+    } else if (prefsRepository.marketToken == null) {
+      registerGuest();
+    }
     super.initState();
   }
 
@@ -49,20 +54,24 @@ class _SplashPageState extends State<SplashPage> {
         backgroundColor: context.colorScheme.background,
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
-            if(state.registerGuestStatus == RegisterGuestStatus.success){
-              if(state.marketUser?.isPhoneVerified == 1){
-                context.go(GRouter.config.applicationRoutes.kBasePage);
-              }else{
-                context.go(GRouter.config.applicationRoutes.kRegistrationPage);
-              }
+            if (state.getCustomerInfoStatus == GetCustomerInfoStatus.success) {
+              context.go(GRouter.config.applicationRoutes.kBasePage);
             }
           },
-          child: Center(child: logo),
+          child: BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state.registerGuestStatus == RegisterGuestStatus.success) {
+                context.go(GRouter.config.applicationRoutes.kRegistrationPage);
+              }
+            },
+            child: Center(child: logo),
+          ),
         ));
   }
 
-  void registerGuest()async {
+  void registerGuest() async {
     String? deviceId = await HelperFunctions.getDeviceId();
-    BlocProvider.of<AuthBloc>(context).add(RegisterGuestEvent(deviceId: deviceId!));
+    BlocProvider.of<AuthBloc>(context).add(
+        RegisterGuestEvent(deviceId: deviceId!));
   }
 }

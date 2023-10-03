@@ -637,7 +637,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           AssetEntity? assetEntity =
                                               await HelperFunctions
                                                   .getAssetFromCamera(context);
-
                                           if (assetEntity != null) {
                                             File file =
                                                 (await assetEntity.file)!;
@@ -657,7 +656,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           pusherChatService.sendActivityEvent(
                                               widget.channelId,
                                               widget.channelPusherName,
-                                              null);
+                                              null
+                                          );
                                         },
                                         child: SvgPicture.asset(
                                           AppAssets.takePictureSvg,

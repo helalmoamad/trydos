@@ -105,19 +105,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           []);
     }
     String? parentMessageId;
-//    print('count  ${messages.length}');
     if (!ids.contains(event.messageId)) {
       ids.add(event.messageId);
       int index = messages.indexWhere((element) =>
           element.localId == event.parentMessageId &&
           event.parentMessageId != null);
-//      print('index $index');
       parentMessageId = event.parentMessageId;
       if (index != -1) {
-//        print(messages[index].id);
         parentMessageId = messages[index].id;
-//        print('parent sneder id: ${event.senderParentMessageId}');
-//        print('parent sneder id2: $parentMessageId');
       }
       messages.insert(
           0,
@@ -254,7 +249,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       },
     );
   }
-
   FutureOr<void> _onGetChatsEvent(
       GetChatsEvent event, Emitter<ChatState> emit) async {
     emit(state.copyWith(getChatsStatus: GetChatsStatus.loading));

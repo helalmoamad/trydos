@@ -17,15 +17,15 @@ MergeOldMessageWithNew(
     resultMessages=[];
           currMessages = List.of(chat.messages ?? []);
           for(int i=0;i<currMessages.length ; i++){
-            if(currMessages[i].id == prevMessages[lastPrevIndex].id){
-              resultMessages[i] = prevMessages[lastPrevIndex];
+            if(lastPrevIndex < prevMessages.length && currMessages[i].id == prevMessages[lastPrevIndex].id){
+              resultMessages.add( prevMessages[lastPrevIndex]);
               lastPrevIndex++;
             }else {
-              resultMessages[i]=currMessages[i];
+              resultMessages.add(currMessages[i]);
             }
           }
           for(int i= lastPrevIndex ; i< prevMessages.length ;i++){
-            resultMessages[i] = prevMessages[i];
+            resultMessages.add( prevMessages[lastPrevIndex]);
           }
           return chat.copyWith(messages: [...chat.messages!, ...resultMessages]);
         }).toList()

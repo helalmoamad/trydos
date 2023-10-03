@@ -140,6 +140,14 @@ class UpdateNameEvent extends AuthEvent {
   // TODO: implement props
   List<Object?> get props => [name];
 }
+class GetCustomerInfoEvent extends AuthEvent {
+
+  GetCustomerInfoEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
 
 class LoginToMarketEvent extends AuthEvent {
   final String? phone;

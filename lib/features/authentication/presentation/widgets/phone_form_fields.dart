@@ -247,6 +247,7 @@ class PhoneNumberFormatter extends TextInputFormatter {
         if(oldText[oldText.length-1]==' '){
           return newText.substring(0,newText.length-1);
         }
+        return newText;
     }
     newText = newText.replaceAll(' ', '');
     oldText = oldText.replaceAll(' ', '');

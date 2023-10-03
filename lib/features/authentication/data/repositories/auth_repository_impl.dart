@@ -94,4 +94,9 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
     return handlingExceptionRequest(
         tryCall: () => dataSource.updateName(params));
   }
+
+  @override
+  Future<Either<Failure, User>> getCustomerInfo() {
+    return handlingExceptionRequest(tryCall:  dataSource.getCustomerInfo);
+  }
   }

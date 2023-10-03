@@ -18,8 +18,9 @@ bool checkingOtp = false;
 
 class PinItem extends StatefulWidget {
   final TextEditingController controller;
+  bool isExpired;
   final bool autoFocus;
-  final bool wrongCode;
+  bool wrongCode;
   final Color borderColor;
   final Color contentColor;
   final int index;
@@ -27,9 +28,10 @@ class PinItem extends StatefulWidget {
   final void Function() onChange;
   final void Function(String text)? pasteOtpCode;
 
-  const PinItem(
+  PinItem(
       {this.checkOtp,
       required this.contentColor,
+      required this.isExpired,
       this.wrongCode = false,
       this.pasteOtpCode,
       required this.onChange,
@@ -67,14 +69,28 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
+  void resetPins() {
+    focusNodes[0].requestFocus();
+    currentToType = 0;
+    checkingOtp = false;
+    withBorder = true;
+    widget.controller.value = zwspEditingValue;
+    widget.wrongCode = false;
+    widget.isExpired = false;
+    setState(() {});
+  }
+
   void _updateStatus(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
+      print('hello');
       animationController.reset();
+      resetPins();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    print('wrong otp : ${widget.wrongCode}');
     if (widget.wrongCode) {
       animationController.forward();
     }
@@ -85,7 +101,8 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
     }
     return BlocBuilder<AuthBloc, AuthState>(
       buildWhen: (p, c) =>
-          p.verifyOtpSignInStatus != c.verifyOtpSignInStatus || p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus,
+          p.verifyOtpSignInStatus != c.verifyOtpSignInStatus ||
+          p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus,
       builder: (context, state) {
         return AnimatedBuilder(
             animation: animationController,
@@ -105,8 +122,10 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
                     dashPattern: [3, 3],
                     radius: Radius.circular(15.0),
                     color: (withBorder &&
-                        (state.verifyOtpSignInStatus !=
-                                VerifyOtpSignInStatus.loading && state.verifyOtpSignUpStatus != VerifyOtpSignUpStatus.loading ))
+                            (state.verifyOtpSignInStatus !=
+                                    VerifyOtpSignInStatus.loading &&
+                                state.verifyOtpSignUpStatus !=
+                                    VerifyOtpSignUpStatus.loading))
                         ? widget.borderColor
                         : Color(0xffF5F5F5),
                     child: ClipRRect(
@@ -114,7 +133,9 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
                       child: TextFormField(
                         controller: widget.controller,
                         enabled: (state.verifyOtpSignInStatus !=
-                            VerifyOtpSignInStatus.loading && state.verifyOtpSignUpStatus != VerifyOtpSignUpStatus.loading ),
+                                VerifyOtpSignInStatus.loading &&
+                            state.verifyOtpSignUpStatus !=
+                                VerifyOtpSignUpStatus.loading),
                         focusNode: focusNodes[widget.index],
                         onTap: () {
                           if (widget.index != currentToType) {
@@ -122,11 +143,11 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
                           }
                         },
                         onChanged: (String? text) {
+                          widget.onChange.call();
                           if (widget.index == 0 && (text?.length ?? 0) > 1) {
                             widget.pasteOtpCode!.call(text!);
                           }
                           if ((text?.length ?? 0) > 1) {
-                            widget.controller.text = '';
                             widget.controller.text = text![0];
                             text = text[0];
                           }
@@ -158,6 +179,7 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
                         autocorrect: false,
                         cursorColor: Color(0xff5D5C5D),
                         cursorHeight: 0,
+                        enableInteractiveSelection: widget.index == 0,
                         cursorWidth: 0,
                         textAlignVertical: TextAlignVertical.center,
                         inputFormatters: [
@@ -176,8 +198,10 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
                           focusedBorder: InputBorder.none,
                           filled: true,
                           fillColor: !(withBorder &&
-                              (state.verifyOtpSignInStatus !=
-                                  VerifyOtpSignInStatus.loading && state.verifyOtpSignUpStatus != VerifyOtpSignUpStatus.loading ))
+                                  (state.verifyOtpSignInStatus !=
+                                          VerifyOtpSignInStatus.loading &&
+                                      state.verifyOtpSignUpStatus !=
+                                          VerifyOtpSignUpStatus.loading))
                               ? Color(0xffF5F5F5)
                               : Color(0xffFAFAFA),
                         ),
