@@ -33,7 +33,7 @@ class _TrydosApplicationState extends State<TrydosApplication> {
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: colorScheme.white,
-      statusBarBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
       statusBarIconBrightness: Brightness.dark,
     ));
     super.didChangeDependencies();

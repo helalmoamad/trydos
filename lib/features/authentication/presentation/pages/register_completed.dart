@@ -30,7 +30,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffBCFFDF),
-      statusBarBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
       statusBarIconBrightness: Brightness.dark,
     ));
     super.didChangeDependencies();

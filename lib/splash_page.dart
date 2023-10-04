@@ -13,6 +13,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_page.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/routes/router_config.dart';
 
@@ -29,49 +31,62 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
+  late HomeBloc homeBloc;
 
   @override
   void initState() {
-    if (prefsRepository.chatToken != null) {
-      BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
-    }
-    if (prefsRepository.storiesToken != null) {
-      BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
-    }
-    if (prefsRepository.marketToken != null) {
-      BlocProvider.of<AuthBloc>(context).add(GetCustomerInfoEvent());
-      return;
-    } else if (prefsRepository.marketToken == null) {
+    homeBloc = BlocProvider.of<HomeBloc>(context);
+    if (prefsRepository.marketToken == null) {
       registerGuest();
+    } else {
+      BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
+      homeBloc.add(GetMainCategoriesEvent());
+      homeBloc.add(GetMainCategoriesEvent());
+      Future.delayed(
+        Duration(seconds: 2),
+        () {
+          context.go(GRouter.config.applicationRoutes.kBasePage);
+        },
+      );
     }
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: context.colorScheme.background,
-        body: BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state.getCustomerInfoStatus == GetCustomerInfoStatus.success) {
-              context.go(GRouter.config.applicationRoutes.kBasePage);
-            }
-          },
-          child: BlocListener<AuthBloc, AuthState>(
-            listener: (context, state) {
-              if (state.registerGuestStatus == RegisterGuestStatus.success) {
-                context.go(GRouter.config.applicationRoutes.kRegistrationPage);
-              }
-            },
-            child: Center(child: logo),
-          ),
-        ));
+      backgroundColor: context.colorScheme.background,
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state.registerGuestStatus == RegisterGuestStatus.success) {
+            BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
+            homeBloc.add(GetHomeSectionsEvent(''));
+            homeBloc.add(GetMainCategoriesEvent());
+            context.go(GRouter.config.applicationRoutes.kRegistrationPage);
+          }
+        },
+        child: Center(child: logo),
+      ),
+      // BlocListener<AuthBloc, AuthState>(
+      //   listener: (context, state) {
+      //     if (state.getCustomerInfoStatus == GetCustomerInfoStatus.success) {
+      //       context.go(GRouter.config.applicationRoutes.kBasePage);
+      //     }
+      //   },
+      //   child: BlocListener<AuthBloc, AuthState>(
+      //     listener: (context, state) {
+      //       if (state.registerGuestStatus == RegisterGuestStatus.success) {
+      //         context.go(GRouter.config.applicationRoutes.kRegistrationPage);
+      //       }
+      //     },
+      //     child:
+      //   ),),
+    );
   }
 
   void registerGuest() async {
     String? deviceId = await HelperFunctions.getDeviceId();
-    BlocProvider.of<AuthBloc>(context).add(
-        RegisterGuestEvent(deviceId: deviceId!));
+    BlocProvider.of<AuthBloc>(context)
+        .add(RegisterGuestEvent(deviceId: deviceId!));
   }
 }

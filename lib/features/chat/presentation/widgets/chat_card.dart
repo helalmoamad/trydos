@@ -79,9 +79,10 @@ class _ChatCardState extends ThemeState<ChatCard> {
     User? receiver = widget.chat.channelMembers
         ?.firstWhere((element) => element.userId != _prefsRepository.myChatId)
         .user;
-    String receiverName;
+    String receiverName, fullReceiverName;
     if (receiver == null) {
       receiverName = 'UK';
+      fullReceiverName = 'Unknown User';
     } else {
       receiverName = receiver.contactUser == null
           ? receiver.name == null
@@ -91,12 +92,11 @@ class _ChatCardState extends ThemeState<ChatCard> {
               ? 'UK'
               : HelperFunctions.getTheFirstTwoLettersOfName(
                   receiver.contactUser!.name!);
+      fullReceiverName = receiver.contactUser?.name ??
+          receiver.name ??
+          receiver.mobilePhone ??
+          'Unknown User';
     }
-
-    if(receiver!.contactUser!=null)
-       if(receiver.contactUser!.name!=null)
-    Fluttertoast.showToast(msg: receiver.contactUser!.name!,backgroundColor: Colors.green);
-
     ChannelMember me = widget.chat.channelMembers!
         .firstWhere((element) => element.userId == _prefsRepository.myChatId);
     User? sender = me.user;
@@ -149,7 +149,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                     widget.chat.id.toString());
                 context.go(GRouter
                         .config.applicationRoutes.kSinglePageChatPagePath +
-                    '?chatId=${widget.chat.id!.toString()}&data_length=${widget.chat.messages!.length}&receiverName=$receiverName&fullReceiverName=${receiver?.name ?? receiver?.mobilePhone ?? 'Un Known User'}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}&receiverPhoto=${receiver?.photoPath}&senderPhoto=${sender?.photoPath}');
+                    '?chatId=${widget.chat.id!.toString()}&data_length=${widget.chat.messages!.length}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}&receiverPhoto=${receiver?.photoPath}&senderPhoto=${sender?.photoPath}');
               },
               child: Slidable(
                 endActionPane: ActionPane(
@@ -280,9 +280,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                   child: Row(
                                     children: [
                                       Text(
-                                        receiver?.name ??
-                                            receiver?.mobilePhone ??
-                                            'Un Known user',
+                                        fullReceiverName,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: textTheme.subtitle1?.rr.copyWith(
@@ -445,13 +443,10 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                       28.horizontalSpace,
                                       Row(
                                         children: [
-                                          if (((widget.chat
-                                                          .totalUnreadMessageCount ??
-                                                      0)) >
-                                                  0 &&
-                                              widget.chat
-                                                      .totalUnreadMessageCount !=
-                                                  null) ...{
+                                          if ((widget.chat
+                                                      .totalUnreadMessageCount ??
+                                                  0) >
+                                              0) ...{
                                             SvgPicture.asset(
                                               AppAssets
                                                   .singleChatFilledActiveSvg,

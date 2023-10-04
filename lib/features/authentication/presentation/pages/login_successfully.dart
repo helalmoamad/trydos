@@ -28,7 +28,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffE0FFEE),
-      statusBarBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
       statusBarIconBrightness: Brightness.dark,
     ));
     Future.delayed(

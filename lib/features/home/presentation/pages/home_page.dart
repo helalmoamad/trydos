@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
@@ -56,7 +58,8 @@ class _HomePageState extends State<HomePage> {
           if (_previousOffset != null) {
             final distance = (currentOffset - _previousOffset!).abs();
             final time =
-                notification.dragDetails?.sourceTimeStamp?.inMilliseconds ?? 0.000001;
+                notification.dragDetails?.sourceTimeStamp?.inMilliseconds ??
+                    0.000001;
             _velocity = distance / time;
             if (scrollController.position.pixels <= 80) {
               _previousOffset = currentOffset;
@@ -86,26 +89,28 @@ class _HomePageState extends State<HomePage> {
                   SliverToBoxAdapter(
                     child: 40.verticalSpace,
                   ),
-                  SliverToBoxAdapter(child: Padding(
-                      padding: HWEdgeInsetsDirectional.only(start: 30),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SvgPicture.asset(
-                            AppAssets.storyFilmSvg,
-                            width: 20,
-                            height: 20,
-                          ),
-                          SizedBox(
-                            width: 7,
-                          ),
-                          Text(
-                            'Story',
-                            style: context.textTheme.bodyText2?.rr
-                                .copyWith(height: 0.86, color: Color(0xff3C3C3C)),
-                          )
-                        ],
-                      )),),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                        padding: HWEdgeInsetsDirectional.only(start: 30),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SvgPicture.asset(
+                              AppAssets.storyFilmSvg,
+                              width: 20,
+                              height: 20,
+                            ),
+                            SizedBox(
+                              width: 7,
+                            ),
+                            Text(
+                              'Story',
+                              style: context.textTheme.bodyText2?.rr.copyWith(
+                                  height: 0.86, color: Color(0xff3C3C3C)),
+                            )
+                          ],
+                        )),
+                  ),
                   SliverToBoxAdapter(
                     child: 20.verticalSpace,
                   ),
@@ -117,9 +122,17 @@ class _HomePageState extends State<HomePage> {
                   ),
                   sliverListSeparated(
                     itemBuilder: (_, index) => Padding(
-                      padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                      child: HomePageCard(showWhite: index % 2 == 0),
-                    ),
+                        padding: HWEdgeInsets.symmetric(horizontal: 15.w),
+                        child: Shimmer.fromColors(
+                            child: Container(
+                              width: 1.sw,
+                              height: 200,
+                              color: Colors.white,
+                            ),
+                            baseColor: Colors.grey,
+                            highlightColor: Color.fromARGB(31, 146, 144, 144))
+                        //HomePageCard(showWhite: index % 2 == 0),
+                        ),
                     separator: 10.verticalSpace,
                     childCount: 8,
                   ),
