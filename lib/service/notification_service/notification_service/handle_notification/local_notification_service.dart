@@ -65,7 +65,7 @@ class LocalNotificationService {
     String prevMessageId=message.data['prev_message_id'];
     await _localNotificationPlugin.show(
       0,
-      myMessage.senderInfo!.name ?? myMessage.senderMobilePhone ?? 'Un Known User',
+      myMessage.senderInfo!.name ?? myMessage.senderMobilePhone ?? 'UnKnown User',
       type == 'TextMessage' ? myMessage.messageContent!.content.toString() :  type=='ImageMessage' ? 'Photo' :type=='VoiceMessage' ? 'Voice' : type == 'VideoMessage' ? 'Video' :'File',
       _notificationDetails(),
       payload: '${message.data['message']},,${prevMessageId}'

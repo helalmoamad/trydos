@@ -31,7 +31,7 @@ class ContactCard extends StatelessWidget {
     final String receiverName, fullReceiverName;
     if (contact.name == null) {
       receiverName = 'UK';
-      fullReceiverName = contact.mobilePhone ?? 'Un Known User';
+      fullReceiverName = contact.mobilePhone ?? 'UnKnown User';
     } else {
       receiverName = HelperFunctions.getTheFirstTwoLettersOfName(contact.name!);
       fullReceiverName = contact.name!;

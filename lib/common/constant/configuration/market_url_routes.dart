@@ -6,6 +6,7 @@ extension ScopeApi on String {
   String authFirebaseScope() => '$_api/${_currentVersion}/auth/firebase/$this';
   String authScope() => '$_api/${_currentVersion}/auth/$this';
   String customerScope() => '$_api/${_currentVersion}/customer/$this';
+  String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
 }
 
 abstract class MarketEndPoints {
@@ -19,6 +20,9 @@ abstract class MarketEndPoints {
   static final loginEP = 'login'.phoneScope();
   static final updateNameEP = 'update-name'.customerScope();
   static final getCustomerInfoEP = 'info'.customerScope();
+  static final getStartingSettingsEP = 'startingSettings'.homeScope();
+  static final getHomeSectionsEP = 'home_sections'.homeScope();
+  static final getMainCategoriesEP = 'mainCategories'.homeScope();
 }
 
 abstract class MarketUrls {

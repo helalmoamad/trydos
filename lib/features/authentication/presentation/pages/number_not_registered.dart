@@ -29,7 +29,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFF9F0),
-      statusBarBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
       statusBarIconBrightness: Brightness.dark,
     ));
     super.didChangeDependencies();

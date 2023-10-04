@@ -42,7 +42,7 @@ class ChatPageContentState extends State<ChatPageContent> {
       List<Chat> search=[];
       for(Chat chat in initialChats){
         ChannelMember member=chat.channelMembers!.firstWhere((element) => element.userId!=GetIt.I<PrefsRepository>().myChatId);
-        if((member.user?.name ?? 'Un Known User').toLowerCase().contains(text?.toLowerCase() ?? '') || (member.user?.mobilePhone ?? 'No Number').toLowerCase().contains(text?.toLowerCase() ?? '')){
+        if((member.user?.name ?? 'UnKnown User').toLowerCase().contains(text?.toLowerCase() ?? '') || (member.user?.mobilePhone ?? 'No Number').toLowerCase().contains(text?.toLowerCase() ?? '')){
           search.add(chat);
         }
       }
@@ -54,7 +54,7 @@ class ChatPageContentState extends State<ChatPageContent> {
   Widget build(BuildContext context) {
     //todo  9/21  change it to BlocBuilder
     return BlocBuilder<ChatBloc, ChatState>(
-      buildWhen: (p,c)=> p.getChatsStatus != c.getChatsStatus,
+      buildWhen: (p,c)=> p.getChatsStatus != c.getChatsStatus || p.unReadMessagesFromAllChats != c.unReadMessagesFromAllChats,
       builder: (context, state) {
         if (state.getChatsStatus == GetChatsStatus.loading && state.chats.isEmpty && state.pinnedChats.isEmpty) {
           return SliverToBoxAdapter(child: TrydosLoader());

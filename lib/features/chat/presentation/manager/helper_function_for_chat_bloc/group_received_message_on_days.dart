@@ -16,11 +16,6 @@ groupReceivedMessageOnDays({required List<Chat> chats}) {
     //todo here bring all the days that have messages send on it and put the date as key in the messages in this day as value
     Map<String, List<Message>> newMessagesByDate = {};
     for (int i = 0; i < chat.messages!.length; i++) {
-      String? filePath = chat.messages![i].mediaMessageContent?[0].filePath;
-      if (filePath!=null &&  _prefsRepository.isAFilePathExist(filePath)) {
-        File? file= File(FileSaving().getFilePath(filePath.split('/').last));
-        chat.messages![i] = chat.messages![i].copyWith(file: file , checkedExistence: true);
-      }
       final zonedDate = HelperFunctions.replaceArabicNumber(
           DateFormat("yyyy-MM-dd").format(
               HelperFunctions.getZonedDate(chat.messages![i].createdAt!)));

@@ -1400,6 +1400,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
     String? senderPhoto,
     String? receiverPhoto,
   }) {
+    String? filePath = message.mediaMessageContent?[0].filePath;
+    if (filePath!=null &&  _prefsRepository.isAFilePathExist(filePath)) {
+      File? file= File(FileSaving().getFilePath(filePath.split('/').last));
+      message = message.copyWith(file: file , checkedExistence: true);
+    }
     MessageStatus? messageStatus = message.messageStatus
         ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
     if (message.parentMessageId != null && message.parentMessage != null) {
