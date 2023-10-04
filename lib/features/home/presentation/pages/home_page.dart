@@ -11,6 +11,7 @@ import 'package:trydos/features/app/app_widgets/tabs_bar.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_card.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import '../../../../common/constant/design/assets_provider.dart';
@@ -120,22 +121,30 @@ class _HomePageState extends State<HomePage> {
                   SliverToBoxAdapter(
                     child: 20.verticalSpace,
                   ),
-                  sliverListSeparated(
+                  BlocBuilder<HomeBloc, HomeState>(
+                    buildWhen: (p,c) => p.getHomeSectionsStatus != c.getHomeSectionsStatus,
+  builder: (context, state) {
+    return sliverListSeparated(
                     itemBuilder: (_, index) => Padding(
                         padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                        child: Shimmer.fromColors(
+                        child: state.getHomeSectionsStatus == GetHomeSectionsStatus.loading ? Shimmer.fromColors(
                             child: Container(
                               width: 1.sw,
                               height: 200,
-                              color: Colors.white,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
                             ),
                             baseColor: Colors.grey,
-                            highlightColor: Color.fromARGB(31, 146, 144, 144))
-                        //HomePageCard(showWhite: index % 2 == 0),
+                            highlightColor: Color.fromARGB(31, 146, 144, 144)):
+                        HomePageCard(showWhite: index % 2 == 0),
                         ),
                     separator: 10.verticalSpace,
                     childCount: 8,
-                  ),
+                  );
+  },
+),
                   SliverToBoxAdapter(
                     child: 20.verticalSpace,
                   ),

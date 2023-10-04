@@ -193,8 +193,7 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
                         maxLines: 2,
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          contentPadding:
-                              HWEdgeInsets.only(top: 30.7, bottom: 15),
+                           contentPadding: HWEdgeInsets.only(top: 30 , bottom: 25),
                           focusedBorder: InputBorder.none,
                           filled: true,
                           fillColor: !(withBorder &&
