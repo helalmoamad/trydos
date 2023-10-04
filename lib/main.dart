@@ -6,7 +6,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:network_info_plus/network_info_plus.dart';
 import 'package:trydos/core/di/di_container.dart';
 import 'package:trydos/features/app/blocs/sensitive_connectivity/connectivity_observer.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
