@@ -190,10 +190,10 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   // TODO: implement deviceIp
-  String? get deviceIp => _preferences.getString('deviceIp');
+  String? get countryName => _preferences.getString('countryName');
 
   @override
-  Future<bool> setDeviceIp(String? deviceIp) =>_preferences.setString('deviceIp', deviceIp!);
+  Future<bool> setCountryName(String? countryName) =>_preferences.setString('countryName', countryName!);
 
 
 

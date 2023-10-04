@@ -35,9 +35,9 @@ class _SplashPageState extends State<SplashPage> {
     if (prefsRepository.chatToken != null) {
       BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
     }
-    if (prefsRepository.storiesToken != null) {
+//    if (prefsRepository.storiesToken != null) {
       BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
-    }
+//    }
     if (prefsRepository.marketToken != null) {
       BlocProvider.of<AuthBloc>(context).add(GetCustomerInfoEvent());
       return;

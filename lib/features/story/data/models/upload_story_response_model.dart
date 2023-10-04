@@ -47,7 +47,7 @@ class UploadStoryResponseModel {
 
   factory UploadStoryResponseModel.fromJson(Map<String, dynamic> json) {
 
-    Fluttertoast.showToast(msg: json.toString());
+//    Fluttertoast.showToast(msg: json.toString());
     return  UploadStoryResponseModel(
       isSuccessful: json["isSuccessful"],
       hasContent: json["hasContent"],

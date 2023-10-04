@@ -93,9 +93,6 @@ class _ChatCardState extends ThemeState<ChatCard> {
                   receiver.contactUser!.name!);
     }
 
-    if(receiver!.contactUser!=null)
-       if(receiver.contactUser!.name!=null)
-    Fluttertoast.showToast(msg: receiver.contactUser!.name!,backgroundColor: Colors.green);
 
     ChannelMember me = widget.chat.channelMembers!
         .firstWhere((element) => element.userId == _prefsRepository.myChatId);

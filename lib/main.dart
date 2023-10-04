@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -17,49 +18,51 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
 import 'dart:convert' as convert;
+
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  if(!isDependencyInitialized){
+  if (!isDependencyInitialized) {
     await configureDependencies();
-    isDependencyInitialized=true;
+    isDependencyInitialized = true;
   }
   LocalNotificationService().showNotificationWithPayload(message: message);
 }
-bool isDependencyInitialized=false;
- Timer? timer;
+
+bool isDependencyInitialized = false;
+Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-bool notificationClicked =false;
+bool notificationClicked = false;
 Message? initialMessage;
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await configureDependencies();
-  final  info = NetworkInfo();
-  final wifiIPv6 = await info.getWifiIPv6(); // 2001:0db8:85a3:0000:0000:8a2e:0370:7334
-  GetIt.I<PrefsRepository>().setDeviceIp(wifiIPv6);
-  isDependencyInitialized=true;
+
+var client=Dio();
+  var  addressInfo= await client.get('http://ip-api.com/json');
+  Map<String,dynamic> jsonResponse=convert.jsonDecode(addressInfo.toString());
+print('addressInfo ${addressInfo}  runType ${addressInfo.runtimeType}');
+print('json reponse ${jsonResponse['country']}');
+
+  await  GetIt.I<PrefsRepository>().setCountryName(jsonResponse['country']);
+  isDependencyInitialized = true;
   await NotificationProcess().init();
-  RemoteMessage? openedMessage = await FirebaseMessaging.instance.getInitialMessage();
-  if(initialMessage != null){
+  RemoteMessage? openedMessage =
+      await FirebaseMessaging.instance.getInitialMessage();
+  if (initialMessage != null) {
     print('hello');
-    initialMessage = Message.fromJson(
-        convert.jsonDecode(openedMessage!.data['message']));
+    initialMessage =
+        Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
   }
-  await  NotificationProcess().setupInteractedMessage();
+  await NotificationProcess().setupInteractedMessage();
   await NotificationProcess().fcmToken();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   AssetPicker.registerObserve();
   PhotoManager.setLog(true);
   FlutterError.onError = (FlutterErrorDetails error) {
     GetIt.I<PrefsRepository>().saveRequestsData(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
+        null, null, null, null, null, null, null,
         error: error.toString());
   };
   //   GetIt.I<Dio>().post(ChatEndPoints.createBugEP, data: {
@@ -71,19 +74,21 @@ void main() async{
   // Isolate.current.addErrorListener(RawReceivePort((pair) async {
   //   final List<dynamic> errorAndStacktrace = pair;
   // }).sendPort);
-  HttpOverrides.global =  MyHttpOverrides();
+  HttpOverrides.global = MyHttpOverrides();
   await dealWithTimer();
-  runApp( TrydosApplication(navKey: navigatorKey,));
+  runApp(TrydosApplication(
+    navKey: navigatorKey,
+  ));
 }
 
- dealWithTimer() async{
-  final  PrefsRepository prefs = GetIt.I<PrefsRepository>();
+dealWithTimer() async {
+  final PrefsRepository prefs = GetIt.I<PrefsRepository>();
   timer?.cancel();
-  timer=Timer.periodic(const Duration(minutes: 2 ), (timer) {
-    if((ConnectivityObserver.currentEvent==ConnectivityResult.wifi || ConnectivityObserver.currentEvent==ConnectivityResult.mobile) && prefs.chatToken!=null) {
+  timer = Timer.periodic(const Duration(minutes: 2), (timer) {
+    if ((ConnectivityObserver.currentEvent == ConnectivityResult.wifi ||
+            ConnectivityObserver.currentEvent == ConnectivityResult.mobile) &&
+        prefs.chatToken != null) {
       GetIt.I<ChatBloc>().add(const GetChatsEvent());
     }
   });
 }
-
-

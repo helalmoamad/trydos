@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:trydos/core/data/repository/prefs_repository_impl.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/story/helper_functions/check_showing_stories.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection.dart';
@@ -16,6 +19,9 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../../common/helper/helper_functions.dart';
+import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../routes/router.dart';
+import '../../../authentication/presentation/pages/first_registeration_page.dart';
 
 class StoriesList extends StatelessWidget {
   StoriesList({super.key});
@@ -27,9 +33,7 @@ class StoriesList extends StatelessWidget {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
 
-    return BlocBuilder<StoryBloc, StoryState>(
-//        buildWhen: (previous, current) => previous.stories.length!=current.stories.length,
-        builder: (context, state) {
+    return BlocBuilder<StoryBloc, StoryState>(builder: (context, state) {
 //todo the ScrollConfiguration make behavior to the scroll
       return ScrollConfiguration(
         behavior: const CupertinoScrollBehavior(),
@@ -39,9 +43,6 @@ class StoriesList extends StatelessWidget {
                 builder: (context, focused, _) {
                   return Row(
                     children: [
-//                      state.uploadStoryStatus == UploadStoryStatus.loading
-//                          ? CircularProgressIndicator()
-//                          :
                       Expanded(
                           child: SizedBox(
                               width: 110,
@@ -50,49 +51,72 @@ class StoriesList extends StatelessWidget {
                                   controller: listViewController,
                                   itemBuilder: (context, index) {
                                     if (index == 0) {
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsetsDirectional.only(
-                                                top: 18.0, bottom: 18),
-                                        child: SizedBox(
-                                          width: 100,
-                                          height: 100,
-                                          child: InkWell(
-                                            child: Container(
-                                              child: Center(child: Text('uplaod')),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(20.0),
-                                                color: Colors.grey,
-                                              ),
-                                              width: 100,
-                                              height: 120,
-                                            ),
-                                            onTap: () async {
-                                              AssetEntity? assetEntity =
-                                                  await HelperFunctions
-                                                      .getAssetFromCamera(
-                                                          context);
+                                      return state.uploadStoryStatus ==
+                                              UploadStoryStatus.loading
+                                          ? TrydosLoader()
+                                          : Padding(
+                                              padding:
+                                                  const EdgeInsetsDirectional
+                                                      .only(
+                                                      top: 18.0, bottom: 18),
+                                              child: SizedBox(
+                                                width: 100,
+                                                height: 100,
+                                                child: InkWell(
+                                                  child: Container(
+                                                    child: Center(
+                                                        child: Text('uplaod')),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20.0),
+                                                      color: Colors.grey,
+                                                    ),
+                                                    width: 100,
+                                                    height: 120,
+                                                  ),
+                                                  onTap: () async {
+                                                    if (GetIt.I<PrefsRepository>()
+                                                            .isVerifiedPhone ==
+                                                        false) {
+                                                      context.go(GRouter
+                                                          .config
+                                                          .applicationRoutes
+                                                          .kRegistrationPage);
+                                                    } else {
+//                                                      Fluttertoast.showToast(
+//                                                          msg: 'vessrify');
 
-                                              if (assetEntity != null) {
-                                                File file = (await assetEntity
-                                                    .originFile)!;
-                                                String mimeStr = lookupMimeType(
-                                                        file.absolute.path) ??
-                                                    '';
-                                                var fileType =
-                                                    mimeStr.split('/');
-                                                Fluttertoast.showToast(
-                                                    msg: file.absolute.path,
-                                                    backgroundColor:
-                                                        Colors.yellow);
-                                                GetIt.I<StoryBloc>().add(
-                                                    UploadStoryEvent(file));
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                      );
+                                                      AssetEntity? assetEntity =
+                                                          await HelperFunctions
+                                                              .getAssetFromCamera(
+                                                                  context);
+
+                                                      if (assetEntity != null) {
+                                                        File file =
+                                                            (await assetEntity
+                                                                .originFile)!;
+                                                        String mimeStr =
+                                                            lookupMimeType(file
+                                                                    .absolute
+                                                                    .path) ??
+                                                                '';
+                                                        var fileType =
+                                                            mimeStr.split('/');
+//                                                        Fluttertoast.showToast(
+//                                                            msg: file
+//                                                                .absolute.path,
+//                                                            backgroundColor:
+//                                                                Colors.yellow);
+                                                        GetIt.I<StoryBloc>().add(
+                                                            UploadStoryEvent(
+                                                                file));
+                                                      }
+                                                    }
+                                                  },
+                                                ),
+                                              ),
+                                            );
                                     } else {
                                       index = index - 1;
                                       var indexOfInitialStory =
@@ -116,7 +140,8 @@ class StoriesList extends StatelessWidget {
                                         onLongPressStart: (details) {
                                           resizeStories.value = (details
                                                       .globalPosition.dx +
-                                                  listViewController.offset) ~/230;
+                                                  listViewController.offset) ~/
+                                              230;
                                         },
                                         onLongPressUp: () {
                                           resizeStories.value = -1;
@@ -144,18 +169,20 @@ class StoriesList extends StatelessWidget {
                                                         .photoPath!,
                                                   )
                                                 : StoryItemWidget(
-                                              index: index,
-                                              resize: index == focused,
-                                              firstPhotoNotShowed: state
-                                                  .stories[index]
-                                                  .stories![
-                                              firstWhereNotShowed(
-                                                  state
-                                                      .stories[
-                                                  index]
-                                                      .stories!)]
-                                                  .fullVideoPath!.replaceAll('mp4', 'png'),
-                                            )
+                                                    index: index,
+                                                    resize: index == focused,
+                                                    firstPhotoNotShowed: state
+                                                        .stories[index]
+                                                        .stories![
+                                                            firstWhereNotShowed(
+                                                                state
+                                                                    .stories[
+                                                                        index]
+                                                                    .stories!)]
+                                                        .fullVideoPath!
+                                                        .replaceAll(
+                                                            'mp4', 'png'),
+                                                  )
 //      }
 
                                             ),

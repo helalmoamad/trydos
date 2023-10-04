@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import '../../service/language_service.dart';
+import '../domin/repositories/prefs_repository.dart';
 import 'handling_exception.dart';
 
 abstract class BaseApi<T> with HandlingExceptionRequest {
@@ -13,7 +14,7 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
     if (token != null) {
       headers = client.options.headers..[HttpHeaders.authorizationHeader] = 'Bearer ${token}';
     }
-
+    client.options.headers..['country']= GetIt.I<PrefsRepository>().countryName;
     headers = client.options.headers..[HttpHeaders.acceptLanguageHeader] = LanguageService.languageCode;
     headers.addAll({
       'User-Agent':'device OS:'+(Platform.isAndroid ? 'Android' : 'IOS')+' , application version: 1.0.0',

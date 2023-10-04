@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+
 //import 'material';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -9,9 +10,11 @@ import 'package:dartz/dartz_unsafe.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
 import 'package:stream_transform/stream_transform.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/story/data/models/image_detail.dart';
 import 'package:trydos/features/story/data/models/upload_story_response_model.dart';
@@ -69,21 +72,26 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
 
   _uploadStoryEvent(UploadStoryEvent event, Emitter<StoryState> emit) async {
     emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.loading));
-    final response =await uploadStoryUseCase.call(UploadStoryParams(file: event.file));
-Fluttertoast.showToast(msg: 'msg');
+    final response =
+        await uploadStoryUseCase.call(UploadStoryParams(file: event.file));
+//Fluttertoast.showToast(msg: 'msg');
 
     response.fold((l) {
-      Fluttertoast.showToast(msg: 'ssssssss',backgroundColor: Colors.amber);
+//      Fluttertoast.showToast(msg: 'ssssssss',backgroundColor: Colors.amber);
       emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.failure));
     }, (r) {
 //      Fluttertoast.showToast(msg: 'zzzzzzzzzzzzzzzzz',backgroundColor: Colors.blue);
-      List<Story> o=List.of(state.stories.first.stories!);
-      o.insert(o.length, r.data!);
+      if (GetIt.I<PrefsRepository>().myStoriesId == state.stories.first.id) {
+        List<Story> o = List.of(state.stories.first.stories!);
+        o.insert(o.length, r.data!);
 //      //todo check if the use exist in the array and the story to it's stories
-      state.stories.first.stories=o;
-      emit(state.copyWith(
-        stories: state.stories,
-          uploadStoryStatus: UploadStoryStatus.success));
+        state.stories.first.stories = o;
+        emit(state.copyWith(
+            stories: state.stories,
+            uploadStoryStatus: UploadStoryStatus.success));
+      } else {
+        state.stories.insert(0, Datum(stories: [r.data!]));
+      }
     });
   }
 

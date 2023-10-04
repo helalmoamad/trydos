@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../config/theme/typography.dart';
+
 //import 'package:dartz/dartz_streaming.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,10 +47,10 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
         _videoController?.dispose();
 
         //todo the initial story
-        int currentInitialIndex = state.initialStory!;
-        List<Story> collectionOfSelectedStory =
-            state.stories[state.selectedStory!].stories!;
-        var initialStory = collectionOfSelectedStory[currentInitialIndex];
+//        int currentInitialIndex = state.initialStory!;
+//        List<Story> collectionOfSelectedStory =
+//            state.stories[state.selectedStory!].stories!;
+//        var initialStory = collectionOfSelectedStory[currentInitialIndex];
 
         animatedController = AnimationController(vsync: this);
         pageController = PageController(initialPage: state.initialStory!);
@@ -78,17 +80,18 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
               switch (state.getStoriesStatus) {
                 case GetStoriesStatus.success:
                   return GestureDetector(
-onLongPress: () => animatedController.stop(),
-                      onLongPressUp: () => animatedController.forward(),
+                    onLongPress: () => animatedController.stop(),
+                    onLongPressUp: () => animatedController.forward(),
                     onTapDown: (details) {
                       final double screenWidth =
                           MediaQuery.of(context).size.width;
                       final double dx = details.globalPosition.dx;
-                      if (dx > screenWidth * 1/2) {
+                      if (dx > screenWidth * 1 / 2) {
                         animatedController.stop();
                         animatedController.reset();
                         if ((state.initialStory! + 1) >=
-                            state.stories[state.selectedStory!].stories!.length) {
+                            state.stories[state.selectedStory!].stories!
+                                .length) {
                           GetIt.I<StoryBloc>().add(StorySelectedEvent(
                               selected: state.selectedStory!, initialStory: 0));
                           Navigator.of(context).pop();
@@ -116,37 +119,36 @@ onLongPress: () => animatedController.stop(),
                       controller: pageController,
                       itemBuilder: (context, index) {
 //todo check whether photo or video and start processing
-                        if (initialStory.isPhoto == 1) {
+                        if (state.stories[state.selectedStory!]
+                                .stories![state.initialStory!].isPhoto ==
+                            1) {
                           animatedController.duration =
                               const Duration(seconds: 4);
                           animatedController.forward();
 
                           return CachedNetworkImage(
-                            imageUrl: initialStory.photoPath!,
+                            imageUrl: state.stories[state.selectedStory!]
+                                .stories![state.initialStory!].photoPath!,
                             width: state.imageDetail!.width.toDouble(),
                             height: state.imageDetail!.height.toDouble(),
                           );
                         } else {
-//                          GetIt.I<StoryBloc>().add(LoadingVideoEvent());
                           _videoController = null;
                           _videoController?.dispose();
                           _videoController = VideoPlayerController.networkUrl(
-                              Uri.parse(initialStory.fullVideoPath!));
+                              Uri.parse(state
+                                  .stories[state.selectedStory!]
+                                  .stories![state.initialStory!]
+                                  .fullVideoPath!));
 
                           Future<void> init =
                               _videoController!.initialize().then((_) {
-//                              if (_videoController!.value.isInitialized) {
-//                                GetIt.I<StoryBloc>().add(LoadedVideoEvent());
+
                             animatedController.duration =
                                 _videoController!.value.duration;
                             _videoController!.play();
                             animatedController.forward();
-//                              }
-//else                                GetIt.I<StoryBloc>().add(FailureVideoEvent());
                           });
-//if(state.selectedVideoStatus==SelectedVideoStatus.failure)
-//  return Center(child: Text('sssssssssssssssssssssssssssss'),);
-//                          return state.selectedVideoStatus==SelectedVideoStatus.loading?Center(child: CircularProgressIndicator(),):
                           return FutureBuilder(
                             future: init,
                             builder: (context, snapshot) {
@@ -170,7 +172,8 @@ onLongPress: () => animatedController.stop(),
                           );
                         }
                       },
-                      itemCount: collectionOfSelectedStory.length,
+                      itemCount:
+                          state.stories[state.selectedStory!].stories!.length,
                     ),
                   );
                 case GetStoriesStatus.failure:
@@ -190,7 +193,7 @@ onLongPress: () => animatedController.stop(),
                 right: 10.0,
                 child: Column(children: <Widget>[
                   Row(
-                    children: collectionOfSelectedStory
+                    children: state.stories[state.selectedStory!].stories!
                         .asMap()
                         .map((i, e) {
                           return MapEntry(
@@ -198,16 +201,14 @@ onLongPress: () => animatedController.stop(),
                             AnimatedBar(
                               animController: animatedController,
                               position: i,
-                              currentIndex: currentInitialIndex,
+                              currentIndex: state.initialStory!,
                             ),
                           );
                         })
                         .values
                         .toList(),
                   ),
-//        receiverName = receiver.name == null
-//        ? 'UK'
-//            : ;
+
                   Align(
                     alignment: Alignment.topLeft,
                     child: Row(children: [
@@ -223,30 +224,46 @@ onLongPress: () => animatedController.stop(),
                         width: 40,
                         height: 40,
                         clipBehavior: Clip.hardEdge,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20)),
                         child: state.stories[state.selectedStory!].photoPath ==
                                 null
-                            ? Image.asset('assets/images/default_story_avatar.png',fit: BoxFit.contain,)
+                            ? NoImageWidget(
+                            height: 40,
+                            width: 40,
+                            textStyle: context.textTheme.subtitle1?.br
+                                .copyWith(
+                                color: const Color(0xff6638FF),
+                                letterSpacing: 0.18,
+                                height: 1.33),
+                            name:state.stories[state.selectedStory!]
+                                .name==null?'UK':
+                            HelperFunctions.getTheFirstTwoLettersOfName(
+                                state.stories[state.selectedStory!]
+                                    .name!))
                             : CachedNetworkImage(
-                          placeholder:(context, url) =>
-
-                          Shimmer.fromColors(child: Container(
-
-                            width: 40,height: 40,
-                            color: Colors.white,),
-                          baseColor:Colors.grey ,highlightColor:Color.fromARGB(31, 146, 144, 144))
-                            ,
+                                placeholder: (context, url) =>
+                                    Shimmer.fromColors(
+                                        child: Container(
+                                          width: 40,
+                                          height: 40,
+                                          color: Colors.white,
+                                        ),
+                                        baseColor: Colors.grey,
+                                        highlightColor:
+                                            Color.fromARGB(31, 146, 144, 144)),
                                 imageUrl: state
                                     .stories[state.selectedStory!].photoPath),
-
                       ),
-                      Padding(padding: EdgeInsetsDirectional.only(start: 10),child: Text(
-
-                          style:textTheme.headline6?.rr.copyWith(color: Colors.white),
-                          state.stories[state.selectedStory!].name == null
-                          ? 'UK'
-                          : HelperFunctions.getTheFirstTwoLettersOfName(
-                          state.stories[state.selectedStory!].name!)),)
+                      Padding(
+                        padding: EdgeInsetsDirectional.only(start: 10),
+                        child: Text(
+                            style: textTheme.headline6?.rr
+                                .copyWith(color: Colors.white),
+                            state.stories[state.selectedStory!].name == null
+                                ? 'UK'
+                                : state.stories[state.selectedStory!].name!),
+                      )
                     ]),
                   ),
                 ])),
