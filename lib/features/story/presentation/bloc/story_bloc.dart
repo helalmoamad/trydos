@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-
+//import 'material';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:dartz/dartz.dart';
@@ -73,7 +73,7 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
 Fluttertoast.showToast(msg: 'msg');
 
     response.fold((l) {
-      Fluttertoast.showToast(msg: 'ssssssss',backgroundColor: Colors.blue);
+      Fluttertoast.showToast(msg: 'ssssssss',backgroundColor: Colors.amber);
       emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.failure));
     }, (r) {
 //      Fluttertoast.showToast(msg: 'zzzzzzzzzzzzzzzzz',backgroundColor: Colors.blue);

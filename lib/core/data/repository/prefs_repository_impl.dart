@@ -188,6 +188,13 @@ class PrefsRepositoryImpl extends PrefsRepository {
     return _preferences.setStringList(PrefsKey.existenceFiles , files);
   }
 
+  @override
+  // TODO: implement deviceIp
+  String? get deviceIp => _preferences.getString('deviceIp');
+
+  @override
+  Future<bool> setDeviceIp(String? deviceIp) =>_preferences.setString('deviceIp', deviceIp!);
+
 
 
 

@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 import 'package:trydos/core/di/di_container.dart';
 import 'package:trydos/features/app/blocs/sensitive_connectivity/connectivity_observer.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
@@ -34,6 +35,9 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await configureDependencies();
+  final  info = NetworkInfo();
+  final wifiIPv6 = await info.getWifiIPv6(); // 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+  GetIt.I<PrefsRepository>().setDeviceIp(wifiIPv6);
   isDependencyInitialized=true;
   await NotificationProcess().init();
   RemoteMessage? openedMessage = await FirebaseMessaging.instance.getInitialMessage();

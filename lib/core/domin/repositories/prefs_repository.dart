@@ -4,7 +4,7 @@ abstract class PrefsRepository {
   String? get chatToken;
   String? get marketToken;
   String? get storiesToken;
-
+  String? get deviceIp;
   int? get fcmTokenId;
 
   int? get myChatId;
@@ -22,6 +22,7 @@ abstract class PrefsRepository {
   String? get otpCode;
 
   Future<bool> setVerifiedPhone(bool verifiedPhone);
+  Future<bool> setDeviceIp(String? deviceIp);
 
   Future<bool> setVerificationId(String verificationId);
 
