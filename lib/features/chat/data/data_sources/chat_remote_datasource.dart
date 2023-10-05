@@ -161,6 +161,8 @@ class ChatRemoteDataSource{
     PostClient<Message> sendMessage= PostClient<Message>(
       serverName: ServerName.chat,
       requestPrams: RequestConfig<Message>(
+        receiveTimeout: const Duration(minutes: 1),
+        sendTimeout: const Duration(minutes: 1),
         endpoint: ChatEndPoints.sendMessageEP,
         data: params,
         response: ResponseValue<Message>(

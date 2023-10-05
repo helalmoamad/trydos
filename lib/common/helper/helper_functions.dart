@@ -97,8 +97,6 @@ class HelperFunctions {
     );
   }
 
-
-
   static Future<List<Map<String, dynamic>>> getContactsFromDevice() async {
     final PermissionStatus permissionStatus =
         await Permission.contacts.request();
@@ -106,9 +104,9 @@ class HelperFunctions {
     if (permissionStatus == PermissionStatus.granted) {
       contacts = await ContactsService.getContacts(withThumbnails: false);
     }
-    List<Contact> myContacts=[];
-    for (Contact contact in contacts ){
-      if(contact.phones?.isNotEmpty ?? false){
+    List<Contact> myContacts = [];
+    for (Contact contact in contacts) {
+      if (contact.phones?.isNotEmpty ?? false) {
         myContacts.add(contact);
       }
     }
@@ -181,7 +179,9 @@ class HelperFunctions {
   static String getTheFirstTwoLettersOfName(String name) {
     return name.split(' ').length == 2
         ? name.split(' ')[0][0] + name.split(' ')[1][0]
-        : name.split(' ').first.length >1 ? (name.split(' ')[0][0] + name.split(' ')[0][1]):name.split(' ').first ;
+        : name.split(' ').first.length > 1
+            ? (name.split(' ')[0][0] + name.split(' ')[0][1])
+            : name.split(' ').first;
   }
 
   static Future<File?> pickDocumentFile() async {
@@ -202,9 +202,11 @@ class HelperFunctions {
     return CameraPicker.pickFromCamera(
       c,
       locale: LanguageService.currentLanguage,
-
-      pickerConfig:
-          CameraPickerConfig(enableRecording: true, textDelegate: textDelegate),
+      pickerConfig: CameraPickerConfig(
+        resolutionPreset: ResolutionPreset.low,
+        enableRecording: true,
+        textDelegate: textDelegate,
+      ),
     );
   }
 
