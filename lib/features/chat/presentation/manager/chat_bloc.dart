@@ -17,6 +17,7 @@ import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.da
 import 'package:trydos/features/chat/domain/use_cases/save_contacts_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart';
 import 'package:trydos/features/chat/presentation/manager/helper_function_for_chat_bloc/merge_the_old_chat_with_new.dart';
+import 'package:trydos/features/story/domain/useCases/get_stories_usecase.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../data/models/my_chats_response_model.dart';
@@ -241,7 +242,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       (l) =>
           emit(state.copyWith(saveContactsStatus: SaveContactsStatus.failure)),
       (r) {
-        add(const GetContactsEvent());
         emit(
           state.copyWith(
             saveContactsStatus: SaveContactsStatus.success,
@@ -283,6 +283,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         //todo set the value of new chat in those variables to reuse it in calculating the newSortedChatsByDate
         List<Chat> chat_after_merge_with_new = MergeOldMessageWithNew(newChats: r.data!.chats!, previousChats: state.chats);
         var pinned_chat_after_merge_with_the_new = MergeOldMessageWithNew(newChats: r.data!.pinnedChats!, previousChats: state.pinnedChats);
+
         emit(
           state.copyWith(
               getChatsStatus: GetChatsStatus.success,
@@ -291,6 +292,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               pinnedChats: pinned_chat_after_merge_with_the_new,
               unReadMessagesFromAllChats: unReadMessagesFromAllChats),
         );
+        if(state.contacts.isEmpty){
+          add(const GetContactsEvent());
+        }
       },
     );
   }
@@ -882,17 +886,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           messages: messages,
           hasReachedMax: r.length < event.limit,
           paginationStatus: PaginationStatus.success);
-      List<Chat> pinnedChat = !fromPinned
-          ? state.pinnedChats
-          : state.pinnedChats.map((e) {
+      List<Chat> pinnedChat =  state.pinnedChats.map((e) {
         if (e.id == event.channelId) {
           return chat;
         }
         return e;
       }).toList();
-      List<Chat> chats = fromPinned
-          ? state.chats
-          : state.chats.map((e) {
+      List<Chat> chats =  state.chats.map((e) {
         if (e.id == event.channelId) {
           return chat;
         }
