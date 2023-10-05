@@ -824,7 +824,6 @@ class ContactUser {
 }
 class User {
   ContactUser? contactUser;
-
   final int? id;
   final String? mobilePhone;
   final dynamic photoPath;
@@ -838,7 +837,6 @@ class User {
 
   User({
     this.contactUser,
-
     this.id,
     this.mobilePhone,
     this.photoPath,
@@ -853,7 +851,6 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) => User(
     contactUser: json["contact_user"] == null ? null : ContactUser.fromJson(json["contact_user"]),
-
     id: json["id"],
     mobilePhone: json["mobile_phone"],
     photoPath: json["photo_path"],

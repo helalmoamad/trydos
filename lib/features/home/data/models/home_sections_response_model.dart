@@ -327,7 +327,6 @@ class HsProduct {
   final String? name;
   final String? slug;
   final String? shareLink;
-  final String? details;
   final String? thumbnail;
   final List<String>? images;
   final double? price;
@@ -345,7 +344,6 @@ class HsProduct {
     this.name,
     this.slug,
     this.shareLink,
-    this.details,
     this.thumbnail,
     this.images,
     this.price,
@@ -364,7 +362,6 @@ class HsProduct {
     String? name,
     String? slug,
     String? shareLink,
-    String? details,
     String? thumbnail,
     List<String>? images,
     double? price,
@@ -382,7 +379,6 @@ class HsProduct {
         name: name ?? this.name,
         slug: slug ?? this.slug,
         shareLink: shareLink ?? this.shareLink,
-        details: details ?? this.details,
         thumbnail: thumbnail ?? this.thumbnail,
         images: images ?? this.images,
         price: price ?? this.price,
@@ -401,7 +397,6 @@ class HsProduct {
     name: json["name"],
     slug: json["slug"],
     shareLink: json["share_link"],
-    details: json["details"],
     thumbnail: json["thumbnail"],
     images: json["images"] == null ? [] : List<String>.from(json["images"]!.map((x) => x)),
     price: json["price"]?.toDouble(),
@@ -420,7 +415,6 @@ class HsProduct {
     "name": name,
     "slug": slug,
     "share_link": shareLink,
-    "details": details,
     "thumbnail": thumbnail,
     "images": images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
     "price": price,

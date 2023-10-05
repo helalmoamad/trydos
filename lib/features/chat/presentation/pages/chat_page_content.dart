@@ -56,7 +56,7 @@ class ChatPageContentState extends State<ChatPageContent> {
     return BlocBuilder<ChatBloc, ChatState>(
       buildWhen: (p,c)=> p.getChatsStatus != c.getChatsStatus || p.unReadMessagesFromAllChats != c.unReadMessagesFromAllChats,
       builder: (context, state) {
-        if (state.getChatsStatus == GetChatsStatus.loading && state.chats.isEmpty && state.pinnedChats.isEmpty) {
+        if ((state.getChatsStatus == GetChatsStatus.loading || state.getChatsStatus == GetChatsStatus.init) && state.chats.isEmpty && state.pinnedChats.isEmpty) {
           return SliverToBoxAdapter(child: TrydosLoader());
         }
         // todo (future update) here we can return try again if the status failure
@@ -83,7 +83,7 @@ class ChatPageContentState extends State<ChatPageContent> {
                 builder: (context , searchedChats , _) {
                   return sliverListSeparated(
                     itemBuilder: (_, index) {
-                      bool thereActivity=appState.pusherActivityIds.containsKey(int.parse(searchedChats[index].id.toString()));
+                      bool thereActivity=int.tryParse(searchedChats[index].id.toString()) != null ? appState.pusherActivityIds.containsKey(int.parse(searchedChats[index].id.toString())) : false;
                       return
                         ChatCard(
                           onSendForwardMessage: widget.onSendForwardMessage,
@@ -91,8 +91,7 @@ class ChatPageContentState extends State<ChatPageContent> {
                           thereActivity: thereActivity,
                           index: index,
                           activityDescription: thereActivity ? appState.pusherActivityDescription[int.parse(searchedChats[index].id.toString())]: null,
-                        )
-                      ;
+                        );
                     },
                     separator: const SizedBox.shrink(),
                     childCount: searchedChats.length,

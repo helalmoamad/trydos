@@ -71,8 +71,8 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
   }
 
   _uploadStoryEvent(UploadStoryEvent event, Emitter<StoryState> emit) async {
-    print('uplaod22ss')
-;    emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.loading));
+    print('uplaod22ss');
+    emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.loading));
     Fluttertoast.showToast(msg: 'msg', textColor: Colors.yellow);
 
     final response =

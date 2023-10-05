@@ -216,10 +216,7 @@ class _BasePageState extends State<BasePage> {
                     ? 'UK'
                     : HelperFunctions.getTheFirstTwoLettersOfName(
                         receiver.contactUser!.name!);
-            fullReceiverName = receiver.contactUser?.name ??
-                receiver.name ??
-                receiver.mobilePhone ??
-                'Unknown User';
+            fullReceiverName = receiver.contactUser?.name ?? receiver.name ?? receiver.mobilePhone ?? 'Unknown User';
           }
           ChannelMember me = chat.channelMembers!.firstWhere((element) =>
               element.userId == GetIt.I<PrefsRepository>().myChatId);
