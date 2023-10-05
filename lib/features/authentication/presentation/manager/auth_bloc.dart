@@ -235,6 +235,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           mobilePhone: r.data!.user!.phone,
           originalUserId: r.data!.user!.id!.toString(),
           otpIdToken: r.data!.idToken!));
+      add(LoginToStoriesEvent(
+        originalUserId: r.data!.user!.id!.toString(),
+        otpIdToken: r.data!.idToken!,
+        phone: r.data!.user!.phone,
+      ));
       emit(state.copyWith(
           verifyOtpSignInStatus: VerifyOtpSignInStatus.success,
           marketUser: r.data!.user));
@@ -265,6 +270,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           mobilePhone: r.data!.user!.phone,
           originalUserId: r.data!.user!.id!.toString(),
           otpIdToken: r.data!.idToken!));
+      add(LoginToStoriesEvent(
+        originalUserId: r.data!.user!.id!.toString(),
+        otpIdToken: r.data!.idToken!,
+        phone: r.data!.user!.phone,
+      ));
       if (r.code == 'user-exists') {
         emit(state.copyWith(
             verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,

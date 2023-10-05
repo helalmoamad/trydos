@@ -1,24 +1,18 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
-import 'dart:math' as math;
 import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logger/logger.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/file_saving.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -38,7 +32,6 @@ import 'package:uuid/uuid.dart';
 import 'dart:ui' as ui;
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
-import '../../../../service/language_service.dart';
 import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
@@ -152,6 +145,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError =(details){
+      print(details);
+    };
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (autoScrollController.hasClients) {
         autoScrollController.jumpTo(autoScrollController.position.maxScrollExtent);
@@ -159,7 +155,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
         Timer(Duration(milliseconds: 400), () => _scrollToBottom());
       }
     });
-    // scrollToTheEnd();
     return Scaffold(
         backgroundColor: const Color(0xffEBFFF8),
         appBar: TrydosAppBar(

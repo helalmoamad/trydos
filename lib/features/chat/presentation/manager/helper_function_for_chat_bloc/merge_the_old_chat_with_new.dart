@@ -1,3 +1,5 @@
+import 'package:trydos/core/utils/extensions/list.dart';
+
 import '../../../data/models/my_chats_response_model.dart';
 
 MergeOldMessageWithNew(
@@ -5,14 +7,23 @@ MergeOldMessageWithNew(
   List<Message> currMessages;
   List<Message> prevMessages;
   List<Message> resultMessages=[];
+  List<Chat> emptyChats=[];
+  previousChats.forEach((chat) {
+    if(chat.messages.isNullOrEmpty){
+      emptyChats.add(chat);
+    }
+  });
   return (previousChats.isNotEmpty &&
           previousChats
               .any((element) => int.tryParse(element.id.toString()) != null))
-      ? newChats.map((chat) {
+      ? [...newChats.map((chat) {
     prevMessages = List.of(previousChats
-        .firstWhere((element) => element.id == chat.id)
+        .firstWhere((element) => element.id == chat.id,orElse: ()=> Chat())
         .messages ??
         []);
+    if(prevMessages.isEmpty){
+      return chat;
+    }
     resultMessages=[];
     int lastPrevIndex = 0;
           currMessages = List.of(chat.messages ?? []);
@@ -28,6 +39,6 @@ MergeOldMessageWithNew(
             resultMessages.add( prevMessages[i]);
           }
           return chat.copyWith(messages: resultMessages);
-        }).toList()
+        }).toList(), ...emptyChats]
       : newChats;
 }

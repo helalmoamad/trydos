@@ -287,8 +287,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           state.copyWith(
               getChatsStatus: GetChatsStatus.success,
               chats: chat_after_merge_with_new,
-              newSortedChatsByDate:
-                  groupReceivedMessageOnDays(chats: [...chat_after_merge_with_new , ...pinned_chat_after_merge_with_the_new]),
+              newSortedChatsByDate: groupReceivedMessageOnDays(chats: [...chat_after_merge_with_new , ...pinned_chat_after_merge_with_the_new]),
               pinnedChats: pinned_chat_after_merge_with_the_new,
               unReadMessagesFromAllChats: unReadMessagesFromAllChats),
         );
@@ -322,6 +321,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               -1);
 //          print('index : $index');
           if (index == -1) {
+            print('new chat');
             changed = true;
             String uuid = const Uuid().v4();
             newChats.insert(
@@ -347,6 +347,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         emit(
           state.copyWith(
               chats: changed ? newChats : state.chats,
+              newSortedChatsByDate: groupReceivedMessageOnDays(chats: [...(changed ? newChats : state.chats) , ...state.pinnedChats]),
               getContactsStatus: GetContactsStatus.success,
               contacts: r.contacts),
         );
@@ -535,6 +536,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onReadAllMessagesEvent(
       ReadAllMessagesEvent event, Emitter<ChatState> emit) async {
+    if(int.tryParse(event.channelId) == null){
+      return ;
+    }
     emit(state.copyWith(readMessagesStatus: ResetReadMessagesStatus.loading));
     final response = await readAllMessagesUseCase(
         ReadAllMessagesParams(channelId: event.channelId));
@@ -544,11 +548,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       emit(state.copyWith(
           readMessagesStatus: ResetReadMessagesStatus.success,
           unReadMessagesFromAllChats: state.unReadMessagesFromAllChats -
-              state.chats
+              (state.chats
                   .firstWhere((element) => element.id == event.channelId,
                       orElse: () => state.pinnedChats.firstWhere(
                           (element) => element.id == event.channelId))
-                  .totalUnreadMessageCount!,
+                  .totalUnreadMessageCount ?? 0),
           chats: state.chats.map((e) {
             if (e.id == event.channelId) {
               return e.copyWith(totalUnreadMessageCount: 0);
