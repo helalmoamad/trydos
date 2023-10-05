@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-import 'dart:isolate';
 
 //import 'material';
 import 'package:bloc/bloc.dart';
@@ -71,23 +70,24 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     emit(state.copyWith(selectedVideoStatus: SelectedVideoStatus.failure));
   }
 
-  void fetchData(SendPort message) async {
-
-    print('listens2242');
-
-//    message['sendPort'].send(true);
-  }
-
   _uploadStoryEvent(UploadStoryEvent event, Emitter<StoryState> emit) async {
-    emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.loading));
+    print('uplaod22ss')
+;    emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.loading));
+    Fluttertoast.showToast(msg: 'msg', textColor: Colors.yellow);
+
     final response =
     await uploadStoryUseCase.call(UploadStoryParams(file: event.file));
-//Fluttertoast.showToast(msg: 'msg');
+Fluttertoast.showToast(msg: 'msg', textColor: Colors.red);
 
     response.fold((l) {
+      Fluttertoast.showToast(msg: l.message, textColor: Colors.white);
+
+      print('object_failute');
 //      Fluttertoast.showToast(msg: 'ssssssss',backgroundColor: Colors.amber);
       emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.failure));
     }, (r) {
+      print('storiesIds ${GetIt.I<PrefsRepository>().myStoriesId}');
+      print('storiesIds ${state.stories.first.id}');
 //      Fluttertoast.showToast(msg: 'zzzzzzzzzzzzzzzzz',backgroundColor: Colors.blue);
       if (GetIt.I<PrefsRepository>().myStoriesId == state.stories.first.id) {
         List<Story> o = List.of(state.stories.first.stories!);
@@ -98,16 +98,24 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
             stories: state.stories,
             uploadStoryStatus: UploadStoryStatus.success));
       } else {
+        print('object222');
         state.stories.insert(0, Datum(stories: [r.data!]));
+        print('upload 22 ');
+        emit(state.copyWith(
+            stories: state.stories,
+            uploadStoryStatus: UploadStoryStatus.success));
       }
     });
   }
+
   _onStorySelectedEvent(
       StorySelectedEvent event, Emitter<StoryState> emit) async {
     emit(state.copyWith(selectedStoriesStatus: SelectedStoriesStatus.loading));
     var initialStory =
-        state.stories[event.selected].stories![event.initialStory];
+    state.stories[event.selected].stories![event.initialStory];
     if (initialStory.isPhoto == 1) {
+//todo debug
+//      Fluttertoast.showToast(msg: 'msg');
       //todo bring the real width and height for selected photo
       final response = await getWidthAndHeightUseCase(
           widthAndHeightParams(url: initialStory.photoPath!));
@@ -120,7 +128,7 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
 //todo make the story seen
 
         state.stories[event.selected].stories![event.initialStory].isSeen =
-            true;
+        true;
 //todo debug
 //        Fluttertoast.showToast(msg:state.stories.length.toString(),backgroundColor: Colors.red );
         emit(state.copyWith(
@@ -148,10 +156,10 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     final response = await getStoryUseCase(NoParams());
     log(response.toString());
     response.fold(
-        (l) => emit(state.copyWith(getStoriesStatus: GetStoriesStatus.failure)),
-        (r) {
-      emit(state.copyWith(
-          getStoriesStatus: GetStoriesStatus.success, stories: r.data!.data));
-    });
+            (l) => emit(state.copyWith(getStoriesStatus: GetStoriesStatus.failure)),
+            (r) {
+          emit(state.copyWith(
+              getStoriesStatus: GetStoriesStatus.success, stories: r.data!.data));
+        });
   }
 }

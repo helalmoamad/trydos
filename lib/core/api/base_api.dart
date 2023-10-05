@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import '../../service/language_service.dart';
@@ -11,6 +13,8 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
   BaseApi(this.serverName) {
     Map<String, dynamic> headers = client.options.headers;
     final String? token = getServerToken(serverName);
+    Fluttertoast.showToast(msg: serverName.toString(),textColor: Colors.blue);
+    Fluttertoast.showToast(msg: token.toString(),textColor: Colors.red);
     if (token != null) {
       headers = client.options.headers..[HttpHeaders.authorizationHeader] = 'Bearer ${token}';
     }
