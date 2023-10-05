@@ -13,8 +13,8 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
   BaseApi(this.serverName) {
     Map<String, dynamic> headers = client.options.headers;
     final String? token = getServerToken(serverName);
-    Fluttertoast.showToast(msg: serverName.toString(),textColor: Colors.blue);
-    Fluttertoast.showToast(msg: token.toString(),textColor: Colors.red);
+//    Fluttertoast.showToast(msg: serverName.toString(),textColor: Colors.blue);
+//    Fluttertoast.showToast(msg: token.toString(),textColor: Colors.red);
     if (token != null) {
       headers = client.options.headers..[HttpHeaders.authorizationHeader] = 'Bearer ${token}';
     }

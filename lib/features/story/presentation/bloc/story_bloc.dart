@@ -73,23 +73,25 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
   _uploadStoryEvent(UploadStoryEvent event, Emitter<StoryState> emit) async {
     print('uplaod22ss');
     emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.loading));
-    Fluttertoast.showToast(msg: 'msg', textColor: Colors.yellow);
+//    Fluttertoast.showToast(msg: 'msg', textColor: Colors.yellow);
 
     final response =
     await uploadStoryUseCase.call(UploadStoryParams(file: event.file));
-Fluttertoast.showToast(msg: 'msg', textColor: Colors.red);
+//Fluttertoast.showToast(msg: 'msg', textColor: Colors.red);
 
     response.fold((l) {
-      Fluttertoast.showToast(msg: l.message, textColor: Colors.white);
+//      Fluttertoast.showToast(msg: l.message, textColor: Colors.white);
 
       print('object_failute');
 //      Fluttertoast.showToast(msg: 'ssssssss',backgroundColor: Colors.amber);
       emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.failure));
     }, (r) {
+
       print('storiesIds ${GetIt.I<PrefsRepository>().myStoriesId}');
       print('storiesIds ${state.stories.first.id}');
-//      Fluttertoast.showToast(msg: 'zzzzzzzzzzzzzzzzz',backgroundColor: Colors.blue);
-      if (GetIt.I<PrefsRepository>().myStoriesId == state.stories.first.id) {
+//      Fluttertoast.showToast(msg: 'storiesIds ${GetIt.I<PrefsRepository>().myStoriesId}',backgroundColor: Colors.blue);
+//      Fluttertoast.showToast(msg: 'storiesIds ${state.stories.first.id}',backgroundColor: Colors.blue);
+      if (GetIt.I<PrefsRepository>().myStoriesId == state.stories.first.stories![0].userId) {
         List<Story> o = List.of(state.stories.first.stories!);
         o.insert(o.length, r.data!);
 //      //todo check if the use exist in the array and the story to it's stories
