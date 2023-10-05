@@ -9,7 +9,7 @@ MergeOldMessageWithNew(
   List<Message> resultMessages=[];
   List<Chat> emptyChats=[];
   previousChats.forEach((chat) {
-    if(chat.messages.isNullOrEmpty){
+    if(chat.messages.isNullOrEmpty && int.tryParse(chat.id.toString())==null){
       emptyChats.add(chat);
     }
   });
@@ -28,7 +28,7 @@ MergeOldMessageWithNew(
     int lastPrevIndex = 0;
           currMessages = List.of(chat.messages ?? []);
           for(int i=0;i<currMessages.length  && lastPrevIndex < prevMessages.length; i++){
-            if( currMessages[i].id == prevMessages[lastPrevIndex].id){
+            if( currMessages[i].id == prevMessages[lastPrevIndex].id || currMessages[i].id == prevMessages[lastPrevIndex].localId){
               resultMessages.add( prevMessages[lastPrevIndex]);
               lastPrevIndex++;
             }else {

@@ -71,7 +71,7 @@ class ContactCard extends StatelessWidget {
                                       sender=chat.channelMembers?.firstWhere((element) => element.userId==preferences.myChatId,orElse: ()=> ChannelMember()).user;
                                       receiver=chat.channelMembers?.firstWhere((element) => element.userId!=preferences.myChatId,orElse: ()=> ChannelMember()).user;
                                   return SinglePageChat(
-                                    chatId: id!,
+                                    chatId: id,
                                     receiverName: receiverName,
                                     fullReceiverName: fullReceiverName,
                                     receiverPhone: receiver?.mobilePhone ??

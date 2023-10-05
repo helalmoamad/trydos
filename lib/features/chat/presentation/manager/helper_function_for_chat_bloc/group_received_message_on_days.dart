@@ -1,10 +1,6 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:get_it/get_it.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:math' as math;
-import '../../../../../common/helper/file_saving.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../data/models/my_chats_response_model.dart';
@@ -36,11 +32,8 @@ groupReceivedMessageOnDays({required List<Chat> chats}) {
         }
       }
     }
-    print('thereeeeveev2 : $newMessagesByDate');
-    print('thereeeeveev2 : ${chat.id}');
     newSortedChatsByDate['${chat.id}'] = newMessagesByDate;
   });
 
-  print('thereeeeveev : $newSortedChatsByDate');
   return newSortedChatsByDate;
 }
