@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:isolate';
 
 //import 'material';
 import 'package:bloc/bloc.dart';
@@ -70,30 +71,49 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     emit(state.copyWith(selectedVideoStatus: SelectedVideoStatus.failure));
   }
 
-  _uploadStoryEvent(UploadStoryEvent event, Emitter<StoryState> emit) async {
-    emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.loading));
-    final response =
-        await uploadStoryUseCase.call(UploadStoryParams(file: event.file));
-//Fluttertoast.showToast(msg: 'msg');
+  void fetchData(SendPort message) async {
 
-    response.fold((l) {
-//      Fluttertoast.showToast(msg: 'ssssssss',backgroundColor: Colors.amber);
-      emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.failure));
-    }, (r) {
-//      Fluttertoast.showToast(msg: 'zzzzzzzzzzzzzzzzz',backgroundColor: Colors.blue);
-      if (GetIt.I<PrefsRepository>().myStoriesId == state.stories.first.id) {
-        List<Story> o = List.of(state.stories.first.stories!);
-        o.insert(o.length, r.data!);
-//      //todo check if the use exist in the array and the story to it's stories
-        state.stories.first.stories = o;
-        emit(state.copyWith(
-            stories: state.stories,
-            uploadStoryStatus: UploadStoryStatus.success));
-      } else {
-        state.stories.insert(0, Datum(stories: [r.data!]));
-      }
-    });
+    print('listens2242');
+
+//    message['sendPort'].send(true);
   }
+
+  _uploadStoryEvent(UploadStoryEvent event, Emitter<StoryState> emit) async* {
+    emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.loading));
+    ReceivePort mainReceivePort = ReceivePort();
+try {
+  final  filePath= event.file.path;
+  Isolate isolate = await Isolate.spawn(
+      fetchData,mainReceivePort.sendPort);
+  Isolate.exit(mainReceivePort.sendPort, "OK");
+
+}catch(r){
+  print('listen2242Catch');
+  print(r.toString());
+
+}
+//    final response =
+//        await uploadStoryUseCase.call(UploadStoryParams(file: event.file));
+
+    mainReceivePort.listen((message) {
+Fluttertoast.showToast(msg: 'listen');
+//      message.fold((l) {
+//      emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.failure));
+//    }, (r) {
+//      if (GetIt.I<PrefsRepository>().myStoriesId == state.stories.first.id) {
+//        List<Story> o = List.of(state.stories.first.stories!);
+//        o.insert(o.length, r.data!);
+//        //todo check if the use exist in the array and the story to it's stories
+//        state.stories.first.stories = o;
+//        emit(state.copyWith(
+//            stories: state.stories,
+//            uploadStoryStatus: UploadStoryStatus.success));
+//      } else {
+//        state.stories.insert(0, Datum(stories: [r.data!]));
+//      }
+//    });
+  }
+    );}
 
   _onStorySelectedEvent(
       StorySelectedEvent event, Emitter<StoryState> emit) async {
@@ -101,8 +121,6 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     var initialStory =
         state.stories[event.selected].stories![event.initialStory];
     if (initialStory.isPhoto == 1) {
-//todo debug
-//      Fluttertoast.showToast(msg: 'msg');
       //todo bring the real width and height for selected photo
       final response = await getWidthAndHeightUseCase(
           widthAndHeightParams(url: initialStory.photoPath!));
