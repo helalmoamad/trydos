@@ -60,8 +60,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         transformer: throttleDroppable(throttleDuration));
     on<LoginToChatEvent>(_onLoginToChatEvent,
         transformer: throttleDroppable(throttleDuration));
-    on<LoginToMarketEvent>(_onLoginToMarketEvent,
-        transformer: throttleDroppable(throttleDuration));
     on<LoginToStoriesEvent>(_onLoginToStoriesEvent,
         transformer: throttleDroppable(throttleDuration));
     on<StoreFcmTokenEvent>(_onStoreFcmTokenEvent,
@@ -189,7 +187,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-  FutureOr<void> _onLoginToMarketEvent(event, Emitter<AuthState> emit) async {}
 
 //todo _onLoginToStoriesEvent
   FutureOr<void> _onLoginToStoriesEvent(
@@ -214,7 +211,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setStoriesToken(token!);
           _prefsRepository.setMyStoriesId(id!);
         }
-        GetIt.I<StoryBloc>().add(GetStoryEvent());
       },
     );
   }
@@ -236,12 +232,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       add(LoginToChatEvent(
           fcmToken: NotificationProcess.myFcmToken!,
-          mobilePhone: event.phone,
-          name: r.data?.user?.name,
-          originalUserId: r.data!.user!.id!.toString(),
-          otpIdToken: r.data!.idToken!));
-      add(LoginToStoriesEvent(
-          phone: event.phone,
+          mobilePhone: r.data!.user!.phone,
           originalUserId: r.data!.user!.id!.toString(),
           otpIdToken: r.data!.idToken!));
       emit(state.copyWith(
@@ -272,10 +263,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       add(LoginToChatEvent(
           fcmToken: NotificationProcess.myFcmToken!,
           mobilePhone: r.data!.user!.phone,
-          originalUserId: r.data!.user!.id!.toString(),
-          otpIdToken: r.data!.idToken!));
-      add(LoginToStoriesEvent(
-          phone: r.data!.user!.phone,
           originalUserId: r.data!.user!.id!.toString(),
           otpIdToken: r.data!.idToken!));
       if (r.code == 'user-exists') {

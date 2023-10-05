@@ -149,22 +149,6 @@ class GetCustomerInfoEvent extends AuthEvent {
   List<Object?> get props => [];
 }
 
-class LoginToMarketEvent extends AuthEvent {
-  final String? phone;
-  final String? deviceId;
-  final String? password;
-
-  LoginToMarketEvent({
-    this.phone,
-    this.password,
-    this.deviceId,
-  });
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [phone , deviceId , password];
-}
-
 class LoginToStoriesEvent extends AuthEvent {
   final String? otpIdToken;
   final String? phone;

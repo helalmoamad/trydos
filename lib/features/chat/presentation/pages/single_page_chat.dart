@@ -152,13 +152,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (error) {
-      print(error.stack);
-    };
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (autoScrollController.hasClients) {
-        autoScrollController
-            .jumpTo(autoScrollController.position.maxScrollExtent);
+        autoScrollController.jumpTo(autoScrollController.position.maxScrollExtent);
       } else {
         Timer(Duration(milliseconds: 400), () => _scrollToBottom());
       }
@@ -347,6 +343,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
           children: [
             Flexible(
               child: BlocConsumer<ChatBloc, ChatState>(
+                listenWhen: (p,c)=> p.sendMessageStatus != c.sendMessageStatus || p.receiveMessageStatus != c.receiveMessageStatus,
                 listener: (context, state) {
                   if (state.sendMessageStatus == SendMessageStatus.loading ||
                       state.receiveMessageStatus ==
@@ -355,6 +352,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                       _scrollToBottom();
                     });
                   }
+                  if (state.receiveMessageStatus ==
+                      ReceiveMessageStatus.success && chat.messages![0].senderUserId !=
+                          _prefsRepository.myChatId) {
+                        chatBloc.add(ReadAllMessagesEvent(widget.chatId));
+                      }
                 },
                 // buildWhen: (p, c) {
                 //   Chat previousChat = p.chats.firstWhere(
