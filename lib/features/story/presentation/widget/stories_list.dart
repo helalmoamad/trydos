@@ -84,12 +84,8 @@ class StoriesList extends StatelessWidget {
                                                           .applicationRoutes
                                                           .kRegistrationPage);
                                                     } else {
-//                                                      Fluttertoast.showToast(
-//                                                          msg: 'vessrify');
 
-                                                      AssetEntity? assetEntity =
-                                                          await HelperFunctions
-                                                              .getAssetFromCamera(
+                                                      AssetEntity? assetEntity =await HelperFunctions.getAssetFromCamera(
                                                                   context);
 
                                                       if (assetEntity != null) {
@@ -103,11 +99,7 @@ class StoriesList extends StatelessWidget {
                                                                 '';
                                                         var fileType =
                                                             mimeStr.split('/');
-//                                                        Fluttertoast.showToast(
-//                                                            msg: file
-//                                                                .absolute.path,
-//                                                            backgroundColor:
-//                                                                Colors.yellow);
+
                                                         GetIt.I<StoryBloc>().add(
                                                             UploadStoryEvent(
                                                                 file));
