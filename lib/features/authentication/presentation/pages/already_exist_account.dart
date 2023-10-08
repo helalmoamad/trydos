@@ -12,6 +12,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 
 import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
@@ -156,17 +157,30 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                       ),
                     ),
                   ),
-                  30.verticalSpace,
-                  Text(
-                    'Cancel & Take A Look At The App',
-                    style: textTheme.bodyText2?.ra.copyWith(
-                      color: Color(0xff4d84ff),
-                      letterSpacing: 0.14,
-                      height: 1.43,
+                  20.verticalSpace,
+                  InkWell(
+                    onTap: ()async{
+                      if(GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
+                        String? deviceId = await HelperFunctions
+                            .getDeviceId();
+                        BlocProvider.of<AuthBloc>(context).add(
+                            RegisterGuestEvent(deviceId: deviceId!));
+                      }
+                      context.go(GRouter.config.applicationRoutes.kBasePage);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: Text(
+                        'Cancel & Take A Look At The App',
+                        style: textTheme.bodyText2?.ra.copyWith(
+                          color: Color(0xff4d84ff),
+                          letterSpacing: 0.14,
+                          height: 1.43,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                  5.verticalSpace,
                 ]),
           ),
         ],

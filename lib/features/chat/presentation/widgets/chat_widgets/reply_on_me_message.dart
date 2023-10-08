@@ -63,9 +63,10 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final RenderBox renderBox =
-      key.currentContext?.findRenderObject() as RenderBox;
-      height = renderBox.size.height;
+      final RenderObject? renderBox =key.currentContext?.findRenderObject();
+      if(renderBox != null) {
+        height = (renderBox as RenderBox).size.height;
+      }
     });
     super.initState();
   }

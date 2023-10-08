@@ -49,7 +49,7 @@ class _TrydosApplicationState extends State<TrydosApplication> {
     });
   }
   initializeSmartLook() async {
-    String deviceId = await HelperFunctions.getDeviceId().toString();
+    String deviceId = (await HelperFunctions.getDeviceId()).toString();
     await smartLook.preferences.setProjectKey('c8c465313d257c63e0a282ba9856a427973888fe');
     await smartLook.preferences.setFrameRate(2);
     await smartLook.user.setIdentifier(deviceId);

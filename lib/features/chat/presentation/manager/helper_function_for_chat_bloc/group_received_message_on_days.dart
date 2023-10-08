@@ -5,13 +5,13 @@ import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../data/models/my_chats_response_model.dart';
 final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
-groupReceivedMessageOnDays({required List<Chat> chats}) {
+Map<String , List<Message>> groupReceivedMessageOnDays({required List<Chat> chats}) {
   //todo map for store all chats after we group every messages chat depending on it's day sent
   Map<String, Map<String, List<Message>>> newSortedChatsByDate = {};
   chats.forEach((chat){
     //todo here bring all the days that have messages send on it and put the date as key in the messages in this day as value
     Map<String, List<Message>> newMessagesByDate = {};
-    for (int i = 0; i < chat.messages!.length; i++) {
+    for (int i = chat.messages!.length-1; i >=0; i--) {
       final zonedDate = HelperFunctions.replaceArabicNumber(
           DateFormat("yyyy-MM-dd").format(
               HelperFunctions.getZonedDate(chat.messages![i].createdAt!)));
@@ -23,17 +23,23 @@ groupReceivedMessageOnDays({required List<Chat> chats}) {
         newMessagesByDate[zonedDate]!.add(chat.messages![i]);
     }
     for (String sendDate in newMessagesByDate.keys) {
-      for (int i = 0; i < newMessagesByDate[sendDate]!.length; i++) {
-        if (newMessagesByDate[sendDate]![
-                    math.min(i + 1, newMessagesByDate[sendDate]!.length - 1)]
+      for (int i = 1; i < newMessagesByDate[sendDate]!.length; i++) {
+        if (newMessagesByDate[sendDate]![i-1]
                 .senderUserId !=
             newMessagesByDate[sendDate]![i].senderUserId) {
-          newMessagesByDate[sendDate]![i].copyWith(isFirstMessage: true);
+          newMessagesByDate[sendDate]![i] = newMessagesByDate[sendDate]![i].copyWith(isFirstMessage: true);
         }
       }
     }
     newSortedChatsByDate['${chat.id}'] = newMessagesByDate;
   });
-
-  return newSortedChatsByDate;
+  Map<String , List<Message>> result={};
+  newSortedChatsByDate.forEach((channelId, value) {
+    result[channelId] = [];
+    value.keys.forEach((date) {
+      result[channelId]!.add(Message(isDateMessage: true , dateValue: date));
+      result[channelId]!.addAll(value[date]!);
+    });
+  });
+  return result;
 }

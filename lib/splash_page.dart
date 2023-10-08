@@ -39,36 +39,16 @@ class _SplashPageState extends State<SplashPage> {
     homeBloc=BlocProvider.of<HomeBloc>(context);
     authBloc=BlocProvider.of<AuthBloc>(context);
       BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
-    if (prefsRepository.marketToken != null) {
       homeBloc.add(GetHomeSectionsEvent('Women_1'));
       homeBloc.add(GetMainCategoriesEvent());
-      Future.delayed(Duration(seconds: 2),() => context.go(GRouter.config.applicationRoutes.kBasePage),);
-      return;
-    } else {
-      registerGuest();
-    }
+      Future.delayed(Duration(seconds: 2),() => context.go(prefsRepository.marketToken == null ?GRouter.config.applicationRoutes.kRegistrationPage : GRouter.config.applicationRoutes.kBasePage),);
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: context.colorScheme.background,
-        body: BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state.registerGuestStatus == RegisterGuestStatus.success) {
-              homeBloc.add(GetHomeSectionsEvent('Women_1'));
-              homeBloc.add(GetMainCategoriesEvent());
-              context.go(GRouter.config.applicationRoutes.kRegistrationPage);
-            }
-          },
-          child: Center(child: logo),
-        ));
-  }
-
-  void registerGuest() async {
-    String? deviceId = await HelperFunctions.getDeviceId();
-    authBloc.add(RegisterGuestEvent(deviceId: deviceId!));
+        body: Center(child: logo));
   }
 }

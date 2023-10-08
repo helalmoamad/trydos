@@ -1,13 +1,18 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
 import '../../../../base_page.dart';
+import '../../../../common/helper/helper_functions.dart';
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
+import '../manager/auth_bloc.dart';
 class WelcomeSection extends StatelessWidget {
    WelcomeSection({required this.goToCreateAccount , required this.goToLoginSection ,Key? key}) : super(key: key);
   void Function() goToCreateAccount;
@@ -159,24 +164,33 @@ class WelcomeSection extends StatelessWidget {
                   );
                 }),
           ),
-          SizedBox(height: 30,),
+          SizedBox(height: 20,),
           InkWell(
-            onTap: (){
+            onTap: ()async{
+              if(GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
+                String? deviceId = await HelperFunctions
+                    .getDeviceId();
+                BlocProvider.of<AuthBloc>(context).add(
+                    RegisterGuestEvent(deviceId: deviceId!));
+              }
               context.go(GRouter.config.applicationRoutes.kBasePage);
             },
-            child: Text(
-              'Later, Take A Look At The App',
-              textAlign: TextAlign.center,
-              textHeightBehavior:
-              TextHeightBehavior(applyHeightToFirstAscent: false),
-              style: context.textTheme.bodyText2?.ra.copyWith(
-                color: Color(0xff4d84ff),
-                letterSpacing: 0.14,
-                height: 1.43,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Text(
+                'Later, Take A Look At The App',
+                textAlign: TextAlign.center,
+                textHeightBehavior:
+                TextHeightBehavior(applyHeightToFirstAscent: false),
+                style: context.textTheme.bodyText2?.ra.copyWith(
+                  color: Color(0xff4d84ff),
+                  letterSpacing: 0.14,
+                  height: 1.43,
+                ),
               ),
             ),
           ),
-          SizedBox(height: 56,),
+          SizedBox(height: 46,),
         ],
       ),
     );

@@ -159,7 +159,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(state.copyWith(
         sendMessageStatus: SendMessageStatus.loading,
         currentMessage: ids,
-        createAnewChat : int.tryParse(event.channelId) == null ,
+        createAnewChat: int.tryParse(event.channelId) == null,
         newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
           ...chats,
           ...(fromPinned ? state.chats : state.pinnedChats)
@@ -190,44 +190,48 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       (r) {
 //        print('count  ${messages.length}');
         ids.remove(event.messageId);
-        List<Chat> pinnedChats =state.pinnedChats.map((e) {
+        List<Chat> pinnedChats = state.pinnedChats.map((e) {
           if (e.localId == event.channelId &&
               int.tryParse(event.channelId) == null) {
-            return r.channel!.copyWith(localId: event.channelId,messages: e.messages?.map((e) {
-              if(e.localId == event.messageId){
-                return r.copyWith(localId: e.localId);
-              }
-              return e;
-            }).toList());
+            return r.channel!.copyWith(
+                localId: event.channelId,
+                messages: e.messages?.map((e) {
+                  if (e.localId == event.messageId) {
+                    return r.copyWith(localId: e.localId);
+                  }
+                  return e;
+                }).toList());
           } else if (e.id == event.channelId) {
             List<Message> messages = List.of(e.messages ?? []);
-            int index = messages
-                .indexWhere((element) => element.id == event.messageId);
+            int index =
+                messages.indexWhere((element) => element.id == event.messageId);
             messages[index] =
                 r.copyWith(file: event.file, localId: event.messageId);
             return e.copyWith(messages: messages);
           }
           return e;
         }).toList();
-        List<Chat> chats =state.chats.map((e) {
+        List<Chat> chats = state.chats.map((e) {
           if (e.localId == event.channelId &&
               int.tryParse(event.channelId) == null) {
             final PusherChatService pusherChatService =
-            GetIt.I<PusherChatService>();
+                GetIt.I<PusherChatService>();
             pusherChatService
                 .subscribe(r.channel!.pusherChannelName.toString());
             pusherChatService
                 .createPresenceChannel(r.channel!.pusherChannelName!);
-            return r.channel!.copyWith(localId: event.channelId, messages: e.messages?.map((e) {
-              if(e.localId == event.messageId){
-                return r.copyWith(localId: e.localId);
-              }
-              return e;
-            }).toList());
+            return r.channel!.copyWith(
+                localId: event.channelId,
+                messages: e.messages?.map((e) {
+                  if (e.localId == event.messageId) {
+                    return r.copyWith(localId: e.localId);
+                  }
+                  return e;
+                }).toList());
           } else if (e.id == event.channelId) {
             List<Message> messages = List.of(e.messages ?? []);
-            int index = messages
-                .indexWhere((element) => element.id == event.messageId);
+            int index =
+                messages.indexWhere((element) => element.id == event.messageId);
             messages[index] =
                 r.copyWith(file: event.file, localId: event.messageId);
             return e.copyWith(messages: messages);
@@ -238,9 +242,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           state.copyWith(
               sendMessageStatus: SendMessageStatus.success,
               chats: chats,
-              createAnewChat : false,
+              createAnewChat: false,
               pinnedChats: pinnedChats,
-              newSortedChatsByDate: groupReceivedMessageOnDays(chats: [...chats , ...pinnedChats]),
+              newSortedChatsByDate:
+                  groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
               currentMessage: ids),
         );
       },
@@ -636,7 +641,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(state.copyWith(
         chats: fromPinned ? state.chats : chats,
         deleteChatStatus: DeleteChatStatus.loading,
-        newSortedChatsByDate: groupReceivedMessageOnDays(chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)]),
+        newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
+          ...chats,
+          ...(fromPinned ? state.chats : state.pinnedChats)
+        ]),
         pinnedChats: !fromPinned ? state.pinnedChats : chats));
     final response =
         await deleteChatUseCase(DeleteChatParams(channelId: event.channelId));
@@ -654,7 +662,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       emit(state.copyWith(
           chats: fromPinned ? state.chats : chats,
           deleteChatStatus: DeleteChatStatus.failure,
-          newSortedChatsByDate: groupReceivedMessageOnDays(chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)]),
+          newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
+            ...chats,
+            ...(fromPinned ? state.chats : state.pinnedChats)
+          ]),
           pinnedChats: !fromPinned ? state.pinnedChats : chats));
     }, (r) {
       emit((state.copyWith(
@@ -939,6 +950,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           messages: messages,
           hasReachedMax: r.length < event.limit,
           paginationStatus: PaginationStatus.success);
+
       List<Chat> pinnedChat = state.pinnedChats.map((e) {
         if (e.id == event.channelId) {
           return chat;
@@ -988,40 +1000,43 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       ));
     }, (r) {
       List<Message> messages = List.of(chat.messages ?? []);
-      int index =
-          messages.indexWhere((element) => element.id == event.secondMessageId);
-      String? lastMessageId = messages[messages.length - 1].id;
-      for (int i = r.length - 1; i > 0; i--) {
-        if (r[i].id == lastMessageId) {
-          break;
+      int index = messages.indexWhere((element) => element.id == event.secondMessageId);
+      for (int i = 0; i < r.length; i++) {
+        if (index< messages.length && r[i].id == messages[index].id) {
+          index++;
+          continue;
         }
-
-        messages.insert(r.length == 2 ? index + 1 : messages.length, r[i]);
+        messages.insert(index, r[i]);
+        index++;
       }
       chat = chat.copyWith(
         messages: messages,
       );
+      List<Chat> chats = fromPinned
+          ? state.chats
+          : state.chats.map((e) {
+              if (e.id == event.channelId) {
+                return chat;
+              }
+              return e;
+            }).toList();
+      List<Chat> pinnedChats = !fromPinned
+          ? state.pinnedChats
+          : state.pinnedChats.map((e) {
+              if (e.id == event.channelId) {
+                return chat;
+              }
+              return e;
+            }).toList();
       emit(state.copyWith(
-          chats: fromPinned
-              ? state.chats
-              : state.chats.map((e) {
-                  if (e.id == event.channelId) {
-                    return chat;
-                  }
-                  return e;
-                }).toList(),
+          chats: chats,
           getMessagesBetweenStatus: GetMessagesBetweenStatus.success,
           firstMessageId: event.firstMessageId,
+          newSortedChatsByDate:
+              groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
           secondMessageId: event.secondMessageId,
           scrollToParentMessage: event.scrollToParentMessage,
-          pinnedChats: !fromPinned
-              ? state.pinnedChats
-              : state.pinnedChats.map((e) {
-                  if (e.id == event.channelId) {
-                    return chat;
-                  }
-                  return e;
-                }).toList()));
+          pinnedChats: pinnedChats));
     });
   }
 }

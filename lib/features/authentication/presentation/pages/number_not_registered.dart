@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/authentication/presentation/widgets/adding_name.dart';
 import 'package:trydos/routes/router.dart';
 
 import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
+import '../manager/auth_bloc.dart';
 
 class NumberNotRegistered extends StatefulWidget {
   const NumberNotRegistered(
@@ -155,17 +160,31 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                               ),
                             ),
                           ),
-                          30.verticalSpace,
-                          Text(
-                            'Cancel & Take A Look At The App',
-                            style: textTheme.bodyText2?.ra.copyWith(
-                              color: Color(0xff4d84ff),
-                              letterSpacing: 0.14,
-                              height: 1.43,
+                          20.verticalSpace,
+                          InkWell(
+                            onTap: ()async{
+                              if(GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
+                                String? deviceId = await HelperFunctions
+                                    .getDeviceId();
+                                BlocProvider.of<AuthBloc>(context).add(
+                                    RegisterGuestEvent(deviceId: deviceId!));
+                              }
+                              context.go(GRouter.config.applicationRoutes.kBasePage);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10.0),
+                              child: Text(
+                                'Cancel & Take A Look At The App',
+                                style: textTheme.bodyText2?.ra.copyWith(
+                                  color: Color(0xff4d84ff),
+                                  letterSpacing: 0.14,
+                                  height: 1.43,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
-                            textAlign: TextAlign.center,
                           ),
-                          SizedBox(height: 54,),
+                          SizedBox(height: 44,),
                         ]),
                   ),
                   AddingName(fromLogin: true,)

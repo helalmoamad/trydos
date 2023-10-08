@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,8 +26,8 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_mes
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_messge.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_me_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/video_message.dart';
+import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
-import 'dart:ui' as ui;
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
 import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
@@ -81,12 +79,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   late AutoScrollController autoScrollController;
 
   void _scrollToBottom() {
-    if (autoScrollController.hasClients) {
-      autoScrollController
-          .jumpTo(autoScrollController.position.maxScrollExtent);
-    } else {
-      Timer(Duration(milliseconds: 400), () => _scrollToBottom());
-    }
+    autoScrollController.jumpTo(autoScrollController.position.maxScrollExtent);
   }
 
   final key = GlobalKey();
@@ -98,6 +91,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   int countMessagesReceivedToMeNow = 0;
   late Chat chat;
   AudioPlayer _audioPlayer = AudioPlayer();
+  Map<String, int> messagesIndexes = {};
 
   void playSound() async {
     await _audioPlayer.play(
@@ -116,20 +110,19 @@ class _SinglePageChatState extends State<SinglePageChat> {
       if (rebuild) {
         rebuildMessage.value = -1;
       }
-      print('rebuild............');
       if ((autoScrollController.offset <=
-              autoScrollController.position.minScrollExtent + 400 ) &&
-          autoScrollController.position.userScrollDirection ==
-              ScrollDirection.forward) {
+          autoScrollController.position.minScrollExtent + 400)) {
         _loadMoreMessages();
       }
     });
     super.initState();
   }
 
-  void scrollToTheEnd() {
-//todo i change the duration to 1 from 50
-    scrollToIndex(3 * data.length, duration: const Duration(milliseconds: 50));
+  @override
+  void dispose() {
+    autoScrollController.dispose();
+    _audioPlayer.dispose();
+    super.dispose();
   }
 
   int currentScrolledIndex = -1;
@@ -145,15 +138,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError =(details){
+    FlutterError.onError = (details) {
       print(details);
     };
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (autoScrollController.hasClients) {
-        autoScrollController.jumpTo(autoScrollController.position.maxScrollExtent);
-      } else {
-        Timer(Duration(milliseconds: 400), () => _scrollToBottom());
-      }
+      _scrollToBottom();
     });
     return Scaffold(
         backgroundColor: const Color(0xffEBFFF8),
@@ -334,81 +323,95 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 ),
               )),
         ),
-        body: Column(
-          children: [
-            Flexible(
-              child: BlocConsumer<ChatBloc, ChatState>(
-                listenWhen: (p,c)=> p.sendMessageStatus != c.sendMessageStatus || p.receiveMessageStatus != c.receiveMessageStatus,
-                listener: (context, state) {
-                  if (state.sendMessageStatus == SendMessageStatus.loading ||
-                      state.receiveMessageStatus ==
-                          ReceiveMessageStatus.success) {
-                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                      _scrollToBottom();
-                    });
-                  }
-                  if (state.receiveMessageStatus ==
-                      ReceiveMessageStatus.success && chat.messages![0].senderUserId !=
-                          _prefsRepository.myChatId) {
-                        chatBloc.add(ReadAllMessagesEvent(widget.chatId));
-                      }
-                },
-                // buildWhen: (p, c) {
-                //   Chat previousChat = p.chats.firstWhere(
-                //           (element) =>
-                //       element.id.toString() == widget.chatId ||
-                //           element.localId.toString() == widget.chatId,
-                //       orElse: () =>
-                //           p.pinnedChats.firstWhere((element) =>
-                //           element.id.toString() == widget.chatId ||
-                //               element.localId.toString() == widget.chatId));
-                //   currentChat = c.chats.firstWhere(
-                //           (element) =>
-                //       element.id.toString() == widget.chatId ||
-                //           element.localId.toString() == widget.chatId,
-                //       orElse: () =>
-                //           c.pinnedChats.firstWhere((element) =>
-                //           element.id.toString() == widget.chatId ||
-                //               element.localId.toString() == widget.chatId));
-                //   getMessagesBetween =
-                //       p.getMessagesBetweenStatus != c.getMessagesBetweenStatus;
-                //
-                //   rebuildScreen = (previousChat.messages?.length !=
-                //       currentChat.messages?.length) ||
-                //       getMessagesBetween;
-                //   fromPagination = previousChat.paginationStatus !=
-                //       currentChat.paginationStatus &&
-                //       currentChat.paginationStatus == PaginationStatus.success;
-                //   sendOrReceiveMessage = c.sendMessageStatus ==
-                //       SendMessageStatus.loading ||
-                //       (c.receiveMessageStatus == ReceiveMessageStatus.success &&
-                //           widget.chatId ==
-                //               c.currentChannelReceivedMessage.toString());
-                //   getChats = p.getChatsStatus != c.getChatsStatus &&
-                //       c.getChatsStatus == GetChatsStatus.success;
-                //
-                //   if (getChats) {
-                //     fromPagination = false;
-                //     sendOrReceiveMessage = false;
-                //     getMessagesBetween = false;
-                //   }
-                //   return rebuildScreen ||
-                //       p.unReadMessagesFromAllChats !=
-                //           c.unReadMessagesFromAllChats ||
-                //       getMessagesBetween;
-                // },
-                builder: (context, chatState) {
-                  print('data: ${widget.chatId}');
-                  print('data: ${chatState.newSortedChatsByDate}');
-                  print(
-                      'data: ${chatState.newSortedChatsByDate!.containsKey(widget.chatId)}');
-                   chat = chatState.chats.firstWhere(
-                               (element) =>
-                           element.id.toString() == widget.chatId ||
-                               element.localId.toString() == widget.chatId,
-                      orElse: () => chatState.pinnedChats.firstWhere((element) =>
+        body: BlocListener<ChatBloc, ChatState>(
+          listenWhen: (p, c) => (p.getMessagesBetweenStatus !=
+                  c.getMessagesBetweenStatus &&
+              c.getMessagesBetweenStatus == GetMessagesBetweenStatus.success &&
+              c.scrollToParentMessage),
+          listener: (context, state) {
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              scrollToIndex(1);
+            });
+          },
+          child: Column(
+            children: [
+              Flexible(
+                child: BlocConsumer<ChatBloc, ChatState>(
+                  listenWhen: (p, c) =>
+                      p.sendMessageStatus != c.sendMessageStatus ||
+                      p.receiveMessageStatus != c.receiveMessageStatus,
+                  listener: (context, state) {
+                    if (state.sendMessageStatus == SendMessageStatus.loading ||
+                        state.receiveMessageStatus ==
+                            ReceiveMessageStatus.success) {
+                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                        _scrollToBottom();
+                      });
+                    }
+                    if (state.receiveMessageStatus ==
+                            ReceiveMessageStatus.success &&
+                        chat.messages![0].senderUserId !=
+                            _prefsRepository.myChatId) {
+                      chatBloc.add(ReadAllMessagesEvent(widget.chatId));
+                    }
+                  },
+                  // buildWhen: (p, c) {
+                  //   Chat previousChat = p.chats.firstWhere(
+                  //           (element) =>
+                  //       element.id.toString() == widget.chatId ||
+                  //           element.localId.toString() == widget.chatId,
+                  //       orElse: () =>
+                  //           p.pinnedChats.firstWhere((element) =>
+                  //           element.id.toString() == widget.chatId ||
+                  //               element.localId.toString() == widget.chatId));
+                  //   currentChat = c.chats.firstWhere(
+                  //           (element) =>
+                  //       element.id.toString() == widget.chatId ||
+                  //           element.localId.toString() == widget.chatId,
+                  //       orElse: () =>
+                  //           c.pinnedChats.firstWhere((element) =>
+                  //           element.id.toString() == widget.chatId ||
+                  //               element.localId.toString() == widget.chatId));
+                  //   getMessagesBetween =
+                  //       p.getMessagesBetweenStatus != c.getMessagesBetweenStatus;
+                  //
+                  //   rebuildScreen = (previousChat.messages?.length !=
+                  //       currentChat.messages?.length) ||
+                  //       getMessagesBetween;
+                  //   fromPagination = previousChat.paginationStatus !=
+                  //       currentChat.paginationStatus &&
+                  //       currentChat.paginationStatus == PaginationStatus.success;
+                  //   sendOrReceiveMessage = c.sendMessageStatus ==
+                  //       SendMessageStatus.loading ||
+                  //       (c.receiveMessageStatus == ReceiveMessageStatus.success &&
+                  //           widget.chatId ==
+                  //               c.currentChannelReceivedMessage.toString());
+                  //   getChats = p.getChatsStatus != c.getChatsStatus &&
+                  //       c.getChatsStatus == GetChatsStatus.success;
+                  //
+                  //   if (getChats) {
+                  //     fromPagination = false;
+                  //     sendOrReceiveMessage = false;
+                  //     getMessagesBetween = false;
+                  //   }
+                  //   return rebuildScreen ||
+                  //       p.unReadMessagesFromAllChats !=
+                  //           c.unReadMessagesFromAllChats ||
+                  //       getMessagesBetween;
+                  // },
+                  builder: (context, chatState) {
+                    print('data: ${widget.chatId}');
+                    print('data: ${chatState.newSortedChatsByDate}');
+                    print(
+                        'data: ${chatState.newSortedChatsByDate!.containsKey(widget.chatId)}');
+                    chat = chatState.chats.firstWhere(
+                        (element) =>
+                            element.id.toString() == widget.chatId ||
+                            element.localId.toString() == widget.chatId,
+                        orElse: () => chatState.pinnedChats.firstWhere(
+                            (element) =>
                                 element.id.toString() == widget.chatId ||
-                                    element.localId.toString() == widget.chatId));
+                                element.localId.toString() == widget.chatId));
 //                   if (rebuildScreen) {
 //                     chat = chat = chatState.chats.firstWhere(
 //                             (element) => element.id.toString() == widget.chatId,
@@ -527,177 +530,188 @@ class _SinglePageChatState extends State<SinglePageChat> {
 //                     }
 //                     rebuildScreen = false;
 //                   }
-                  print(chatState.newSortedChatsByDate);
-                  return GestureDetector(
-                      onTap: () {
-                        rebuildMessage.value = -1;
-                      },
-                      child: SafeArea(
-                          child: ValueListenableBuilder<int>(
-                              valueListenable: rebuildMessage,
-                              builder: (context, currentIndex, _) {
-                                currentFocusedIcon.value = -2;
-                                return Column(
-                                  children: [
-                                    chat.paginationStatus == PaginationStatus.loading ? TrydosLoader() : SizedBox.shrink(),
-                                    chat.paginationStatus == PaginationStatus.loading ? 8.verticalSpace : SizedBox.shrink(),
-                                    Expanded(
-                                      child: ListView.builder(
-                                        controller: autoScrollController,
-                                        physics: const ClampingScrollPhysics(),
-                                        itemBuilder: (context, outerIndex) {
-                                          String date = chatState
+                    print(chatState.newSortedChatsByDate);
+                    return GestureDetector(
+                        onTap: () {
+                          rebuildMessage.value = -1;
+                        },
+                        child: SafeArea(
+                            child: ValueListenableBuilder<int>(
+                                valueListenable: rebuildMessage,
+                                builder: (context, currentIndex, _) {
+                                  currentFocusedIcon.value = -2;
+                                  return Column(
+                                    children: [
+                                      chat.paginationStatus ==
+                                              PaginationStatus.loading
+                                          ? TrydosLoader()
+                                          : SizedBox.shrink(),
+                                      chat.paginationStatus ==
+                                              PaginationStatus.loading
+                                          ? 8.verticalSpace
+                                          : SizedBox.shrink(),
+                                      Flexible(
+                                        child: ListView.builder(
+                                          physics:
+                                              const ClampingScrollPhysics(),
+                                          controller: autoScrollController,
+                                          itemBuilder: (context, index) {
+                                            List<Message> messages =
+                                                chatState.newSortedChatsByDate![
+                                                    chat.id.toString()]!;
+                                            if (messages[index].isDateMessage) {
+                                              return Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  MessagesDate(
+                                                      date: messages[index]
+                                                          .dateValue),
+                                                  10.verticalSpace,
+                                                ],
+                                              );
+                                            }
+                                            messagesIndexes[messages[index]
+                                                .id
+                                                .toString()] = index;
+                                            return AutoScrollTag(
+                                              key: ValueKey(index),
+                                              index: index,
+                                              controller: autoScrollController,
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Container(
+                                                    color:
+                                                        currentScrolledIndex ==
+                                                                index
+                                                            ? Colors
+                                                                .grey.shade100
+                                                            : null,
+                                                    child: getTheMessageWidget(
+                                                      message: messages[index],
+                                                      senderName:
+                                                          widget.senderName,
+                                                      receiverName:
+                                                          widget.receiverName,
+                                                      receiverPhoto:
+                                                          widget.receiverPhoto,
+                                                      senderPhoto:
+                                                          widget.senderPhoto,
+                                                    ),
+                                                  ),
+                                                  messages[min(
+                                                              index + 1,
+                                                              chatState
+                                                                      .newSortedChatsByDate![chat
+                                                                          .id
+                                                                          .toString()]!
+                                                                      .length -
+                                                                  1)]
+                                                          .isFirstMessage
+                                                      ? 30.verticalSpace
+                                                      : 10.verticalSpace,
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                          itemCount: chatState
                                               .newSortedChatsByDate![chat.id]!
-                                              .keys
-                                              .toList()
-                                              .reversed
-                                              .toList()[outerIndex];
-                                          List<Message> messages = chatState
-                                              .newSortedChatsByDate![chat.id]![date]!
-                                              .reversed
-                                              .toList();
-                                          return Column(
-                                            children: [
-                                              //todo display the date with it's messages for a single day
-                                              MessagesDate(date: date),
-                                              10.verticalSpace,
-                                              ListView.builder(
-                                                  itemBuilder:
-                                                      (context, innerIndex) {
-                                                    // ,
-                                                    //  widget.receiverName,
-                                                    //  widget.senderPhoto,
-                                                    //  widget.receiverPhoto,
-                                                    return Column(
-                                                      children: [
-                                                        getTheMessageWidget(
-                                                          message: messages[
-                                                              innerIndex],
-                                                          senderName:
-                                                              widget.senderName,
-                                                          receiverName: widget
-                                                              .receiverName,
-                                                          receiverPhoto: widget
-                                                              .receiverPhoto,
-                                                          senderPhoto: widget
-                                                              .senderPhoto,
-                                                        ),
-                                                        messages[min(
-                                                                    innerIndex +
-                                                                        1,
-                                                                    messages.length -
-                                                                        1)]
-                                                                .isFirstMessage
-                                                            ? 30.verticalSpace
-                                                            : 10.verticalSpace,
-                                                      ],
-                                                    );
-                                                  },
-                                                  shrinkWrap: true,
-                                                  physics:
-                                                      const NeverScrollableScrollPhysics(),
-                                                  itemCount: messages.length)
-                                            ],
-                                          );
-                                        },
-                                        itemCount: chatState
-                                            .newSortedChatsByDate![
-                                        chat.id]!
-                                            .length,
+                                              .length,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                );
-                              })));
+                                    ],
+                                  );
+                                })));
+                  },
+                ),
+              ),
+              BlocBuilder<AppBloc, AppState>(
+                buildWhen: (p, c) => p.thereIsReply != c.thereIsReply,
+                builder: (context, state) {
+//                flutterToast.s
+                  return ChatInputField(
+                    channelId: chat.id!,
+                    senderName: widget.senderName,
+                    channelPusherName: chat.pusherChannelName ?? '',
+                    senderUserImage: widget.senderPhoto,
+                    onSendFile: (File file, String type) {
+                      String id = const Uuid().v4();
+                      FileSaving().saveFileToSpecificDirectory(file);
+                      ChannelMember member = chat.channelMembers!.firstWhere(
+                          (element) =>
+                              element.userId != _prefsRepository.myChatId);
+                      String fileName = 'Trydos-${DateTime.now()}';
+                      chatBloc.add(UploadFileEvent(
+                          file: file,
+                          channelId: chat.id.toString(),
+                          fileName: fileName,
+                          filePath: type == 'image'
+                              ? 'images/test'
+                              : type == 'file'
+                                  ? 'files/test'
+                                  : type == 'video'
+                                      ? 'videos/test'
+                                      : 'voices/test',
+                          messageType: type == 'image'
+                              ? 'ImageMessage'
+                              : type == 'file'
+                                  ? 'FileMessage'
+                                  : type == 'video'
+                                      ? 'VideoMessage'
+                                      : 'VoiceMessage',
+                          isForward: false,
+                          senderParentMessageId: state.senderParentMessageId,
+                          parentMessageId:
+                              state.thereIsReply ? state.messageId : null,
+                          messageId: id,
+                          parentMessageContent: type == 'image'
+                              ? 'Photo'
+                              : type == 'file'
+                                  ? 'File'
+                                  : type == 'video'
+                                      ? 'Video'
+                                      : 'Voice',
+                          receiverUserId: member.userId));
+                      BlocProvider.of<AppBloc>(context).add(
+                          RefreshChatInputField(false, '', false,
+                              messageId: null,
+                              message: null,
+                              senderParentMessageId: null,
+                              imageUrl: null,
+                              time: null));
+                    },
+                    onSendMessage: (String message) {
+                      String id = const Uuid().v4();
+                      ChannelMember member = chat.channelMembers!.firstWhere(
+                          (element) =>
+                              element.userId != _prefsRepository.myChatId);
+//                    print('there : ${state.thereIsReply}');
+                      chatBloc.add(SendMessageEvent(
+                          messageType: 'TextMessage',
+                          channelId: chat.id.toString(),
+                          isForward: false,
+                          parentMessageId:
+                              state.thereIsReply ? state.messageId : null,
+                          content: message,
+                          messageId: id,
+                          senderParentMessageId: state.senderParentMessageId,
+                          parentMessageContent: state.message,
+                          receiverUserId: member.userId));
+                      BlocProvider.of<AppBloc>(context).add(
+                          RefreshChatInputField(false, '', false,
+                              messageId: null,
+                              message: null,
+                              senderParentMessageId: null,
+                              imageUrl: null,
+                              time: null));
+                      // rebuildMessage.value = data.length;
+                    },
+                  );
                 },
               ),
-            ),
-            BlocBuilder<AppBloc, AppState>(
-              buildWhen: (p, c) => p.thereIsReply != c.thereIsReply,
-              builder: (context, state) {
-//                flutterToast.s
-                return ChatInputField(
-                  channelId: chat.id!,
-                  senderName: widget.senderName,
-                  channelPusherName: chat.pusherChannelName ?? '',
-                  senderUserImage: widget.senderPhoto,
-                  onSendFile: (File file, String type) {
-                    String id = const Uuid().v4();
-                    FileSaving().saveFileToSpecificDirectory(file);
-                    ChannelMember member = chat.channelMembers!.firstWhere(
-                        (element) =>
-                            element.userId != _prefsRepository.myChatId);
-                    String fileName = 'Trydos-${DateTime.now()}';
-                    chatBloc.add(UploadFileEvent(
-                        file: file,
-                        channelId: chat.id.toString(),
-                        fileName: fileName,
-                        filePath: type == 'image'
-                            ? 'images/test'
-                            : type == 'file'
-                                ? 'files/test'
-                                : type == 'video'
-                                    ? 'videos/test'
-                                    : 'voices/test',
-                        messageType: type == 'image'
-                            ? 'ImageMessage'
-                            : type == 'file'
-                                ? 'FileMessage'
-                                : type == 'video'
-                                    ? 'VideoMessage'
-                                    : 'VoiceMessage',
-                        isForward: false,
-                        senderParentMessageId: state.senderParentMessageId,
-                        parentMessageId:
-                            state.thereIsReply ? state.messageId : null,
-                        messageId: id,
-                        parentMessageContent: type == 'image'
-                            ? 'Photo'
-                            : type == 'file'
-                                ? 'File'
-                                : type == 'video'
-                                    ? 'Video'
-                                    : 'Voice',
-                        receiverUserId: member.userId));
-                    BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                        false, '', false,
-                        messageId: null,
-                        message: null,
-                        senderParentMessageId: null,
-                        imageUrl: null,
-                        time: null));
-                  },
-                  onSendMessage: (String message) {
-                    String id = const Uuid().v4();
-                    ChannelMember member = chat.channelMembers!.firstWhere(
-                        (element) =>
-                            element.userId != _prefsRepository.myChatId);
-//                    print('there : ${state.thereIsReply}');
-                    chatBloc.add(SendMessageEvent(
-                        messageType: 'TextMessage',
-                        channelId: chat.id.toString(),
-                        isForward: false,
-                        parentMessageId:
-                            state.thereIsReply ? state.messageId : null,
-                        content: message,
-                        messageId: id,
-                        senderParentMessageId: state.senderParentMessageId,
-                        parentMessageContent: state.message,
-                        receiverUserId: member.userId));
-                    BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                        false, '', false,
-                        messageId: null,
-                        message: null,
-                        senderParentMessageId: null,
-                        imageUrl: null,
-                        time: null));
-                    // rebuildMessage.value = data.length;
-                  },
-                );
-              },
-            ),
-            0.2.verticalSpace
-          ],
+              0.2.verticalSpace
+            ],
+          ),
         ));
   }
 
@@ -714,534 +728,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
       return dateStr;
     }
   }
-
-  // void dealWithExistMessage(
-  //   String senderName,
-  //   String receiverName,
-  //   String? senderPhoto,
-  //   String? receiverPhoto, {
-  //   required Message element,
-  // }) async {
-  //   int index = getMessageIndex(element.id, null);
-  //   data.removeAt(index);
-  //   data.removeAt(index - 1);
-  //   bool thereIsDate = (data[index - 2] is MessagesDate);
-  //   await addTheMessageWidget(index - 1, element, senderName, receiverName,
-  //       senderPhoto, receiverPhoto, getIsFirstMessage(element.id), thereIsDate);
-  //   index =
-  //       getMessageIndex(element.parentMessageId, element.localParentMessageId);
-  //   rebuildMessage.value = data.length;
-  //   scrollToIndex(index);
-  // }
-
-//   void preProcessingOfMessaging(
-//       List<Message> messages,
-//       int insertPosition,
-//       bool scrollToLastMessage,
-//       String senderName,
-//       String receiverName,
-//       String? senderPhoto,
-//       String? receiverPhoto,
-//       {bool fromGetMessagesBetween = false,
-//       Message? replacedReplyMessage}) async {
-//     if (messages.isEmpty && replacedReplyMessage == null) {
-//       return;
-//     }
-//     if (data.isNotEmpty) {
-//       data.removeLast();
-//     }
-//
-//     //todo here bring all the days that have messages send on it and put
-//     Map<String, List<Message>> newMessagesByDate = {};
-//
-//     for (int i = 0; i < messages.length; i++) {
-//       Message element = messages[i];
-//       final zonedDate = HelperFunctions.replaceArabicNumber(
-//           DateFormat("yyyy-MM-dd")
-//               .format(HelperFunctions.getZonedDate(element.createdAt!)));
-//       if (!newMessagesByDate.containsKey(zonedDate)) {
-//         newMessagesByDate[zonedDate] = [];
-//       }
-//       newMessagesByDate[zonedDate]!.add(element);
-//     }
-//     for (String sendDate in newMessagesByDate.keys) {
-//       bool thereIsDate = false;
-//       if (!messagesByDate.containsKey(sendDate) && insertPosition == -1) {
-//         thereIsDate = true;
-//         data.insert(data.length, 10.verticalSpace);
-//         data.insert(data.length, MessagesDate(date: formatDate(sendDate)));
-//         messagesByDate[sendDate] = newMessagesByDate[sendDate] ?? [];
-//       }
-//       bool isFirstMessage = false;
-//       for (int i = 0; i < newMessagesByDate[sendDate]!.length; i++) {
-//         Message element = newMessagesByDate[sendDate]![i];
-//         isFirstMessage = false;
-//         if (insertPosition == 0) {
-//           //todo here we check if the next message coming from the other use so its the new  first message in the chat
-//           //todo cause he change the sender so change the owner of the message
-//           isFirstMessage = newMessagesByDate[sendDate]![
-//                       math.min(i + 1, newMessagesByDate[sendDate]!.length - 1)]
-//                   .senderUserId !=
-//               element.senderUserId;
-//         } else {
-//           isFirstMessage = !(element.senderUserId == currentMessageSenderId);
-//         }
-//         if (currentMessageSenderId == null && insertPosition == -1) {
-//           isFirstMessage = true;
-//         }
-//         if (i == newMessagesByDate[sendDate]!.length - 1 &&
-//             insertPosition == 0) {
-//           isFirstMessage = true;
-//           thereIsDate = true;
-//         }
-// //        print('$i : $isFirstMessage');
-//         await addTheMessageWidget(
-//             insertPosition,
-//             element,
-//             senderName,
-//             receiverName,
-//             senderPhoto,
-//             receiverPhoto,
-//             isFirstMessage,
-//             thereIsDate);
-//       }
-//       thereIsDate = false;
-//       if (!messagesByDate.containsKey(sendDate) && insertPosition == 0) {
-// //        print(sendDate);
-//         data.insert(0, MessagesDate(date: formatDate(sendDate)));
-//         data.insert(0, 10.verticalSpace);
-//         messagesByDate[sendDate] = newMessagesByDate[sendDate] ?? [];
-//       }
-//     }
-//     if (!fromGetMessagesBetween) {
-//       currentMessageSenderId = messages[0].senderUserId;
-//     }
-//     if (scrollToLastMessage) {}
-//     data.add(30.verticalSpace);
-//     if (replacedReplyMessage != null) {
-//       dealWithExistMessage(widget.senderName, widget.receiverName,
-//           widget.senderPhoto, widget.receiverPhoto,
-//           element: replacedReplyMessage);
-//       rebuildMessage.value = data.length;
-//     } else {
-//       rebuildMessage.value = data.length;
-//     }
-//   }
-//
-//   addTheMessageWidget(
-//       int insertPosition,
-//       Message element,
-//       String senderName,
-//       String receiverName,
-//       String? senderPhoto,
-//       String? receiverPhoto,
-//       bool isFirstMessage,
-//       bool thereIsDate) async {
-//     String messageType = element.messageType!.name.toString();
-//     MessageStatus? messageStatus = element.messageStatus
-//         ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
-// //    print('ee: ${element.parentMessageId}');
-// //    print('ee: ${element.parentMessage}');
-//     if (insertPosition == -1) {
-//       data.insert(
-//           data.length,
-//           thereIsDate
-//               ? 10.verticalSpace
-//               : isFirstMessage
-//                   ? 30.verticalSpace
-//                   : 10.verticalSpace);
-//     }
-//     if (element.parentMessageId != null && element.parentMessage != null) {
-//       Message parentMessage = element.parentMessage!;
-//       MessageStatus? parentMessageStatus = parentMessage.messageStatus
-//           ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
-//       int index = getMessageIndex(
-//           element.parentMessageId, element.localParentMessageId);
-//       if (parentMessage.senderUserId != element.senderUserId) {
-//         data.insert(
-//             insertPosition == -1 ? data.length : insertPosition,
-//             ReplayMessage(
-//                 messageDate: element.createdAt!,
-//                 scrollToMessage: () => scrollToIndex(index,
-//                     currentId: element.id!,
-//                     parentMessageId: element.parentMessageId!),
-//                 messageId: element.parentMessageId!,
-//                 answeredFilePath: element.mediaMessageContent?[0].filePath,
-//                 messageAnswer: element.messageContent?.content,
-//                 isFirstMessage: isFirstMessage,
-//                 replayedPhoto:
-//                     parentMessage.id == _prefsRepository.myChatId.toString()
-//                         ? senderPhoto
-//                         : receiverPhoto,
-//                 replayedName:
-//                     parentMessage.id == _prefsRepository.myChatId.toString()
-//                         ? senderName
-//                         : receiverName,
-//                 senderAnswerName: senderName,
-//                 senderAnswerPhoto: senderPhoto,
-//                 isISentFirstMessage:
-//                     parentMessage.senderUserId == _prefsRepository.myChatId,
-//                 isSent: element.senderUserId == _prefsRepository.myChatId,
-//                 parentSenderId: parentMessage.senderUserId!,
-//                 isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
-//                 isReplayedMessageReceived:
-//                     (parentMessageStatus?.isReceived ?? 0) == 1,
-//                 isAnswerMessageRead: messageStatus?.isWatched ?? false,
-//                 isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
-//                 answeredFile: element.file,
-//                 message: parentMessage.messageContent?.content == null
-//                     ? parentMessage.messageType!.name == 'ImageMessage'
-//                         ? 'Photo'
-//                         : parentMessage.messageType!.name == 'FileMessage'
-//                             ? 'File'
-//                             : parentMessage.messageType!.name == 'VideoMessage'
-//                                 ? 'Video'
-//                                 : 'Voice'
-//                     : parentMessage.messageContent!.content.toString(),
-//                 messageAnswerId: element.id!));
-//       } else {
-//         data.insert(
-//             insertPosition == -1 ? data.length : insertPosition,
-//             ReplayOnMeMessage(
-//                 messageDate: element.createdAt!,
-//                 messageId: element.parentMessageId!,
-//                 answeredFilePath: element.mediaMessageContent?[0].filePath,
-//                 messageAnswer: element.messageContent?.content,
-//                 answeredFile: element.file,
-//                 scrollToMessage: () => scrollToIndex(index,
-//                     currentId: element.id!,
-//                     parentMessageId: element.parentMessageId!),
-//                 isISentFirstMessage:
-//                     parentMessage.senderUserId == _prefsRepository.myChatId,
-//                 isSent: element.senderUserId == _prefsRepository.myChatId,
-//                 isFirstMessage: isFirstMessage,
-//                 parentSenderId: parentMessage.senderUserId!,
-//                 replayedPhoto:
-//                     parentMessage.id == _prefsRepository.myChatId.toString()
-//                         ? senderPhoto
-//                         : receiverPhoto,
-//                 replayedName:
-//                     parentMessage.id == _prefsRepository.myChatId.toString()
-//                         ? senderName
-//                         : receiverName,
-//                 senderAnswerName: senderName,
-//                 senderAnswerPhoto: senderPhoto,
-//                 isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
-//                 isReplayedMessageReceived:
-//                     (parentMessageStatus?.isReceived ?? 0) == 1,
-//                 isAnswerMessageRead: messageStatus?.isWatched ?? false,
-//                 isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
-//                 message: parentMessage.messageContent?.content == null
-//                     ? parentMessage.messageType!.name == 'ImageMessage'
-//                         ? 'Photo'
-//                         : parentMessage.messageType!.name == 'FileMessage'
-//                             ? 'File'
-//                             : parentMessage.messageType!.name == 'VideoMessage'
-//                                 ? 'Video'
-//                                 : 'Voice'
-//                     : parentMessage.messageContent!.content.toString(),
-//                 messageAnswerId: element.id!));
-//       }
-//     } else {
-//       switch (messageType) {
-//         case 'TextMessage':
-//           data.insert(
-//               insertPosition == -1 ? data.length : insertPosition,
-//               TextMessage(
-//                 message: element.messageContent!.content.toString(),
-//                 messageId: element.messageContent!.messageId.toString(),
-//                 senderId: element.senderUserId!,
-//                 isSent: element.receiverUserId != _prefsRepository.myChatId,
-//                 isRead: messageStatus?.isWatched ?? false,
-//                 userMessageName:
-//                     element.receiverUserId != _prefsRepository.myChatId
-//                         ? senderName
-//                         : receiverName,
-//                 userMessagePhoto:
-//                     element.receiverUserId != _prefsRepository.myChatId
-//                         ? senderPhoto
-//                         : receiverPhoto,
-//                 isReceived: (messageStatus?.isReceived ?? 0) == 1,
-//                 isFirstMessage: isFirstMessage,
-//                 time: element.createdAt!,
-//                 isForwarded: element.isForward == 1,
-//               ));
-//           break;
-//         case 'ImageMessage':
-//           if (element.file != null) {
-//             data.insert(
-//               insertPosition == -1 ? data.length : insertPosition,
-//               ImageMessage(
-//                 isSent: element.receiverUserId != _prefsRepository.myChatId,
-//                 imageFile: element.file,
-//                 messageId: element.id.toString(),
-//                 senderId: element.senderUserId!,
-//                 time: element.createdAt!,
-//                 userMessageName:
-//                     element.receiverUserId != _prefsRepository.myChatId
-//                         ? senderName
-//                         : receiverName,
-//                 userMessagePhoto:
-//                     element.receiverUserId != _prefsRepository.myChatId
-//                         ? senderPhoto
-//                         : receiverPhoto,
-//                 isFirstMessage: isFirstMessage,
-//                 isRead: messageStatus?.isWatched ?? false,
-//                 isReceived: (messageStatus?.isReceived ?? 0) == 1,
-//                 isLocalMessage: true,
-//                 isForwarded: element.isForward == 1,
-//               ),
-//             );
-//           } else {
-// //            print('length : ${element.mediaMessageContent?.length}');
-//             for (int i = 0;
-//                 i < (element.mediaMessageContent?.length ?? 0);
-//                 i++) {
-//               File? file = await FileSaving().checkExistence(
-//                   element.mediaMessageContent![i].filePath,
-//                   element.mediaMessageContent![i].fileName!,
-//                   download: false);
-//               data.insert(
-//                 insertPosition == -1 ? data.length : insertPosition,
-//                 ImageMessage(
-//                   isSent: element.receiverUserId != _prefsRepository.myChatId,
-//                   imageUrl: element.mediaMessageContent![i].filePath,
-//                   imageFile: file,
-//                   messageId:
-//                       element.mediaMessageContent![i].messageId.toString(),
-//                   time: element.createdAt!,
-//                   senderId: element.senderUserId!,
-//                   userMessageName:
-//                       element.receiverUserId != _prefsRepository.myChatId
-//                           ? senderName
-//                           : receiverName,
-//                   userMessagePhoto:
-//                       element.receiverUserId != _prefsRepository.myChatId
-//                           ? senderPhoto
-//                           : receiverPhoto,
-//                   isRead: messageStatus?.isWatched ?? false,
-//                   isReceived: (messageStatus?.isReceived ?? 0) == 1,
-//                   isFirstMessage: isFirstMessage,
-//                   isLocalMessage: file != null,
-//                   isForwarded: element.isForward == 1,
-//                 ),
-//               );
-//               if (i != element.mediaMessageContent!.length - 1) {
-//                 data.insert(insertPosition == -1 ? data.length : insertPosition,
-//                     10.verticalSpace);
-//               }
-//             }
-//           }
-//           break;
-//         case 'VideoMessage':
-//           if (element.file != null) {
-//             data.insert(
-//               insertPosition == -1 ? data.length : insertPosition,
-//               VideoMessage(
-//                 isSent: element.receiverUserId != _prefsRepository.myChatId,
-//                 videoFile: element.file,
-//                 messageId: element.id.toString(),
-//                 senderId: element.senderUserId!,
-//                 time: element.createdAt!,
-//                 userMessageName:
-//                     element.receiverUserId != _prefsRepository.myChatId
-//                         ? senderName
-//                         : receiverName,
-//                 userMessagePhoto:
-//                     element.receiverUserId != _prefsRepository.myChatId
-//                         ? senderPhoto
-//                         : receiverPhoto,
-//                 isFirstMessage: isFirstMessage,
-//                 isRead: messageStatus?.isWatched ?? false,
-//                 isReceived: (messageStatus?.isReceived ?? 0) == 1,
-//                 isLocalMessage: true,
-//                 isForwarded: element.isForward == 1,
-//               ),
-//             );
-//           } else {
-// //            print('length : ${element.mediaMessageContent?.length}');
-//             for (int i = 0;
-//                 i < (element.mediaMessageContent?.length ?? 0);
-//                 i++) {
-//               File? file = await FileSaving().checkExistence(
-//                   element.mediaMessageContent![i].filePath,
-//                   element.mediaMessageContent![i].fileName!,
-//                   download: false);
-//               data.insert(
-//                 insertPosition == -1 ? data.length : insertPosition,
-//                 VideoMessage(
-//                   isSent: element.receiverUserId != _prefsRepository.myChatId,
-//                   videoUrl: element.mediaMessageContent![i].filePath,
-//                   videoFile: file,
-//                   messageId:
-//                       element.mediaMessageContent![i].messageId.toString(),
-//                   time: element.createdAt!,
-//                   senderId: element.senderUserId!,
-//                   userMessageName:
-//                       element.receiverUserId != _prefsRepository.myChatId
-//                           ? senderName
-//                           : receiverName,
-//                   userMessagePhoto:
-//                       element.receiverUserId != _prefsRepository.myChatId
-//                           ? senderPhoto
-//                           : receiverPhoto,
-//                   isRead: messageStatus?.isWatched ?? false,
-//                   isReceived: (messageStatus?.isReceived ?? 0) == 1,
-//                   isFirstMessage: isFirstMessage,
-//                   isLocalMessage: file != null,
-//                   isForwarded: element.isForward == 1,
-//                 ),
-//               );
-//               if (i != element.mediaMessageContent!.length - 1) {
-//                 data.insert(insertPosition == -1 ? data.length : insertPosition,
-//                     10.verticalSpace);
-//               }
-//             }
-//           }
-//           break;
-//         case 'VoiceMessage':
-//           if (element.file != null) {
-//             data.insert(
-//               insertPosition == -1 ? data.length : insertPosition,
-//               VoiceMessage(
-//                 isSent: element.receiverUserId != _prefsRepository.myChatId,
-//                 file: element.file,
-//                 messageId: element.id.toString(),
-//                 senderId: element.senderUserId!,
-//                 userMessageName:
-//                     element.receiverUserId != _prefsRepository.myChatId
-//                         ? senderName
-//                         : receiverName,
-//                 userMessagePhoto:
-//                     element.receiverUserId != _prefsRepository.myChatId
-//                         ? senderPhoto
-//                         : receiverPhoto,
-//                 time: element.createdAt!,
-//                 isRead: messageStatus?.isWatched ?? false,
-//                 isReceived: (messageStatus?.isReceived ?? 0) == 1,
-//                 isFirstMessage: isFirstMessage,
-//                 isForwarded: element.isForward == 1,
-//               ),
-//             );
-//           } else {
-//             for (int i = 0;
-//                 i < (element.mediaMessageContent?.length ?? 0);
-//                 i++) {
-//               String fileName = element.mediaMessageContent![i].fileName ??
-//                   element.mediaMessageContent![i].filePath!.split('/').last;
-//               File? file = await FileSaving().checkExistence(
-//                   element.mediaMessageContent![i].filePath, fileName,
-//                   download: false);
-//               data.insert(
-//                 insertPosition == -1 ? data.length : insertPosition,
-//                 VoiceMessage(
-//                   isSent: element.receiverUserId != _prefsRepository.myChatId,
-//                   fileUrl: element.mediaMessageContent![i].filePath,
-//                   messageId:
-//                       element.mediaMessageContent![i].messageId.toString(),
-//                   time: element.createdAt!,
-//                   senderId: element.senderUserId!,
-//                   userMessageName:
-//                       element.receiverUserId != _prefsRepository.myChatId
-//                           ? senderName
-//                           : receiverName,
-//                   userMessagePhoto:
-//                       element.receiverUserId != _prefsRepository.myChatId
-//                           ? senderPhoto
-//                           : receiverPhoto,
-//                   file: file,
-//                   isFirstMessage: isFirstMessage,
-//                   isRead: messageStatus?.isWatched ?? false,
-//                   isReceived: (messageStatus?.isReceived ?? 0) == 1,
-//                   isForwarded: element.isForward == 1,
-//                 ),
-//               );
-//               if (i != element.mediaMessageContent!.length - 1) {
-//                 data.insert(insertPosition == -1 ? data.length : insertPosition,
-//                     10.verticalSpace);
-//               }
-//             }
-//           }
-//           break;
-//         case 'FileMessage':
-//           if (element.file != null) {
-//             String fileName = element.file!.path.split('/').last;
-//             data.insert(
-//               insertPosition == -1 ? data.length : insertPosition,
-//               DocumentMessage(
-//                 isSent: element.receiverUserId != _prefsRepository.myChatId,
-//                 documentFile: element.file,
-//                 fileName: fileName,
-//                 messageId: element.id.toString(),
-//                 senderId: element.senderUserId!,
-//                 userMessageName:
-//                     element.receiverUserId != _prefsRepository.myChatId
-//                         ? senderName
-//                         : receiverName,
-//                 userMessagePhoto:
-//                     element.receiverUserId != _prefsRepository.myChatId
-//                         ? senderPhoto
-//                         : receiverPhoto,
-//                 time: element.createdAt!,
-//                 isRead: messageStatus?.isWatched ?? false,
-//                 isReceived: (messageStatus?.isReceived ?? 0) == 1,
-//                 isFirstMessage: isFirstMessage,
-//                 isForwarded: element.isForward == 1,
-//               ),
-//             );
-//           } else {
-//             for (int i = 0;
-//                 i < (element.mediaMessageContent?.length ?? 0);
-//                 i++) {
-//               String fileName = element.mediaMessageContent![i].fileName ??
-//                   element.file!.path.split('/').last;
-//               File? file = await FileSaving().checkExistence(
-//                   element.mediaMessageContent![i].filePath, fileName,
-//                   download: false);
-//               data.insert(
-//                 insertPosition == -1 ? data.length : insertPosition,
-//                 DocumentMessage(
-//                   isSent: element.receiverUserId != _prefsRepository.myChatId,
-//                   documentFile: file,
-//                   documentFileUrl: element.mediaMessageContent![i].filePath,
-//                   fileName: fileName,
-//                   messageId:
-//                       element.mediaMessageContent![i].messageId.toString(),
-//                   time: element.createdAt!,
-//                   senderId: element.senderUserId!,
-//                   userMessageName:
-//                       element.receiverUserId != _prefsRepository.myChatId
-//                           ? senderName
-//                           : receiverName,
-//                   userMessagePhoto:
-//                       element.receiverUserId != _prefsRepository.myChatId
-//                           ? senderPhoto
-//                           : receiverPhoto,
-//                   isFirstMessage: isFirstMessage,
-//                   isRead: messageStatus?.isWatched ?? false,
-//                   isReceived: (messageStatus?.isReceived ?? 0) == 1,
-//                   isForwarded: element.isForward == 1,
-//                 ),
-//               );
-//               if (i != element.mediaMessageContent!.length - 1) {
-//                 data.insert(insertPosition == -1 ? data.length : insertPosition,
-//                     10.verticalSpace);
-//               }
-//             }
-//           }
-//       }
-//     }
-// //    print('isFirst: $isFirstMessage');
-//     if (insertPosition != -1) {
-//       data.insert(
-//           insertPosition,
-//           thereIsDate
-//               ? 10.verticalSpace
-//               : isFirstMessage
-//                   ? 30.verticalSpace
-//                   : 10.verticalSpace);
-//     }
-//   }
 
   int getMessageIndex(String? messageId, String? localParentMessageId) {
     return data.indexWhere((e) {
@@ -1366,7 +852,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
       String? parentMessageId,
       Duration? duration,
       AutoScrollPosition? preferPosition}) {
-//    print('iii:  $index');
     if (index == -1) {
       chatBloc.add(GetAllMessagesBetweenEvent(
           firstMessageId: parentMessageId!,
@@ -1376,14 +861,20 @@ class _SinglePageChatState extends State<SinglePageChat> {
       return;
     }
     currentScrolledIndex = index;
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await autoScrollController.scrollToIndex(index,
-          duration: duration ?? const Duration(milliseconds: 250),
-          preferPosition: preferPosition ?? AutoScrollPosition.middle);
-    });
-    Future.delayed(const Duration(milliseconds: 1000)).then((value) {
+    print('it called for scrolling!!!!!! $index');
+    autoScrollController.highlight(index);
+    autoScrollController
+        .scrollToIndex(index,
+            duration: duration ?? const Duration(milliseconds: 50),
+            preferPosition: preferPosition ?? AutoScrollPosition.middle)
+        .then((value) {
       currentScrolledIndex = -1;
-      rebuildMessage.value = 2 * data.length;
+      Future.delayed(
+        Duration(milliseconds: 300),
+        () {
+          rebuildMessage.value = index;
+        },
+      );
     });
   }
 
@@ -1399,9 +890,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
     String? receiverPhoto,
   }) {
     String? filePath = message.mediaMessageContent?[0].filePath;
-    if (message.file == null && filePath!=null &&  _prefsRepository.isAFilePathExist(filePath)) {
-      File? file= File(FileSaving().getFilePath(filePath.split('/').last));
-      message = message.copyWith(file: file , checkedExistence: true);
+    if (message.file == null &&
+        filePath != null &&
+        _prefsRepository.isAFilePathExist(filePath)) {
+      File? file = File(FileSaving().getFilePath(filePath.split('/').last));
+      message = message.copyWith(file: file, checkedExistence: true);
     }
     MessageStatus? messageStatus = message.messageStatus
         ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
@@ -1409,12 +902,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
       Message parentMessage = message.parentMessage!;
       MessageStatus? parentMessageStatus = parentMessage.messageStatus
           ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
-      int index = getMessageIndex(
-          message.parentMessageId, message.localParentMessageId);
       if (parentMessage.senderUserId != message.senderUserId) {
         return ReplayMessage(
             messageDate: message.createdAt!,
-            scrollToMessage: () => scrollToIndex(index,
+            scrollToMessage: () => scrollToIndex(
+                messagesIndexes[parentMessage.id.toString()] ?? -1,
                 currentId: message.id!,
                 parentMessageId: message.parentMessageId!),
             messageId: message.parentMessageId!,
@@ -1458,7 +950,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
             answeredFilePath: message.mediaMessageContent?[0].filePath,
             messageAnswer: message.messageContent?.content,
             answeredFile: message.file,
-            scrollToMessage: () => scrollToIndex(index,
+            scrollToMessage: () => scrollToIndex(
+                messagesIndexes[parentMessage.id.toString()] ?? -1,
                 currentId: message.id!,
                 parentMessageId: message.parentMessageId!),
             isISentFirstMessage:
@@ -1509,7 +1002,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     ? senderPhoto
                     : receiverPhoto,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
-            isFirstMessage: message.isFirstMessage,
+            isFirstMessage:
+                message.isFirstMessage || message.isFirstMessageForThisDay,
             time: message.createdAt!,
             isForwarded: message.isForward == 1,
           );
@@ -1528,7 +1022,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 message.receiverUserId != _prefsRepository.myChatId
                     ? senderPhoto
                     : receiverPhoto,
-            isFirstMessage: message.isFirstMessage,
+            isFirstMessage:
+                message.isFirstMessage || message.isFirstMessageForThisDay,
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isLocalMessage: true,
@@ -1549,7 +1044,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 message.receiverUserId != _prefsRepository.myChatId
                     ? senderPhoto
                     : receiverPhoto,
-            isFirstMessage: message.isFirstMessage,
+            isFirstMessage:
+                message.isFirstMessage || message.isFirstMessageForThisDay,
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isLocalMessage: true,
@@ -1572,7 +1068,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
             time: message.createdAt!,
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
-            isFirstMessage: message.isFirstMessage,
+            isFirstMessage:
+                message.isFirstMessage || message.isFirstMessageForThisDay,
             isForwarded: message.isForward == 1,
           );
         case 'FileMessage':
@@ -1595,7 +1092,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
             time: message.createdAt!,
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
-            isFirstMessage: message.isFirstMessage,
+            isFirstMessage:
+                message.isFirstMessage || message.isFirstMessageForThisDay,
             isForwarded: message.isForward == 1,
           );
       }
