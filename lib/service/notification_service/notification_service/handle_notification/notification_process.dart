@@ -3,11 +3,13 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as fln;
 import 'package:get_it/get_it.dart';
 import 'package:trydos/main.dart';
 import '../../../../base_page.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import '../../../../features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../features/chat/presentation/manager/chat_event.dart';
 import '../../../../features/chat/presentation/pages/single_page_chat.dart';
@@ -97,6 +99,13 @@ class NotificationProcess {
   Future<void> init() async {
     try {
       await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+      PlatformDispatcher.instance.onError = (error, stack) {
+        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        return true;
+      };
+
+
     } catch (e) {
       print(e);
       rethrow;
