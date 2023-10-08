@@ -126,10 +126,14 @@ class Message {
   final File? file;
    bool isFirstMessageForThisDay;
     bool isFirstMessage;
+    bool isDateMessage;
+    String dateValue;
 
   Message({
     this.isFirstMessageForThisDay=false,
     this.checkedExistence=false,
+    this.isDateMessage=false,
+    this.dateValue ='',
     this.isFirstMessage = false,
     this.id,
     this.senderUserId,

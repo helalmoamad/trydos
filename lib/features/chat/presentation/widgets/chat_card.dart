@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
@@ -19,9 +17,7 @@ import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
-import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/no_image_widget.dart';
-
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -30,7 +26,6 @@ import '../../../../service/language_service.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_event.dart';
-
 class ChatCard extends StatefulWidget {
   const ChatCard(
       {Key? key,
@@ -355,7 +350,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                 .toString();
                                           }
                                           return Flexible(
-                                            fit: FlexFit.tight,
+                                            fit: FlexFit.loose,
                                             child: SizedBox(
                                               height: widget.thereActivity
                                                   ? 33

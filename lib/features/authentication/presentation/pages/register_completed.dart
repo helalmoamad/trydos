@@ -52,7 +52,9 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Spacer(),
-                  SizedBox(height: 10,),
+                  SizedBox(
+                    height: 10,
+                  ),
                   Padding(
                     padding: HWEdgeInsets.only(left: 30.0),
                     child: Column(
@@ -65,7 +67,9 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                               style: textTheme.headline3?.ba.copyWith(
                                   color: Color(0xff5D5C5D), height: 1.25)),
                         ),
-                        SizedBox(height: 17,),
+                        SizedBox(
+                          height: 17,
+                        ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -76,12 +80,13 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                                   letterSpacing: 0.3,
                                   height: 0.67,
                                 )),
-                            SizedBox(height: 18,),
+                            SizedBox(
+                              height: 18,
+                            ),
                             Text('Enjoy With Our Services',
                                 textAlign: TextAlign.center,
                                 style: textTheme.subtitle1?.la.copyWith(
-                                    color: Color(0xff5D5C5D),
-                                    height: 1.25)),
+                                    color: Color(0xff5D5C5D), height: 1.25)),
                           ],
                         ),
                       ],
@@ -96,7 +101,9 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                         letterSpacing: 0.14,
                         height: 1.43,
                       )),
-                  SizedBox(height: 10,),
+                  SizedBox(
+                    height: 10,
+                  ),
                   Container(
                     width: 1.sw,
                     height: 60,
@@ -119,22 +126,29 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 30,),
+                  SizedBox(
+                    height: 20,
+                  ),
                   InkWell(
-                    onTap: (){
+                    onTap: () {
                       context.go(GRouter.config.applicationRoutes.kBasePage);
                     },
-                    child: Text(
-                      'Skip For Now',
-                      style: textTheme.bodyText2?.ra.copyWith(
-                        color: Color(0xff4d84ff),
-                        letterSpacing: 0.14,
-                        height: 1.43,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: Text(
+                        'Skip For Now',
+                        style: textTheme.bodyText2?.ra.copyWith(
+                          color: Color(0xff4d84ff),
+                          letterSpacing: 0.14,
+                          height: 1.43,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ),
-                  SizedBox(height: 54,),
+                  SizedBox(
+                    height: 44,
+                  ),
                 ]),
           ),
         ],

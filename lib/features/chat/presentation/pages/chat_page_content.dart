@@ -65,7 +65,10 @@ class ChatPageContentState extends State<ChatPageContent> {
           p.unReadMessagesFromAllChats != c.unReadMessagesFromAllChats ||
           (p.changeChatPropertyStatus != c.changeChatPropertyStatus &&
               c.changeChatPropertyStatus != ChangeChatPropertyStatus.success) ||
-          p.deleteChatStatus != c.deleteChatStatus || c.createAnewChat,
+          p.deleteChatStatus != c.deleteChatStatus ||
+          c.createAnewChat ||
+          c.sendMessageStatus == SendMessageStatus.loading ||
+          c.receiveMessageStatus == ReceiveMessageStatus.success,
       builder: (context, state) {
         if ((state.getChatsStatus == GetChatsStatus.loading ||
                 state.getChatsStatus == GetChatsStatus.init) &&

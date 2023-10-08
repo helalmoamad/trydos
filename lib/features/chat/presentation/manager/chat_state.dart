@@ -48,7 +48,7 @@ class ChatState {
   final String currentChannelReceivedMessage;
   final bool scrollToParentMessage;
   final bool createAnewChat;
-  Map<String, Map<String,List<Message>>>? newSortedChatsByDate;
+  Map<String, List<Message>>? newSortedChatsByDate;
   ChatState({
     this.newSortedChatsByDate=const {},
     this.getContactsStatus = GetContactsStatus.init,
@@ -80,7 +80,7 @@ class ChatState {
   });
 
   ChatState copyWith({
-    final Map<String, Map<String,List<Message>>>?  newSortedChatsByDate,
+    Map<String, List<Message>>? newSortedChatsByDate,
     final GetChatsStatus? getChatsStatus,
     final SendMessageStatus? sendMessageStatus,
     final ReceiveMessageStatus? receiveMessageStatus,
