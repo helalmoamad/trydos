@@ -398,14 +398,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 //       getMessagesBetween;
                 // },
                 builder: (context, chatState) {
-                   chat = chatState.chats.firstWhere(
-                      (element) => element.id.toString() == widget.chatId,
-                      orElse: () => chatState.pinnedChats.firstWhere(
-                          (element) => element.id.toString() == widget.chatId));
                   print('data: ${widget.chatId}');
                   print('data: ${chatState.newSortedChatsByDate}');
                   print(
                       'data: ${chatState.newSortedChatsByDate!.containsKey(widget.chatId)}');
+                   chat = chatState.chats.firstWhere(
+                               (element) =>
+                           element.id.toString() == widget.chatId ||
+                               element.localId.toString() == widget.chatId,
+                      orElse: () => chatState.pinnedChats.firstWhere((element) =>
+                                element.id.toString() == widget.chatId ||
+                                    element.localId.toString() == widget.chatId));
 //                   if (rebuildScreen) {
 //                     chat = chat = chatState.chats.firstWhere(
 //                             (element) => element.id.toString() == widget.chatId,
@@ -544,15 +547,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         physics: const ClampingScrollPhysics(),
                                         itemBuilder: (context, outerIndex) {
                                           String date = chatState
-                                              .newSortedChatsByDate![
-                                                  widget.chatId]!
+                                              .newSortedChatsByDate![chat.id]!
                                               .keys
                                               .toList()
                                               .reversed
                                               .toList()[outerIndex];
                                           List<Message> messages = chatState
-                                              .newSortedChatsByDate![
-                                                  widget.chatId]![date]!
+                                              .newSortedChatsByDate![chat.id]![date]!
                                               .reversed
                                               .toList();
                                           return Column(
@@ -601,7 +602,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         },
                                         itemCount: chatState
                                             .newSortedChatsByDate![
-                                                widget.chatId]!
+                                        chat.id]!
                                             .length,
                                       ),
                                     ),
@@ -629,7 +630,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     String fileName = 'Trydos-${DateTime.now()}';
                     chatBloc.add(UploadFileEvent(
                         file: file,
-                        channelId: widget.chatId,
+                        channelId: chat.id.toString(),
                         fileName: fileName,
                         filePath: type == 'image'
                             ? 'images/test'
@@ -674,7 +675,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
 //                    print('there : ${state.thereIsReply}');
                     chatBloc.add(SendMessageEvent(
                         messageType: 'TextMessage',
-                        channelId: widget.chatId,
+                        channelId: chat.id.toString(),
                         isForward: false,
                         parentMessageId:
                             state.thereIsReply ? state.messageId : null,
@@ -1398,7 +1399,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
     String? receiverPhoto,
   }) {
     String? filePath = message.mediaMessageContent?[0].filePath;
-    if (filePath!=null &&  _prefsRepository.isAFilePathExist(filePath)) {
+    if (message.file == null && filePath!=null &&  _prefsRepository.isAFilePathExist(filePath)) {
       File? file= File(FileSaving().getFilePath(filePath.split('/').last));
       message = message.copyWith(file: file , checkedExistence: true);
     }
@@ -1463,7 +1464,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isISentFirstMessage:
                 parentMessage.senderUserId == _prefsRepository.myChatId,
             isSent: message.senderUserId == _prefsRepository.myChatId,
-            isFirstMessage: message.isFirstMessage ?? false,
+            isFirstMessage: message.isFirstMessage,
             parentSenderId: parentMessage.senderUserId!,
             replayedPhoto:
                 parentMessage.id == _prefsRepository.myChatId.toString()
