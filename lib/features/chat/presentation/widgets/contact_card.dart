@@ -28,6 +28,11 @@ class ContactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     final String receiverName, fullReceiverName;
     if (contact.name == null) {
       receiverName = 'UK';

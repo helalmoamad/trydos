@@ -58,6 +58,11 @@ class ChatPageContentState extends State<ChatPageContent> {
   @override
 // ! asd
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     //todo  9/21  change it to BlocBuilder
     return BlocBuilder<ChatBloc, ChatState>(
       buildWhen: (p, c) =>

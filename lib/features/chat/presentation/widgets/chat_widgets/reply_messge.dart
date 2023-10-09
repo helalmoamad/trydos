@@ -73,6 +73,11 @@ class _ReplayMessageState extends State<ReplayMessage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocListener<ChatBloc, ChatState>(
       listenWhen: (p, c) =>
       p.changeMessageStateFromPusherStatus !=c.changeMessageStateFromPusherStatus &&
