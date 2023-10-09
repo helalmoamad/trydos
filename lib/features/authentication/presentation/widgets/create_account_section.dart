@@ -21,6 +21,11 @@ class CreateAccountSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Column(

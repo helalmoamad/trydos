@@ -67,6 +67,11 @@ class _ChatCardState extends ThemeState<ChatCard> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     chatTime = null;
     if (!(widget.chat.messages?.isEmpty ?? true)) {
       chatTime = widget.chat.messages!.first.createdAt!;

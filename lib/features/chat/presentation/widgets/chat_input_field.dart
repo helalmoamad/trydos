@@ -21,6 +21,7 @@ import 'package:trydos/core/utils/theme_state.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/app_widgets/app_text_field.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
@@ -93,6 +94,11 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocBuilder<AppBloc, AppState>(
       buildWhen: (p,c)=> p.thereIsReply != c.thereIsReply,
       builder: (context, state) {

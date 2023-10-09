@@ -172,6 +172,11 @@ class _BasePageState extends State<BasePage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Scaffold(
       backgroundColor: colorScheme.background,
       bottomNavigationBar: BlocBuilder<AppBloc, AppState>(

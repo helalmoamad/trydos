@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -9,6 +10,7 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/my_cached_network_image.dart';
@@ -27,6 +29,11 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Scaffold(
       backgroundColor: const Color(0xffF8F8F8),
       body: SafeArea(

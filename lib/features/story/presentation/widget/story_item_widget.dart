@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -15,6 +16,7 @@ import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/helper/helper_functions.dart';
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../chat/presentation/widgets/chat_widgets/no_image_widget.dart';
 
 class StoryItemWidget extends StatelessWidget {
@@ -33,6 +35,11 @@ class StoryItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocBuilder<StoryBloc, StoryState>(builder: (context, state) {
       bool isLastStoryShowed = state.stories[index].stories!.length ==
           (firstWhereNotShowedStoryCollection(state.stories[index].stories!));

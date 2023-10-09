@@ -26,6 +26,7 @@ class VerifyOtp extends StatefulWidget {
       {Key? key,
       required this.methodIcon,
       required this.fromLogin,
+      required this.isVisWhatsApp,
       required this.navigateToAddName,
       required this.onLoginFailed,
       required this.goBack,
@@ -37,6 +38,7 @@ class VerifyOtp extends StatefulWidget {
   final void Function() onLoginFailed;
   final void Function() goBack;
   final void Function() navigateToAddName;
+  final int isVisWhatsApp;
 
   @override
   State<VerifyOtp> createState() => _VerifyOtpState();
@@ -75,6 +77,11 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocListener<AuthBloc, AuthState>(
         listenWhen: (p, c) =>
             p.verifyOtpSignInStatus != c.verifyOtpSignInStatus,
@@ -538,6 +545,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
     controller.start();
     _enabledResendNotifier.value = false;
     checkOtp.value = 0;
+    authBloc.add(SendOtpEvent(phone: widget.phoneNumber, isViaWhatsApp: widget.isVisWhatsApp));
   }
 
   @override
