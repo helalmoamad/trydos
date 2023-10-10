@@ -77,9 +77,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
   double currentHoverPosition = -1;
   double x = -1, xActionSubtitle = -1, yActionSubtitle = -1;
   late AutoScrollController autoScrollController;
-
   void _scrollToBottom() {
-    autoScrollController.jumpTo(autoScrollController.position.maxScrollExtent);
+    autoScrollController.jumpTo(0);
   }
 
   final key = GlobalKey();
@@ -110,8 +109,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
       if (rebuild) {
         rebuildMessage.value = -1;
       }
-      if ((autoScrollController.offset <=
-          autoScrollController.position.minScrollExtent + 400)) {
+      if ((autoScrollController.offset >=
+          autoScrollController.position.maxScrollExtent -400)) {
         _loadMoreMessages();
       }
     });
@@ -554,11 +553,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         child: ListView.builder(
                                           physics:
                                               const ClampingScrollPhysics(),
+                                          shrinkWrap: true,
+                                          reverse: true,
                                           controller: autoScrollController,
                                           itemBuilder: (context, index) {
                                             List<Message> messages =
                                                 chatState.newSortedChatsByDate![
-                                                    chat.id.toString()]!;
+                                                    chat.id.toString()]!.reversed.toList();
                                             if (messages[index].isDateMessage) {
                                               return Column(
                                                 mainAxisSize: MainAxisSize.min,

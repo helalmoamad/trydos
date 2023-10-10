@@ -75,8 +75,8 @@ class _VoiceMessageState extends State<VoiceMessage> {
       );
       await audioPlayer.setSource(audioSource);
     } else {
-      audioSource = UrlSource(widget.fileUrl!);
-      await audioPlayer.setSource(audioSource);
+        audioSource = UrlSource(widget.fileUrl!);
+        await audioPlayer.setSource(audioSource);
     }
     duration = (await audioPlayer.getDuration())!;
     audioPlayingNotifier.notifyListeners();
@@ -93,7 +93,6 @@ class _VoiceMessageState extends State<VoiceMessage> {
       position = Duration.zero;
       audioPlayingNotifier.value = false;
     });
-
     getAudioDuration();
     audioPlayer.onPositionChanged.listen((newDuration) {
       audioPlayingNotifier.notifyListeners();

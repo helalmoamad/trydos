@@ -23,6 +23,7 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/app_widgets/app_text_field.dart';
+import '../../../app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
@@ -640,27 +641,50 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               widget.channelId,
                                               widget.channelPusherName,
                                               'Sending file...');
-                                          AssetEntity? assetEntity =
-                                              await HelperFunctions
-                                                  .getAssetFromCamera(context);
-                                          if (assetEntity != null) {
-                                            File file =
-                                                (await assetEntity.file)!;
-                                            String mimeStr = lookupMimeType(file.absolute.path) ??'';
-                                            var fileType = mimeStr.split('/');
-                                            log(fileType.toString());
-                                            if (fileType[0] == 'image') {
-                                              widget.onSendFile.call(file, 'image');
-                                            }else{
-                                              widget.onSendFile
-                                                  .call(file, 'video');
-                                            }
-                                          }
-                                          pusherChatService.sendActivityEvent(
-                                              widget.channelId,
-                                              widget.channelPusherName,
-                                              null
-                                          );
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return GalleryAndCameraDialogWidget(
+                                                    onChooseFileFromGalleryAction:
+                                                        (AssetEntity?
+                                                    assetEntity) async {
+                                                      if (assetEntity != null) {
+                                                        File file = (await assetEntity.originFile)!;
+                                                        String mimeStr = lookupMimeType(file.absolute.path) ??'';
+                                                        var fileType = mimeStr.split('/');
+                                                        log(fileType.toString());
+                                                        if (fileType[0] == 'image') {
+                                                          widget.onSendFile.call(file, 'image');
+                                                        }else{
+                                                          widget.onSendFile
+                                                              .call(file, 'video');
+                                                        }
+                                                        pusherChatService.sendActivityEvent(
+                                                            widget.channelId,
+                                                            widget.channelPusherName,
+                                                            null
+                                                        );
+                                                      }
+                                                    }, onChooseFileFromCameraAction:
+                                                    (File? file) {
+                                                  if (file != null) {
+                                                    String mimeStr = lookupMimeType(file.absolute.path) ??'';
+                                                    var fileType = mimeStr.split('/');
+                                                    log(fileType.toString());
+                                                    if (fileType[0] == 'image') {
+                                                      widget.onSendFile.call(file, 'image');
+                                                    }else{
+                                                      widget.onSendFile
+                                                          .call(file, 'video');
+                                                    }
+                                                    pusherChatService.sendActivityEvent(
+                                                        widget.channelId,
+                                                        widget.channelPusherName,
+                                                        null
+                                                    );
+                                                  }
+                                                });
+                                              });
                                         },
                                         child: SvgPicture.asset(
                                           AppAssets.takePictureSvg,
