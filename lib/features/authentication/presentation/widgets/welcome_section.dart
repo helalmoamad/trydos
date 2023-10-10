@@ -14,14 +14,19 @@ import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
 import '../manager/auth_bloc.dart';
 class WelcomeSection extends StatelessWidget {
-   WelcomeSection({required this.goToCreateAccount , required this.goToLoginSection ,Key? key}) : super(key: key);
-  void Function() goToCreateAccount;
-  void Function() goToLoginSection;
+    WelcomeSection({required this.goToCreateAccount , required this.goToLoginSection ,Key? key}) : super(key: key);
+  final void Function() goToCreateAccount;
+  final void Function() goToLoginSection;
 
-  ValueNotifier<int> clickButton = ValueNotifier(-1);
+  final ValueNotifier<int> clickButton = ValueNotifier(-1);
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Column(

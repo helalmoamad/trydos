@@ -15,6 +15,7 @@ import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../common/helper/helper_functions.dart';
+import '../../../../core/domin/repositories/prefs_repository.dart';
 
 class StoryCollection extends StatefulWidget {
   int id;
@@ -41,6 +42,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocBuilder<StoryBloc, StoryState>(
 //      buildWhen:  (previous, current) => previous.getStoriesStatus!=current.getStoriesStatus,
       builder: (context, state) {

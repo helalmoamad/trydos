@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.gms.google-services'
-//apply plugin: 'com.smartlook.crash-gradle-plugin'
+apply plugin: 'com.smartlook.crash-gradle-plugin'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 
@@ -80,7 +80,7 @@ dependencies {
 
 }
 
-//smartlookCrashGradlePlugin {
-//    apiKey = "29b28f3bd01e6abb7b17a18878c9d42573ecfe5f91aff2c0d163638a33ade7e6"
-//    force = true
-//}
+smartlookCrashGradlePlugin {
+    apiKey = "29b28f3bd01e6abb7b17a18878c9d42573ecfe5f91aff2c0d163638a33ade7e6"
+    force = true
+}

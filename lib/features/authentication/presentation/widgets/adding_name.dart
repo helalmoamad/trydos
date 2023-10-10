@@ -42,6 +42,11 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocListener<AuthBloc, AuthState>(
       listenWhen: (p, c) => p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus,
       listener: (context, state) {

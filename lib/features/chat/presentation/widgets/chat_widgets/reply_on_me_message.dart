@@ -73,6 +73,11 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Column(
       children: [
         Stack(

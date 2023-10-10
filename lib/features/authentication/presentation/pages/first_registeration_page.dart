@@ -39,6 +39,7 @@ class _RegistrationPageState extends State<RegistrationPage>
   Duration animationDuration = Duration(milliseconds: 500);
   final FocusNode focusNode = FocusNode();
   late AuthBloc authBloc;
+  int isVisWhatsApp = 0;
 
   @override
   void initState() {
@@ -58,6 +59,11 @@ class _RegistrationPageState extends State<RegistrationPage>
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return ValueListenableBuilder<int>(
         valueListenable: pageContent,
         builder: (ctx, index, _) {
@@ -179,6 +185,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                             VerificationMethods(
                               phoneNumber: phoneNumber,
                               onChooseWhatsapp: () {
+                                isVisWhatsApp=1;
                                 pageContent.value = 4;
                                 pageController.animateToPage(4,
                                     duration: Duration(milliseconds: 500),
@@ -193,6 +200,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                 pageContent.value = 2;
                               },
                               onChooseSms: () {
+                                isVisWhatsApp=0;
                                 pageController.animateToPage(4,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.easeInOut);
@@ -202,6 +210,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                               },
                             ),
                             VerifyOtp(
+                                isVisWhatsApp : isVisWhatsApp ,
                                 navigateToAddName: () {
                                   print('fromLogin:  $fromLogin');
                                   if (fromLogin) {
