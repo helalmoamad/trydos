@@ -3,5 +3,8 @@
   "recording" : "Recording...",
   "sending_file" : "sending file...",
   "sending_picture" : "sending photo...",
-  "sending_video" : "sending video..."
+  "sending_video" : "sending video...",
+  "gallery": "gallery",
+  "camera": "camera",
+  "choose_photo_or_video_from_gallery_or_camera": "choose  photo or video from gallery or camera"
 }

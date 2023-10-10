@@ -5,8 +5,10 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:trydos/common/constant/countries.dart';
+import 'package:trydos/common/helper/camera_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:wechat_camera_picker/wechat_camera_picker.dart';
@@ -135,10 +137,10 @@ class HelperFunctions {
         themeColor: const Color(0xff137AC9),
         specialItemPosition: SpecialItemPosition.prepend,
         specialItemBuilder: (
-          BuildContext context,
-          AssetPathEntity? path,
-          int length,
-        ) {
+            BuildContext context,
+            AssetPathEntity? path,
+            int length,
+            ) {
           if (path?.isAll != true) {
             return null;
           }
@@ -146,30 +148,6 @@ class HelperFunctions {
             label: textDelegate.sActionUseCameraHint,
             button: true,
             onTapHint: textDelegate.sActionUseCameraHint,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () async {
-                final AssetEntity? result = await _pickFromCamera(context);
-                if (result == null) {
-                  return;
-                }
-                final AssetPicker<AssetEntity, AssetPathEntity> picker =
-                    context.findAncestorWidgetOfExactType()!;
-                final DefaultAssetPickerBuilderDelegate builder =
-                    picker.builder as DefaultAssetPickerBuilderDelegate;
-                final DefaultAssetPickerProvider p = builder.provider;
-                await p.switchPath(
-                  PathWrapper<AssetPathEntity>(
-                    path: await p.currentPath!.path.obtainForNewProperties(),
-                  ),
-                );
-                p.selectAsset(result);
-              },
-              child: const Center(
-                child: Icon(Icons.camera_alt_outlined,
-                    size: 42.0, color: Colors.white),
-              ),
-            ),
           );
         },
       ),
@@ -203,7 +181,7 @@ class HelperFunctions {
       c,
       locale: LanguageService.currentLanguage,
       pickerConfig: CameraPickerConfig(
-        resolutionPreset: ResolutionPreset.low,
+        resolutionPreset: ResolutionPreset.high,
         enableRecording: true,
         textDelegate: textDelegate,
       ),

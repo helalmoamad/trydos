@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../config/theme/typography.dart';
-
+import 'package:trydos/service/language_service.dart';
 //import 'package:dartz/dartz_streaming.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -86,33 +86,78 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                       final double screenWidth =
                           MediaQuery.of(context).size.width;
                       final double dx = details.globalPosition.dx;
-                      if (dx > screenWidth * 1 / 2) {
-                        animatedController.stop();
-                        animatedController.reset();
-                        if ((state.initialStory! + 1) >=
-                            state.stories[state.selectedStory!].stories!
-                                .length) {
-                          GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                              selected: state.selectedStory!, initialStory: 0));
-                          Navigator.of(context).pop();
-                        } else {
-                          GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                              selected: state.selectedStory!,
-                              initialStory: state.initialStory! + 1));
-                        }
-                      } else if (dx < screenWidth * 1 / 2) {
-                        animatedController.stop();
 
-                        animatedController.reset();
-                        if ((state.initialStory! - 1) > 0) {
-                          context.read<StoryBloc>().add(StorySelectedEvent(
-                              initialStory: state.initialStory! - 1,
-                              selected: state.selectedStory!));
-                        } else {
-                          context.read<StoryBloc>().add(StorySelectedEvent(
-                              initialStory: 0, selected: state.selectedStory!));
+
+                      if(LanguageService.rtl)
+                        {
+
+
+                          if (dx < screenWidth * 1 / 2) {
+                            animatedController.stop();
+                            animatedController.reset();
+                            if ((state.initialStory! + 1) >=
+                                state.stories[state.selectedStory!].stories!
+                                    .length) {
+                              GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                                  selected: state.selectedStory!, initialStory: 0));
+                              Navigator.of(context).pop();
+                            } else {
+                              GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                                  selected: state.selectedStory!,
+                                  initialStory: state.initialStory! + 1));
+                            }
+                          } else if (dx > screenWidth * 1 / 2) {
+                            animatedController.stop();
+
+                            animatedController.reset();
+                            if ((state.initialStory! - 1) > 0) {
+                              context.read<StoryBloc>().add(StorySelectedEvent(
+                                  initialStory: state.initialStory! - 1,
+                                  selected: state.selectedStory!));
+                            } else {
+                              context.read<StoryBloc>().add(StorySelectedEvent(
+                                  initialStory: 0, selected: state.selectedStory!));
+                            }
+                          }
+                        }
+                      else{
+
+                        if (dx > screenWidth * 1 / 2) {
+                          animatedController.stop();
+                          animatedController.reset();
+                          if ((state.initialStory! + 1) >=
+                              state.stories[state.selectedStory!].stories!
+                                  .length) {
+                            GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                                selected: state.selectedStory!, initialStory: 0));
+                            Navigator.of(context).pop();
+                          } else {
+                            GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                                selected: state.selectedStory!,
+                                initialStory: state.initialStory! + 1));
+                          }
+                        } else if (dx < screenWidth * 1 / 2) {
+                          animatedController.stop();
+
+                          animatedController.reset();
+                          if ((state.initialStory! - 1) > 0) {
+                            context.read<StoryBloc>().add(StorySelectedEvent(
+                                initialStory: state.initialStory! - 1,
+                                selected: state.selectedStory!));
+                          } else {
+                            context.read<StoryBloc>().add(StorySelectedEvent(
+                                initialStory: 0, selected: state.selectedStory!));
+                          }
                         }
                       }
+
+
+
+
+
+
+                      ;
+
                     },
                     child: PageView.builder(
                       physics: const NeverScrollableScrollPhysics(),

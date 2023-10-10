@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
-
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,9 +15,12 @@ import 'package:trydos/features/story/helper_functions/check_showing_stories.dar
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection.dart';
 import 'package:trydos/features/story/presentation/widget/story_item_widget.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 
+import '../../../../common/helper/camera_screen.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
@@ -46,7 +49,7 @@ class StoriesList extends StatelessWidget {
                   Expanded(
                       child: SizedBox(
                           width: 110,
-                          height: 190,
+                          height: 200,
                           child: ListView.separated(
                               controller: listViewController,
                               itemBuilder: (context, index) {
@@ -58,7 +61,7 @@ class StoriesList extends StatelessWidget {
                                     padding:
                                     const EdgeInsetsDirectional
                                         .only(
-                                        top: 18.0, bottom: 18),
+                                        top: 23.0, bottom: 23),
                                     child: SizedBox(
                                       width: 100,
                                       height: 100,
@@ -86,32 +89,85 @@ class StoriesList extends StatelessWidget {
                                           } else {
 //                                                      Fluttertoast.showToast(
 //                                                          msg: 'vessrify');
+showDialog(context: context, builder:(BuildContext context){
 
-                                            AssetEntity? assetEntity =
-                                            await HelperFunctions
-                                                .getAssetFromCamera(
-                                                context);
 
-                                            if (assetEntity != null) {
-                                              File file =
-                                              (await assetEntity
-                                                  .originFile)!;
-                                              String mimeStr =
-                                                  lookupMimeType(file
-                                                      .absolute
-                                                      .path) ??
-                                                      '';
-                                              var fileType =
-                                              mimeStr.split('/');
+  return AlertDialog(
+//    title: Text('choose'),
+    content: Text(LocaleKeys.choose_photo_or_video_from_gallery_or_camera.tr()),
+    actions: [
+
+Row(
+
+  mainAxisAlignment: MainAxisAlignment.spaceAround,
+  children: [      TextButton(
+    onPressed: ()async {
+
+      List<CameraDescription> cameras = [];
+      cameras = await availableCameras();
+      File? selectedFile=  await Navigator.push<File>(
+        context,
+        MaterialPageRoute(builder: (context) => CameraScreen(cameras)),
+      );
+
+      if(selectedFile!=null)
+      { GetIt.I<StoryBloc>().add(
+          UploadStoryEvent(
+              selectedFile));}
+      Navigator.of(context).pop();
+    },
+    child: Text(LocaleKeys.camera.tr()),
+  ),
+    TextButton(
+      onPressed: ()async {
+
+
+
+        AssetEntity? assetEntity =
+        await HelperFunctions
+            .getAssetFromCamera(
+            context);
+
+        if (assetEntity != null) {
+          File file =
+          (await assetEntity
+              .originFile)!;
+          String mimeStr =
+              lookupMimeType(file
+                  .absolute
+                  .path) ??
+                  '';
+          var fileType =
+          mimeStr.split('/');
 //                                                        Fluttertoast.showToast(
 //                                                            msg: file
 //                                                                .absolute.path,
 //                                                            backgroundColor:
 //                                                                Colors.yellow);
-                                              GetIt.I<StoryBloc>().add(
-                                                  UploadStoryEvent(
-                                                      file));
-                                            }
+          GetIt.I<StoryBloc>().add(
+              UploadStoryEvent(
+                  file));
+
+        }
+        Navigator.of(context).pop();
+
+
+
+
+
+
+
+      },
+      child: Text(LocaleKeys.gallery.tr()),
+    ),
+  ],
+)
+
+    ],
+  );
+
+});
+
                                           }
                                         },
                                       ),
@@ -206,12 +262,12 @@ class StoriesList extends StatelessWidget {
   }
 }
 
-Future<Uint8List> generateThumbnail(String videoPath) async {
-  final uint8list = await VideoThumbnail.thumbnailData(
-    video: videoPath,
-    imageFormat: ImageFormat.PNG,
-    maxWidth: 1280,
-    quality: 100,
-  );
-  return uint8list!;
-}
+//Future<Uint8List> generateThumbnail(String videoPath) async {
+//  final uint8list = await VideoThumbnail.thumbnailData(
+//    video: videoPath,
+//    imageFormat: ImageFormat.PNG,
+//    maxWidth: 1280,
+//    quality: 100,
+//  );
+//  return uint8list!;
+//}
