@@ -1,17 +1,13 @@
 import 'dart:io';
-
 import 'package:contacts_service/contacts_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:trydos/common/constant/countries.dart';
-import 'package:trydos/common/helper/camera_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
-import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -173,20 +169,6 @@ class HelperFunctions {
     }
   }
 
-  static Future<AssetEntity?> _pickFromCamera(BuildContext c) {
-    CameraPickerTextDelegate textDelegate = LanguageService.languageCode != 'ar'
-        ? const EnglishCameraPickerTextDelegate()
-        : const ArabicCameraPickerTextDelegate();
-    return CameraPicker.pickFromCamera(
-      c,
-      locale: LanguageService.currentLanguage,
-      pickerConfig: CameraPickerConfig(
-        resolutionPreset: ResolutionPreset.high,
-        enableRecording: true,
-        textDelegate: textDelegate,
-      ),
-    );
-  }
 
   static String replaceArabicNumber(String input) {
     const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
