@@ -242,8 +242,9 @@ class Story {
   bool? isSeen;
   int? viewersCount;
   List<dynamic>? media;
-
+  bool isInitialStory;
   Story({
+    this.isInitialStory=false,
     this.id,
     this.cutVideoName,
     this.cutVideoPath,
@@ -261,6 +262,7 @@ class Story {
   });
 
   Story copyWith({
+    bool? isInitialStory,
     int? id,
     dynamic cutVideoName,
     dynamic cutVideoPath,
@@ -277,6 +279,7 @@ class Story {
     List<dynamic>? media,
   }) =>
       Story(
+        isInitialStory: isInitialStory??this.isInitialStory,
         id: id ?? this.id,
         cutVideoName: cutVideoName ?? this.cutVideoName,
         cutVideoPath: cutVideoPath ?? this.cutVideoPath,
