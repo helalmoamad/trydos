@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/core/data/repository/prefs_repository_impl.dart';
+import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/story/helper_functions/check_showing_stories.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
@@ -18,10 +19,6 @@ import 'package:trydos/features/story/presentation/widget/story_item_widget.dart
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
-import 'package:wechat_camera_picker/wechat_camera_picker.dart';
-
-import '../../../../common/helper/camera_screen.dart';
-import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
 import '../../../authentication/presentation/pages/first_registeration_page.dart';
@@ -98,82 +95,29 @@ class StoriesList extends StatelessWidget {
                                                           context: context,
                                                           builder: (BuildContext
                                                               context) {
-                                                            return AlertDialog(
-//    title: Text('choose'),
-                                                              content: Text(
-                                                                  LocaleKeys
-                                                                      .choose_photo_or_video_from_gallery_or_camera
-                                                                      .tr()),
-                                                              actions: [
-                                                                Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceAround,
-                                                                  children: [
-                                                                    TextButton(
-                                                                      onPressed:
-                                                                          () async {
-                                                                        List<CameraDescription>
-                                                                            cameras =
-                                                                            [];
-                                                                        cameras =
-                                                                            await availableCameras();
-                                                                        File?
-                                                                            selectedFile =
-                                                                            await Navigator.push<File>(
-                                                                          context,
-                                                                          MaterialPageRoute(
-                                                                              builder: (context) => CameraScreen(cameras)),
-                                                                        );
-
-                                                                        if (selectedFile !=
-                                                                            null) {
-                                                                          GetIt.I<StoryBloc>()
-                                                                              .add(UploadStoryEvent(selectedFile));
-                                                                        }
-                                                                        Navigator.of(context)
-                                                                            .pop();
-                                                                      },
-                                                                      child: Text(LocaleKeys
-                                                                          .camera
-                                                                          .tr()),
-                                                                    ),
-                                                                    TextButton(
-                                                                      onPressed:
-                                                                          () async {
-                                                                        AssetEntity?
-                                                                            assetEntity =
-                                                                            await HelperFunctions.getAssetFromCamera(context);
-
-                                                                        if (assetEntity !=
-                                                                            null) {
-                                                                          File
-                                                                              file =
-                                                                              (await assetEntity.originFile)!;
-                                                                          String
-                                                                              mimeStr =
-                                                                              lookupMimeType(file.absolute.path) ?? '';
-                                                                          var fileType =
-                                                                              mimeStr.split('/');
-//                                                        Fluttertoast.showToast(
-//                                                            msg: file
-//                                                                .absolute.path,
-//                                                            backgroundColor:
-//                                                                Colors.yellow);
-                                                                          GetIt.I<StoryBloc>()
-                                                                              .add(UploadStoryEvent(file));
-                                                                        }
-                                                                        Navigator.of(context)
-                                                                            .pop();
-                                                                      },
-                                                                      child: Text(LocaleKeys
-                                                                          .gallery
-                                                                          .tr()),
-                                                                    ),
-                                                                  ],
-                                                                )
-                                                              ],
-                                                            );
+                                                            return GalleryAndCameraDialogWidget(
+                                                                onChooseFileFromCameraAction:
+                                                                    (File?
+                                                                        file) {
+                                                              if (file !=
+                                                                  null) {
+                                                                GetIt.I<StoryBloc>().add(
+                                                                    UploadStoryEvent(
+                                                                        file));
+                                                              }
+                                                            }, onChooseFileFromGalleryAction:
+                                                                    (AssetEntity?
+                                                                        assetEntity) async {
+                                                              if (assetEntity !=
+                                                                  null) {
+                                                                File file =
+                                                                    (await assetEntity
+                                                                        .originFile)!;
+                                                                GetIt.I<StoryBloc>().add(
+                                                                    UploadStoryEvent(
+                                                                        file));
+                                                              }
+                                                            });
                                                           });
                                                     }
                                                   },
