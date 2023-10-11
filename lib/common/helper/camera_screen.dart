@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,21 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen>
     with WidgetsBindingObserver {
+  //todo start timer for recording video
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _seconds++;
+      });
+    });
+  }
+
+  void _resetTimer() {
+    setState(() {
+      _seconds = 0;
+    });
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final CameraController? cameraController = controller;
@@ -35,6 +51,8 @@ class _CameraScreenState extends State<CameraScreen>
 
   @override
   void dispose() {
+    _timer.cancel();
+
     controller?.dispose();
     super.dispose();
   }
@@ -48,6 +66,9 @@ class _CameraScreenState extends State<CameraScreen>
     super.initState();
   }
 
+//todo timer for recording video
+  late Timer _timer;
+  int _seconds = 0;
   bool _isVideoCameraSelected = false;
   bool _isRecordingInProgress = false;
 
@@ -226,15 +247,12 @@ class _CameraScreenState extends State<CameraScreen>
                                 setState(() {
                                   _isCameraInitialized = false;
                                   _isRearCameraSelected =
-                                    !_isRearCameraSelected;
-
+                                      !_isRearCameraSelected;
                                 });
 
                                 onNewCameraSelected(
-                                  widget.cameras[_isRearCameraSelected ? 0: 1],
+                                  widget.cameras[_isRearCameraSelected ? 0 : 1],
                                 );
-
-
                               },
                               child: Stack(
                                 alignment: Alignment.center,
@@ -255,34 +273,43 @@ class _CameraScreenState extends State<CameraScreen>
                               ),
                             ),
                             _isVideoCameraSelected
-                                ? InkWell(
-                                    onTap: () async {
-                                      if (_isRecordingInProgress) {
-                                        XFile? rawVideo =
-                                            await stopVideoRecording();
-                                        File videoFile = File(rawVideo!.path);
+                                ? Row(
+                                    children: [
+                                      Padding(
+                                          padding: EdgeInsetsDirectional.only(
+                                              start: 10),
+                                          child: Text('0 : $_seconds',style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.bold),)),
+                                      InkWell(
+                                        onTap: () async {
+                                          if (_isRecordingInProgress) {
+                                            _resetTimer();
+                                            XFile? rawVideo =
+                                                await stopVideoRecording();
+                                            File videoFile =
+                                                File(rawVideo!.path);
 
-                                        Navigator.pop(context, videoFile);
-
-                                      } else {
-                                        await startVideoRecording();
-                                      }
-                                    },
-                                    child: _isRecordingInProgress
+                                            Navigator.pop(context, videoFile);
+                                          } else {
+                                            await startVideoRecording();
+                                          }
+                                        },
+                                        child : _isRecordingInProgress
                                         ? Icon(
-                                            Icons.circle,
-                                            color: _isVideoCameraSelected
-                                                ? Colors.white
-                                                : Colors.white38,
-                                            size: 80,
-                                          )
-                                        : Icon(
-                                            Icons.circle,
-                                            color: _isVideoCameraSelected
-                                                ? Colors.red
-                                                : Colors.white,
-                                            size: 65,
-                                          ),
+                                        Icons.circle,
+                                        color: _isVideoCameraSelected
+                                            ? Colors.white
+                                            : Colors.white38,
+                                        size: 80,
+                                      )
+            : Icon(
+        Icons.circle,
+        color: _isVideoCameraSelected
+            ? Colors.red
+            : Colors.white,
+        size: 65,
+      ),
+                                      )
+                                    ],
                                   )
                                 : InkWell(
                                     onTap: () async {
@@ -487,6 +514,7 @@ class _CameraScreenState extends State<CameraScreen>
     }
     try {
       await cameraController!.startVideoRecording();
+      _startTimer();
       setState(() {
         _isRecordingInProgress = true;
         print(_isRecordingInProgress);
