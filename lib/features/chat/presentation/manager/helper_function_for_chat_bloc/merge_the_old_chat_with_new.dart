@@ -28,7 +28,7 @@ MergeOldMessageWithNew(
     int lastPrevIndex = 0;
           currMessages = List.of(chat.messages ?? []);
           for(int i=0;i<currMessages.length  && lastPrevIndex < prevMessages.length; i++){
-            if( currMessages[i].id == prevMessages[lastPrevIndex].id || currMessages[i].id == prevMessages[lastPrevIndex].localId){
+            if( currMessages[i].id == prevMessages[lastPrevIndex].id || currMessages[i].id == prevMessages[lastPrevIndex].localId || int.tryParse(prevMessages[lastPrevIndex].id.toString())==null){
               resultMessages.add( prevMessages[lastPrevIndex]);
               lastPrevIndex++;
             }else {

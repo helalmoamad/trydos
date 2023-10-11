@@ -57,7 +57,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
                 getHomeSectionsStatus: GetHomeSectionsStatus.failure)),
             (r) {
               if(state.getMainCategoriesStatus == GetMainCategoriesStatus.success){
-                requestAPIAfterHome();
+                requestAPIAfterHome(GetIt.I<AuthBloc>().state.registerGuestStatus == RegisterGuestStatus.init);
               }
           emit(state.copyWith(
               getHomeSectionsStatus: GetHomeSectionsStatus.success));
@@ -91,14 +91,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
                 getMainCategoriesStatus: GetMainCategoriesStatus.failure)),
             (r) {
           if (state.getHomeSectionsStatus == GetHomeSectionsStatus.success) {
-            requestAPIAfterHome();
+            requestAPIAfterHome(GetIt.I<AuthBloc>().state.registerGuestStatus == RegisterGuestStatus.init);
           }
           emit(state.copyWith(
               getMainCategoriesStatus: GetMainCategoriesStatus.success));
         });
   }
 
-  void requestAPIAfterHome() {
+  void requestAPIAfterHome(bool requestStartingSettings) {
     if(prefsRepository.marketToken != null) {
       GetIt.I<AuthBloc>().add(GetCustomerInfoEvent());
       add(GetStartingSettingsEvent());
