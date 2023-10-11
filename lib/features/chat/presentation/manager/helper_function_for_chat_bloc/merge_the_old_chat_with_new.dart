@@ -26,15 +26,15 @@ MergeOldMessageWithNew(
     }
     resultMessages=[];
     int lastPrevIndex = 0;
-          currMessages = List.of(chat.messages ?? []);
-          for(int i=0;i<currMessages.length  && lastPrevIndex < prevMessages.length; i++){
-            if( currMessages[i].id == prevMessages[lastPrevIndex].id || currMessages[i].id == prevMessages[lastPrevIndex].localId || int.tryParse(prevMessages[lastPrevIndex].id.toString())==null){
-              resultMessages.add( prevMessages[lastPrevIndex]);
-              lastPrevIndex++;
-            }else {
-              resultMessages.add(currMessages[i]);
-            }
-          }
+    currMessages = List.of(chat.messages ?? []);
+    for( lastPrevIndex ; lastPrevIndex< prevMessages.length ;lastPrevIndex++){
+      if(prevMessages[lastPrevIndex].id == currMessages[0].id)break;
+      resultMessages.add( prevMessages[lastPrevIndex++]);
+    }
+    resultMessages.addAll(currMessages);
+    while(prevMessages[lastPrevIndex].id != currMessages[currMessages.length-1].id && lastPrevIndex<prevMessages.length){
+      lastPrevIndex++;
+    }
           for(int i= lastPrevIndex ; i< prevMessages.length ;i++){
             resultMessages.add( prevMessages[i]);
           }
