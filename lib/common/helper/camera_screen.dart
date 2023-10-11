@@ -98,6 +98,7 @@ class _CameraScreenState extends State<CameraScreen>
     final CameraController cameraController = CameraController(
       cameraDescription,
       currentResolutionPreset,
+
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 

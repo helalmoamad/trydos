@@ -41,6 +41,7 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (context) => CameraScreen(cameras)),
                 );
+                print('file path ${selectedFile!.path}');
                   onChooseFileFromCameraAction.call(selectedFile);
                 Navigator.of(context)
                     .pop();
