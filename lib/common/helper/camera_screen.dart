@@ -139,6 +139,7 @@ class _CameraScreenState extends State<CameraScreen>   with WidgetsBindingObserv
             width: double.infinity,height:MediaQuery.sizeOf(context).height*0.9,
 //        aspectRatio: 1 / controller!.value.aspectRatio,
             child: Stack(children:[
+              //todo show a live camera
               controller!.buildPreview(),
 
 //todo drop down item list for resolution
