@@ -99,8 +99,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   void requestAPIAfterHome() {
-    GetIt.I<AuthBloc>().add(GetCustomerInfoEvent());
-    add(GetStartingSettingsEvent());
+    if(prefsRepository.marketToken != null) {
+      GetIt.I<AuthBloc>().add(GetCustomerInfoEvent());
+      add(GetStartingSettingsEvent());
+    }
     if (prefsRepository.chatToken != null) {
       GetIt.I<ChatBloc>().add(GetChatsEvent());
     }

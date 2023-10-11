@@ -9,6 +9,9 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_page.dart';
+import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
+import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
+import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/theme_state.dart';
 import '../../../routes/router.dart';
@@ -235,6 +238,10 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               ),
               Expanded(
                 child: InkWell(
+                  onLongPress: () {
+                    context.go(GRouter
+                        .config.applicationRoutes.kSharedPreferencePagePath);
+                  },
                   onTap: () => appBloc.add(ChangeBasePage(1)),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -266,8 +273,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                 child: InkWell(
                   onTap: () {
                     if (prefsRepository.isVerifiedPhone != true) {
-                      context.go(GRouter.config.applicationRoutes.kRegistrationPagePath);
-                    }else{
+                      context.go(GRouter
+                          .config.applicationRoutes.kRegistrationPagePath);
+                    } else {
                       appBloc.add(ChangeBasePage(2));
                     }
                   },
@@ -299,12 +307,66 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               ),
               Expanded(
                 child: InkWell(
-                  onLongPress: (){
-                    context.go(GRouter.config.applicationRoutes.kFeedBackPagePath);
+                  onLongPress: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: Text('Dev tools'),
+                            actions: [
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  FeedBackScreen(showRequests: true,)));
+                                    },
+                                    child: Text('requests'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  SharedPreferencePage()));
+                                    },
+                                    child: Text('shared preferences'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  FeedBackScreen(showRequests: false,)));
+                                    },
+                                    child: Text('flutter errors'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) => FilesExistPage()));
+                                    },
+                                    child: Text('files exists'),
+                                  ),
+                                ],
+                              )
+                            ],
+                          );
+                        });
                   },
                   onTap: () {
                     appBloc.add(ChangeBasePage(0));
-                    context.go(GRouter.config.applicationRoutes.kRegistrationPage);
+                    context
+                        .go(GRouter.config.applicationRoutes.kRegistrationPage);
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

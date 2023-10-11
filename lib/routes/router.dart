@@ -14,6 +14,7 @@ import '../features/authentication/presentation/pages/already_exist_account.dart
 import '../features/authentication/presentation/pages/number_not_registered.dart';
 import '../features/chat/presentation/pages/chat_pages.dart';
 import '../features/chat/presentation/pages/contacts_page.dart';
+import '../features/feed_back/presentation/pages/shared_preference_page.dart';
 import 'error_screen.dart';
 import 'router_config.dart';
 
@@ -143,15 +144,6 @@ class GRouter {
                       );
                     }),
               ]
-            ),
-            GoRoute(
-              path: _config.applicationRoutes.kFeedBackPageName,
-              pageBuilder: (BuildContext context, GoRouterState state) {
-                return _builderPage(
-                  child: FeedBackScreen(),
-                  state: state,
-                );
-              },
             ),
             GoRoute(
               path: _config.applicationRoutes.kMyContactsPageName,

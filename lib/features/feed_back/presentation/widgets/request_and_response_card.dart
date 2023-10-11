@@ -14,7 +14,6 @@ class RequestAndResponseCard extends StatelessWidget {
   const RequestAndResponseCard({Key? key, required this.data})
       : super(key: key);
   final Map<String, dynamic> data;
-
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(

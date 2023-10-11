@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
-import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/domain/use_cases/register_guest_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/send_otp_usecase.dart';
@@ -15,9 +13,13 @@ import 'package:trydos/features/authentication/domain/use_cases/update_name_usec
 import 'package:trydos/features/authentication/domain/use_cases/verify_guest_phone_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_signin_usecase.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
+import '../../../home/presentation/manager/home_event.dart';
+import '../../../story/presentation/bloc/story_bloc.dart';
 import '../../../story/presentation/bloc/story_bloc.dart';
 import '../../data/models/verify_otp_sign_up_and_in_response_model.dart';
 import '../../domain/use_cases/create_user_usecase.dart';
@@ -187,7 +189,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-
 //todo _onLoginToStoriesEvent
   FutureOr<void> _onLoginToStoriesEvent(
       LoginToStoriesEvent event, Emitter<AuthState> emit) async {
@@ -211,6 +212,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setStoriesToken(token!);
           _prefsRepository.setMyStoriesId(id!);
         }
+        GetIt.I<StoryBloc>().add(GetStoryEvent());
       },
     );
   }
@@ -255,13 +257,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           otp: event.otp,
           name: event.name),
     );
-    response.fold(
-        (l) {
-          _prefsRepository.setOtpCode(event.otp);
-          emit(state.copyWith(
-            verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
-            signUpErrorMessage: l.message));
-          }, (r) {
+    response.fold((l) {
+      _prefsRepository.setOtpCode(event.otp);
+      emit(state.copyWith(
+          verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
+          signUpErrorMessage: l.message));
+    }, (r) {
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       print('isNumberVerifiedFromSignUp:  ${r.data!.user!.isPhoneVerified}');
@@ -304,6 +305,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           registerGuestStatus: RegisterGuestStatus.success,
           marketUser: r.data!.user));
     });
+    GetIt.I<HomeBloc>().add(GetStartingSettingsEvent());
   }
 
   FutureOr<void> _onUpdateNameEvent(

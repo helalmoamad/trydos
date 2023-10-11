@@ -10,17 +10,22 @@ import '../../../app/app_elvated_button.dart';
 import '../widgets/request_and_response_card.dart';
 import '../widgets/search_app_bar.dart';
 class FeedBackScreen extends StatelessWidget {
-  FeedBackScreen({Key? key}) : super(key: key);
+  FeedBackScreen({Key? key , required this.showRequests}) : super(key: key);
   static String routeName = 'FeedBackScreen';
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   late List<Map<String, dynamic>> data ;
   List<Map<String, dynamic>> searchedData = [];
   ValueNotifier<bool> rebuild = ValueNotifier(false);
-
+  final bool showRequests ;
   @override
   Widget build(BuildContext context) {
     data= _prefsRepository.getRequestsData();
     searchedData.addAll(data);
+    if(showRequests){
+      searchedData.removeWhere((element) => element.containsKey('flutter_error'));
+    }else{
+      searchedData.removeWhere((element) => !element.containsKey('flutter_error'));
+    }
     return Scaffold(
       backgroundColor: context.colorScheme.background,
       appBar: PreferredSize(
@@ -29,6 +34,11 @@ class FeedBackScreen extends StatelessWidget {
             onSearch: (String searchText) {
               if (searchText.isEmpty) {
                 searchedData.addAll(data);
+                if(showRequests){
+                  searchedData.removeWhere((element) => element.containsKey('flutter_error'));
+                }else{
+                  searchedData.removeWhere((element) => !element.containsKey('flutter_error'));
+                }
                 rebuild.value = !rebuild.value;
                 return;
               }
@@ -43,6 +53,11 @@ class FeedBackScreen extends StatelessWidget {
                 });
                 if (text.trim().contains(searchText.toLowerCase())) {
                   searchedData.add(element);
+                }
+                if(showRequests){
+                  searchedData.removeWhere((element) => element.containsKey('flutter_error'));
+                }else{
+                  searchedData.removeWhere((element) => !element.containsKey('flutter_error'));
                 }
               }
               rebuild.value = !rebuild.value;
