@@ -26,5 +26,7 @@ class _ApplicationRoutes{
   final String kRegistrationCompletedPage = '/RegistrationCompletedPage';
   final String kFeedBackPageName = 'FeedBackPage';
   final String kFeedBackPagePath = '/BasePage/FeedBackPage';
+  final String kSharedPreferencePageName = 'SharedPreferencePage';
+  final String kSharedPreferencePagePath = '/BasePage/SharedPreferencePage';
 }
 

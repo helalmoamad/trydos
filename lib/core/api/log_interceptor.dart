@@ -32,6 +32,8 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n timeout: ${options.connectTimeout! ~/ 1000}s",
       );
     }
+    _prefsRepository.saveRequestsData(options.path, options.data, options.headers, null, options.method, options.queryParameters, options.data);
+
     handler.next(options);
   }
 
@@ -61,7 +63,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n Data: ${response.data}",
       );
     }
-    _prefsRepository.saveRequestsData(response.requestOptions.path, response.data, response.headers.map, response.statusCode, response.requestOptions.method, response.requestOptions.queryParameters, response.data);
+    _prefsRepository.saveRequestsData(response.requestOptions.path, response.data, response.requestOptions.headers, response.statusCode, response.requestOptions.method, response.requestOptions.queryParameters, response.data);
 
     handler.next(response);
   }
