@@ -26,7 +26,6 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_mes
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_messge.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_me_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/video_message.dart';
-import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
@@ -586,7 +585,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                         currentScrolledIndex ==
                                                                 index
                                                             ? Colors
-                                                                .grey.shade100
+                                                                .black12.withOpacity(0.05)
                                                             : null,
                                                     child: getTheMessageWidget(
                                                       message: messages[index],
@@ -861,19 +860,18 @@ class _SinglePageChatState extends State<SinglePageChat> {
           channelId: widget.chatId));
       return;
     }
-    currentScrolledIndex = index;
-    print('it called for scrolling!!!!!! $index');
-    autoScrollController.highlight(index);
     autoScrollController
         .scrollToIndex(index,
             duration: duration ?? const Duration(milliseconds: 50),
             preferPosition: preferPosition ?? AutoScrollPosition.middle)
         .then((value) {
-      currentScrolledIndex = -1;
+      currentScrolledIndex = index;
+      rebuildMessage.value = index;
       Future.delayed(
-        Duration(milliseconds: 300),
+        Duration(milliseconds: 800),
         () {
-          rebuildMessage.value = index;
+          currentScrolledIndex=-1;
+          rebuildMessage.value = -1;
         },
       );
     });
