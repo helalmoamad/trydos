@@ -1,11 +1,9 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import '../../../common/constant/configuration/chat_url_routes.dart';
-import '../../common/helper/show_message.dart';
 import '../../enums/status_code_type.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'api.dart';
@@ -32,7 +30,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n timeout: ${options.connectTimeout! ~/ 1000}s",
       );
     }
-    _prefsRepository.saveRequestsData(options.path, options.data, options.headers, null, options.method, options.queryParameters, options.data);
+    _prefsRepository.saveRequestsData(options.path, options.data is! FormData ? options.data : {'data' : 'formData'}, options.headers, null, options.method, options.queryParameters, options.data is! FormData ? options.data : {'data' : 'formData'});
 
     handler.next(options);
   }
@@ -63,7 +61,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n Data: ${response.data}",
       );
     }
-    _prefsRepository.saveRequestsData(response.requestOptions.path, response.data, response.requestOptions.headers, response.statusCode, response.requestOptions.method, response.requestOptions.queryParameters, response.data);
+    _prefsRepository.saveRequestsData(response.requestOptions.path, response.data is! FormData ? response.data : {'data' : 'formData'}, response.requestOptions.headers, response.statusCode, response.requestOptions.method, response.requestOptions.queryParameters, response.data is! FormData ? response.data : {'data' : 'formData'});
 
     handler.next(response);
   }

@@ -24,7 +24,6 @@ class UploadStoryUseCase extends UseCase<UploadStoryResponseModel , UploadStoryP
 
 
       final Map<String,dynamic>   map=await params.map();
-//      Fluttertoast.showToast(msg: 'mimme',textColor: Colors.blue);
       return repository.uploadStory(map);
 
 
@@ -39,10 +38,8 @@ class UploadStoryParams{
     String fileName = file.path.split('/').last;
     String mimeType = mime(fileName) ?? '';
     String mimee = mimeType.split('/')[0];
-//    Fluttertoast.showToast(msg:mimee,backgroundColor: Colors.red);
     int checkWitherVideoOrNot=mimee=='image'?0:1;
     String type = mimeType.split('/')[1];
-//    Fluttertoast.showToast(msg:file.path,backgroundColor: Colors.blue);
 
     return {
       'data': FormData.fromMap(

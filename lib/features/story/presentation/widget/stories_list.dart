@@ -89,8 +89,7 @@ class StoriesList extends StatelessWidget {
                                                           .applicationRoutes
                                                           .kRegistrationPage);
                                                     } else {
-//                                                      Fluttertoast.showToast(
-//                                                          msg: 'vessrify');
+//
                                                       showDialog(
                                                           context: context,
                                                           builder: (BuildContext
