@@ -15,7 +15,9 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen>
-    with WidgetsBindingObserver {
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+  late AnimationController animatedController;
+
   //todo start timer for recording video
   void _startTimer() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -62,6 +64,10 @@ class _CameraScreenState extends State<CameraScreen>
 // Hide the status bar
 //    SystemChrome.setEnabledSystemUIOverlays([]);
 //;
+    animatedController = AnimationController(vsync: this);
+    animatedController.stop();
+    animatedController.reset();
+    animatedController.duration = const Duration(seconds: 60);
     onNewCameraSelected(widget.cameras[0]);
     super.initState();
   }
@@ -98,7 +104,6 @@ class _CameraScreenState extends State<CameraScreen>
     final CameraController cameraController = CameraController(
       cameraDescription,
       currentResolutionPreset,
-
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
@@ -279,36 +284,57 @@ class _CameraScreenState extends State<CameraScreen>
                                       Padding(
                                           padding: EdgeInsetsDirectional.only(
                                               start: 10),
-                                          child: Text('0 : $_seconds',style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.bold),)),
-                                      InkWell(
-                                        onTap: () async {
+                                          child: Text(
+                                            '0 : $_seconds',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold),
+                                          )),
+                                      GestureDetector(
+                                        onLongPress: () async {
+                                          animatedController.forward();
+                                          await startVideoRecording();
+                                        },
+                                        onLongPressUp: () async {
                                           if (_isRecordingInProgress) {
-                                            _resetTimer();
+                                            animatedController.stop();
+                                            // _resetTimer();
                                             XFile? rawVideo =
                                                 await stopVideoRecording();
                                             File videoFile =
                                                 File(rawVideo!.path);
 
                                             Navigator.pop(context, videoFile);
-                                          } else {
-                                            await startVideoRecording();
                                           }
                                         },
-                                        child : _isRecordingInProgress
-                                        ? Icon(
-                                        Icons.circle,
-                                        color: _isVideoCameraSelected
-                                            ? Colors.white
-                                            : Colors.white38,
-                                        size: 80,
-                                      )
-            : Icon(
-        Icons.circle,
-        color: _isVideoCameraSelected
-            ? Colors.red
-            : Colors.white,
-        size: 65,
-      ),
+                                        child: Container(
+                                          width: 75,
+                                          height: 75,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.white24,
+                                            // borderRadius: BorderRadius.circular(20)
+                                          ),
+                                          // width: 120,
+                                          // height: 90,
+                                          // color: Colors.amber,
+                                          child: LayoutBuilder(
+                                            builder: (context,
+                                                BoxConstraints constraints) {
+                                              return AnimatedBuilder(
+                                                animation: animatedController,
+                                                builder: (context, child) {
+                                                  return CircularProgressIndicator(
+                                                    color: Colors.red,
+                                                    value: animatedController
+                                                        .value,
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ),
                                       )
                                     ],
                                   )

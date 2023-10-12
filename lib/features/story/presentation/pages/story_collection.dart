@@ -169,7 +169,12 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
 
                           if (state.selectedStoriesStatus ==
                               SelectedStoriesStatus.loading)
-                            return CircularProgressIndicator();
+                            return SizedBox(
+
+                                height: 40,
+                                width: 40,
+                                child
+                                : CircularProgressIndicator());
                           else {
                             animatedController.duration =
                                 const Duration(seconds: 4);
