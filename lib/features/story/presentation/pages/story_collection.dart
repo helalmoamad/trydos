@@ -3,6 +3,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../config/theme/typography.dart';
 import 'package:trydos/service/language_service.dart';
+
 //import 'package:dartz/dartz_streaming.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -82,7 +83,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
 //          Text('${state.selectedStoriesStatus}'),
 //          state.selectedStoriesStatus==SelectedStoriesStatus.success?Text('${state.imageDetail!.width}'):Text('data')
 
-                () {
+            () {
               switch (state.getStoriesStatus) {
                 case GetStoriesStatus.success:
                   return GestureDetector(
@@ -93,11 +94,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                           MediaQuery.of(context).size.width;
                       final double dx = details.globalPosition.dx;
 
-
-                      if(LanguageService.rtl)
-                      {
-
-
+                      if (LanguageService.rtl) {
                         if (dx < screenWidth * 1 / 2) {
                           animatedController.stop();
                           animatedController.reset();
@@ -105,7 +102,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                               state.stories[state.selectedStory!].stories!
                                   .length) {
                             GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                                selected: state.selectedStory!, initialStory: 0));
+                                selected: state.selectedStory!,
+                                initialStory: 0));
                             Navigator.of(context).pop();
                           } else {
                             GetIt.I<StoryBloc>().add(StorySelectedEvent(
@@ -122,12 +120,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                                 selected: state.selectedStory!));
                           } else {
                             context.read<StoryBloc>().add(StorySelectedEvent(
-                                initialStory: 0, selected: state.selectedStory!));
+                                initialStory: 0,
+                                selected: state.selectedStory!));
                           }
                         }
-                      }
-                      else{
-
+                      } else {
                         if (dx > screenWidth * 1 / 2) {
                           animatedController.stop();
                           animatedController.reset();
@@ -135,7 +132,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                               state.stories[state.selectedStory!].stories!
                                   .length) {
                             GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                                selected: state.selectedStory!, initialStory: 0));
+                                selected: state.selectedStory!,
+                                initialStory: 0));
                             Navigator.of(context).pop();
                           } else {
                             GetIt.I<StoryBloc>().add(StorySelectedEvent(
@@ -152,18 +150,13 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                                 selected: state.selectedStory!));
                           } else {
                             context.read<StoryBloc>().add(StorySelectedEvent(
-                                initialStory: 0, selected: state.selectedStory!));
+                                initialStory: 0,
+                                selected: state.selectedStory!));
                           }
                         }
                       }
 
-
-
-
-
-
                       ;
-
                     },
                     child: PageView.builder(
                       physics: const NeverScrollableScrollPhysics(),
@@ -171,19 +164,26 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                       itemBuilder: (context, index) {
 //todo check whether photo or video and start processing
                         if (state.stories[state.selectedStory!]
-                            .stories![state.initialStory!].isPhoto ==
+                                .stories![state.initialStory!].isPhoto ==
                             1) {
-                          animatedController.duration =
-                          const Duration(seconds: 4);
-                          animatedController.forward();
 
-                          return CachedNetworkImage(
-                            imageUrl: state.stories[state.selectedStory!]
-                                .stories![state.initialStory!].photoPath!,
-                            width: state.imageDetail!.width.toDouble(),
-                            height: state.imageDetail!.height.toDouble(),
-                          );
-                        } else {
+                          if (state.selectedStoriesStatus ==
+                              SelectedStoriesStatus.loading)
+                            return CircularProgressIndicator();
+                          else {
+                            animatedController.duration =
+                                const Duration(seconds: 4);
+                            animatedController.forward();
+
+                          return   CachedNetworkImage(
+                              imageUrl: state.stories[state.selectedStory!]
+                                  .stories![state.initialStory!].photoPath!,
+                              width: state.imageDetail!.width.toDouble(),
+                              height: state.imageDetail!.height.toDouble(),
+                            );
+                          }
+                        } else
+                        {
                           _videoController = null;
                           _videoController?.dispose();
                           _videoController = VideoPlayerController.networkUrl(
@@ -193,8 +193,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                                   .fullVideoPath!));
 
                           Future<void> init =
-                          _videoController!.initialize().then((_) {
-
+                              _videoController!.initialize().then((_) {
                             animatedController.duration =
                                 _videoController!.value.duration;
                             _videoController!.play();
@@ -224,7 +223,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                         }
                       },
                       itemCount:
-                      state.stories[state.selectedStory!].stories!.length,
+                          state.stories[state.selectedStory!].stories!.length,
                     ),
                   );
                 case GetStoriesStatus.failure:
@@ -232,7 +231,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                 case GetStoriesStatus.loading:
                   return CircularProgressIndicator();
                 case GetStoriesStatus.init:
-                // TODO: Handle this case.
+                  // TODO: Handle this case.
                   break;
               }
               return Container();
@@ -245,10 +244,13 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                 child: Column(children: <Widget>[
                   Row(
                     children: state.stories[state.selectedStory!].stories!
-                      .map((e) => AnimatedBar(animController: animatedController, position: state.stories[state.selectedStory!].stories!.indexOf(e)))
+                        .map((e) => AnimatedBar(
+                            animController: animatedController,
+                            position: state
+                                .stories[state.selectedStory!].stories!
+                                .indexOf(e)))
                         .toList(),
                   ),
-
                   Align(
                     alignment: Alignment.topLeft,
                     child: Row(children: [
@@ -267,33 +269,36 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20)),
                         child: state.stories[state.selectedStory!].photoPath ==
-                            null
+                                null
                             ? NoImageWidget(
-                            height: 40,
-                            width: 40,
-                            textStyle: context.textTheme.subtitle1?.br
-                                .copyWith(
-                                color: const Color(0xff6638FF),
-                                letterSpacing: 0.18,
-                                height: 1.33),
-                            name:state.stories[state.selectedStory!]
-                                .name==null?'UK':
-                            HelperFunctions.getTheFirstTwoLettersOfName(
-                                state.stories[state.selectedStory!]
-                                    .name!))
+                                height: 40,
+                                width: 40,
+                                textStyle: context.textTheme.subtitle1?.br
+                                    .copyWith(
+                                        color: const Color(0xff6638FF),
+                                        letterSpacing: 0.18,
+                                        height: 1.33),
+                                name: state.stories[state.selectedStory!]
+                                            .name ==
+                                        null
+                                    ? 'UK'
+                                    : HelperFunctions
+                                        .getTheFirstTwoLettersOfName(state
+                                            .stories[state.selectedStory!]
+                                            .name!))
                             : CachedNetworkImage(
-                            placeholder: (context, url) =>
-                                Shimmer.fromColors(
-                                    child: Container(
-                                      width: 40,
-                                      height: 40,
-                                      color: Colors.white,
-                                    ),
-                                    baseColor: Colors.grey,
-                                    highlightColor:
-                                    Color.fromARGB(31, 146, 144, 144)),
-                            imageUrl: state
-                                .stories[state.selectedStory!].photoPath),
+                                placeholder: (context, url) =>
+                                    Shimmer.fromColors(
+                                        child: Container(
+                                          width: 40,
+                                          height: 40,
+                                          color: Colors.white,
+                                        ),
+                                        baseColor: Colors.grey,
+                                        highlightColor:
+                                            Color.fromARGB(31, 146, 144, 144)),
+                                imageUrl: state
+                                    .stories[state.selectedStory!].photoPath),
                       ),
                       Padding(
                         padding: EdgeInsetsDirectional.only(start: 10),
@@ -343,14 +348,14 @@ class AnimatedBar extends StatelessWidget {
                     ),
                     position == state.initialStory
                         ? AnimatedBuilder(
-                      animation: animController,
-                      builder: (context, child) {
-                        return _buildContainer(
-                          constraints.maxWidth * animController.value,
-                          Colors.white,
-                        );
-                      },
-                    )
+                            animation: animController,
+                            builder: (context, child) {
+                              return _buildContainer(
+                                constraints.maxWidth * animController.value,
+                                Colors.white,
+                              );
+                            },
+                          )
                         : const SizedBox.shrink(),
                   ],
                 );

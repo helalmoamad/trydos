@@ -89,8 +89,7 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
 
       print('storiesIds ${GetIt.I<PrefsRepository>().myStoriesId}');
       print('storiesIds ${state.stories.first.id}');
-//      Fluttertoast.showToast(msg: 'storiesIds ${GetIt.I<PrefsRepository>().myStoriesId}',backgroundColor: Colors.blue);
-//      Fluttertoast.showToast(msg: 'storiesIds ${state.stories.first.id}',backgroundColor: Colors.blue);
+
       if (GetIt.I<PrefsRepository>().myStoriesId == state.stories.first.stories![0].userId) {
         List<Story> o = List.of(state.stories.first.stories!);
         o.insert(o.length, r.data!);
@@ -112,27 +111,25 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
 
   _onStorySelectedEvent(
       StorySelectedEvent event, Emitter<StoryState> emit) async {
-    emit(state.copyWith(selectedStoriesStatus: SelectedStoriesStatus.loading));
+    emit(state.copyWith(selectedStoriesStatus: SelectedStoriesStatus.loading,   initialStory: event.initialStory,));
     var initialStory =
     state.stories[event.selected].stories![event.initialStory];
     if (initialStory.isPhoto == 1) {
 //todo debug
-//      Fluttertoast.showToast(msg: 'msg');
       //todo bring the real width and height for selected photo
       final response = await getWidthAndHeightUseCase(
           widthAndHeightParams(url: initialStory.photoPath!));
       response.fold((l) {
         emit(state.copyWith(
+
             selectedStoriesStatus: SelectedStoriesStatus.failure));
       }, (r) {
         //todo debug
-//        Fluttertoast.showToast(msg: '${r.width}');
 //todo make the story seen
 
         state.stories[event.selected].stories![event.initialStory].isSeen =
         true;
 //todo debug
-//        Fluttertoast.showToast(msg:state.stories.length.toString(),backgroundColor: Colors.red );
         emit(state.copyWith(
             selectedStoriesStatus: SelectedStoriesStatus.success,
             stories: state.stories,
