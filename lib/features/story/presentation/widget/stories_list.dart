@@ -43,170 +43,165 @@ class StoriesList extends StatelessWidget {
       return ScrollConfiguration(
         behavior: const CupertinoScrollBehavior(),
         child: //todo the ValueListenableBuilder to control the effect when make longPress on the story and other action
-            ValueListenableBuilder<int>(
-                valueListenable: resizeStories,
-                builder: (context, focused, _) {
-                  return Row(
-                    children: [
-                      Expanded(
-                          child: SizedBox(
-                              width: 110,
-                              height: 200,
-                              child: ListView.separated(
-                                  controller: listViewController,
-                                  itemBuilder: (context, index) {
-                                    if (index == 0) {
-                                      return state.uploadStoryStatus ==
-                                              UploadStoryStatus.loading
-                                          ? TrydosLoader()
-                                          : Padding(
-                                              padding:
-                                                  const EdgeInsetsDirectional
-                                                      .only(
-                                                      top: 23.0, bottom: 23),
-                                              child: SizedBox(
-                                                width: 100,
-                                                height: 100,
-                                                child: InkWell(
-                                                  child: Container(
-                                                    child: Center(
-                                                        child: Text('uplaod')),
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20.0),
-                                                      color: Colors.grey,
-                                                    ),
-                                                    width: 100,
-                                                    height: 120,
-                                                  ),
-                                                  onTap: () async {
-                                                    if (GetIt.I<PrefsRepository>()
-                                                            .isVerifiedPhone ==
-                                                        false) {
-                                                      context.go(GRouter
-                                                          .config
-                                                          .applicationRoutes
-                                                          .kRegistrationPage);
-                                                    } else {
-//
-                                                      showDialog(
-                                                          context: context,
-                                                          builder: (BuildContext
-                                                              context) {
-                                                            return GalleryAndCameraDialogWidget(
-                                                                onChooseFileFromCameraAction:
-                                                                    (File?
-                                                                        file) {
-                                                              if (file !=
-                                                                  null) {
-                                                                GetIt.I<StoryBloc>().add(
-                                                                    UploadStoryEvent(
-                                                                        file));
-                                                              }
-                                                            }, onChooseFileFromGalleryAction:
-                                                                    (AssetEntity?
-                                                                        assetEntity) async {
-                                                              if (assetEntity !=
-                                                                  null) {
-                                                                File file =
-                                                                    (await assetEntity
-                                                                        .originFile)!;
-                                                                GetIt.I<StoryBloc>().add(
-                                                                    UploadStoryEvent(
-                                                                        file));
-                                                              }
-                                                            });
-                                                          });
-                                                    }
-                                                  },
-                                                ),
-                                              ),
-                                            );
-                                    } else {
-                                      index = index - 1;
-                                      var indexOfInitialStory =
-                                          firstWhereNotShowed(
-                                              state.stories[index].stories!);
-                                      var initialStory = state.stories[index]
-                                          .stories![indexOfInitialStory];
-                                      return GestureDetector(
+        ValueListenableBuilder<int>(
+            valueListenable: resizeStories,
+            builder: (context, focused, _) {
+              return Row(
+                children: [
+                  Expanded(
+                      child: SizedBox(
+                          width: 110,
+                          height: 200,
+                          child: ListView.separated(
+                              controller: listViewController,
+                              itemBuilder: (context, index) {
+                                if (index == 0) {
+                                  return state.uploadStoryStatus ==
+                                      UploadStoryStatus.loading
+                                      ? TrydosLoader()
+                                      : Padding(
+                                    padding:
+                                    const EdgeInsetsDirectional
+                                        .only(
+                                        top: 23.0, bottom: 23),
+                                    child: SizedBox(
+                                      width: 100,
+                                      height: 100,
+                                      child: InkWell(
+                                        child: Container(
+                                          child: Center(
+                                              child: Text('uplaod')),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                            BorderRadius.circular(
+                                                20.0),
+                                            color: Colors.grey,
+                                          ),
+                                          width: 100,
+                                          height: 120,
+                                        ),
                                         onTap: () async {
-                                          GetIt.I<StoryBloc>().add(
-                                              StorySelectedEvent(
-                                                  selected: index,
-                                                  initialStory:
-                                                      indexOfInitialStory));
+                                          if (GetIt.I<PrefsRepository>()
+                                              .isVerifiedPhone ==
+                                              false) {
+                                            context.go(GRouter
+                                                .config
+                                                .applicationRoutes
+                                                .kRegistrationPage);
+                                          } else {
+//
+                                            showDialog(
+                                                context: context,
+                                                builder: (BuildContext
+                                                context) {
+                                                  return GalleryAndCameraDialogWidget(
+                                                      onChooseFileFromCameraAction:
+                                                          (File?
+                                                      file) {
+                                                        if (file !=
+                                                            null) {
+                                                          GetIt.I<StoryBloc>().add(
+                                                              UploadStoryEvent(
+                                                                  file));
+                                                        }
+                                                      }, onChooseFileFromGalleryAction:
+                                                      (AssetEntity?
+                                                  assetEntity) async {
+                                                    if (assetEntity !=
+                                                        null) {
+                                                      File file =
+                                                      (await assetEntity
+                                                          .originFile)!;
+                                                      GetIt.I<StoryBloc>().add(
+                                                          UploadStoryEvent(
+                                                              file));
+                                                    }
+                                                  });
+                                                });
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  index = index - 1;
+                                  var indexOfInitialStory;
+                                  var initialStory;
+                                  if(GetIt.I<PrefsRepository>().myStoriesId==state.stories[index].stories![0].userId) {
+                                    indexOfInitialStory =state.stories[index].stories!.length-1;
+                                    initialStory = state.stories[index]
+                                        .stories![indexOfInitialStory];
+                                  }
+                                  else{
+                                    indexOfInitialStory =firstWhereNotShowed(state.stories[index].stories!);
+                                    initialStory = state.stories[index]
+                                        .stories![indexOfInitialStory];
 
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      StoryCollection(index)));
-                                        },
-                                        onLongPressStart: (details) {
-                                          resizeStories.value = (details
-                                                      .globalPosition.dx +
-                                                  listViewController.offset) ~/
-                                              230;
-                                        },
-                                        onLongPressUp: () {
-                                          resizeStories.value = -1;
-                                        },
-                                        onLongPressMoveUpdate: (details) {
-                                          resizeStories.value = (details
-                                                      .globalPosition.dx +
-                                                  listViewController.offset) ~/
-                                              230;
-                                        },
-                                        child: SizedBox(
-                                            height: focused == -1 ? 170 : 190,
-                                            child: (initialStory.isPhoto == 1)
-                                                ? StoryItemWidget(
-                                                    index: index,
-                                                    resize: index == focused,
-                                                    firstPhotoNotShowed: state
-                                                        .stories[index]
-                                                        .stories![
-                                                            firstWhereNotShowed(
-                                                                state
-                                                                    .stories[
-                                                                        index]
-                                                                    .stories!)]
-                                                        .photoPath!,
-                                                  )
-                                                : StoryItemWidget(
-                                                    index: index,
-                                                    resize: index == focused,
-                                                    firstPhotoNotShowed: state
-                                                        .stories[index]
-                                                        .stories![
-                                                            firstWhereNotShowed(
-                                                                state
-                                                                    .stories[
-                                                                        index]
-                                                                    .stories!)]
-                                                        .fullVideoPath!
-                                                        .replaceAll(
-                                                            'mp4', 'png'),
-                                                  )
+                                  }
+
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      GetIt.I<StoryBloc>().add(
+                                          StorySelectedEvent(
+                                              selected: index,
+                                              initialStory:
+                                              indexOfInitialStory));
+
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  StoryCollection(index)));
+                                    },
+                                    onLongPressStart: (details) {
+                                      resizeStories.value = (details
+                                          .globalPosition.dx +
+                                          listViewController.offset) ~/
+                                          230;
+                                    },
+                                    onLongPressUp: () {
+                                      resizeStories.value = -1;
+                                    },
+                                    onLongPressMoveUpdate: (details) {
+                                      resizeStories.value = (details
+                                          .globalPosition.dx +
+                                          listViewController.offset) ~/
+                                          230;
+                                    },
+                                    child: SizedBox(
+                                        height: focused == -1 ? 170 : 190,
+                                        child: (initialStory.isPhoto == 1)
+                                            ? StoryItemWidget(
+                                          index: index,
+                                          resize: index == focused,
+                                          firstPhotoNotShowed: initialStory
+                                              .photoPath!,
+                                        )
+                                            : StoryItemWidget(
+                                          index: index,
+                                          resize: index == focused,
+                                          firstPhotoNotShowed: initialStory
+                                              .fullVideoPath!
+                                              .replaceAll(
+                                              'mp4', 'png'),
+                                        )
 //      }
 
-                                            ),
-                                      );
-                                    }
-                                  },
-                                  physics: const ClampingScrollPhysics(),
-                                  padding:
-                                      EdgeInsetsDirectional.only(start: 10),
-                                  scrollDirection: Axis.horizontal,
-                                  separatorBuilder: (context, index) =>
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                  itemCount: state.stories.length + 1)))
-                    ],
-                  );
-                }),
+                                    ),
+                                  );
+                                }
+                              },
+                              physics: const ClampingScrollPhysics(),
+                              padding:
+                              EdgeInsetsDirectional.only(start: 10),
+                              scrollDirection: Axis.horizontal,
+                              separatorBuilder: (context, index) =>
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                              itemCount: state.stories.length + 1)))
+                ],
+              );
+            }),
       );
     });
   }
