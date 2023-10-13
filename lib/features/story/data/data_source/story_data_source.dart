@@ -66,8 +66,7 @@ class StoriesDataSource {
       PostClient<UploadStoryResponseModel>(requestPrams: RequestConfig<UploadStoryResponseModel>(
         endpoint: StoriesEndPoints.uploadStoriesEP,
         data: params['data'],
-//        receiveTimeout: const Duration(minutes: 5),
-//        sendTimeout: const Duration(minutes: 5),
+
         response: ResponseValue<UploadStoryResponseModel>(
             fromJson: (response) => UploadStoryResponseModel.fromJson(response)
 
