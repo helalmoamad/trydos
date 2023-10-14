@@ -61,19 +61,22 @@ class StoriesDataSource {
 
   Future<UploadStoryResponseModel> uploadStory(Map<String,dynamic> params) {
 
-//Fluttertoast.s
       PostClient<UploadStoryResponseModel> uploadStory =
-      PostClient<UploadStoryResponseModel>(requestPrams: RequestConfig<UploadStoryResponseModel>(
+      PostClient<UploadStoryResponseModel>(
+         onSendProgress: (count, total) {
+
+
+
+         },
+        requestPrams: RequestConfig<UploadStoryResponseModel>(
+        // sendTimeout: Duration(seconds: 10),
         endpoint: StoriesEndPoints.uploadStoriesEP,
         data: params['data'],
-//        receiveTimeout: const Duration(minutes: 5),
-//        sendTimeout: const Duration(minutes: 5),
-        response: ResponseValue<UploadStoryResponseModel>(
-            fromJson: (response) => UploadStoryResponseModel.fromJson(response)
+        response: ResponseValue<UploadStoryResponseModel>(fromJson: (response) => UploadStoryResponseModel.fromJson(response)),
+      ),
 
-        ),
-      ), serverName: ServerName.stories,);
-
+        serverName: ServerName.stories,);
+      // uploadStory.call();
     return uploadStory();
   }
 

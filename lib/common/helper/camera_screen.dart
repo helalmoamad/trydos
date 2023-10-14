@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -160,376 +159,363 @@ class _CameraScreenState extends State<CameraScreen>
     return Scaffold(
       body: _isCameraInitialized
           ? Column(
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  height: MediaQuery.sizeOf(context).height * 0.9,
+        children: [
+          SizedBox(
+            width: double.infinity,
+            height: MediaQuery.sizeOf(context).height * 0.9,
 //        aspectRatio: 1 / controller!.value.aspectRatio,
-                  child: Stack(children: [
-                    //todo show a live camera
-                    controller!.buildPreview(),
+            child: Stack(children: [
+              //todo show a live camera
+              controller!.buildPreview(),
+
+_isVideoCameraSelected?
+              Align(
+
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(top: 55.0),
+                  child: Text(
+                  '0 : $_seconds',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold),
+              ),
+                ),):Container(),
 
 //todo drop down item list for resolution
-                    Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _isVideoCameraSelected
-                              ? Padding(
-                                  padding: EdgeInsetsDirectional.only(start: 10),
-                                  child: Text(
-                                    '0 : $_seconds',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
-                                  ))
-                              : SizedBox.shrink(),
-                          _isVideoCameraSelected
-                              ? 10.horizontalSpace
-                              : SizedBox.shrink(),
-                          Padding(
-                            padding: const EdgeInsets.all(38.0),
-                            child: DropdownButton<ResolutionPreset>(
-                              dropdownColor: Colors.black87,
-                              underline: Container(),
-                              value: currentResolutionPreset,
-                              items: [
-                                for (ResolutionPreset preset in resolutionPresets)
-                                  DropdownMenuItem(
-                                    value: preset,
-                                    child: Text(
-                                      preset
-                                          .toString()
-                                          .split('.')[1]
-                                          .toUpperCase(),
-                                      style: const TextStyle(color: Colors.white),
-                                    ),
-                                  )
-                              ],
-                              onChanged: (value) {
-                                setState(() {
-                                  currentResolutionPreset = value!;
-                                  _isCameraInitialized = false;
-                                });
-                                onNewCameraSelected(controller!.description);
-                              },
-                              hint: Text("Select item"),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+              Padding(
+                padding: const EdgeInsets.all(38.0),
+                child: DropdownButton<ResolutionPreset>(
+                  dropdownColor: Colors.black87,
+                  underline: Container(),
+                  value: currentResolutionPreset,
+                  items: [
+                    for (ResolutionPreset preset in resolutionPresets)
+                      DropdownMenuItem(
+                        value: preset,
+                        child: Text(
+                          preset.toString().split('.')[1].toUpperCase(),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      )
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      currentResolutionPreset = value!;
+                      _isCameraInitialized = false;
+                    });
+                    onNewCameraSelected(controller!.description);
+                  },
+                  hint: Text("Select item"),
+                ),
+              ),
 
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.only(
-                            bottom: 90, start: 20, end: 20),
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 30,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Slider(
-                                  value: _currentZoomLevel,
-                                  min: _minAvailableZoom,
-                                  max: _maxAvailableZoom,
-                                  activeColor: Colors.white,
-                                  inactiveColor: Colors.white30,
-                                  onChanged: (value) async {
-                                    setState(() {
-                                      _currentZoomLevel = value;
-                                    });
-                                    await controller!.setZoomLevel(value);
-                                  },
-                                ),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.black87,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    _currentZoomLevel.toStringAsFixed(1) + 'x',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ],
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(
+                      bottom: 90, start: 20, end: 20),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 30,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Slider(
+                            value: _currentZoomLevel,
+                            min: _minAvailableZoom,
+                            max: _maxAvailableZoom,
+                            activeColor: Colors.white,
+                            inactiveColor: Colors.white30,
+                            onChanged: (value) async {
+                              setState(() {
+                                _currentZoomLevel = value;
+                              });
+                              await controller!.setZoomLevel(value);
+                            },
                           ),
                         ),
-                      ),
-                    ),
-                    //todo row transform and take video button
-                    Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.only(
-                            bottom: 12, start: 16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  _isCameraInitialized = false;
-                                  _isRearCameraSelected =
-                                      !_isRearCameraSelected;
-                                });
-
-                                onNewCameraSelected(
-                                  widget.cameras[_isRearCameraSelected ? 0 : 1],
-                                );
-                              },
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.circle,
-                                    color: Colors.black38,
-                                    size: 60,
-                                  ),
-                                  Icon(
-                                    _isRearCameraSelected
-                                        ? Icons.camera_front
-                                        : Icons.camera_rear,
-                                    color: Colors.white,
-                                    size: 30,
-                                  ),
-                                ],
-                              ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black87,
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              _currentZoomLevel.toStringAsFixed(1) + 'x',
+                              style: TextStyle(color: Colors.white),
                             ),
-                            _isVideoCameraSelected
-                                ? Row(
-                                    children: [
-                                      GestureDetector(
-                                        onLongPress: () async {
-                                          animatedController.forward();
-                                          await startVideoRecording();
-                                        },
-                                        onLongPressUp: () async {
-                                          if (_isRecordingInProgress) {
-                                            animatedController.stop();
-                                            // _resetTimer();
-                                            XFile? rawVideo =
-                                                await stopVideoRecording();
-                                            File videoFile =
-                                                File(rawVideo!.path);
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              //todo row transform and take video button
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(
+                      bottom: 12, start: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            _isCameraInitialized = false;
+                            _isRearCameraSelected =
+                            !_isRearCameraSelected;
+                          });
 
-                                            Navigator.pop(context, videoFile);
-                                          }
-                                        },
-                                        child: Container(
-                                          width: 75,
-                                          height: 75,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.white24,
-                                            // borderRadius: BorderRadius.circular(20)
-                                          ),
-                                          // width: 120,
-                                          // height: 90,
-                                          // color: Colors.amber,
-                                          child: LayoutBuilder(
-                                            builder: (context,
-                                                BoxConstraints constraints) {
-                                              return AnimatedBuilder(
-                                                animation: animatedController,
-                                                builder: (context, child) {
-                                                  return CircularProgressIndicator(
-                                                    color: Colors.red,
-                                                    value: animatedController
-                                                        .value,
-                                                  );
-                                                },
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                : InkWell(
-                                    onTap: () async {
-                                      XFile? rawImage = await takePicture();
-                                      File imageFile = File(rawImage!.path);
-
-                                      int currentUnix =
-                                          DateTime.now().millisecondsSinceEpoch;
-                                      final directory =
-                                          await getApplicationDocumentsDirectory();
-                                      String fileFormat =
-                                          imageFile.path.split('.').last;
-                                      await imageFile.copy(
-                                        '${directory.path}/$currentUnix.$fileFormat',
-                                      );
-                                      Navigator.pop(context, imageFile);
-
-//                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ShowMessage(imageFile)));
-                                    },
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        Icon(Icons.circle,
-                                            color: Colors.white38, size: 80),
-                                        Icon(Icons.circle,
-                                            color: Colors.white, size: 65),
-                                      ],
-                                    ),
-                                  ),
-                            Container(
-                              width: 90,
-                              height: 90,
-                            )
+                          onNewCameraSelected(
+                            widget.cameras[_isRearCameraSelected ? 0 : 1],
+                          );
+                        },
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Icon(
+                              Icons.circle,
+                              color: Colors.black38,
+                              size: 60,
+                            ),
+                            Icon(
+                              _isRearCameraSelected
+                                  ? Icons.camera_front
+                                  : Icons.camera_rear,
+                              color: Colors.white,
+                              size: 30,
+                            ),
                           ],
                         ),
                       ),
-                    ),
-                  ]),
-                ),
-                Row(
-                  children: [
-                    //todo image button transform
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 8.0,
-                          right: 4.0,
-                        ),
-                        child: TextButton(
-                          onPressed: _isRecordingInProgress
-                              ? null
-                              : () {
-                                  if (_isVideoCameraSelected) {
-                                    setState(() {
-                                      _isVideoCameraSelected = false;
-                                    });
-                                  }
-                                },
-                          style: TextButton.styleFrom(
-                            primary: _isVideoCameraSelected
-                                ? Colors.black54
-                                : Colors.black,
-                            backgroundColor: _isVideoCameraSelected
-                                ? Colors.white30
-                                : Colors.white,
-                          ),
-                          child: Text('IMAGE'),
-                        ),
-                      ),
-                    ),
-                    //todo image button transform
+                      _isVideoCameraSelected
+                          ?                           GestureDetector(
+                        onLongPress: () async {
+                          animatedController.forward();
+                          await startVideoRecording();
+                        },
+                        onLongPressUp: () async {
+                          if (_isRecordingInProgress) {
+                            animatedController.stop();
+                            // _resetTimer();
+                            XFile? rawVideo =
+                            await stopVideoRecording();
+                            File videoFile =
+                            File(rawVideo!.path);
 
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 4.0, right: 8.0),
-                        child: TextButton(
-                          onPressed: () {
-                            if (!_isVideoCameraSelected) {
-                              setState(() {
-                                _isVideoCameraSelected = true;
-                              });
-                            }
-                          },
-                          style: TextButton.styleFrom(
-                            primary: _isVideoCameraSelected
-                                ? Colors.black
-                                : Colors.black54,
-                            backgroundColor: _isVideoCameraSelected
-                                ? Colors.white
-                                : Colors.white30,
+                            Navigator.pop(context, videoFile);
+                          }
+                        },
+                        child: Container(
+                          width: 75,
+                          height: 75,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white24,
+                            // borderRadius: BorderRadius.circular(20)
                           ),
-                          child: Text('VIDEO'),
+                          // width: 120,
+                          // height: 90,
+                          // color: Colors.amber,
+                          child: LayoutBuilder(
+                            builder: (context,
+                                BoxConstraints constraints) {
+                              return AnimatedBuilder(
+                                animation: animatedController,
+                                builder: (context, child) {
+                                  return CircularProgressIndicator(
+                                    color: Colors.red,
+                                    value: animatedController
+                                        .value,
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
+                      )
+
+                          : InkWell(
+                        onTap: () async {
+                          XFile? rawImage = await takePicture();
+                          File imageFile = File(rawImage!.path);
+
+                          int currentUnix =
+                              DateTime.now().millisecondsSinceEpoch;
+                          final directory =
+                          await getApplicationDocumentsDirectory();
+                          String fileFormat =
+                              imageFile.path.split('.').last;
+                          await imageFile.copy(
+                            '${directory.path}/$currentUnix.$fileFormat',
+                          );
+                          Navigator.pop(context, imageFile);
+
+//                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ShowMessage(imageFile)));
+                        },
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Icon(Icons.circle,
+                                color: Colors.white38, size: 80),
+                            Icon(Icons.circle,
+                                color: Colors.white, size: 65),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 90,
+                        height: 90,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ]),
+          ),
+          Row(
+            children: [
+              //todo image button transform
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 8.0,
+                    right: 4.0,
+                  ),
+                  child: TextButton(
+                    onPressed: _isRecordingInProgress
+                        ? null
+                        : () {
+                      if (_isVideoCameraSelected) {
+                        setState(() {
+                          _isVideoCameraSelected = false;
+                        });
+                      }
+                    },
+                    style: TextButton.styleFrom(
+                      primary: _isVideoCameraSelected
+                          ? Colors.black54
+                          : Colors.black,
+                      backgroundColor: _isVideoCameraSelected
+                          ? Colors.white30
+                          : Colors.white,
+                    ),
+                    child: Text('IMAGE'),
+                  ),
+                ),
+              ),
+              //todo image button transform
+
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 4.0, right: 8.0),
+                  child: TextButton(
+                    onPressed: () {
+                      if (!_isVideoCameraSelected) {
+                        setState(() {
+                          _isVideoCameraSelected = true;
+                        });
+                      }
+                    },
+                    style: TextButton.styleFrom(
+                      primary: _isVideoCameraSelected
+                          ? Colors.black
+                          : Colors.black54,
+                      backgroundColor: _isVideoCameraSelected
+                          ? Colors.white
+                          : Colors.white30,
+                    ),
+                    child: Text('VIDEO'),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      onTap: () async {
+                        setState(() {
+                          _currentFlashMode = FlashMode.off;
+                        });
+                        await controller!.setFlashMode(
+                          FlashMode.off,
+                        );
+                      },
+                      child: Icon(
+                        Icons.flash_off,
+                        color: _currentFlashMode == FlashMode.off
+                            ? Colors.amber
+                            : Colors.black,
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        setState(() {
+                          _currentFlashMode = FlashMode.auto;
+                        });
+                        await controller!.setFlashMode(
+                          FlashMode.auto,
+                        );
+                      },
+                      child: Icon(
+                        Icons.flash_auto,
+                        color: _currentFlashMode == FlashMode.auto
+                            ? Colors.amber
+                            : Colors.black,
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        setState(() {
+                          _isCameraInitialized = false;
+                        });
+                        onNewCameraSelected(
+                          widget.cameras[_isRearCameraSelected ? 0 : 1],
+                        );
+                        setState(() {
+                          _isRearCameraSelected = !_isRearCameraSelected;
+                        });
+                      },
+                      child: Icon(
+                        Icons.flash_on,
+                        color: _currentFlashMode == FlashMode.always
+                            ? Colors.amber
+                            : Colors.black,
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        setState(() {
+                          _currentFlashMode = FlashMode.torch;
+                        });
+                        await controller!.setFlashMode(
+                          FlashMode.torch,
+                        );
+                      },
+                      child: Icon(
+                        Icons.highlight,
+                        color: _currentFlashMode == FlashMode.torch
+                            ? Colors.amber
+                            : Colors.black,
                       ),
                     ),
                   ],
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          InkWell(
-                            onTap: () async {
-                              setState(() {
-                                _currentFlashMode = FlashMode.off;
-                              });
-                              await controller!.setFlashMode(
-                                FlashMode.off,
-                              );
-                            },
-                            child: Icon(
-                              Icons.flash_off,
-                              color: _currentFlashMode == FlashMode.off
-                                  ? Colors.amber
-                                  : Colors.black,
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () async {
-                              setState(() {
-                                _currentFlashMode = FlashMode.auto;
-                              });
-                              await controller!.setFlashMode(
-                                FlashMode.auto,
-                              );
-                            },
-                            child: Icon(
-                              Icons.flash_auto,
-                              color: _currentFlashMode == FlashMode.auto
-                                  ? Colors.amber
-                                  : Colors.black,
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () async {
-                              setState(() {
-                                _isCameraInitialized = false;
-                              });
-                              onNewCameraSelected(
-                                widget.cameras[_isRearCameraSelected ? 0 : 1],
-                              );
-                              setState(() {
-                                _isRearCameraSelected = !_isRearCameraSelected;
-                              });
-                            },
-                            child: Icon(
-                              Icons.flash_on,
-                              color: _currentFlashMode == FlashMode.always
-                                  ? Colors.amber
-                                  : Colors.black,
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () async {
-                              setState(() {
-                                _currentFlashMode = FlashMode.torch;
-                              });
-                              await controller!.setFlashMode(
-                                FlashMode.torch,
-                              );
-                            },
-                            child: Icon(
-                              Icons.highlight,
-                              color: _currentFlashMode == FlashMode.torch
-                                  ? Colors.amber
-                                  : Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                )
-              ],
-            )
+              )
+            ],
+          )
+        ],
+      )
           : Container(),
     );
   }

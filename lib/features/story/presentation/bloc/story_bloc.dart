@@ -111,7 +111,13 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
 
   _onStorySelectedEvent(
       StorySelectedEvent event, Emitter<StoryState> emit) async {
-    emit(state.copyWith(selectedStoriesStatus: SelectedStoriesStatus.loading,   initialStory: event.initialStory,));
+    emit(state.copyWith(selectedStoriesStatus: SelectedStoriesStatus.loading,
+      selectedStory: event.selected,
+
+
+
+
+      initialStory: event.initialStory,));
     var initialStory =
     state.stories[event.selected].stories![event.initialStory];
     if (initialStory.isPhoto == 1) {
@@ -132,9 +138,9 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
 //todo debug
         emit(state.copyWith(
             selectedStoriesStatus: SelectedStoriesStatus.success,
-            stories: state.stories,
-            initialStory: event.initialStory,
-            selectedStory: event.selected,
+            // stories: state.stories,
+            // initialStory: event.initialStory,
+            // selectedStory: event.selected,
             imageDetail: r));
       });
     } else {
