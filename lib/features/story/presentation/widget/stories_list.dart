@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../../../../test.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -94,65 +95,48 @@ class StoriesList extends StatelessWidget {
                                                                 onChooseFileFromCameraAction:
                                                                     (File?
                                                                         file) async {
-                                                                      // final cloudinary = CloudinaryPublic('CLOUD_NAME', 'UPLOAD_PRESET', cache: false);
+                                                              // final cloudinary = CloudinaryPublic('CLOUD_NAME', 'UPLOAD_PRESET', cache: false);
 
-                                                                      print('ppppppp');
-                                                              print(GetIt.I<
-                                                                      PrefsRepository>()
-                                                                  .chatToken);
-                                                              print(GetIt.I<
-                                                                  PrefsRepository>()
-                                                                  .marketToken);
+                                                              print('ppppppp');
+
                                                               if (file !=
                                                                   null) {
-                                                                GetIt.I<StoryBloc>().add(
-                                                                    UploadStoryEvent(
-                                                                        file));
-                                                                // Fluttertoast
-                                                                //     .showToast(
-                                                                //         msg:
-                                                                //             'camera');
+                                                                // GetIt.I<StoryBloc>().add(
+                                                                //     UploadStoryEvent(
+                                                                //         file));
 
-
-                                                                // Fluttertoast
-                                                                //     .showToast(
-                                                                //         msg:
-                                                                //             'gallrey');
-                                                                // final cloudinary = CloudinaryPublic('djooohujg', 'v4h8xqns', cache: false);
-
-                                                                // CloudinaryResponse response = await cloudinary.uploadFile(
-                                                                //   CloudinaryFile.fromFile(file.path, resourceType: CloudinaryResourceType.Image),
-                                                                // );
-                                                                // print('secureUrl');
-                                                                //
-                                                                // print(response.secureUrl);
-
-                                                                // try {
-                                                                //   Response response =await Dio().post(
-                                                                //       'https://api.cloudinary.com/v1_1/djooohujg/uplaod',
-                                                                //       data: FormData
-                                                                //           .fromMap({
-                                                                //         "file":
-                                                                //             await MultipartFile.fromFile(
-                                                                //           file.path,
-                                                                //         ),
-                                                                //         "upload_preset":
-                                                                //             'v4h8xqns'
-                                                                //       }));
-                                                                //
-                                                                //   print(
-                                                                //       'response cloudinary ${response.data} ss');
-                                                                // } catch (e) {
-                                                                //   debugPrint(
-                                                                //       'catch cloudinary');
-                                                                // }
+                                                                final cloudinary =
+                                                                    CloudinaryPublic(
+                                                                        'djooohujg',
+                                                                        'v4h8xqns',
+                                                                        cache:
+                                                                            false);
+                                                                CloudinaryResponse
+                                                                    response =
+                                                                    await cloudinary
+                                                                        .uploadFile(
+                                                                  CloudinaryFile.fromFile(
+                                                                      file.path,
+                                                                      resourceType:
+                                                                          CloudinaryResourceType
+                                                                              .Image),
+                                                                );
+                                                                print('sssssc');
+                                                                print(response
+                                                                    .publicId);
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                      builder: (context) =>
+                                                                          CloudWidget(
+                                                                              publicId: response.publicId),
+                                                                    ));
                                                               }
                                                             }, onChooseFileFromGalleryAction:
                                                                     (AssetEntity?
                                                                         assetEntity) async {
                                                               if (assetEntity !=
                                                                   null) {
-
                                                                 File file =
                                                                     (await assetEntity
                                                                         .originFile)!;

@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:cloudinary_flutter/cloudinary_context.dart';
+import 'package:cloudinary_url_gen/cloudinary.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -37,7 +39,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await configureDependencies();
-
+// CloudinaryContext.cloudinary=Cloudinary.fromCloudName(cloudName: 'djooohujg');
 var client=Dio();
   var  addressInfo= await client.get('http://ip-api.com/json');
   Map<String,dynamic> jsonResponse=convert.jsonDecode(addressInfo.toString());
