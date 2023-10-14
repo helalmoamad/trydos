@@ -101,36 +101,36 @@ class StoriesList extends StatelessWidget {
 
                                                               if (file !=
                                                                   null) {
-                                                                // GetIt.I<StoryBloc>().add(
-                                                                //     UploadStoryEvent(
-                                                                //         file));
+                                                                GetIt.I<StoryBloc>().add(
+                                                                    UploadStoryEvent(
+                                                                        file));
 
-                                                                final cloudinary =
-                                                                    CloudinaryPublic(
-                                                                        'djooohujg',
-                                                                        'v4h8xqns',
-                                                                        cache:
-                                                                            false);
-                                                                CloudinaryResponse
-                                                                    response =
-                                                                    await cloudinary
-                                                                        .uploadFile(
-                                                                  CloudinaryFile.fromFile(
-                                                                      file.path,
-                                                                      resourceType:
-                                                                          CloudinaryResourceType
-                                                                              .Image),
-                                                                );
-                                                                print('sssssc');
-                                                                print(response
-                                                                    .publicId);
-                                                                Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (context) =>
-                                                                          CloudWidget(
-                                                                              publicId: response.publicId),
-                                                                    ));
+                                                                // final cloudinary =
+                                                                //     CloudinaryPublic(
+                                                                //         'djooohujg',
+                                                                //         'v4h8xqns',
+                                                                //         cache:
+                                                                //             false);
+                                                                // CloudinaryResponse
+                                                                //     response =
+                                                                //     await cloudinary
+                                                                //         .uploadFile(
+                                                                //   CloudinaryFile.fromFile(
+                                                                //       file.path,
+                                                                //       resourceType:
+                                                                //           CloudinaryResourceType
+                                                                //               .Image),
+                                                                // );
+                                                                // print('sssssc');
+                                                                // print(response
+                                                                //     .publicId);
+                                                                // Navigator.push(
+                                                                //     context,
+                                                                //     MaterialPageRoute(
+                                                                //       builder: (context) =>
+                                                                //           CloudWidget(
+                                                                //               publicId: response.publicId),
+                                                                //     ));
                                                               }
                                                             }, onChooseFileFromGalleryAction:
                                                                     (AssetEntity?
