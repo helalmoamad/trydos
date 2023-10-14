@@ -17,7 +17,6 @@ import '../manager/auth_bloc.dart';
 List<FocusNode> focusNodes = List.generate(6, (index) => FocusNode());
 int currentToType = 0;
 bool checkingOtp = false;
-
 class PinItem extends StatefulWidget {
   final TextEditingController controller;
   bool isExpired;
@@ -56,8 +55,7 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     animationController.addStatusListener(_updateStatus);
     focusNodes[0].requestFocus();
     widget.controller.value = zwspEditingValue;
@@ -97,7 +95,6 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
           null, null, null, null, null, null, null,
           error: error.toString());
     };
-    print('wrong otp : ${widget.wrongCode}');
     if (widget.wrongCode) {
       animationController.forward();
     }
@@ -150,8 +147,11 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
                           }
                         },
                         onChanged: (String? text) {
+                          print(widget.index);
+                          print(text);
+                          print(text?.length);
                           widget.onChange.call();
-                          if (widget.index == 0 && (text?.length ?? 0) > 1) {
+                          if (widget.index == 0 && (text?.length ?? 0)==6) {
                             widget.pasteOtpCode!.call(text!);
                           }
                           if ((text?.length ?? 0) > 1) {
@@ -160,20 +160,19 @@ class _PinItemState extends State<PinItem> with SingleTickerProviderStateMixin {
                           }
                           setState(() {
                             if ((text?.length ?? 0) == 1) {
+                              widget.onChange.call();
+                              focusNodes[min(5, widget.index + 1)].requestFocus();
+                              currentToType = min(5, widget.index + 1);
+                              withBorder = widget.index == 5;
                               if (widget.index == 5) {
                                 checkingOtp = true;
                                 widget.checkOtp!.call();
                               }
-                              focusNodes[min(5, widget.index + 1)]
-                                  .requestFocus();
-                              currentToType = min(5, widget.index + 1);
-                              withBorder = widget.index == 5;
                             } else if (text?.isEmpty ?? true) {
                               widget.onChange.call();
                               checkingOtp = false;
                               widget.controller.value = zwspEditingValue;
-                              focusNodes[max(0, widget.index - 1)]
-                                  .requestFocus();
+                              focusNodes[max(0, widget.index - 1)].requestFocus();
                               currentToType = max(0, widget.index - 1);
                               withBorder = true;
                             }

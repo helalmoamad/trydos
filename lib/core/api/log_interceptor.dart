@@ -21,7 +21,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     if (kDebugMode) {
       log(_prefsRepository.chatToken.toString());
       prettyPrinterI(
-        "***|| INFO Request ${options.path.substring(ChatUrls.baseUrl.length)} ||***"
+        "***|| INFO Request ${options.path} ||***"
         "\n HTTP Method: ${options.method}"
         "\n token : ${options.headers[HttpHeaders.authorizationHeader]?.substring(0, 20)}"
         "\n param : ${options.data}"
@@ -45,7 +45,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         statusType = _StatusType.failed;
       }
       final requestRoute =
-          response.requestOptions.path.substring(ChatUrls.baseUrl.length);
+          response.requestOptions.path;
 
       if (statusType == _StatusType.failed) {
         prettyPrinterError(

@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+import 'package:trydos/features/authentication/data/models/get_user_country_response_model.dart';
 import 'package:trydos/features/authentication/data/models/login_to_stories_response_model.dart';
 import 'package:trydos/features/authentication/data/models/send_otp_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_guest_phone_response_model.dart';
@@ -98,5 +99,11 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
   @override
   Future<Either<Failure, User>> getCustomerInfo() {
     return handlingExceptionRequest(tryCall:  dataSource.getCustomerInfo);
+  }
+
+  @override
+  Future<Either<Failure, GetUserCountryResponseModel>> getUserCountry() {
+    return handlingExceptionRequest(tryCall:  dataSource.getUserCountry);
+
   }
   }

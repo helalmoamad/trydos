@@ -22,7 +22,6 @@ class ConnectivityObserver {
       if(previousEvent== ConnectivityResult.none && prefs.chatToken!=null){
         GetIt.I<ChatBloc>().add(const GetChatsEvent());
       }
-        GetIt.I<StoryBloc>().add(const GetStoryEvent());
       currentEvent=event;
       if (Enum.compareByName(previousEvent, event) == 0 ||
           ((event == ConnectivityResult.mobile ||

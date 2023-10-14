@@ -39,7 +39,6 @@ class PostClient<T> extends BaseApi<T> {
     try {
       final baseUri = getBaseUriForSpecificServer(serverName);
       stopWatch.start();
-      print('ddddddd $_data');
       final Response response = await client.postUri(
         Uri(
           host: baseUri.host,

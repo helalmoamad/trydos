@@ -10,6 +10,7 @@ import '../../../../core/api/client_config.dart';
 import '../../../../core/api/methods/get.dart';
 import '../../../../core/api/methods/post.dart';
 import '../models/create_user_response_model.dart';
+import '../models/get_user_country_response_model.dart';
 import '../models/login_to_chat_response_model.dart';
 import '../models/send_otp_response_model.dart';
 import '../models/verify_guest_phone_response_model.dart';
@@ -109,6 +110,18 @@ class AuthRemoteDatasource {
       ),
     );
     return getCustomerInfo();
+  }
+  Future<GetUserCountryResponseModel> getUserCountry(){
+    GetClient<GetUserCountryResponseModel> getUserCountry= GetClient<GetUserCountryResponseModel>(
+      serverName: ServerName.location,
+      requestPrams: RequestConfig<GetUserCountryResponseModel>(
+        endpoint: '/json',
+        response: ResponseValue<GetUserCountryResponseModel>(
+            fromJson: (response) => GetUserCountryResponseModel.fromJson(response)
+        ),
+      ),
+    );
+    return getUserCountry();
   }
 
   Future<bool> updateName(Map<String,dynamic> params){

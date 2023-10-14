@@ -195,7 +195,6 @@ class PhoneFormField extends StatelessWidget {
                 contentPadding: HWEdgeInsets.only(top: 15),
                 border: InputBorder.none,
                 focusedBorder: InputBorder.none,
-                fillColor: context.colorScheme.white,
                 prefixIcon: prefixIcon,
                 suffixIcon: suffixIcon,
                 counterText: '',
@@ -257,13 +256,16 @@ class PhoneNumberFormatter extends TextInputFormatter {
     Country country = countries.firstWhere(
             (element) => '+${newText.toLowerCase()}'
             .startsWith(element.dialCode.toLowerCase()),
+        orElse:()=> countries.firstWhere(
+                (element) => '+${oldText.toLowerCase()}'
+                .startsWith(element.dialCode.toLowerCase()),
         orElse: () => Country(
             name: '',
             flag: '',
             code: '',
             dialCode: '',
-            minLength: 0,
-            maxLength: 0));
+            minLength: 100,
+            maxLength: 100)));
     String needEdit=newText;
     if(newText.length > (country.dialCode.length + country.maxLength-2) && country.name != ''){
       needEdit =  oldText;
@@ -271,10 +273,11 @@ class PhoneNumberFormatter extends TextInputFormatter {
     if((oldText.length+1) == country.dialCode.length && newText[newText.length-1]=='0'){
       needEdit =  oldText;
     }
-      String result = '';
-    for(int i=0 ; i < needEdit.length ; i++){
+    print(needEdit);
+      String result = needEdit.substring(0 , country.dialCode.length-1) + ' ';
+    for(int i=country.dialCode.length-1; i < needEdit.length ; i++){
       result+=needEdit[i];
-      if((i+1)%3==0){
+      if((i-country.dialCode.length+2)%3==0){
         result+=' ';
       }
     }

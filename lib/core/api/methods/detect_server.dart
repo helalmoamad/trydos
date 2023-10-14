@@ -7,7 +7,7 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import '../../../common/constant/configuration/stories_url_routes.dart';
 
 enum ServerName{
-  chat , market , stories
+  chat , market , stories, location
 }
 
 Uri getBaseUriForSpecificServer(ServerName serverName){
@@ -15,6 +15,7 @@ Uri getBaseUriForSpecificServer(ServerName serverName){
     case ServerName.chat : return ChatUrls.baseUri;
     case ServerName.market : return MarketUrls.baseUri;
     case ServerName.stories : return StoriesUrls.baseUri;
+    case ServerName.location : return Uri.parse('http://ip-api.com');
   }
 }
 
@@ -24,5 +25,6 @@ String? getServerToken(ServerName serverName){
     case ServerName.chat : return  prefsRepository.chatToken;
     case ServerName.market : return  prefsRepository.marketToken;
     case ServerName.stories : return prefsRepository.storiesToken;
+    case ServerName.location : return null ;
   }
 }

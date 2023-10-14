@@ -508,6 +508,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Chat chat = chats.firstWhere(
         (element) => element.id == event.message.channelId,
         orElse: () => Chat(id: '-1'));
+    print('event.message.channelId: ${event.message.channelId}');
+    print('chatId: ${chat.id}');
     if (chat.id == '-1') {
       chats.insert(
           0,
@@ -516,28 +518,22 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             hasReachedMax: false,
           ));
     } else {
+      print('totalUnreadMessageCount: ${chat.totalUnreadMessageCount}');
       chats.removeWhere((element) => element.id == chat.id);
       chats.insert(
           0,
           chat.copyWith(
-              totalUnreadMessageCount: (chat.totalUnreadMessageCount ?? 0) +
-                          event.message.senderUserId! !=
+              totalUnreadMessageCount: ((chat.totalUnreadMessageCount ?? 0) +
+                  (event.message.senderUserId! !=
                       _prefsRepository.myChatId
                   ? 1
-                  : 0));
+                  : 0))));
     }
     messages = List.of(chat.messages ?? []);
-    print('be ${messages.length}');
     messages.insert(0, event.message);
-    print('af ${messages.length}');
 
-    int index =
-        messages.indexWhere((element) => element.id == event.prevMessageId);
-    if (fromPinned) {
+    int index = messages.indexWhere((element) => element.id == event.prevMessageId);
       chats = sortChats(chats, event.message.channelId, messages);
-    } else {
-      chats = sortChats(chats, event.message.channelId, messages);
-    }
     emit(state.copyWith(
       receiveMessageStatus: ReceiveMessageStatus.success,
       unReadMessagesFromAllChats:
@@ -551,20 +547,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       channelId: event.message.channelId,
       chats: fromPinned
           ? state.chats
-          : chats.map((e) {
-              if (e.id == event.message.channelId) {
-                return e.copyWith(messages: messages);
-              }
-              return e;
-            }).toList(),
+          : chats,
       pinnedChats: !fromPinned
           ? state.pinnedChats
-          : chats.map((e) {
-              if (e.id == event.message.channelId) {
-                return e.copyWith(messages: messages);
-              }
-              return e;
-            }).toList(),
+          : chats,
     ));
     add(NotifyThatIReceivedMessageEvent(channelId: event.message.channelId!));
     if (index == -1) {

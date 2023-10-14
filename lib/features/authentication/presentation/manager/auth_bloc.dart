@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/features/authentication/domain/use_cases/get_user_country_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/register_guest_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/send_otp_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/store_fcm_usecase.dart';
@@ -19,8 +20,6 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
 import '../../../home/presentation/manager/home_event.dart';
-import '../../../story/presentation/bloc/story_bloc.dart';
-import '../../../story/presentation/bloc/story_bloc.dart';
 import '../../data/models/verify_otp_sign_up_and_in_response_model.dart';
 import '../../domain/use_cases/create_user_usecase.dart';
 import '../../domain/use_cases/get_customer_info_usecase.dart';
@@ -55,6 +54,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       this.getCustomerInfoUseCase,
       this.verifyGuestPhoneUseCase,
       this.verifyOtpSignInUseCase,
+      this.getUserCountryUseCase,
       this.verifyOtpSignUpUseCase)
       : super(const AuthState()) {
     on<AuthEvent>((event, emit) {});
@@ -78,8 +78,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         transformer: throttleDroppable(throttleDuration));
     on<UpdateNameEvent>(_onUpdateNameEvent,
         transformer: throttleDroppable(throttleDuration));
-    on<GetCustomerInfoEvent>(_onGetCustomerInfoEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<GetCustomerInfoEvent>(_onGetCustomerInfoEvent, transformer: throttleDroppable(throttleDuration));
+    on<GetUserCountryEvent>(_onGetUserCountryEvent, transformer: throttleDroppable(throttleDuration));
   }
 
   final LoginToChatUseCase loginToChatUseCase;
@@ -94,6 +94,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final RegisterGuestUseCase registerGuestUseCase;
   final UpdateNameUseCase updateNameUseCase;
   final GetCustomerInfoUseCase getCustomerInfoUseCase;
+  final GetUserCountryUseCase getUserCountryUseCase;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
 
   FutureOr<void> _onCreateUserEvent(
@@ -232,6 +233,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
+      _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
       add(LoginToChatEvent(
           fcmToken: NotificationProcess.myFcmToken!,
           mobilePhone: r.data!.user!.phone,
@@ -265,11 +267,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
-      print('isNumberVerifiedFromSignUp:  ${r.data!.user!.isPhoneVerified}');
+      _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
       add(LoginToChatEvent(
           fcmToken: NotificationProcess.myFcmToken!,
           mobilePhone: r.data!.user!.phone,
           originalUserId: r.data!.user!.id!.toString(),
+          name: r.data!.user!.name,
           otpIdToken: r.data!.idToken!));
       add(LoginToStoriesEvent(
         originalUserId: r.data!.user!.id!.toString(),
@@ -335,6 +338,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state.copyWith(
           getCustomerInfoStatus: GetCustomerInfoStatus.success,
           marketUser: userInfo));
+    });
+  }
+
+  FutureOr<void> _onGetUserCountryEvent(GetUserCountryEvent event, Emitter<AuthState> emit)async {
+    final response = await getUserCountryUseCase(NoParams());
+    response.fold((l) {}, (r){
+      _prefsRepository.setCountryName(r.country.toString());
     });
   }
 }

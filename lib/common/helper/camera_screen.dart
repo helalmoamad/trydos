@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -169,30 +170,55 @@ class _CameraScreenState extends State<CameraScreen>
                     controller!.buildPreview(),
 
 //todo drop down item list for resolution
-                    Padding(
-                      padding: const EdgeInsets.all(38.0),
-                      child: DropdownButton<ResolutionPreset>(
-                        dropdownColor: Colors.black87,
-                        underline: Container(),
-                        value: currentResolutionPreset,
-                        items: [
-                          for (ResolutionPreset preset in resolutionPresets)
-                            DropdownMenuItem(
-                              value: preset,
-                              child: Text(
-                                preset.toString().split('.')[1].toUpperCase(),
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            )
+                    Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _isVideoCameraSelected
+                              ? Padding(
+                                  padding: EdgeInsetsDirectional.only(start: 10),
+                                  child: Text(
+                                    '0 : $_seconds',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ))
+                              : SizedBox.shrink(),
+                          _isVideoCameraSelected
+                              ? 10.horizontalSpace
+                              : SizedBox.shrink(),
+                          Padding(
+                            padding: const EdgeInsets.all(38.0),
+                            child: DropdownButton<ResolutionPreset>(
+                              dropdownColor: Colors.black87,
+                              underline: Container(),
+                              value: currentResolutionPreset,
+                              items: [
+                                for (ResolutionPreset preset in resolutionPresets)
+                                  DropdownMenuItem(
+                                    value: preset,
+                                    child: Text(
+                                      preset
+                                          .toString()
+                                          .split('.')[1]
+                                          .toUpperCase(),
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                  )
+                              ],
+                              onChanged: (value) {
+                                setState(() {
+                                  currentResolutionPreset = value!;
+                                  _isCameraInitialized = false;
+                                });
+                                onNewCameraSelected(controller!.description);
+                              },
+                              hint: Text("Select item"),
+                            ),
+                          ),
                         ],
-                        onChanged: (value) {
-                          setState(() {
-                            currentResolutionPreset = value!;
-                            _isCameraInitialized = false;
-                          });
-                          onNewCameraSelected(controller!.description);
-                        },
-                        hint: Text("Select item"),
                       ),
                     ),
 
@@ -281,16 +307,6 @@ class _CameraScreenState extends State<CameraScreen>
                             _isVideoCameraSelected
                                 ? Row(
                                     children: [
-                                      Padding(
-                                          padding: EdgeInsetsDirectional.only(
-                                              start: 10),
-                                          child: Text(
-                                            '0 : $_seconds',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold),
-                                          )),
                                       GestureDetector(
                                         onLongPress: () async {
                                           animatedController.forward();
