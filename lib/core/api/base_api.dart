@@ -19,7 +19,8 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
     headers = client.options.headers..['country']= GetIt.I<PrefsRepository>().countryName;
     headers = client.options.headers..[HttpHeaders.acceptLanguageHeader] = LanguageService.languageCode;
     headers.addAll({
-      'User-Agent':'device OS:'+(Platform.isAndroid ? 'Android' : 'IOS')+' , application version: 1.0.0',
+      'User-Agent':'device OS:'+(Platform.isAndroid ? 'Android' : 'IOS')+' '
+          ', application version: 1.0.0',
     });
     options = Options(headers: headers);
   }

@@ -35,9 +35,7 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                 cameras =
                 await availableCameras();
                 File?
-                selectedFile =
-                await Navigator.push<File>(
-                  context,
+                selectedFile =await Navigator.push<File>(context,
                   MaterialPageRoute(
                       builder: (context) => CameraScreen(cameras)),
                 );
