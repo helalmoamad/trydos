@@ -41,10 +41,9 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (context) => CameraScreen(cameras)),
                 );
-                print('file path ${selectedFile!.path}');
+                print('file path ${selectedFile?.path}');
                   onChooseFileFromCameraAction.call(selectedFile);
-                Navigator.of(context)
-                    .pop();
+                Navigator.of(context).pop();
               },
               child: Text(LocaleKeys
                   .camera
@@ -55,7 +54,7 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                   () async {
                 AssetEntity? assetEntity = await HelperFunctions.getAssetFromCamera(context);
                 if (assetEntity != null) {
-                  File file = (await assetEntity.originFile)!;
+                  File? file = (await assetEntity.originFile);
                   onChooseFileFromCameraAction.call(file);
                 }
                 Navigator.of(context).pop();

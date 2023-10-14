@@ -130,18 +130,21 @@ class _NameFormFieldState extends State<NameFormField> {
     return Stack(
       alignment: Alignment.center,
       children: [
-        DottedBorder(
-          borderPadding: EdgeInsets.zero,
-          padding: EdgeInsets.zero,
-          borderType: BorderType.RRect,
-          strokeCap: StrokeCap.round,
-          strokeWidth: 0.5,
-          dashPattern: [3, 3],
-          radius: Radius.circular(20.0),
-          color: widget.ready ? const Color(0xff388CFF) : const Color(0xff5D5C5D),
-          child: SizedBox(
-            height: 60,
-            width: 1.sw,
+        Container(height: 60,decoration: BoxDecoration(
+            color: context.colorScheme.white,
+          borderRadius: BorderRadius.circular(20.0),
+        ),),
+        SizedBox(
+          height: 60,
+          child: DottedBorder(
+            borderPadding: EdgeInsets.zero,
+            padding: EdgeInsets.zero,
+            borderType: BorderType.RRect,
+            strokeCap: StrokeCap.round,
+            strokeWidth: 0.5,
+            dashPattern: [3, 3],
+            radius: Radius.circular(20.0),
+            color: widget.ready ? const Color(0xff388CFF) : const Color(0xff5D5C5D),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: TextFormField(
@@ -188,9 +191,7 @@ class _NameFormFieldState extends State<NameFormField> {
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   focusedBorder: InputBorder.none,
-                  fillColor: context.colorScheme.white,
-                  filled: true,
-                  contentPadding: HWEdgeInsets.only(top: 25 , left: 20,bottom: 25),
+                  contentPadding: HWEdgeInsets.only(top: 10 , left: 20 , bottom: 0),
                   prefixIcon: widget.prefixIcon,
                   suffixIcon: Padding(
                     padding: HWEdgeInsets.only(bottom: 20),

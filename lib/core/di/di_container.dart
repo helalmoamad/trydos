@@ -23,7 +23,6 @@ abstract class AppModule {
   BaseOptions get dioOption => BaseOptions(
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
-
         contentType: 'application/json',
         responseType: ResponseType.json,
         headers: <String, String>{

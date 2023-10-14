@@ -567,13 +567,16 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         widget.onSendFile(audioFile, 'voice');
                                         recordingNotifier.value = false;
                                       },
-                                      child: SvgPicture.asset(
-                                        AppAssets.messageReadArrowSvg,
-                                        width: 20.w,
-                                        height: 20,
+                                      child: Padding(
+                                        padding: HWEdgeInsets.all(10.0),
+                                        child: SvgPicture.asset(
+                                          AppAssets.messageReadArrowSvg,
+                                          width: 20.w,
+                                          height: 20,
+                                        ),
                                       ),
                                     ),
-                                    24.horizontalSpace,
+                                    14.horizontalSpace,
                                   ],
                                 )
                               : Row(

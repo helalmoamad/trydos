@@ -164,3 +164,11 @@ class LoginToStoriesEvent extends AuthEvent {
   // TODO: implement props
   List<Object?> get props => [otpIdToken , phone,originalUserId];
 }
+
+class GetUserCountryEvent extends AuthEvent{
+  GetUserCountryEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props =>[];
+}

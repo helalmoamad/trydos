@@ -44,7 +44,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
     return BlocListener<AuthBloc, AuthState>(
   listener: (context, state) {
     if (state.verifyOtpSignInStatus == VerifyOtpSignInStatus.failure) {
-     showMessage(state.signInErrorMessage ?? 'No Error Message');
+     showMessage(state.signInErrorMessage ?? 'No Error Message' , showInRelease: true);
         return;
       }
     if (state.verifyOtpSignInStatus ==

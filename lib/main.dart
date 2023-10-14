@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/di/di_container.dart';
 import 'package:trydos/features/app/blocs/sensitive_connectivity/connectivity_observer.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
@@ -37,22 +38,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await configureDependencies();
-
-var client=Dio();
-  var  addressInfo= await client.get('http://ip-api.com/json');
-  Map<String,dynamic> jsonResponse=convert.jsonDecode(addressInfo.toString());
-print('addressInfo ${addressInfo}  runType ${addressInfo.runtimeType}');
-print('json reponse ${jsonResponse['country']}');
-
-  await  GetIt.I<PrefsRepository>().setCountryName(jsonResponse['country']);
   isDependencyInitialized = true;
+  HttpOverrides.global = MyHttpOverrides();
+  GetIt.I<AuthBloc>().add(GetUserCountryEvent());
   await NotificationProcess().init();
-  RemoteMessage? openedMessage =
-      await FirebaseMessaging.instance.getInitialMessage();
+  RemoteMessage? openedMessage = await FirebaseMessaging.instance.getInitialMessage();
   if (initialMessage != null) {
     print('hello');
-    initialMessage =
-        Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
+    initialMessage = Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
   }
   await NotificationProcess().setupInteractedMessage();
   await NotificationProcess().fcmToken();
@@ -73,7 +66,6 @@ print('json reponse ${jsonResponse['country']}');
   // Isolate.current.addErrorListener(RawReceivePort((pair) async {
   //   final List<dynamic> errorAndStacktrace = pair;
   // }).sendPort);
-  HttpOverrides.global = MyHttpOverrides();
   await dealWithTimer();
   runApp(TrydosApplication(
     navKey: navigatorKey,

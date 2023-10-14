@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -44,16 +45,20 @@ FToast fToast = FToast();
 showMessage(
     String message, {
       bool hasError = true,
+      bool showInRelease = false,
       Color? backGroundColor,
       Color? foreGroundColor,
       Toast timeShowing = Toast.LENGTH_LONG,
     }) {
-  Fluttertoast.cancel().then((value) => Fluttertoast.showToast(
-    msg: message,
-    backgroundColor: Colors.white,
-    textColor: foreGroundColor ?? Colors.red,
-    fontSize: 16,
-    toastLength: timeShowing,
-    gravity: ToastGravity.BOTTOM,
-  ));
+  if (kDebugMode || showInRelease) {
+    Fluttertoast.cancel().then((value) =>
+        Fluttertoast.showToast(
+          msg: message,
+          backgroundColor: Colors.white,
+          textColor: foreGroundColor ?? Colors.red,
+          fontSize: 16,
+          toastLength: timeShowing,
+          gravity: ToastGravity.BOTTOM,
+        ));
+  }
 }

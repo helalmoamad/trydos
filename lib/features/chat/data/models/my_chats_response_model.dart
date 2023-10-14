@@ -14,7 +14,7 @@ class MyChatsResponseModel {
   final bool? hasContent;
   final int? code;
   final String? message;
-  final String? detailedError;
+  final List<dynamic>? detailedError;
   final Data? data;
 
   MyChatsResponseModel({
