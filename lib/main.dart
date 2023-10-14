@@ -46,6 +46,8 @@ print('json reponse ${jsonResponse['country']}');
 
   await  GetIt.I<PrefsRepository>().setCountryName(jsonResponse['country']);
   isDependencyInitialized = true;
+
+
   await NotificationProcess().init();
   RemoteMessage? openedMessage =
       await FirebaseMessaging.instance.getInitialMessage();

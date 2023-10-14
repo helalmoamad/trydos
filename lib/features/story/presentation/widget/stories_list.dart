@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'package:cloudinary_public/cloudinary_public.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/story/helper_functions/check_showing_stories.dart';
@@ -74,7 +78,8 @@ class StoriesList extends StatelessWidget {
                                                   ),
                                                   onTap: () async {
                                                     if (GetIt.I<PrefsRepository>()
-                                                            .isVerifiedPhone ==false) {
+                                                            .isVerifiedPhone ==
+                                                        false) {
                                                       context.go(GRouter
                                                           .config
                                                           .applicationRoutes
@@ -88,24 +93,94 @@ class StoriesList extends StatelessWidget {
                                                             return GalleryAndCameraDialogWidget(
                                                                 onChooseFileFromCameraAction:
                                                                     (File?
-                                                                        file) {
+                                                                        file) async {
+                                                                      // final cloudinary = CloudinaryPublic('CLOUD_NAME', 'UPLOAD_PRESET', cache: false);
+
+                                                                      print('ppppppp');
+                                                              print(GetIt.I<
+                                                                      PrefsRepository>()
+                                                                  .chatToken);
+                                                              print(GetIt.I<
+                                                                  PrefsRepository>()
+                                                                  .marketToken);
                                                               if (file !=
                                                                   null) {
                                                                 GetIt.I<StoryBloc>().add(
                                                                     UploadStoryEvent(
                                                                         file));
+                                                                // Fluttertoast
+                                                                //     .showToast(
+                                                                //         msg:
+                                                                //             'camera');
+
+
+                                                                // Fluttertoast
+                                                                //     .showToast(
+                                                                //         msg:
+                                                                //             'gallrey');
+                                                                // final cloudinary = CloudinaryPublic('djooohujg', 'v4h8xqns', cache: false);
+
+                                                                // CloudinaryResponse response = await cloudinary.uploadFile(
+                                                                //   CloudinaryFile.fromFile(file.path, resourceType: CloudinaryResourceType.Image),
+                                                                // );
+                                                                // print('secureUrl');
+                                                                //
+                                                                // print(response.secureUrl);
+
+                                                                // try {
+                                                                //   Response response =await Dio().post(
+                                                                //       'https://api.cloudinary.com/v1_1/djooohujg/uplaod',
+                                                                //       data: FormData
+                                                                //           .fromMap({
+                                                                //         "file":
+                                                                //             await MultipartFile.fromFile(
+                                                                //           file.path,
+                                                                //         ),
+                                                                //         "upload_preset":
+                                                                //             'v4h8xqns'
+                                                                //       }));
+                                                                //
+                                                                //   print(
+                                                                //       'response cloudinary ${response.data} ss');
+                                                                // } catch (e) {
+                                                                //   debugPrint(
+                                                                //       'catch cloudinary');
+                                                                // }
                                                               }
                                                             }, onChooseFileFromGalleryAction:
                                                                     (AssetEntity?
                                                                         assetEntity) async {
                                                               if (assetEntity !=
                                                                   null) {
+
                                                                 File file =
                                                                     (await assetEntity
                                                                         .originFile)!;
                                                                 GetIt.I<StoryBloc>().add(
                                                                     UploadStoryEvent(
                                                                         file));
+                                                                // Fluttertoast
+                                                                //     .showToast(
+                                                                //         msg:
+                                                                //             'gallrey');
+                                                                // try {
+                                                                //   var response = Dio().post(
+                                                                //       'https://api.cloudinary.com/v1_1/djooohujg/uplaod',
+                                                                //       data: FormData
+                                                                //           .fromMap({
+                                                                //         "file":
+                                                                //             await MultipartFile.fromFile(
+                                                                //           file.path,
+                                                                //         ),
+                                                                //         "upload_preset":
+                                                                //             'v4h8xqns'
+                                                                //       }));
+                                                                //   print(
+                                                                //       'response cloudinary $response ');
+                                                                // } catch (e) {
+                                                                //   debugPrint(
+                                                                //       'catch cloudinary');
+                                                                // }
                                                               }
                                                             });
                                                           });

@@ -168,6 +168,21 @@ class _CameraScreenState extends State<CameraScreen>
               //todo show a live camera
               controller!.buildPreview(),
 
+_isVideoCameraSelected?
+              Align(
+
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(top: 55.0),
+                  child: Text(
+                  '0 : $_seconds',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold),
+              ),
+                ),):Container(),
+
 //todo drop down item list for resolution
               Padding(
                 padding: const EdgeInsets.all(38.0),
@@ -279,65 +294,52 @@ class _CameraScreenState extends State<CameraScreen>
                         ),
                       ),
                       _isVideoCameraSelected
-                          ? Row(
-                        children: [
-                          Padding(
-                              padding: EdgeInsetsDirectional.only(
-                                  start: 10),
-                              child: Text(
-                                '0 : $_seconds',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold),
-                              )),
-                          GestureDetector(
-                            onLongPress: () async {
-                              animatedController.forward();
-                              await startVideoRecording();
-                            },
-                            onLongPressUp: () async {
-                              if (_isRecordingInProgress) {
-                                animatedController.stop();
-                                // _resetTimer();
-                                XFile? rawVideo =
-                                await stopVideoRecording();
-                                File videoFile =
-                                File(rawVideo!.path);
+                          ?                           GestureDetector(
+                        onLongPress: () async {
+                          animatedController.forward();
+                          await startVideoRecording();
+                        },
+                        onLongPressUp: () async {
+                          if (_isRecordingInProgress) {
+                            animatedController.stop();
+                            // _resetTimer();
+                            XFile? rawVideo =
+                            await stopVideoRecording();
+                            File videoFile =
+                            File(rawVideo!.path);
 
-                                Navigator.pop(context, videoFile);
-                              }
-                            },
-                            child: Container(
-                              width: 75,
-                              height: 75,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white24,
-                                // borderRadius: BorderRadius.circular(20)
-                              ),
-                              // width: 120,
-                              // height: 90,
-                              // color: Colors.amber,
-                              child: LayoutBuilder(
-                                builder: (context,
-                                    BoxConstraints constraints) {
-                                  return AnimatedBuilder(
-                                    animation: animatedController,
-                                    builder: (context, child) {
-                                      return CircularProgressIndicator(
-                                        color: Colors.red,
-                                        value: animatedController
-                                            .value,
-                                      );
-                                    },
+                            Navigator.pop(context, videoFile);
+                          }
+                        },
+                        child: Container(
+                          width: 75,
+                          height: 75,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white24,
+                            // borderRadius: BorderRadius.circular(20)
+                          ),
+                          // width: 120,
+                          // height: 90,
+                          // color: Colors.amber,
+                          child: LayoutBuilder(
+                            builder: (context,
+                                BoxConstraints constraints) {
+                              return AnimatedBuilder(
+                                animation: animatedController,
+                                builder: (context, child) {
+                                  return CircularProgressIndicator(
+                                    color: Colors.red,
+                                    value: animatedController
+                                        .value,
                                   );
                                 },
-                              ),
-                            ),
-                          )
-                        ],
+                              );
+                            },
+                          ),
+                        ),
                       )
+
                           : InkWell(
                         onTap: () async {
                           XFile? rawImage = await takePicture();
