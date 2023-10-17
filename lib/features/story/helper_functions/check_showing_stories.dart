@@ -26,6 +26,23 @@ int firstWhereNotShowed(List<Story> stories) {
   return index;
 }
 
+int lastWhereNotShowed(List<Story> stories)
+{
+  stories.lastIndexWhere((element) => element.isSeen==false);
+  int index = 0;
+  stories.forEach((element) {
+    if (element.isSeen!) {
+      index++;
+    }
+//    todo  remember to break when meat first story not seen
+//    else break;
+  });
+
+  if (stories.length == index) return index - 1;
+  return index;
+
+}
+
 int firstWhereNotShowedStoryCollection(List<Story> stories) {
   int index = 0;
   stories.forEach((element) {

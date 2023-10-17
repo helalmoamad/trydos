@@ -24,6 +24,7 @@ abstract class AppModule {
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         contentType: 'application/json',
+
         responseType: ResponseType.json,
         headers: <String, String>{
           HttpHeaders.acceptHeader: 'application/json',
@@ -46,7 +47,7 @@ abstract class AppModule {
   @singleton
   Dio dio(BaseOptions option, Logger logger) {
     final dio = Dio(option);
-    dio.interceptors.add(LoggerInterceptor());
+     dio.interceptors.add(LoggerInterceptor());
     return dio;
   }
 }

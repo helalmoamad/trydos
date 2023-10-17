@@ -228,6 +228,8 @@ class Datum {
 }
 
 class Story {
+  int? height;
+  int? width;
   int? id;
   dynamic cutVideoName;
   dynamic cutVideoPath;
@@ -244,6 +246,8 @@ class Story {
   List<dynamic>? media;
   bool isInitialStory;
   Story({
+    this.height,
+    this.width,
     this.isInitialStory=false,
     this.id,
     this.cutVideoName,
@@ -262,6 +266,8 @@ class Story {
   });
 
   Story copyWith({
+    int? width,
+    int? height,
     bool? isInitialStory,
     int? id,
     dynamic cutVideoName,
@@ -279,6 +285,8 @@ class Story {
     List<dynamic>? media,
   }) =>
       Story(
+        height: height??this.height,
+        width: width??this.width,
         isInitialStory: isInitialStory??this.isInitialStory,
         id: id ?? this.id,
         cutVideoName: cutVideoName ?? this.cutVideoName,
@@ -297,6 +305,7 @@ class Story {
       );
 
   factory Story.fromJson(Map<String, dynamic> json) => Story(
+
     id: json["id"],
     cutVideoName: json["cut_video_name"],
     cutVideoPath: json["cut_video_path"],
