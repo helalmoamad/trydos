@@ -69,6 +69,7 @@ class _ImageMessageState extends State<ImageMessage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.imageFile);
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
@@ -281,9 +282,9 @@ class _ImageMessageState extends State<ImageMessage> {
                       //todo until i solve the translate
                       widget.isFirstMessage
                           ?
-//                          Transform.translate(
-//                              offset: Offset(widget.isSent ? 15.w : -15.w, 0),
-//                              child:
+                         Transform.translate(
+                             offset: Offset(widget.isSent ? 15.w : -15.w, 0),
+                             child:
                               Stack(
                                 alignment: Alignment.center,
                                 children: [
@@ -341,8 +342,8 @@ class _ImageMessageState extends State<ImageMessage> {
                                           name: widget.userMessageName)
                                 ],
                               )
-//                      ,
-//                            )
+                     ,
+                           )
                           : const SizedBox.shrink()
                     ],
                   ),

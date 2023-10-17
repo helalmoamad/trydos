@@ -19,6 +19,7 @@ import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart'
 import 'package:trydos/features/chat/presentation/manager/helper_function_for_chat_bloc/merge_the_old_chat_with_new.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../core/domin/usecases/upload_file_cloudinary_usecase.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../../data/models/my_contacts_response_model.dart';
 import '../../domain/use_cases/upload_file_usecase.dart';
@@ -44,7 +45,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       this.saveContactsUseCase,
       this.sendMessageUseCase,
       this.getMessagesBetweenUseCase,
-      this.uploadFileUseCase,
+      this.uploadFileCloudinaryUseCase,
       this.getMessagesForChatUseCase,
       this.deleteChatUseCase,
       this.changeChatPropertyUseCase,
@@ -76,7 +77,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final SaveContactsUseCase saveContactsUseCase;
   final GetContactsUseCase getContactsUseCase;
   final GetMyChatsUseCase getMyChatsUseCase;
-  final UploadFileUseCase uploadFileUseCase;
+  final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
   final ReadAllMessagesUseCase readAllMessagesUseCase;
   final ReceiveMessageUseCase receiveMessageUseCase;
   final DeleteChatUseCase deleteChatUseCase;
@@ -420,8 +421,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       print(messages[index].id);
       parentMessageId = messages[index].id;
     }
-    print('parent sneder id: ${event.senderParentMessageId}');
-    print('parent sneder id2: $parentMessageId');
     messages.insert(
         0,
         Message(
@@ -463,12 +462,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         pinnedChats: !fromPinned ? state.pinnedChats : chats,
         channelId: event.channelId));
     final response =
-        await uploadFileUseCase(UploadFileParams(event.file, event.filePath));
+        await uploadFileCloudinaryUseCase(UploadFileCloudinaryParams(file: event.file , usingSendProgressFunction: false , usingOnUploadingFinishedFunction: false));
     response.fold(
         (l) =>
             emit(state.copyWith(sendMessageStatus: SendMessageStatus.failure)),
         (r) {
-      _prefsRepository.setAFilePathExist(r.data!.filePath!);
+      _prefsRepository.setAFilePathExist(r.secureUrl!);
       add(SendMessageEvent(
           messageId: event.messageId,
           extraFields: event.extraFields,
@@ -479,7 +478,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           parentMessageContent: event.parentMessageContent,
           mediaContent: [
             {
-              'file_path': r.data!.filePath,
+              'file_path': r.secureUrl!,
               'file_name': event.fileName,
               'caption': 'test image'
             }

@@ -76,6 +76,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   double currentHoverPosition = -1;
   double x = -1, xActionSubtitle = -1, yActionSubtitle = -1;
   late AutoScrollController autoScrollController;
+
   void _scrollToBottom() {
     autoScrollController.jumpTo(0);
   }
@@ -109,7 +110,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         rebuildMessage.value = -1;
       }
       if ((autoScrollController.offset >=
-          autoScrollController.position.maxScrollExtent -400)) {
+          autoScrollController.position.maxScrollExtent - 400)) {
         _loadMoreMessages();
       }
     });
@@ -556,9 +557,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                           reverse: true,
                                           controller: autoScrollController,
                                           itemBuilder: (context, index) {
-                                            List<Message> messages =
-                                                chatState.newSortedChatsByDate![
-                                                    chat.id.toString()]!.reversed.toList();
+                                            List<Message> messages = chatState
+                                                .newSortedChatsByDate![
+                                                    chat.id.toString()]!
+                                                .reversed
+                                                .toList();
                                             if (messages[index].isDateMessage) {
                                               return Column(
                                                 mainAxisSize: MainAxisSize.min,
@@ -585,7 +588,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                         currentScrolledIndex ==
                                                                 index
                                                             ? Colors
-                                                                .black12.withOpacity(0.05)
+                                                                .black12
+                                                                .withOpacity(
+                                                                    0.05)
                                                             : null,
                                                     child: getTheMessageWidget(
                                                       message: messages[index],
@@ -640,11 +645,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                       ChannelMember member = chat.channelMembers!.firstWhere(
                           (element) =>
                               element.userId != _prefsRepository.myChatId);
-                      String fileName = 'Trydos-${DateTime.now()}';
                       chatBloc.add(UploadFileEvent(
                           file: file,
                           channelId: chat.id.toString(),
-                          fileName: fileName,
                           filePath: type == 'image'
                               ? 'images/test'
                               : type == 'file'
@@ -652,6 +655,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                   : type == 'video'
                                       ? 'videos/test'
                                       : 'voices/test',
+                          fileName: file.path ,
                           messageType: type == 'image'
                               ? 'ImageMessage'
                               : type == 'file'
@@ -870,7 +874,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       Future.delayed(
         Duration(milliseconds: 800),
         () {
-          currentScrolledIndex=-1;
+          currentScrolledIndex = -1;
           rebuildMessage.value = -1;
         },
       );
@@ -892,7 +896,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
     if (message.file == null &&
         filePath != null &&
         _prefsRepository.isAFilePathExist(filePath)) {
-      File? file = File(FileSaving().getFilePath(filePath.split('/').last));
+      File? file = File(message.mediaMessageContent![0].fileName!);
       message = message.copyWith(file: file, checkedExistence: true);
     }
     MessageStatus? messageStatus = message.messageStatus

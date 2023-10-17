@@ -14,12 +14,12 @@ import 'detect_server.dart';
 typedef whenComplete = FutureOr<void> Function();
 
 class PostClient<T> extends BaseApi<T> {
-  whenComplete? whenComplete1;
-// bool tryAgain;
+  final void Function(bool isUploadingSuccess)? onUploadingFinished;
+
   PostClient({
     required this.requestPrams,
     required this.serverName,
-    this.whenComplete1,
+    this.onUploadingFinished,
     this.onSendProgress,
     this.onReceiveProgress,
   })  : _fromJson = requestPrams.response.fromJson,
@@ -46,7 +46,6 @@ class PostClient<T> extends BaseApi<T> {
 
   @override
   Future<T> call() async {
-    late Response response;
     try {
       final baseUri = getBaseUriForSpecificServer(serverName);
       //todo just in case the server is Cloudinary i want to clear the header
@@ -57,7 +56,7 @@ class PostClient<T> extends BaseApi<T> {
       }
 
       stopWatch.start();
-      response = await client
+     final Response response = await client
           .postUri(
         Uri(
           host: baseUri.host,
@@ -72,10 +71,13 @@ class PostClient<T> extends BaseApi<T> {
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       )
-          .whenComplete(() {
-            debugPrint('res ${response.statusCode}');
-        response.statusCode == 200 ? whenComplete1?.call() : null;
-      });
+          .then((response) {
+        onUploadingFinished?.call(true);
+        return response;
+      }).catchError((error , errorStack) {
+       onUploadingFinished?.call(false);
+       return error;
+     });
       stopWatch.stop();
 
       if (response.statusCode == StatusCode.operationSucceeded.code) {
@@ -85,19 +87,9 @@ class PostClient<T> extends BaseApi<T> {
 
         return _fromJson!(response.data);
       } else {
-        //if(tryAgain==false)
         throw getException(
-
             statusCode: response.statusCode!,
             message: response.data['message']);
-
-      //else
-      //   throw getException(
-      //   tryAgain:true
-      //       statusCode: response.statusCode!,
-      //       message: response.data['message']);
-      //
-
       }
     } catch (exception) {
       rethrow;

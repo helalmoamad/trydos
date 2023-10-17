@@ -16,18 +16,20 @@ class CommonUseRemoteDataSource
       Map<String, dynamic> params) {
     PostClient<UploadFileCloudinaryResponseModel> uploadCloudinaryFile =
     PostClient<UploadFileCloudinaryResponseModel>(
-      whenComplete1:
+        onUploadingFinished:
 
-      params['isWhenComplete']?
-      (() {
-        LocalNotificationService().uploadingNotification(0, 0, false);
+      params['usingOnUploadingFinishedFunction']?
+      ((bool isUploadingSuccess) {
+        LocalNotificationService().uploadingNotification(0, 0, false,isUploadingSuccess);
       }):null,
       onSendProgress:
-          params['isWhenComplete']?
+          params['usingSendProgressFunction']?
           (count, total) {
-            LocalNotificationService().uploadingNotification(total, count, true);
+            LocalNotificationService().uploadingNotification(total, count, true,false);
       }:null,
       requestPrams: RequestConfig<UploadFileCloudinaryResponseModel>(
+        receiveTimeout: const Duration(minutes: 5),
+        sendTimeout: const Duration(minutes: 5),
         endpoint: CloudinaryEndPoints.uploadEP,
         data: params['data'],
         response: ResponseValue<UploadFileCloudinaryResponseModel>(

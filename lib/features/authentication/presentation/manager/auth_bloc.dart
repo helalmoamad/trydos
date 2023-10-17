@@ -343,7 +343,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onGetUserCountryEvent(GetUserCountryEvent event, Emitter<AuthState> emit)async {
     final response = await getUserCountryUseCase(NoParams());
-    response.fold((l) {}, (r){
+    response.fold((l) {
+    }, (r){
       _prefsRepository.setCountryName(r.country.toString());
     });
   }
