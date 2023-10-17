@@ -1,9 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import '../../../enums/status_code_type.dart';
 import '../api.dart';
 import '../client_config.dart';
+import '../log_interceptor.dart';
 import 'detect_server.dart';
 
 typedef whenComplete = FutureOr<void> Function();
@@ -44,6 +49,13 @@ class PostClient<T> extends BaseApi<T> {
   Future<T> call() async {
     try {
       final baseUri = getBaseUriForSpecificServer(serverName);
+      //todo just in case the server is Cloudinary i want to clear the header
+      if (serverName == ServerName.cloudinary) {
+        options = Options();
+        client.options.headers = {};
+        // Fluttertoast.showToast(msg: client.options.headers.toString());
+      }
+
       stopWatch.start();
       final Response response = await client
           .postUri(
@@ -62,7 +74,7 @@ class PostClient<T> extends BaseApi<T> {
           )
           .whenComplete(whenComplete1 ?? () => null);
       stopWatch.stop();
-      prettyPrinterI(stopWatch.elapsed.toString());
+
       if (response.statusCode == StatusCode.operationSucceeded.code) {
         if (_fromJson == null) {
           return Future.value(_valueOnSuccess);

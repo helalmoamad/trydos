@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../config/theme/typography.dart';
 import 'package:trydos/service/language_service.dart';
 
@@ -174,7 +175,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                                 height: 40,
                                 width: 40,
                                 child
-                                : CircularProgressIndicator());
+                                : TrydosLoader());
                           else {
                             animatedController.duration =
                                 const Duration(seconds: 4);
@@ -219,8 +220,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                                 );
                               } else {
                                 return Center(
-                                  child: CircularProgressIndicator(
-                                      color: Colors.white),
+                                  child:TrydosLoader(),
                                 );
                               }
                             },
@@ -234,7 +234,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                 case GetStoriesStatus.failure:
                   return Text('failed');
                 case GetStoriesStatus.loading:
-                  return CircularProgressIndicator();
+                  return TrydosLoader();
                 case GetStoriesStatus.init:
                   // TODO: Handle this case.
                   break;

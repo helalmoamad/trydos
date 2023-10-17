@@ -10,6 +10,7 @@ import 'package:trydos/features/app/blocs/sensitive_connectivity/connectivity_ob
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/service/local_notification_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/notification_process.dart';
 import 'package:trydos/trydos_application.dart';
@@ -37,6 +38,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await configureDependencies();
+  //todo initialization for local notification
+  await NotificationService().initNotification();
   isDependencyInitialized = true;
   HttpOverrides.global = MyHttpOverrides();
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());

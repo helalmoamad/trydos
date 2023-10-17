@@ -4,10 +4,11 @@ enum GetStoriesStatus { init, loading, success, failure }
 enum SelectedStoriesStatus { init, loading, success, failure }
 enum SelectedVideoStatus { init, loading, success, failure }
 enum UploadStoryStatus { init, loading, success, failure }
+enum UploadStoryCloudinaryStatus { init, loading, success, failure }
 
 class StoryState {
   UploadStoryStatus uploadStoryStatus;
-
+  UploadStoryCloudinaryStatus uploadStoryCloudinaryStatus;
   GetStoriesStatus getStoriesStatus;
    SelectedStoriesStatus selectedStoriesStatus;
    SelectedVideoStatus selectedVideoStatus;
@@ -18,7 +19,10 @@ class StoryState {
   ImageDetail? imageDetail;
 
   StoryState(
-      {this.uploadStoryStatus=UploadStoryStatus.init,
+      {
+
+        this.uploadStoryCloudinaryStatus=UploadStoryCloudinaryStatus.init,
+        this.uploadStoryStatus=UploadStoryStatus.init,
         this.selectedVideoStatus=SelectedVideoStatus.init,
         this.selectedStoriesStatus=SelectedStoriesStatus.init,
         this.imageDetail,
@@ -29,6 +33,8 @@ class StoryState {
 
   StoryState copyWith(
       {
+        UploadStoryCloudinaryStatus? uploadStoryCloudinaryStatus,
+
         UploadStoryStatus? uploadStoryStatus,
         SelectedVideoStatus? selectedVideoStatus,
         SelectedStoriesStatus? selectedStoriesStatus,
@@ -39,6 +45,7 @@ class StoryState {
       ImageDetail? imageDetail
       }) {
     return StoryState(
+      uploadStoryCloudinaryStatus: uploadStoryCloudinaryStatus??this.uploadStoryCloudinaryStatus,
       uploadStoryStatus: uploadStoryStatus??this.uploadStoryStatus,
       selectedVideoStatus: selectedVideoStatus??this.selectedVideoStatus,
       selectedStoriesStatus: selectedStoriesStatus??this.selectedStoriesStatus,

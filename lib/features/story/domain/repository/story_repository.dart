@@ -4,6 +4,7 @@ import 'package:trydos/features/story/data/models/upload_story_response_model.da
 
 import '../../data/models/get_stories_model.dart';
 import '../../data/models/image_detail.dart';
+import '../../data/models/upload_story_cloudinary_response.dart';
 
 abstract  class StoryRepository
 {
@@ -12,5 +13,6 @@ Future<Either<Failure,GetStoriesModel>> getStories();
 Future<Either<Failure, ImageDetail>> loadWidthAndHeight(
     {required String url});
 Future<Either<Failure,UploadStoryResponseModel>> uploadStory(Map<String , dynamic> params);
+Future<Either<Failure,UploadStoryCloudinaryResponseModel>> uploadCloudinaryStory(Map<String , dynamic> params);
 
 } 
