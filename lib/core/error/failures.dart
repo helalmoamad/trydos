@@ -17,3 +17,8 @@ class OperationFailedFailure extends Failure {
 class DioFailure extends Failure {
   const DioFailure({String? message}) : super(message ?? "DioFailure");
 }
+
+class TryAgainFailure extends Failure {
+  final int tryCount;
+  const TryAgainFailure({String? message , required this.tryCount}) : super(message ?? "TryAgainFailure");
+}

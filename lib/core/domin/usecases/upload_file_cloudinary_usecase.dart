@@ -9,10 +9,6 @@ import 'package:trydos/core/data/model/upload_file_cloudinary_response.dart';
 import 'package:trydos/core/domin/repositories/common_use_repository.dart';
 import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/core/use_case/use_case.dart';
-
-import '../../../features/story/data/models/upload_story_cloudinary_response.dart';
-import '../../../features/story/domain/repository/story_repository.dart';
-
 @injectable
 class UploadFileCloudinaryUseCase extends UseCase<
     UploadFileCloudinaryResponseModel, UploadFileCloudinaryParams> {
