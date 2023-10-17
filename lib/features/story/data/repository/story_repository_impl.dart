@@ -42,10 +42,7 @@ class StoryRepositoryImpl extends StoryRepository
 
   }
 
-  @override
-  Future<Either<Failure, UploadStoryCloudinaryResponseModel>> uploadCloudinaryStory(Map<String, dynamic> params) {
-    return handlingExceptionRequest(tryCall:()=> storyDataSource.uploadCloudinaryStory(params) );
-  }
+
 
 
 }

@@ -11,7 +11,7 @@ import 'package:trydos/core/api/client_config.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/post.dart';
 import 'package:trydos/features/story/data/models/upload_story_cloudinary_response.dart';
-import 'package:trydos/features/story/domain/useCases/upload_story_cloudinary_usecase.dart';
+import 'package:trydos/core/domin/usecases/upload_file_cloudinary_usecase.dart';
 
 import '../../../../core/api/methods/get.dart';
 import '../../../../service/local_notification_service.dart';
@@ -84,26 +84,5 @@ class StoriesDataSource {
     return uploadStory();
   }
 
-  Future<UploadStoryCloudinaryResponseModel> uploadCloudinaryStory(
-      Map<String, dynamic> params) {
-    PostClient<UploadStoryCloudinaryResponseModel> uploadCloudinaryStory =
-        PostClient<UploadStoryCloudinaryResponseModel>(
-      whenComplete1: (() {
-        NotificationService().uploadingNotification(0, 0, false);
-      }),
-      onSendProgress: (count, total) {
-        NotificationService().uploadingNotification(total, count, true);
-      },
-      requestPrams: RequestConfig<UploadStoryCloudinaryResponseModel>(
-        endpoint: CloudinaryEndPoints.uploadEP,
-        data: params['data'],
-        response: ResponseValue<UploadStoryCloudinaryResponseModel>(
-            fromJson: (response) =>
-                UploadStoryCloudinaryResponseModel.fromJson(response)),
-      ),
-      serverName: ServerName.cloudinary,
-    );
-    // uploadStory.call();
-    return uploadCloudinaryStory();
-  }
+
 }
