@@ -15,7 +15,7 @@ typedef whenComplete = FutureOr<void> Function();
 
 class PostClient<T> extends BaseApi<T> {
   whenComplete? whenComplete1;
-
+// bool tryAgain;
   PostClient({
     required this.requestPrams,
     required this.serverName,
@@ -85,9 +85,19 @@ class PostClient<T> extends BaseApi<T> {
 
         return _fromJson!(response.data);
       } else {
+        //if(tryAgain==false)
         throw getException(
+
             statusCode: response.statusCode!,
             message: response.data['message']);
+
+      //else
+      //   throw getException(
+      //   tryAgain:true
+      //       statusCode: response.statusCode!,
+      //       message: response.data['message']);
+      //
+
       }
     } catch (exception) {
       rethrow;

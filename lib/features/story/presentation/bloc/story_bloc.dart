@@ -64,9 +64,20 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     emit(state.copyWith(
         uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.loading));
     final response = await uploadFileCloudinaryUseCase
-        (UploadFileCloudinaryParams(file: event.file, isWhenComplete: true,isSendProgress: true));
+        (UploadFileCloudinaryParams(
+
+        file: event.file, isWhenComplete: true,isSendProgress: true));
     // Fluttertoast.showToast(msg: 'tosss');
     response.fold((l) {
+      // if l is TryAgailFailure
+
+
+
+
+
+
+
+
       emit(state.copyWith(
           uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
       // Fluttertoast.showToast(

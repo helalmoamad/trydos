@@ -28,6 +28,9 @@ abstract class HandlingExceptionRequest {
   }
 
   Exception getException({required int statusCode, String? message}) {
+
+    //if(tryAgain==true)
+    //return TryAgainException
     if (statusCode == StatusCode.operationFailed.code) {
       return OperationFailedException(message: message);
     } else {
