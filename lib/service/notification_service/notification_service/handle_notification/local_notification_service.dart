@@ -77,7 +77,7 @@ class LocalNotificationService {
     GetIt.I<ChatBloc>().add(NotifyThatIReceivedMessageEvent(channelId: channelId));
    }
 
-  Future<void> uploadingNotification(maxProgress, progress, isUploading) async {
+  Future<void> uploadingNotification(maxProgress, progress, isUploading , bool isUploadingSuccess) async {
     if (isUploading) {
       final AndroidNotificationDetails androidPlatformChannelSpecifics =
       AndroidNotificationDetails(
@@ -118,7 +118,7 @@ class LocalNotificationService {
       NotificationDetails(android: androidPlatformChannelSpecifics);
       await _localNotificationPlugin.show(
         5,
-        'upload story success',
+        isUploadingSuccess ? 'upload story success' : 'upload story failed',
         '',
         platformChannelSpecifics,
       );
