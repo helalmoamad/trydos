@@ -13,6 +13,5 @@ Future<Either<Failure,GetStoriesModel>> getStories();
 Future<Either<Failure, ImageDetail>> loadWidthAndHeight(
     {required String url});
 Future<Either<Failure,UploadStoryResponseModel>> uploadStory(Map<String , dynamic> params);
-Future<Either<Failure,UploadStoryCloudinaryResponseModel>> uploadCloudinaryStory(Map<String , dynamic> params);
 
 } 

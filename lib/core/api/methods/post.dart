@@ -17,8 +17,6 @@ class PostClient<T> extends BaseApi<T> {
   whenComplete? whenComplete1;
 
   PostClient({
-    this.isSendProgress = false,
-    this.isWhenComplete = false,
     required this.requestPrams,
     required this.serverName,
     this.whenComplete1,
@@ -39,8 +37,6 @@ class PostClient<T> extends BaseApi<T> {
   final ProgressCallback? onReceiveProgress;
   final Duration? _receiveTimeout;
   final Duration? _sendTimeout;
-  final bool isSendProgress;
-  final bool isWhenComplete;
   final FromJson<T>? _fromJson;
   final T? _valueOnSuccess;
   final dynamic _queryParameters;
@@ -50,6 +46,7 @@ class PostClient<T> extends BaseApi<T> {
 
   @override
   Future<T> call() async {
+    late Response response;
     try {
       final baseUri = getBaseUriForSpecificServer(serverName);
       //todo just in case the server is Cloudinary i want to clear the header
@@ -60,22 +57,25 @@ class PostClient<T> extends BaseApi<T> {
       }
 
       stopWatch.start();
-      final Response response = await client
+      response = await client
           .postUri(
-            Uri(
-              host: baseUri.host,
-              scheme: baseUri.scheme,
-              path: _endpoint,
-              queryParameters: _queryParameters,
-            ),
-            options: options.copyWith(
-                receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
-                sendTimeout: _sendTimeout ?? options.sendTimeout),
-            data: _data,
-            onSendProgress: onSendProgress,
-            onReceiveProgress: onReceiveProgress,
-          )
-          .whenComplete(whenComplete1 ?? () => null);
+        Uri(
+          host: baseUri.host,
+          scheme: baseUri.scheme,
+          path: _endpoint,
+          queryParameters: _queryParameters,
+        ),
+        options: options.copyWith(
+            receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
+            sendTimeout: _sendTimeout ?? options.sendTimeout),
+        data: _data,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      )
+          .whenComplete(() {
+            debugPrint('res ${response.statusCode}');
+        response.statusCode == 200 ? whenComplete1?.call() : null;
+      });
       stopWatch.stop();
 
       if (response.statusCode == StatusCode.operationSucceeded.code) {

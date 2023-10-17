@@ -21,7 +21,7 @@ import 'package:trydos/features/story/data/models/image_detail.dart';
 import 'package:trydos/features/story/data/models/upload_story_response_model.dart';
 import 'package:trydos/features/story/domain/useCases/get_stories_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
-import 'package:trydos/core/use_case/upload_file_cloudinary_usecase.dart';
+import 'package:trydos/core/domin/usecases/upload_file_cloudinary_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/upload_story_usecase.dart';
 
 import '../../../../core/error/failures.dart';
@@ -42,11 +42,11 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 @LazySingleton()
 class StoryBloc extends Bloc<StoryEvent, StoryState> {
   final GetStoryUseCase getStoryUseCase;
-  final UploadFileCloudinaryUseCase uploadStoryCloudinaryUseCase;
+  final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
   final UploadStoryUseCase uploadStoryUseCase;
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
 
-  StoryBloc(this.uploadStoryCloudinaryUseCase, this.getStoryUseCase,
+  StoryBloc(this.uploadFileCloudinaryUseCase, this.getStoryUseCase,
       this.getWidthAndHeightUseCase, this.uploadStoryUseCase)
       : super(StoryState()) {
     on<UploadStoryEvent>(_uploadStoryEvent);
@@ -63,8 +63,8 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
       UploadStoryCloudinaryEvent event, Emitter emit) async {
     emit(state.copyWith(
         uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.loading));
-    final response = await uploadStoryCloudinaryUseCase
-        .call(UploadStoryCloudinaryParams(file: event.file));
+    final response = await uploadFileCloudinaryUseCase
+        (UploadFileCloudinaryParams(file: event.file, isWhenComplete: true,isSendProgress: true));
     // Fluttertoast.showToast(msg: 'tosss');
     response.fold((l) {
       emit(state.copyWith(
