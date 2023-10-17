@@ -17,6 +17,8 @@ class PostClient<T> extends BaseApi<T> {
   whenComplete? whenComplete1;
 
   PostClient({
+    this.isSendProgress = false,
+    this.isWhenComplete = false,
     required this.requestPrams,
     required this.serverName,
     this.whenComplete1,
@@ -37,7 +39,8 @@ class PostClient<T> extends BaseApi<T> {
   final ProgressCallback? onReceiveProgress;
   final Duration? _receiveTimeout;
   final Duration? _sendTimeout;
-
+  final bool isSendProgress;
+  final bool isWhenComplete;
   final FromJson<T>? _fromJson;
   final T? _valueOnSuccess;
   final dynamic _queryParameters;

@@ -11,15 +11,15 @@ import 'package:trydos/common/constant/configuration/cloudinary_url_routes.dart'
 import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 
-import '../../data/models/upload_story_cloudinary_response.dart';
-import '../repository/story_repository.dart';
+import '../../features/story/data/models/upload_story_cloudinary_response.dart';
+import '../../features/story/domain/repository/story_repository.dart';
 
 @injectable
-class UploadStoryCloudinaryUseCase extends UseCase<UploadStoryCloudinaryResponseModel,UploadStoryCloudinaryParams>
+class UploadFileCloudinaryUseCase extends UseCase<UploadStoryCloudinaryResponseModel,UploadStoryCloudinaryParams>
 {
 
   final StoryRepository repository;
-  UploadStoryCloudinaryUseCase(this.repository);
+  UploadFileCloudinaryUseCase(this.repository);
 
 
   @override

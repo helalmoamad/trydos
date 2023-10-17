@@ -11,7 +11,7 @@ import 'package:trydos/core/api/client_config.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/post.dart';
 import 'package:trydos/features/story/data/models/upload_story_cloudinary_response.dart';
-import 'package:trydos/features/story/domain/useCases/upload_story_cloudinary_usecase.dart';
+import 'package:trydos/core/use_case/upload_file_cloudinary_usecase.dart';
 
 import '../../../../core/api/methods/get.dart';
 import '../../../../service/local_notification_service.dart';
@@ -88,6 +88,8 @@ class StoriesDataSource {
       Map<String, dynamic> params) {
     PostClient<UploadStoryCloudinaryResponseModel> uploadCloudinaryStory =
         PostClient<UploadStoryCloudinaryResponseModel>(
+      isSendProgress: true,
+      isWhenComplete: true,
       whenComplete1: (() {
         NotificationService().uploadingNotification(0, 0, false);
       }),

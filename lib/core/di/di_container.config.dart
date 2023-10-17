@@ -74,7 +74,7 @@ import '../../features/chat/domain/use_cases/receive_message_usecase.dart'
 import '../../features/chat/domain/use_cases/save_contacts_usecase.dart'
     as _i33;
 import '../../features/chat/domain/use_cases/send_message_usecase.dart' as _i34;
-import '../../features/chat/domain/use_cases/upload_file_usecase.dart' as _i43;
+import '../../features/chat/domain/use_cases/upload_file_usecase.dart' as _i44;
 import '../../features/chat/presentation/manager/chat_bloc.dart' as _i51;
 import '../../features/chat/presentation/manager/preload_bloc/preloading_videos_bloc.dart'
     as _i28;
@@ -98,8 +98,8 @@ import '../../features/story/domain/repository/story_repository.dart' as _i40;
 import '../../features/story/domain/useCases/get_stories_usecase.dart' as _i55;
 import '../../features/story/domain/useCases/get_width_and_height_usecase.dart'
     as _i56;
-import '../../features/story/domain/useCases/upload_story_cloudinary_usecase.dart'
-    as _i44;
+import '../use_case/upload_file_cloudinary_usecase.dart'
+    as _i43;
 import '../../features/story/domain/useCases/upload_story_usecase.dart' as _i45;
 import '../../features/story/presentation/bloc/story_bloc.dart' as _i58;
 import '../domin/repositories/prefs_repository.dart' as _i27;
@@ -184,10 +184,10 @@ Future<_i1.GetIt> $initGetIt(
       () => _i41.StoryRepositoryImpl(gh<_i39.StoriesDataSource>()));
   gh.factory<_i42.UpdateNameUseCase>(
       () => _i42.UpdateNameUseCase(gh<_i5.AuthRepository>()));
-  gh.factory<_i43.UploadFileUseCase>(
-      () => _i43.UploadFileUseCase(gh<_i9.ChatRepository>()));
-  gh.factory<_i44.UploadStoryCloudinaryUseCase>(
-      () => _i44.UploadStoryCloudinaryUseCase(gh<_i40.StoryRepository>()));
+  gh.factory<_i43.UploadFileCloudinaryUseCase>(
+      () => _i43.UploadFileCloudinaryUseCase(gh<_i40.StoryRepository>()));
+  gh.factory<_i44.UploadFileUseCase>(
+      () => _i44.UploadFileUseCase(gh<_i9.ChatRepository>()));
   gh.factory<_i45.UploadStoryUseCase>(
       () => _i45.UploadStoryUseCase(gh<_i40.StoryRepository>()));
   gh.factory<_i46.VerifyGuestPhoneUseCase>(
@@ -219,7 +219,7 @@ Future<_i1.GetIt> $initGetIt(
         gh<_i33.SaveContactsUseCase>(),
         gh<_i34.SendMessageUseCase>(),
         gh<_i16.GetMessagesBetweenUseCase>(),
-        gh<_i43.UploadFileUseCase>(),
+        gh<_i44.UploadFileUseCase>(),
         gh<_i17.GetMessagesForChatUseCase>(),
         gh<_i12.DeleteChatUseCase>(),
         gh<_i50.ChangeChatPropertyUseCase>(),
@@ -246,7 +246,7 @@ Future<_i1.GetIt> $initGetIt(
         gh<_i54.GetStartingSettingsUseCase>(),
       ));
   gh.lazySingleton<_i58.StoryBloc>(() => _i58.StoryBloc(
-        gh<_i44.UploadStoryCloudinaryUseCase>(),
+        gh<_i43.UploadFileCloudinaryUseCase>(),
         gh<_i55.GetStoryUseCase>(),
         gh<_i56.GetWidthAndHeightUseCase>(),
         gh<_i45.UploadStoryUseCase>(),
