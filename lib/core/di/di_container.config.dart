@@ -225,7 +225,7 @@ Future<_i1.GetIt> $initGetIt(
         gh<_i36.SaveContactsUseCase>(),
         gh<_i37.SendMessageUseCase>(),
         gh<_i19.GetMessagesBetweenUseCase>(),
-        gh<_i47.UploadFileUseCase>(),
+        gh<_i46.UploadFileCloudinaryUseCase>(),
         gh<_i20.GetMessagesForChatUseCase>(),
         gh<_i15.DeleteChatUseCase>(),
         gh<_i53.ChangeChatPropertyUseCase>(),

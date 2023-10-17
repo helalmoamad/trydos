@@ -34,13 +34,13 @@ class UploadFileCloudinaryUseCase extends UseCase<
 class UploadFileCloudinaryParams {
   UploadFileCloudinaryParams(
       {required this.file,
-      required this.isWhenComplete,
-      required this.isSendProgress});
+      required this.usingOnUploadingFinishedFunction,
+      required this.usingSendProgressFunction});
 
   File file;
-  bool isWhenComplete;
+  bool usingOnUploadingFinishedFunction;
 
-  bool isSendProgress;
+  bool usingSendProgressFunction;
 
   Future<Map<String, dynamic>> map() async {
     var data = FormData.fromMap({
@@ -49,6 +49,6 @@ class UploadFileCloudinaryParams {
       ),
       "upload_preset": CloudinaryUrls.LoadPreset
     });
-    return {'data': data ,'isWhenComplete':isWhenComplete,'isSendProgress':isSendProgress };
+    return {'data': data ,'usingOnUploadingFinishedFunction':usingOnUploadingFinishedFunction,'usingSendProgressFunction':usingSendProgressFunction };
   }
 }
