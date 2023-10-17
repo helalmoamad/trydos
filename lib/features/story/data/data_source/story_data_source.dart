@@ -5,12 +5,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
+import 'package:trydos/common/constant/configuration/cloudinary_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
 import 'package:trydos/core/api/client_config.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/post.dart';
+import 'package:trydos/features/story/data/models/upload_story_cloudinary_response.dart';
+import 'package:trydos/features/story/domain/useCases/upload_story_cloudinary_usecase.dart';
 
 import '../../../../core/api/methods/get.dart';
+import '../../../../service/local_notification_service.dart';
 import '../models/get_stories_model.dart';
 import '../models/image_detail.dart';
 import '../models/upload_story_response_model.dart';
@@ -23,25 +27,29 @@ class StoriesDataSource {
       {required String url, Function? onError}) {
     completer = Completer<ImageDetail>();
     Image image;
-    image = Image(image: CachedNetworkImageProvider(url),);
+    image = Image(
+      image: CachedNetworkImageProvider(url),
+    );
 
     image.image
         .resolve(const ImageConfiguration())
         .addListener(ImageStreamListener(
-          (ImageInfo imageInfo,
-          bool _,) {
-        final dimensions = ImageDetail(
-          width: imageInfo.image.width,
-          height: imageInfo.image.height,
-        );
-        if (completer.isCompleted == false) {
-          completer.complete(dimensions);
-        }
-      },
-      onError: (exception, stackTrace) {
-        if (onError != null) onError();
-      },
-    ));
+          (
+            ImageInfo imageInfo,
+            bool _,
+          ) {
+            final dimensions = ImageDetail(
+              width: imageInfo.image.width,
+              height: imageInfo.image.height,
+            );
+            if (completer.isCompleted == false) {
+              completer.complete(dimensions);
+            }
+          },
+          onError: (exception, stackTrace) {
+            if (onError != null) onError();
+          },
+        ));
     return completer.future;
   }
 
@@ -58,27 +66,44 @@ class StoriesDataSource {
     return getStories();
   }
 
-
-  Future<UploadStoryResponseModel> uploadStory(Map<String,dynamic> params) {
-
-      PostClient<UploadStoryResponseModel> uploadStory =
-      PostClient<UploadStoryResponseModel>(
-         onSendProgress: (count, total) {
-
-
-
-         },
-        requestPrams: RequestConfig<UploadStoryResponseModel>(
+  Future<UploadStoryResponseModel> uploadStory(Map<String, dynamic> params) {
+    PostClient<UploadStoryResponseModel> uploadStory =
+        PostClient<UploadStoryResponseModel>(
+      onSendProgress: (count, total) {},
+      requestPrams: RequestConfig<UploadStoryResponseModel>(
         // sendTimeout: Duration(seconds: 10),
         endpoint: StoriesEndPoints.uploadStoriesEP,
         data: params['data'],
-        response: ResponseValue<UploadStoryResponseModel>(fromJson: (response) => UploadStoryResponseModel.fromJson(response)),
+        response: ResponseValue<UploadStoryResponseModel>(
+            fromJson: (response) =>
+                UploadStoryResponseModel.fromJson(response)),
       ),
-
-        serverName: ServerName.stories,);
-      // uploadStory.call();
+      serverName: ServerName.stories,
+    );
+    // uploadStory.call();
     return uploadStory();
   }
 
-
+  Future<UploadStoryCloudinaryResponseModel> uploadCloudinaryStory(
+      Map<String, dynamic> params) {
+    PostClient<UploadStoryCloudinaryResponseModel> uploadCloudinaryStory =
+        PostClient<UploadStoryCloudinaryResponseModel>(
+      whenComplete1: (() {
+        NotificationService().uploadingNotification(0, 0, false);
+      }),
+      onSendProgress: (count, total) {
+        NotificationService().uploadingNotification(total, count, true);
+      },
+      requestPrams: RequestConfig<UploadStoryCloudinaryResponseModel>(
+        endpoint: CloudinaryEndPoints.uploadEP,
+        data: params['data'],
+        response: ResponseValue<UploadStoryCloudinaryResponseModel>(
+            fromJson: (response) =>
+                UploadStoryCloudinaryResponseModel.fromJson(response)),
+      ),
+      serverName: ServerName.cloudinary,
+    );
+    // uploadStory.call();
+    return uploadCloudinaryStory();
+  }
 }

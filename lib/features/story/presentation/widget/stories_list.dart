@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:cloudinary_public/cloudinary_public.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
@@ -49,8 +51,9 @@ class StoriesList extends StatelessWidget {
                                   itemBuilder: (context, index) {
                                     //TODO FIRST ELEMENT IN THE LISTvIEW IT WILL BE THE UPLOAD BUTTON
                                     if (index == 0) {
-                                      return state.uploadStoryStatus ==
-                                              UploadStoryStatus.loading
+                                      return state.uploadStoryCloudinaryStatus ==
+                                              UploadStoryCloudinaryStatus
+                                                  .loading
                                           ? TrydosLoader()
                                           : Padding(
                                               padding:
@@ -91,42 +94,26 @@ class StoriesList extends StatelessWidget {
                                                                 onChooseFileFromCameraAction:
                                                                     (File?
                                                                         file) async {
-                                                              // final cloudinary = CloudinaryPublic('CLOUD_NAME', 'UPLOAD_PRESET', cache: false);
-
                                                               print('ppppppp');
 
                                                               if (file !=
                                                                   null) {
                                                                 GetIt.I<StoryBloc>().add(
-                                                                    UploadStoryEvent(
+                                                                    UploadStoryCloudinaryEvent(
                                                                         file));
 
                                                                 // final cloudinary =
                                                                 //     CloudinaryPublic(
                                                                 //         'djooohujg',
                                                                 //         'v4h8xqns',
-                                                                //         cache:
-                                                                //             false);
+                                                                //         cache:false);
                                                                 // CloudinaryResponse
                                                                 //     response =
                                                                 //     await cloudinary
                                                                 //         .uploadFile(
+                                                                //
+                                                                //
                                                                 //   CloudinaryFile.fromFile(
-                                                                //       file.path,
-                                                                //       resourceType:
-                                                                //           CloudinaryResourceType
-                                                                //               .Image),
-                                                                // );
-                                                                // print('sssssc');
-                                                                // print(response
-                                                                //     .publicId);
-                                                                // Navigator.push(
-                                                                //     context,
-                                                                //     MaterialPageRoute(
-                                                                //       builder: (context) =>
-                                                                //           CloudWidget(
-                                                                //               publicId: response.publicId),
-                                                                //     ));
                                                               }
                                                             }, onChooseFileFromGalleryAction:
                                                                     (AssetEntity?
@@ -137,30 +124,9 @@ class StoriesList extends StatelessWidget {
                                                                     (await assetEntity
                                                                         .originFile)!;
                                                                 GetIt.I<StoryBloc>().add(
-                                                                    UploadStoryEvent(
+                                                                    UploadStoryCloudinaryEvent(
                                                                         file));
-                                                                // Fluttertoast
-                                                                //     .showToast(
-                                                                //         msg:
-                                                                //             'gallrey');
-                                                                // try {
-                                                                //   var response = Dio().post(
-                                                                //       'https://api.cloudinary.com/v1_1/djooohujg/uplaod',
-                                                                //       data: FormData
-                                                                //           .fromMap({
-                                                                //         "file":
-                                                                //             await MultipartFile.fromFile(
-                                                                //           file.path,
-                                                                //         ),
-                                                                //         "upload_preset":
-                                                                //             'v4h8xqns'
-                                                                //       }));
-                                                                //   print(
-                                                                //       'response cloudinary $response ');
-                                                                // } catch (e) {
-                                                                //   debugPrint(
-                                                                //       'catch cloudinary');
-                                                                // }
+
                                                               }
                                                             });
                                                           });
@@ -180,11 +146,9 @@ class StoriesList extends StatelessWidget {
                                               .myStoriesId ==
                                           state.stories[index].stories![0]
                                               .userId) {
-                                        indexOfInitialStory = state
-                                                .stories[index]
-                                                .stories!
-                                                .length -
-                                            1;
+                                        indexOfInitialStory =       state.stories[index].stories!.lastIndexWhere((element) => element.isSeen==false);
+                                        ;
+                                        indexOfInitialStory=indexOfInitialStory==-1?0:indexOfInitialStory;
                                         initialStory = state.stories[index]
                                             .stories![indexOfInitialStory];
                                       } else {
@@ -230,7 +194,7 @@ class StoriesList extends StatelessWidget {
                                                     index: index,
                                                     resize: index == focused,
                                                     firstPhotoNotShowed:
-                                                        initialStory.photoPath!,
+                                                        initialStory.photoPath,
                                                   )
                                                 : StoryItemWidget(
                                                     index: index,

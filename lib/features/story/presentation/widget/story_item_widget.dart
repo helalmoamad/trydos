@@ -53,6 +53,18 @@ class StoryItemWidget extends StatelessWidget {
             alignment: Alignment.center,
             child: Stack(
               children: [
+//todo just in case you to show the behavior of last  story have been seen
+// Container(width: 90,height:90,
+// child: Text('${state.stories[index].stories!.length}'),
+// ),
+// // SizedBox(:)
+// Padding(
+//   padding: const EdgeInsets.all(28.0),
+//   child:   Container(width: 90,height:90,
+//   child: Text('${firstWhereNotShowedStoryCollection(state.stories[index].stories!)}'),
+//   ),
+// )
+
                 Container(
                   clipBehavior: Clip.hardEdge,
                   height: resize ? 190 : 150,
@@ -85,35 +97,35 @@ class StoryItemWidget extends StatelessWidget {
                       clipBehavior: Clip.hardEdge,
                       child: state.stories[index].photoPath == null
                           ? Container(
-                              clipBehavior: Clip.hardEdge,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(180),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0x4dffffff),
-                                    offset: Offset(0, 0),
-                                    blurRadius: 6,
-                                  ),
-                                ],
-                              ),
-                              child:  NoImageWidget(
-                                  height: 40,
-                                  width: 40,
-                                  textStyle: context.textTheme.subtitle1?.br
-                                      .copyWith(
-                                      color: const Color(0xff6638FF),
-                                      letterSpacing: 0.18,
-                                      height: 1.33),
-                                  name:state.stories[index]
-                                      .name==null?'UK':
-                                  HelperFunctions.getTheFirstTwoLettersOfName(
-                                      state.stories[index]
-                                          .name!)),
-                            )
-                          : CachedNetworkImage(
-                              imageUrl: state.stories[index].photoPath,
-                              fit: BoxFit.cover,
+                        clipBehavior: Clip.hardEdge,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(180),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0x4dffffff),
+                              offset: Offset(0, 0),
+                              blurRadius: 6,
                             ),
+                          ],
+                        ),
+                        child:  NoImageWidget(
+                            height: 40,
+                            width: 40,
+                            textStyle: context.textTheme.subtitle1?.br
+                                .copyWith(
+                                color: const Color(0xff6638FF),
+                                letterSpacing: 0.18,
+                                height: 1.33),
+                            name:state.stories[index]
+                                .name==null?'UK':
+                            HelperFunctions.getTheFirstTwoLettersOfName(
+                                state.stories[index]
+                                    .name!)),
+                      )
+                          : CachedNetworkImage(
+                        imageUrl: state.stories[index].photoPath,
+                        fit: BoxFit.cover,
+                      ),
                       height: resize ? 50 : 30,
                       width: resize ? 50 : 30,
                       decoration: BoxDecoration(
@@ -135,6 +147,8 @@ class StoryItemWidget extends StatelessWidget {
                     ),
                   ),
                 ),
+
+
               ],
             ),
           ),

@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/api.dart';
 import 'package:trydos/features/story/data/models/get_stories_model.dart';
+import 'package:trydos/features/story/data/models/upload_story_cloudinary_response.dart';
 import 'package:trydos/features/story/data/models/upload_story_response_model.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 
@@ -39,6 +40,11 @@ class StoryRepositoryImpl extends StoryRepository
   Future<Either<Failure, UploadStoryResponseModel>> uploadStory(Map<String, dynamic> params) {
     return handlingExceptionRequest(tryCall:()=> storyDataSource.uploadStory(params) );
 
+  }
+
+  @override
+  Future<Either<Failure, UploadStoryCloudinaryResponseModel>> uploadCloudinaryStory(Map<String, dynamic> params) {
+    return handlingExceptionRequest(tryCall:()=> storyDataSource.uploadCloudinaryStory(params) );
   }
 
 
