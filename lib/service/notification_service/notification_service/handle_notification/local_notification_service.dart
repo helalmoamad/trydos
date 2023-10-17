@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -76,7 +77,53 @@ class LocalNotificationService {
     GetIt.I<ChatBloc>().add(NotifyThatIReceivedMessageEvent(channelId: channelId));
    }
 
+  Future<void> uploadingNotification(maxProgress, progress, isUploading) async {
+    if (isUploading) {
+      final AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails(
+          "uploading files", "Uploading Files Notifications",
+          channelDescription: "show to user progress for uploading files",
+          channelShowBadge: false,
+          importance: Importance.max,
+          priority: Priority.max,
+          onlyAlertOnce: true,
+          showProgress: true,
+          maxProgress: maxProgress,
+          progress: progress,
+          autoCancel: false);
+      final IosNotificationDetails = DarwinNotificationDetails();
 
+      NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+      await _localNotificationPlugin.show(
+        5,
+        'Uploading story',
+        '',
+        platformChannelSpecifics,
+      );
+    } else {
+      _localNotificationPlugin.cancel(5);
+      AndroidNotificationDetails androidPlatformChannelSpecifics =
+      const AndroidNotificationDetails(
+        "files",
+        "Files Notifications",
+        channelDescription: "Inform user files uploaded",
+        channelShowBadge: false,
+        importance: Importance.max,
+        priority: Priority.high,
+        onlyAlertOnce: true,
+      );
+
+      NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+      await _localNotificationPlugin.show(
+        5,
+        'upload story success',
+        '',
+        platformChannelSpecifics,
+      );
+    }
+  }
   static void _onSelectNotification(NotificationResponse notificationResponse) {
     print('tapped');
     chat.Message myMessage = chat.Message.fromJson(
