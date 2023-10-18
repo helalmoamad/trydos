@@ -17,12 +17,12 @@ import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.da
 import 'package:trydos/features/chat/domain/use_cases/save_contacts_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart';
 import 'package:trydos/features/chat/presentation/manager/helper_function_for_chat_bloc/merge_the_old_chat_with_new.dart';
+import 'package:trydos/main.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/domin/usecases/upload_file_cloudinary_usecase.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../../data/models/my_contacts_response_model.dart';
-import '../../domain/use_cases/upload_file_usecase.dart';
 import '../utils/pusher_chat.dart';
 import 'chat_event.dart';
 import 'helper_function_for_chat_bloc/group_received_message_on_days.dart';
@@ -262,8 +262,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final response =
         await saveContactsUseCase(SaveContactsParams(contacts: event.contacts));
     response.fold(
-      (l) =>
-          emit(state.copyWith(saveContactsStatus: SaveContactsStatus.failure)),
+      (l) {
+        if(!isFailedTheFirstTime.contains('SaveContactsEvent')){
+          add(SaveContactsEvent());
+          isFailedTheFirstTime.add('SaveContactsEvent');
+        }
+        emit(state.copyWith(saveContactsStatus: SaveContactsStatus.failure));
+      },
       (r) {
         emit(
           state.copyWith(
@@ -279,7 +284,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(state.copyWith(getChatsStatus: GetChatsStatus.loading));
     final response = await getMyChatsUseCase(NoParams());
     response.fold(
-      (l) => emit(state.copyWith(getChatsStatus: GetChatsStatus.failure)),
+      (l) {
+        if(!isFailedTheFirstTime.contains('GetChatsEvent')){
+          add(GetChatsEvent());
+          isFailedTheFirstTime.add('GetChatsEvent');
+        }
+        emit(state.copyWith(getChatsStatus: GetChatsStatus.failure));},
       (r) {
         final PusherChatService pusherChatService =
             GetIt.I<PusherChatService>();
@@ -333,7 +343,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(state.copyWith(getContactsStatus: GetContactsStatus.loading));
     final response = await getContactsUseCase(NoParams());
     response.fold(
-      (l) => emit(state.copyWith(getContactsStatus: GetContactsStatus.failure)),
+      (l) {
+        if(!isFailedTheFirstTime.contains('GetContactsEvent')){
+          add(GetContactsEvent());
+          isFailedTheFirstTime.add('GetContactsEvent');
+        }
+        emit(state.copyWith(getContactsStatus: GetContactsStatus.failure));},
       (r) {
         List<Chat> newChats = List.of(state.chats);
         bool changed = false;
@@ -570,8 +585,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final response = await readAllMessagesUseCase(
         ReadAllMessagesParams(channelId: event.channelId));
     response.fold(
-        (l) => emit(state.copyWith(
-            readMessagesStatus: ResetReadMessagesStatus.failure)), (r) {
+        (l) {
+          emit(state.copyWith(
+            readMessagesStatus: ResetReadMessagesStatus.failure));}, (r) {
       emit(state.copyWith(
           readMessagesStatus: ResetReadMessagesStatus.success,
           unReadMessagesFromAllChats: state.unReadMessagesFromAllChats -
