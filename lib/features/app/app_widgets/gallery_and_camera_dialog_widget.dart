@@ -20,8 +20,7 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
 //    title: Text('choose'),
-      content:
-          Text(LocaleKeys.choose_photo_or_video_from_gallery_or_camera.tr()),
+      content:Text(LocaleKeys.choose_photo_or_video_from_gallery_or_camera.tr()),
       actions: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

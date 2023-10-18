@@ -52,7 +52,7 @@ class StoriesList extends StatelessWidget {
                                     child: ListView.separated(
                                         controller: listViewController,
                                         itemBuilder: (context, index) {
-                                          //TODO FIRST ELEMENT IN THE LISTvIEW IT WILL BE THE UPLOAD BUTTON
+                                          //todo FIRST ELEMENT IN THE LISTvIEW IT WILL BE THE UPLOAD BUTTON
                                           if (index == 0) {
                                             return state.uploadStoryCloudinaryStatus ==
                                                     UploadStoryCloudinaryStatus
