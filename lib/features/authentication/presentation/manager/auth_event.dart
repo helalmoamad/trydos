@@ -152,12 +152,12 @@ class GetCustomerInfoEvent extends AuthEvent {
 class LoginToStoriesEvent extends AuthEvent {
   final String? otpIdToken;
   final String? phone;
-  final String name;
+  final String? name;
   final String? originalUserId;
 
   LoginToStoriesEvent({
     this.phone,
-    required this.name,
+    this.name,
     this.otpIdToken,
     this.originalUserId,
   });

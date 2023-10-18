@@ -23,13 +23,13 @@ class LoginToStoriesUseCase implements UseCase<LoginToStoriesResponseModel, Logi
 class LoginToStoriesParams {
   String? otpIdToken;
   String? phone;
-  String name;
+  String? name;
   String? originalUserId;
 
   LoginToStoriesParams({
     this.phone,
     this.otpIdToken,
-    required this.name,
+     this.name,
     this.originalUserId,
   });
   Map<String, dynamic> get map =>{
