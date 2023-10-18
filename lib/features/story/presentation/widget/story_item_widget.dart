@@ -72,7 +72,7 @@ class StoryItemWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
-                  child: CachedNetworkImage(
+                  child: CachedNetworkImage(errorWidget:(context, url, error) => Center(child: Text('press to reload')),
                     placeholder: (context, url) => Shimmer.fromColors(
                         child: Container(
                           clipBehavior: Clip.hardEdge,
@@ -123,6 +123,7 @@ class StoryItemWidget extends StatelessWidget {
                                     .name!)),
                       )
                           : CachedNetworkImage(
+                        errorWidget:(context, url, error) => Text('press to reload'),
                         imageUrl: state.stories[index].photoPath,
                         fit: BoxFit.cover,
                       ),
