@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' as math;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -539,93 +539,365 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                 valueListenable: rebuildMessage,
                                 builder: (context, currentIndex, _) {
                                   currentFocusedIcon.value = -2;
-                                  return Column(
-                                    children: [
-                                      chat.paginationStatus ==
-                                              PaginationStatus.loading
-                                          ? TrydosLoader()
-                                          : SizedBox.shrink(),
-                                      chat.paginationStatus ==
-                                              PaginationStatus.loading
-                                          ? 8.verticalSpace
-                                          : SizedBox.shrink(),
-                                      Flexible(
-                                        child: ListView.builder(
-                                          physics:
-                                              const ClampingScrollPhysics(),
-                                          shrinkWrap: true,
-                                          reverse: true,
-                                          controller: autoScrollController,
-                                          itemBuilder: (context, index) {
-                                            List<Message> messages = chatState
-                                                .newSortedChatsByDate![
-                                                    chat.id.toString()]!
-                                                .reversed
-                                                .toList();
-                                            if (messages[index].isDateMessage) {
-                                              return Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  MessagesDate(
-                                                      date: messages[index]
-                                                          .dateValue),
-                                                  10.verticalSpace,
-                                                ],
-                                              );
-                                            }
-                                            messagesIndexes[messages[index]
-                                                .id
-                                                .toString()] = index;
-                                            return AutoScrollTag(
-                                              key: ValueKey(index),
-                                              index: index,
-                                              controller: autoScrollController,
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Container(
-                                                    color:
-                                                        currentScrolledIndex ==
-                                                                index
-                                                            ? Colors
-                                                                .black12
-                                                                .withOpacity(
-                                                                    0.05)
-                                                            : null,
-                                                    child: getTheMessageWidget(
-                                                      message: messages[index],
-                                                      senderName:
-                                                          widget.senderName,
-                                                      receiverName:
-                                                          widget.receiverName,
-                                                      receiverPhoto:
-                                                          widget.receiverPhoto,
-                                                      senderPhoto:
-                                                          widget.senderPhoto,
-                                                    ),
-                                                  ),
-                                                  messages[min(
-                                                              index + 1,
-                                                              chatState
-                                                                      .newSortedChatsByDate![chat
-                                                                          .id
-                                                                          .toString()]!
-                                                                      .length -
-                                                                  1)]
-                                                          .isFirstMessage
-                                                      ? 30.verticalSpace
-                                                      : 10.verticalSpace,
-                                                ],
+                                  return ValueListenableBuilder<int>(
+                                      valueListenable: currentFocusedIcon,
+                                      builder: (context, focusedIndex, _) {
+                                        return Column(
+                                          children: [
+                                            chat.paginationStatus ==
+                                                    PaginationStatus.loading
+                                                ? TrydosLoader()
+                                                : SizedBox.shrink(),
+                                            chat.paginationStatus ==
+                                                    PaginationStatus.loading
+                                                ? 8.verticalSpace
+                                                : SizedBox.shrink(),
+                                            Flexible(
+                                              child: ListView.builder(
+                                                physics:
+                                                    const ClampingScrollPhysics(),
+                                                shrinkWrap: true,
+                                                reverse: true,
+                                                controller:
+                                                    autoScrollController,
+                                                itemBuilder: (context, index) {
+                                                  List<Message> messages =
+                                                      chatState
+                                                          .newSortedChatsByDate![
+                                                              chat.id
+                                                                  .toString()]!
+                                                          .reversed
+                                                          .toList();
+                                                  if (messages[index]
+                                                      .isDateMessage) {
+                                                    return Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        MessagesDate(
+                                                            date:
+                                                                messages[index]
+                                                                    .dateValue),
+                                                        10.verticalSpace,
+                                                      ],
+                                                    );
+                                                  }
+                                                  bool isSent = messages[index]
+                                                          .senderUserId !=
+                                                      _prefsRepository.myChatId;
+                                                  String? messageId =
+                                                      messages[index].id;
+                                                  messagesIndexes[
+                                                      messages[index]
+                                                          .id
+                                                          .toString()] = index;
+                                                  return AutoScrollTag(
+                                                      key: ValueKey(index),
+                                                      index: index,
+                                                      controller:
+                                                          autoScrollController,
+                                                      child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            GestureDetector(
+                                                              onLongPress: () {
+                                                                if ((chatState
+                                                                            .sendMessageStatus ==
+                                                                        SendMessageStatus
+                                                                            .loading &&
+                                                                    chatState
+                                                                        .currentMessage
+                                                                        .contains(
+                                                                            messageId))) {
+                                                                  return;
+                                                                }
+                                                                rebuildMessage
+                                                                        .value =
+                                                                    index;
+                                                              },
+                                                              onTap: () {
+                                                                rebuildMessage
+                                                                    .value = -1;
+                                                              },
+                                                              child: Container(
+                                                                color: currentScrolledIndex ==
+                                                                        index
+                                                                    ? Colors
+                                                                        .black12
+                                                                        .withOpacity(
+                                                                            0.05)
+                                                                    : null,
+                                                                child:
+                                                                    getTheMessageWidget(
+                                                                  message:
+                                                                      messages[
+                                                                          index],
+                                                                  senderName: widget
+                                                                      .senderName,
+                                                                  receiverName:
+                                                                      widget
+                                                                          .receiverName,
+                                                                  receiverPhoto:
+                                                                      widget
+                                                                          .receiverPhoto,
+                                                                  senderPhoto:
+                                                                      widget
+                                                                          .senderPhoto,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            messages[math.min(
+                                                                        index +
+                                                                            1,
+                                                                        chatState.newSortedChatsByDate![chat.id.toString()]!.length -
+                                                                            1)]
+                                                                    .isFirstMessage
+                                                                ? 30.verticalSpace
+                                                                : 10.verticalSpace,
+                                                            currentIndex ==
+                                                                    index
+                                                                ? 5
+                                                                    .verticalSpace
+                                                                : const SizedBox
+                                                                    .shrink(),
+                                                            currentIndex ==
+                                                                    index
+                                                                ? Padding(
+                                                                    padding: HWEdgeInsets.only(
+                                                                        left: isSent
+                                                                            ? 40
+                                                                                .w
+                                                                            : 20
+                                                                                .w,
+                                                                        top: 10,
+                                                                        right: isSent
+                                                                            ? 20.w
+                                                                            : 40.w),
+                                                                    child: GestureDetector(
+                                                                        key: key,
+                                                                        onPanDown: (details) {
+                                                                          print(
+                                                                              'down');
+                                                                          if (details.localPosition.dx <
+                                                                              5) {
+                                                                            return;
+                                                                          }
+                                                                          print(
+                                                                              isSent);
+                                                                          if (isSent) {
+                                                                            x = 130;
+                                                                          } else {
+                                                                            final RenderBox
+                                                                                renderBox =
+                                                                                key.currentContext?.findRenderObject() as RenderBox;
+                                                                            final position =
+                                                                                renderBox.localToGlobal(Offset.zero);
+                                                                            x = position.dx;
+                                                                            xActionSubtitle =
+                                                                                x;
+                                                                            yActionSubtitle =
+                                                                                position.dy;
+                                                                          }
+                                                                          currentHoverPosition = details
+                                                                              .localPosition
+                                                                              .dx;
+                                                                          print(
+                                                                              x);
+                                                                          if ((currentHoverPosition - x) <
+                                                                              40) {
+                                                                            currentFocusedIcon.value =
+                                                                                -1;
+                                                                          } else {
+                                                                            print(currentHoverPosition -
+                                                                                x);
+                                                                            currentFocusedIcon.value =
+                                                                                ((currentHoverPosition - x - 40) ~/ 25);
+                                                                          }
+                                                                          dealWithMessageOptions(
+                                                                              currentFocusedIcon.value,
+                                                                              messageId);
+                                                                        },
+                                                                        onPanEnd: (details) {
+                                                                          print(
+                                                                              'end');
+                                                                          rebuildMessage.value =
+                                                                              -1;
+                                                                          dealWithMessageOptions(
+                                                                              currentFocusedIcon.value,
+                                                                              messageId);
+                                                                        },
+                                                                        onPanUpdate: (details) {
+                                                                          print(
+                                                                              'update');
+                                                                          if (details.localPosition.dx < x &&
+                                                                              currentFocusedIcon.value == -1) {
+                                                                            currentFocusedIcon.value =
+                                                                                -1;
+                                                                            return;
+                                                                          }
+                                                                          if (details.localPosition.dx > x + 225.w &&
+                                                                              currentFocusedIcon.value == 5) {
+                                                                            currentFocusedIcon.value =
+                                                                                5;
+                                                                            return;
+                                                                          }
+                                                                          final dragDifference =
+                                                                              details.localPosition.dx - currentHoverPosition;
+                                                                          if (dragDifference.abs() >
+                                                                              20) {
+                                                                            currentHoverPosition =
+                                                                                details.localPosition.dx;
+                                                                            if (dragDifference >
+                                                                                0) {
+                                                                              currentFocusedIcon.value = math.min(5, currentFocusedIcon.value + 1);
+                                                                            } else {
+                                                                              currentFocusedIcon.value = math.max(-1, currentFocusedIcon.value - 1);
+                                                                            }
+                                                                          }
+                                                                        },
+                                                                        child: Directionality(
+                                                                            textDirection: TextDirection.ltr,
+                                                                            child: Container(
+                                                                                child: Row(mainAxisAlignment: isSent ? MainAxisAlignment.end : MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                              Column(
+                                                                                children: [
+                                                                                  InkWell(
+                                                                                    highlightColor: const Color(0xfffafafa),
+                                                                                    splashColor: const Color(0xfffafafa),
+                                                                                    onTap: () {
+                                                                                      currentFocusedIcon.value = -1;
+                                                                                    },
+                                                                                    child: Container(
+                                                                                      height: 40,
+                                                                                      width: 35.w,
+                                                                                      decoration: BoxDecoration(
+                                                                                        color: const Color(0xfffafafa),
+                                                                                        borderRadius: BorderRadius.circular(12.0),
+                                                                                        boxShadow: const [
+                                                                                          BoxShadow(
+                                                                                            color: Color(0x29000000),
+                                                                                            offset: Offset(0, 2),
+                                                                                            blurRadius: 10,
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                      child: Center(
+                                                                                          child: SvgPicture.asset(
+                                                                                        AppAssets.replyButtonLogoSvg,
+                                                                                      )),
+                                                                                    ),
+                                                                                  ),
+                                                                                  7.verticalSpace,
+                                                                                  focusedIndex == -1
+                                                                                      ? Container(
+                                                                                          width: 50.w,
+                                                                                          height: 22,
+                                                                                          decoration: BoxDecoration(
+                                                                                            color: const Color(0xff404040),
+                                                                                            borderRadius: BorderRadius.circular(8.0),
+                                                                                            boxShadow: const [
+                                                                                              BoxShadow(
+                                                                                                color: Color(0x34000000),
+                                                                                                offset: Offset(0, 3),
+                                                                                                blurRadius: 6,
+                                                                                              ),
+                                                                                            ],
+                                                                                          ),
+                                                                                          child: Center(
+                                                                                            child: Text(
+                                                                                              'Replay',
+                                                                                              style: textTheme.overline?.rr.copyWith(color: colorScheme.white, height: 1.4),
+                                                                                            ),
+                                                                                          ),
+                                                                                        )
+                                                                                      : const SizedBox.shrink()
+                                                                                ],
+                                                                              ),
+                                                                              5.horizontalSpace,
+                                                                              Column(
+                                                                                mainAxisSize: MainAxisSize.min,
+                                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                children: [
+                                                                                  Row(
+                                                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                                                    children: [
+                                                                                      Container(
+                                                                                        width: 185.w,
+                                                                                        height: 40,
+                                                                                        padding: HWEdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                                                                                        decoration: BoxDecoration(
+                                                                                          color: const Color(0xfffafafa),
+                                                                                          borderRadius: BorderRadius.circular(12.0),
+                                                                                          boxShadow: const [
+                                                                                            BoxShadow(
+                                                                                              color: Color(0x29000000),
+                                                                                              offset: Offset(0, 2),
+                                                                                              blurRadius: 10,
+                                                                                            ),
+                                                                                          ],
+                                                                                        ),
+                                                                                        child: Row(
+                                                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                          children: [
+                                                                                            MessageActionWidget(
+                                                                                              onTap: () => forwardMessageMethod(chat.messages!.firstWhere((element) => element.id == messageId)),
+                                                                                              iconUrl: AppAssets.goBackIconSvg,
+                                                                                              myIndex: 0,
+                                                                                              focusedIndex: focusedIndex,
+                                                                                            ),
+                                                                                            MessageActionWidget(
+                                                                                              onTap: () {},
+                                                                                              iconUrl: AppAssets.copyIconSvg,
+                                                                                              myIndex: 1,
+                                                                                              focusedIndex: focusedIndex,
+                                                                                            ),
+                                                                                            MessageActionWidget(
+                                                                                              onTap: () {},
+                                                                                              iconUrl: AppAssets.addToGroupSvg,
+                                                                                              myIndex: 2,
+                                                                                              focusedIndex: focusedIndex,
+                                                                                            ),
+                                                                                            MessageActionWidget(
+                                                                                              onTap: () {},
+                                                                                              iconUrl: AppAssets.removeIconSvg,
+                                                                                              myIndex: 3,
+                                                                                              focusedIndex: focusedIndex,
+                                                                                            ),
+                                                                                            MessageActionWidget(
+                                                                                              onTap: () {},
+                                                                                              iconUrl: AppAssets.editIconSvg,
+                                                                                              myIndex: 4,
+                                                                                              focusedIndex: focusedIndex,
+                                                                                            ),
+                                                                                            MessageActionWidget(
+                                                                                              onTap: () {},
+                                                                                              iconUrl: AppAssets.notificationIconSvg,
+                                                                                              myIndex: 5,
+                                                                                              focusedIndex: focusedIndex,
+                                                                                            ),
+                                                                                          ],
+                                                                                        ),
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                  10.verticalSpace,
+                                                                                  focusedIndex >= 0 ? Align(alignment: Alignment(xActionSubtitle, yActionSubtitle + 50), child: Transform.translate(offset: Offset((focusedIndex + 1) * 22, 0), child: MessageSubtitleWidget(focusedIndex: focusedIndex))) : const SizedBox.shrink()
+                                                                                ],
+                                                                              ),
+                                                                            ])))))
+                                                                : SizedBox.shrink()
+                                                          ]));
+                                                },
+                                                itemCount: chatState
+                                                    .newSortedChatsByDate![
+                                                        chat.id]!
+                                                    .length,
                                               ),
-                                            );
-                                          },
-                                          itemCount: chatState
-                                              .newSortedChatsByDate![chat.id]!
-                                              .length,
-                                        ),
-                                      ),
-                                    ],
-                                  );
+                                            ),
+                                          ],
+                                        );
+                                      });
                                 })));
                   },
                 ),
@@ -655,7 +927,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                   : type == 'video'
                                       ? 'videos/test'
                                       : 'voices/test',
-                          fileName: file.path ,
+                          fileName: file.path,
                           messageType: type == 'image'
                               ? 'ImageMessage'
                               : type == 'file'

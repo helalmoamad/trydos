@@ -17,6 +17,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../main.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
 import '../../../home/presentation/manager/home_event.dart';
@@ -78,8 +79,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         transformer: throttleDroppable(throttleDuration));
     on<UpdateNameEvent>(_onUpdateNameEvent,
         transformer: throttleDroppable(throttleDuration));
-    on<GetCustomerInfoEvent>(_onGetCustomerInfoEvent, transformer: throttleDroppable(throttleDuration));
-    on<GetUserCountryEvent>(_onGetUserCountryEvent, transformer: throttleDroppable(throttleDuration));
+    on<GetCustomerInfoEvent>(_onGetCustomerInfoEvent,
+        transformer: throttleDroppable(throttleDuration));
+    on<GetUserCountryEvent>(_onGetUserCountryEvent,
+        transformer: throttleDroppable(throttleDuration));
   }
 
   final LoginToChatUseCase loginToChatUseCase;
@@ -129,7 +132,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           originalUserId: event.originalUserId),
     );
     response.fold(
-      (l) => emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure)),
+      (l) {
+        if (!isFailedTheFirstTime.contains('LoginToChatEvent')) {
+          add(LoginToChatEvent(
+              mobilePhone: event.mobilePhone,
+              otpIdToken: event.otpIdToken,
+              name: event.name,
+              fcmToken: event.fcmToken,
+              originalUserId: event.originalUserId));
+          isFailedTheFirstTime.add('LoginToChatEvent');
+        }
+        emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
+      },
       (r) {
         final id = r.data!.id;
         final token = r.data!.accessToken;
@@ -152,10 +166,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final response = await storeFcmUseCase(
       StoreFcmParams(userId: event.userId, fcmToken: event.fcmToken),
     );
-    response.fold(
-        (l) =>
-            emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure)),
-        (r) {
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('StoreFcmTokenEvent')) {
+        add(StoreFcmTokenEvent(userId: event.userId, fcmToken: event.fcmToken));
+        isFailedTheFirstTime.add('StoreFcmTokenEvent');
+      }
+      emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
+    }, (r) {
       final id = r.data!.id;
       _prefsRepository.setFcmTokenId(id!);
       emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
@@ -202,8 +219,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           originalUserId: event.originalUserId),
     );
     response.fold(
-      (l) => emit(
-          state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.failure)),
+      (l) {
+        if (!isFailedTheFirstTime.contains('LoginToStoriesEvent')) {
+          add(LoginToStoriesEvent(
+              phone: event.phone,
+              otpIdToken: event.otpIdToken,
+              originalUserId: event.originalUserId));
+          isFailedTheFirstTime.add('LoginToStoriesEvent');
+        }
+        emit(
+            state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.failure));
+      },
       (r) {
         final id = r.data!.id;
         final token = r.data!.accessToken;
@@ -297,10 +323,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final response = await registerGuestUseCase(
       RegisterGuestParams(deviceId: event.deviceId),
     );
-    response.fold(
-        (l) => emit(
-            state.copyWith(registerGuestStatus: RegisterGuestStatus.failure)),
-        (r) {
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('RegisterGuestEvent')) {
+        add(RegisterGuestEvent(deviceId: event.deviceId));
+        isFailedTheFirstTime.add('RegisterGuestEvent');
+      }
+      emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.failure));
+    }, (r) {
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       print('isNumberVerifiedFromGuest:  ${r.data!.user!.isPhoneVerified}');
@@ -317,9 +346,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final response = await updateNameUseCase(
       UpdateNameParams(name: event.name),
     );
-    response.fold(
-        (l) => emit(state.copyWith(updateNameStatus: UpdateNameStatus.failure)),
-        (r) {
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('UpdateNameEvent')) {
+        add(UpdateNameEvent(name: event.name));
+        isFailedTheFirstTime.add('UpdateNameEvent');
+      }
+      emit(state.copyWith(updateNameStatus: UpdateNameStatus.failure));
+    }, (r) {
       emit(state.copyWith(
         updateNameStatus: UpdateNameStatus.success,
       ));
@@ -330,9 +363,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       GetCustomerInfoEvent event, Emitter<AuthState> emit) async {
     emit(state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.loading));
     final response = await getCustomerInfoUseCase(NoParams());
-    response.fold(
-        (l) => emit(state.copyWith(
-            getCustomerInfoStatus: GetCustomerInfoStatus.failure)), (userInfo) {
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('GetCustomerInfoEvent')) {
+        add(GetCustomerInfoEvent());
+        isFailedTheFirstTime.add('GetCustomerInfoEvent');
+      }
+      emit(
+          state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.failure));
+    }, (userInfo) {
       _prefsRepository.setVerifiedPhone(userInfo.isPhoneVerified == 1);
 
       emit(state.copyWith(
@@ -341,10 +379,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-  FutureOr<void> _onGetUserCountryEvent(GetUserCountryEvent event, Emitter<AuthState> emit)async {
+  FutureOr<void> _onGetUserCountryEvent(
+      GetUserCountryEvent event, Emitter<AuthState> emit) async {
     final response = await getUserCountryUseCase(NoParams());
     response.fold((l) {
-    }, (r){
+      if (!isFailedTheFirstTime.contains('GetUserCountryEvent')) {
+        add(GetUserCountryEvent());
+        isFailedTheFirstTime.add('GetUserCountryEvent');
+      }
+    }, (r) {
       _prefsRepository.setCountryName(r.country.toString());
     });
   }

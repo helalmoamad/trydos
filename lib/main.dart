@@ -49,7 +49,6 @@ void main() async {
   await NotificationProcess().init();
   RemoteMessage? openedMessage = await FirebaseMessaging.instance.getInitialMessage();
   if (initialMessage != null) {
-    print('hello');
     initialMessage = Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
   }
   await NotificationProcess().setupInteractedMessage();
