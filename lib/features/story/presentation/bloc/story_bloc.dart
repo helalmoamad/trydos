@@ -75,9 +75,13 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
         ));
     // Fluttertoast.showToast(msg: 'tosss');
     response.fold((l) {
-      if (isFailedTheFirstTime.contains('UploadStoryCloudinaryEvent'))
+      if (isFailedTheFirstTime.contains('UploadStoryCloudinaryEvent')) {
+        isFailedTheFirstTime.remove('UploadStoryCloudinaryEvent');
+
         emit(state.copyWith(
             uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
+      }
+
       else {
         isFailedTheFirstTime.insert(
             isFailedTheFirstTime.length, 'UploadStoryCloudinaryEvent');
@@ -192,15 +196,16 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
       final response = await getWidthAndHeightUseCase(
           widthAndHeightParams(url: initialStory.photoPath!));
       response.fold((l) {
-        if (isFailedTheFirstTime.contains('StorySelectedEvent'))
-          emit(state.copyWith(selectedStoriesStatus: SelectedStoriesStatus.failure));
-        else {
+        if (isFailedTheFirstTime.contains('StorySelectedEvent')) {
+          isFailedTheFirstTime.remove('StorySelectedEvent');
+          emit(state.copyWith(
+              selectedStoriesStatus: SelectedStoriesStatus.failure));
+        } else {
           isFailedTheFirstTime.insert(
               isFailedTheFirstTime.length, 'StorySelectedEvent');
-          GetIt.I<StoryBloc>().add(StorySelectedEvent(selected: event.selected,initialStory: event.initialStory
-          ));
+          GetIt.I<StoryBloc>().add(StorySelectedEvent(
+              selected: event.selected, initialStory: event.initialStory));
         }
-
       }, (r) {
 //todo just make the state success with the width and height for the image and in the emitter above you changed the initial  story
         emit(state.copyWith(
@@ -223,8 +228,10 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     final response = await getStoryUseCase(NoParams());
 
     response.fold((l) {
-      if (isFailedTheFirstTime.contains('GetStoryEvent'))
-        emit(state.copyWith(getStoriesStatus: GetStoriesStatus.failure));
+      if (isFailedTheFirstTime.contains('GetStoryEvent')){
+        //
+        isFailedTheFirstTime.remove('GetStoryEvent');
+        emit(state.copyWith(getStoriesStatus: GetStoriesStatus.failure));}
       else {
         isFailedTheFirstTime.insert(
             isFailedTheFirstTime.length, 'GetStoryEvent');
