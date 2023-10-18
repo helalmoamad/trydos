@@ -165,26 +165,22 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
 //todo check whether photo or video and start processing
         if (state.selectedStoriesStatus ==
         SelectedStoriesStatus.failure)
-        return Padding(
-        padding: const EdgeInsets.all(28.0),
-        child: Container(
-        color: Colors.white,
-        child: Center(
-        child: ElevatedButton(
-        onPressed: () {
-        GetIt.I<StoryBloc>().add(
-        StorySelectedEvent(
-        initialStory: state.initialStory!,
-        selected: state.selectedStory!));
-        },
-        child: Text('try')),
-        ),
-        ),
-        );
+        return
+
+
+          Center(
+            child: ElevatedButton(
+                onPressed: () {
+                  GetIt.I<StoryBloc>().add(
+                      StorySelectedEvent(
+                          initialStory: state.initialStory!,
+                          selected: state.selectedStory!));
+                },
+                child: Text('Try Again')),
+          );
         else if (state.stories[state.selectedStory!]
             .stories![state.initialStory!].isPhoto ==
         1) {
-        Fluttertoast.showToast(msg: 'asdsd');
         if (state.selectedStoriesStatus ==
         SelectedStoriesStatus.loading)
         return SizedBox(
