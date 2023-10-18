@@ -52,44 +52,41 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
       : super(StoryState()) {
     on<UploadStoryEvent>(_uploadStoryEvent);
     on<StoryEvent>((event, emit) {});
-    on<GetStoryEvent>(_onGetStoryEvent,
+    on<GetStoryEvent>(
+      _onGetStoryEvent,
       // transformer: throttleDroppable(throttleDuration)
-
-
     );
-    on<LoadFailureEvent>(((event, emit) =>
-        emit(state.copyWith(
-            selectedStoriesStatus: SelectedStoriesStatus.failure))));
+    on<LoadFailureEvent>(((event, emit) => emit(
+        state.copyWith(selectedStoriesStatus: SelectedStoriesStatus.failure))));
     on<StorySelectedEvent>(_onStorySelectedEvent);
     on<UploadStoryCloudinaryEvent>(_uploadStoryCloudinaryEvent);
   }
 
-  _uploadStoryCloudinaryEvent(UploadStoryCloudinaryEvent event,
-      Emitter emit) async
-  {
+  _uploadStoryCloudinaryEvent(
+      UploadStoryCloudinaryEvent event, Emitter emit) async {
     emit(state.copyWith(
         uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.loading));
-    final response = await uploadFileCloudinaryUseCase
-      (UploadFileCloudinaryParams(file: event.file,
-        usingOnUploadingFinishedFunction: true,
-        usingSendProgressFunction: true));
+    final response = await uploadFileCloudinaryUseCase(
+        UploadFileCloudinaryParams(
+            file: event.file,
+            usingOnUploadingFinishedFunction: true,
+            usingSendProgressFunction: true));
     // Fluttertoast.showToast(msg: 'tosss');
     response.fold((l) {
-      if(isFailedTheFirstTime.contains('UploadStoryCloudinaryEvent'))
-        emit(state.copyWith(uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
+      if (isFailedTheFirstTime.contains('UploadStoryCloudinaryEvent'))
+        emit(state.copyWith(
+            uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
       else {
-        isFailedTheFirstTime.insert(isFailedTheFirstTime.length, 'UploadStoryCloudinaryEvent');
+        isFailedTheFirstTime.insert(
+            isFailedTheFirstTime.length, 'UploadStoryCloudinaryEvent');
         GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(event.file));
-
       }
       // Fluttertoast.showToast(
       //     msg: l.message,
       //     textColor: Colors.white,
       //     toastLength: Toast.LENGTH_LONG);
     }, (r) {
-      String fileName = event.file.path
-          .split('/')
-          .last;
+      String fileName = event.file.path.split('/').last;
       String mimeType = mime(fileName) ?? '';
       String mimee = mimeType.split('/')[0];
       bool checkWitherImageOrNot;
@@ -105,9 +102,7 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
 
       Story story = Story(
           isSeen: false,
-          userId: GetIt
-              .I<PrefsRepository>()
-              .myStoriesId,
+          userId: GetIt.I<PrefsRepository>().myStoriesId,
           height: r.height,
           width: r.width,
           isVideo: checkWitherVideoOrNot ? 1 : 0,
@@ -126,9 +121,7 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
       // Fluttertoast.showToast(
       //     msg: story.fullVideoPath.toString(), toastLength: Toast.LENGTH_LONG);
 
-      if (GetIt
-          .I<PrefsRepository>()
-          .myStoriesId ==
+      if (GetIt.I<PrefsRepository>().myStoriesId ==
           state.stories.first.stories![0].userId) {
         List<Story> currentUserStories = List.of(state.stories.first.stories!);
         currentUserStories.insert(currentUserStories.length, story);
@@ -148,20 +141,17 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     });
   }
 
-
   _uploadStoryEvent(UploadStoryEvent event, Emitter<StoryState> emit) async {
     print('uplaod22ss');
     emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.loading));
 
     final response =
-    await uploadStoryUseCase.call(UploadStoryParams(file: event.file));
+        await uploadStoryUseCase.call(UploadStoryParams(file: event.file));
 
     response.fold((l) {
       emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.failure));
     }, (r) {
-      if (GetIt
-          .I<PrefsRepository>()
-          .myStoriesId ==
+      if (GetIt.I<PrefsRepository>().myStoriesId ==
           state.stories.first.stories![0].userId) {
         List<Story> currentUserStories = List.of(state.stories.first.stories!);
         currentUserStories.insert(currentUserStories.length, r.data!);
@@ -181,8 +171,8 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     });
   }
 
-  _onStorySelectedEvent(StorySelectedEvent event,
-      Emitter<StoryState> emit) async {
+  _onStorySelectedEvent(
+      StorySelectedEvent event, Emitter<StoryState> emit) async {
     //todo make the story seen when he press to show it
     state.stories[event.selected].stories![event.initialStory].isSeen = true;
     //todo make  the state loading
@@ -192,19 +182,23 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
       initialStory: event.initialStory,
     ));
 
-
-    var initialStory = state.stories[event.selected].stories![event
-        .initialStory];
+    var initialStory =
+        state.stories[event.selected].stories![event.initialStory];
     if (initialStory.isPhoto == 1) {
 //todo debug
       //todo bring the real width and height for selected photo
       final response = await getWidthAndHeightUseCase(
           widthAndHeightParams(url: initialStory.photoPath!));
       response.fold((l) {
-        Fluttertoast.showToast(msg: 'msg');
+        if (isFailedTheFirstTime.contains('StorySelectedEvent'))
+          emit(state.copyWith(selectedStoriesStatus: SelectedStoriesStatus.failure));
+        else {
+          isFailedTheFirstTime.insert(
+              isFailedTheFirstTime.length, 'StorySelectedEvent');
+          GetIt.I<StoryBloc>().add(StorySelectedEvent(selected: event.selected,initialStory: event.initialStory
+          ));
+        }
 
-        emit(state.copyWith(
-            selectedStoriesStatus: SelectedStoriesStatus.failure));
       }, (r) {
 //todo just make the state success with the width and height for the image and in the emitter above you changed the initial  story
         emit(state.copyWith(
@@ -226,17 +220,17 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     emit(state.copyWith(getStoriesStatus: GetStoriesStatus.loading));
     final response = await getStoryUseCase(NoParams());
 
-    response.fold(
-            (l) =>
-
-            emit(state.copyWith(getStoriesStatus: GetStoriesStatus.failure))
-
-
-        ,
-            (r) {
-          emit(state.copyWith(
-              getStoriesStatus: GetStoriesStatus.success,
-              stories: r.data!.data));
-        });
+    response.fold((l) {
+      if (isFailedTheFirstTime.contains('GetStoryEvent'))
+        emit(state.copyWith(getStoriesStatus: GetStoriesStatus.failure));
+      else {
+        isFailedTheFirstTime.insert(
+            isFailedTheFirstTime.length, 'GetStoryEvent');
+        GetIt.I<StoryBloc>().add(GetStoryEvent);
+      }
+    }, (r) {
+      emit(state.copyWith(
+          getStoriesStatus: GetStoriesStatus.success, stories: r.data!.data));
+    });
   }
 }
