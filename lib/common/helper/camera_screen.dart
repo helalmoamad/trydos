@@ -169,7 +169,7 @@ class _CameraScreenState extends State<CameraScreen>
               children: [
                 SizedBox(
                   width: double.infinity,
-                  height: MediaQuery.sizeOf(context).height * 0.9,
+                  height: MediaQuery.sizeOf(context).height * 0.86,
 //        aspectRatio: 1 / controller!.value.aspectRatio,
                   child: Stack(children: [
                     //todo show a live camera
@@ -320,31 +320,32 @@ class _CameraScreenState extends State<CameraScreen>
                                         Navigator.pop(context, videoFile);
                                       }
                                     },
-                                    child: Container(
-                                      width: 75,
-                                      height: 75,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white24,
-                                        // borderRadius: BorderRadius.circular(20)
-                                      ),
-                                      // width: 120,
-                                      // height: 90,
-                                      // color: Colors.amber,
-                                      child: LayoutBuilder(
-                                        builder: (context,
-                                            BoxConstraints constraints) {
-                                          return AnimatedBuilder(
-                                            animation: animatedController,
-                                            builder: (context, child) {
-                                              return CircularProgressIndicator(
-                                                color: Colors.red,
-                                                value: animatedController.value,
-                                              );
-                                            },
-                                          );
-                                        },
-                                      ),
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle),
+                                          width: 50,
+                                          height: 50,
+                                          child: LayoutBuilder(
+                                            builder: (context, constraints) =>
+                                                AnimatedBuilder(
+                                              animation: animatedController,
+                                              builder: (context, child) =>
+                                                  CircularProgressIndicator(
+                                                      strokeWidth: 15,
+                                                      value: animatedController
+                                                          .value,
+                                                      color: Colors.red),
+                                            ),
+                                          ),
+                                        ),
+                                        Icon(Icons.circle,
+                                            color: Colors.white38, size: 80),
+                                        Icon(Icons.circle,
+                                            color: Colors.white, size: 65),
+                                      ],
                                     ),
                                   )
                                 : InkWell(
@@ -368,8 +369,9 @@ class _CameraScreenState extends State<CameraScreen>
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: [
-                                        Icon(Icons.circle,
-                                            color: Colors.white38, size: 80),
+                                        // Icon(Icons.circle,
+                                        //     color: Colors.white38, size: 80),
+
                                         Icon(Icons.circle,
                                             color: Colors.white, size: 65),
                                       ],
@@ -386,62 +388,76 @@ class _CameraScreenState extends State<CameraScreen>
                   ]),
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     //todo image button transform
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 8.0,
-                          right: 4.0,
+                    TextButton(
+                      onPressed: _isRecordingInProgress
+                          ? null
+                          : () {
+                              if (_isVideoCameraSelected) {
+                                setState(() {
+                                  _isVideoCameraSelected = false;
+                                });
+                              }
+                            },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: _isVideoCameraSelected
+                              ? Colors.white
+                              : Colors.black,
                         ),
-                        child: TextButton(
-                          onPressed: _isRecordingInProgress
-                              ? null
-                              : () {
-                                  if (_isVideoCameraSelected) {
-                                    setState(() {
-                                      _isVideoCameraSelected = false;
-                                    });
-                                  }
-                                },
-                          style: TextButton.styleFrom(
-                            primary: _isVideoCameraSelected
-                                ? Colors.black54
-                                : Colors.black,
-                            backgroundColor: _isVideoCameraSelected
-                                ? Colors.white30
-                                : Colors.white,
-                          ),
-                          child: Text('IMAGE'),
+                        width: 90,
+                        height: 40,
+                        child: Center(
+                          child: Text('IMAGE',
+                              style: TextStyle(
+                                  color: _isVideoCameraSelected
+                                      ? Colors.grey
+                                      : Colors.white)),
                         ),
                       ),
                     ),
                     //todo image button transform
 
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 4.0, right: 8.0),
-                        child: TextButton(
-                          onPressed: () {
-                            if (!_isVideoCameraSelected) {
-                              setState(() {
-                                _isVideoCameraSelected = true;
-                              });
-                            }
-                          },
-                          style: TextButton.styleFrom(
-                            primary: _isVideoCameraSelected
-                                ? Colors.black
-                                : Colors.black54,
-                            backgroundColor: _isVideoCameraSelected
-                                ? Colors.white
-                                : Colors.white30,
-                          ),
-                          child: Text('VIDEO'),
-                        ),
-                      ),
+                    TextButton(
+                      onPressed: () {
+                        if (!_isVideoCameraSelected) {
+                          setState(() {
+                            _isVideoCameraSelected = true;
+                          });
+                        }
+                      },
+                      // style: TextButton.styleFrom(
+                      //
+                      // ),
+                      child: Container(
+                          decoration: BoxDecoration(
+                              color: _isVideoCameraSelected
+                                  ? Colors.black
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(5)),
+                          width: 60,
+                          height: 40,
+                          child: Center(
+                            child: Text(
+                              'VIDEO',
+                              style: TextStyle(
+                                  color: _isVideoCameraSelected
+                                      ? Colors.white
+                                      : Colors.grey
+                                  // color: _isVideoCameraSelected
+                                  // ? Colors.white
+                                  // : Colors.black,
+                                  ),
+                            ),
+                          )),
                     ),
                   ],
+                ),
+                SizedBox(
+                  height: 20,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
