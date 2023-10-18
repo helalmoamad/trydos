@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/cloudinary_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
@@ -15,6 +16,7 @@ import 'package:trydos/core/domin/usecases/upload_file_cloudinary_usecase.dart';
 
 import '../../../../core/api/methods/get.dart';
 import '../../../../service/local_notification_service.dart';
+import '../../presentation/bloc/story_bloc.dart';
 import '../models/get_stories_model.dart';
 import '../models/image_detail.dart';
 import '../models/upload_story_response_model.dart';
@@ -24,16 +26,19 @@ class StoriesDataSource {
   Completer<ImageDetail> completer = Completer<ImageDetail>();
 
   Future<ImageDetail> loadWidthAndHeightForImage(
-      {required String url, Function? onError}) {
+      {required String url, Function? onError}) async
+  {
+
     completer = Completer<ImageDetail>();
     Image image;
     image = Image(
       image: CachedNetworkImageProvider(url),
     );
-
-    image.image
+try{
+     image.image
         .resolve(const ImageConfiguration())
         .addListener(ImageStreamListener(
+
           (
             ImageInfo imageInfo,
             bool _,
@@ -46,10 +51,19 @@ class StoriesDataSource {
               completer.complete(dimensions);
             }
           },
+
           onError: (exception, stackTrace) {
-            if (onError != null) onError();
+            if (onError
+                != null) onError();
           },
-        ));
+        ));}
+catch(e,s)
+    {
+
+      GetIt.I<StoryBloc>().add(LoadFailureEvent());
+
+
+    }
     return completer.future;
   }
 

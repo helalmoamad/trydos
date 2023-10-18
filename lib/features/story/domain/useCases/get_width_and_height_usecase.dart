@@ -1,4 +1,3 @@
-
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/error/failures.dart';
@@ -9,20 +8,22 @@ import '../../data/models/get_stories_model.dart';
 import '../repository/story_repository.dart';
 
 @injectable
-class GetWidthAndHeightUseCase extends UseCase<ImageDetail,widthAndHeightParams>
-{  final StoryRepository repository;
+class GetWidthAndHeightUseCase
+    extends UseCase<ImageDetail, widthAndHeightParams> {
+  final StoryRepository repository;
 
-GetWidthAndHeightUseCase(this.repository);
+  GetWidthAndHeightUseCase(this.repository);
+
   @override
   Future<Either<Failure, ImageDetail>> call(widthAndHeightParams params) {
     return repository.loadWidthAndHeight(url: params.getUrl);
   }
-
 }
-class widthAndHeightParams
-{
+
+class widthAndHeightParams {
   String url;
 
   widthAndHeightParams({required this.url});
-  String get getUrl =>url;
+
+  String get getUrl => url;
 }

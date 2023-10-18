@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -18,6 +19,7 @@ import 'package:video_player/video_player.dart';
 
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../widget/animated_builder.dart';
 
 class StoryCollection extends StatefulWidget {
   int id;
@@ -84,164 +86,198 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
 //          Text('${state.selectedStoriesStatus}'),
 //          state.selectedStoriesStatus==SelectedStoriesStatus.success?Text('${state.imageDetail!.width}'):Text('data')
 
-            () {
-              switch (state.getStoriesStatus) {
-                case GetStoriesStatus.success:
-                  return GestureDetector(
-                    onLongPress: () => animatedController.stop(),
-                    onLongPressUp: () => animatedController.forward(),
-                    onTapDown: (details) {
-                      final double screenWidth =
-                          MediaQuery.of(context).size.width;
-                      final double dx = details.globalPosition.dx;
+             GestureDetector(
+            onLongPress: () => animatedController.stop(),
+        onLongPressUp: () => animatedController.forward(),
+        onTapDown: (details) {
+        final double screenWidth =
+        MediaQuery.of(context).size.width;
+        final double dx = details.globalPosition.dx;
 
-                      if (LanguageService.rtl) {
-                        if (dx < screenWidth * 1 / 2) {
-                          animatedController.stop();
-                          animatedController.reset();
-                          if ((state.initialStory! + 1) >=
-                              state.stories[state.selectedStory!].stories!
-                                  .length) {
-                            GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                                selected: state.selectedStory!,
-                                initialStory: 0));
-                            Navigator.of(context).pop();
-                          } else {
-                            GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                                selected: state.selectedStory!,
-                                initialStory: state.initialStory! + 1));
-                          }
-                        } else if (dx > screenWidth * 1 / 2) {
-                          animatedController.stop();
+        if (LanguageService.rtl) {
+        if (dx < screenWidth * 1 / 2) {
+        animatedController.stop();
+        animatedController.reset();
+        if ((state.initialStory! + 1) >=
+        state.stories[state.selectedStory!].stories!
+            .length) {
+        GetIt.I<StoryBloc>().add(StorySelectedEvent(
+        selected: state.selectedStory!,
+        initialStory: 0));
+        Navigator.of(context).pop();
+        } else {
+        GetIt.I<StoryBloc>().add(StorySelectedEvent(
+        selected: state.selectedStory!,
+        initialStory: state.initialStory! + 1));
+        }
+        } else if (dx > screenWidth * 1 / 2) {
+        animatedController.stop();
 
-                          animatedController.reset();
-                          if ((state.initialStory! - 1) > 0) {
-                            context.read<StoryBloc>().add(StorySelectedEvent(
-                                initialStory: state.initialStory! - 1,
-                                selected: state.selectedStory!));
-                          } else {
-                            context.read<StoryBloc>().add(StorySelectedEvent(
-                                initialStory: 0,
-                                selected: state.selectedStory!));
-                          }
-                        }
-                      } else {
-                        if (dx > screenWidth * 1 / 2) {
-                          animatedController.stop();
-                          animatedController.reset();
-                          if ((state.initialStory! + 1) >=
-                              state.stories[state.selectedStory!].stories!
-                                  .length) {
-                            GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                                selected: state.selectedStory!,
-                                initialStory: 0));
-                            Navigator.of(context).pop();
-                          } else {
-                            GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                                selected: state.selectedStory!,
-                                initialStory: state.initialStory! + 1));
-                          }
-                        } else if (dx < screenWidth * 1 / 2) {
-                          animatedController.stop();
+        animatedController.reset();
+        if ((state.initialStory! - 1) > 0) {
+        context.read<StoryBloc>().add(StorySelectedEvent(
+        initialStory: state.initialStory! - 1,
+        selected: state.selectedStory!));
+        } else {
+        context.read<StoryBloc>().add(StorySelectedEvent(
+        initialStory: 0,
+        selected: state.selectedStory!));
+        }
+        }
+        } else {
+        if (dx > screenWidth * 1 / 2) {
+        animatedController.stop();
+        animatedController.reset();
+        if ((state.initialStory! + 1) >=
+        state.stories[state.selectedStory!].stories!
+            .length) {
+        GetIt.I<StoryBloc>().add(StorySelectedEvent(
+        selected: state.selectedStory!,
+        initialStory: 0));
+        Navigator.of(context).pop();
+        } else {
+        GetIt.I<StoryBloc>().add(StorySelectedEvent(
+        selected: state.selectedStory!,
+        initialStory: state.initialStory! + 1));
+        }
+        } else if (dx < screenWidth * 1 / 2) {
+        animatedController.stop();
 
-                          animatedController.reset();
-                          if ((state.initialStory! - 1) > 0) {
-                            context.read<StoryBloc>().add(StorySelectedEvent(
-                                initialStory: state.initialStory! - 1,
-                                selected: state.selectedStory!));
-                          } else {
-                            context.read<StoryBloc>().add(StorySelectedEvent(
-                                initialStory: 0,
-                                selected: state.selectedStory!));
-                          }
-                        }
-                      }
+        animatedController.reset();
+        if ((state.initialStory! - 1) > 0) {
+        context.read<StoryBloc>().add(StorySelectedEvent(
+        initialStory: state.initialStory! - 1,
+        selected: state.selectedStory!));
+        } else {
+        context.read<StoryBloc>().add(StorySelectedEvent(
+        initialStory: 0,
+        selected: state.selectedStory!));
+        }
+        }
+        }
 
-                      ;
-                    },
-                    child: PageView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      controller: pageController,
-                      itemBuilder: (context, index) {
+        ;
+        },
+        child: PageView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        controller: pageController,
+        itemBuilder: (context, index) {
 //todo check whether photo or video and start processing
-                        if (state.stories[state.selectedStory!]
-                                .stories![state.initialStory!].isPhoto ==
-                            1) {
+        if (state.selectedStoriesStatus ==
+        SelectedStoriesStatus.failure)
+        return Padding(
+        padding: const EdgeInsets.all(28.0),
+        child: Container(
+        color: Colors.white,
+        child: Center(
+        child: ElevatedButton(
+        onPressed: () {
+        GetIt.I<StoryBloc>().add(
+        StorySelectedEvent(
+        initialStory: state.initialStory!,
+        selected: state.selectedStory!));
+        },
+        child: Text('try')),
+        ),
+        ),
+        );
+        else if (state.stories[state.selectedStory!]
+            .stories![state.initialStory!].isPhoto ==
+        1) {
+        Fluttertoast.showToast(msg: 'asdsd');
+        if (state.selectedStoriesStatus ==
+        SelectedStoriesStatus.loading)
+        return SizedBox(
+        height: 60, width: 60, child: TrydosLoader());
+        if (state.selectedStoriesStatus ==
+        SelectedStoriesStatus.success) {
+        animatedController.duration =
+        const Duration(seconds: 4);
+        animatedController.forward();
 
-                          if (state.selectedStoriesStatus ==
-                              SelectedStoriesStatus.loading)
-                            return SizedBox(
+        return CachedNetworkImage(
+        imageUrl: state.stories[state.selectedStory!]
+            .stories![state.initialStory!].photoPath!,
+        width: state.imageDetail!.width.toDouble(),
+        height: state.imageDetail!.height.toDouble(),
+        );
+        }
 
-                                height: 40,
-                                width: 40,
-                                child
-                                : TrydosLoader());
-                          else {
-                            animatedController.duration =
-                                const Duration(seconds: 4);
-                            animatedController.forward();
+        return Container();
+        } else {
+        _videoController = null;
+        _videoController?.dispose();
+        _videoController = VideoPlayerController.networkUrl(
+        Uri.parse(state
+            .stories[state.selectedStory!]
+            .stories![state.initialStory!]
+            .fullVideoPath!));
+        Future<void> init =
+        _videoController!.initialize().then((_) {
+        animatedController.duration =
+        _videoController!.value.duration;
+        _videoController!.play();
+        animatedController.forward();
+        },onError: (e){
 
-                          return   CachedNetworkImage(
-                              imageUrl: state.stories[state.selectedStory!]
-                                  .stories![state.initialStory!].photoPath!,
-                              width: state.imageDetail!.width.toDouble(),
-                              height: state.imageDetail!.height.toDouble(),
-                            );
-                          }
-                        } else
-                        {
-                          _videoController = null;
-                          _videoController?.dispose();
-                          _videoController = VideoPlayerController.networkUrl(
-                              Uri.parse(state
-                                  .stories[state.selectedStory!]
-                                  .stories![state.initialStory!]
-                                  .fullVideoPath!));
+        GetIt.I<StoryBloc>().add(LoadFailureEvent());
 
-                          Future<void> init =
-                              _videoController!.initialize().then((_) {
-                            animatedController.duration =
-                                _videoController!.value.duration;
-                            _videoController!.play();
-                            animatedController.forward();
-                          });
-                          return FutureBuilder(
-                            future: init,
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.done) {
-                                return FittedBox(
-                                  fit: BoxFit.cover,
-                                  child: SizedBox(
-                                    width: _videoController!.value.size.width,
-                                    height: _videoController!.value.size.height,
-                                    child: VideoPlayer(_videoController!),
-                                  ),
-                                );
-                              } else {
-                                return Center(
-                                  child:TrydosLoader(),
-                                );
-                              }
-                            },
-                          );
-                        }
-                      },
-                      itemCount:
-                          state.stories[state.selectedStory!].stories!.length,
-                    ),
-                  );
-                case GetStoriesStatus.failure:
-                  return Text('failed');
-                case GetStoriesStatus.loading:
-                  return TrydosLoader();
-                case GetStoriesStatus.init:
-                  // TODO: Handle this case.
-                  break;
-              }
-              return Container();
-            }(),
+        });
+        return FutureBuilder(
+        future: init,
+        builder: (context, snapshot) {
+        if (snapshot.connectionState ==
+        ConnectionState.done) {
+        return FittedBox(
+        fit: BoxFit.cover,
+        child: SizedBox(
+        width: _videoController!.value.size.width,
+        height:
+        _videoController!.value.size.height,
+        child: VideoPlayer(
+        _videoController!,
+        ),
+        ),
+        );
+        } else if (snapshot.connectionState ==
+        ConnectionState.waiting) {
+        return Center(
+        child: TrydosLoader(),
+        );
+        } else if (snapshot.hasError)
+        return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+        color: Colors.white,
+        child: Center(
+        child: ElevatedButton(
+        onPressed: () {
+        GetIt.I<StoryBloc>().add(
+        StorySelectedEvent(
+        initialStory:
+        state.initialStory!,
+        selected: state
+            .selectedStory!));
+        },
+        child: Text('try')),
+        ),
+        ),
+        );
+        return Container(
+        color: Colors.amberAccent,
+        width: 200,
+        height: 200,
+        );
+        },
+        );
 
+        }
+        },
+        itemCount:
+        state.stories[state.selectedStory!].stories!.length,
+        ),
+        )
+,
             Positioned(
                 top: 40.0,
                 left: 10.0,
@@ -324,66 +360,3 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
   }
 }
 
-class AnimatedBar extends StatelessWidget {
-  final AnimationController animController;
-  final int position;
-
-  const AnimatedBar({
-    Key? key,
-    required this.animController,
-    required this.position,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<StoryBloc, StoryState>(
-      builder: (context1, state) {
-        return Flexible(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 1.5),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return Stack(
-                  children: <Widget>[
-                    _buildContainer(
-                      double.infinity,
-                      position < state.initialStory!
-                          ? Colors.white
-                          : Colors.white.withOpacity(0.5),
-                    ),
-                    position == state.initialStory
-                        ? AnimatedBuilder(
-                            animation: animController,
-                            builder: (context, child) {
-                              return _buildContainer(
-                                constraints.maxWidth * animController.value,
-                                Colors.white,
-                              );
-                            },
-                          )
-                        : const SizedBox.shrink(),
-                  ],
-                );
-              },
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-Container _buildContainer(double width, Color color) {
-  return Container(
-    height: 5.0,
-    width: width,
-    decoration: BoxDecoration(
-      color: color,
-      border: Border.all(
-        color: Colors.black26,
-        width: 0.8,
-      ),
-      borderRadius: BorderRadius.circular(3.0),
-    ),
-  );
-}

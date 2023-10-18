@@ -70,7 +70,7 @@ class NotificationProcess {
     );
   }
 
-  Future<void> setupInteractedMessage() async {
+  Future<void>  setupInteractedMessage() async {
     // if (initialMessage != null) {
     //   LocalNotificationService().showNotificationWithPayload(message: initialMessage);
     // }
