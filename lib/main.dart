@@ -33,8 +33,11 @@ Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 bool notificationClicked = false;
 Message? initialMessage;
+//todo this list will store on it the api's that we try to load it and returned a failure for the first time so we check if it's in this list we try to reload it
+List<String> isFailedTheFirstTime=[];
 
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await configureDependencies();
@@ -59,19 +62,8 @@ void main() async {
         null, null, null, null, null, null, null,
         error: error.toString());
   };
-  //   GetIt.I<Dio>().post(ChatEndPoints.createBugEP, data: {
-  //     "user_id": GetIt.I<PrefsRepository>().myChatId,
-  //     "title": "flutter error",
-  //     "description": error.toString()
-  //   });
-  // };
-  // Isolate.current.addErrorListener(RawReceivePort((pair) async {
-  //   final List<dynamic> errorAndStacktrace = pair;
-  // }).sendPort);
   await dealWithTimer();
-  runApp(TrydosApplication(
-    navKey: navigatorKey,
-  ));
+  runApp(TrydosApplication(navKey: navigatorKey,));
 }
 
 dealWithTimer() async {

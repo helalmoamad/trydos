@@ -7,26 +7,25 @@ import '../../api/client_config.dart';
 import '../../api/methods/detect_server.dart';
 import '../../api/methods/post.dart';
 import '../model/upload_file_cloudinary_response.dart';
+
 @injectable
-class CommonUseRemoteDataSource
-{
-
-
+class CommonUseRemoteDataSource {
   Future<UploadFileCloudinaryResponseModel> uploadCloudinaryFile(
       Map<String, dynamic> params) {
     PostClient<UploadFileCloudinaryResponseModel> uploadCloudinaryFile =
-    PostClient<UploadFileCloudinaryResponseModel>(
-        onUploadingFinished:
-
-      params['usingOnUploadingFinishedFunction']?
-      ((bool isUploadingSuccess) {
-        LocalNotificationService().uploadingNotification(0, 0, false,isUploadingSuccess);
-      }):null,
-      onSendProgress:
-          params['usingSendProgressFunction']?
-          (count, total) {
-            LocalNotificationService().uploadingNotification(total, count, true,false);
-      }:null,
+        PostClient<UploadFileCloudinaryResponseModel>(
+      onUploadingFinished: params['usingOnUploadingFinishedFunction']
+          ? ((bool isUploadingSuccess) {
+              LocalNotificationService()
+                  .uploadingNotification(0, 0, false, isUploadingSuccess);
+            })
+          : null,
+      onSendProgress: params['usingSendProgressFunction']
+          ? (count, total) {
+              LocalNotificationService()
+                  .uploadingNotification(total, count, true, false);
+            }
+          : null,
       requestPrams: RequestConfig<UploadFileCloudinaryResponseModel>(
         receiveTimeout: const Duration(minutes: 5),
         sendTimeout: const Duration(minutes: 5),
@@ -41,5 +40,4 @@ class CommonUseRemoteDataSource
     // uploadStory.call();
     return uploadCloudinaryFile();
   }
-
 }

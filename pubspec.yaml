@@ -93,6 +93,7 @@ dependencies:
   full_screen_image_null_safe: ^2.0.0
   flutter_file_downloader: ^1.1.2
   camera: ^0.10.5+5
+  lottie: 2.6.0
  # The following adds the Cupertino Icons font to your application.
  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
@@ -131,6 +132,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/svg/
+    - assets/lottie/
     - assets/images/
     - assets/languages/
     - assets/audio/
