@@ -22,13 +22,15 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
    Duration? videoDuration;
   @override
   void initState() {
-    if(widget.videoUrl != null) {
+    if(widget.videoUrl != null ) {
+      print('yes from memory');
+      _controller = VideoPlayerController.file(widget.videoFile!);
+    }else{
+
       FileSaving().downloadFileToLocalStorage(widget.videoUrl!);
       _controller = VideoPlayerController.networkUrl(
         Uri.parse(widget.videoUrl!),
       );
-    }else{
-      _controller = VideoPlayerController.file(widget.videoFile!);
     }
     _initializeVideoPlayerFuture = _controller.initialize();
     _controller.addListener(() {setState(() {

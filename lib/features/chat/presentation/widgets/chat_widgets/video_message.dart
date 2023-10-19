@@ -61,6 +61,8 @@ class VideoMessage extends StatefulWidget {
 class _VideoMessageState extends State<VideoMessage> {
   @override
   Widget build(BuildContext context) {
+    print('videoFile: ${widget.videoFile}');
+    print(widget.videoUrl);
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
