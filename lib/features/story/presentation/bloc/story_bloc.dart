@@ -116,16 +116,6 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
           photoPath: checkWitherImageOrNot ? r.secureUrl : null,
           fullVideoPath: checkWitherVideoOrNot ? r.secureUrl : null);
 
-      // Fluttertoast.showToast(
-      //     msg: story.userId.toString(), toastLength: Toast.LENGTH_LONG);
-      // Fluttertoast.showToast(
-      //     msg: story.photoPath.toString(), toastLength: Toast.LENGTH_LONG);
-      // Fluttertoast.showToast(
-      //     msg: story.isPhoto.toString(), toastLength: Toast.LENGTH_LONG);
-      // Fluttertoast.showToast(
-      //     msg: story.isVideo.toString(), toastLength: Toast.LENGTH_LONG);
-      // Fluttertoast.showToast(
-      //     msg: story.fullVideoPath.toString(), toastLength: Toast.LENGTH_LONG);
 
       if (GetIt.I<PrefsRepository>().myStoriesId ==
           state.stories.first.stories![0].userId) {
@@ -137,9 +127,7 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
             stories: state.stories,
             uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
       } else {
-        print('object222');
         state.stories.insert(0, Datum(stories: [story]));
-        print('upload 22 ');
         emit(state.copyWith(
             stories: state.stories,
             uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));

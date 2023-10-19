@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/story/helper_functions/check_showing_stories.dart';
@@ -256,9 +257,29 @@ class StoriesList extends StatelessWidget {
                               child: Text('Try Again')),
                         );
                       case GetStoriesStatus.loading:
-                        return Center(
-                          child: Lottie.asset('assets/lottie/sand_clock.json',
-                              height: 90, width: 90),
+                        return Container(
+                          width: double.infinity,
+                          height: 150,
+                          child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+
+
+                              itemBuilder: (context, index) => Padding(padding: EdgeInsetsDirectional.only(start: 20),child: Shimmer.fromColors(child: Container(
+
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Colors.amberAccent
+
+                                ),
+                                width: 100,
+                                height: 150,
+                              ),  baseColor: Colors.white,
+                                  highlightColor: Colors.grey),),
+                              separatorBuilder: (context, index) =>
+                                  SizedBox(
+                                    width: 5,
+                                  ),  itemCount: 4),
+
                         );
                     }
                   }();
