@@ -100,8 +100,7 @@ class StoriesList extends StatelessWidget {
                                                                   return GalleryAndCameraDialogWidget(onChooseFileFromCameraAction:
                                                                       (File?
                                                                           file) async {
-                                                                    print(
-                                                                        'ppppppp');
+
 
                                                                     if (file !=
                                                                         null) {

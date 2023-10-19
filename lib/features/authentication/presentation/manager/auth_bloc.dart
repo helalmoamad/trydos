@@ -145,6 +145,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
       },
       (r) {
+        isFailedTheFirstTime.remove('LoginToChatEvent');
         final id = r.data!.id;
         final token = r.data!.accessToken;
         final name = r.data!.name;
@@ -173,6 +174,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
     }, (r) {
+      isFailedTheFirstTime.remove('StoreFcmTokenEvent');
       final id = r.data!.id;
       _prefsRepository.setFcmTokenId(id!);
       emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
@@ -215,6 +217,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final response = await loginToStoriesUseCase(
       LoginToStoriesParams(
           phone: event.phone,
+          name: event.name,
           otpIdToken: event.otpIdToken,
           originalUserId: event.originalUserId),
     );
@@ -223,6 +226,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (!isFailedTheFirstTime.contains('LoginToStoriesEvent')) {
           add(LoginToStoriesEvent(
               phone: event.phone,
+              name: event.name,
               otpIdToken: event.otpIdToken,
               originalUserId: event.originalUserId));
           isFailedTheFirstTime.add('LoginToStoriesEvent');
@@ -231,6 +235,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.failure));
       },
       (r) {
+        isFailedTheFirstTime.remove('LoginToStoriesEvent');
+
         final id = r.data!.id;
         final token = r.data!.accessToken;
         final checkToken = token?.isNotEmpty ?? false;
@@ -263,11 +269,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       add(LoginToChatEvent(
           fcmToken: NotificationProcess.myFcmToken!,
           mobilePhone: r.data!.user!.phone,
+          name:r.data!.user!.name ,
           originalUserId: r.data!.user!.id!.toString(),
           otpIdToken: r.data!.idToken!));
       add(LoginToStoriesEvent(
         originalUserId: r.data!.user!.id!.toString(),
         otpIdToken: r.data!.idToken!,
+        name: r.data!.user!.name,
         phone: r.data!.user!.phone,
       ));
       emit(state.copyWith(
@@ -303,6 +311,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       add(LoginToStoriesEvent(
         originalUserId: r.data!.user!.id!.toString(),
         otpIdToken: r.data!.idToken!,
+        name: r.data!.user!.name,
         phone: r.data!.user!.phone,
       ));
       if (r.code == 'user-exists') {
@@ -330,6 +339,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.failure));
     }, (r) {
+      isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       print('isNumberVerifiedFromGuest:  ${r.data!.user!.isPhoneVerified}');
@@ -353,6 +363,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       emit(state.copyWith(updateNameStatus: UpdateNameStatus.failure));
     }, (r) {
+      isFailedTheFirstTime.remove('UpdateNameEvent');
       emit(state.copyWith(
         updateNameStatus: UpdateNameStatus.success,
       ));
@@ -371,6 +382,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(
           state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.failure));
     }, (userInfo) {
+      isFailedTheFirstTime.remove('GetCustomerInfoEvent');
       _prefsRepository.setVerifiedPhone(userInfo.isPhoneVerified == 1);
 
       emit(state.copyWith(
@@ -388,6 +400,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         isFailedTheFirstTime.add('GetUserCountryEvent');
       }
     }, (r) {
+      isFailedTheFirstTime.remove('GetUserCountryEvent');
       _prefsRepository.setCountryName(r.country.toString());
     });
   }

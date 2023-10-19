@@ -270,6 +270,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         emit(state.copyWith(saveContactsStatus: SaveContactsStatus.failure));
       },
       (r) {
+        isFailedTheFirstTime.remove('SaveContactsEvent');
         emit(
           state.copyWith(
             saveContactsStatus: SaveContactsStatus.success,
@@ -291,6 +292,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         }
         emit(state.copyWith(getChatsStatus: GetChatsStatus.failure));},
       (r) {
+        isFailedTheFirstTime.remove('GetChatsEvent');
         final PusherChatService pusherChatService =
             GetIt.I<PusherChatService>();
         pusherChatService.initialization();
@@ -350,6 +352,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         }
         emit(state.copyWith(getContactsStatus: GetContactsStatus.failure));},
       (r) {
+        isFailedTheFirstTime.remove('GetContactsEvent');
         List<Chat> newChats = List.of(state.chats);
         bool changed = false;
         List<Chat> chats = List.of(state.chats);
@@ -586,8 +589,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         ReadAllMessagesParams(channelId: event.channelId));
     response.fold(
         (l) {
+          if(!isFailedTheFirstTime.contains('ReadAllMessagesEvent')){
+            add(SaveContactsEvent());
+            isFailedTheFirstTime.add('ReadAllMessagesEvent');
+          }
           emit(state.copyWith(
             readMessagesStatus: ResetReadMessagesStatus.failure));}, (r) {
+      isFailedTheFirstTime.remove('ReadAllMessagesEvent');
       emit(state.copyWith(
           readMessagesStatus: ResetReadMessagesStatus.success,
           unReadMessagesFromAllChats: state.unReadMessagesFromAllChats -
@@ -617,9 +625,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final response = await receiveMessageUseCase(
         ReceiveMessageParams(channelId: event.channelId));
     response.fold(
-        (l) => emit(state.copyWith(
+        (l) {
+          if(!isFailedTheFirstTime.contains('NotifyThatIReceivedMessageEvent')){
+            add(SaveContactsEvent());
+            isFailedTheFirstTime.add('NotifyThatIReceivedMessageEvent');
+          }
+          emit(state.copyWith(
             notifyThatIReceivedMessageStatus:
-                NotifyThatIReceivedMessageStatus.failure)), (r) {
+                NotifyThatIReceivedMessageStatus.failure));}, (r) {
+      isFailedTheFirstTime.remove('NotifyThatIReceivedMessageEvent');
       emit(state.copyWith(
           notifyThatIReceivedMessageStatus:
               NotifyThatIReceivedMessageStatus.success));

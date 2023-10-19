@@ -152,17 +152,19 @@ class GetCustomerInfoEvent extends AuthEvent {
 class LoginToStoriesEvent extends AuthEvent {
   final String? otpIdToken;
   final String? phone;
+  final String? name;
   final String? originalUserId;
 
   LoginToStoriesEvent({
     this.phone,
+    this.name,
     this.otpIdToken,
     this.originalUserId,
   });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [otpIdToken , phone,originalUserId];
+  List<Object?> get props => [otpIdToken , phone,originalUserId , name];
 }
 
 class GetUserCountryEvent extends AuthEvent{
