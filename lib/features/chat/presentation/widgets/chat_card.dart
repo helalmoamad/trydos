@@ -93,8 +93,6 @@ class _ChatCardState extends ThemeState<ChatCard> {
               : HelperFunctions.getTheFirstTwoLettersOfName(
                   receiver.contactUser!.name!);
       fullReceiverName = receiver.contactUser?.name ?? receiver.name ?? receiver.mobilePhone ?? 'Unknown User';
-      print('contact : ${receiver.contactUser}');
-      print('contact name: ${receiver.contactUser?.name}');
     }
 
     ChannelMember me = widget.chat.channelMembers!
@@ -373,7 +371,11 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                     ?.first
                                                                     .mediaMessageContent
                                                                     ?.isNotEmpty ??
-                                                                false) ...{
+                                                                false || widget
+                                                                    .chat
+                                                                    .messages
+                                                                    ?.first
+                                                                    .file != null) ...{
                                                               SvgPicture.asset(
                                                                 messageType ==
                                                                         'ImageMessage'

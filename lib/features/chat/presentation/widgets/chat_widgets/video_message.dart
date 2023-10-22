@@ -22,7 +22,7 @@ import '../../manager/chat_bloc.dart';
 import 'no_image_widget.dart';
 
 class VideoMessage extends StatefulWidget {
-  VideoMessage(
+  const VideoMessage(
       {Key? key,
       this.isForwarded = false,
       this.isLocalMessage = true,
@@ -43,12 +43,12 @@ class VideoMessage extends StatefulWidget {
   final bool isFirstMessage;
   final bool isForwarded;
   final String messageId;
-  File? videoFile;
+  final File? videoFile;
   final bool isLocalMessage;
   final String? videoUrl;
   final DateTime time;
-   bool isRead;
-   bool isReceived;
+  final bool isRead;
+  final bool isReceived;
   final int senderId;
   final String? userMessagePhoto;
   final String userMessageName;
@@ -59,10 +59,19 @@ class VideoMessage extends StatefulWidget {
 }
 
 class _VideoMessageState extends State<VideoMessage> {
+
+ late bool isRead ;
+ late bool isReceived ;
+
+  @override
+  void initState() {
+    isRead = widget.isRead;
+    isReceived = widget.isReceived;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    print('videoFile: ${widget.videoFile}');
-    print(widget.videoUrl);
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
@@ -82,11 +91,11 @@ class _VideoMessageState extends State<VideoMessage> {
               return;
             }
             setState(() {
-              widget.isRead=true;
+              isRead=true;
             });
           }else if(!widget.isReceived){
             setState(() {
-              widget.isReceived=true;
+              isReceived=true;
             });
           }
         },
@@ -136,7 +145,7 @@ class _VideoMessageState extends State<VideoMessage> {
                                       : const Color(0xffB4FFD9),
                                 ),
                               ),
-                              child:MYVideoPlayer(videoUrl: widget.videoUrl,videoFile: widget.videoFile,)
+                              child:MYVideoPlayer(videoUrl: widget.videoUrl,videoFile: widget.videoFile)
                             ),
                             Transform.translate(
                               offset: const Offset(0, -3),

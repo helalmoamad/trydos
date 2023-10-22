@@ -108,7 +108,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                   children: [
                                     Padding(
                                       padding: HWEdgeInsets.only(left: 4.0),
-                                      child: Text('Hello,',
+                                      child: Text('Hello',
                                           textAlign: TextAlign.start,
                                           style: textTheme.headline3?.ba
                                               .copyWith(
@@ -125,7 +125,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                             if(state.marketUser!.name==null){
                                               return const SizedBox.shrink();
                                             }
-                                            return Text(state.marketUser!.name.toString(),
+                                            return Text(','+state.marketUser!.name.toString(),
                                                 textAlign: TextAlign.start,
                                                 style: textTheme.headline3?.la
                                                     .copyWith(
