@@ -30,7 +30,7 @@ class _TrydosApplicationState extends State<TrydosApplication> {
 
   final Smartlook smartLook = Smartlook.instance;
   @override
-  void didChangeDependencies() {
+    void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: colorScheme.white,
       statusBarBrightness: Brightness.dark,

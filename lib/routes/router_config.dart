@@ -7,6 +7,7 @@ class RouterConfiguration {
 }
 
 class _ApplicationRoutes{
+  final String test='/test';
   final String kBasePage = '/BasePage';
   final String kSinglePageChatPageName = 'SinglePageChatPage';
   final String kSinglePageChatPagePath = '/BasePage/SinglePageChatPage';

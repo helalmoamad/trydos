@@ -49,7 +49,7 @@ class LanguageService {
     return LanguageService._singleton(context);
   }
 
-  Locale get _currentLanguage => context.locale;
+  Locale get  _currentLanguage => context.locale;
 
   String get _languageCode => _currentLanguage.languageCode;
 

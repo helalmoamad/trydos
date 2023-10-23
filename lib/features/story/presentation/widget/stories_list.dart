@@ -101,8 +101,6 @@ class StoriesList extends StatelessWidget {
                                                                   return GalleryAndCameraDialogWidget(onChooseFileFromCameraAction:
                                                                       (File?
                                                                           file) async {
-
-
                                                                     if (file !=
                                                                         null) {
                                                                       GetIt.I<StoryBloc>().add(
@@ -262,24 +260,25 @@ class StoriesList extends StatelessWidget {
                           height: 150,
                           child: ListView.separated(
                               scrollDirection: Axis.horizontal,
-
-
-                              itemBuilder: (context, index) => Padding(padding: EdgeInsetsDirectional.only(start: 20),child: Shimmer.fromColors(child: Container(
-
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Colors.amberAccent
-
-                                ),
-                                width: 100,
-                                height: 150,
-                              ),  baseColor: Colors.white,
-                                  highlightColor: Colors.grey),),
-                              separatorBuilder: (context, index) =>
-                                  SizedBox(
+                              itemBuilder: (context, index) => Padding(
+                                    padding:
+                                        EdgeInsetsDirectional.only(start: 20),
+                                    child: Shimmer.fromColors(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              color: Colors.amberAccent),
+                                          width: 100,
+                                          height: 150,
+                                        ),
+                                        baseColor: Colors.white,
+                                        highlightColor: Colors.grey),
+                                  ),
+                              separatorBuilder: (context, index) => SizedBox(
                                     width: 5,
-                                  ),  itemCount: 4),
-
+                                  ),
+                              itemCount: 4),
                         );
                     }
                   }();

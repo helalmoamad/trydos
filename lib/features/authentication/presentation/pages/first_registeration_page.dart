@@ -40,6 +40,7 @@ class _RegistrationPageState extends State<RegistrationPage>
   final FocusNode focusNode = FocusNode();
   late AuthBloc authBloc;
   int isVisWhatsApp = 0;
+  int PopScopeValue = 0;
 
   @override
   void initState() {
@@ -138,111 +139,129 @@ class _RegistrationPageState extends State<RegistrationPage>
                     SizedBox(
                       height: 360,
                       width: 1.sw,
-                      child: PageView(
-                          physics: NeverScrollableScrollPhysics(),
-                          controller: pageController,
-                          children: [
-                            WelcomeSection(
-                              goToLoginSection: () {
-                                fromLogin = true;
-                                animationDuration = Duration(seconds: 1);
-                                animate.value = true;
-                                pageContent.value = 2;
-                                pageController.animateToPage(2,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut);
-                              },
-                              goToCreateAccount: () {
-                                fromLogin = false;
-                                animate.value = true;
-                                pageContent.value = 1;
-                                pageController.animateToPage(1,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut);
-                                //_animationController.forward();
-                              },
-                            ),
-                            CreateAccountSection(
-                              moveToNextStep: () {
-                                pageContent.value = 2;
-                                pageController.animateToPage(2,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut);
-                              },
-                            ),
-                            InsertPhoneTab(
-                              fromLogin: fromLogin,
-                              focusNode: focusNode,
-                              moveToNextStep: (String phoneNumber) {
-                                this.phoneNumber =
-                                    phoneNumber.replaceAll(' ', '');
-                                pageContent.value = 3;
-                                pageController.animateToPage(3,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut);
-                              },
-                            ),
-                            VerificationMethods(
-                              phoneNumber: phoneNumber,
-                              onChooseWhatsapp: () {
-                                isVisWhatsApp=1;
-                                pageContent.value = 4;
-                                pageController.animateToPage(4,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut);
-                                authBloc.add(SendOtpEvent(
-                                    phone: phoneNumber, isViaWhatsApp: 1));
-                              },
-                              goBackToPhone: () {
-                                pageController.animateToPage(2,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut);
-                                pageContent.value = 2;
-                              },
-                              onChooseSms: () {
-                                isVisWhatsApp=0;
-                                pageController.animateToPage(4,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut);
-                                pageContent.value = 5;
-                                authBloc.add(SendOtpEvent(
-                                    phone: phoneNumber, isViaWhatsApp: 0));
-                              },
-                            ),
-                            VerifyOtp(
-                                isVisWhatsApp : isVisWhatsApp ,
-                                navigateToAddName: () {
-                                  print('fromLogin:  $fromLogin');
-                                  if (fromLogin) {
-                                    context.go(GRouter.config.applicationRoutes
-                                            .kLoginSuccessfullyPage +
-                                        '?phoneNumber=$phoneNumber');
-                                    return;
-                                  }
-                                  pageController.animateToPage(5,
-                                      duration: Duration(milliseconds: 500),
-                                      curve: Curves.easeInOut);
-                                  pageContent.value = 6;
-                                },
-                                fromLogin: fromLogin,
-                                onLoginFailed: () {
-                                  pageController.animateToPage(5,
-                                      duration: Duration(milliseconds: 500),
-                                      curve: Curves.easeInOut);
-                                  pageContent.value = 6;
-                                },
-                                goBack: () {
-                                  pageController.animateToPage(3,
-                                      duration: Duration(milliseconds: 500),
-                                      curve: Curves.easeInOut);
-                                  pageContent.value = 3;
-                                },
-                                methodIcon: index == 4
-                                    ? AppAssets.whatsappSvg
-                                    : AppAssets.smsSvg,
-                                phoneNumber: phoneNumber),
-                            AddingName(fromLogin: false,)
-                          ]),
+                      child: WillPopScope(
+                          child: PageView(
+                              physics: NeverScrollableScrollPhysics(),
+                              onPageChanged: (value) => setState(() {
+                                    PopScopeValue = value;
+                                  }),
+                              controller: pageController,
+                              children: [
+                                WelcomeSection(
+                                  goToLoginSection: () {
+                                    fromLogin = true;
+                                    animationDuration = Duration(seconds: 1);
+                                    animate.value = true;
+                                    pageContent.value = 2;
+                                    pageController.animateToPage(2,
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+                                  },
+                                  goToCreateAccount: () {
+                                    fromLogin = false;
+                                    animate.value = true;
+                                    pageContent.value = 1;
+                                    pageController.animateToPage(1,
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+                                    //_animationController.forward();
+                                  },
+                                ),
+                                CreateAccountSection(
+                                  moveToNextStep: () {
+                                    pageContent.value = 2;
+                                    pageController.animateToPage(2,
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+                                  },
+                                ),
+                                InsertPhoneTab(
+                                  fromLogin: fromLogin,
+                                  focusNode: focusNode,
+                                  moveToNextStep: (String phoneNumber) {
+                                    this.phoneNumber =
+                                        phoneNumber.replaceAll(' ', '');
+                                    pageContent.value = 3;
+                                    pageController.animateToPage(3,
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+                                  },
+                                ),
+                                VerificationMethods(
+                                  phoneNumber: phoneNumber,
+                                  onChooseWhatsapp: () {
+                                    isVisWhatsApp = 1;
+                                    pageContent.value = 4;
+                                    pageController.animateToPage(4,
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+                                    authBloc.add(SendOtpEvent(
+                                        phone: phoneNumber, isViaWhatsApp: 1));
+                                  },
+                                  goBackToPhone: () {
+                                    pageController.animateToPage(2,
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+                                    pageContent.value = 2;
+                                  },
+                                  onChooseSms: () {
+                                    isVisWhatsApp = 0;
+                                    pageController.animateToPage(4,
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+                                    pageContent.value = 5;
+                                    authBloc.add(SendOtpEvent(
+                                        phone: phoneNumber, isViaWhatsApp: 0));
+                                  },
+                                ),
+                                VerifyOtp(
+                                    isVisWhatsApp: isVisWhatsApp,
+                                    navigateToAddName: () {
+                                      print('fromLogin:  $fromLogin');
+                                      if (fromLogin) {
+                                        context.go(GRouter
+                                                .config
+                                                .applicationRoutes
+                                                .kLoginSuccessfullyPage +
+                                            '?phoneNumber=$phoneNumber');
+                                        return;
+                                      }
+                                      pageController.animateToPage(5,
+                                          duration: Duration(milliseconds: 500),
+                                          curve: Curves.easeInOut);
+                                      pageContent.value = 6;
+                                    },
+                                    fromLogin: fromLogin,
+                                    onLoginFailed: () {
+                                      pageController.animateToPage(5,
+                                          duration: Duration(milliseconds: 500),
+                                          curve: Curves.easeInOut);
+                                      pageContent.value = 6;
+                                    },
+                                    goBack: () {
+                                      pageController.animateToPage(3,
+                                          duration: Duration(milliseconds: 500),
+                                          curve: Curves.easeInOut);
+                                      pageContent.value = 3;
+                                    },
+                                    methodIcon: index == 4
+                                        ? AppAssets.whatsappSvg
+                                        : AppAssets.smsSvg,
+                                    phoneNumber: phoneNumber),
+                                AddingName(
+                                  fromLogin: false,
+                                )
+                              ]),
+                          onWillPop: () async {
+                            if (PopScopeValue > 0) {
+                              await pageController.animateToPage(0,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.easeInOut);
+
+                              return false;
+                            }
+                            return true;
+                          }),
                     )
                   ],
                 )

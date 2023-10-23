@@ -203,6 +203,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
         } else {
         _videoController = null;
         _videoController?.dispose();
+        // VideoPlayerController.
         _videoController = VideoPlayerController.networkUrl(
         Uri.parse(state
             .stories[state.selectedStory!]

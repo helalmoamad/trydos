@@ -245,6 +245,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setStoriesToken(token!);
           _prefsRepository.setMyStoriesId(id!);
         }
+
         GetIt.I<StoryBloc>().add(GetStoryEvent());
       },
     );
