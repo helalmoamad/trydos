@@ -9,30 +9,38 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:video_player/video_player.dart';
 
 class MYVideoPlayer extends StatefulWidget {
-  const MYVideoPlayer({Key? key , this.videoUrl ,this.videoFile}) : super(key: key);
- final String? videoUrl;
- final File? videoFile;
+  const MYVideoPlayer({Key? key, this.videoUrl, this.videoFile})
+      : super(key: key);
+  final String? videoUrl;
+  final File? videoFile;
+
   @override
   State<MYVideoPlayer> createState() => _MYVideoPlayerState();
 }
 
 class _MYVideoPlayerState extends State<MYVideoPlayer> {
   late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
-   Duration? videoDuration;
+  Duration? videoDuration;
+
   @override
   void initState() {
-    if(widget.videoUrl != null) {
+    if (widget.videoFile != null) {
+      print('yes from memory');
+      _controller = VideoPlayerController.file(widget.videoFile!);
+    } else {
       FileSaving().downloadFileToLocalStorage(widget.videoUrl!);
       _controller = VideoPlayerController.networkUrl(
         Uri.parse(widget.videoUrl!),
       );
-    }else{
-      _controller = VideoPlayerController.file(widget.videoFile!);
     }
-    _initializeVideoPlayerFuture = _controller.initialize();
-    _controller.addListener(() {setState(() {
-    });});
+    _controller.initialize().then((value) {
+      setState(() {
+
+      });
+    });
+    _controller.addListener(() {
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -44,28 +52,32 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
 
   String getPosition() {
     final Duration duration;
-    if( _controller.value.isPlaying) {
-      duration = Duration(milliseconds: _controller.value.position.inMilliseconds.round());
-    }else{
-      duration = Duration(milliseconds: _controller.value.duration.inMilliseconds.round());
+    if (_controller.value.isPlaying) {
+      duration = Duration(
+          milliseconds: _controller.value.position.inMilliseconds.round());
+    } else {
+      duration = Duration(
+          milliseconds: _controller.value.duration.inMilliseconds.round());
     }
 
     return [duration.inHours, duration.inMinutes, duration.inSeconds]
         .map((seg) => seg.remainder(60).toString().padLeft(2, '0'))
-        .join(':').padLeft(2,'0');
+        .join(':')
+        .padLeft(2, '0');
   }
+
   @override
   Widget build(BuildContext context) {
-    if(_controller.value.position==_controller.value.duration){
+    //print('_initializeVideoPlayerFuture : $_initializeVideoPlayerFuture');
+    print('videoUrl : ${widget.videoUrl}');
+    print('videoFile : ${widget.videoFile}');
+    if (_controller.value.position == _controller.value.duration) {
       _controller.seekTo(Duration.zero);
     }
-    return FutureBuilder(
-      future: _initializeVideoPlayerFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          // If the VideoPlayerController has finished initialization, use
-          // the data it provides to limit the aspect ratio of the video.
-          return GestureDetector(
+    // If the VideoPlayerController has finished initialization, use
+    // the data it provides to limit the aspect ratio of the video.
+    return _controller.value.isInitialized
+        ? GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () => {
               setState(() {
@@ -84,21 +96,20 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                     aspectRatio: _controller.value.aspectRatio,
                     // Use the VideoPlayer widget to display the video.
                     child: ClipRRect(
-                        borderRadius:
-                        BorderRadius.circular(12.0),
+                        borderRadius: BorderRadius.circular(12.0),
                         child: VideoPlayer(_controller)),
                   ),
                   _controller.value.isPlaying
                       ? Container()
-                      :  Icon(Icons.play_arrow,
+                      : Icon(Icons.play_arrow,
                           size: 50, color: Colors.grey.shade300),
                   buildSpeed(),
                   Positioned(
                     left: 8,
                     bottom: 38,
-                    child: Text(getPosition(),style: context.textTheme.bodyText2?.rr.copyWith(
-                      color: Colors.white
-                    )),
+                    child: Text(getPosition(),
+                        style: context.textTheme.bodyText2?.rr
+                            .copyWith(color: Colors.white)),
                   ),
                   Positioned(
                     bottom: 15,
@@ -111,8 +122,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                         _controller,
                         allowScrubbing: true,
                         colors: VideoProgressColors(
-                            bufferedColor:
-                                Colors.white,
+                            bufferedColor: Colors.white,
                             playedColor: const Color(0xff388CFF),
                             backgroundColor: Colors.white.withOpacity(0.3)),
                       ),
@@ -121,18 +131,12 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                 ],
               ),
             ),
-          );
-        } else {
-          return SizedBox(
+          )
+        : SizedBox(
             width: 300,
             height: 300,
-            child: Center(
-              child:TrydosLoader()
-            ),
+            child: Center(child: TrydosLoader()),
           );
-        }
-      },
-    );
   }
 
   Widget buildSpeed() {
@@ -149,7 +153,9 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                   value: speed,
                   child: Text(
                     '${speed}x',
-                    style: const TextStyle(color: Color(0xff388CFF),),
+                    style: const TextStyle(
+                      color: Color(0xff388CFF),
+                    ),
                   ),
                 ))
             .toList(),
@@ -161,7 +167,9 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           child: Text(
             '${_controller.value.playbackSpeed}x',
-           style: const TextStyle(color: Color(0xff388CFF),),
+            style: const TextStyle(
+              color: Color(0xff388CFF),
+            ),
           ),
         ),
       ),

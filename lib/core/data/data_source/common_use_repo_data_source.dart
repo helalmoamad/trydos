@@ -27,8 +27,8 @@ class CommonUseRemoteDataSource {
             }
           : null,
       requestPrams: RequestConfig<UploadFileCloudinaryResponseModel>(
-        receiveTimeout: const Duration(minutes: 5),
-        sendTimeout: const Duration(minutes: 5),
+        receiveTimeout: const Duration(hours: 1),
+        sendTimeout: const Duration(hours: 1),
         endpoint: CloudinaryEndPoints.uploadEP,
         data: params['data'],
         response: ResponseValue<UploadFileCloudinaryResponseModel>(

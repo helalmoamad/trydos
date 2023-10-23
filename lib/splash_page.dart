@@ -40,7 +40,7 @@ class _SplashPageState extends State<SplashPage> {
       BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
       homeBloc.add(GetHomeSectionsEvent('Women_1'));
       homeBloc.add(GetMainCategoriesEvent());
-      Future.delayed(Duration(seconds: 2),() => context.go(prefsRepository.marketToken == null ?GRouter.config.applicationRoutes.kRegistrationPage : GRouter.config.applicationRoutes.kBasePage),);
+      Future.delayed(Duration(seconds: 2),() => context.go(prefsRepository.marketToken == null ? GRouter.config.applicationRoutes.kRegistrationPage : GRouter.config.applicationRoutes.kBasePage),);
     super.initState();
   }
 

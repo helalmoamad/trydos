@@ -62,7 +62,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                       children: [
                         Padding(
                           padding: HWEdgeInsets.only(left: 4.0),
-                          child: Text('Hello,',
+                          child: Text('Hello',
                               textAlign: TextAlign.start,
                               style: textTheme.headline3?.ba.copyWith(
                                   color: Color(0xff5D5C5D), height: 1.25)),
@@ -73,7 +73,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(widget.userName,
+                            Text(',' + widget.userName,
                                 textAlign: TextAlign.start,
                                 style: textTheme.headline3?.la.copyWith(
                                   color: Color(0xff5D5C5D),
