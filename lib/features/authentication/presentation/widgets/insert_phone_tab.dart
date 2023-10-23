@@ -17,11 +17,15 @@ import '../../../../core/utils/responsive_padding.dart';
 
 class InsertPhoneTab extends StatefulWidget {
   const InsertPhoneTab(
-      {this.fromLogin = false, required this.moveToNextStep, required this.focusNode, Key? key})
+      {this.fromLogin = false,
+      required this.moveToNextStep,
+      required this.focusNode,
+      Key? key})
       : super(key: key);
   final bool fromLogin;
   final void Function(String phoneNumber) moveToNextStep;
   final FocusNode focusNode;
+
   @override
   State<InsertPhoneTab> createState() => _InsertPhoneTabState();
 }
@@ -150,19 +154,20 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
               ),
             ]),
           ),
-          SizedBox(height: 29,),
+          SizedBox(
+            height: 29,
+          ),
           Padding(
               padding: HWEdgeInsets.symmetric(horizontal: 20.0),
               child: ValueListenableBuilder<bool>(
                   valueListenable: displaySubmit,
                   builder: (context, display, _) {
                     return PhoneFormField(
-                      focusNode:widget.focusNode,
+                      focusNode: widget.focusNode,
                       onChange: (String? text) {
                         Country newCountry = countries.firstWhere(
                             (element) => '+${text?.toLowerCase()}'
-                                .startsWith(
-                                    element.dialCode.toLowerCase()),
+                                .startsWith(element.dialCode.toLowerCase()),
                             orElse: () => Country(
                                 name: '',
                                 flag: '',
@@ -171,17 +176,24 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                 minLength: 0,
                                 maxLength: 0));
                         if (text?.isNotEmpty ?? false) {
-                          displaySubmit.value = text!.replaceAll(' ', '').length >=
-                                  (newCountry.minLength +
-                                      newCountry.dialCode.length - 2) &&
-                              text.replaceAll(' ', '').length <=
-                                  (newCountry.maxLength +
-                                      newCountry.dialCode.length - 2);
+                          displaySubmit.value =
+                              text!.replaceAll(' ', '').length >=
+                                      (newCountry.minLength +
+                                          newCountry.dialCode.length -
+                                          2) &&
+                                  text.replaceAll(' ', '').length <=
+                                      (newCountry.maxLength +
+                                          newCountry.dialCode.length -
+                                          2);
                         }
                         countryChanged.value = newCountry;
-                        return form.controllers[0].text.isNotEmpty ? form.controllers[0].text[form.controllers[0].text.length-1]==' ' : false;
+                        return form.controllers[0].text.isNotEmpty
+                            ? form.controllers[0].text[
+                                    form.controllers[0].text.length - 1] ==
+                                ' '
+                            : false;
                       },
-                      maxLength: maxLength-1,
+                      maxLength: maxLength - 1,
                       prefixIcon: Padding(
                         padding: HWEdgeInsets.only(left: 20.0, top: 15),
                         child: Row(
@@ -199,9 +211,9 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                     );
                                   else
                                     return CountryFlag.fromCountryCode(
-                                    country.code,
-                                    height: 15,
-                                    width: 22,
+                                      country.code,
+                                      height: 15,
+                                      width: 22,
                                       borderRadius: 4,
                                     );
                                 }),
@@ -225,8 +237,8 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                               )
                             : InkWell(
                                 onTap: () {
-                                  widget.moveToNextStep.call(
-                                      '${form.controllers[0].text}');
+                                  widget.moveToNextStep
+                                      .call('${form.controllers[0].text}');
                                 },
                                 child: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -243,7 +255,9 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                       controller: form.controllers[0],
                     );
                   })),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
         ],
       ),
     );

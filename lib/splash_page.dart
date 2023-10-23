@@ -37,7 +37,6 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     homeBloc=BlocProvider.of<HomeBloc>(context);
-    authBloc=BlocProvider.of<AuthBloc>(context);
       BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
       homeBloc.add(GetHomeSectionsEvent('Women_1'));
       homeBloc.add(GetMainCategoriesEvent());
