@@ -178,7 +178,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   bool isAFilePathExist(String filePath) {
     List<String> files = getExistenceFiles();
-    return files.contains(filePath);
+    String path = files.firstWhere((element) => element.startsWith(filePath) , orElse: ()=> '');
+    return path != '';
   }
 
   @override
@@ -194,6 +195,14 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setCountryName(String? countryName) =>_preferences.setString('countryName', countryName!);
+
+  @override
+  String? getTheLocalPathForFile(String filePath) {
+    List<String> files = getExistenceFiles();
+    String path = files.firstWhere((element) => element.startsWith(filePath));
+    print('pathhhh: $path');
+    return path.split(' ').length > 1 ? path.split(' ')[1]: null;
+  }
 
 
 
