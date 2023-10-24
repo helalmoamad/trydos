@@ -52,6 +52,8 @@ abstract class PrefsRepository {
 
   bool isAFilePathExist(String filePath);
 
+  String? getTheLocalPathForFile(String filePath);
+
   // Future<bool> setUser(User user);
   //
   // User? get user;
