@@ -33,11 +33,10 @@ Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 bool notificationClicked = false;
 Message? initialMessage;
-//todo this list will store on it the api's that we try to load it and returned a failure for the first time so we check if it's in this list we try to reload it
-List<String> isFailedTheFirstTime=[];
+//todo this list will store on it the api's that we try to load it and returned a failure for the first time so we check if it's not  in this list we try to reload it
+List<String> isFailedTheFirstTime = [];
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await configureDependencies();
@@ -48,9 +47,8 @@ void main() async {
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
   await NotificationProcess().init();
   RemoteMessage? openedMessage = await FirebaseMessaging.instance.getInitialMessage();
-  if (initialMessage != null) {
-    initialMessage = Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
-  }
+  if (initialMessage != null)
+    {  initialMessage = Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));}
   await NotificationProcess().setupInteractedMessage();
   await NotificationProcess().fcmToken();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -62,7 +60,9 @@ void main() async {
         error: error.toString());
   };
   await dealWithTimer();
-  runApp(TrydosApplication(navKey: navigatorKey,));
+  runApp(TrydosApplication(
+    navKey: navigatorKey,
+  ));
 }
 
 dealWithTimer() async {

@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -9,6 +8,7 @@ import '../api/log_interceptor.dart';
 import '../data/repository/prefs_repository_impl.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'di_container.config.dart';
+
 final GetIt _getIt = GetIt.I;
 
 @InjectableInit(
@@ -24,18 +24,19 @@ abstract class AppModule {
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         contentType: 'application/json',
-
         responseType: ResponseType.json,
         headers: <String, String>{
           HttpHeaders.acceptHeader: 'application/json',
         },
       );
+
   @singleton
   Logger get logger => Logger();
 
   @preResolve
   @singleton
-  Future<SharedPreferences> get sharedPreferences => SharedPreferences.getInstance();
+  Future<SharedPreferences> get sharedPreferences =>
+      SharedPreferences.getInstance();
 
   @preResolve
   @singleton
@@ -47,14 +48,16 @@ abstract class AppModule {
   @singleton
   Dio dio(BaseOptions option, Logger logger) {
     final dio = Dio(option);
-     dio.interceptors.add(LoggerInterceptor());
+    dio.interceptors.add(LoggerInterceptor());
     return dio;
   }
 }
-class MyHttpOverrides extends HttpOverrides{
+
+class MyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext? context){
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }
