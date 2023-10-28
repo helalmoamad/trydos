@@ -13,8 +13,13 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
 import '../manager/auth_bloc.dart';
+
 class WelcomeSection extends StatelessWidget {
-    WelcomeSection({required this.goToCreateAccount , required this.goToLoginSection ,Key? key}) : super(key: key);
+  WelcomeSection(
+      {required this.goToCreateAccount,
+      required this.goToLoginSection,
+      Key? key})
+      : super(key: key);
   final void Function() goToCreateAccount;
   final void Function() goToLoginSection;
 
@@ -39,7 +44,7 @@ class WelcomeSection extends StatelessWidget {
               'To Take Advantage Of All The Advantages Of The Application,\nPlease Join Us In Quick And Easy Steps And For Just One Time',
               textAlign: TextAlign.start,
               textHeightBehavior:
-              TextHeightBehavior(applyHeightToFirstAscent: false),
+                  TextHeightBehavior(applyHeightToFirstAscent: false),
               style: context.textTheme.bodyText2?.la.copyWith(
                 color: Color(0xff5D5C5D),
                 letterSpacing: 0.14,
@@ -47,7 +52,9 @@ class WelcomeSection extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
           Text(
             'Why We Know You ?',
             textAlign: TextAlign.center,
@@ -57,19 +64,18 @@ class WelcomeSection extends StatelessWidget {
               height: 1.43,
             ),
           ),
-          SizedBox(height: 30,),
+          SizedBox(
+            height: 30,
+          ),
           InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () {
               clickButton.value = 0;
-              Future.delayed(
-                  Duration(milliseconds: 100),
-                      (){
-                    clickButton.value = -1;
-                    goToLoginSection.call();
-                  }
-              );
+              Future.delayed(Duration(milliseconds: 100), () {
+                clickButton.value = -1;
+                goToLoginSection.call();
+              });
             },
             child: ValueListenableBuilder<int>(
                 valueListenable: clickButton,
@@ -114,15 +120,17 @@ class WelcomeSection extends StatelessWidget {
                   );
                 }),
           ),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           InkWell(
             highlightColor: Colors.transparent,
-            splashColor: Colors.transparent,
+            splashColor: Colors.amber,
             onTap: () {
               clickButton.value = 1;
               Future.delayed(Duration(milliseconds: 100), () {
                 clickButton.value = -1;
-                  goToCreateAccount.call();
+                goToCreateAccount.call();
               });
             },
             child: ValueListenableBuilder<int>(
@@ -130,7 +138,7 @@ class WelcomeSection extends StatelessWidget {
                 builder: (context, index, _) {
                   print(index);
                   return Padding(
-                    padding:  EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                    padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                     child: DottedBorder(
                       borderPadding: EdgeInsets.zero,
                       padding: EdgeInsets.zero,
@@ -169,14 +177,15 @@ class WelcomeSection extends StatelessWidget {
                   );
                 }),
           ),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
           InkWell(
-            onTap: ()async{
-              if(GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
-                String? deviceId = await HelperFunctions
-                    .getDeviceId();
-                BlocProvider.of<AuthBloc>(context).add(
-                    RegisterGuestEvent(deviceId: deviceId!));
+            onTap: () async {
+              if (GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
+                String? deviceId = await HelperFunctions.getDeviceId();
+                BlocProvider.of<AuthBloc>(context)
+                    .add(RegisterGuestEvent(deviceId: deviceId!));
               }
               context.go(GRouter.config.applicationRoutes.kBasePage);
             },
@@ -186,7 +195,7 @@ class WelcomeSection extends StatelessWidget {
                 'Later, Take A Look At The App',
                 textAlign: TextAlign.center,
                 textHeightBehavior:
-                TextHeightBehavior(applyHeightToFirstAscent: false),
+                    TextHeightBehavior(applyHeightToFirstAscent: false),
                 style: context.textTheme.bodyText2?.ra.copyWith(
                   color: Color(0xff4d84ff),
                   letterSpacing: 0.14,
@@ -195,7 +204,9 @@ class WelcomeSection extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 46,),
+          SizedBox(
+            height: 46,
+          ),
         ],
       ),
     );
