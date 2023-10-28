@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:developer';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -264,7 +263,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         await saveContactsUseCase(SaveContactsParams(contacts: event.contacts));
     response.fold(
       (l) {
-        if(!isFailedTheFirstTime.contains('SaveContactsEvent')){
+        if (!isFailedTheFirstTime.contains('SaveContactsEvent')) {
           add(SaveContactsEvent());
           isFailedTheFirstTime.add('SaveContactsEvent');
         }
@@ -287,11 +286,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final response = await getMyChatsUseCase(NoParams());
     response.fold(
       (l) {
-        if(!isFailedTheFirstTime.contains('GetChatsEvent')){
+        if (!isFailedTheFirstTime.contains('GetChatsEvent')) {
           add(GetChatsEvent());
           isFailedTheFirstTime.add('GetChatsEvent');
         }
-        emit(state.copyWith(getChatsStatus: GetChatsStatus.failure));},
+        emit(state.copyWith(getChatsStatus: GetChatsStatus.failure));
+      },
       (r) {
         isFailedTheFirstTime.remove('GetChatsEvent');
         final PusherChatService pusherChatService =
@@ -347,11 +347,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final response = await getContactsUseCase(NoParams());
     response.fold(
       (l) {
-        if(!isFailedTheFirstTime.contains('GetContactsEvent')){
+        if (!isFailedTheFirstTime.contains('GetContactsEvent')) {
           add(GetContactsEvent());
           isFailedTheFirstTime.add('GetContactsEvent');
         }
-        emit(state.copyWith(getContactsStatus: GetContactsStatus.failure));},
+        emit(state.copyWith(getContactsStatus: GetContactsStatus.failure));
+      },
       (r) {
         isFailedTheFirstTime.remove('GetContactsEvent');
         List<Chat> newChats = List.of(state.chats);
@@ -480,12 +481,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         chats: fromPinned ? state.chats : chats,
         pinnedChats: !fromPinned ? state.pinnedChats : chats,
         channelId: event.channelId));
-    final response =
-        await uploadFileCloudinaryUseCase(UploadFileCloudinaryParams(file: event.file , usingSendProgressFunction: false , usingOnUploadingFinishedFunction: false));
-    response.fold(
-        (l) =>
-            emit(state.copyWith(sendMessageStatus: SendMessageStatus.failure)),
-        (r) {
+    final response = await uploadFileCloudinaryUseCase(
+        UploadFileCloudinaryParams(
+            file: event.file,
+            usingSendProgressFunction: false,
+            usingOnUploadingFinishedFunction: false));
+    response.fold((l) {
+      List<String> currentFailedMessage = List.of(state.currentFailedMessage);
+      ids.remove(event.messageId);
+      currentFailedMessage.add(event.messageId);
+      emit(state.copyWith(sendMessageStatus: SendMessageStatus.failure));
+    }, (r) {
       _prefsRepository.setAFilePathExist(r.secureUrl!);
       add(SendMessageEvent(
           messageId: event.messageId,
@@ -542,16 +548,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           0,
           chat.copyWith(
               totalUnreadMessageCount: ((chat.totalUnreadMessageCount ?? 0) +
-                  (event.message.senderUserId! !=
-                      _prefsRepository.myChatId
-                  ? 1
-                  : 0))));
+                  (event.message.senderUserId! != _prefsRepository.myChatId
+                      ? 1
+                      : 0))));
     }
     messages = List.of(chat.messages ?? []);
     messages.insert(0, event.message);
 
-    int index = messages.indexWhere((element) => element.id == event.prevMessageId);
-      chats = sortChats(chats, event.message.channelId, messages);
+    int index =
+        messages.indexWhere((element) => element.id == event.prevMessageId);
+    chats = sortChats(chats, event.message.channelId, messages);
     emit(state.copyWith(
       receiveMessageStatus: ReceiveMessageStatus.success,
       unReadMessagesFromAllChats:
@@ -563,12 +569,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)]),
       currentChannelReceivedMessage: event.message.channelId,
       channelId: event.message.channelId,
-      chats: fromPinned
-          ? state.chats
-          : chats,
-      pinnedChats: !fromPinned
-          ? state.pinnedChats
-          : chats,
+      chats: fromPinned ? state.chats : chats,
+      pinnedChats: !fromPinned ? state.pinnedChats : chats,
     ));
     add(NotifyThatIReceivedMessageEvent(channelId: event.message.channelId!));
     if (index == -1) {
@@ -588,14 +590,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(state.copyWith(readMessagesStatus: ResetReadMessagesStatus.loading));
     final response = await readAllMessagesUseCase(
         ReadAllMessagesParams(channelId: event.channelId));
-    response.fold(
-        (l) {
-          if(!isFailedTheFirstTime.contains('ReadAllMessagesEvent')){
-            add(SaveContactsEvent());
-            isFailedTheFirstTime.add('ReadAllMessagesEvent');
-          }
-          emit(state.copyWith(
-            readMessagesStatus: ResetReadMessagesStatus.failure));}, (r) {
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('ReadAllMessagesEvent')) {
+        add(SaveContactsEvent());
+        isFailedTheFirstTime.add('ReadAllMessagesEvent');
+      }
+      emit(state.copyWith(readMessagesStatus: ResetReadMessagesStatus.failure));
+    }, (r) {
       isFailedTheFirstTime.remove('ReadAllMessagesEvent');
       emit(state.copyWith(
           readMessagesStatus: ResetReadMessagesStatus.success,
@@ -625,15 +626,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       NotifyThatIReceivedMessageEvent event, Emitter<ChatState> emit) async {
     final response = await receiveMessageUseCase(
         ReceiveMessageParams(channelId: event.channelId));
-    response.fold(
-        (l) {
-          if(!isFailedTheFirstTime.contains('NotifyThatIReceivedMessageEvent')){
-            add(SaveContactsEvent());
-            isFailedTheFirstTime.add('NotifyThatIReceivedMessageEvent');
-          }
-          emit(state.copyWith(
-            notifyThatIReceivedMessageStatus:
-                NotifyThatIReceivedMessageStatus.failure));}, (r) {
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('NotifyThatIReceivedMessageEvent')) {
+        add(SaveContactsEvent());
+        isFailedTheFirstTime.add('NotifyThatIReceivedMessageEvent');
+      }
+      emit(state.copyWith(
+          notifyThatIReceivedMessageStatus:
+              NotifyThatIReceivedMessageStatus.failure));
+    }, (r) {
       isFailedTheFirstTime.remove('NotifyThatIReceivedMessageEvent');
       emit(state.copyWith(
           notifyThatIReceivedMessageStatus:
@@ -1016,9 +1017,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       ));
     }, (r) {
       List<Message> messages = List.of(chat.messages ?? []);
-      int index = messages.indexWhere((element) => element.id == event.secondMessageId);
+      int index =
+          messages.indexWhere((element) => element.id == event.secondMessageId);
       for (int i = 0; i < r.length; i++) {
-        if (index< messages.length && r[i].id == messages[index].id) {
+        if (index < messages.length && r[i].id == messages[index].id) {
           index++;
           continue;
         }

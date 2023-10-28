@@ -108,7 +108,7 @@ class ScreenService {
       _widthBasedScreenType = ScreenType.desktop;
     }
 
-    if (_screenHeight< 960) {
+    if (_screenHeight < 960) {
       _heightBasedScreenType = ScreenType.mobile;
     } else if (_screenHeight < 1280) {
       _heightBasedScreenType = ScreenType.tablet;
