@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/main.dart';
@@ -19,6 +20,7 @@ class ConnectivityObserver {
   static createInstance(BuildContext context) {
     instance ??= ConnectivityObserver();
     Connectivity().onConnectivityChanged.listen((event) {
+      Fluttertoast.showToast(msg: 'inst',toastLength: Toast.LENGTH_LONG);
       if(previousEvent== ConnectivityResult.none && prefs.chatToken!=null){
         GetIt.I<ChatBloc>().add(const GetChatsEvent());
       }

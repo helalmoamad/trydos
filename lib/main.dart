@@ -41,7 +41,7 @@ void main() async {
   await EasyLocalization.ensureInitialized();
   await configureDependencies();
   //todo initialization for local notification
-  await NotificationService().initNotification();
+  // await NotificationService().initNotification();
   isDependencyInitialized = true;
   HttpOverrides.global = MyHttpOverrides();
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());

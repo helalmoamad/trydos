@@ -345,17 +345,18 @@ class _CameraScreenState extends State<CameraScreen>
                                             color: Colors.white38, size: 80),
                                         Icon(Icons.circle,
                                             color: Colors.white, size: 65),
-                                        _isRecordingInProgress?Container(
-                                          width: 25,
-                                          height:25,
-                                          decoration: BoxDecoration(
-                                            color: Colors.red,
-                                            borderRadius: BorderRadius.circular(4)
-
-                                          ),
-
-                                        ): Icon(Icons.circle,
-                                            color: Colors.red, size: 25),
+                                        _isRecordingInProgress
+                                            ? Container(
+                                                width: 25,
+                                                height: 25,
+                                                decoration: BoxDecoration(
+                                                    color: Colors.red,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            4)),
+                                              )
+                                            : Icon(Icons.circle,
+                                                color: Colors.red, size: 25),
                                       ],
                                     ),
                                   )
