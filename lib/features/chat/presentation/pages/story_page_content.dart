@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:story_view/controller/story_controller.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/chat/presentation/manager/preload_bloc/preloading_videos_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/preload_bloc/preloading_videos_event.dart';
@@ -16,7 +15,6 @@ class StoryPageContent extends StatefulWidget {
 }
 
 class _StoryPageContentState extends State<StoryPageContent> {
-  final controller = StoryController();
 
   @override
   Widget build(BuildContext context) {
