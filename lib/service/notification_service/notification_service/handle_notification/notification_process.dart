@@ -97,18 +97,20 @@ class NotificationProcess {
   }
 
   Future<void> init() async {
-    try {
-      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-      PlatformDispatcher.instance.onError = (error, stack) {
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-        return true;
-      };
-
-
-    } catch (e) {
-      print(e);
-      rethrow;
+    if(Platform.isAndroid) {
+      try {
+        await Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform);
+        FlutterError.onError =
+            FirebaseCrashlytics.instance.recordFlutterFatalError;
+        PlatformDispatcher.instance.onError = (error, stack) {
+          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+          return true;
+        };
+      } catch (e) {
+        print(e);
+        rethrow;
+      }
     }
 
     await _setForegroundNotificationPresentationOptions();

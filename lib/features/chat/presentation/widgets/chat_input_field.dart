@@ -137,6 +137,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                 ),
                                 15.horizontalSpace,
                                 InkWell(
+                                  focusColor: Colors.transparent,
+                                  splashColor: Colors.transparent,
                                   onTap: () {
                                     BlocProvider.of<AppBloc>(context).add(
                                         RefreshChatInputField(false, '', false,
@@ -198,6 +200,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     ),
                                     15.horizontalSpace,
                                     InkWell(
+                                      focusColor: Colors.transparent,
+                                      splashColor: Colors.transparent,
                                       onTap: () {
                                         BlocProvider.of<AppBloc>(context).add(
                                             RefreshChatInputField(
@@ -291,6 +295,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         ),
                                         15.horizontalSpace,
                                         InkWell(
+                                          focusColor: Colors.transparent,
+                                          splashColor: Colors.transparent,
                                           onTap: () {
                                             BlocProvider.of<AppBloc>(context)
                                                 .add(RefreshChatInputField(
@@ -360,6 +366,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             ),
                                             15.horizontalSpace,
                                             InkWell(
+                                              focusColor: Colors.transparent,
+                                              splashColor: Colors.transparent,
                                               onTap: () {
                                                 BlocProvider.of<AppBloc>(
                                                         context)
@@ -430,6 +438,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             ),
                                             15.horizontalSpace,
                                             InkWell(
+                                              focusColor: Colors.transparent,
+                                              splashColor: Colors.transparent,
                                               onTap: () {
                                                 BlocProvider.of<AppBloc>(
                                                         context)
@@ -533,6 +543,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     const VoiceWavesInRecording(),
                                     20.horizontalSpace,
                                     InkWell(
+                                      focusColor: Colors.transparent,
+                                      splashColor: Colors.transparent,
                                       onTap: () async {
                                         if (!recorderReady) {
                                           initializeRecorder();
@@ -557,6 +569,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     ),
                                     const Spacer(),
                                     InkWell(
+                                      focusColor: Colors.transparent,
+                                      splashColor: Colors.transparent,
                                       onTap: () async {
                                         final path = await recorder.stopRecorder();
                                         final audioFile = File(path!);
@@ -583,6 +597,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                   children: [
                                     13.horizontalSpace,
                                     InkWell(
+                                      focusColor: Colors.transparent,
+                                      splashColor: Colors.transparent,
                                       onTap: () async {
                                         pusherChatService.sendActivityEvent(
                                             widget.channelId,
@@ -639,6 +655,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     5.horizontalSpace,
                                     if (!thereText) ...{
                                       InkWell(
+                                        focusColor: Colors.transparent,
+                                        splashColor: Colors.transparent,
                                         onTap: () async {
                                           pusherChatService.sendActivityEvent(
                                               widget.channelId,
@@ -697,6 +715,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                       10.horizontalSpace,
                                       InkWell(
+                                        focusColor: Colors.transparent,
+                                        splashColor: Colors.transparent,
                                         onTap: () async {
                                           if (!recorderReady) {
                                             initializeRecorder();
@@ -723,6 +743,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     } else ...{
                                       InkWell(
+                                        focusColor: Colors.transparent,
+                                        splashColor: Colors.transparent,
                                         onTap: () {
                                           String message =
                                               form.controllers[0].text;

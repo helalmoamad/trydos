@@ -41,6 +41,7 @@ dependencies:
   intl: ^0.18.1
   cached_network_image: ^3.2.3
   video_thumbnail:
+  flutter_inset_box_shadow: ^1.0.8
   easy_localization: ^3.0.3
   url_launcher: ^6.1.14
   flutter_launcher_icons: ^0.13.1
@@ -139,6 +140,9 @@ flutter:
     - assets/audio/
     - assets/fonts/SF_Pro_text/
     - assets/fonts/SF_Pro_Display/
+    - assets/fonts/SF_Pro_Rounded/
+    - assets/fonts/adobe_clean/
+    - assets/fonts/Quicksand/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -194,6 +198,10 @@ flutter:
     - family: AdobeCleanBold
       fonts:
         - asset: assets/fonts/adobe_clean/AdobeCleanBold.otf
+    - family: Quicksand-Regular
+      fonts:
+        - asset: assets/fonts/Quicksand/Quicksand-Regular.ttf
+
 
   #
   # For details regarding fonts from package dependencies,

@@ -189,8 +189,8 @@ class StoriesList extends StatelessWidget {
                                                 resizeStories.value =
                                                     (details.globalPosition.dx +
                                                             listViewController
-                                                                .offset) ~/
-                                                        230;
+                                                                .offset - 115) ~/
+                                                        115;
                                               },
                                               onLongPressUp: () {
                                                 resizeStories.value = -1;
@@ -199,8 +199,8 @@ class StoriesList extends StatelessWidget {
                                                 resizeStories.value =
                                                     (details.globalPosition.dx +
                                                             listViewController
-                                                                .offset) ~/
-                                                        230;
+                                                                .offset - 115) ~/
+                                                        115;
                                               },
                                               child: SizedBox(
                                                   height:
@@ -218,8 +218,7 @@ class StoriesList extends StatelessWidget {
                                                         )
                                                       : StoryItemWidget(
                                                           index: index,
-                                                          resize:
-                                                              index == focused,
+                                                          resize: index == focused,
                                                           firstPhotoNotShowed:
                                                               initialStory
                                                                   .fullVideoPath!

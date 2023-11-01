@@ -162,7 +162,7 @@ class PhoneFormField extends StatelessWidget {
               minLines: minLines,
               maxLength: maxLength,
               enabled: enabled,
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.phone,
               textInputAction: textInputAction,
               textDirection: TextDirection.ltr,
               scrollPadding: scrollPadding,
@@ -211,7 +211,6 @@ class PhoneFormField extends StatelessWidget {
                     ? ValueListenableBuilder<bool>(
                         valueListenable: rebuildCursor,
                         builder: (context, rebuild, _) {
-                          print(rebuild);
                           return Container(
                             margin: HWEdgeInsets.only(
                                 left: 95 + offset, bottom: 20),
@@ -267,7 +266,7 @@ class PhoneNumberFormatter extends TextInputFormatter {
             minLength: 100,
             maxLength: 100)));
     String needEdit=newText;
-    if(newText.length > (country.dialCode.length + country.maxLength-2) && country.name != ''){
+    if(newText.length > (country.dialCode.length + country.maxLength-1) && country.name != ''){
       needEdit =  oldText;
     }
     if((oldText.length+1) == country.dialCode.length && newText[newText.length-1]=='0'){

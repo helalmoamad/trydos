@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:logger/logger.dart';
 import '../../enums/status_code_type.dart';
 import '../error/exception.dart';

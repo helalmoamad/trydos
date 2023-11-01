@@ -18,6 +18,7 @@ import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.d
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../story/presentation/widget/stories_list.dart';
+import '../widgets/home_page_card2.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -129,29 +130,35 @@ class _HomePageState extends State<HomePage> {
                     child: 20.verticalSpace,
                   ),
                   BlocBuilder<HomeBloc, HomeState>(
-                    buildWhen: (p,c) => p.getHomeSectionsStatus != c.getHomeSectionsStatus,
-  builder: (context, state) {
-    return sliverListSeparated(
-                    itemBuilder: (_, index) => Padding(
-                        padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                        child: state.getHomeSectionsStatus == GetHomeSectionsStatus.loading ? Shimmer.fromColors(
-                            child: Container(
-                              width: 1.sw,
-                              height: 200,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
+                    buildWhen: (p, c) =>
+                        p.getHomeSectionsStatus != c.getHomeSectionsStatus,
+                    builder: (context, state) {
+                      return sliverListSeparated(
+                        itemBuilder: (_, index) => Padding(
+                            padding: HWEdgeInsets.symmetric(horizontal: 15.w),
+                            child: state.getHomeSectionsStatus ==
+                                    GetHomeSectionsStatus.loading
+                                ? Shimmer.fromColors(
+                                    child: Container(
+                                      width: 1.sw,
+                                      height: 200,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      ),
+                                    ),
+                                    baseColor: Colors.grey,
+                                    highlightColor:
+                                        Color.fromARGB(31, 146, 144, 144))
+                                : HomePageCard2()
+                            // HomePageCard(showWhite: index % 2 == 0),
                             ),
-                            baseColor: Colors.grey,
-                            highlightColor: Color.fromARGB(31, 146, 144, 144)):
-                        HomePageCard(showWhite: index % 2 == 0),
-                        ),
-                    separator: 10.verticalSpace,
-                    childCount: 8,
-                  );
-  },
-),
+                        separator: SizedBox(height: 20,),
+                        childCount: 8,
+                      );
+                    },
+                  ),
                   SliverToBoxAdapter(
                     child: 20.verticalSpace,
                   ),

@@ -1737,8 +1737,8 @@ const List<Country> countries = [
     flag: "sy",
     code: "SY",
     dialCode: "+963",
-    minLength: 10,
-    maxLength: 10,
+    minLength: 9,
+    maxLength: 9,
   ),
   Country(
     name: "Taiwan",
@@ -1988,8 +1988,8 @@ const defaultCountry =  Country(
   flag: "tr",
   code: "TR",
   dialCode: "+90",
-  minLength: 10,
-  maxLength: 10,
+  minLength: 11,
+  maxLength: 11,
 );
 
 class Country {

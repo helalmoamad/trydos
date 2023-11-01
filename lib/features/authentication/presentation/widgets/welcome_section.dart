@@ -171,6 +171,8 @@ class WelcomeSection extends StatelessWidget {
           ),
           SizedBox(height: 20,),
           InkWell(
+            highlightColor: Colors.transparent,
+            splashColor: Colors.transparent,
             onTap: ()async{
               if(GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
                 String? deviceId = await HelperFunctions
@@ -181,7 +183,7 @@ class WelcomeSection extends StatelessWidget {
               context.go(GRouter.config.applicationRoutes.kBasePage);
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: Text(
                 'Later, Take A Look At The App',
                 textAlign: TextAlign.center,

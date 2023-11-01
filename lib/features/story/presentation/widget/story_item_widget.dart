@@ -42,17 +42,21 @@ class StoryItemWidget extends StatelessWidget {
     };
     return BlocBuilder<StoryBloc, StoryState>(builder: (context, state) {
       bool isLastStoryShowed = state.stories[index].stories!.length ==
-          (firstWhereNotShowedStoryCollection(state.stories[index].stories!));
+          (firstWhereNotShowedStoryCollection(
+              state.stories[index].stories!));
 
-      return SizedBox(
-        height: resize ? 190 : 150,
-        width: resize ? 150 : 110,
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Align(
-            alignment: Alignment.center,
-            child: Stack(
-              children: [
+      return AnimatedSize(
+        curve: Curves.easeInOut,
+        duration: Duration(milliseconds: 300),
+        child: SizedBox(
+          height: resize ? 190 : 150,
+          width: resize ? 150 : 110,
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Align(
+              alignment: Alignment.center,
+              child: Stack(
+                children: [
 //todo just in case you to show the behavior of last  story have been seen
 // Container(width: 90,height:90,
 // child: Text('${state.stories[index].stories!.length}'),
@@ -65,39 +69,75 @@ class StoryItemWidget extends StatelessWidget {
 //   ),
 // )
 
-                Container(
-                  clipBehavior: Clip.hardEdge,
-                  height: resize ? 190 : 150,
-                  width: resize ? 140 : 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
+                  Container(
+                    clipBehavior: Clip.hardEdge,
+                    height: resize ? 190 : 150,
+                    width: resize ? 140 : 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    child: CachedNetworkImage(
+                      errorWidget: (context, url, error) =>
+                          Center(child: Text('press to reload')),
+                      placeholder: (context, url) => Shimmer.fromColors(
+                          child: Container(
+                            clipBehavior: Clip.hardEdge,
+                            height: 150,
+                            width: 100,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20.0),
+                                color: Colors.blue),
+                          ),
+                          baseColor: Colors.white,
+                          highlightColor: Colors.grey),
+                      fit: BoxFit.cover,
+                      imageUrl: firstPhotoNotShowed!,
+                    ),
                   ),
-                  child: CachedNetworkImage(errorWidget:(context, url, error) => Center(child: Text('press to reload')),
-                    placeholder: (context, url) => Shimmer.fromColors(
-                        child: Container(
-                          clipBehavior: Clip.hardEdge,
-                          height: 150,
-                          width: 100,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20.0),
-                              color: Colors.blue),
-                        ),
-                        baseColor: Colors.white,
-                        highlightColor: Colors.grey),
-                    fit: BoxFit.cover,
-                    imageUrl: firstPhotoNotShowed!,
-                  ),
-                ),
-                Positioned(
-                  left: 0,
-                  top: 0,
-                  child: Transform.translate(
-                    offset: resize ? Offset(-10, -5) : Offset(-10, -10),
-                    child: Container(
-                      clipBehavior: Clip.hardEdge,
-                      child: state.stories[index].photoPath == null
-                          ? Container(
+                  Positioned(
+                    left: 0,
+                    top: 0,
+                    child: Transform.translate(
+                      offset:
+                          resize ? Offset(-10, -5) : Offset(-10, -10),
+                      child: Container(
                         clipBehavior: Clip.hardEdge,
+                        child: state.stories[index].photoPath == null
+                            ? Container(
+                                clipBehavior: Clip.hardEdge,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(180),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0x4dffffff),
+                                      offset: Offset(0, 0),
+                                      blurRadius: 6,
+                                    ),
+                                  ],
+                                ),
+                                child: NoImageWidget(
+                                    height: 40,
+                                    width: 40,
+                                    textStyle: context.textTheme.subtitle1?.br
+                                        .copyWith(
+                                            color: const Color(0xff6638FF),
+                                            letterSpacing: 0.18,
+                                            height: 1.33),
+                                    name: state.stories[index].name ==
+                                            null
+                                        ? 'UK'
+                                        : HelperFunctions
+                                            .getTheFirstTwoLettersOfName(state
+                                                .stories[index].name!)),
+                              )
+                            : CachedNetworkImage(
+                                errorWidget: (context, url, error) =>
+                                    Text('press to reload'),
+                                imageUrl: state.stories[index].photoPath,
+                                fit: BoxFit.cover,
+                              ),
+                        height: resize ? 50 : 30,
+                        width: resize ? 50 : 30,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(180),
                           boxShadow: [
@@ -107,50 +147,18 @@ class StoryItemWidget extends StatelessWidget {
                               blurRadius: 6,
                             ),
                           ],
+                          border: Border.all(
+                              color: isLastStoryShowed
+                                  ? Colors.white
+                                  : const Color(0xffffab62),
+                              width: 3),
                         ),
-                        child:  NoImageWidget(
-                            height: 40,
-                            width: 40,
-                            textStyle: context.textTheme.subtitle1?.br
-                                .copyWith(
-                                color: const Color(0xff6638FF),
-                                letterSpacing: 0.18,
-                                height: 1.33),
-                            name:state.stories[index]
-                                .name==null?'UK':
-                            HelperFunctions.getTheFirstTwoLettersOfName(
-                                state.stories[index]
-                                    .name!)),
-                      )
-                          : CachedNetworkImage(
-                        errorWidget:(context, url, error) => Text('press to reload'),
-                        imageUrl: state.stories[index].photoPath,
-                        fit: BoxFit.cover,
+                        margin: EdgeInsets.all(1.0),
                       ),
-                      height: resize ? 50 : 30,
-                      width: resize ? 50 : 30,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(180),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0x4dffffff),
-                            offset: Offset(0, 0),
-                            blurRadius: 6,
-                          ),
-                        ],
-                        border: Border.all(
-                            color: isLastStoryShowed
-                                ? Colors.white
-                                : const Color(0xffffab62),
-                            width: 3),
-                      ),
-                      margin: EdgeInsets.all(1.0),
                     ),
                   ),
-                ),
-
-
-              ],
+                ],
+              ),
             ),
           ),
         ),

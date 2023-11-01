@@ -43,6 +43,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
     super.initState();
   }
 
+
   @override
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -55,6 +56,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
 
   @override
   Widget build(BuildContext context) {
+    print('yes rebuilt');
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
@@ -180,11 +182,11 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                               text!.replaceAll(' ', '').length >=
                                       (newCountry.minLength +
                                           newCountry.dialCode.length -
-                                          2) &&
+                                          1) &&
                                   text.replaceAll(' ', '').length <=
                                       (newCountry.maxLength +
                                           newCountry.dialCode.length -
-                                          2);
+                                          1);
                         }
                         countryChanged.value = newCountry;
                         return form.controllers[0].text.isNotEmpty

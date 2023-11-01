@@ -36,6 +36,7 @@ Message? initialMessage;
 //todo this list will store on it the api's that we try to load it and returned a failure for the first time so we check if it's in this list we try to reload it
 List<String> isFailedTheFirstTime=[];
 
+
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,13 +48,17 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
   await NotificationProcess().init();
-  RemoteMessage? openedMessage = await FirebaseMessaging.instance.getInitialMessage();
-  if (initialMessage != null) {
-    initialMessage = Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
+  if(Platform.isAndroid) {
+    RemoteMessage? openedMessage = await FirebaseMessaging.instance
+        .getInitialMessage();
+    if (initialMessage != null) {
+      initialMessage =
+          Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
+    }
+    await NotificationProcess().setupInteractedMessage();
+    await NotificationProcess().fcmToken();
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
-  await NotificationProcess().setupInteractedMessage();
-  await NotificationProcess().fcmToken();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   AssetPicker.registerObserve();
   PhotoManager.setLog(true);
   FlutterError.onError = (FlutterErrorDetails error) {

@@ -37,11 +37,10 @@ class _RegistrationPageState extends State<RegistrationPage>
   String verificationId = '';
   String otp = '';
   Duration animationDuration = Duration(milliseconds: 500);
-  final FocusNode focusNode = FocusNode();
   late AuthBloc authBloc;
   int isVisWhatsApp = 0;
   int PopScopeValue = 0;
-
+  FocusNode focusNode = FocusNode();
   @override
   void initState() {
     authBloc = BlocProvider.of<AuthBloc>(context);
@@ -68,8 +67,10 @@ class _RegistrationPageState extends State<RegistrationPage>
     return ValueListenableBuilder<int>(
         valueListenable: pageContent,
         builder: (ctx, index, _) {
-          if (index == 0) {
-            focusNode.unfocus();
+          if(index < 2){
+            FocusScope.of(context).unfocus();
+          }else{
+            focusNode.requestFocus();
           }
           return Scaffold(
             backgroundColor:
@@ -254,10 +255,15 @@ class _RegistrationPageState extends State<RegistrationPage>
                               ]),
                           onWillPop: () async {
                             if (PopScopeValue > 0) {
-                              await pageController.animateToPage(0,
+                              if(PopScopeValue == 2 && fromLogin){
+                                await pageController.animateToPage(PopScopeValue -2,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut);
+                                return false;
+                              }
+                              await pageController.animateToPage(PopScopeValue-1,
                                   duration: Duration(milliseconds: 500),
                                   curve: Curves.easeInOut);
-
                               return false;
                             }
                             return true;
