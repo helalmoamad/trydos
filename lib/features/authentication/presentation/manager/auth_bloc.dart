@@ -270,7 +270,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       add(LoginToChatEvent(
           fcmToken: NotificationProcess.myFcmToken!,
           mobilePhone: r.data!.user!.phone,
-          name:r.data!.user!.name ,
+          name: r.data!.user!.name,
           originalUserId: r.data!.user!.id!.toString(),
           otpIdToken: r.data!.idToken!));
       add(LoginToStoriesEvent(

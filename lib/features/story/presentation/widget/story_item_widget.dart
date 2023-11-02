@@ -44,7 +44,7 @@ class StoryItemWidget extends StatelessWidget {
       bool isLastStoryShowed = state.stories[index].stories!.length ==
           (firstWhereNotShowedStoryCollection(state.stories[index].stories!));
 
-      return SizedBox(
+      return AnimatedContainer(duration: Duration(milliseconds: 1000),
         height: resize ? 190 : 150,
         width: resize ? 150 : 110,
         child: Directionality(
@@ -154,6 +154,7 @@ class StoryItemWidget extends StatelessWidget {
             ),
           ),
         ),
+        curve: Curves.easeInBack,
       );
     });
   }
