@@ -9,9 +9,7 @@ import '../../data/models/upload_story_cloudinary_response.dart';
 abstract  class StoryRepository
 {
 Future<Either<Failure,GetStoriesModel>> getStories();
-
-Future<Either<Failure, ImageDetail>> loadWidthAndHeight(
-    {required String url});
+Future<Either<Failure, ImageDetail>> loadWidthAndHeight({required String url});
 Future<Either<Failure,UploadStoryResponseModel>> uploadStory(Map<String , dynamic> params);
 
 } 

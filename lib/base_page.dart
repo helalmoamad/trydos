@@ -157,6 +157,7 @@ class _BasePageState extends State<BasePage> {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
+
       ChatBloc bloc = BlocProvider.of<ChatBloc>(context);
       Message message =
           Message.fromJson(convert.jsonDecode(event.data['message']));

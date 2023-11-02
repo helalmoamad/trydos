@@ -58,6 +58,7 @@ class ChatRemoteDataSource{
     PostClient<MyChatsResponseModel> getChats= PostClient<MyChatsResponseModel>(
       serverName: ServerName.chat,
       requestPrams: RequestConfig<MyChatsResponseModel>(
+
         endpoint: ChatEndPoints.getMyChatsEP,
         response: ResponseValue<MyChatsResponseModel>(
             fromJson: (response){

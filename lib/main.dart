@@ -38,28 +38,39 @@ List<String> isFailedTheFirstTime = [];
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await EasyLocalization.ensureInitialized();
-  await configureDependencies();
+  await Future.wait([
+    EasyLocalization.ensureInitialized(),
+    configureDependencies(),
+    NotificationProcess().init(),
+    FirebaseMessaging.instance.getInitialMessage(),
+    NotificationProcess().setupInteractedMessage(),
+    NotificationProcess().fcmToken()
+  ]);
+  // await EasyLocalization.ensureInitialized();
+  // await configureDependencies();
   //todo initialization for local notification
   // await NotificationService().initNotification();
   isDependencyInitialized = true;
   HttpOverrides.global = MyHttpOverrides();
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
-  await NotificationProcess().init();
-  RemoteMessage? openedMessage = await FirebaseMessaging.instance.getInitialMessage();
-  if (initialMessage != null)
-    {  initialMessage = Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));}
-  await NotificationProcess().setupInteractedMessage();
-  await NotificationProcess().fcmToken();
+  // await NotificationProcess().init();
+  RemoteMessage? openedMessage =
+      await FirebaseMessaging.instance.getInitialMessage();
+  if (initialMessage != null) {
+    initialMessage =
+        Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
+  }
+  // await NotificationProcess().setupInteractedMessage();
+  // await NotificationProcess().fcmToken();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  AssetPicker.registerObserve();
-  PhotoManager.setLog(true);
+  // AssetPicker.registerObserve();
+  // PhotoManager.setLog(true);
   FlutterError.onError = (FlutterErrorDetails error) {
     GetIt.I<PrefsRepository>().saveRequestsData(
         null, null, null, null, null, null, null,
         error: error.toString());
   };
-  await dealWithTimer();
+  // await dealWithTimer();
   runApp(TrydosApplication(
     navKey: navigatorKey,
   ));
