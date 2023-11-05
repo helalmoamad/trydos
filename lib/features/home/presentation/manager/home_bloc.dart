@@ -105,6 +105,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       add(GetStartingSettingsEvent());
     }
     if (prefsRepository.chatToken != null) {
+
       GetIt.I<ChatBloc>().add(GetChatsEvent());
     }
   }
