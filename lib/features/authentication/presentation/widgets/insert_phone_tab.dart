@@ -154,9 +154,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
               ),
             ]),
           ),
-          SizedBox(
-            height: 29.h
-          ),
+          SizedBox(height: 29.h),
           Padding(
               padding: HWEdgeInsets.symmetric(horizontal: 20.0),
               child: ValueListenableBuilder<bool>(
@@ -205,7 +203,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                 valueListenable: countryChanged,
                                 builder: (context, country, _) {
                                   if (country.code == '')
-                                    return  SizedBox(
+                                    return SizedBox(
                                       width: 22.w,
                                       height: 15.h,
                                     );
@@ -239,8 +237,6 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                 onTap: () {
                                   widget.moveToNextStep
                                       .call('${form.controllers[0].text}');
-
-
                                 },
                                 child: Row(
                                     mainAxisSize: MainAxisSize.min,

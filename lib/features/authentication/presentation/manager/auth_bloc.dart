@@ -407,8 +407,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-  FutureOr<void> _onGetUserCountryEvent(
-      GetUserCountryEvent event, Emitter<AuthState> emit) async {
+  FutureOr<void> _onGetUserCountryEvent(GetUserCountryEvent event, Emitter<AuthState> emit) async {
     final response = await getUserCountryUseCase(NoParams());
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetUserCountryEvent')) {
