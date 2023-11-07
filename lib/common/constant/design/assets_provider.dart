@@ -146,6 +146,9 @@ abstract class AppAssets {
   static String get searchOutlinedSvg=>'search_outlined'.svg;
   static String get storeIconInactiveSvg=>'store_icon_inactive'.svg;
   static String get mangoSvg=>'mango'.svg;
+  static String get quickOfferSvg=>'quick_offer'.svg;
+  static String get trydosTextSvg=>'trydos_text'.svg;
+  static String get backArrowArabic=>'back_arrow_arabic'.svg;
   static String getFlagPath(String name) => name.flagSvg;
 
   ///endregion

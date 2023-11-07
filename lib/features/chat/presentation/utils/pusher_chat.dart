@@ -46,16 +46,14 @@ class PusherChatService {
     if(publicChannels.containsKey(channelName))return ;
     Channel channel = pusher.subscribe(channelName);
     channel.bind('ChannelReceivedEvent', (event) {
-      dealWithTimer();
-      print(event?.data ?? 'ChannelReceivedEvent');
+      print('ChannelReceivedEventData ${event?.data ?? 'Empty'}');
       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
       chatBloc.add(ReceiveMessageFromPusherEvent(
           data['channel_id'].toString(), data['auth_user_id'], data['last_message_id']));
     });
 
     channel.bind('ChannelWatchedEvent', (event) {
-      dealWithTimer();
-      print(event?.data ?? 'ChannelWatchedEvent');
+      print('ChannelWatchedEventData ${event?.data ?? 'Empty'}');
       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
       chatBloc.add(WatchedMessageFromPusherEvent(
           data['channel_id'].toString(), data['auth_user_id'], data['last_message_id']));
@@ -72,7 +70,6 @@ Map<String,String> descTranslation={
     Channel channel = pusher.subscribe("presence-typing-$channelName");
     presenceChannels["presence-typing-$channelName"] = channel;
     channel.bind('client-TypingEvent', (event) {
-      dealWithTimer();
       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
       if (data['desc']== 'null' || data['desc']==null) {
         print('yes it is');

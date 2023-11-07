@@ -12,6 +12,7 @@ import 'package:trydos/features/app/app_widgets/tabs_bar.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
+import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_card.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
@@ -19,6 +20,7 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../story/presentation/widget/stories_list.dart';
 import '../widgets/home_page_card2.dart';
+import '../widgets/quick_offer_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -63,6 +65,7 @@ class _HomePageState extends State<HomePage> {
       padding: HWEdgeInsets.symmetric(horizontal: 0.w),
       child: NotificationListener<ScrollUpdateNotification>(
         onNotification: (notification) {
+          if (notification.metrics.axis == Axis.horizontal) return false;
           final currentOffset = notification.metrics.pixels;
           if (_previousOffset != null) {
             final distance = (currentOffset - _previousOffset!).abs();
@@ -99,9 +102,13 @@ class _HomePageState extends State<HomePage> {
                     child: 40.verticalSpace,
                   ),
                   SliverToBoxAdapter(
-                    child: Padding(
-                        padding: HWEdgeInsetsDirectional.only(start: 30),
-                        child: Row(
+                    child: Stack(
+                      children: [
+                        StoriesList(),
+                        Positioned(
+                            top: 0,
+                            left: 30,
+                            child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             SvgPicture.asset(
@@ -118,16 +125,12 @@ class _HomePageState extends State<HomePage> {
                                   height: 0.86, color: Color(0xff3C3C3C)),
                             )
                           ],
-                        )),
+                        ))
+                      ],
+                    ),
                   ),
                   SliverToBoxAdapter(
-                    child: 20.verticalSpace,
-                  ),
-                  SliverToBoxAdapter(
-                    child: StoriesList(),
-                  ),
-                  SliverToBoxAdapter(
-                    child: 20.verticalSpace,
+                    child: 5.verticalSpace,
                   ),
                   BlocBuilder<HomeBloc, HomeState>(
                     buildWhen: (p, c) =>
@@ -136,25 +139,26 @@ class _HomePageState extends State<HomePage> {
                       return sliverListSeparated(
                         itemBuilder: (_, index) => Padding(
                             padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                            child: state.getHomeSectionsStatus ==
+                            child:
+                            state.getHomeSectionsStatus ==
                                     GetHomeSectionsStatus.loading
-                                ? Shimmer.fromColors(
-                                    child: Container(
-                                      width: 1.sw,
-                                      height: 200,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(20.0),
-                                      ),
-                                    ),
-                                    baseColor: Colors.grey,
-                                    highlightColor:
-                                        Color.fromARGB(31, 146, 144, 144))
-                                : HomePageCard2()
-                            // HomePageCard(showWhite: index % 2 == 0),
+                                ?
+                            TrydosShimmerLoading(
+                                    width: 1.sw,
+                                    logoTextWidth: 70.w,
+                                    height: 235,
+                                    logoTextHeight: 20)
+                                :
+                            index == 2
+                                    ? quickOfferCard()
+                                    : HomePageCard2(
+                                        withSlidingImages: index == 1,
+                                      )
+                            //HomePageCard(showWhite: index % 2 == 0),
                             ),
-                        separator: SizedBox(height: 20,),
+                        separator: SizedBox(
+                          height: 20,
+                        ),
                         childCount: 8,
                       );
                     },

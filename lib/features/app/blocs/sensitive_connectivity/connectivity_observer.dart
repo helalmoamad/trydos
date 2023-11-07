@@ -19,9 +19,9 @@ class ConnectivityObserver {
   static createInstance(BuildContext context) {
     instance ??= ConnectivityObserver();
     Connectivity().onConnectivityChanged.listen((event) {
-      if(previousEvent== ConnectivityResult.none && prefs.chatToken!=null){
-        GetIt.I<ChatBloc>().add(const GetChatsEvent());
-      }
+      // if(previousEvent== ConnectivityResult.none && prefs.chatToken!=null){
+      //   GetIt.I<ChatBloc>().add(const GetChatsEvent());
+      // }
       currentEvent=event;
       if (Enum.compareByName(previousEvent, event) == 0 ||
           ((event == ConnectivityResult.mobile ||

@@ -66,18 +66,6 @@ void main() async {
         null, null, null, null, null, null, null,
         error: error.toString());
   };
-  await dealWithTimer();
   runApp(TrydosApplication(navKey: navigatorKey,));
 }
 
-dealWithTimer() async {
-  final PrefsRepository prefs = GetIt.I<PrefsRepository>();
-  timer?.cancel();
-  timer = Timer.periodic(const Duration(minutes: 2), (timer) {
-    if ((ConnectivityObserver.currentEvent == ConnectivityResult.wifi ||
-            ConnectivityObserver.currentEvent == ConnectivityResult.mobile) &&
-        prefs.chatToken != null) {
-      GetIt.I<ChatBloc>().add(const GetChatsEvent());
-    }
-  });
-}

@@ -27,6 +27,7 @@ String get _adobeCleanLightFamily => 'AdobeCleanLight';
 String get _adobeCleanRegularFamily => 'AdobeCleanRegular';
 String get _adobeCleanBoldFamily => 'AdobeCleanBold';
 String get _quickSandRegularFamily => 'Quicksand-Regular';
+String get _quickSandMediumFamily => 'Quicksand-Medium';
 
 extension FamilyUtils on TextStyle {
 
@@ -60,6 +61,8 @@ extension FamilyUtils on TextStyle {
   TextStyle get ba => copyWith(fontWeight: _bold,fontFamily: _adobeCleanBoldFamily);
 
   TextStyle get rq => copyWith(fontWeight: _regular,fontFamily: _quickSandRegularFamily);
+
+  TextStyle get mq => copyWith(fontWeight: _medium,fontFamily: _quickSandMediumFamily);
 
 
 }

@@ -289,6 +289,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.2+3"
+  carousel_slider:
+    dependency: "direct main"
+    description:
+      name: carousel_slider
+      sha256: "9c695cc963bf1d04a47bd6021f68befce8970bcd61d24938e1fb0918cf5d9c42"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.1"
   characters:
     dependency: transitive
     description:
@@ -1554,6 +1562,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.0"
+  themed:
+    dependency: "direct main"
+    description:
+      name: themed
+      sha256: ec7bcc8ee4dcf20ef3ba0df01414b07836fd2d01134d9f0fc36a38d2fe95a53c
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0"
   timezone:
     dependency: transitive
     description:
