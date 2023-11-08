@@ -142,12 +142,12 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                               'Your Privacy Is Completely Safe, We Not Share Your\nInformation With Anyone',
                               textAlign: TextAlign.start,
                               style: context.textTheme.caption?.ra.copyWith(
-                                  color: Color(0xffC4C2C2), height: 1.25),
+                                  color: Color(0xffC4C2C2), height: 1.25.h),
                             )
                           ],
                         ),
                         SizedBox(
-                          height: 3,
+                          height: 3.h,
                         )
                       }
                     ],
@@ -156,9 +156,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
               ),
             ]),
           ),
-          SizedBox(
-            height: 29,
-          ),
+          SizedBox(height: 29.h),
           Padding(
               padding: HWEdgeInsets.symmetric(horizontal: 20.0),
               child: ValueListenableBuilder<bool>(
@@ -207,16 +205,16 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                 valueListenable: countryChanged,
                                 builder: (context, country, _) {
                                   if (country.code == '')
-                                    return const SizedBox(
-                                      width: 22,
-                                      height: 15,
+                                    return SizedBox(
+                                      width: 22.w,
+                                      height: 15.h,
                                     );
                                   else
                                     return CountryFlag.fromCountryCode(
                                       country.code,
-                                      height: 15,
-                                      width: 22,
-                                      borderRadius: 4,
+                                      height: 15.h,
+                                      width: 22.w,
+                                      borderRadius: 4.r,
                                     );
                                 }),
                             10.horizontalSpace,
@@ -234,8 +232,8 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                         padding: HWEdgeInsets.only(right: 20.0, top: 22),
                         child: !display
                             ? SizedBox(
-                                width: 22,
-                                height: 15,
+                                width: 22.w,
+                                height: 15.h,
                               )
                             : InkWell(
                                 onTap: () {
@@ -247,8 +245,8 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                     children: [
                                       SvgPicture.asset(
                                         AppAssets.submitArrowSvg,
-                                        width: 10,
-                                        height: 20,
+                                        width: 10.w,
+                                        height: 20.h,
                                       ),
                                     ]),
                               ),

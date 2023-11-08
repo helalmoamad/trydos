@@ -63,6 +63,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
 
   @override
   void initState() {
+    debugPrint('deasds');
     authBloc = BlocProvider.of<AuthBloc>(context);
     _enabledResendNotifier = ValueNotifier<bool>(false);
     checkOtp = ValueNotifier<int>(0);
@@ -92,7 +93,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
               return;
             }
             checkOtp.value = 2;
-          } else if (state.verifyOtpSignInStatus ==
+          }
+          else if (state.verifyOtpSignInStatus ==
               VerifyOtpSignInStatus.success) {
             checkOtp.value = 1;
             Future.delayed(
@@ -109,6 +111,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
           listener: (context, state) {
             if (state.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.failure) {
               if (state.signUpErrorMessage == 'auth-001') {
+                debugPrint('auth-00122');
                 context.go(
                   GRouter.config.applicationRoutes.kUserExistPage +
                       '?phoneNumber=${widget.phoneNumber}',

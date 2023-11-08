@@ -14,7 +14,7 @@ import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
 import '../manager/auth_bloc.dart';
 class WelcomeSection extends StatelessWidget {
-    WelcomeSection({required this.goToCreateAccount , required this.goToLoginSection ,Key? key}) : super(key: key);
+  WelcomeSection({required this.goToCreateAccount , required this.goToLoginSection ,Key? key}) : super(key: key);
   final void Function() goToCreateAccount;
   final void Function() goToLoginSection;
 
@@ -122,7 +122,7 @@ class WelcomeSection extends StatelessWidget {
               clickButton.value = 1;
               Future.delayed(Duration(milliseconds: 100), () {
                 clickButton.value = -1;
-                  goToCreateAccount.call();
+                goToCreateAccount.call();
               });
             },
             child: ValueListenableBuilder<int>(

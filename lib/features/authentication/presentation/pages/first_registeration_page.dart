@@ -74,7 +74,7 @@ class _RegistrationPageState extends State<RegistrationPage>
           }
           return Scaffold(
             backgroundColor:
-                index != 6 ? context.colorScheme.background : Color(0xffF4FFF4),
+            index != 6 ? context.colorScheme.background : Color(0xffF4FFF4),
             body: Stack(
               alignment: Alignment.bottomCenter,
               children: [
@@ -144,8 +144,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                           child: PageView(
                               physics: NeverScrollableScrollPhysics(),
                               onPageChanged: (value) => setState(() {
-                                    PopScopeValue = value;
-                                  }),
+                                PopScopeValue = value;
+                              }),
                               controller: pageController,
                               children: [
                                 WelcomeSection(
@@ -221,9 +221,9 @@ class _RegistrationPageState extends State<RegistrationPage>
                                       print('fromLogin:  $fromLogin');
                                       if (fromLogin) {
                                         context.go(GRouter
-                                                .config
-                                                .applicationRoutes
-                                                .kLoginSuccessfullyPage +
+                                            .config
+                                            .applicationRoutes
+                                            .kLoginSuccessfullyPage +
                                             '?phoneNumber=$phoneNumber');
                                         return;
                                       }

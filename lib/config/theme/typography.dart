@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 part 'font.dart';
 
-TextTheme appTextTheme(TextTheme base, Color textColor) => base
+TextTheme   appTextTheme(TextTheme base, Color textColor) => base
     .copyWith(
       headlineLarge: base.headlineLarge?.copyWith(
         fontSize: _FontSize.huge, ///77
@@ -26,9 +26,7 @@ TextTheme appTextTheme(TextTheme base, Color textColor) => base
         fontSize: _FontSize.heading_03, /// 26
         fontWeight: _bold,
         letterSpacing:0,
-
         fontFamily: _sFDisplayLightFamily,
-
       ),
       headline4: base.headline4?.copyWith(
         fontSize: _FontSize.heading_04, /// 24
