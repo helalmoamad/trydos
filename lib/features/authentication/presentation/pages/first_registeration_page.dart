@@ -37,11 +37,10 @@ class _RegistrationPageState extends State<RegistrationPage>
   String verificationId = '';
   String otp = '';
   Duration animationDuration = Duration(milliseconds: 500);
-  final FocusNode focusNode = FocusNode();
   late AuthBloc authBloc;
   int isVisWhatsApp = 0;
   int PopScopeValue = 0;
-
+  FocusNode focusNode = FocusNode();
   @override
   void initState() {
     authBloc = BlocProvider.of<AuthBloc>(context);
@@ -66,36 +65,33 @@ class _RegistrationPageState extends State<RegistrationPage>
           error: error.toString());
     };
     return ValueListenableBuilder<int>(
-        child: ValueListenableBuilder<bool>(
-            child: logo,
-            valueListenable: animate,
-            builder: (context, yes, child) {
-              // debugPrint('asdasdas');
-              return Directionality(
-                textDirection: TextDirection.ltr,
-                child: AnimatedPositioned(
-                    left: yes ? 40 : null,
-                    right: yes ? 40 : null,
-                    top: yes ? 50 : null,
-                    bottom: yes ? null : 456,
-                    duration: animationDuration,
-                    child: child!),
-              );
-            }),
         valueListenable: pageContent,
-        builder: (ctx, index, child) {
-          // debugPrint('pageContentlogo ${pageContent.value}');
-          // debugPrint('aniater${animate}');
-          if (index == 0) {
-            focusNode.unfocus();
+        builder: (ctx, index, _) {
+          if(index < 2){
+            FocusScope.of(context).unfocus();
+          }else{
+            focusNode.requestFocus();
           }
           return Scaffold(
             backgroundColor:
-                index != 6 ? context.colorScheme.background : Color(0xffF4FFF4),
+            index != 6 ? context.colorScheme.background : Color(0xffF4FFF4),
             body: Stack(
               alignment: Alignment.bottomCenter,
               children: [
-                child!,
+                ValueListenableBuilder<bool>(
+                    valueListenable: animate,
+                    builder: (context, yes, _) {
+                      return Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: AnimatedPositioned(
+                            left: yes ? 40 : null,
+                            right: yes ? 40 : null,
+                            top: yes ? 50 : null,
+                            bottom: yes ? null : 456,
+                            duration: animationDuration,
+                            child: logo),
+                      );
+                    }),
                 Positioned(
                   top: 0,
                   right: 0,
@@ -147,9 +143,9 @@ class _RegistrationPageState extends State<RegistrationPage>
                       child: WillPopScope(
                           child: PageView(
                               physics: NeverScrollableScrollPhysics(),
-                              // onPageChanged: (value) => setState(() {
-                              //   PopScopeValue = value;
-                              // }),
+                              onPageChanged: (value) => setState(() {
+                                PopScopeValue = value;
+                              }),
                               controller: pageController,
                               children: [
                                 WelcomeSection(
@@ -225,9 +221,9 @@ class _RegistrationPageState extends State<RegistrationPage>
                                       print('fromLogin:  $fromLogin');
                                       if (fromLogin) {
                                         context.go(GRouter
-                                                .config
-                                                .applicationRoutes
-                                                .kLoginSuccessfullyPage +
+                                            .config
+                                            .applicationRoutes
+                                            .kLoginSuccessfullyPage +
                                             '?phoneNumber=$phoneNumber');
                                         return;
                                       }
@@ -259,11 +255,15 @@ class _RegistrationPageState extends State<RegistrationPage>
                               ]),
                           onWillPop: () async {
                             if (PopScopeValue > 0) {
-                              pageContent.value = index - 1;
-                              await pageController.animateToPage(index-1,
+                              if(PopScopeValue == 2 && fromLogin){
+                                await pageController.animateToPage(PopScopeValue -2,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut);
+                                return false;
+                              }
+                              await pageController.animateToPage(PopScopeValue-1,
                                   duration: Duration(milliseconds: 500),
                                   curve: Curves.easeInOut);
-
                               return false;
                             }
                             return true;

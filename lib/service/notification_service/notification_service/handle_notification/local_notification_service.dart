@@ -62,8 +62,6 @@ class LocalNotificationService {
 
   Future<void> showNotificationWithPayload(
       {required RemoteMessage message}) async {
-    dealWithTimer();
-    print('hello');
     chat.Message myMessage =
         chat.Message.fromJson(convert.jsonDecode(message.data['message']));
     sendIReceivedTheMessage(myMessage.channelId!);

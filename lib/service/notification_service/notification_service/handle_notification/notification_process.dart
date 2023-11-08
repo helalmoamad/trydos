@@ -37,15 +37,15 @@ class NotificationProcess {
   handleNotificationForLocal(String? payload) {
     if (payload != null) {
       final PayloadModel payloadModel =
-          PayloadModel.fromJson(jsonDecode(payload));
+      PayloadModel.fromJson(jsonDecode(payload));
       INotificationFactory factory = NotificationFactoryImpl();
       NotificationType notification =
-          factory.getNotificationType(NotificationTypeName.delivery);
+      factory.getNotificationType(NotificationTypeName.delivery);
       notification.executeNotification(payloadModel);
     }
   }
 
- Future fcmToken() async {
+  Future fcmToken() async {
     myFcmToken = await FirebaseMessaging.instance.getToken();
 
     log(myFcmToken.toString());
@@ -60,7 +60,7 @@ class NotificationProcess {
   Future<void> _setForegroundNotificationPresentationOptions() async {
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
-            alert: true, badge: true, sound: true);
+        alert: true, badge: true, sound: true);
   }
 
   requestPermission() async {
@@ -89,11 +89,11 @@ class NotificationProcess {
       print('foreground message');
       print('onMessageOpenedApp');
       chat.Message myMessage =
-          chat.Message.fromJson(convert.jsonDecode(event.data['message']));
+      chat.Message.fromJson(convert.jsonDecode(event.data['message']));
       main.initialMessage = myMessage;
       navigatorKey.currentState!.pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const BasePage()),
-        (route) => false,
+            (route) => false,
       );
     });
   }
@@ -110,22 +110,37 @@ class NotificationProcess {
   }
 
   Future<void> init() async {
-    try {
-      await Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform);
-      FlutterError.onError =
-          FirebaseCrashlytics.instance.recordFlutterFatalError;
-      PlatformDispatcher.instance.onError = (error, stack) {
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-        return true;
-      };
-    } catch (e) {
-      print(e);
-      rethrow;
+    if (Platform.isAndroid) {
+      try {
+        await Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform);
+        FlutterError.onError =
+            FirebaseCrashlytics.instance.recordFlutterFatalError;
+        PlatformDispatcher.instance.onError = (error, stack) {
+          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+          return true;
+        };
+      } catch (e) {
+        print(e);
+        rethrow;
+      }
+      try {
+        await Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform);
+        FlutterError.onError =
+            FirebaseCrashlytics.instance.recordFlutterFatalError;
+        PlatformDispatcher.instance.onError = (error, stack) {
+          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+          return true;
+        };
+      } catch (e) {
+        print(e);
+        rethrow;
+      }
+
+      await _setForegroundNotificationPresentationOptions();
+
+      await LocalNotificationService.initialize();
     }
-
-    await _setForegroundNotificationPresentationOptions();
-
-    await LocalNotificationService.initialize();
   }
 }

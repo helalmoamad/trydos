@@ -13,9 +13,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
-import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
-
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';

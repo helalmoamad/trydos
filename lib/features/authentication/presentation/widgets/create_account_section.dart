@@ -152,6 +152,8 @@ class CreateAccountSection extends StatelessWidget {
             height: 19,
           ),
           InkWell(
+            highlightColor: Colors.transparent,
+            splashColor: Colors.transparent,
             onTap: () async {
               if (GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
                 String? deviceId = await HelperFunctions.getDeviceId();

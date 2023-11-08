@@ -10,7 +10,8 @@ import 'package:trydos/features/authentication/presentation/manager/auth_bloc.da
 import 'package:trydos/features/home/domain/use_cases/get_home_sections_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usecase.dart';
-
+import 'package:flutter_smartlook/flutter_smartlook.dart';
+import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
@@ -44,7 +45,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetStartingSettingsUseCase getStartingSettingsUseCase;
   final GetHomeSectionsUseCase getHomeSectionsUseCase;
   final GetMainCategoriesUseCase getMainCategoriesUseCase;
-
+  final Smartlook smartLook = Smartlook.instance;
   FutureOr<void> _onGetHomeSectionsEvent(GetHomeSectionsEvent event,
       Emitter<HomeState> emit) async {
     emit(state.copyWith(getHomeSectionsStatus: GetHomeSectionsStatus.loading));
@@ -75,9 +76,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             (l) =>
             emit(state.copyWith(
                 getStartingSettingsStatus: GetStartingSettingsStatus.failure)),
-            (r) =>
-            emit(state.copyWith(
-                getStartingSettingsStatus: GetStartingSettingsStatus.success)));
+            (r)
+    {
+      if(r.data!.startingSetting!.smartLook ?? false){
+        initializeSmartLook();
+      }
+      emit(state.copyWith(
+          getStartingSettingsStatus: GetStartingSettingsStatus.success));
+    });
   }
 
   FutureOr<void> _onGetMainCategoriesEvent(GetMainCategoriesEvent event,
@@ -108,6 +114,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       GetIt.I<ChatBloc>().add(GetChatsEvent());
     }
+  }
+  initializeSmartLook() async {
+    String deviceId = (await HelperFunctions.getDeviceId()).toString();
+    await smartLook.preferences.setProjectKey('c8c465313d257c63e0a282ba9856a427973888fe');
+    await smartLook.preferences.setFrameRate(2);
+    await smartLook.user.setIdentifier(deviceId);
+    await smartLook.user.setName(GetIt.I<PrefsRepository>().myChatName ?? 'No_Name');
+    await smartLook.start();
   }
 }
 
