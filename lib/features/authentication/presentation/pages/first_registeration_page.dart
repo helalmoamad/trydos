@@ -37,10 +37,11 @@ class _RegistrationPageState extends State<RegistrationPage>
   String verificationId = '';
   String otp = '';
   Duration animationDuration = Duration(milliseconds: 500);
+  final FocusNode focusNode = FocusNode();
   late AuthBloc authBloc;
   int isVisWhatsApp = 0;
   int PopScopeValue = 0;
-  FocusNode focusNode = FocusNode();
+
   @override
   void initState() {
     authBloc = BlocProvider.of<AuthBloc>(context);
@@ -65,8 +66,23 @@ class _RegistrationPageState extends State<RegistrationPage>
           error: error.toString());
     };
     return ValueListenableBuilder<int>(
+        child: ValueListenableBuilder<bool>(
+            child: logo,
+            valueListenable: animate,
+            builder: (context, yes, child) {
+              return Directionality(
+                textDirection: TextDirection.ltr,
+                child: AnimatedPositioned(
+                    left: yes ? 40 : null,
+                    right: yes ? 40 : null,
+                    top: yes ? 50 : null,
+                    bottom: yes ? null : 456,
+                    duration: animationDuration,
+                    child: child!),
+              );
+            }),
         valueListenable: pageContent,
-        builder: (ctx, index, _) {
+        builder: (ctx, index, child) {
           if(index < 2){
             FocusScope.of(context).unfocus();
           }else{
@@ -78,20 +94,7 @@ class _RegistrationPageState extends State<RegistrationPage>
             body: Stack(
               alignment: Alignment.bottomCenter,
               children: [
-                ValueListenableBuilder<bool>(
-                    valueListenable: animate,
-                    builder: (context, yes, _) {
-                      return Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: AnimatedPositioned(
-                            left: yes ? 40 : null,
-                            right: yes ? 40 : null,
-                            top: yes ? 50 : null,
-                            bottom: yes ? null : 456,
-                            duration: animationDuration,
-                            child: logo),
-                      );
-                    }),
+                child!,
                 Positioned(
                   top: 0,
                   right: 0,
@@ -147,7 +150,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                 PopScopeValue = value;
                               }),
                               controller: pageController,
-                              children: [
+                              children:  [
                                 WelcomeSection(
                                   goToLoginSection: () {
                                     fromLogin = true;
@@ -277,3 +280,4 @@ class _RegistrationPageState extends State<RegistrationPage>
         });
   }
 }
+

@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -53,11 +52,10 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
           (firstWhereNotShowedStoryCollection(
               state.stories[widget.index].stories!));
 
-      return  Hero(
-        tag: widget.index,
-        transitionOnUserGestures: true,
-        child: Container(
-          margin: EdgeInsets.only(top: 20 , bottom: 10),
+      return  Container(
+        margin: EdgeInsets.only(top: 20 , bottom: 10),
+        child: Hero(
+          tag: widget.index,
           child: Directionality(
             textDirection: TextDirection.ltr,
             child: Align(
@@ -122,54 +120,57 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
                             Positioned(
                               left: 0,
                               top:0,
-                              child: Transform.translate(
-                                offset: Offset(-10 , -10),
+                              child: Material(
+                                color: Colors.transparent,
                                 child: InkWell(
                                   onTap: widget.onTapOnUserImage,
                                   highlightColor: Colors.transparent,
                                   splashColor: Colors.transparent,
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      AnimatedScale(
-                                        alignment: Alignment.topLeft,
-                                        scale: widget.resizeUserImage ? 2.33 : widget.resize ? 1.4 :  1,
-                                        duration: Duration(milliseconds: 50),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: isLastStoryShowed
-                                                      ? Colors.white
-                                                      : const Color(0xffffab62),
-                                                  width: widget.resizeUserImage ? 0.4 : widget.resize ? 0.6 : 1),
-                                              shape: BoxShape.circle
-                                          ),
-                                          child: state.stories[widget.index].photoPath == null
-                                              ? NoImageWidget(
-                                              height: 28,
-                                              width: 28,
-                                              radius: 180,
-                                              textStyle: context.textTheme.subtitle1?.br
-                                                  .copyWith(
-                                                  color: const Color(0xff6638FF),
-                                                  letterSpacing: 0.18,
+                                  child: Transform.translate(
+                                    offset: Offset(-10 , -10),
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        AnimatedScale(
+                                          alignment: Alignment.topLeft,
+                                          scale: widget.resizeUserImage ? 2.33 : widget.resize ? 1.4 :  1,
+                                          duration: Duration(milliseconds: 50),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: isLastStoryShowed
+                                                        ? Colors.white
+                                                        : const Color(0xffffab62),
+                                                    width: widget.resizeUserImage ? 0.4 : widget.resize ? 0.6 : 1),
+                                                shape: BoxShape.circle
+                                            ),
+                                            child: state.stories[widget.index].photoPath == null
+                                                ? NoImageWidget(
+                                                height: 28,
+                                                width: 28,
+                                                radius: 180,
+                                                textStyle: context.textTheme.subtitle1?.br
+                                                    .copyWith(
+                                                    color: const Color(0xff6638FF),
+                                                    letterSpacing: 0.18,
 
-                                                  height: 1.33),
-                                              name: state.stories[widget.index].name ==
-                                                  null
-                                                  ? 'UK'
-                                                  : HelperFunctions
-                                                  .getTheFirstTwoLettersOfName(state
-                                                  .stories[widget.index].name!))
-                                              : CachedNetworkImage(
-                                            errorWidget: (context, url, error) =>
-                                                Text('press to reload'),
-                                            imageUrl:
-                                            state.stories[widget.index].photoPath,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),),
-                                    ],
+                                                    height: 1.33),
+                                                name: state.stories[widget.index].name ==
+                                                    null
+                                                    ? 'UK'
+                                                    : HelperFunctions
+                                                    .getTheFirstTwoLettersOfName(state
+                                                    .stories[widget.index].name!))
+                                                : CachedNetworkImage(
+                                              errorWidget: (context, url, error) =>
+                                                  Text('press to reload'),
+                                              imageUrl:
+                                              state.stories[widget.index].photoPath,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

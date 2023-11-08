@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cube_transition_plus/cube_transition_plus.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -203,7 +204,12 @@ class _StoriesListState extends State<StoriesList> {
                                               selected: index,
                                               initialStory:
                                               indexOfInitialStory));
-                                      context.go(GRouter.config.applicationRoutes.kStoryCollectionsPagePath + '?id=$index');
+                                      Navigator.push(context, CubePageRoute(
+                                        enterPage: StoryCollection(index , key : UniqueKey()),
+                                        exitPage: widget,
+                                        duration: const Duration(milliseconds: 300),
+                                      ),);
+                                      //Navigator.push(context, MaterialPageRoute(builder: (_)=> StoryCollection(index),));
                                     },
                                     onLongPressStart: (details) {
                                       bool isFirstPress = resizeStories.value.value1 == -1  ;

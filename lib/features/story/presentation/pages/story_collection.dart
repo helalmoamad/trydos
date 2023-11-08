@@ -1,19 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:cube_transition_plus/cube_transition_plus.dart';
+import 'package:flutter/gestures.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../config/theme/typography.dart';
 import 'package:trydos/service/language_service.dart';
-
-//import 'package:dartz/dartz_streaming.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/no_image_widget.dart';
-import 'package:trydos/features/story/data/models/get_stories_model.dart';
-import 'package:trydos/features/story/helper_functions/check_showing_stories.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:video_player/video_player.dart';
 
@@ -22,12 +20,12 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../widget/animated_builder.dart';
 
 class StoryCollection extends StatefulWidget {
-  int id;
+  final int id;
 
   @override
   State<StoryCollection> createState() => _StoryCollectionState();
 
-  StoryCollection(this.id);
+  const StoryCollection(this.id ,{super.key});
 }
 
 class _StoryCollectionState extends ThemeState<StoryCollection>
@@ -35,7 +33,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
   VideoPlayerController? _videoController;
   late PageController pageController;
   late AnimationController animatedController;
-
+  double deltaDirection = -1 ;
+  LongPressDownDetails details  = LongPressDownDetails();
   @override
   void dispose() {
     pageController.dispose();
@@ -53,8 +52,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
     };
     return Hero(
       tag: widget.id,
-      transitionOnUserGestures: true,
-
       child: BlocBuilder<StoryBloc, StoryState>(
 //      buildWhen:  (previous, current) => previous.getStoriesStatus!=current.getStoriesStatus,
         builder: (context, state) {
@@ -90,195 +87,208 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
 //          Text('${state.selectedStoriesStatus}'),
 //          state.selectedStoriesStatus==SelectedStoriesStatus.success?Text('${state.imageDetail!.width}'):Text('data')
 
-               GestureDetector(
-              onLongPress: () => animatedController.stop(),
-          onLongPressUp: () => animatedController.forward(),
-          onTapDown: (details) {
-          final double screenWidth =
-          MediaQuery.of(context).size.width;
-          final double dx = details.globalPosition.dx;
+              GestureDetector(
+                onLongPressDown: (_){
+                  details = _;
+                } ,
+                onLongPressStart: (_){
+                  animatedController.stop();
+                  _videoController?.pause();
+                },
+                onLongPressUp: () {
+                  animatedController.forward();
+                  _videoController?.play();
+                },
+                onHorizontalDragEnd: (details){
+                  print(deltaDirection);
+                  if (deltaDirection >= 0) { // right to left
+                    print('right to left');
+                    Navigator.pushReplacement(context, CubePageRoute(
+                      enterPage: StoryCollection(widget.id + 1 ,key: UniqueKey()),
+                      exitPage: widget,
+                      duration: const Duration(milliseconds: 300),
+                    ),);
+                  }else{
+                    print('left to right');
+                  }
+                },
+                onVerticalDragUpdate: (details) {
+                  if (details.delta.direction > 0) {
+                    Navigator.pop(context);
+                  }
+                },
+                onHorizontalDragUpdate: (details) {
+                  deltaDirection = details.delta.direction;
+                },
+                onLongPressCancel: () {
+                  print('rrrrrrrrrrrrrrrrrr');
+                  final double screenWidth = MediaQuery.of(context).size.width;
+                  final double dx = details.localPosition.dx;
+                  print(dx);
+                  if (LanguageService.rtl) {
+                    if (dx < screenWidth * 1 / 2) {
+                      animatedController.stop();
+                      animatedController.reset();
+                      if ((state.initialStory! + 1) >=
+                          state.stories[state.selectedStory!].stories!.length) {
+                        GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                            selected: state.selectedStory!, initialStory: 0));
+                        Navigator.of(context).pop();
+                      } else {
+                        GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                            selected: state.selectedStory!,
+                            initialStory: state.initialStory! + 1));
+                      }
+                    } else if (dx > screenWidth * 1 / 2) {
+                      animatedController.stop();
 
-          if (LanguageService.rtl) {
-          if (dx < screenWidth * 1 / 2) {
-          animatedController.stop();
-          animatedController.reset();
-          if ((state.initialStory! + 1) >=
-          state.stories[state.selectedStory!].stories!
-              .length) {
-          GetIt.I<StoryBloc>().add(StorySelectedEvent(
-          selected: state.selectedStory!,
-          initialStory: 0));
-          Navigator.of(context).pop();
-          } else {
-          GetIt.I<StoryBloc>().add(StorySelectedEvent(
-          selected: state.selectedStory!,
-          initialStory: state.initialStory! + 1));
-          }
-          } else if (dx > screenWidth * 1 / 2) {
-          animatedController.stop();
-
-          animatedController.reset();
-          if ((state.initialStory! - 1) > 0) {
-          context.read<StoryBloc>().add(StorySelectedEvent(
-          initialStory: state.initialStory! - 1,
-          selected: state.selectedStory!));
-          } else {
-          context.read<StoryBloc>().add(StorySelectedEvent(
-          initialStory: 0,
-          selected: state.selectedStory!));
-          }
-          }
-          } else {
-          if (dx > screenWidth * 1 / 2) {
-          animatedController.stop();
-          animatedController.reset();
-          if ((state.initialStory! + 1) >=
-          state.stories[state.selectedStory!].stories!
-              .length) {
-          GetIt.I<StoryBloc>().add(StorySelectedEvent(
-          selected: state.selectedStory!,
-          initialStory: 0));
-          Navigator.of(context).pop();
-          } else {
-          GetIt.I<StoryBloc>().add(StorySelectedEvent(
-          selected: state.selectedStory!,
-          initialStory: state.initialStory! + 1));
-          }
-          } else if (dx < screenWidth * 1 / 2) {
-          animatedController.stop();
-
-          animatedController.reset();
-          if ((state.initialStory! - 1) > 0) {
-          context.read<StoryBloc>().add(StorySelectedEvent(
-          initialStory: state.initialStory! - 1,
-          selected: state.selectedStory!));
-          } else {
-          context.read<StoryBloc>().add(StorySelectedEvent(
-          initialStory: 0,
-          selected: state.selectedStory!));
-          }
-          }
-          }
-
-          ;
-          },
-          child: PageView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          controller: pageController,
-          itemBuilder: (context, index) {
-//todo check whether photo or video and start processing
-          if (state.selectedStoriesStatus ==
-          SelectedStoriesStatus.failure)
-          return
-
-
-            Center(
-              child: ElevatedButton(
-                  onPressed: () {
-                    GetIt.I<StoryBloc>().add(
-                        StorySelectedEvent(
-                            initialStory: state.initialStory!,
+                      animatedController.reset();
+                      if ((state.initialStory! - 1) > 0) {
+                        context.read<StoryBloc>().add(StorySelectedEvent(
+                            initialStory: state.initialStory! - 1,
                             selected: state.selectedStory!));
+                      } else {
+                        context.read<StoryBloc>().add(StorySelectedEvent(
+                            initialStory: 0, selected: state.selectedStory!));
+                      }
+                    }
+                  } else {
+                    if (dx > screenWidth * 1 / 2) {
+                      animatedController.stop();
+                      animatedController.reset();
+                      if ((state.initialStory! + 1) >=
+                          state.stories[state.selectedStory!].stories!.length) {
+                        GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                            selected: state.selectedStory!, initialStory: 0));
+                        Navigator.of(context).pop();
+                      } else {
+                        GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                            selected: state.selectedStory!,
+                            initialStory: state.initialStory! + 1));
+                      }
+                    } else if (dx < screenWidth * 1 / 2) {
+                      animatedController.stop();
+
+                      animatedController.reset();
+                      if ((state.initialStory! - 1) > 0) {
+                        context.read<StoryBloc>().add(StorySelectedEvent(
+                            initialStory: state.initialStory! - 1,
+                            selected: state.selectedStory!));
+                      } else {
+                        context.read<StoryBloc>().add(StorySelectedEvent(
+                            initialStory: 0, selected: state.selectedStory!));
+                      }
+                    }
+                  }
+
+                  ;
+                },
+                child: PageView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: pageController,
+                  itemBuilder: (context, index) {
+//todo check whether photo or video and start processing
+                    if (state.selectedStoriesStatus ==
+                        SelectedStoriesStatus.failure)
+                      return Center(
+                        child: ElevatedButton(
+                            onPressed: () {
+                              GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                                  initialStory: state.initialStory!,
+                                  selected: state.selectedStory!));
+                            },
+                            child: Text('Try Again')),
+                      );
+                    else if (state.stories[state.selectedStory!]
+                            .stories![state.initialStory!].isPhoto ==
+                        1) {
+                      if (state.selectedStoriesStatus ==
+                          SelectedStoriesStatus.loading)
+                        return SizedBox(
+                            height: 60, width: 60, child: TrydosLoader());
+                      if (state.selectedStoriesStatus ==
+                          SelectedStoriesStatus.success) {
+                        animatedController.duration =
+                            const Duration(seconds: 4);
+                        animatedController.forward();
+
+                        return CachedNetworkImage(
+                          imageUrl: state.stories[state.selectedStory!]
+                              .stories![state.initialStory!].photoPath!,
+                          width: state.imageDetail!.width.toDouble(),
+                          height: state.imageDetail!.height.toDouble(),
+                        );
+                      }
+
+                      return Container();
+                    } else {
+                      _videoController = null;
+                      _videoController?.dispose();
+                      // VideoPlayerController.
+                      _videoController = VideoPlayerController.networkUrl(
+                          Uri.parse(state.stories[state.selectedStory!]
+                              .stories![state.initialStory!].fullVideoPath!));
+                      Future<void> init =
+                          _videoController!.initialize().then((_) {
+                        animatedController.duration =
+                            _videoController!.value.duration;
+                        _videoController!.play();
+                        animatedController.forward();
+                      }, onError: (e) {
+                        GetIt.I<StoryBloc>().add(LoadFailureEvent());
+                      });
+                      return FutureBuilder(
+                        future: init,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            return FittedBox(
+                              fit: BoxFit.cover,
+                              child: SizedBox(
+                                width: _videoController!.value.size.width,
+                                height: _videoController!.value.size.height,
+                                child: VideoPlayer(
+                                  _videoController!,
+                                ),
+                              ),
+                            );
+                          } else if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: TrydosLoader(),
+                            );
+                          } else if (snapshot.hasError)
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                color: Colors.white,
+                                child: Center(
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        GetIt.I<StoryBloc>().add(
+                                            StorySelectedEvent(
+                                                initialStory:
+                                                    state.initialStory!,
+                                                selected:
+                                                    state.selectedStory!));
+                                      },
+                                      child: Text('try')),
+                                ),
+                              ),
+                            );
+                          return Container(
+                            color: Colors.amberAccent,
+                            width: 200,
+                            height: 200,
+                          );
+                        },
+                      );
+                    }
                   },
-                  child: Text('Try Again')),
-            );
-          else if (state.stories[state.selectedStory!]
-              .stories![state.initialStory!].isPhoto ==
-          1) {
-          if (state.selectedStoriesStatus ==
-          SelectedStoriesStatus.loading)
-          return SizedBox(
-          height: 60, width: 60, child: TrydosLoader());
-          if (state.selectedStoriesStatus ==
-          SelectedStoriesStatus.success) {
-          animatedController.duration =
-          const Duration(seconds: 4);
-          animatedController.forward();
-
-          return CachedNetworkImage(
-          imageUrl: state.stories[state.selectedStory!]
-              .stories![state.initialStory!].photoPath!,
-          width: state.imageDetail!.width.toDouble(),
-          height: state.imageDetail!.height.toDouble(),
-          );
-          }
-
-          return Container();
-          } else {
-          _videoController = null;
-          _videoController?.dispose();
-          // VideoPlayerController.
-          _videoController = VideoPlayerController.networkUrl(
-          Uri.parse(state
-              .stories[state.selectedStory!]
-              .stories![state.initialStory!]
-              .fullVideoPath!));
-          Future<void> init =
-          _videoController!.initialize().then((_) {
-          animatedController.duration =
-          _videoController!.value.duration;
-          _videoController!.play();
-          animatedController.forward();
-          },onError: (e){
-
-          GetIt.I<StoryBloc>().add(LoadFailureEvent());
-
-          });
-          return FutureBuilder(
-          future: init,
-          builder: (context, snapshot) {
-          if (snapshot.connectionState ==
-          ConnectionState.done) {
-          return FittedBox(
-          fit: BoxFit.cover,
-          child: SizedBox(
-          width: _videoController!.value.size.width,
-          height:
-          _videoController!.value.size.height,
-          child: VideoPlayer(
-          _videoController!,
-          ),
-          ),
-          );
-          } else if (snapshot.connectionState ==
-          ConnectionState.waiting) {
-          return Center(
-          child: TrydosLoader(),
-          );
-          } else if (snapshot.hasError)
-          return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-          color: Colors.white,
-          child: Center(
-          child: ElevatedButton(
-          onPressed: () {
-          GetIt.I<StoryBloc>().add(
-          StorySelectedEvent(
-          initialStory:
-          state.initialStory!,
-          selected: state
-              .selectedStory!));
-          },
-          child: Text('try')),
-          ),
-          ),
-          );
-          return Container(
-          color: Colors.amberAccent,
-          width: 200,
-          height: 200,
-          );
-          },
-          );
-
-          }
-          },
-          itemCount:
-          state.stories[state.selectedStory!].stories!.length,
-          ),
-          )
-,
+                  itemCount:
+                      state.stories[state.selectedStory!].stories!.length,
+                ),
+              ),
               Positioned(
                   top: 40.0,
                   left: 10.0,
@@ -320,14 +330,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                                           color: const Color(0xff6638FF),
                                           letterSpacing: 0.18,
                                           height: 1.33),
-                                  name: state.stories[state.selectedStory!]
-                                              .name ==
-                                          null
-                                      ? 'UK'
-                                      : HelperFunctions
-                                          .getTheFirstTwoLettersOfName(state
-                                              .stories[state.selectedStory!]
-                                              .name!))
+                                  name:
+                                      state.stories[state.selectedStory!].name ==
+                                              null
+                                          ? 'UK'
+                                          : HelperFunctions
+                                              .getTheFirstTwoLettersOfName(state
+                                                  .stories[state.selectedStory!]
+                                                  .name!))
                               : CachedNetworkImage(
                                   placeholder: (context, url) =>
                                       Shimmer.fromColors(
@@ -337,8 +347,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
                                             color: Colors.white,
                                           ),
                                           baseColor: Colors.grey,
-                                          highlightColor:
-                                              Color.fromARGB(31, 146, 144, 144)),
+                                          highlightColor: Color.fromARGB(
+                                              31, 146, 144, 144)),
                                   imageUrl: state
                                       .stories[state.selectedStory!].photoPath),
                         ),
@@ -361,4 +371,3 @@ class _StoryCollectionState extends ThemeState<StoryCollection>
     );
   }
 }
-
