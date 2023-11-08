@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:cube_transition_plus/cube_transition_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -59,7 +60,7 @@ class GRouter {
         path: _config.applicationRoutes.kRegistrationPage,
         pageBuilder: (BuildContext context, GoRouterState state) {
           return _builderPage(
-            child:  RegistrationPage(),
+            child: RegistrationPage(),
             state: state,
           );
         },
@@ -114,36 +115,37 @@ class GRouter {
               },
             ),
             GoRoute(
-              path: _config.applicationRoutes.kRegistrationPageName,
-              pageBuilder: (BuildContext context, GoRouterState state) {
-                return _builderPage(
-                  child:  RegistrationPage(),
-                  state: state,
-                );
-              },
-              routes: [
-                GoRoute(
-                    path: _config.applicationRoutes.kNumberNotRegisteredName,
-                    pageBuilder: (BuildContext context, GoRouterState state) {
-                      return _builderPage(
-                        child: NumberNotRegistered(
-                            phoneNumber: state.uri.queryParameters['phoneNumber']!,
-                        ),
-                        state: state,
-                      );
-                    }),
-                GoRoute(
-                    path: _config.applicationRoutes.kUserExistName,
-                    pageBuilder: (BuildContext context, GoRouterState state) {
-                      return _builderPage(
-                        child: AlreadyExistAccount(
-                            phoneNumber: state.uri.queryParameters['phoneNumber']!,
-                        ),
-                        state: state,
-                      );
-                    }),
-              ]
-            ),
+                path: _config.applicationRoutes.kRegistrationPageName,
+                pageBuilder: (BuildContext context, GoRouterState state) {
+                  return _builderPage(
+                    child: RegistrationPage(),
+                    state: state,
+                  );
+                },
+                routes: [
+                  GoRoute(
+                      path: _config.applicationRoutes.kNumberNotRegisteredName,
+                      pageBuilder: (BuildContext context, GoRouterState state) {
+                        return _builderPage(
+                          child: NumberNotRegistered(
+                            phoneNumber:
+                                state.uri.queryParameters['phoneNumber']!,
+                          ),
+                          state: state,
+                        );
+                      }),
+                  GoRoute(
+                      path: _config.applicationRoutes.kUserExistName,
+                      pageBuilder: (BuildContext context, GoRouterState state) {
+                        return _builderPage(
+                          child: AlreadyExistAccount(
+                            phoneNumber:
+                                state.uri.queryParameters['phoneNumber']!,
+                          ),
+                          state: state,
+                        );
+                      }),
+                ]),
             GoRoute(
               path: _config.applicationRoutes.kMyContactsPageName,
               pageBuilder: (BuildContext context, GoRouterState state) {
@@ -153,17 +155,7 @@ class GRouter {
                 );
               },
             ),
-            GoRoute(
-              path: _config.applicationRoutes.kStoryCollectionsPageName,
-              pageBuilder: (BuildContext context, GoRouterState state) {
-                return _builderPage(
-                  child:  StoryCollection(int.parse(state.uri.queryParameters['id']!)),
-                  state: state,
-                );
-              },
-            ),
-          ]
-      ),
+          ]),
       // StatefulShellRoute.indexedStack(
       //   branches: [
       //     StatefulShellBranch(
