@@ -184,8 +184,7 @@ class WelcomeSection extends StatelessWidget {
             onTap: () async {
               if (GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
                 String? deviceId = await HelperFunctions.getDeviceId();
-                BlocProvider.of<AuthBloc>(context)
-                    .add(RegisterGuestEvent(deviceId: deviceId!));
+                BlocProvider.of<AuthBloc>(context).add(RegisterGuestEvent(deviceId: deviceId!));
               }
               context.go(GRouter.config.applicationRoutes.kBasePage);
             },
@@ -194,8 +193,7 @@ class WelcomeSection extends StatelessWidget {
               child: Text(
                 'Later, Take A Look At The App',
                 textAlign: TextAlign.center,
-                textHeightBehavior:
-                    TextHeightBehavior(applyHeightToFirstAscent: false),
+                textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false),
                 style: context.textTheme.bodyText2?.ra.copyWith(
                   color: Color(0xff4d84ff),
                   letterSpacing: 0.14,

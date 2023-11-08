@@ -66,8 +66,26 @@ class _RegistrationPageState extends State<RegistrationPage>
           error: error.toString());
     };
     return ValueListenableBuilder<int>(
+        child: ValueListenableBuilder<bool>(
+            child: logo,
+            valueListenable: animate,
+            builder: (context, yes, child) {
+              // debugPrint('asdasdas');
+              return Directionality(
+                textDirection: TextDirection.ltr,
+                child: AnimatedPositioned(
+                    left: yes ? 40 : null,
+                    right: yes ? 40 : null,
+                    top: yes ? 50 : null,
+                    bottom: yes ? null : 456,
+                    duration: animationDuration,
+                    child: child!),
+              );
+            }),
         valueListenable: pageContent,
-        builder: (ctx, index, _) {
+        builder: (ctx, index, child) {
+          // debugPrint('pageContentlogo ${pageContent.value}');
+          // debugPrint('aniater${animate}');
           if (index == 0) {
             focusNode.unfocus();
           }
@@ -77,20 +95,7 @@ class _RegistrationPageState extends State<RegistrationPage>
             body: Stack(
               alignment: Alignment.bottomCenter,
               children: [
-                ValueListenableBuilder<bool>(
-                    valueListenable: animate,
-                    builder: (context, yes, _) {
-                      return Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: AnimatedPositioned(
-                            left: yes ? 40 : null,
-                            right: yes ? 40 : null,
-                            top: yes ? 50 : null,
-                            bottom: yes ? null : 456,
-                            duration: animationDuration,
-                            child: logo),
-                      );
-                    }),
+                child!,
                 Positioned(
                   top: 0,
                   right: 0,
@@ -142,9 +147,9 @@ class _RegistrationPageState extends State<RegistrationPage>
                       child: WillPopScope(
                           child: PageView(
                               physics: NeverScrollableScrollPhysics(),
-                              onPageChanged: (value) => setState(() {
-                                    PopScopeValue = value;
-                                  }),
+                              // onPageChanged: (value) => setState(() {
+                              //   PopScopeValue = value;
+                              // }),
                               controller: pageController,
                               children: [
                                 WelcomeSection(
@@ -254,7 +259,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                               ]),
                           onWillPop: () async {
                             if (PopScopeValue > 0) {
-                              await pageController.animateToPage(0,
+                              pageContent.value = index - 1;
+                              await pageController.animateToPage(index-1,
                                   duration: Duration(milliseconds: 500),
                                   curve: Curves.easeInOut);
 

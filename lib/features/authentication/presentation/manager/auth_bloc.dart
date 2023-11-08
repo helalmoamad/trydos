@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -279,6 +281,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         name: r.data!.user!.name,
         phone: r.data!.user!.phone,
       ));
+      debugPrint(
+          'login _prefsRepository.chatToken${_prefsRepository.chatToken}');
+      debugPrint(
+          'login _prefsRepository.marketToken${_prefsRepository.marketToken}');
+      debugPrint(
+          'login _prefsRepository.storiesToken${_prefsRepository.storiesToken}');
+
       emit(state.copyWith(
           verifyOtpSignInStatus: VerifyOtpSignInStatus.success,
           marketUser: r.data!.user));
@@ -342,6 +351,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
+
+      debugPrint('_prefsRepository.chatToken;${_prefsRepository.chatToken}');
+      debugPrint(
+          '_prefsRepository.marketToken;${_prefsRepository.marketToken}');
+      debugPrint(
+          '_prefsRepository.storiesToken${_prefsRepository.storiesToken}');
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       print('isNumberVerifiedFromGuest:  ${r.data!.user!.isPhoneVerified}');
       emit(state.copyWith(
@@ -392,8 +407,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-  FutureOr<void> _onGetUserCountryEvent(
-      GetUserCountryEvent event, Emitter<AuthState> emit) async {
+  FutureOr<void> _onGetUserCountryEvent(GetUserCountryEvent event, Emitter<AuthState> emit) async {
     final response = await getUserCountryUseCase(NoParams());
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetUserCountryEvent')) {

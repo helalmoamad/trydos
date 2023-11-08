@@ -31,15 +31,20 @@ import 'features/chat/data/models/my_chats_response_model.dart';
 import 'features/chat/presentation/manager/chat_bloc.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
 
-Widget get logo => Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        logoText,
 
-        Transform.translate(offset: Offset(-108, 0),
-            child: logoIcon)
-      ],
-    );
+Widget get logo {
+
+
+  debugPrint('deblogo');
+  return Stack(
+  alignment: Alignment.bottomCenter,
+  children: [
+    logoText,
+
+    Transform.translate(offset: Offset(-108, 0),
+        child: logoIcon)
+  ],
+);}
 
 Widget get logoIcon => SizedBox(
     width: 50,
