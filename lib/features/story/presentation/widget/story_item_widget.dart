@@ -53,18 +53,21 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
           (firstWhereNotShowedStoryCollection(
               state.stories[widget.index].stories!));
 
-      return  Container(
-        margin: EdgeInsets.only(top: 20 , bottom: 10),
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Align(
-            child: AnimatedScale(
-              scale: widget.resize ? 1.3 : 1,
-              alignment: Alignment.centerLeft,
-              curve: Curves.fastEaseInToSlowEaseOut,
-              duration: Duration(milliseconds: 200),
-              child: Stack(
-                    children: [
+      return  Hero(
+        tag: widget.index,
+        transitionOnUserGestures: true,
+        child: Container(
+          margin: EdgeInsets.only(top: 20 , bottom: 10),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Align(
+              child: AnimatedScale(
+                scale: widget.resize ? 1.3 : 1,
+                alignment: Alignment.centerLeft,
+                curve: Curves.fastEaseInToSlowEaseOut,
+                duration: Duration(milliseconds: 200),
+                child: Stack(
+                      children: [
 //todo just in case you to show the behavior of last  story have been seen
 // Container(width: 90,height:90,
 // child: Text('${state.stories[index].stories!.length}'),
@@ -76,117 +79,118 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
 //   child: Text('${firstWhereNotShowedStoryCollection(state.stories[index].stories!)}'),
 //   ),
 // )
-                      CachedNetworkImage(
-                        errorWidget: (context, url, error) =>
-                            Center(child: Text('press to reload')),
-                        imageBuilder: (ctx , image){
-                          return Stack(
-                            children: [
-                              Container(
-                                clipBehavior: Clip.hardEdge,
-                                height: 150,
-                                width:  100,
-                                decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.0),
-                          boxShadow: [
-                          BoxShadow(
-                          color: const Color(0xff000000).withOpacity(0.2),
-                          offset: Offset(0, 3),
-                          blurRadius: 6,
-                          )],
-                                  image: DecorationImage(
-                                    image: image,
-                                    fit: BoxFit.cover,
-                                  )
-                                ),
-                              ),
-                              Container(
-                                height: 150,
-                                width: 100,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment(0.0, -1.0),
-                                    end: Alignment(0.0, 2.026),
-                                    colors: [
-                                      const Color(0x00000000),
-                                      const Color(0xff000000)
-                                    ],
-                                    stops: [0.0, 1.0],
+                        CachedNetworkImage(
+                          errorWidget: (context, url, error) =>
+                              Center(child: Text('press to reload')),
+                          imageBuilder: (ctx , image){
+                            return Stack(
+                              children: [
+                                Container(
+                                  clipBehavior: Clip.hardEdge,
+                                  height: 150,
+                                  width:  100,
+                                  decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20.0),
+                            boxShadow: [
+                            BoxShadow(
+                            color: const Color(0xff000000).withOpacity(0.2),
+                            offset: Offset(0, 3),
+                            blurRadius: 6,
+                            )],
+                                    image: DecorationImage(
+                                      image: image,
+                                      fit: BoxFit.cover,
+                                    )
                                   ),
-                                  borderRadius: BorderRadius.circular(20.0),
                                 ),
-                              ),
-                              Positioned(
-                                left: 0,
-                                top:0,
-                                child: Transform.translate(
-                                  offset: Offset(-10 , -10),
-                                  child: InkWell(
-                                    onTap: widget.onTapOnUserImage,
-                                    highlightColor: Colors.transparent,
-                                    splashColor: Colors.transparent,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        AnimatedScale(
-                                        alignment: Alignment.topLeft,
-                                        scale: widget.resizeUserImage ? 2.33 : widget.resize ? 1.4 :  1,
-                                        duration: Duration(milliseconds: 50),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: isLastStoryShowed
-                                                    ? Colors.white
-                                                    : const Color(0xffffab62),
-                                                width: widget.resizeUserImage ? 0.4 : widget.resize ? 0.6 : 1),
-                                              shape: BoxShape.circle
-                                          ),
-                                          child: state.stories[widget.index].photoPath == null
-                                              ? NoImageWidget(
-                                              height: 28,
-                                              width: 28,
-                                              radius: 180,
-                                              textStyle: context.textTheme.subtitle1?.br
-                                                  .copyWith(
-                                                  color: const Color(0xff6638FF),
-                                                  letterSpacing: 0.18,
-
-                                                  height: 1.33),
-                                              name: state.stories[widget.index].name ==
-                                                  null
-                                                  ? 'UK'
-                                                  : HelperFunctions
-                                                  .getTheFirstTwoLettersOfName(state
-                                                  .stories[widget.index].name!))
-                                              : CachedNetworkImage(
-                                            errorWidget: (context, url, error) =>
-                                                Text('press to reload'),
-                                            imageUrl:
-                                            state.stories[widget.index].photoPath,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),),
+                                Container(
+                                  height: 150,
+                                  width: 100,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment(0.0, -1.0),
+                                      end: Alignment(0.0, 2.026),
+                                      colors: [
+                                        const Color(0x00000000),
+                                        const Color(0xff000000)
                                       ],
+                                      stops: [0.0, 1.0],
+                                    ),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: 0,
+                                  top:0,
+                                  child: Transform.translate(
+                                    offset: Offset(-10 , -10),
+                                    child: InkWell(
+                                      onTap: widget.onTapOnUserImage,
+                                      highlightColor: Colors.transparent,
+                                      splashColor: Colors.transparent,
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          AnimatedScale(
+                                          alignment: Alignment.topLeft,
+                                          scale: widget.resizeUserImage ? 2.33 : widget.resize ? 1.4 :  1,
+                                          duration: Duration(milliseconds: 50),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: isLastStoryShowed
+                                                      ? Colors.white
+                                                      : const Color(0xffffab62),
+                                                  width: widget.resizeUserImage ? 0.4 : widget.resize ? 0.6 : 1),
+                                                shape: BoxShape.circle
+                                            ),
+                                            child: state.stories[widget.index].photoPath == null
+                                                ? NoImageWidget(
+                                                height: 28,
+                                                width: 28,
+                                                radius: 180,
+                                                textStyle: context.textTheme.subtitle1?.br
+                                                    .copyWith(
+                                                    color: const Color(0xff6638FF),
+                                                    letterSpacing: 0.18,
+
+                                                    height: 1.33),
+                                                name: state.stories[widget.index].name ==
+                                                    null
+                                                    ? 'UK'
+                                                    : HelperFunctions
+                                                    .getTheFirstTwoLettersOfName(state
+                                                    .stories[widget.index].name!))
+                                                : CachedNetworkImage(
+                                              errorWidget: (context, url, error) =>
+                                                  Text('press to reload'),
+                                              imageUrl:
+                                              state.stories[widget.index].photoPath,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
-                        progressIndicatorBuilder: (context, _, progress) {
-                          return TrydosShimmerLoading(
-                            width: 100,
-                            height: 150,
-                            logoTextHeight: 14,
-                            logoTextWidth: 48.w,
-                          );
-                        },
-                        imageUrl: widget.firstPhotoNotShowed!,
-                      ),
+                              ],
+                            );
+                          },
+                          progressIndicatorBuilder: (context, _, progress) {
+                            return TrydosShimmerLoading(
+                              width: 100,
+                              height: 150,
+                              logoTextHeight: 14,
+                              logoTextWidth: 48.w,
+                            );
+                          },
+                          imageUrl: widget.firstPhotoNotShowed!,
+                        ),
 
-                    ],
-                  ),
+                      ],
+                    ),
+              ),
             ),
           ),
         ),

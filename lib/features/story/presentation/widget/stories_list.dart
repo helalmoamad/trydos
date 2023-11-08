@@ -203,12 +203,7 @@ class _StoriesListState extends State<StoriesList> {
                                                   selected: index,
                                                   initialStory:
                                                       indexOfInitialStory));
-
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      StoryCollection(
-                                                          index)));
+                                        context.go(GRouter.config.applicationRoutes.kStoryCollectionsPagePath + '?id=$index');
                                         },
                                         onLongPressStart: (details) {
                                           bool isFirstPress = resizeStories.value.value1 == -1  ;
