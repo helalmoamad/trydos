@@ -22,7 +22,7 @@ import '../../../../app/my_cached_network_image.dart';
 import 'no_image_widget.dart';
 
 class ImageMessage extends StatefulWidget {
-   ImageMessage(
+  ImageMessage(
       {Key? key,
       this.isForwarded = false,
       this.isLocalMessage = true,
@@ -42,30 +42,27 @@ class ImageMessage extends StatefulWidget {
   final bool isFirstMessage;
   final bool isForwarded;
   final String messageId;
-   File? imageFile;
+  File? imageFile;
   final bool isLocalMessage;
   final String? imageUrl;
   final DateTime time;
-   bool isRead;
-   bool isReceived;
+  bool isRead;
+  bool isReceived;
   final int senderId;
   final String? userMessagePhoto;
   final String userMessageName;
 
-
-   @override
+  @override
   State<ImageMessage> createState() => _ImageMessageState();
 }
 
 class _ImageMessageState extends State<ImageMessage> {
-  final ValueNotifier<int> _loadingImage =  ValueNotifier(0);
-
+  final ValueNotifier<int> _loadingImage = ValueNotifier(0);
 
   @override
   void initState() {
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -80,38 +77,38 @@ class _ImageMessageState extends State<ImageMessage> {
       textDirection: TextDirection.ltr,
       child: BlocConsumer<ChatBloc, ChatState>(
         listenWhen: (p, c) =>
-        p.changeMessageStateFromPusherStatus !=
-            c.changeMessageStateFromPusherStatus &&
+            p.changeMessageStateFromPusherStatus !=
+                c.changeMessageStateFromPusherStatus &&
             c.changeMessageStateFromPusherStatus !=
                 ChangeMessageStateFromPusherStatus.init,
         listener: (context, state) {
-          if (state.changeMessageStateFromPusherStatus==ChangeMessageStateFromPusherStatus.watched){
-            if(widget.isRead){
+          if (state.changeMessageStateFromPusherStatus ==
+              ChangeMessageStateFromPusherStatus.watched) {
+            if (widget.isRead) {
               return;
             }
             setState(() {
-              widget.isRead=true;
+              widget.isRead = true;
             });
-          }else if(!widget.isReceived){
+          } else if (!widget.isReceived) {
             setState(() {
-              widget.isReceived=true;
+              widget.isReceived = true;
             });
           }
         },
         builder: (context, state) {
           return Padding(
             padding: HWEdgeInsets.only(
-                right: widget.isSent ? 25.w : 0, left: widget.isSent ? 0 : 25.w),
+                right: widget.isSent ? 25.w : 0,
+                left: widget.isSent ? 0 : 25.w),
             child: SwipeTo(
               iconSize: 0,
               animationDuration: const Duration(milliseconds: 100),
               offsetDx: 0.15,
               onRightSwipe: () {
-                if((state.sendMessageStatus ==
-                    SendMessageStatus.loading &&
-                    state.currentMessage
-                        .contains(widget.messageId))){
-                  return ;
+                if ((state.sendMessageStatus == SendMessageStatus.loading &&
+                    state.currentMessage.contains(widget.messageId))) {
+                  return;
                 }
                 BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
                     true, 'image', widget.isSent,
@@ -122,21 +119,22 @@ class _ImageMessageState extends State<ImageMessage> {
                     message: 'Photo'));
               },
               child: Row(
-                mainAxisAlignment:
-                    widget.isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+                mainAxisAlignment: widget.isSent
+                    ? MainAxisAlignment.end
+                    : MainAxisAlignment.start,
                 children: [
                   Stack(
-                    alignment:
-                        widget.isSent ? Alignment.centerRight : Alignment.centerLeft,
+                    alignment: widget.isSent
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
                     children: [
                       if (widget.imageFile == null) ...{
                         Container(
                           width: 300.w,
                           height: 600,
                           decoration: BoxDecoration(
-                           color: Colors.grey.shade200,
-                            borderRadius:
-                            BorderRadius.circular(12.0),
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(12.0),
                             border: Border.all(
                               width: 3.0,
                               color: widget.isSent
@@ -144,41 +142,56 @@ class _ImageMessageState extends State<ImageMessage> {
                                   : const Color(0xffB4FFD9),
                             ),
                           ),
-                        child:Center(
-                          child: ValueListenableBuilder<int>(
-                              valueListenable: _loadingImage,
-                              builder: (context, status, _) {
-                                if (status == 0) {
-                                  return InkWell(
-                                    onTap: () async{
-                                      _loadingImage.value = 1;
-                                    },
-                                    child: Icon(
-                                        Icons
-                                            .save_alt_outlined,
-                                        color: const Color(
-                                            0xff388CFF),
-                                        size: 35.sp),
-                                  );
-                                } else if (status == 1) {
-                                  FileSaving().downloadFileToLocalStorage(widget.imageUrl!,action: (File? file){
-                                    _loadingImage.value=2;
-                                    widget.imageFile=file;
-                                    setState(() {
-
-                                    });
+                          child: Center(
+                            child: ValueListenableBuilder<int>(
+                                valueListenable: _loadingImage,
+                                builder: (context, status, _) {
+                                  FileSaving().downloadFileToLocalStorage(
+                                      widget.imageUrl!, action: (File? file) {
+                                    // _loadingImage.value = 2;
+                                    widget.imageFile = file;
+                                    setState(() {});
                                   });
-                                  return  CircularProgressIndicator(
+                                  return CircularProgressIndicator(
                                     backgroundColor: Colors.grey.shade100,
-                                    color:
-                                    const  Color(0xff388CFF),
+                                    color: const Color(0xff388CFF),
                                   );
-                                }else{
-                                  return const SizedBox.shrink();
-                                }
-                              }),
-                        ),),
-                      }else...{
+
+                                  // if (status == 0) {
+                                  //   return InkWell(
+                                  //     onTap: () async{
+                                  //       _loadingImage.value = 1;
+                                  //     },
+                                  //     child: Icon(
+                                  //         Icons
+                                  //             .save_alt_outlined,
+                                  //         color: const Color(
+                                  //             0xff388CFF),
+                                  //         size: 35.sp),
+                                  //   );
+                                  // } else if (status == 1) {
+                                  //   //
+                                  //   FileSaving().downloadFileToLocalStorage(widget.imageUrl!,action: (File? file){
+                                  //     _loadingImage.value=2;
+                                  //     widget.imageFile=file;
+                                  //     setState(() {
+                                  //
+                                  //     });
+                                  //   });
+                                  //   return  CircularProgressIndicator(
+                                  //     backgroundColor: Colors.grey.shade100,
+                                  //     color:
+                                  //     const  Color(0xff388CFF),
+                                  //   );
+                                  //
+                                  //
+                                  // }else{
+                                  //   return const SizedBox.shrink();
+                                  // }
+                                }),
+                          ),
+                        ),
+                      } else ...{
                         Stack(
                           alignment: Alignment.bottomCenter,
                           children: [
@@ -196,8 +209,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                       image: FileImage(widget.imageFile!),
                                       fit: BoxFit.fitWidth,
                                     ),
-                                    borderRadius:
-                                    BorderRadius.circular(12.0),
+                                    borderRadius: BorderRadius.circular(12.0),
                                     border: Border.all(
                                       width: 3.0,
                                       color: widget.isSent
@@ -234,30 +246,33 @@ class _ImageMessageState extends State<ImageMessage> {
                                       Text(
                                         !widget.time.isUtc
                                             ? HelperFunctions.getDateInFormat(
-                                            widget.time)
+                                                widget.time)
                                             : HelperFunctions
-                                            .getZonedDateInFormat(widget.time),
+                                                .getZonedDateInFormat(
+                                                    widget.time),
                                         style: context.textTheme.overline?.rr
                                             .copyWith(
-                                            color: context.colorScheme.white),
+                                                color:
+                                                    context.colorScheme.white),
                                       ),
                                       if (widget.isSent) ...{
                                         10.horizontalSpace,
                                         SvgPicture.asset(
                                           (state.currentMessage
-                                              .contains(
-                                              widget.messageId))
-                                              ? AppAssets.sandClockSvg :
-                                          (state.currentFailedMessage
-                                              .contains(
-                                              widget.messageId)) ?
-                                          AppAssets.MessageFailedSvg: widget.isRead
-                                              ? AppAssets.messageReadArrowSvg
-                                              : widget.isReceived
-                                              ? AppAssets
-                                              .messageDeliveredArrowSvg
-                                              : AppAssets
-                                              .messageSentArrowSvg,
+                                                  .contains(widget.messageId))
+                                              ? AppAssets.sandClockSvg
+                                              : (state.currentFailedMessage
+                                                      .contains(
+                                                          widget.messageId))
+                                                  ? AppAssets.MessageFailedSvg
+                                                  : widget.isRead
+                                                      ? AppAssets
+                                                          .messageReadArrowSvg
+                                                      : widget.isReceived
+                                                          ? AppAssets
+                                                              .messageDeliveredArrowSvg
+                                                          : AppAssets
+                                                              .messageSentArrowSvg,
                                           color: context.colorScheme.white,
                                           width: 10.sp,
                                           height: 10.sp,
@@ -281,11 +296,9 @@ class _ImageMessageState extends State<ImageMessage> {
                       },
                       //todo until i solve the translate
                       widget.isFirstMessage
-                          ?
-                         Transform.translate(
-                             offset: Offset(widget.isSent ? 15.w : -15.w, 0),
-                             child:
-                              Stack(
+                          ? Transform.translate(
+                              offset: Offset(widget.isSent ? 15.w : -15.w, 0),
+                              child: Stack(
                                 alignment: Alignment.center,
                                 children: [
                                   Stack(
@@ -321,8 +334,8 @@ class _ImageMessageState extends State<ImageMessage> {
                                   ),
                                   widget.userMessagePhoto != null
                                       ? MyCachedNetworkImage(
-                                          imageUrl:
-                                              ChatUrls.baseUrl + widget.userMessagePhoto!,
+                                          imageUrl: ChatUrls.baseUrl +
+                                              widget.userMessagePhoto!,
                                           imageFit: BoxFit.fitWidth,
                                           radius: 8,
                                           width: 30.w,
@@ -341,9 +354,8 @@ class _ImageMessageState extends State<ImageMessage> {
                                           radius: 8,
                                           name: widget.userMessageName)
                                 ],
-                              )
-                     ,
-                           )
+                              ),
+                            )
                           : const SizedBox.shrink()
                     ],
                   ),

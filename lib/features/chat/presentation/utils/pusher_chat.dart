@@ -20,6 +20,10 @@ class PusherChatService {
 
   initialization() async {
     PusherOptions options = PusherOptions(
+      // pongTimeout: ,
+      // activityTimeout: ,
+      // maxReconnectGapInSeconds: ,
+      // maxReconnectionAttempts: ,
       encrypted: true,
       cluster: 'ap2',
       auth: PusherAuth(
@@ -43,10 +47,12 @@ class PusherChatService {
   }
 
   subscribe(String channelName) async {
+    //
     if(publicChannels.containsKey(channelName))return ;
     Channel channel = pusher.subscribe(channelName);
     channel.bind('ChannelReceivedEvent', (event) {
-      dealWithTimer();
+      //todo test comment
+      // dealWithTimer();
       print(event?.data ?? 'ChannelReceivedEvent');
       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
       chatBloc.add(ReceiveMessageFromPusherEvent(

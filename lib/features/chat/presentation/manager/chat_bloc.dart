@@ -280,8 +280,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
   }
 
-  FutureOr<void> _onGetChatsEvent(
-      GetChatsEvent event, Emitter<ChatState> emit) async {
+  FutureOr<void> _onGetChatsEvent(GetChatsEvent event, Emitter<ChatState> emit) async {
     emit(state.copyWith(getChatsStatus: GetChatsStatus.loading));
     final response = await getMyChatsUseCase(NoParams());
     response.fold(
@@ -298,10 +297,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             GetIt.I<PusherChatService>();
         pusherChatService.initialization();
         r.data!.chats?.forEach((element) async {
-          await pusherChatService
-              .subscribe(element.pusherChannelName.toString());
-          await pusherChatService
-              .createPresenceChannel(element.pusherChannelName!);
+          await pusherChatService.subscribe(element.pusherChannelName.toString());
+          await pusherChatService.createPresenceChannel(element.pusherChannelName!);
         });
         r.data!.pinnedChats?.forEach((element) async {
           await pusherChatService

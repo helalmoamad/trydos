@@ -943,6 +943,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
     if (message.file == null &&
         filePath != null &&
         _prefsRepository.isAFilePathExist(filePath)) {
+      //todo
       String? path = _prefsRepository.getTheLocalPathForFile(filePath);
       File? file = File(path ?? message.mediaMessageContent![0].fileName!);
       message = message.copyWith(file: file, checkedExistence: true);

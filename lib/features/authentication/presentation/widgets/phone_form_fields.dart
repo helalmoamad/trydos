@@ -234,51 +234,84 @@ class PhoneNumberFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    String result  = getFormattedText(oldValue.text, newValue.text);
-      return newValue.copyWith(
-          text: result,
-          selection: TextSelection.collapsed(
-              offset: result.length));
-    }
+    String result = getFormattedText(oldValue.text, newValue.text);
+    return newValue.copyWith(
+        text: result,
+        selection: TextSelection.collapsed(offset: result.length));
+  }
 
   String getFormattedText(String oldText, String newText) {
-    if(newText.length < oldText.length){
-        if(oldText[oldText.length-1]==' '){
-          return newText.substring(0,newText.length-1);
-        }
-        return newText;
+    if (newText.length < oldText.length) {
+      //todo so if the last character in the old text was space and you have remove character remove the space and the
+      //todo the last character
+      //todo   abs'space'  => ab
+      if (oldText[oldText.length - 1] == ' ') {
+        // debugPrint('oldText.length${oldText.length}');
+        // debugPrint('newText.length${newText.length}');
+        // debugPrint('oldText${oldText}as');
+        // debugPrint('newText${newText}as');
+        // debugPrint('newText${newText[newText.length-1]}');
+        // debugPrint('newText${newText.substring(0,newText.length-1)}');
+        return newText.substring(0, newText.length - 1);
+      }
+
+      // debugPrint('newW${newText}');
+
+//todo so if the last character in the old text not space and you have removed the last charechter
+//todo so just return the newText no processing
+      return newText;
     }
     newText = newText.replaceAll(' ', '');
     oldText = oldText.replaceAll(' ', '');
-    if (!validationRegex.hasMatch(newText)){
+
+    debugPrint('newText${newText}');
+    debugPrint('oldText${oldText}');
+
+    if (!validationRegex.hasMatch(newText)) {
       return oldText;
     }
     Country country = countries.firstWhere(
-            (element) => '+${newText.toLowerCase()}'
+        (element) => '+${newText.toLowerCase()}'
             .startsWith(element.dialCode.toLowerCase()),
-        orElse:()=> countries.firstWhere(
-                (element) => '+${oldText.toLowerCase()}'
+        orElse: () => countries.firstWhere(
+            (element) => '+${oldText.toLowerCase()}'
                 .startsWith(element.dialCode.toLowerCase()),
-        orElse: () => Country(
-            name: '',
-            flag: '',
-            code: '',
-            dialCode: '',
-            minLength: 100,
-            maxLength: 100)));
-    String needEdit=newText;
-    if(newText.length > (country.dialCode.length + country.maxLength-2) && country.name != ''){
-      needEdit =  oldText;
+            orElse: () => Country(
+                name: '',
+                flag: '',
+                code: '',
+                dialCode: '',
+                minLength: 100,
+                maxLength: 100)));
+    String needEdit = newText;
+
+    if (newText.length > (country.dialCode.length + country.maxLength - 2) &&
+        country.name != '') {
+      debugPrint('needEdit1${oldText}');
+      debugPrint('needEdit1newText${newText}');
+      needEdit = oldText;
     }
-    if((oldText.length+1) == country.dialCode.length && newText[newText.length-1]=='0'){
-      needEdit =  oldText;
+
+    if ((oldText.length + 1) == country.dialCode.length &&
+        newText[newText.length - 1] == '0') {
+      debugPrint('oldText.length${oldText.length}');
+      debugPrint('country.dialCode.length${country.dialCode.length}');
+      debugPrint('newText.length${newText.length}');
+      debugPrint('oldText${oldText}as');
+      debugPrint('newText${newText}as');
+      debugPrint('newText${newText[newText.length - 1]}');
+      debugPrint('newText${newText.substring(0, newText.length - 1)}');
+
+      needEdit = oldText;
     }
-    print(needEdit);
-      String result = needEdit.substring(0 , country.dialCode.length-1) + ' ';
-    for(int i=country.dialCode.length-1; i < needEdit.length ; i++){
-      result+=needEdit[i];
-      if((i-country.dialCode.length+2)%3==0){
-        result+=' ';
+
+    String result = needEdit.substring(0, country.dialCode.length - 1) + ' ';
+    debugPrint('result${result}');
+    debugPrint('country.dialCode.length${country.dialCode.length}');
+    for (int i = country.dialCode.length - 1; i < needEdit.length; i++) {
+      result += needEdit[i];
+      if ((i - country.dialCode.length + 2) % 3 == 0) {
+        result += ' ';
       }
     }
     return result;

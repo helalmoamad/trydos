@@ -15,8 +15,7 @@ class FileSaving {
     return savePath + fileName;
   }
 
-  static String savePath =
-      '/storage/emulated/0/Android/data/com.example.trydos/files/';
+  static String savePath = '/storage/emulated/0/Android/data/com.example.trydos/files/';
 
   downloadFileToLocalStorage(String fileUrl,
       {void Function(File file)? action}) async {
@@ -44,13 +43,11 @@ class FileSaving {
     if (cancelToken.isCancelled) {
       cancelToken = CancelToken();
     }
-    dio.download(
-        fileUrl,
-        filePath,
+    dio.download(fileUrl, filePath,
         cancelToken: cancelToken,
         deleteOnError: false, onReceiveProgress: (rec, total) {
       onProgress.call((rec / total) * 100);
-      if((rec / total * 100) == 100){
+      if ((rec / total * 100) == 100) {
         _prefsRepository.setAFilePathExist(fileUrl + ' ' + filePath);
         action?.call(File(filePath));
       }
