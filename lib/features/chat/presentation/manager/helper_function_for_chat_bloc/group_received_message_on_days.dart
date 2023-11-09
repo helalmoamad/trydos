@@ -23,6 +23,7 @@ Map<String , List<Message>> groupReceivedMessageOnDays({required List<Chat> chat
         newMessagesByDate[zonedDate]!.add(chat.messages![i]);
     }
     for (String sendDate in newMessagesByDate.keys) {
+      newMessagesByDate[sendDate]![0] = newMessagesByDate[sendDate]![0].copyWith(isFirstMessage: true);
       for (int i = 1; i < newMessagesByDate[sendDate]!.length; i++) {
         if (newMessagesByDate[sendDate]![i-1]
                 .senderUserId !=

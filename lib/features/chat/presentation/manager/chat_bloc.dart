@@ -16,7 +16,6 @@ import 'package:trydos/features/chat/domain/use_cases/read_all_messages_usecase.
 import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/save_contacts_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart';
-import 'package:trydos/features/chat/presentation/manager/helper_function_for_chat_bloc/merge_the_old_chat_with_new.dart';
 import 'package:trydos/main.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -314,21 +313,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
         });
 
-        //todo set the value of new chat in those variables to reuse it in calculating the newSortedChatsByDate
-        List<Chat> chat_after_merge_with_new = MergeOldMessageWithNew(
-            newChats: r.data!.chats!, previousChats: state.chats);
-        var pinned_chat_after_merge_with_the_new = MergeOldMessageWithNew(
-            newChats: r.data!.pinnedChats!, previousChats: state.pinnedChats);
-
         emit(
           state.copyWith(
               getChatsStatus: GetChatsStatus.success,
-              chats: chat_after_merge_with_new,
+              chats: r.data!.chats!,
               newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
-                ...chat_after_merge_with_new,
-                ...pinned_chat_after_merge_with_the_new
+                ...r.data!.chats!,
+                ...r.data!.pinnedChats!
               ]),
-              pinnedChats: pinned_chat_after_merge_with_the_new,
+              pinnedChats: r.data!.pinnedChats!,
               unReadMessagesFromAllChats: unReadMessagesFromAllChats),
         );
         if (state.contacts.isEmpty) {
@@ -487,7 +480,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       List<String> currentFailedMessage = List.of(state.currentFailedMessage);
       ids.remove(event.messageId);
       currentFailedMessage.add(event.messageId);
-      emit(state.copyWith(sendMessageStatus: SendMessageStatus.failure));
+      emit(state.copyWith(sendMessageStatus: SendMessageStatus.failure , currentFailedMessage: currentFailedMessage));
     }, (r) {
       _prefsRepository.setAFilePathExist(r.secureUrl!);
       add(SendMessageEvent(
@@ -839,32 +832,45 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onReceiveMessageFromPusherEvent(
       ReceiveMessageFromPusherEvent event, Emitter<ChatState> emit) {
+
+    print('_onReceiveMessageFromPusherEventExecuted');
+
     emit(state.copyWith(
         changeMessageStateFromPusherStatus:
             ChangeMessageStateFromPusherStatus.init));
+    List<Chat> chats = getChatsAfterEditPropertyOfMessage(state.chats, 1, null,
+        event.channelId, event.lastMessageId, event.userId);
+    List<Chat> pinnedChats = getChatsAfterEditPropertyOfMessage(state.pinnedChats, 1,
+        null, event.channelId, event.lastMessageId, event.userId);
     emit(state.copyWith(
-      chats: getChatsAfterEditPropertyOfMessage(state.chats, 1, null,
-          event.channelId, event.lastMessageId, event.userId),
+      chats: chats,
+      newSortedChatsByDate:
+      groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
       changeMessageStateFromPusherStatus:
           ChangeMessageStateFromPusherStatus.received,
-      pinnedChats: getChatsAfterEditPropertyOfMessage(state.pinnedChats, 1,
-          null, event.channelId, event.lastMessageId, event.userId),
+      pinnedChats: pinnedChats,
     ));
   }
 
   FutureOr<void> _onWatchedMessageFromPusherEvent(
       WatchedMessageFromPusherEvent event, Emitter<ChatState> emit) {
+    print('_onWatchedMessageFromPusherEventExecuted');
+
     emit(state.copyWith(
         changeMessageStateFromPusherStatus:
             ChangeMessageStateFromPusherStatus.init));
+    List<Chat> chats = getChatsAfterEditPropertyOfMessage(state.chats, null, true,
+        event.channelId, event.lastMessageId, event.userId);
+    List<Chat> pinnedChats = getChatsAfterEditPropertyOfMessage(state.pinnedChats, null,
+        true, event.channelId, event.lastMessageId, event.userId);
     emit(state.copyWith(
       unReadMessagesFromAllChats: state.unReadMessagesFromAllChats - 1,
-      chats: getChatsAfterEditPropertyOfMessage(state.chats, null, true,
-          event.channelId, event.lastMessageId, event.userId),
+      chats: chats,
+      newSortedChatsByDate:
+      groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
       changeMessageStateFromPusherStatus:
           ChangeMessageStateFromPusherStatus.watched,
-      pinnedChats: getChatsAfterEditPropertyOfMessage(state.pinnedChats, null,
-          true, event.channelId, event.lastMessageId, event.userId),
+      pinnedChats: pinnedChats,
     ));
   }
 

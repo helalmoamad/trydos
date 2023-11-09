@@ -70,7 +70,6 @@ class _RegistrationPageState extends State<RegistrationPage>
             child: logo,
             valueListenable: animate,
             builder: (context, yes, child) {
-              // debugPrint('asdasdas');
               return Directionality(
                 textDirection: TextDirection.ltr,
                 child: AnimatedPositioned(
@@ -84,14 +83,14 @@ class _RegistrationPageState extends State<RegistrationPage>
             }),
         valueListenable: pageContent,
         builder: (ctx, index, child) {
-          // debugPrint('pageContentlogo ${pageContent.value}');
-          // debugPrint('aniater${animate}');
-          if (index == 0) {
-            focusNode.unfocus();
+          if(index < 2){
+            FocusScope.of(context).unfocus();
+          }else{
+            focusNode.requestFocus();
           }
           return Scaffold(
             backgroundColor:
-                index != 6 ? context.colorScheme.background : Color(0xffF4FFF4),
+            index != 6 ? context.colorScheme.background : Color(0xffF4FFF4),
             body: Stack(
               alignment: Alignment.bottomCenter,
               children: [
@@ -147,11 +146,11 @@ class _RegistrationPageState extends State<RegistrationPage>
                       child: WillPopScope(
                           child: PageView(
                               physics: NeverScrollableScrollPhysics(),
-                              // onPageChanged: (value) => setState(() {
-                              //   PopScopeValue = value;
-                              // }),
+                              onPageChanged: (value) => setState(() {
+                                PopScopeValue = value;
+                              }),
                               controller: pageController,
-                              children: [
+                              children:  [
                                 WelcomeSection(
                                   goToLoginSection: () {
                                     fromLogin = true;
@@ -225,9 +224,9 @@ class _RegistrationPageState extends State<RegistrationPage>
                                       print('fromLogin:  $fromLogin');
                                       if (fromLogin) {
                                         context.go(GRouter
-                                                .config
-                                                .applicationRoutes
-                                                .kLoginSuccessfullyPage +
+                                            .config
+                                            .applicationRoutes
+                                            .kLoginSuccessfullyPage +
                                             '?phoneNumber=$phoneNumber');
                                         return;
                                       }
@@ -259,11 +258,15 @@ class _RegistrationPageState extends State<RegistrationPage>
                               ]),
                           onWillPop: () async {
                             if (PopScopeValue > 0) {
-                              pageContent.value = index - 1;
-                              await pageController.animateToPage(index-1,
+                              if(PopScopeValue == 2 && fromLogin){
+                                await pageController.animateToPage(PopScopeValue -2,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut);
+                                return false;
+                              }
+                              await pageController.animateToPage(PopScopeValue-1,
                                   duration: Duration(milliseconds: 500),
                                   curve: Curves.easeInOut);
-
                               return false;
                             }
                             return true;
@@ -277,3 +280,4 @@ class _RegistrationPageState extends State<RegistrationPage>
         });
   }
 }
+

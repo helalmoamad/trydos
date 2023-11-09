@@ -29,5 +29,7 @@ class _ApplicationRoutes{
   final String kFeedBackPagePath = '/BasePage/FeedBackPage';
   final String kSharedPreferencePageName = 'SharedPreferencePage';
   final String kSharedPreferencePagePath = '/BasePage/SharedPreferencePage';
+  final String kStoryCollectionsPageName = 'StoryCollectionsPage';
+  final String kStoryCollectionsPagePath = '/BasePage/StoryCollectionsPage';
 }
 

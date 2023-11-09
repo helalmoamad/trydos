@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:cube_transition_plus/cube_transition_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +8,7 @@ import 'package:trydos/features/authentication/presentation/pages/first_register
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/authentication/presentation/pages/register_completed.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
+import 'package:trydos/features/story/presentation/pages/story_collection.dart';
 import 'package:trydos/splash_page.dart';
 import '../base_page.dart';
 import '../features/authentication/presentation/pages/already_exist_account.dart';
@@ -58,7 +60,7 @@ class GRouter {
         path: _config.applicationRoutes.kRegistrationPage,
         pageBuilder: (BuildContext context, GoRouterState state) {
           return _builderPage(
-            child:  RegistrationPage(),
+            child: RegistrationPage(),
             state: state,
           );
         },
@@ -113,36 +115,37 @@ class GRouter {
               },
             ),
             GoRoute(
-              path: _config.applicationRoutes.kRegistrationPageName,
-              pageBuilder: (BuildContext context, GoRouterState state) {
-                return _builderPage(
-                  child:  RegistrationPage(),
-                  state: state,
-                );
-              },
-              routes: [
-                GoRoute(
-                    path: _config.applicationRoutes.kNumberNotRegisteredName,
-                    pageBuilder: (BuildContext context, GoRouterState state) {
-                      return _builderPage(
-                        child: NumberNotRegistered(
-                            phoneNumber: state.uri.queryParameters['phoneNumber']!,
-                        ),
-                        state: state,
-                      );
-                    }),
-                GoRoute(
-                    path: _config.applicationRoutes.kUserExistName,
-                    pageBuilder: (BuildContext context, GoRouterState state) {
-                      return _builderPage(
-                        child: AlreadyExistAccount(
-                            phoneNumber: state.uri.queryParameters['phoneNumber']!,
-                        ),
-                        state: state,
-                      );
-                    }),
-              ]
-            ),
+                path: _config.applicationRoutes.kRegistrationPageName,
+                pageBuilder: (BuildContext context, GoRouterState state) {
+                  return _builderPage(
+                    child: RegistrationPage(),
+                    state: state,
+                  );
+                },
+                routes: [
+                  GoRoute(
+                      path: _config.applicationRoutes.kNumberNotRegisteredName,
+                      pageBuilder: (BuildContext context, GoRouterState state) {
+                        return _builderPage(
+                          child: NumberNotRegistered(
+                            phoneNumber:
+                                state.uri.queryParameters['phoneNumber']!,
+                          ),
+                          state: state,
+                        );
+                      }),
+                  GoRoute(
+                      path: _config.applicationRoutes.kUserExistName,
+                      pageBuilder: (BuildContext context, GoRouterState state) {
+                        return _builderPage(
+                          child: AlreadyExistAccount(
+                            phoneNumber:
+                                state.uri.queryParameters['phoneNumber']!,
+                          ),
+                          state: state,
+                        );
+                      }),
+                ]),
             GoRoute(
               path: _config.applicationRoutes.kMyContactsPageName,
               pageBuilder: (BuildContext context, GoRouterState state) {

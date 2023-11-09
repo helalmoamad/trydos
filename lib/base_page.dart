@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:convert' as convert;
+import 'dart:io';
 
 import 'package:adobe_xd/pinned.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -17,15 +18,10 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_pages.dart';
-import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
-import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
-
-import 'features/authentication/presentation/manager/auth_bloc.dart';
 import 'features/authentication/presentation/pages/first_registeration_page.dart';
 import 'features/chat/data/models/my_chats_response_model.dart';
 import 'features/chat/presentation/manager/chat_bloc.dart';
@@ -146,7 +142,9 @@ class _BasePageState extends State<BasePage> {
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    onMessage();
+    if(Platform.isAndroid) {
+      onMessage();
+    }
     super.initState();
   }
 

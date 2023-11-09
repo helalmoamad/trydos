@@ -130,6 +130,8 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                     height: 20,
                   ),
                   InkWell(
+                    focusColor: Colors.transparent,
+                    splashColor: Colors.transparent,
                     onTap: () {
                       context.go(GRouter.config.applicationRoutes.kBasePage);
                     },
