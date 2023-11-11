@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -19,6 +21,7 @@ import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
+import '../../../data/models/ImageDetail.dart';
 import 'no_image_widget.dart';
 
 class ImageMessage extends StatefulWidget {
@@ -57,6 +60,8 @@ class ImageMessage extends StatefulWidget {
 }
 
 class _ImageMessageState extends State<ImageMessage> {
+  int? width;
+  int? height;
   final ValueNotifier<int> _loadingImage = ValueNotifier(0);
 
   @override
@@ -130,168 +135,168 @@ class _ImageMessageState extends State<ImageMessage> {
                     children: [
                       if (widget.imageFile == null) ...{
                         Container(
-                          width: 300.w,
-                          height: 600,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(12.0),
-                            border: Border.all(
-                              width: 3.0,
-                              color: widget.isSent
-                                  ? const Color(0xffFFF9B4)
-                                  : const Color(0xffB4FFD9),
+                            width: 300.w,
+                            height: 600,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(12.0),
+                              border: Border.all(
+                                width: 3.0,
+                                color: widget.isSent
+                                    ? const Color(0xffFFF9B4)
+                                    : const Color(0xffB4FFD9),
+                              ),
                             ),
-                          ),
-                          child: Center(
-                            child: ValueListenableBuilder<int>(
-                                valueListenable: _loadingImage,
-                                builder: (context, status, _) {
-                                  FileSaving().downloadFileToLocalStorage(
-                                      widget.imageUrl!, action: (File? file) {
-                                    // _loadingImage.value = 2;
-                                    widget.imageFile = file;
-                                    setState(() {});
-                                  });
-                                  return CircularProgressIndicator(
-                                    backgroundColor: Colors.grey.shade100,
-                                    color: const Color(0xff388CFF),
-                                  );
-
-                                  // if (status == 0) {
-                                  //   return InkWell(
-                                  //     onTap: () async{
-                                  //       _loadingImage.value = 1;
-                                  //     },
-                                  //     child: Icon(
-                                  //         Icons
-                                  //             .save_alt_outlined,
-                                  //         color: const Color(
-                                  //             0xff388CFF),
-                                  //         size: 35.sp),
-                                  //   );
-                                  // } else if (status == 1) {
-                                  //   //
-                                  //   FileSaving().downloadFileToLocalStorage(widget.imageUrl!,action: (File? file){
-                                  //     _loadingImage.value=2;
-                                  //     widget.imageFile=file;
-                                  //     setState(() {
-                                  //
-                                  //     });
-                                  //   });
-                                  //   return  CircularProgressIndicator(
-                                  //     backgroundColor: Colors.grey.shade100,
-                                  //     color:
-                                  //     const  Color(0xff388CFF),
-                                  //   );
-                                  //
-                                  //
-                                  // }else{
-                                  //   return const SizedBox.shrink();
-                                  // }
-                                }),
-                          ),
-                        ),
+                            child: Center(
+                                child: ValueListenableBuilder<int>(
+                                    valueListenable: _loadingImage,
+                                    builder: (context, status, _) {
+                                      FileSaving().downloadFileToLocalStorage(
+                                          widget.imageUrl!,
+                                          action: (File? file) {
+                                        // _loadingImage.value = 2;
+                                        widget.imageFile = file;
+                                        setState(() {});
+                                      });
+                                      return CircularProgressIndicator(
+                                        backgroundColor: Colors.grey.shade100,
+                                        color: const Color(0xff388CFF),
+                                      );
+                                    }))),
                       } else ...{
-                        Stack(
-                          alignment: Alignment.bottomCenter,
-                          children: [
-                            FullScreenWidget(
-                              backgroundColor: widget.isSent
-                                  ? const Color(0xffFFF9B4)
-                                  : const Color(0xffB4FFD9),
-                              child: Hero(
-                                tag: "hero${DateTime.now()}",
-                                child: Container(
-                                  width: 300.w,
-                                  height: 600,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: FileImage(widget.imageFile!),
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    border: Border.all(
-                                      width: 3.0,
-                                      color: widget.isSent
-                                          ? const Color(0xffFFF9B4)
-                                          : const Color(0xffB4FFD9),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Transform.translate(
-                              offset: const Offset(0, -3),
-                              child: Container(
-                                height: 50,
-                                width: 300.w - 6,
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    begin: Alignment(0.0, 0),
-                                    end: Alignment(0.0, 1.0),
-                                    colors: [
-                                      Color(0x00000000),
-                                      Color(0xb2000000)
-                                    ],
-                                    stops: [0.0, 1.0],
-                                  ),
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 20),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        !widget.time.isUtc
-                                            ? HelperFunctions.getDateInFormat(
-                                                widget.time)
-                                            : HelperFunctions
-                                                .getZonedDateInFormat(
-                                                    widget.time),
-                                        style: context.textTheme.overline?.rr
-                                            .copyWith(
-                                                color:
-                                                    context.colorScheme.white),
+                        FutureBuilder(
+                          future: loadWidthAndHeightForImage(
+                              ImageFile: widget.imageFile!),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done)
+                              return Stack(
+                                alignment: Alignment.bottomCenter,
+                                children: [
+                                  FullScreenWidget(
+                                    backgroundColor: widget.isSent
+                                        ? const Color(0xffFFF9B4)
+                                        : const Color(0xffB4FFD9),
+                                    child: Hero(
+                                      tag: "hero${DateTime.now()}",
+                                      child: Container(
+                                        width: (snapshot.data!.width.w < 200.w)
+                                            ? snapshot.data!.width.toDouble()
+                                            : 200.w
+
+                                        // (snapshot.data!.width.w / 3 >
+                                        //             200.w)
+                                        //         ? 200.w.toDouble()
+                                        //         : snapshot.data!.width / 3
+                                        ,
+                                        height: (snapshot.data!.height.h <
+                                                200.h)
+                                            ? snapshot.data!.height.toDouble()
+                                            : 200.h
+
+                                        // snapshot.data!.height / 3
+
+                                        ,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: FileImage(widget.imageFile!),
+                                            fit: BoxFit.fitWidth,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                          border: Border.all(
+                                            width: 3.0,
+                                            color: widget.isSent
+                                                ? const Color(0xffFFF9B4)
+                                                : const Color(0xffB4FFD9),
+                                          ),
+                                        ),
                                       ),
-                                      if (widget.isSent) ...{
-                                        10.horizontalSpace,
-                                        SvgPicture.asset(
-                                          (state.currentMessage
-                                                  .contains(widget.messageId))
-                                              ? AppAssets.sandClockSvg
-                                              : (state.currentFailedMessage
-                                                      .contains(
-                                                          widget.messageId))
-                                                  ? AppAssets.MessageFailedSvg
-                                                  : widget.isRead
-                                                      ? AppAssets
-                                                          .messageReadArrowSvg
-                                                      : widget.isReceived
-                                                          ? AppAssets
-                                                              .messageDeliveredArrowSvg
-                                                          : AppAssets
-                                                              .messageSentArrowSvg,
-                                          color: context.colorScheme.white,
-                                          width: 10.sp,
-                                          height: 10.sp,
-                                        )
-                                      },
-                                      if (widget.isForwarded) ...{
-                                        10.horizontalSpace,
-                                        SvgPicture.asset(
-                                          AppAssets.forwardedSvg,
-                                          width: 10.sp,
-                                          height: 10.sp,
-                                        )
-                                      }
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ),
-                          ],
+                                  Transform.translate(
+                                    offset: const Offset(0, -3),
+                                    child: Container(
+                                      height: 40.h,
+                                      width: (snapshot.data!.width.w < 200.w)
+                                          ? snapshot.data!.width.toDouble()
+                                          : 200.w,
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          begin: Alignment(0.0, 0),
+                                          end: Alignment(0.0, 1.0),
+                                          colors: [
+                                            Color(0x00000000),
+                                            Color(0xb2000000)
+                                          ],
+                                          stops: [0.0, 1.0],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 5, horizontal: 20),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              !widget.time.isUtc
+                                                  ? HelperFunctions
+                                                      .getDateInFormat(
+                                                          widget.time)
+                                                  : HelperFunctions
+                                                      .getZonedDateInFormat(
+                                                          widget.time),
+                                              style: context
+                                                  .textTheme.overline?.rr
+                                                  .copyWith(
+                                                      color: context
+                                                          .colorScheme.white),
+                                            ),
+                                            if (widget.isSent) ...{
+                                              10.horizontalSpace,
+                                              SvgPicture.asset(
+                                                (state.currentMessage.contains(
+                                                        widget.messageId))
+                                                    ? AppAssets.sandClockSvg
+                                                    : (state.currentFailedMessage
+                                                            .contains(widget
+                                                                .messageId))
+                                                        ? AppAssets
+                                                            .MessageFailedSvg
+                                                        : widget.isRead
+                                                            ? AppAssets
+                                                                .messageReadArrowSvg
+                                                            : widget.isReceived
+                                                                ? AppAssets
+                                                                    .messageDeliveredArrowSvg
+                                                                : AppAssets
+                                                                    .messageSentArrowSvg,
+                                                color:
+                                                    context.colorScheme.white,
+                                                width: 10.sp,
+                                                height: 10.sp,
+                                              )
+                                            },
+                                            if (widget.isForwarded) ...{
+                                              10.horizontalSpace,
+                                              SvgPicture.asset(
+                                                AppAssets.forwardedSvg,
+                                                width: 10.sp,
+                                                height: 10.sp,
+                                              )
+                                            }
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            return CircularProgressIndicator();
+                          },
                         ),
                       },
                       //todo until i solve the translate
@@ -366,5 +371,38 @@ class _ImageMessageState extends State<ImageMessage> {
         },
       ),
     );
+  }
+
+  Future<ChatImageDetail> loadWidthAndHeightForImage(
+      {required File ImageFile, Function? onError}) async {
+    Completer<ChatImageDetail> completer = Completer<ChatImageDetail>();
+
+    completer = Completer<ChatImageDetail>();
+    Image image;
+    image = Image.file(ImageFile);
+    try {
+      image.image
+          .resolve(const ImageConfiguration())
+          .addListener(ImageStreamListener(
+            (
+              ImageInfo imageInfo,
+              bool _,
+            ) {
+              final dimensions = ChatImageDetail(
+                width: imageInfo.image.width,
+                height: imageInfo.image.height,
+              );
+              if (completer.isCompleted == false) {
+                completer.complete(dimensions);
+              }
+            },
+            onError: (exception, stackTrace) {
+              if (onError != null) onError();
+            },
+          ));
+    } catch (e, s) {
+      // GetIt.I<StoryBloc>().add(LoadFailureEvent());
+    }
+    return completer.future;
   }
 }

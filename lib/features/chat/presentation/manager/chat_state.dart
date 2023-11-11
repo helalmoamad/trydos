@@ -2,6 +2,8 @@ part of 'chat_bloc.dart';
 
 enum SaveContactsStatus { init, loading, success, failure }
 
+enum LoadImageWidthAndHeight { init, loading, success, failure }
+
 enum GetContactsStatus { init, loading, success, failure }
 
 enum GetChatsStatus { init, loading, success, failure }
@@ -20,12 +22,15 @@ enum ChangeChatPropertyStatus { init, loading, success, failure }
 
 enum DeleteChatStatus { init, loading, success, failure }
 
-enum ChangeMessageStateFromPusherStatus { init, received , watched }
+enum ChangeMessageStateFromPusherStatus { init, received, watched }
 
 class ChatState {
+  final int width;
+  final int height;
   final GetChatsStatus getChatsStatus;
   final SendMessageStatus sendMessageStatus;
   final ReceiveMessageStatus receiveMessageStatus;
+  final LoadImageWidthAndHeight loadImageWidthAndHeight;
   final SaveContactsStatus saveContactsStatus;
   final GetContactsStatus getContactsStatus;
   final ResetReadMessagesStatus readMessagesStatus;
@@ -35,7 +40,7 @@ class ChatState {
   final ChangeChatPropertyStatus changeChatPropertyStatus;
   final DeleteChatStatus deleteChatStatus;
   final List<Contact> contacts;
-  final List<Chat> chats;
+   List<Chat> chats;
   final List<Chat> pinnedChats;
   final List<String> currentMessage;
   final List<String> currentFailedMessage;
@@ -49,10 +54,15 @@ class ChatState {
   final bool scrollToParentMessage;
   final bool createAnewChat;
   Map<String, List<Message>>? newSortedChatsByDate;
+
   ChatState({
-    this.newSortedChatsByDate=const {},
+    this.width=0,
+    this.height=0,
+    this.loadImageWidthAndHeight = LoadImageWidthAndHeight.init,
+    this.newSortedChatsByDate = const {},
     this.getContactsStatus = GetContactsStatus.init,
-    this.changeMessageStateFromPusherStatus = ChangeMessageStateFromPusherStatus.init,
+    this.changeMessageStateFromPusherStatus =
+        ChangeMessageStateFromPusherStatus.init,
     this.getMessagesBetweenStatus = GetMessagesBetweenStatus.init,
     this.changeChatPropertyStatus = ChangeChatPropertyStatus.init,
     this.saveContactsStatus = SaveContactsStatus.init,
@@ -68,8 +78,8 @@ class ChatState {
     this.currentChannelReceivedMessage = '-1',
     this.messageType,
     this.firstMessageId,
-    this.scrollToParentMessage=false,
-    this.createAnewChat=false,
+    this.scrollToParentMessage = false,
+    this.createAnewChat = false,
     this.secondMessageId,
     this.messageContent,
     this.contacts = const [],
@@ -80,6 +90,9 @@ class ChatState {
   });
 
   ChatState copyWith({
+    int? width,
+    int? height,
+    LoadImageWidthAndHeight? loadImageWidthAndHeight,
     Map<String, List<Message>>? newSortedChatsByDate,
     final GetChatsStatus? getChatsStatus,
     final SendMessageStatus? sendMessageStatus,
@@ -97,7 +110,8 @@ class ChatState {
     final int? currentOpenedChannelId,
     final ResetReadMessagesStatus? readMessagesStatus,
     final NotifyThatIReceivedMessageStatus? notifyThatIReceivedMessageStatus,
-    final ChangeMessageStateFromPusherStatus? changeMessageStateFromPusherStatus,
+    final ChangeMessageStateFromPusherStatus?
+        changeMessageStateFromPusherStatus,
     final String? currentChannelReceivedMessage,
     final List<Chat>? chats,
     final bool? createAnewChat,
@@ -109,24 +123,33 @@ class ChatState {
     final List<Chat>? pinnedChats,
   }) {
     return ChatState(
-      newSortedChatsByDate:newSortedChatsByDate??this.newSortedChatsByDate,
+      width: width??this.width,
+      height: height??this.height,
+      loadImageWidthAndHeight:
+          loadImageWidthAndHeight ?? this.loadImageWidthAndHeight,
+      newSortedChatsByDate: newSortedChatsByDate ?? this.newSortedChatsByDate,
       getChatsStatus: getChatsStatus ?? this.getChatsStatus,
       sendMessageStatus: sendMessageStatus ?? this.sendMessageStatus,
-      changeChatPropertyStatus: changeChatPropertyStatus ?? this.changeChatPropertyStatus,
+      changeChatPropertyStatus:
+          changeChatPropertyStatus ?? this.changeChatPropertyStatus,
       getContactsStatus: getContactsStatus ?? this.getContactsStatus,
       contacts: contacts ?? this.contacts,
       chats: chats ?? this.chats,
       createAnewChat: createAnewChat ?? this.createAnewChat,
       deleteChatStatus: deleteChatStatus ?? this.deleteChatStatus,
       currentFailedMessage: currentFailedMessage ?? this.currentFailedMessage,
-      changeMessageStateFromPusherStatus: changeMessageStateFromPusherStatus ?? this.changeMessageStateFromPusherStatus,
-      scrollToParentMessage: scrollToParentMessage ?? this.scrollToParentMessage,
+      changeMessageStateFromPusherStatus: changeMessageStateFromPusherStatus ??
+          this.changeMessageStateFromPusherStatus,
+      scrollToParentMessage:
+          scrollToParentMessage ?? this.scrollToParentMessage,
       notifyThatIReceivedMessageStatus: notifyThatIReceivedMessageStatus ??
           this.notifyThatIReceivedMessageStatus,
       currentMessage: currentMessage ?? this.currentMessage,
       pinnedChats: pinnedChats ?? this.pinnedChats,
-      unReadMessagesFromAllChats: unReadMessagesFromAllChats ?? this.unReadMessagesFromAllChats,
-      currentChannelReceivedMessage: currentChannelReceivedMessage ?? this.currentChannelReceivedMessage,
+      unReadMessagesFromAllChats:
+          unReadMessagesFromAllChats ?? this.unReadMessagesFromAllChats,
+      currentChannelReceivedMessage:
+          currentChannelReceivedMessage ?? this.currentChannelReceivedMessage,
       saveContactsStatus: saveContactsStatus ?? this.saveContactsStatus,
       channelId: channelId ?? this.channelId,
       firstMessageId: firstMessageId ?? this.firstMessageId,
@@ -135,7 +158,8 @@ class ChatState {
       readMessagesStatus: readMessagesStatus ?? this.readMessagesStatus,
       messageType: messageType ?? this.messageType,
       receiveMessageStatus: receiveMessageStatus ?? this.receiveMessageStatus,
-      getMessagesBetweenStatus: getMessagesBetweenStatus ?? this.getMessagesBetweenStatus,
+      getMessagesBetweenStatus:
+          getMessagesBetweenStatus ?? this.getMessagesBetweenStatus,
     );
   }
 }

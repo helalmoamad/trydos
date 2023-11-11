@@ -8,6 +8,20 @@ abstract class ChatEvent extends Equatable {
   const ChatEvent();
 }
 
+class LoadWidthAndHeightForImage extends ChatEvent {
+  final File file;
+  final int message_id;
+  final int channel_id;
+
+  LoadWidthAndHeightForImage({
+    required this.channel_id,
+    required this.message_id, required this.file});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
 class CreateUserEvent extends ChatEvent {
   final String? name;
   final String? mobilePhone;
@@ -178,7 +192,9 @@ class SaveContactsEvent extends ChatEvent {
 class ReceiveMessageEvent extends ChatEvent {
   final Message message;
   final String prevMessageId;
-  const ReceiveMessageEvent({required this.message,required this.prevMessageId});
+
+  const ReceiveMessageEvent(
+      {required this.message, required this.prevMessageId});
 
   @override
   // TODO: implement props
@@ -261,6 +277,7 @@ class GetAllMessagesBetweenEvent extends ChatEvent {
   final String firstMessageId;
   final String secondMessageId;
   final bool scrollToParentMessage;
+
   const GetAllMessagesBetweenEvent(
       {required this.firstMessageId,
       required this.secondMessageId,
@@ -269,5 +286,6 @@ class GetAllMessagesBetweenEvent extends ChatEvent {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [firstMessageId, secondMessageId, channelId,scrollToParentMessage];
+  List<Object?> get props =>
+      [firstMessageId, secondMessageId, channelId, scrollToParentMessage];
 }

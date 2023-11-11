@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/features/chat/data/models/ImageDetail.dart';
 import 'package:trydos/features/chat/domain/use_cases/change_chat_property_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/delete_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_contacts_usecase.dart';
@@ -22,6 +24,7 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/domin/usecases/upload_file_cloudinary_usecase.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../../data/models/my_contacts_response_model.dart';
+import '../../domain/use_cases/get_image_width_and_height_usecase.dart';
 import '../utils/pusher_chat.dart';
 import 'chat_event.dart';
 import 'helper_function_for_chat_bloc/group_received_message_on_days.dart';
@@ -39,6 +42,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 @LazySingleton()
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ChatBloc(
+      this.getWidthAndHeightUseCase,
       this.getContactsUseCase,
       this.getMyChatsUseCase,
       this.saveContactsUseCase,
@@ -52,6 +56,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       this.receiveMessageUseCase)
       : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
+    on<LoadWidthAndHeightForImage>((event, emit) async {
+      emit(state.copyWith(
+          loadImageWidthAndHeight: LoadImageWidthAndHeight.loading));
+      final response = await getWidthAndHeightUseCase(
+          widthAndHeightParams(file: event.file));
+      response.fold((l) => null, (r) {
+        debugPrint("r.height${r.height}");
+        emit(state.copyWith(
+            loadImageWidthAndHeight: LoadImageWidthAndHeight.success,
+            width: r.width,
+            height: r.height));
+      });
+    });
+    // on
     on<SendMessageEvent>(_onSendMessageEvent);
     on<ReadAllMessagesEvent>(_onReadAllMessagesEvent);
     on<NotifyThatIReceivedMessageEvent>(_onNotifyThatIReceivedMessageEvent);
@@ -72,6 +90,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         transformer: throttleDroppable(throttleDuration));
   }
 
+  final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final SendMessageUseCase sendMessageUseCase;
   final SaveContactsUseCase saveContactsUseCase;
   final GetContactsUseCase getContactsUseCase;
@@ -216,10 +235,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               int.tryParse(event.channelId) == null) {
             final PusherChatService pusherChatService =
                 GetIt.I<PusherChatService>();
-            pusherChatService
-                .subscribe(r.channel!.pusherChannelName.toString());
-            pusherChatService
-                .createPresenceChannel(r.channel!.pusherChannelName!);
+            pusherChatService.subscribe(r.channel!.pusherChannelName.toString());
+            pusherChatService.createPresenceChannel(r.channel!.pusherChannelName!);
             return r.channel!.copyWith(
                 localId: event.channelId,
                 messages: e.messages?.map((e) {
@@ -279,7 +296,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
   }
 
-  FutureOr<void> _onGetChatsEvent(GetChatsEvent event, Emitter<ChatState> emit) async {
+  FutureOr<void> _onGetChatsEvent(
+      GetChatsEvent event, Emitter<ChatState> emit) async {
     emit(state.copyWith(getChatsStatus: GetChatsStatus.loading));
     final response = await getMyChatsUseCase(NoParams());
     response.fold(
@@ -292,18 +310,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       },
       (r) {
         isFailedTheFirstTime.remove('GetChatsEvent');
-        final PusherChatService pusherChatService =
-            GetIt.I<PusherChatService>();
+        final PusherChatService pusherChatService = GetIt.I<PusherChatService>();
         pusherChatService.initialization();
         r.data!.chats?.forEach((element) async {
           await pusherChatService.subscribe(element.pusherChannelName.toString());
           await pusherChatService.createPresenceChannel(element.pusherChannelName!);
         });
         r.data!.pinnedChats?.forEach((element) async {
-          await pusherChatService
-              .subscribe(element.pusherChannelName.toString());
-          await pusherChatService
-              .createPresenceChannel(element.pusherChannelName!);
+          await pusherChatService.subscribe(element.pusherChannelName.toString());
+          await pusherChatService.createPresenceChannel(element.pusherChannelName!);
         });
         int unReadMessagesFromAllChats = 0;
         r.data!.chats?.forEach((element) {
@@ -317,10 +332,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           state.copyWith(
               getChatsStatus: GetChatsStatus.success,
               chats: r.data!.chats!,
-              newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
-                ...r.data!.chats!,
-                ...r.data!.pinnedChats!
-              ]),
+              newSortedChatsByDate: groupReceivedMessageOnDays(
+                  chats: [...r.data!.chats!, ...r.data!.pinnedChats!]),
               pinnedChats: r.data!.pinnedChats!,
               unReadMessagesFromAllChats: unReadMessagesFromAllChats),
         );
@@ -480,7 +493,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       List<String> currentFailedMessage = List.of(state.currentFailedMessage);
       ids.remove(event.messageId);
       currentFailedMessage.add(event.messageId);
-      emit(state.copyWith(sendMessageStatus: SendMessageStatus.failure , currentFailedMessage: currentFailedMessage));
+      emit(state.copyWith(
+          sendMessageStatus: SendMessageStatus.failure,
+          currentFailedMessage: currentFailedMessage));
     }, (r) {
       _prefsRepository.setAFilePathExist(r.secureUrl!);
       add(SendMessageEvent(
@@ -832,7 +847,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onReceiveMessageFromPusherEvent(
       ReceiveMessageFromPusherEvent event, Emitter<ChatState> emit) {
-
     print('_onReceiveMessageFromPusherEventExecuted');
 
     emit(state.copyWith(
@@ -840,12 +854,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             ChangeMessageStateFromPusherStatus.init));
     List<Chat> chats = getChatsAfterEditPropertyOfMessage(state.chats, 1, null,
         event.channelId, event.lastMessageId, event.userId);
-    List<Chat> pinnedChats = getChatsAfterEditPropertyOfMessage(state.pinnedChats, 1,
-        null, event.channelId, event.lastMessageId, event.userId);
+    List<Chat> pinnedChats = getChatsAfterEditPropertyOfMessage(
+        state.pinnedChats,
+        1,
+        null,
+        event.channelId,
+        event.lastMessageId,
+        event.userId);
     emit(state.copyWith(
       chats: chats,
       newSortedChatsByDate:
-      groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
+          groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
       changeMessageStateFromPusherStatus:
           ChangeMessageStateFromPusherStatus.received,
       pinnedChats: pinnedChats,
@@ -859,15 +878,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(state.copyWith(
         changeMessageStateFromPusherStatus:
             ChangeMessageStateFromPusherStatus.init));
-    List<Chat> chats = getChatsAfterEditPropertyOfMessage(state.chats, null, true,
-        event.channelId, event.lastMessageId, event.userId);
-    List<Chat> pinnedChats = getChatsAfterEditPropertyOfMessage(state.pinnedChats, null,
+    List<Chat> chats = getChatsAfterEditPropertyOfMessage(state.chats, null,
         true, event.channelId, event.lastMessageId, event.userId);
+    List<Chat> pinnedChats = getChatsAfterEditPropertyOfMessage(
+        state.pinnedChats,
+        null,
+        true,
+        event.channelId,
+        event.lastMessageId,
+        event.userId);
     emit(state.copyWith(
       unReadMessagesFromAllChats: state.unReadMessagesFromAllChats - 1,
       chats: chats,
       newSortedChatsByDate:
-      groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
+          groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
       changeMessageStateFromPusherStatus:
           ChangeMessageStateFromPusherStatus.watched,
       pinnedChats: pinnedChats,

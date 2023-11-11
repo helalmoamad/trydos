@@ -26,43 +26,34 @@ class StoriesDataSource {
   Completer<ImageDetail> completer = Completer<ImageDetail>();
 
   Future<ImageDetail> loadWidthAndHeightForImage(
-      {required String url, Function? onError}) async
-  {
-
+      {required String url, Function? onError}) async {
     completer = Completer<ImageDetail>();
     Image image;
     image = Image(
       image: CachedNetworkImageProvider(url),
     );
-try{
-     image.image
-        .resolve(const ImageConfiguration())
-        .addListener(ImageStreamListener(
-
-          (
-            ImageInfo imageInfo,
-            bool _,
-          ) {
-            final dimensions = ImageDetail(
-              width: imageInfo.image.width,
-              height: imageInfo.image.height,
-            );
-            if (completer.isCompleted == false) {
-              completer.complete(dimensions);
-            }
-          },
-
-          onError: (exception, stackTrace) {
-            if (onError
-                != null) onError();
-          },
-        ));}
-catch(e,s)
-    {
-
+    try {
+      image.image
+          .resolve(const ImageConfiguration())
+          .addListener(ImageStreamListener(
+            (
+              ImageInfo imageInfo,
+              bool _,
+            ) {
+              final dimensions = ImageDetail(
+                width: imageInfo.image.width,
+                height: imageInfo.image.height,
+              );
+              if (completer.isCompleted == false) {
+                completer.complete(dimensions);
+              }
+            },
+            onError: (exception, stackTrace) {
+              if (onError != null) onError();
+            },
+          ));
+    } catch (e, s) {
       GetIt.I<StoryBloc>().add(LoadFailureEvent());
-
-
     }
     return completer.future;
   }
@@ -97,6 +88,4 @@ catch(e,s)
     // uploadStory.call();
     return uploadStory();
   }
-
-
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:file_saver/file_saver.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -26,7 +27,7 @@ class FileSaving {
       link: LinkDetails(link: fileUrl),
     )
         .then((value) {
-      _prefsRepository.setAFilePathExist(fileUrl);
+      _prefsRepository.setAFilePathExist(fileUrl + ' ' + value);
       File file = File(value);
       action?.call(file);
       return value;
