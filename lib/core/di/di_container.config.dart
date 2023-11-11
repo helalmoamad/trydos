@@ -224,7 +224,6 @@ Future<_i1.GetIt> $initGetIt(
   gh.factory<_i54.ChangeChatPropertyUseCase>(
       () => _i54.ChangeChatPropertyUseCase(gh<_i9.ChatRepository>()));
   gh.lazySingleton<_i55.ChatBloc>(() => _i55.ChatBloc(
-        gh<_i23.GetWidthAndHeightUseCase>(),
         gh<_i17.GetContactsUseCase>(),
         gh<_i21.GetMyChatsUseCase>(),
         gh<_i37.SaveContactsUseCase>(),

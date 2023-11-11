@@ -18,7 +18,7 @@ class PusherChatService {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   ChatBloc chatBloc = GetIt.I<ChatBloc>();
 
-  void initialization() async {
+  Future initialization() async {
     PusherOptions options = PusherOptions(
       encrypted: true,
       cluster: 'ap2',

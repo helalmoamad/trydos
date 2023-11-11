@@ -148,7 +148,6 @@ class LocalNotificationService {
     chat.Message myMessage = chat.Message.fromJson(
         convert.jsonDecode(notificationResponse.payload!.split(',,')[0]));
     String prevMessageId = notificationResponse.payload!.split(',,')[1];
-    print('ok');
     initialMessage = myMessage;
     GetIt.I<ChatBloc>().add(
         ReceiveMessageEvent(message: myMessage, prevMessageId: prevMessageId));
