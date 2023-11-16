@@ -26,7 +26,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        {
+          return ios;
+        }
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -50,18 +52,18 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBqEbZnQHW-6C8J-xoMJgOyEyqB2ypz9qA', //
-    appId: '1:912302743695:android:35ac3a3661d583674110fa',//
-    messagingSenderId: '912302743695',//
-    projectId: 'trydos-ce234',//
+    apiKey: 'AIzaSyBqEbZnQHW-6C8J-xoMJgOyEyqB2ypz9qA',
+    appId: '1:912302743695:android:35ac3a3661d583674110fa',
+    messagingSenderId: '912302743695',
+    projectId: 'trydos-ce234',
     storageBucket: 'trydos-ce234.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA87U9cDxOqSxQahKZZUldfphajbG3Vjp0',//
-    appId: '1:912302743695:android:35ac3a3661d583674110fa',//
-    messagingSenderId: '912302743695',//
-    projectId: 'trydos-ce234',//
+    apiKey: 'AIzaSyA87U9cDxOqSxQahKZZUldfphajbG3Vjp0',
+    appId: '1:912302743695:ios:a735391f8bdd3ee34110fa',
+    messagingSenderId: '912302743695',
+    projectId: 'trydos-ce234',
     storageBucket: 'trydos-ce234.appspot.com',
     iosClientId: '912302743695-t599imjsqacpn6ujnkde71jvu848ra5o.apps.googleusercontent.com',
     iosBundleId: 'Trydos',

@@ -16,14 +16,15 @@ class GetWidthAndHeightUseCase
 
   @override
   Future<Either<Failure, ImageDetail>> call(widthAndHeightParams params) {
-    return repository.loadWidthAndHeight(url: params.getUrl);
+    return repository.loadWidthAndHeight(url: params.getUrl , collectionId: params.getCollectionId);
   }
 }
 
 class widthAndHeightParams {
   String url;
-
-  widthAndHeightParams({required this.url});
+  int collectionId;
+  widthAndHeightParams({required this.url , required this.collectionId});
 
   String get getUrl => url;
+  int get getCollectionId => collectionId;
 }

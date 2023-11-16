@@ -15,6 +15,7 @@ import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../core/utils/responsive_padding.dart';
+import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
@@ -259,6 +260,7 @@ class _VideoMessageState extends State<VideoMessage> {
                               imageUrl:
                               ChatUrls.baseUrl + widget.userMessagePhoto!,
                               imageFit: BoxFit.cover,
+                              progressIndicatorBuilderWidget: TrydosLoader(),
                               radius: 8,
                               width: 30.w,
                               height: 30,

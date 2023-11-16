@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,7 +12,8 @@ import 'package:trydos/features/story/helper_functions/check_showing_stories.dar
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
-import '../../../app/trydos_shimmer_loading.dart';
+import '../../../../core/utils/theme_state.dart';
+import '../../../app/my_cached_network_image.dart';
 import '../../../chat/presentation/widgets/chat_widgets/no_image_widget.dart';
 
 class StoryItemWidget extends StatefulWidget {
@@ -19,6 +21,7 @@ class StoryItemWidget extends StatefulWidget {
       {required this.index,
         Key? key,
         required this.resize,
+        required this.onTapOnStoryAction,
         required this.resizeUserImage,
         required this.onTapOnUserImage,
         this.firstPhotoNotShowed,
@@ -31,13 +34,15 @@ class StoryItemWidget extends StatefulWidget {
   final Uint8List? videoData;
   final String? firstPhotoNotShowed;
   final void Function() onTapOnUserImage;
+  final void Function() onTapOnStoryAction;
 
   @override
   State<StoryItemWidget> createState() => _StoryItemWidgetState();
 }
 
-class _StoryItemWidgetState extends State<StoryItemWidget> {
+class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
   ValueNotifier<bool> resizeUserImageOnClick = ValueNotifier(false);
+  ValueNotifier<bool> transactionOnOpenedStory = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
@@ -52,20 +57,37 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
           (firstWhereNotShowedStoryCollection(
               state.stories[widget.index].stories!));
 
-      return  Container(
-        margin: EdgeInsets.only(top: 20 , bottom: 10),
-        child: Hero(
-          tag: widget.index,
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Align(
-              child: AnimatedScale(
-                scale: widget.resize ? 1.3 : 1,
-                alignment: Alignment.centerLeft,
-                curve: Curves.fastEaseInToSlowEaseOut,
-                duration: Duration(milliseconds: 200),
-                child: Stack(
-                  children: [
+      return  Material(
+        color: Colors.transparent,
+        child: InkWell(
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          onTap: () async{
+            transactionOnOpenedStory.value = true;
+            await Future.delayed(Duration(milliseconds: 100));
+            transactionOnOpenedStory.value = false;
+            await Future.delayed(Duration(milliseconds: 100));
+            widget.onTapOnStoryAction.call();
+          },
+          child: ValueListenableBuilder<bool>(
+            valueListenable: transactionOnOpenedStory,
+            builder: (context , build , child) {
+              return AnimatedScale(scale: build ? 0.95 : 1, duration: Duration(milliseconds: 100),child: child,);
+            },
+            child: Container(
+              margin: EdgeInsets.only(top: 20 , bottom: 10),
+              child: Hero(
+                tag: widget.index,
+                child: Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Align(
+                    child: AnimatedScale(
+                      scale: widget.resize ? 1.3 : 1,
+                      alignment: Alignment.centerLeft,
+                      curve: Curves.fastEaseInToSlowEaseOut,
+                      duration: Duration(milliseconds: 200),
+                      child: Stack(
+                        children: [
 //todo just in case you to show the behavior of last  story have been seen
 // Container(width: 90,height:90,
 // child: Text('${state.stories[index].stories!.length}'),
@@ -77,119 +99,136 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
 //   child: Text('${firstWhereNotShowedStoryCollection(state.stories[index].stories!)}'),
 //   ),
 // )
-                    CachedNetworkImage(
-                      errorWidget: (context, url, error) =>
-                          Center(child: Text('press to reload')),
-                      imageBuilder: (ctx , image){
-                        return Stack(
-                          children: [
-                            Container(
-                              clipBehavior: Clip.hardEdge,
-                              height: 150,
-                              width:  100,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xff000000).withOpacity(0.2),
-                                      offset: Offset(0, 3),
-                                      blurRadius: 6,
-                                    )],
-                                  image: DecorationImage(
-                                    image: image,
-                                    fit: BoxFit.cover,
-                                  )
-                              ),
-                            ),
-                            Container(
-                              height: 150,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment(0.0, -1.0),
-                                  end: Alignment(0.0, 2.026),
-                                  colors: [
-                                    const Color(0x00000000),
-                                    const Color(0xff000000)
-                                  ],
-                                  stops: [0.0, 1.0],
-                                ),
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                            ),
-                            Positioned(
-                              left: 0,
-                              top:0,
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: widget.onTapOnUserImage,
-                                  highlightColor: Colors.transparent,
-                                  splashColor: Colors.transparent,
-                                  child: Transform.translate(
-                                    offset: Offset(-10 , -10),
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        AnimatedScale(
-                                          alignment: Alignment.topLeft,
-                                          scale: widget.resizeUserImage ? 2.33 : widget.resize ? 1.4 :  1,
-                                          duration: Duration(milliseconds: 50),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: isLastStoryShowed
-                                                        ? Colors.white
-                                                        : const Color(0xffffab62),
-                                                    width: widget.resizeUserImage ? 0.4 : widget.resize ? 0.6 : 1),
-                                                shape: BoxShape.circle
-                                            ),
-                                            child: state.stories[widget.index].photoPath == null
-                                                ? NoImageWidget(
-                                                height: 28,
-                                                width: 28,
-                                                radius: 180,
-                                                textStyle: context.textTheme.subtitle1?.br
-                                                    .copyWith(
-                                                    color: const Color(0xff6638FF),
-                                                    letterSpacing: 0.18,
-
-                                                    height: 1.33),
-                                                name: state.stories[widget.index].name ==
-                                                    null
-                                                    ? 'UK'
-                                                    : HelperFunctions
-                                                    .getTheFirstTwoLettersOfName(state
-                                                    .stories[widget.index].name!))
-                                                : CachedNetworkImage(
-                                              errorWidget: (context, url, error) =>
-                                                  Text('press to reload'),
-                                              imageUrl:
-                                              state.stories[widget.index].photoPath,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),),
-                                      ],
+                          MyCachedNetworkImage(
+                            width: 100,
+                            height: 150,
+                            withImageShadow: false,
+                            logoTextHeight: 14,
+                            imageFit: BoxFit.cover,
+                            logoTextWidth: 48.w,
+                            imageBuilder: (ctx , image){
+                              return Stack(
+                                alignment : Alignment.bottomCenter,
+                                children: [
+                                  Container(
+                                    clipBehavior: Clip.hardEdge,
+                                    height: 150,
+                                    width:  100,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: const Color(0xff000000).withOpacity(0.2),
+                                            offset: Offset(0, 3),
+                                            blurRadius: 6,
+                                          )],
+                                        image: DecorationImage(
+                                          image: image,
+                                          fit: BoxFit.cover,
+                                        )
                                     ),
                                   ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                      progressIndicatorBuilder: (context, _, progress) {
-                        return TrydosShimmerLoading(
-                          width: 100,
-                          height: 150,
-                          logoTextHeight: 14,
-                          logoTextWidth: 48.w,
-                        );
-                      },
-                      imageUrl: widget.firstPhotoNotShowed!,
-                    ),
+                                  Container(
+                                    height: 150,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment(0.0, -1.0),
+                                        end: Alignment(0.0, 2.026),
+                                        colors: [
+                                          const Color(0x00000000),
+                                          const Color(0xff000000)
+                                        ],
+                                        stops: [0.0, 1.0],
+                                      ),
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 80,
+                                    child: Text(
+                                      state.stories[widget.index].name ?? 'UnKnown User',
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: !widget.resize ? textTheme.caption?.rr.copyWith(
+                                        letterSpacing: 0.036,
+                                        height: 3,
+                                        color: Colors.white
+                                      ) : textTheme.bodyText1?.rr.copyWith(
+                                          letterSpacing: 0.048,
+                                          height: 2.25,
+                                          color: Colors.white
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    left: 0,
+                                    top:0,
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        onTap: widget.onTapOnUserImage,
+                                        highlightColor: Colors.transparent,
+                                        splashColor: Colors.transparent,
+                                        child: Transform.translate(
+                                          offset: Offset(-10 , -10),
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              AnimatedScale(
+                                                alignment: Alignment.topLeft,
+                                                scale: widget.resizeUserImage ? 2.33 : widget.resize ? 1.4 :  1,
+                                                duration: Duration(milliseconds: 50),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: isLastStoryShowed
+                                                              ? Colors.white
+                                                              : const Color(0xffffab62),
+                                                          width: widget.resizeUserImage ? 0.4 : widget.resize ? 0.6 : 1),
+                                                      shape: BoxShape.circle
+                                                  ),
+                                                  child: state.stories[widget.index].photoPath == null
+                                                      ? NoImageWidget(
+                                                      height: 28,
+                                                      width: 28,
+                                                      radius: 180,
+                                                      textStyle: context.textTheme.subtitle1?.br
+                                                          .copyWith(
+                                                          color: const Color(0xff6638FF),
+                                                          letterSpacing: 0.18,
 
-                  ],
+                                                          height: 1.33),
+                                                      name: state.stories[widget.index].name ==
+                                                          null
+                                                          ? 'UK'
+                                                          : HelperFunctions
+                                                          .getTheFirstTwoLettersOfName(state
+                                                          .stories[widget.index].name!))
+                                                      : MyCachedNetworkImage(
+                                                    height: 28,
+                                                    width: 28,
+                                                    imageUrl:
+                                                    state.stories[widget.index].photoPath,
+                                                    imageFit: BoxFit.cover,
+                                                  ),
+                                                ),),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+
+                            imageUrl: widget.firstPhotoNotShowed!,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

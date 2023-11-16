@@ -10,7 +10,6 @@ import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/notification_process.dart';
 import 'package:trydos/trydos_application.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
 
@@ -34,38 +33,23 @@ List<String> isFailedTheFirstTime = [];
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await     NotificationProcess().init();
+
 
   await Future.wait([
     EasyLocalization.ensureInitialized(),
     configureDependencies(),
-    FirebaseMessaging.instance.getInitialMessage(),
+    NotificationProcess().init(),
     NotificationProcess().setupInteractedMessage(),
-    NotificationProcess().fcmToken()
   ]);
+  NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   HttpOverrides.global = MyHttpOverrides();
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
-  await NotificationProcess().init();
-  if(Platform.isAndroid) {
-    RemoteMessage? openedMessage = await FirebaseMessaging.instance
-        .getInitialMessage();
+    RemoteMessage? openedMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
-      initialMessage =
-          Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
+      initialMessage = Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
     }
-    await NotificationProcess().setupInteractedMessage();
-    await NotificationProcess().fcmToken();
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  }
-  AssetPicker.registerObserve();
-  PhotoManager.setLog(true);
-  RemoteMessage? openedMessage =
-      await FirebaseMessaging.instance.getInitialMessage();
-  if (initialMessage != null) {
-    initialMessage =
-        Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
-  }
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FlutterError.onError = (FlutterErrorDetails error) {
     GetIt.I<PrefsRepository>().saveRequestsData(
@@ -73,8 +57,5 @@ void main() async {
         error: error.toString());
   };
   runApp(TrydosApplication(navKey: navigatorKey,));
-  runApp(TrydosApplication(
-    navKey: navigatorKey,
-  ));
 }
 

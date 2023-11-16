@@ -16,6 +16,7 @@ import 'package:trydos/features/chat/domain/use_cases/read_all_messages_usecase.
 import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/save_contacts_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart';
+import 'package:trydos/features/chat/domain/use_cases/upload_file_usecase.dart';
 import 'package:trydos/main.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -48,6 +49,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       this.getMessagesForChatUseCase,
       this.deleteChatUseCase,
       this.changeChatPropertyUseCase,
+      this.uploadFileUseCase,
       this.readAllMessagesUseCase,
       this.receiveMessageUseCase)
       : super(ChatState()) {
@@ -77,6 +79,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetContactsUseCase getContactsUseCase;
   final GetMyChatsUseCase getMyChatsUseCase;
   final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
+  final UploadFileUseCase uploadFileUseCase;
   final ReadAllMessagesUseCase readAllMessagesUseCase;
   final ReceiveMessageUseCase receiveMessageUseCase;
   final DeleteChatUseCase deleteChatUseCase;
@@ -474,18 +477,23 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         chats: fromPinned ? state.chats : chats,
         pinnedChats: !fromPinned ? state.pinnedChats : chats,
         channelId: event.channelId));
-    final response = await uploadFileCloudinaryUseCase(
-        UploadFileCloudinaryParams(
-            file: event.file,
-            usingSendProgressFunction: false,
-            usingOnUploadingFinishedFunction: false));
+    final response ;
+    if(event.useCloudinaryToUpload) {
+      response = await uploadFileCloudinaryUseCase(
+          UploadFileCloudinaryParams(
+              file: event.file,
+              usingSendProgressFunction: false,
+              usingOnUploadingFinishedFunction: false));
+    }else{
+      response = await uploadFileUseCase(UploadFileParams(event.file ,event.filePath ));
+    }
     response.fold((l) {
       List<String> currentFailedMessage = List.of(state.currentFailedMessage);
       ids.remove(event.messageId);
       currentFailedMessage.add(event.messageId);
       emit(state.copyWith(sendMessageStatus: SendMessageStatus.failure , currentFailedMessage: currentFailedMessage));
     }, (r) {
-      _prefsRepository.setAFilePathExist(r.secureUrl!);
+      _prefsRepository.setAFilePathExist(event.useCloudinaryToUpload ? r.secureUrl! : r.data!.filePath!);
       add(SendMessageEvent(
           messageId: event.messageId,
           extraFields: event.extraFields,
@@ -496,7 +504,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           parentMessageContent: event.parentMessageContent,
           mediaContent: [
             {
-              'file_path': r.secureUrl!,
+              'file_path': event.useCloudinaryToUpload ? r.secureUrl! : r.data!.filePath!,
               'file_name': event.fileName,
               'caption': 'test image'
             }

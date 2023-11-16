@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mime/mime.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/file_saving.dart';
@@ -215,6 +216,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               imageUrl:
                                   ChatUrls.baseUrl + widget.receiverPhoto!,
                               imageFit: BoxFit.cover,
+                              progressIndicatorBuilderWidget: TrydosLoader(),
                               height: 40,
                               width: 40.w,
                             ),
@@ -698,28 +700,32 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     senderName: widget.senderName,
                     channelPusherName: chat.pusherChannelName ?? '',
                     senderUserImage: widget.senderPhoto,
-                    onSendFile: (File file, String type) {
+                    onSendFile: (File file, String customPathType) {
                       String id = const Uuid().v4();
                       FileSaving().saveFileToSpecificDirectory(file);
                       ChannelMember member = chat.channelMembers!.firstWhere(
                           (element) =>
                               element.userId != _prefsRepository.myChatId);
+                      String mimeStr = lookupMimeType(file.absolute.path) ??'';
+                      bool  isMediaFile = mimeStr.split('/')[0] != 'application';
+
                       chatBloc.add(UploadFileEvent(
                           file: file,
                           channelId: chat.id.toString(),
-                          filePath: type == 'image'
+                          filePath: customPathType == 'image'
                               ? 'images/test'
-                              : type == 'file'
+                              : customPathType == 'file'
                                   ? 'files/test'
-                                  : type == 'video'
+                                  : customPathType == 'video'
                                       ? 'videos/test'
                                       : 'voices/test',
+                          useCloudinaryToUpload: isMediaFile,
                           fileName: file.path,
-                          messageType: type == 'image'
+                          messageType: customPathType == 'image'
                               ? 'ImageMessage'
-                              : type == 'file'
+                              : customPathType == 'file'
                                   ? 'FileMessage'
-                                  : type == 'video'
+                                  : customPathType == 'video'
                                       ? 'VideoMessage'
                                       : 'VoiceMessage',
                           isForward: false,
@@ -727,11 +733,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           parentMessageId:
                               state.thereIsReply ? state.messageId : null,
                           messageId: id,
-                          parentMessageContent: type == 'image'
+                          parentMessageContent: customPathType == 'image'
                               ? 'Photo'
-                              : type == 'file'
+                              : customPathType == 'file'
                                   ? 'File'
-                                  : type == 'video'
+                                  : customPathType == 'video'
                                       ? 'Video'
                                       : 'Voice',
                           receiverUserId: member.userId));

@@ -6,11 +6,13 @@ import '../bloc/story_bloc.dart';
 class AnimatedBar extends StatelessWidget {
   final AnimationController animController;
   final int position;
+  final int collectionIndex ;
 
   const AnimatedBar({
     Key? key,
     required this.animController,
     required this.position,
+    required this.collectionIndex,
   }) : super(key: key);
 
   @override
@@ -26,11 +28,11 @@ class AnimatedBar extends StatelessWidget {
                   children: <Widget>[
                     _buildContainer(
                       double.infinity,
-                      position < state.initialStory!
+                      position < state.initialStory[collectionIndex]!
                           ? Colors.white
                           : Colors.white.withOpacity(0.5),
                     ),
-                    position == state.initialStory
+                    position == state.initialStory[collectionIndex]
                         ? AnimatedBuilder(
                       animation: animController,
                       builder: (context, child) {

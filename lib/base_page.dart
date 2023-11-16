@@ -36,7 +36,6 @@ Widget get logo {
   alignment: Alignment.bottomCenter,
   children: [
     logoText,
-
     Transform.translate(offset: Offset(-108, 0),
         child: logoIcon)
   ],
