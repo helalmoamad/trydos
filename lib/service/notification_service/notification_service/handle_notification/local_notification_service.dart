@@ -49,7 +49,9 @@ class LocalNotificationService {
       iOS: iosInitializationSettings,
     );
 
-    await _localNotificationPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+    await _localNotificationPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(
             LocalNotificationService().getAndroidChannel);
 
@@ -141,11 +143,11 @@ class LocalNotificationService {
     }
   }
 
+  @pragma('vm:entry-point')
   static void _onSelectNotification(NotificationResponse notificationResponse) {
     chat.Message myMessage = chat.Message.fromJson(
         convert.jsonDecode(notificationResponse.payload!.split(',,')[0]));
     String prevMessageId = notificationResponse.payload!.split(',,')[1];
-    print('ok');
     initialMessage = myMessage;
     GetIt.I<ChatBloc>().add(
         ReceiveMessageEvent(message: myMessage, prevMessageId: prevMessageId));

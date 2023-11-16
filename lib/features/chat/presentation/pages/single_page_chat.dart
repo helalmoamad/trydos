@@ -897,8 +897,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
     if (message.file == null &&
         filePath != null &&
         _prefsRepository.isAFilePathExist(filePath)) {
+      //todo
+      debugPrint('filePath${filePath}');
+      debugPrint('senderName${senderName}');
+      debugPrint('receiverName${receiverName}');
       String? path = _prefsRepository.getTheLocalPathForFile(filePath);
-      File? file = File(path ?? message.mediaMessageContent![0].fileName!);
+      File? file = File(path!);
       message = message.copyWith(file: file, checkedExistence: true);
     }
     MessageStatus? messageStatus = message.messageStatus
@@ -990,7 +994,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 : parentMessage.messageContent!.content.toString(),
             messageAnswerId: message.id!);
       }
-    } else {
+    }
+    else {
       switch (message.messageType!.name) {
         case 'TextMessage':
           return TextMessage(

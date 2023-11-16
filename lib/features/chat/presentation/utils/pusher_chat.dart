@@ -18,7 +18,7 @@ class PusherChatService {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   ChatBloc chatBloc = GetIt.I<ChatBloc>();
 
-  initialization() async {
+  Future initialization() async {
     PusherOptions options = PusherOptions(
       encrypted: true,
       cluster: 'ap2',
@@ -43,48 +43,55 @@ class PusherChatService {
   }
 
   subscribe(String channelName) async {
-    if(publicChannels.containsKey(channelName))return ;
+    if (publicChannels.containsKey(channelName)) return;
     Channel channel = pusher.subscribe(channelName);
     channel.bind('ChannelReceivedEvent', (event) {
-      print('ChannelReceivedEventData ${event?.data ?? 'Empty'}');
+      // print('ChannelReceivedEventData ${event?.data ?? 'Empty'}');
       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
-      chatBloc.add(ReceiveMessageFromPusherEvent(
-          data['channel_id'].toString(), data['auth_user_id'], data['last_message_id']));
+      chatBloc.add(ReceiveMessageFromPusherEvent(data['channel_id'].toString(),
+          data['auth_user_id'], data['last_message_id']));
     });
 
     channel.bind('ChannelWatchedEvent', (event) {
       print('ChannelWatchedEventData ${event?.data ?? 'Empty'}');
       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
-      chatBloc.add(WatchedMessageFromPusherEvent(
-          data['channel_id'].toString(), data['auth_user_id'], data['last_message_id']));
+      chatBloc.add(WatchedMessageFromPusherEvent(data['channel_id'].toString(),
+          data['auth_user_id'], data['last_message_id']));
     });
-    publicChannels[channelName]=true;
+    publicChannels[channelName] = true;
   }
-Map<String,String> descTranslation={
+
+  Map<String, String> descTranslation = {
     "Typing...": "يكتب...",
     "Recording...": "يسجل مقطع صوتي...",
     "Sending file...": "يرسل ملف...",
-};
+  };
+
   createPresenceChannel(String channelName) async {
-    if(presenceChannels.containsKey(channelName)) return;
+    if (presenceChannels.containsKey(channelName)) return;
     Channel channel = pusher.subscribe("presence-typing-$channelName");
     presenceChannels["presence-typing-$channelName"] = channel;
     channel.bind('client-TypingEvent', (event) {
       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
-      if (data['desc']== 'null' || data['desc']==null) {
+      if (data['desc'] == 'null' || data['desc'] == null) {
         print('yes it is');
-        GetIt.I<AppBloc>().add(RemoveUserFromTypingList(int.parse(data['id'].toString())));
+        GetIt.I<AppBloc>()
+            .add(RemoveUserFromTypingList(int.parse(data['id'].toString())));
         return;
       }
-      if(LanguageService.languageCode=='ar'){
-        data['desc']=descTranslation[data['desc']] ?? data['desc'];
+      if (LanguageService.languageCode == 'ar') {
+        data['desc'] = descTranslation[data['desc']] ?? data['desc'];
       }
-      GetIt.I<AppBloc>().add(AddUserToTypingList(int.parse(data['uid'].toString()), int.parse(data['id'].toString()),data['desc']));
+      GetIt.I<AppBloc>().add(AddUserToTypingList(
+          int.parse(data['uid'].toString()),
+          int.parse(data['id'].toString()),
+          data['desc']));
     });
   }
 
-  void sendActivityEvent(String channelId ,String channelName, String? description) async {
-    if(int.tryParse(channelId)==null){
+  void sendActivityEvent(
+      String channelId, String channelName, String? description) async {
+    if (int.tryParse(channelId) == null) {
       return;
     }
     var y = await presenceChannels["presence-typing-$channelName"]!.trigger(
