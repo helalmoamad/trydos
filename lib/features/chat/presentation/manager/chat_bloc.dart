@@ -38,8 +38,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 
 @LazySingleton()
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
-  ChatBloc(
-      this.getContactsUseCase,
+  ChatBloc(this.getContactsUseCase,
       this.getMyChatsUseCase,
       this.saveContactsUseCase,
       this.sendMessageUseCase,
@@ -85,31 +84,31 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetMessagesBetweenUseCase getMessagesBetweenUseCase;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
 
-  FutureOr<void> _onSendMessageEvent(
-      SendMessageEvent event, Emitter<ChatState> emit) async {
+  FutureOr<void> _onSendMessageEvent(SendMessageEvent event,
+      Emitter<ChatState> emit) async {
     //waiting messages
     List<String> ids = List.of(state.currentMessage);
     List<Message> messages;
     bool fromPinned = false;
     if (state.chats.any(
-      (e) => e.id == event.channelId,
+          (e) => e.id == event.channelId,
     )) {
       messages = List.of(state.chats
-              .firstWhere((element) => element.id == event.channelId)
-              .messages ??
+          .firstWhere((element) => element.id == event.channelId)
+          .messages ??
           []);
     } else {
       fromPinned = true;
       messages = List.of(state.pinnedChats
-              .firstWhere((element) => element.id == event.channelId)
-              .messages ??
+          .firstWhere((element) => element.id == event.channelId)
+          .messages ??
           []);
     }
     String? parentMessageId;
     if (!ids.contains(event.messageId)) {
       ids.add(event.messageId);
       int index = messages.indexWhere((element) =>
-          element.localId == event.parentMessageId &&
+      element.localId == event.parentMessageId &&
           event.parentMessageId != null);
       parentMessageId = event.parentMessageId;
       if (index != -1) {
@@ -125,8 +124,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               receiverUserId: event.receiverUserId,
               messageContent: event.messageType == 'TextMessage'
                   ? MessageContent(
-                      messageId: int.tryParse(event.messageId),
-                      content: event.content)
+                  messageId: int.tryParse(event.messageId),
+                  content: event.content)
                   : null,
               senderUserId: _prefsRepository.myChatId,
               messageType: MessageType(name: event.messageType),
@@ -135,19 +134,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               localParentMessageId: event.parentMessageId,
               mediaMessageContent: event.messageType != 'TextMessage'
                   ? [
-                      MediaMessageContent(
-                          filePath: event.mediaContent?[0]['file_path'],
-                          caption: event.mediaContent?[0]['caption'])
-                    ]
+                MediaMessageContent(
+                    filePath: event.mediaContent?[0]['file_path'],
+                    caption: event.mediaContent?[0]['caption'])
+              ]
                   : null,
               parentMessage: parentMessageId != null
                   ? Message(
-                      file: event.file,
-                      senderUserId: index != -1
-                          ? messages[index].senderUserId
-                          : event.senderParentMessageId,
-                      messageContent:
-                          MessageContent(content: event.parentMessageContent))
+                  file: event.file,
+                  senderUserId: index != -1
+                      ? messages[index].senderUserId
+                      : event.senderParentMessageId,
+                  messageContent:
+                  MessageContent(content: event.parentMessageContent))
                   : null));
     }
     List<Chat> chats;
@@ -178,7 +177,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           receiverUserId: event.receiverUserId),
     );
     response.fold(
-      (l) {
+          (l) {
         List<String> currentFailedMessage = List.of(state.currentFailedMessage);
         ids.remove(event.messageId);
         currentFailedMessage.add(event.messageId);
@@ -187,7 +186,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             currentMessage: ids,
             currentFailedMessage: currentFailedMessage));
       },
-      (r) {
+          (r) {
 //        print('count  ${messages.length}');
         ids.remove(event.messageId);
         List<Chat> pinnedChats = state.pinnedChats.map((e) {
@@ -204,7 +203,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           } else if (e.id == event.channelId) {
             List<Message> messages = List.of(e.messages ?? []);
             int index =
-                messages.indexWhere((element) => element.id == event.messageId);
+            messages.indexWhere((element) => element.id == event.messageId);
             messages[index] =
                 r.copyWith(file: event.file, localId: event.messageId);
             return e.copyWith(messages: messages);
@@ -215,7 +214,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           if (e.localId == event.channelId &&
               int.tryParse(event.channelId) == null) {
             final PusherChatService pusherChatService =
-                GetIt.I<PusherChatService>();
+            GetIt.I<PusherChatService>();
             pusherChatService
                 .subscribe(r.channel!.pusherChannelName.toString());
             pusherChatService
@@ -231,7 +230,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           } else if (e.id == event.channelId) {
             List<Message> messages = List.of(e.messages ?? []);
             int index =
-                messages.indexWhere((element) => element.id == event.messageId);
+            messages.indexWhere((element) => element.id == event.messageId);
             messages[index] =
                 r.copyWith(file: event.file, localId: event.messageId);
             return e.copyWith(messages: messages);
@@ -245,30 +244,30 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               createAnewChat: false,
               pinnedChats: pinnedChats,
               newSortedChatsByDate:
-                  groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
+              groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
               currentMessage: ids),
         );
       },
     );
   }
 
-  FutureOr<void> _onSaveContactsEvent(
-      SaveContactsEvent event, Emitter<ChatState> emit) async {
+  FutureOr<void> _onSaveContactsEvent(SaveContactsEvent event,
+      Emitter<ChatState> emit) async {
     if (state.saveContactsStatus != SaveContactsStatus.init) {
       return;
     }
     emit(state.copyWith(saveContactsStatus: SaveContactsStatus.loading));
     final response =
-        await saveContactsUseCase(SaveContactsParams(contacts: event.contacts));
+    await saveContactsUseCase(SaveContactsParams(contacts: event.contacts));
     response.fold(
-      (l) {
+          (l) {
         if (!isFailedTheFirstTime.contains('SaveContactsEvent')) {
           add(SaveContactsEvent());
           isFailedTheFirstTime.add('SaveContactsEvent');
         }
         emit(state.copyWith(saveContactsStatus: SaveContactsStatus.failure));
       },
-      (r) {
+          (r) {
         isFailedTheFirstTime.remove('SaveContactsEvent');
         emit(
           state.copyWith(
@@ -279,12 +278,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
   }
 
-  FutureOr<void> _onGetChatsEvent(
-      GetChatsEvent event, Emitter<ChatState> emit) async {
+  FutureOr<void> _onGetChatsEvent(GetChatsEvent event,
+      Emitter<ChatState> emit) async {
     emit(state.copyWith(getChatsStatus: GetChatsStatus.loading));
     final response = await getMyChatsUseCase(NoParams());
     response.fold(
-      (l) {
+          (l) {
         if (!isFailedTheFirstTime.contains('GetChatsEvent')) {
           add(GetChatsEvent());
           isFailedTheFirstTime.add('GetChatsEvent');
@@ -292,13 +291,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
         emit(state.copyWith(getChatsStatus: GetChatsStatus.failure));
       },
-      (r) {
+          (r) {
         isFailedTheFirstTime.remove('GetChatsEvent');
         final PusherChatService pusherChatService =
-            GetIt.I<PusherChatService>();
+        GetIt.I<PusherChatService>();
         pusherChatService.initialization();
         pusherChatService
-            .subscribe('user-${GetIt.I<PrefsRepository>().myChatId}-messages');
+            .subscribe('user-${GetIt
+            .I<PrefsRepository>()
+            .myChatId}-messages');
 
         r.data!.chats?.forEach((element) async {
           await pusherChatService
@@ -332,19 +333,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
   }
 
-  FutureOr<void> _onGetContactsEvent(
-      GetContactsEvent event, Emitter<ChatState> emit) async {
+  FutureOr<void> _onGetContactsEvent(GetContactsEvent event,
+      Emitter<ChatState> emit) async {
     emit(state.copyWith(getContactsStatus: GetContactsStatus.loading));
     final response = await getContactsUseCase(NoParams());
     response.fold(
-      (l) {
+          (l) {
         if (!isFailedTheFirstTime.contains('GetContactsEvent')) {
           add(GetContactsEvent());
           isFailedTheFirstTime.add('GetContactsEvent');
         }
         emit(state.copyWith(getContactsStatus: GetContactsStatus.failure));
       },
-      (r) {
+          (r) {
         isFailedTheFirstTime.remove('GetContactsEvent');
         List<Chat> newChats = List.of(state.chats);
         bool changed = false;
@@ -357,11 +358,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             break;
           }
           int index = chats.indexWhere((element) =>
-              element.channelMembers
-                  ?.firstWhere(
-                      (element) => element.userId == contact.contactUserId,
-                      orElse: () => ChannelMember(userId: -1))
-                  .userId !=
+          element.channelMembers
+              ?.firstWhere(
+                  (element) => element.userId == contact.contactUserId,
+              orElse: () => ChannelMember(userId: -1))
+              .userId !=
               -1);
 //          print('index : $index');
           if (index == -1) {
@@ -402,29 +403,29 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
   }
 
-  FutureOr<void> _onUploadFileEvent(
-      UploadFileEvent event, Emitter<ChatState> emit) async {
+  FutureOr<void> _onUploadFileEvent(UploadFileEvent event,
+      Emitter<ChatState> emit) async {
     List<String> ids = List.of(state.currentMessage);
     ids.add(event.messageId);
     List<Message> messages;
     String? parentMessageId;
     bool fromPinned = false;
     if (state.chats.any(
-      (e) => e.id == event.channelId,
+          (e) => e.id == event.channelId,
     )) {
       messages = List.of(state.chats
-              .firstWhere((element) => element.id == event.channelId)
-              .messages ??
+          .firstWhere((element) => element.id == event.channelId)
+          .messages ??
           []);
     } else {
       fromPinned = true;
       messages = List.of(state.pinnedChats
-              .firstWhere((element) => element.id == event.channelId)
-              .messages ??
+          .firstWhere((element) => element.id == event.channelId)
+          .messages ??
           []);
     }
     int index = messages.indexWhere((element) =>
-        element.localId == event.parentMessageId &&
+    element.localId == event.parentMessageId &&
         event.parentMessageId != null);
 //    print('index $index');
     parentMessageId = event.parentMessageId;
@@ -447,12 +448,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             parentMessageId: parentMessageId,
             parentMessage: parentMessageId != null
                 ? Message(
-                    file: event.file,
-                    senderUserId: index != -1
-                        ? messages[index].senderUserId
-                        : event.senderParentMessageId,
-                    messageContent:
-                        MessageContent(content: event.parentMessageContent))
+                file: event.file,
+                senderUserId: index != -1
+                    ? messages[index].senderUserId
+                    : event.senderParentMessageId,
+                messageContent:
+                MessageContent(content: event.parentMessageContent))
                 : null));
 
     List<Chat> chats;
@@ -507,15 +508,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     });
   }
 
-  FutureOr<void> _onReceiveMessageEvent(
-      ReceiveMessageEvent event, Emitter<ChatState> emit) async {
+  FutureOr<void> _onReceiveMessageEvent(ReceiveMessageEvent event,
+      Emitter<ChatState> emit) async {
     log('***** message received *****');
     print('message ${event.message}');
     List<Message> messages = [];
     bool fromPinned = false;
     List<Chat> chats;
     if (state.chats.any(
-      (e) => e.id == event.message.channelId,
+          (e) => e.id == event.message.channelId,
     )) {
       chats = List.of(state.chats);
     } else {
@@ -523,7 +524,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       chats = List.of(state.pinnedChats);
     }
     Chat chat = chats.firstWhere(
-        (element) => element.id == event.message.channelId,
+            (element) => element.id == event.message.channelId,
         orElse: () => Chat(id: '-1'));
     print('event.message.channelId: ${event.message.channelId}');
     print('chatId: ${chat.id}');
@@ -549,15 +550,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     messages.insert(0, event.message);
 
     int index =
-        messages.indexWhere((element) => element.id == event.prevMessageId);
+    messages.indexWhere((element) => element.id == event.prevMessageId);
     chats = sortChats(chats, event.message.channelId, messages);
     emit(state.copyWith(
       receiveMessageStatus: ReceiveMessageStatus.success,
       unReadMessagesFromAllChats:
-          state.unReadMessagesFromAllChats + event.message.senderUserId! !=
-                  _prefsRepository.myChatId
-              ? 1
-              : 0,
+      state.unReadMessagesFromAllChats + event.message.senderUserId! !=
+          _prefsRepository.myChatId
+          ? 1
+          : 0,
       newSortedChatsByDate: groupReceivedMessageOnDays(
           chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)]),
       currentChannelReceivedMessage: event.message.channelId,
@@ -575,8 +576,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }
   }
 
-  FutureOr<void> _onReadAllMessagesEvent(
-      ReadAllMessagesEvent event, Emitter<ChatState> emit) async {
+  FutureOr<void> _onReadAllMessagesEvent(ReadAllMessagesEvent event,
+      Emitter<ChatState> emit) async {
     if (int.tryParse(event.channelId) == null) {
       return;
     }
@@ -595,10 +596,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           readMessagesStatus: ResetReadMessagesStatus.success,
           unReadMessagesFromAllChats: state.unReadMessagesFromAllChats -
               (state.chats
-                      .firstWhere((element) => element.id == event.channelId,
-                          orElse: () => state.pinnedChats.firstWhere(
+                  .firstWhere((element) => element.id == event.channelId,
+                  orElse: () =>
+                      state.pinnedChats.firstWhere(
                               (element) => element.id == event.channelId))
-                      .totalUnreadMessageCount ??
+                  .totalUnreadMessageCount ??
                   0),
           chats: state.chats.map((e) {
             if (e.id == event.channelId) {
@@ -626,17 +628,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
       emit(state.copyWith(
           notifyThatIReceivedMessageStatus:
-              NotifyThatIReceivedMessageStatus.failure));
+          NotifyThatIReceivedMessageStatus.failure));
     }, (r) {
       isFailedTheFirstTime.remove('NotifyThatIReceivedMessageEvent');
       emit(state.copyWith(
           notifyThatIReceivedMessageStatus:
-              NotifyThatIReceivedMessageStatus.success));
+          NotifyThatIReceivedMessageStatus.success));
     });
   }
 
-  FutureOr<void> _onDeleteChatEvent(
-      DeleteChatEvent event, Emitter<ChatState> emit) async {
+  FutureOr<void> _onDeleteChatEvent(DeleteChatEvent event,
+      Emitter<ChatState> emit) async {
     bool fromPinned = false;
     List<Chat> chats;
     if (state.chats.any((element) => element.id == event.channelId)) {
@@ -657,7 +659,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         ]),
         pinnedChats: !fromPinned ? state.pinnedChats : chats));
     final response =
-        await deleteChatUseCase(DeleteChatParams(channelId: event.channelId));
+    await deleteChatUseCase(DeleteChatParams(channelId: event.channelId));
     response.fold((l) {
       if (state.chats.any((element) => element.id == event.channelId)) {
         chats = List.of(state.chats);
@@ -666,7 +668,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         chats = List.of(state.pinnedChats);
       }
       Chat removedChat =
-          chats.firstWhere((element) => element.id == event.channelId);
+      chats.firstWhere((element) => element.id == event.channelId);
       int index = chats.indexOf(removedChat);
       chats.insert(index, removedChat);
       emit(state.copyWith(
@@ -684,8 +686,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     });
   }
 
-  FutureOr<void> _onChangeChatPropertyEvent(
-      ChangeChatPropertyEvent event, Emitter<ChatState> emit) async {
+  FutureOr<void> _onChangeChatPropertyEvent(ChangeChatPropertyEvent event,
+      Emitter<ChatState> emit) async {
     List<Chat> chats = List.of(state.chats);
     List<Chat> pinnedChats = List.of(state.pinnedChats);
     Chat changedChat;
@@ -720,8 +722,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
     } else {
       changedChat = chats.firstWhere((element) => element.id == event.channelId,
-          orElse: () => pinnedChats
-              .firstWhere((element) => element.id == event.channelId));
+          orElse: () =>
+              pinnedChats
+                  .firstWhere((element) => element.id == event.channelId));
       members = changedChat.channelMembers!;
       members = members.map((e) {
         if (e.userId == _prefsRepository.myChatId) {
@@ -733,7 +736,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         return e;
       }).toList();
       if (chats.any(
-        (e) => e.id == changedChat.id,
+            (e) => e.id == changedChat.id,
       )) {
         chats.removeWhere((e) => e.id == changedChat.id);
         chats.insert(0, changedChat.copyWith(channelMembers: members));
@@ -784,7 +787,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         }).toList();
         int index;
         if (chats.any(
-          (e) => e.id == changedChat.id,
+              (e) => e.id == changedChat.id,
         )) {
           index = chats.indexOf(changedChat);
           chats[index] = changedChat.copyWith(channelMembers: members);
@@ -803,8 +806,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     });
   }
 
-  List<Chat> sortChats(
-      List<Chat> unSortedChats, String? channelId, List<Message> messages) {
+  List<Chat> sortChats(List<Chat> unSortedChats, String? channelId,
+      List<Message> messages) {
     List<Chat> chats = List.of(unSortedChats);
     Chat chat = chats.firstWhere((element) => element.id == channelId);
     chats.removeWhere((e) => e.id == chat.id);
@@ -839,7 +842,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     emit(state.copyWith(
         changeMessageStateFromPusherStatus:
-            ChangeMessageStateFromPusherStatus.init));
+        ChangeMessageStateFromPusherStatus.init));
     List<Chat> chats = getChatsAfterEditPropertyOfMessage(state.chats, 1, null,
         event.channelId, event.lastMessageId, event.userId);
     List<Chat> pinnedChats = getChatsAfterEditPropertyOfMessage(
@@ -852,9 +855,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(state.copyWith(
       chats: chats,
       newSortedChatsByDate:
-          groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
+      groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
       changeMessageStateFromPusherStatus:
-          ChangeMessageStateFromPusherStatus.received,
+      ChangeMessageStateFromPusherStatus.received,
       pinnedChats: pinnedChats,
     ));
   }
@@ -865,7 +868,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     emit(state.copyWith(
         changeMessageStateFromPusherStatus:
-            ChangeMessageStateFromPusherStatus.init));
+        ChangeMessageStateFromPusherStatus.init));
     List<Chat> chats = getChatsAfterEditPropertyOfMessage(state.chats, null,
         true, event.channelId, event.lastMessageId, event.userId);
     List<Chat> pinnedChats = getChatsAfterEditPropertyOfMessage(
@@ -879,9 +882,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       unReadMessagesFromAllChats: state.unReadMessagesFromAllChats - 1,
       chats: chats,
       newSortedChatsByDate:
-          groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
+      groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
       changeMessageStateFromPusherStatus:
-          ChangeMessageStateFromPusherStatus.watched,
+      ChangeMessageStateFromPusherStatus.watched,
       pinnedChats: pinnedChats,
     ));
   }
@@ -889,37 +892,37 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   List<Chat> getChatsAfterEditPropertyOfMessage(List<Chat> chats, int? received,
       bool? watched, String channelId, int lastMessageId, int userId) {
     return chats
-                .firstWhere((element) => element.id == channelId,
-                    orElse: () => Chat(id: "-1"))
-                .id !=
-            "-1"
+        .firstWhere((element) => element.id == channelId,
+        orElse: () => Chat(id: "-1"))
+        .id !=
+        "-1"
         ? chats.map((e) {
-            if (e.id == channelId) {
-              return e.copyWith(
-                  totalUnreadMessageCount: watched != null
-                      ? e.totalUnreadMessageCount! - 1
-                      : e.totalUnreadMessageCount,
-                  messages: e.messages?.map((m) {
-                    return m.copyWith(
-                        messageStatus: m.messageStatus?.map((s) {
-                      return s.copyWith(
-                          isWatched: watched ?? s.isWatched,
-                          isReceived: received ?? s.isReceived);
-                    }).toList());
+      if (e.id == channelId) {
+        return e.copyWith(
+            totalUnreadMessageCount: watched != null
+                ? e.totalUnreadMessageCount! - 1
+                : e.totalUnreadMessageCount,
+            messages: e.messages?.map((m) {
+              return m.copyWith(
+                  messageStatus: m.messageStatus?.map((s) {
+                    return s.copyWith(
+                        isWatched: watched ?? s.isWatched,
+                        isReceived: received ?? s.isReceived);
                   }).toList());
-            }
-            return e;
-          }).toList()
+            }).toList());
+      }
+      return e;
+    }).toList()
         : chats;
   }
 
-  _onGetMessagesForChatEvent(
-      GetMessagesForChatEvent event, Emitter<ChatState> emit) async {
+  _onGetMessagesForChatEvent(GetMessagesForChatEvent event,
+      Emitter<ChatState> emit) async {
     bool fromPinned = false;
     Chat chat;
 //todo check if the  chat is pinned Chat or not
     chat = state.chats.firstWhere(
-        (element) => element.id.toString() == event.channelId,
+            (element) => element.id.toString() == event.channelId,
         orElse: () => Chat(id: "-1"));
     if (chat.id == "-1") {
       fromPinned = true;
@@ -936,19 +939,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       chats: fromPinned
           ? state.chats
           : state.chats.map((e) {
-              if (e.id == event.channelId) {
-                return chat;
-              }
-              return e;
-            }).toList(),
+        if (e.id == event.channelId) {
+          return chat;
+        }
+        return e;
+      }).toList(),
       pinnedChats: !fromPinned
           ? state.pinnedChats
           : state.pinnedChats.map((e) {
-              if (e.id == event.channelId) {
-                return chat;
-              }
-              return e;
-            }).toList(),
+        if (e.id == event.channelId) {
+          return chat;
+        }
+        return e;
+      }).toList(),
     ));
     final response = await getMessagesForChatUseCase(GetMessagesForChatParams(
         lastMessageId: int.parse(lastMessageId),
@@ -961,19 +964,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         chats: fromPinned
             ? state.chats
             : state.chats.map((e) {
-                if (e.id == event.channelId) {
-                  return chat;
-                }
-                return e;
-              }).toList(),
+          if (e.id == event.channelId) {
+            return chat;
+          }
+          return e;
+        }).toList(),
         pinnedChats: !fromPinned
             ? state.pinnedChats
             : state.pinnedChats.map((e) {
-                if (e.id == event.channelId) {
-                  return chat;
-                }
-                return e;
-              }).toList(),
+          if (e.id == event.channelId) {
+            return chat;
+          }
+          return e;
+        }).toList(),
       ));
     }, (r) {
       List<Message> messages = List.of(chat.messages ?? []);
@@ -998,20 +1001,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       emit(state.copyWith(
           chats: chats,
           newSortedChatsByDate:
-              groupReceivedMessageOnDays(chats: [...chats, ...pinnedChat]),
+          groupReceivedMessageOnDays(chats: [...chats, ...pinnedChat]),
           pinnedChats: pinnedChat));
     });
   }
 
-  FutureOr<void> _onGetAllMessagesBetweenEvent(
-      GetAllMessagesBetweenEvent event, Emitter<ChatState> emit) async {
+  FutureOr<void> _onGetAllMessagesBetweenEvent(GetAllMessagesBetweenEvent event,
+      Emitter<ChatState> emit) async {
     if (state.getMessagesBetweenStatus == GetMessagesBetweenStatus.loading) {
       return;
     }
     bool fromPinned = false;
     Chat chat;
     chat = state.chats.firstWhere(
-        (element) => element.id.toString() == event.channelId,
+            (element) => element.id.toString() == event.channelId,
         orElse: () => Chat(id: "-1"));
     if (chat.id == "-1") {
       fromPinned = true;
@@ -1033,7 +1036,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }, (r) {
       List<Message> messages = List.of(chat.messages ?? []);
       int index =
-          messages.indexWhere((element) => element.id == event.secondMessageId);
+      messages.indexWhere((element) => element.id == event.secondMessageId);
       for (int i = 0; i < r.length; i++) {
         if (index < messages.length && r[i].id == messages[index].id) {
           index++;
@@ -1048,25 +1051,25 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       List<Chat> chats = fromPinned
           ? state.chats
           : state.chats.map((e) {
-              if (e.id == event.channelId) {
-                return chat;
-              }
-              return e;
-            }).toList();
+        if (e.id == event.channelId) {
+          return chat;
+        }
+        return e;
+      }).toList();
       List<Chat> pinnedChats = !fromPinned
           ? state.pinnedChats
           : state.pinnedChats.map((e) {
-              if (e.id == event.channelId) {
-                return chat;
-              }
-              return e;
-            }).toList();
+        if (e.id == event.channelId) {
+          return chat;
+        }
+        return e;
+      }).toList();
       emit(state.copyWith(
           chats: chats,
           getMessagesBetweenStatus: GetMessagesBetweenStatus.success,
           firstMessageId: event.firstMessageId,
           newSortedChatsByDate:
-              groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
+          groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
           secondMessageId: event.secondMessageId,
           scrollToParentMessage: event.scrollToParentMessage,
           pinnedChats: pinnedChats));
