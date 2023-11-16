@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:cube_transition_plus/cube_transition_plus.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,12 +14,14 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/story/helper_functions/check_showing_stories.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection.dart';
+import 'package:trydos/features/story/presentation/pages/story_collection_page_view.dart';
 import 'package:trydos/features/story/presentation/widget/story_item_widget.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
 import '../../../app/trydos_shimmer_loading.dart';
+import '../../data/models/get_stories_model.dart';
 
 class StoriesList extends StatefulWidget {
   StoriesList({super.key});
@@ -82,82 +83,85 @@ class _StoriesListState extends State<StoriesList> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     SizedBox(height: 40),
-                                    SizedBox(
-                                      width: 100,
-                                      height: 150,
-                                      child: InkWell(
-                                        highlightColor: Colors.transparent,
-                                        splashColor: Colors.transparent,
-                                        child: Container(
-                                          child: Center(
-                                              child: Text(
-                                                  'uplaod')),
-                                          decoration:
-                                          BoxDecoration(
-                                            borderRadius:
-                                            BorderRadius
-                                                .circular(
-                                                20.0),
-                                            color: Colors.grey,
+                                    Material(
+                                      color: Colors.transparent,
+                                      child: SizedBox(
+                                        width: 100,
+                                        height: 150,
+                                        child: InkWell(
+                                          highlightColor: Colors.transparent,
+                                          splashColor: Colors.transparent,
+                                          child: Container(
+                                            child: Center(
+                                                child: Text(
+                                                    'uplaod')),
+                                            decoration:
+                                            BoxDecoration(
+                                              borderRadius:
+                                              BorderRadius
+                                                  .circular(
+                                                  20.0),
+                                              color: Colors.grey,
+                                            ),
+                                            width: 100,
                                           ),
-                                          width: 100,
-                                        ),
-                                        onTap: () async {
-                                          disableResizing();
-                                          if (GetIt.I<PrefsRepository>()
-                                              .isVerifiedPhone ==
-                                              false) {
-                                            context.go(GRouter
-                                                .config
-                                                .applicationRoutes
-                                                .kRegistrationPage);
-                                          } else {
+                                          onTap: () async {
+                                            disableResizing();
+                                            if (GetIt.I<PrefsRepository>()
+                                                .isVerifiedPhone ==
+                                                false) {
+                                              context.go(GRouter
+                                                  .config
+                                                  .applicationRoutes
+                                                  .kRegistrationPage);
+                                            } else {
 //
-                                            showDialog(
-                                                context:
-                                                context,
-                                                builder:
-                                                    (BuildContext
-                                                context) {
-                                                  return GalleryAndCameraDialogWidget(onChooseFileFromCameraAction:
-                                                      (File?
-                                                  file) async {
-                                                    if (file !=
-                                                        null) {
-                                                      GetIt.I<StoryBloc>().add(
-                                                          UploadStoryCloudinaryEvent(
-                                                              file));
+                                              showDialog(
+                                                  context:
+                                                  context,
+                                                  builder:
+                                                      (BuildContext
+                                                  context) {
+                                                    return GalleryAndCameraDialogWidget(onChooseFileFromCameraAction:
+                                                        (File?
+                                                    file) async {
+                                                      if (file !=
+                                                          null) {
+                                                        GetIt.I<StoryBloc>().add(
+                                                            UploadStoryCloudinaryEvent(
+                                                                file));
 
-                                                      // final cloudinary =
-                                                      //     CloudinaryPublic(
-                                                      //         'djooohujg',
-                                                      //         'v4h8xqns',
-                                                      //         cache:false);
-                                                      // CloudinaryResponse
-                                                      //     response =
-                                                      //     await cloudinary
-                                                      //         .uploadFile(
-                                                      //
-                                                      //
-                                                      //   CloudinaryFile.fromFile(
-                                                    }
-                                                  }, onChooseFileFromGalleryAction:
-                                                      (AssetEntity?
-                                                  assetEntity) async {
-                                                    if (assetEntity !=
-                                                        null) {
-                                                      File
-                                                      file =
-                                                      (await assetEntity
-                                                          .originFile)!;
-                                                      GetIt.I<StoryBloc>().add(
-                                                          UploadStoryCloudinaryEvent(
-                                                              file));
-                                                    }
+                                                        // final cloudinary =
+                                                        //     CloudinaryPublic(
+                                                        //         'djooohujg',
+                                                        //         'v4h8xqns',
+                                                        //         cache:false);
+                                                        // CloudinaryResponse
+                                                        //     response =
+                                                        //     await cloudinary
+                                                        //         .uploadFile(
+                                                        //
+                                                        //
+                                                        //   CloudinaryFile.fromFile(
+                                                      }
+                                                    }, onChooseFileFromGalleryAction:
+                                                        (AssetEntity?
+                                                    assetEntity) async {
+                                                      if (assetEntity !=
+                                                          null) {
+                                                        File
+                                                        file =
+                                                        (await assetEntity
+                                                            .originFile)!;
+                                                        GetIt.I<StoryBloc>().add(
+                                                            UploadStoryCloudinaryEvent(
+                                                                file));
+                                                      }
+                                                    });
                                                   });
-                                                });
-                                          }
-                                        },
+                                            }
+                                          },
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -167,8 +171,8 @@ class _StoriesListState extends State<StoriesList> {
                                 index = index - 1;
                                 //TODO CHECK WITHER THE USER AUTH OR NOT SO IF AUTH IF HE HAS STORY RETURN TO IT THE
                                 //TODO LAST STORY HE UPLOAD ELSE MAKE THE FIRST STORY NOT SHOWED IN FRONT
-                                var indexOfInitialStory;
-                                var initialStory;
+                                int indexOfInitialStory;
+                                Story initialStory;
                                 if (GetIt.I<PrefsRepository>()
                                     .myStoriesId ==
                                     state.stories[index].stories![0]
@@ -181,36 +185,19 @@ class _StoriesListState extends State<StoriesList> {
                                   indexOfInitialStory == -1
                                       ? 0
                                       : indexOfInitialStory;
-                                  initialStory =
-                                  state.stories[index].stories![
-                                  indexOfInitialStory];
                                 } else {
                                   indexOfInitialStory =
                                       firstWhereNotShowed(state
                                           .stories[index].stories!);
-                                  initialStory =
-                                  state.stories[index].stories![
-                                  indexOfInitialStory];
                                 }
+                                initialStory =
+                                state.stories[index].stories![
+                                indexOfInitialStory];
 
                                 return AnimatedPadding(
                                   duration: Duration(milliseconds: 200),
                                   padding: EdgeInsets.only(left: focused.value1 != -1 && focused.value1 == (index  - 1)  ? 30 : 0),
                                   child: GestureDetector(
-                                    onTap: () async {
-                                      disableResizing();
-                                      GetIt.I<StoryBloc>().add(
-                                          StorySelectedEvent(
-                                              selected: index,
-                                              initialStory:
-                                              indexOfInitialStory));
-                                      Navigator.push(context, CubePageRoute(
-                                        enterPage: StoryCollection(index , key : UniqueKey()),
-                                        exitPage: widget,
-                                        duration: const Duration(milliseconds: 300),
-                                      ),);
-                                      //Navigator.push(context, MaterialPageRoute(builder: (_)=> StoryCollection(index),));
-                                    },
                                     onLongPressStart: (details) {
                                       bool isFirstPress = resizeStories.value.value1 == -1  ;
                                       resizeStories.value = resizeStories.value.copyWith(
@@ -262,6 +249,16 @@ class _StoriesListState extends State<StoriesList> {
                                         1)
                                         ? StoryItemWidget(
                                       index: index,
+                                      onTapOnStoryAction: () async {
+                                        GetIt.I<StoryBloc>().add(
+                                            StorySelectedEvent(
+                                                selected: index,
+                                                currentPage: index,
+                                                initialStory: indexOfInitialStory));
+
+                                        Navigator.push(context, MaterialPageRoute(builder: (_)=> StoryCollectionPageView(initialPage: index)),);
+                                        disableResizing();
+                                      },
                                       onTapOnUserImage: (){
                                         resizeStories.value = resizeStories.value.copyWith(
                                             value2: index,
@@ -276,6 +273,18 @@ class _StoriesListState extends State<StoriesList> {
                                     )
                                         : StoryItemWidget(
                                       index: index,
+                                      onTapOnStoryAction: () async {
+                                        disableResizing();
+                                        GetIt.I<StoryBloc>().add(
+                                            StorySelectedEvent(
+                                                selected: index,
+                                                currentPage: index,
+                                                initialStory: indexOfInitialStory));
+                                        Navigator.push(context, MaterialPageRoute(
+                                         builder: (_)=> StoryCollectionPageView(initialPage: index,)
+                                        ),);
+                                        // Navigator.push(context, MaterialPageRoute(builder: (_)=> StoryCollection(index ,   key: UniqueKey()),));
+                                      },
                                       onTapOnUserImage: (){
                                         resizeStories.value = resizeStories.value.copyWith(
                                             value2: index,

@@ -10,6 +10,7 @@ import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/chat/presentation/widgets/call_status_widget.dart';
 
 import '../../../../service/language_service.dart';
+import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../widgets/chat_widgets/no_image_widget.dart';
 
@@ -59,6 +60,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                 child: MyCachedNetworkImage(
                                     imageUrl: ChatUrls.baseUrl + widget.receiverPhoto!,
                                     imageFit: BoxFit.cover,
+                                    progressIndicatorBuilderWidget: TrydosLoader(),
                                     height: 80.h,
                                     width: 60.w),
                           )

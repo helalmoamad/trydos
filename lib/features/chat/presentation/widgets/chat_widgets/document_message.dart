@@ -14,6 +14,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../core/utils/responsive_padding.dart';
+import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
@@ -274,9 +275,9 @@ class _DocumentMessageState extends State<DocumentMessage> {
                       ),
                       widget.isFirstMessage
                           ?
-//                      Transform.translate(
-//                        offset: Offset(widget.isSent ? 15.w : -15.w, 0),
-//                        child:
+                     Transform.translate(
+                       offset: Offset(widget.isSent ? 15.w : -15.w, 0),
+                       child:
                         Stack(
                           alignment: Alignment.center,
                           children: [
@@ -315,6 +316,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                 ? MyCachedNetworkImage(
                               imageUrl:
                               ChatUrls.baseUrl + widget.userMessagePhoto!,
+                              progressIndicatorBuilderWidget: TrydosLoader(),
                               imageFit: BoxFit.cover,
                               radius: 8,
                               width: 30.w,
@@ -334,8 +336,8 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                 name: widget.userMessageName)
                           ],
                         )
-//                        ,
-//                      )
+                       ,
+                     )
                           : const SizedBox.shrink()
                     ],
                   ),

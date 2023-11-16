@@ -26,11 +26,12 @@ class StoryRepositoryImpl extends StoryRepository
   }
 
   @override
-  Future<Either<Failure, ImageDetail>> loadWidthAndHeight({required String url}) async{
+  Future<Either<Failure, ImageDetail>> loadWidthAndHeight({required String url , required int collectionId}) async{
     ImageDetail result = await storyDataSource.loadWidthAndHeightForImage(
         url: url,
+        collectionId: collectionId,
         onError: () {
-          GetIt.I<StoryBloc>().add(LoadFailureEvent());
+          GetIt.I<StoryBloc>().add(LoadFailureEvent(collectionId: collectionId));
         });
     return Right(result);
 
@@ -39,6 +40,12 @@ class StoryRepositoryImpl extends StoryRepository
   @override
   Future<Either<Failure, UploadStoryResponseModel>> uploadStory(Map<String, dynamic> params) {
     return handlingExceptionRequest(tryCall:()=> storyDataSource.uploadStory(params) );
+
+  }
+
+  @override
+  Future<Either<Failure, bool>> addStoryToOurServer(Map<String, dynamic> params) {
+    return handlingExceptionRequest(tryCall:()=> storyDataSource.addStoryToOurServer(params) );
 
   }
 

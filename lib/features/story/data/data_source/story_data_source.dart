@@ -26,43 +26,36 @@ class StoriesDataSource {
   Completer<ImageDetail> completer = Completer<ImageDetail>();
 
   Future<ImageDetail> loadWidthAndHeightForImage(
-      {required String url, Function? onError}) async
-  {
-
+      {required String url,
+      required int collectionId,
+      Function? onError}) async {
     completer = Completer<ImageDetail>();
     Image image;
     image = Image(
       image: CachedNetworkImageProvider(url),
     );
-try{
-     image.image
-        .resolve(const ImageConfiguration())
-        .addListener(ImageStreamListener(
-
-          (
-            ImageInfo imageInfo,
-            bool _,
-          ) {
-            final dimensions = ImageDetail(
-              width: imageInfo.image.width,
-              height: imageInfo.image.height,
-            );
-            if (completer.isCompleted == false) {
-              completer.complete(dimensions);
-            }
-          },
-
-          onError: (exception, stackTrace) {
-            if (onError
-                != null) onError();
-          },
-        ));}
-catch(e,s)
-    {
-
-      GetIt.I<StoryBloc>().add(LoadFailureEvent());
-
-
+    try {
+      image.image
+          .resolve(const ImageConfiguration())
+          .addListener(ImageStreamListener(
+            (
+              ImageInfo imageInfo,
+              bool _,
+            ) {
+              final dimensions = ImageDetail(
+                width: imageInfo.image.width,
+                height: imageInfo.image.height,
+              );
+              if (completer.isCompleted == false) {
+                completer.complete(dimensions);
+              }
+            },
+            onError: (exception, stackTrace) {
+              if (onError != null) onError();
+            },
+          ));
+    } catch (e, s) {
+      GetIt.I<StoryBloc>().add(LoadFailureEvent(collectionId: collectionId));
     }
     return completer.future;
   }
@@ -98,5 +91,16 @@ catch(e,s)
     return uploadStory();
   }
 
-
+  Future<bool> addStoryToOurServer(Map<String, dynamic> params) {
+    PostClient<bool> addStoryToOurServer = PostClient<bool>(
+      requestPrams: RequestConfig<bool>(
+        endpoint: StoriesEndPoints.addStoryToOurServerEP,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+      serverName: ServerName.stories,
+    );
+    // uploadStory.call();
+    return addStoryToOurServer();
+  }
 }

@@ -15,6 +15,7 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
@@ -281,6 +282,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                         imageUrl: ChatUrls.baseUrl + widget.userMessagePhoto!,
                                         imageFit: BoxFit.cover,
                                         radius: 8,
+                                        progressIndicatorBuilderWidget: TrydosLoader(),
                                         width: widget.withImageShadow ? 30 : 20,
                                         withImageShadow: widget.withImageShadow,
                                         height:

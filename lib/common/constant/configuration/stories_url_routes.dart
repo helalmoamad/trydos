@@ -15,6 +15,7 @@ abstract class StoriesEndPoints {
 // ----<stories scope>----
   static final getStoriesEP='users_stories'.storiesScope();
   static final uploadStoriesEP='upload_story'.storiesScope();
+  static final addStoryToOurServerEP='add_story'.storiesScope();
 
 }
 

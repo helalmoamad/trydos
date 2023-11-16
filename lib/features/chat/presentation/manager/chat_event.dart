@@ -126,6 +126,7 @@ class UploadFileEvent extends ChatEvent {
   final String channelId;
   final int? senderParentMessageId;
   final Map<String, dynamic>? extraFields;
+  final bool useCloudinaryToUpload;
 
   const UploadFileEvent({
     required this.file,
@@ -133,6 +134,7 @@ class UploadFileEvent extends ChatEvent {
     required this.fileName,
     required this.messageId,
     required this.channelId,
+    required this.useCloudinaryToUpload,
     this.receiverUserId,
     this.content,
     this.senderParentMessageId,

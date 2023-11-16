@@ -16,21 +16,24 @@ class GetStoryEvent extends StoryEvent
 }
 class LoadFailureEvent extends StoryEvent
 {
+  final int collectionId;
+  const LoadFailureEvent({required this.collectionId});
   @override
   // TODO: implement props
-  List<Object?> get props => [];
+  List<Object?> get props => [collectionId];
 
 }
 class StorySelectedEvent extends StoryEvent
 {
   int selected;
   int initialStory;
+  int currentPage;
   StorySelectedEvent({
-    required this.selected, required this.initialStory});
+    required this.selected, required this.initialStory, required this.currentPage});
 
   @override
   // TODO: implement props
-  List<Object?> get props => [selected,initialStory];
+  List<Object?> get props => [selected,initialStory,currentPage];
 }
 
 class LoadingVideoEvent extends StoryEvent
@@ -56,6 +59,25 @@ UploadStoryEvent(this.file);
 
 
 }
+
+class AddStoryToOurServerEvent extends StoryEvent
+{
+  final String filePath;
+  final int isVideo;
+  final int? width;
+  final int? height;
+
+
+  const AddStoryToOurServerEvent({required this.filePath , required this.isVideo , this.width , this.height});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [filePath , isVideo , width , height];
+
+
+
+}
+
 class UploadStoryCloudinaryEvent extends StoryEvent
 {
   File file;

@@ -22,7 +22,7 @@ int firstWhereNotShowed(List<Story> stories) {
 //    else break;
   });
 
-  if (stories.length == index) return index - 1;
+  if (stories.length == index) return 0;
   return index;
 }
 

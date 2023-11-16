@@ -342,7 +342,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final response = await registerGuestUseCase(
       RegisterGuestParams(deviceId: event.deviceId),
     );
+    bool? previousStatusOfIsVerifiedPhone = _prefsRepository.isVerifiedPhone ?? false;
+    _prefsRepository.setVerifiedPhone(false);
+
     response.fold((l) {
+      _prefsRepository.setVerifiedPhone(previousStatusOfIsVerifiedPhone);
       if (!isFailedTheFirstTime.contains('RegisterGuestEvent')) {
         add(RegisterGuestEvent(deviceId: event.deviceId));
         isFailedTheFirstTime.add('RegisterGuestEvent');
@@ -351,14 +355,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
-
-      debugPrint('_prefsRepository.chatToken;${_prefsRepository.chatToken}');
-      debugPrint(
-          '_prefsRepository.marketToken;${_prefsRepository.marketToken}');
-      debugPrint(
-          '_prefsRepository.storiesToken${_prefsRepository.storiesToken}');
-      _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
-      print('isNumberVerifiedFromGuest:  ${r.data!.user!.isPhoneVerified}');
       emit(state.copyWith(
           registerGuestStatus: RegisterGuestStatus.success,
           marketUser: r.data!.user));

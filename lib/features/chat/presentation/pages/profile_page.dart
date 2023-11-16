@@ -13,6 +13,7 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../service/language_service.dart';
+import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../widgets/chat_widgets/no_image_widget.dart';
 
@@ -67,6 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: MyCachedNetworkImage(
                         imageUrl: ChatUrls.baseUrl + widget.receiverPhoto!,
                         imageFit: BoxFit.cover,
+                        progressIndicatorBuilderWidget: TrydosLoader(),
                         height: 150.h,
                         width: 150.w,
                       ),

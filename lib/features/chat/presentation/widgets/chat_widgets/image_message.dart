@@ -16,6 +16,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../../common/helper/file_saving.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../core/utils/responsive_padding.dart';
+import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
@@ -324,6 +325,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                           imageUrl:
                                               ChatUrls.baseUrl + widget.userMessagePhoto!,
                                           imageFit: BoxFit.fitWidth,
+                                    progressIndicatorBuilderWidget: TrydosLoader(),
                                           radius: 8,
                                           width: 30.w,
                                           height: 30,

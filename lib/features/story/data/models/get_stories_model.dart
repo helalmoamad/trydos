@@ -4,6 +4,9 @@
 
 import 'dart:convert';
 
+import 'package:trydos/features/story/data/models/image_detail.dart';
+import 'package:video_player/video_player.dart';
+
 GetStoriesModel getStoriesModelFromJson(String str) => GetStoriesModel.fromJson(json.decode(str));
 
 String getStoriesModelToJson(GetStoriesModel data) => json.encode(data.toJson());
@@ -155,6 +158,7 @@ class Data {
     "total": total,
   };
 }
+enum SelectedStoriesStatus { init, loading, success, failure }
 
 class Datum {
   int? id;
@@ -166,12 +170,16 @@ class Datum {
   dynamic email;
   List<Story>? stories;
   List<dynamic>? media;
+  SelectedStoriesStatus selectedStoriesStatusForCollection;
+  ImageDetail? imageDetail;
 
   Datum({
     this.id,
     this.mobilePhone,
     this.photoPath,
     this.name,
+    this.imageDetail,
+    this.selectedStoriesStatusForCollection = SelectedStoriesStatus.init,
     this.username,
     this.originalUserId,
     this.email,
@@ -185,6 +193,8 @@ class Datum {
     dynamic photoPath,
     String? name,
     dynamic username,
+    ImageDetail? imageDetail,
+    SelectedStoriesStatus? selectedStoriesStatusForCollection,
     dynamic originalUserId,
     dynamic email,
     List<Story>? stories,
@@ -193,6 +203,8 @@ class Datum {
       Datum(
         id: id ?? this.id,
         mobilePhone: mobilePhone ?? this.mobilePhone,
+        selectedStoriesStatusForCollection: selectedStoriesStatusForCollection ?? this.selectedStoriesStatusForCollection,
+        imageDetail: imageDetail ?? this.imageDetail,
         photoPath: photoPath ?? this.photoPath,
         name: name ?? this.name,
         username: username ?? this.username,

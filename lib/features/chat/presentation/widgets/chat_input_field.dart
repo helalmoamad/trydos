@@ -18,6 +18,7 @@ import 'package:trydos/core/utils/form_state_mixin.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
@@ -103,6 +104,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
     return BlocBuilder<AppBloc, AppState>(
       buildWhen: (p,c)=> p.thereIsReply != c.thereIsReply,
       builder: (context, state) {
+        print('imageUrl:  ${state.imageUrl}');
+
         return Stack(
           alignment: Alignment.bottomCenter,
           children: [
@@ -171,6 +174,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         imageUrl: ChatUrls.baseUrl +
                                             widget.senderUserImage!,
                                         imageFit: BoxFit.cover,
+                                    progressIndicatorBuilderWidget: TrydosLoader(),
                                         radius: 8,
                                         width: 30.sp,
                                         height: 30.sp)
@@ -214,11 +218,12 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     ),
                                     20.horizontalSpace,
-                                    state.imageUrl?.contains('images/test') ??
+                                    state.imageUrl?.contains('cloudinary') ??
                                             false
                                         ? MyCachedNetworkImage(
                                             height: 40.sp,
                                             width: 40.sp,
+                                      progressIndicatorBuilderWidget: TrydosLoader(),
                                             imageFit: BoxFit.cover,
                                             imageUrl: state.imageUrl!,
                                           )
@@ -262,6 +267,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             imageUrl: ChatUrls.baseUrl +
                                                 widget.senderUserImage!,
                                             imageFit: BoxFit.cover,
+                                        progressIndicatorBuilderWidget: TrydosLoader(),
                                             radius: 8,
                                             width: 30.sp,
                                             height: 30.sp)
@@ -333,6 +339,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 imageUrl: ChatUrls.baseUrl +
                                                     widget.senderUserImage!,
                                                 imageFit: BoxFit.cover,
+                                            progressIndicatorBuilderWidget: TrydosLoader(),
                                                 radius: 8,
                                                 width: 30.sp,
                                                 height: 30.sp)
@@ -406,6 +413,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                     imageUrl: ChatUrls.baseUrl +
                                                         widget.senderUserImage!,
                                                     imageFit: BoxFit.cover,
+                                                withImageShadow: true,
+                                                progressIndicatorBuilderWidget: TrydosLoader(),
                                                     radius: 8,
                                                     width: 30.sp,
                                                     height: 30.sp)
@@ -472,10 +481,10 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             const Spacer(),
                                             widget.senderUserImage != null
                                                 ? MyCachedNetworkImage(
-                                                    imageUrl: ChatUrls.baseUrl +
-                                                        widget.senderUserImage!,
+                                                    imageUrl: ChatUrls.baseUrl + widget.senderUserImage!,
                                                     imageFit: BoxFit.cover,
                                                     radius: 8,
+                                                    progressIndicatorBuilderWidget: TrydosLoader(),
                                                     width: 30.sp,
                                                     height: 30.sp)
                                                 : NoImageWidget(
