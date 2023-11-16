@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:file_saver/file_saver.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -15,8 +16,7 @@ class FileSaving {
     return savePath + fileName;
   }
 
-  static String savePath =
-      '/storage/emulated/0/Android/data/com.example.trydos/files/';
+  static String savePath = '/storage/emulated/0/Android/data/com.example.trydos/files/';
 
   downloadFileToLocalStorage(String fileUrl,
       {void Function(File file)? action}) async {
@@ -27,7 +27,7 @@ class FileSaving {
       link: LinkDetails(link: fileUrl),
     )
         .then((value) {
-      _prefsRepository.setAFilePathExist(fileUrl);
+      _prefsRepository.setAFilePathExist(fileUrl + ' ' + value);
       File file = File(value);
       action?.call(file);
       return value;
@@ -44,13 +44,11 @@ class FileSaving {
     if (cancelToken.isCancelled) {
       cancelToken = CancelToken();
     }
-    dio.download(
-        fileUrl,
-        filePath,
+    dio.download(fileUrl, filePath,
         cancelToken: cancelToken,
         deleteOnError: false, onReceiveProgress: (rec, total) {
       onProgress.call((rec / total) * 100);
-      if((rec / total * 100) == 100){
+      if ((rec / total * 100) == 100) {
         _prefsRepository.setAFilePathExist(fileUrl + ' ' + filePath);
         action?.call(File(filePath));
       }

@@ -187,6 +187,8 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                           1);
                         }
                         countryChanged.value = newCountry;
+                        debugPrint(
+                            'form.controllers[0].text${form.controllers[0].text}');
                         return form.controllers[0].text.isNotEmpty
                             ? form.controllers[0].text[
                                     form.controllers[0].text.length - 1] ==
