@@ -94,7 +94,7 @@ class PusherChatService {
     if (int.tryParse(channelId) == null) {
       return;
     }
-    var y = await presenceChannels["presence-typing-$channelName"]!.trigger(
+    var y = await presenceChannels["presence-typing-$channelId"]!.trigger(
         'client-TypingEvent',
         convert.jsonEncode({
           "uid": _prefsRepository.myChatId.toString(),

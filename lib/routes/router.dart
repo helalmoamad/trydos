@@ -14,6 +14,7 @@ import '../features/authentication/presentation/pages/already_exist_account.dart
 import '../features/authentication/presentation/pages/number_not_registered.dart';
 import '../features/chat/presentation/pages/chat_pages.dart';
 import '../features/chat/presentation/pages/contacts_page.dart';
+import '../features/story/presentation/pages/story_collection_page_view.dart';
 import 'error_screen.dart';
 import 'router_config.dart';
 
@@ -154,6 +155,15 @@ class GRouter {
                 );
               },
             ),
+            // GoRoute(
+            //   path: _config.applicationRoutes.kPageViewStoryCollectionsPageName,
+            //   pageBuilder: (BuildContext context, GoRouterState state) {
+            //     return _builderPage(
+            //       child:  StoryCollectionPageView(initialPage: int.parse(state.uri.queryParameters['initialPage']!),),
+            //       state: state,
+            //     );
+            //   },
+            // ),
           ]),
       // StatefulShellRoute.indexedStack(
       //   branches: [

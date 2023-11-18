@@ -86,6 +86,7 @@ class _RegistrationPageState extends State<RegistrationPage>
           if(index < 2){
             FocusScope.of(context).unfocus();
           }else{
+            print('gggggggg');
             focusNode.requestFocus();
           }
           return Scaffold(
@@ -257,6 +258,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                 )
                               ]),
                           onWillPop: () async {
+                            print('tttttttttttttttt');
                             if (PopScopeValue > 0) {
                               if(PopScopeValue == 2 && fromLogin){
                                 await pageController.animateToPage(PopScopeValue -2,

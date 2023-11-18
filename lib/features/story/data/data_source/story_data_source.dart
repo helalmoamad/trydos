@@ -1,21 +1,13 @@
 import 'dart:async';
-import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:trydos/common/constant/configuration/cloudinary_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
 import 'package:trydos/core/api/client_config.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/post.dart';
-import 'package:trydos/features/story/data/models/upload_story_cloudinary_response.dart';
-import 'package:trydos/core/domin/usecases/upload_file_cloudinary_usecase.dart';
-
 import '../../../../core/api/methods/get.dart';
-import '../../../../service/local_notification_service.dart';
 import '../../presentation/bloc/story_bloc.dart';
 import '../models/get_stories_model.dart';
 import '../models/image_detail.dart';
