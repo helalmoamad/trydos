@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter/rendering.dart' as rendering;
+import 'package:flutter/services.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -235,15 +236,19 @@ return List<double>.from(<double>[
             builder: (context, focused, _) {
               return GestureDetector(
                 onLongPressStart: (details) {
+                  HapticFeedback.mediumImpact();
                   resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
-                  print(resizeItems.value);
                 },
                 onLongPressUp: () {
                   resizeItems.value = -1;
                 },
                 onLongPressMoveUpdate: (details) {
+                  int prev = resizeItems.value;
                   resizeItems.value =
                       (details.globalPosition.dx - 40) ~/ 35.w;
+                  if(prev != resizeItems.value){
+                    HapticFeedback.mediumImpact();
+                  }
                 },
                 child: Column(
                   children: [

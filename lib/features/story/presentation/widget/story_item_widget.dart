@@ -15,6 +15,7 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../chat/presentation/widgets/chat_widgets/no_image_widget.dart';
+import '../pages/story_collection.dart';
 
 class StoryItemWidget extends StatefulWidget {
   const StoryItemWidget(
@@ -78,6 +79,20 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
               margin: EdgeInsets.only(top: 20 , bottom: 10),
               child: Hero(
                 tag: widget.index,
+                flightShuttleBuilder: (
+                    BuildContext flightContext,
+                    Animation<double> animation,
+                    HeroFlightDirection flightDirection,
+                    BuildContext fromHeroContext,
+                    BuildContext toHeroContext,
+                    ) {
+                  final Hero toHero = toHeroContext.widget as Hero;
+                  return SizeTransition(
+                    sizeFactor: animation,
+                    child: toHero.child,
+                  );
+                },
+                createRectTween: HeroAnimationAsset.customTweenRect,
                 child: Directionality(
                   textDirection: TextDirection.ltr,
                   child: Align(

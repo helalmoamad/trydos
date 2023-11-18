@@ -17,6 +17,7 @@ import '../../../app/my_cached_network_image.dart';
 import '../../../app/trydos_shimmer_loading.dart';
 import '../../data/models/get_stories_model.dart';
 import '../widget/animated_builder.dart';
+import 'dart:ui';
 
 class StoryCollection extends StatefulWidget {
   final int id;
@@ -71,6 +72,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 
     return Hero(
       tag: widget.id,
+      createRectTween: HeroAnimationAsset.customTweenRect,
       child: BlocConsumer<StoryBloc, StoryState>(
         listener: (ctx, state) {
           widget.stopAnimationAndVideo = false;
@@ -114,11 +116,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                   widget.animatedController.forward();
                   _videoController?.play();
                 },
-                onVerticalDragUpdate: (details) {
-                  if (details.delta.direction > 0) {
-                    Navigator.pop(context);
-                  }
-                },
+                // onVerticalDragUpdate: (details) {
+                //   if (details.delta.direction > 0) {
+                //     Navigator.pop(context);
+                //   }
+                // },
                 onLongPressCancel: () {
                   final double screenWidth = MediaQuery.of(context).size.width;
                   final double dx = details.localPosition.dx;
@@ -232,7 +234,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               .toDouble(),
                           height: state.stories[widget.id].imageDetail!.height
                               .toDouble(),
-                          imageFit: BoxFit.cover,
+                          imageFit: BoxFit.contain,
                         );
                       }
                       return Container();
@@ -289,7 +291,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           if (snapshot.connectionState ==
                               ConnectionState.done) {
                             return FittedBox(
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
                               child: SizedBox(
                                 width: _videoController!.value.size.width,
                                 height: _videoController!.value.size.height,
@@ -402,6 +404,33 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
           );
         },
       ),
+    );
+  }
+}
+
+
+
+class HeroAnimationAsset {
+  static Tween<Rect?> customTweenRect(Rect? begin, Rect? end) =>
+      CustomRectTween(end: end, begin: begin);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+class CustomRectTween extends RectTween {
+  CustomRectTween({
+    Rect? begin,
+    Rect? end,
+  }) : super(begin: begin, end: end);
+
+  @override
+  Rect lerp(double t) {
+    final elasticCurveValue = Curves.fastEaseInToSlowEaseOut.transform(t);
+    return Rect.fromLTRB(
+      lerpDouble(begin!.left, end!.left, elasticCurveValue)!,
+      lerpDouble(begin!.top, end!.top, elasticCurveValue)!,
+      lerpDouble(begin!.right, end!.right, elasticCurveValue)!,
+      lerpDouble(begin!.bottom, end!.bottom, elasticCurveValue)!,
     );
   }
 }

@@ -220,8 +220,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             GetIt.I<PusherChatService>();
             pusherChatService
                 .subscribe(r.channel!.pusherChannelName.toString());
-            pusherChatService
-                .createPresenceChannel(r.channel!.pusherChannelName!);
+            pusherChatService.createPresenceChannel(r.channel!.id.toString());
             return r.channel!.copyWith(
                 localId: event.channelId,
                 messages: e.messages?.map((e) {
@@ -306,11 +305,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
         r.data!.chats?.forEach((element) async {
           await pusherChatService
-              .createPresenceChannel(element.pusherChannelName!);
+              .createPresenceChannel(element.id.toString());
         });
         r.data!.pinnedChats?.forEach((element) async {
           await pusherChatService
-              .createPresenceChannel(element.pusherChannelName!);
+              .createPresenceChannel(element.id.toString());
         });
         int unReadMessagesFromAllChats = 0;
         r.data!.chats?.forEach((element) {
