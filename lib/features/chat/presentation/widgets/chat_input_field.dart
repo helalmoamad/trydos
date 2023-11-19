@@ -20,7 +20,6 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:uuid/uuid.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/app_widgets/app_text_field.dart';
@@ -675,27 +674,29 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return GalleryAndCameraDialogWidget(
-                                                    onChooseFileFromGalleryAction:
-                                                        (AssetEntity?
-                                                    assetEntity) async {
-                                                      if (assetEntity != null) {
-                                                        File file = (await assetEntity.originFile)!;
-                                                        String mimeStr = lookupMimeType(file.absolute.path) ??'';
-                                                        var fileType = mimeStr.split('/');
-                                                        log(fileType.toString());
-                                                        if (fileType[0] == 'image') {
-                                                          widget.onSendFile.call(file, 'image');
-                                                        }else{
-                                                          widget.onSendFile
-                                                              .call(file, 'video');
-                                                        }
-                                                        pusherChatService.sendActivityEvent(
-                                                            widget.channelId,
-                                                            widget.channelPusherName,
-                                                            null
-                                                        );
-                                                      }
-                                                    }, onChooseFileFromCameraAction:
+                                                    // onChooseFileFromGalleryAction:
+                                                    //     (AssetEntity?
+                                                    // assetEntity) async {
+                                                    //   if (assetEntity != null) {
+                                                    //     File file = (await assetEntity.originFile)!;
+                                                    //     String mimeStr = lookupMimeType(file.absolute.path) ??'';
+                                                    //     var fileType = mimeStr.split('/');
+                                                    //     log(fileType.toString());
+                                                    //     if (fileType[0] == 'image') {
+                                                    //       widget.onSendFile.call(file, 'image');
+                                                    //     }else{
+                                                    //       widget.onSendFile
+                                                    //           .call(file, 'video');
+                                                    //     }
+                                                    //     pusherChatService.sendActivityEvent(
+                                                    //         widget.channelId,
+                                                    //         widget.channelPusherName,
+                                                    //         null
+                                                    //     );
+                                                    //   }
+                                                    // },
+
+                                                    onChooseFileFromCameraAction:
                                                     (File? file) {
                                                   if (file != null) {
                                                     String mimeStr = lookupMimeType(file.absolute.path) ??'';

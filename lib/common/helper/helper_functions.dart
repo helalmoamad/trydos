@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:trydos/common/constant/countries.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -116,39 +115,39 @@ class HelperFunctions {
         .toList();
   }
 
-  static Future<AssetEntity?> getAssetFromCamera(BuildContext context) async {
-    final List<AssetEntity>? assets = await myMultiAssetPicker(context);
-    return assets?[0];
-  }
+  // static Future<AssetEntity?> getAssetFromCamera(BuildContext context) async {
+  //   final List<AssetEntity>? assets = await myMultiAssetPicker(context);
+  //   return assets?[0];
+  // }
 
-  static Future<List<AssetEntity>?> myMultiAssetPicker(BuildContext context) {
-    AssetPickerTextDelegate textDelegate = LanguageService.languageCode != 'ar'
-        ? const EnglishAssetPickerTextDelegate()
-        : const ArabicAssetPickerTextDelegate();
-    return AssetPicker.pickAssets(
-      context,
-      pickerConfig: AssetPickerConfig(
-        maxAssets: 1,
-        textDelegate: textDelegate,
-        themeColor: const Color(0xff137AC9),
-        specialItemPosition: SpecialItemPosition.prepend,
-        specialItemBuilder: (
-            BuildContext context,
-            AssetPathEntity? path,
-            int length,
-            ) {
-          if (path?.isAll != true) {
-            return null;
-          }
-          return Semantics(
-            label: textDelegate.sActionUseCameraHint,
-            button: true,
-            onTapHint: textDelegate.sActionUseCameraHint,
-          );
-        },
-      ),
-    );
-  }
+  //static Future<List<AssetEntity>?> myMultiAssetPicker(BuildContext context) {
+    // AssetPickerTextDelegate textDelegate = LanguageService.languageCode != 'ar'
+    //     ? const EnglishAssetPickerTextDelegate()
+    //     : const ArabicAssetPickerTextDelegate();
+    // return AssetPicker.pickAssets(
+    //   context,
+    //   pickerConfig: AssetPickerConfig(
+    //     maxAssets: 1,
+    //     textDelegate: textDelegate,
+    //     themeColor: const Color(0xff137AC9),
+    //     specialItemPosition: SpecialItemPosition.prepend,
+    //     specialItemBuilder: (
+    //         BuildContext context,
+    //         AssetPathEntity? path,
+    //         int length,
+    //         ) {
+    //       if (path?.isAll != true) {
+    //         return null;
+    //       }
+    //       return Semantics(
+    //         label: textDelegate.sActionUseCameraHint,
+    //         button: true,
+    //         onTapHint: textDelegate.sActionUseCameraHint,
+    //       );
+    //     },
+    //   ),
+    // );
+  //}
 
   static String getTheFirstTwoLettersOfName(String name) {
     return name.split(' ').length == 2

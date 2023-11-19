@@ -33,26 +33,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
     super.initState();
   }
 
-  int countOfScrolling = 0;
-  ScrollNotification? previousScrollNotification;
 
-   List<double> brightnessAdjustMatrix({required double value}) {
-if (value <= 0)
-value = value * 255;
-else value = value * 100;
-
-if (value == 0)
-return [
-1,0,0,0,0,
-0,1,0,0,0,
-0,0,1,0,0,
-0,0,0,1,0,
-];
-
-return List<double>.from(<double>[
-1, 0, 0, 0, value, 0, 1, 0, 0, value, 0, 0, 1, 0, value, 0, 0, 0, 1, 0
-]).map((i) => i.toDouble()).toList();
-}
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -236,7 +217,7 @@ return List<double>.from(<double>[
             builder: (context, focused, _) {
               return GestureDetector(
                 onLongPressStart: (details) {
-                  HapticFeedback.mediumImpact();
+                  HapticFeedback.vibrate();
                   resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
                 },
                 onLongPressUp: () {
@@ -247,7 +228,7 @@ return List<double>.from(<double>[
                   resizeItems.value =
                       (details.globalPosition.dx - 40) ~/ 35.w;
                   if(prev != resizeItems.value){
-                    HapticFeedback.mediumImpact();
+                    HapticFeedback.vibrate();
                   }
                 },
                 child: Column(

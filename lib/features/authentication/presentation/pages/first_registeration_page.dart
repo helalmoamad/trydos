@@ -27,7 +27,7 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin , WidgetsBindingObserver{
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<int> pageContent = ValueNotifier(0);
   final ValueNotifier<bool> animate = ValueNotifier(false);
@@ -37,7 +37,7 @@ class _RegistrationPageState extends State<RegistrationPage>
   String verificationId = '';
   String otp = '';
   Duration animationDuration = Duration(milliseconds: 500);
-  final FocusNode focusNode = FocusNode();
+  final  FocusNode focusNode =  FocusNode();
   late AuthBloc authBloc;
   int isVisWhatsApp = 0;
   int PopScopeValue = 0;
@@ -45,9 +45,30 @@ class _RegistrationPageState extends State<RegistrationPage>
   @override
   void initState() {
     authBloc = BlocProvider.of<AuthBloc>(context);
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    final value = WidgetsBinding.instance.window.viewInsets.bottom;
+    if(value == 0 && pageContent.value == 2){
+       dealWithNavigationFromInsertingPhoneNumber();
+    }
+  }
+
+  void dealWithNavigationFromInsertingPhoneNumber()async{
+    if(fromLogin){
+      await pageController.animateToPage(fromLogin ? 1 : 0 , duration: Duration(milliseconds: 500),
+    curve: Curves.easeInOut);
+    }
+  }
   @override
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -57,10 +78,10 @@ class _RegistrationPageState extends State<RegistrationPage>
     ));
     super.didChangeDependencies();
   }
-
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
+      print(error);
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
@@ -83,200 +104,201 @@ class _RegistrationPageState extends State<RegistrationPage>
             }),
         valueListenable: pageContent,
         builder: (ctx, index, child) {
-          if(index < 2){
-            FocusScope.of(context).unfocus();
+          if(index != 2 && index !=6 ){
+            focusNode.unfocus();
           }else{
-            print('gggggggg');
             focusNode.requestFocus();
           }
-          return Scaffold(
-            backgroundColor:
-            index != 6 ? context.colorScheme.background : Color(0xffF4FFF4),
-            body: Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                child!,
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: ValueListenableBuilder<int>(
-                      valueListenable: pageContent,
-                      builder: (context, index, _) {
-                        if (index > 1)
-                          return InkWell(
-                            highlightColor: Colors.transparent,
-                            splashColor: Colors.transparent,
-                            onTap: () {
-                              if (index == 2) {
-                                pageContent.value = 0;
-                                pageController.animateToPage(0,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut);
-                                return;
-                              }
-                              if (index >= 3 && index <= 5) {
+          return WillPopScope(
+              onWillPop: () async {
+                focusNode.unfocus();
+                print('tttttttttttttttt');
+                if (PopScopeValue > 0) {
+                  if(PopScopeValue == 2 && fromLogin){
+                    await pageController.animateToPage(PopScopeValue -2,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.easeInOut);
+                    return false;
+                  }
+                  await pageController.animateToPage(PopScopeValue-1,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.easeInOut);
+                  return false;
+                }
+                return true;
+              },
+            child: Scaffold(
+              backgroundColor:
+              index != 6 ? context.colorScheme.background : Color(0xffF4FFF4),
+              body: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  child!,
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: ValueListenableBuilder<int>(
+                        valueListenable: pageContent,
+                        builder: (context, index, _) {
+                          if (index > 1)
+                            return InkWell(
+                              highlightColor: Colors.transparent,
+                              splashColor: Colors.transparent,
+                              onTap: () {
+                                if (index == 2) {
+                                  pageContent.value = 0;
+                                  pageController.animateToPage(0,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                  return;
+                                }
+                                if (index >= 3 && index <= 5) {
+                                  pageContent.value = 2;
+                                  pageController.animateToPage(2,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                  return;
+                                }
                                 pageContent.value = 2;
                                 pageController.animateToPage(2,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.easeInOut);
-                                return;
-                              }
-                              pageContent.value = 2;
-                              pageController.animateToPage(2,
-                                  duration: Duration(milliseconds: 500),
-                                  curve: Curves.easeInOut);
-                            },
-                            child: Padding(
-                              padding: HWEdgeInsets.only(
-                                  top: 60.0, right: 30, left: 30, bottom: 60),
-                              child: SvgPicture.asset(AppAssets.cancelSvg),
-                            ),
-                          );
-                        return const SizedBox.shrink();
-                      }),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    SizedBox(
-                      height: 96,
-                    ),
-                    SizedBox(
-                      height: 360,
-                      width: 1.sw,
-                      child: WillPopScope(
-                          child: PageView(
-                              physics: NeverScrollableScrollPhysics(),
-                              onPageChanged: (value) => setState(() {
-                                PopScopeValue = value;
-                              }),
-                              controller: pageController,
-                              children:  [
-                                WelcomeSection(
-                                  goToLoginSection: () {
-                                    fromLogin = true;
-                                    animationDuration = Duration(seconds: 1);
-                                    animate.value = true;
-                                    pageContent.value = 2;
-                                    pageController.animateToPage(2,
+                              },
+                              child: Padding(
+                                padding: HWEdgeInsets.only(
+                                    top: 60.0, right: 30, left: 30, bottom: 60),
+                                child: SvgPicture.asset(AppAssets.cancelSvg),
+                              ),
+                            );
+                          return const SizedBox.shrink();
+                        }),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      SizedBox(
+                        height: 96,
+                      ),
+                      SizedBox(
+                        height: 360,
+                        width: 1.sw,
+                        child: PageView(
+                            physics: NeverScrollableScrollPhysics(),
+                            onPageChanged: (value) => setState(() {
+                              PopScopeValue = value;
+                            }),
+                            controller: pageController,
+                            children:  [
+                              WelcomeSection(
+                                goToLoginSection: () {
+                                  fromLogin = true;
+                                  animationDuration = Duration(seconds: 1);
+                                  animate.value = true;
+                                  pageContent.value = 2;
+                                  pageController.animateToPage(2,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                },
+                                goToCreateAccount: () {
+                                  fromLogin = false;
+                                  animate.value = true;
+                                  pageContent.value = 1;
+                                  pageController.animateToPage(1,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                  //_animationController.forward();
+                                },
+                              ),
+                              CreateAccountSection(
+                                moveToNextStep: () {
+                                  pageContent.value = 2;
+                                  pageController.animateToPage(2,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                },
+                              ),
+                              InsertPhoneTab(
+                                fromLogin: fromLogin,
+                                focusNode: focusNode,
+                                moveToNextStep: (String phoneNumber) {
+                                  this.phoneNumber =
+                                      phoneNumber.replaceAll(' ', '');
+                                  pageContent.value = 3;
+                                  pageController.animateToPage(3,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                },
+                              ),
+                              VerificationMethods(
+                                phoneNumber: phoneNumber,
+                                onChooseWhatsapp: () {
+                                  isVisWhatsApp = 1;
+                                  pageContent.value = 4;
+                                  pageController.animateToPage(4,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                  authBloc.add(SendOtpEvent(
+                                      phone: phoneNumber, isViaWhatsApp: 1));
+                                },
+                                goBackToPhone: () {
+                                  pageController.animateToPage(2,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                  pageContent.value = 2;
+                                },
+                                onChooseSms: () {
+                                  isVisWhatsApp = 0;
+                                  pageController.animateToPage(4,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut);
+                                  pageContent.value = 5;
+                                  authBloc.add(SendOtpEvent(
+                                      phone: phoneNumber, isViaWhatsApp: 0));
+                                },
+                              ),
+                              VerifyOtp(
+                                  isVisWhatsApp: isVisWhatsApp,
+                                  navigateToAddName: () {
+                                    print('fromLogin:  $fromLogin');
+                                    if (fromLogin) {
+                                      context.go(GRouter
+                                          .config
+                                          .applicationRoutes
+                                          .kLoginSuccessfullyPage +
+                                          '?phoneNumber=$phoneNumber');
+                                      return;
+                                    }
+                                    pageController.animateToPage(5,
                                         duration: Duration(milliseconds: 500),
                                         curve: Curves.easeInOut);
+                                    pageContent.value = 6;
                                   },
-                                  goToCreateAccount: () {
-                                    fromLogin = false;
-                                    animate.value = true;
-                                    pageContent.value = 1;
-                                    pageController.animateToPage(1,
-                                        duration: Duration(milliseconds: 500),
-                                        curve: Curves.easeInOut);
-                                    //_animationController.forward();
-                                  },
-                                ),
-                                CreateAccountSection(
-                                  moveToNextStep: () {
-                                    pageContent.value = 2;
-                                    pageController.animateToPage(2,
-                                        duration: Duration(milliseconds: 500),
-                                        curve: Curves.easeInOut);
-                                  },
-                                ),
-                                InsertPhoneTab(
                                   fromLogin: fromLogin,
-                                  focusNode: focusNode,
-                                  moveToNextStep: (String phoneNumber) {
-                                    this.phoneNumber =
-                                        phoneNumber.replaceAll(' ', '');
-                                    pageContent.value = 3;
+                                  onLoginFailed: () {
+                                    pageController.animateToPage(5,
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+                                    pageContent.value = 6;
+                                  },
+                                  goBack: () {
                                     pageController.animateToPage(3,
                                         duration: Duration(milliseconds: 500),
                                         curve: Curves.easeInOut);
+                                    pageContent.value = 3;
                                   },
-                                ),
-                                VerificationMethods(
-                                  phoneNumber: phoneNumber,
-                                  onChooseWhatsapp: () {
-                                    isVisWhatsApp = 1;
-                                    pageContent.value = 4;
-                                    pageController.animateToPage(4,
-                                        duration: Duration(milliseconds: 500),
-                                        curve: Curves.easeInOut);
-                                    authBloc.add(SendOtpEvent(
-                                        phone: phoneNumber, isViaWhatsApp: 1));
-                                  },
-                                  goBackToPhone: () {
-                                    pageController.animateToPage(2,
-                                        duration: Duration(milliseconds: 500),
-                                        curve: Curves.easeInOut);
-                                    pageContent.value = 2;
-                                  },
-                                  onChooseSms: () {
-                                    isVisWhatsApp = 0;
-                                    pageController.animateToPage(4,
-                                        duration: Duration(milliseconds: 500),
-                                        curve: Curves.easeInOut);
-                                    pageContent.value = 5;
-                                    authBloc.add(SendOtpEvent(
-                                        phone: phoneNumber, isViaWhatsApp: 0));
-                                  },
-                                ),
-                                VerifyOtp(
-                                    isVisWhatsApp: isVisWhatsApp,
-                                    navigateToAddName: () {
-                                      print('fromLogin:  $fromLogin');
-                                      if (fromLogin) {
-                                        context.go(GRouter
-                                            .config
-                                            .applicationRoutes
-                                            .kLoginSuccessfullyPage +
-                                            '?phoneNumber=$phoneNumber');
-                                        return;
-                                      }
-                                      pageController.animateToPage(5,
-                                          duration: Duration(milliseconds: 500),
-                                          curve: Curves.easeInOut);
-                                      pageContent.value = 6;
-                                    },
-                                    fromLogin: fromLogin,
-                                    onLoginFailed: () {
-                                      pageController.animateToPage(5,
-                                          duration: Duration(milliseconds: 500),
-                                          curve: Curves.easeInOut);
-                                      pageContent.value = 6;
-                                    },
-                                    goBack: () {
-                                      pageController.animateToPage(3,
-                                          duration: Duration(milliseconds: 500),
-                                          curve: Curves.easeInOut);
-                                      pageContent.value = 3;
-                                    },
-                                    methodIcon: index == 4
-                                        ? AppAssets.whatsappSvg
-                                        : AppAssets.smsSvg,
-                                    phoneNumber: phoneNumber),
-                                AddingName(
-                                  fromLogin: false,
-                                )
-                              ]),
-                          onWillPop: () async {
-                            print('tttttttttttttttt');
-                            if (PopScopeValue > 0) {
-                              if(PopScopeValue == 2 && fromLogin){
-                                await pageController.animateToPage(PopScopeValue -2,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut);
-                                return false;
-                              }
-                              await pageController.animateToPage(PopScopeValue-1,
-                                  duration: Duration(milliseconds: 500),
-                                  curve: Curves.easeInOut);
-                              return false;
-                            }
-                            return true;
-                          }),
-                    )
-                  ],
-                )
-              ],
+                                  methodIcon: index == 4
+                                      ? AppAssets.whatsappSvg
+                                      : AppAssets.smsSvg,
+                                  phoneNumber: phoneNumber),
+                              AddingName(
+                                fromLogin: false,
+                              )
+                            ]),
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
           );
         });
