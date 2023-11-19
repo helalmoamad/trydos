@@ -8,6 +8,7 @@ import '../api/log_interceptor.dart';
 import '../data/repository/prefs_repository_impl.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'di_container.config.dart';
+
 final GetIt _getIt = GetIt.I;
 
 @InjectableInit(
@@ -28,12 +29,14 @@ abstract class AppModule {
           HttpHeaders.acceptHeader: 'application/json',
         },
       );
+
   @singleton
   Logger get logger => Logger();
 
   @preResolve
   @singleton
-  Future<SharedPreferences> get sharedPreferences => SharedPreferences.getInstance();
+  Future<SharedPreferences> get sharedPreferences =>
+      SharedPreferences.getInstance();
 
   @preResolve
   @singleton
@@ -49,10 +52,12 @@ abstract class AppModule {
     return dio;
   }
 }
-class MyHttpOverrides extends HttpOverrides{
+
+class MyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext? context){
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

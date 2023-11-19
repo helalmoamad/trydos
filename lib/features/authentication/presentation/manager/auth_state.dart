@@ -2,11 +2,14 @@ part of 'auth_bloc.dart';
 
 enum CreateUserStatus { init, loading, success, failure }
 enum LoginToChatStatus { init, loading, success, failure }
-enum LoginToStoreStatus { init, loading, success, failure }
+enum LoginToStoriesStatus { init, loading, success, failure }
 enum SendOtpStatus { init, loading, success, failure }
 enum VerifyOtpSignUpStatus { init, loading, success, failure }
 enum VerifyOtpSignInStatus { init, loading, success, failure }
 enum VerifyGuestPhoneStatus { init, loading, success, failure }
+enum RegisterGuestStatus { init, loading, success, failure }
+enum UpdateNameStatus { init, loading, success, failure }
+enum GetCustomerInfoStatus { init, loading, success, failure }
 
 
 class AuthState {
@@ -14,24 +17,42 @@ class AuthState {
     this.createUserStatus = CreateUserStatus.init,
     this.loginToChatStatus = LoginToChatStatus.init,
     this.sendOtpStatus = SendOtpStatus.init,
+    this.marketUser ,
+    this.signInErrorMessage ,
+    this.signUpErrorMessage ,
+    this.registerGuestStatus = RegisterGuestStatus.init,
     this.verifyOtpSignUpStatus = VerifyOtpSignUpStatus.init,
     this.verifyOtpSignInStatus = VerifyOtpSignInStatus.init,
     this.verifyGuestPhoneStatus = VerifyGuestPhoneStatus.init,
-    this.loginToStoreStatus = LoginToStoreStatus.init,
+    this.loginToStoriesStatus = LoginToStoriesStatus.init,
+    this.getCustomerInfoStatus = GetCustomerInfoStatus.init,
+    this.updateNameStatus = UpdateNameStatus.init,
   });
 
   final CreateUserStatus createUserStatus;
   final LoginToChatStatus loginToChatStatus;
-  final LoginToStoreStatus loginToStoreStatus;
+  final LoginToStoriesStatus loginToStoriesStatus;
   final SendOtpStatus sendOtpStatus;
   final VerifyOtpSignUpStatus verifyOtpSignUpStatus;
   final VerifyOtpSignInStatus verifyOtpSignInStatus;
   final VerifyGuestPhoneStatus verifyGuestPhoneStatus;
+  final RegisterGuestStatus registerGuestStatus;
+  final UpdateNameStatus updateNameStatus;
+  final GetCustomerInfoStatus getCustomerInfoStatus;
+  final User? marketUser;
+  final String? signInErrorMessage;
+  final String? signUpErrorMessage;
   AuthState copyWith({
     final CreateUserStatus? createUserStatus,
     final LoginToChatStatus? loginToChatStatus,
-    final LoginToStoreStatus? loginToStoreStatus,
+    final LoginToStoriesStatus? loginToStoriesStatus,
     final SendOtpStatus? sendOtpStatus,
+    final String? signInErrorMessage,
+    final RegisterGuestStatus? registerGuestStatus,
+    final GetCustomerInfoStatus? getCustomerInfoStatus,
+    final String? signUpErrorMessage,
+    final UpdateNameStatus? updateNameStatus,
+    final User? marketUser,
     final VerifyOtpSignUpStatus? verifyOtpSignUpStatus,
     final VerifyOtpSignInStatus? verifyOtpSignInStatus,
     final VerifyGuestPhoneStatus? verifyGuestPhoneStatus
@@ -39,8 +60,14 @@ class AuthState {
     return AuthState(
       createUserStatus: createUserStatus ?? this.createUserStatus,
       loginToChatStatus: loginToChatStatus ?? this.loginToChatStatus,
-      loginToStoreStatus: loginToStoreStatus ?? this.loginToStoreStatus,
+      loginToStoriesStatus: loginToStoriesStatus ?? this.loginToStoriesStatus,
+      registerGuestStatus: registerGuestStatus ?? this.registerGuestStatus,
       sendOtpStatus: sendOtpStatus ?? this.sendOtpStatus,
+      getCustomerInfoStatus: getCustomerInfoStatus ?? this.getCustomerInfoStatus,
+      signUpErrorMessage: signUpErrorMessage ?? this.signUpErrorMessage,
+      signInErrorMessage: signInErrorMessage ?? this.signInErrorMessage,
+      marketUser: marketUser ?? this.marketUser,
+      updateNameStatus: updateNameStatus ?? this.updateNameStatus,
       verifyOtpSignUpStatus: verifyOtpSignUpStatus ?? this.verifyOtpSignUpStatus,
       verifyOtpSignInStatus: verifyOtpSignInStatus ?? this.verifyOtpSignInStatus,
       verifyGuestPhoneStatus: verifyGuestPhoneStatus ?? this.verifyGuestPhoneStatus,

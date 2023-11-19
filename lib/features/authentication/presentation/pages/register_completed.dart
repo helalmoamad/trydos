@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -26,6 +27,16 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
   }
 
   @override
+  void didChangeDependencies() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color(0xffBCFFDF),
+      statusBarBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.dark,
+    ));
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffBCFFDF),
@@ -41,7 +52,9 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Spacer(),
-                  SizedBox(height: 10,),
+                  SizedBox(
+                    height: 10,
+                  ),
                   Padding(
                     padding: HWEdgeInsets.only(left: 30.0),
                     child: Column(
@@ -49,28 +62,31 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                       children: [
                         Padding(
                           padding: HWEdgeInsets.only(left: 4.0),
-                          child: Text('Hello,',
+                          child: Text('Hello',
                               textAlign: TextAlign.start,
                               style: textTheme.headline3?.ba.copyWith(
                                   color: Color(0xff5D5C5D), height: 1.25)),
                         ),
-                        SizedBox(height: 17,),
+                        SizedBox(
+                          height: 17,
+                        ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(widget.userName,
+                            Text(',' + widget.userName,
                                 textAlign: TextAlign.start,
                                 style: textTheme.headline3?.la.copyWith(
                                   color: Color(0xff5D5C5D),
                                   letterSpacing: 0.3,
                                   height: 0.67,
                                 )),
-                            SizedBox(height: 18,),
+                            SizedBox(
+                              height: 18,
+                            ),
                             Text('Enjoy With Our Services',
                                 textAlign: TextAlign.center,
                                 style: textTheme.subtitle1?.la.copyWith(
-                                    color: Color(0xff5D5C5D),
-                                    height: 1.25)),
+                                    color: Color(0xff5D5C5D), height: 1.25)),
                           ],
                         ),
                       ],
@@ -85,7 +101,9 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                         letterSpacing: 0.14,
                         height: 1.43,
                       )),
-                  SizedBox(height: 10,),
+                  SizedBox(
+                    height: 10,
+                  ),
                   Container(
                     width: 1.sw,
                     height: 60,
@@ -108,22 +126,31 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 30,),
+                  SizedBox(
+                    height: 20,
+                  ),
                   InkWell(
-                    onTap: (){
+                    focusColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    onTap: () {
                       context.go(GRouter.config.applicationRoutes.kBasePage);
                     },
-                    child: Text(
-                      'Skip For Now',
-                      style: textTheme.bodyText2?.ra.copyWith(
-                        color: Color(0xff4d84ff),
-                        letterSpacing: 0.14,
-                        height: 1.43,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: Text(
+                        'Skip For Now',
+                        style: textTheme.bodyText2?.ra.copyWith(
+                          color: Color(0xff4d84ff),
+                          letterSpacing: 0.14,
+                          height: 1.43,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ),
-                  SizedBox(height: 5,),
+                  SizedBox(
+                    height: 44,
+                  ),
                 ]),
           ),
         ],

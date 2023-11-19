@@ -1,14 +1,15 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+import 'package:trydos/features/authentication/data/models/get_user_country_response_model.dart';
+import 'package:trydos/features/authentication/data/models/login_to_stories_response_model.dart';
 import 'package:trydos/features/authentication/data/models/send_otp_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_guest_phone_response_model.dart';
-import 'package:trydos/features/authentication/data/models/verify_otp_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
 
 import '../../../../core/api/handling_exception.dart';
 import '../../../../core/error/failures.dart';
 import '../models/create_user_response_model.dart';
-import '../models/login_user_response_model.dart';
+import '../models/login_to_chat_response_model.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../data_sources/auth_remote_datasource.dart';
 import '../models/store_fcm_token_response_model.dart';
@@ -28,10 +29,10 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, LoginUserResponseModel>> loginUser(
+  Future<Either<Failure, LoginToChatResponseModel>> loginToChat(
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.loginUser(params));
+        tryCall: () => dataSource.loginToChat(params));
   }
 
   @override
@@ -60,13 +61,13 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, LoginUserResponseModel>> loginToStore(Map<String, dynamic> params) {
+  Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> loginToMarket(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.loginToStore(params));
+        tryCall: () => dataSource.loginToMarket(params));
   }
 
   @override
-  Future<Either<Failure, LoginUserResponseModel>> loginToStories(Map<String, dynamic> params) {
+  Future<Either<Failure, LoginToStoriesResponseModel>> loginToStories(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.loginToStories(params));
   }
@@ -83,4 +84,26 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
         tryCall: () => dataSource.verifyOtpSignUp(params));
   }
 
-}
+  @override
+  Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> registerGuest(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.registerGuest(params));
+  }
+
+  @override
+  Future<Either<Failure, bool>> updateName(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateName(params));
+  }
+
+  @override
+  Future<Either<Failure, User>> getCustomerInfo() {
+    return handlingExceptionRequest(tryCall:  dataSource.getCustomerInfo);
+  }
+
+  @override
+  Future<Either<Failure, GetUserCountryResponseModel>> getUserCountry() {
+    return handlingExceptionRequest(tryCall:  dataSource.getUserCountry);
+
+  }
+  }

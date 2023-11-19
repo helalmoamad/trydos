@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/common/helper/file_saving.dart';
@@ -9,130 +11,209 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:video_player/video_player.dart';
 
 class MYVideoPlayer extends StatefulWidget {
-  const MYVideoPlayer({Key? key , this.videoUrl ,this.videoFile}) : super(key: key);
- final String? videoUrl;
- final File? videoFile;
+  const MYVideoPlayer({Key? key, this.videoUrl, this.videoFile})
+      : super(key: key);
+  final String? videoUrl;
+  final File? videoFile;
+
   @override
   State<MYVideoPlayer> createState() => _MYVideoPlayerState();
 }
 
 class _MYVideoPlayerState extends State<MYVideoPlayer> {
-  late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
-   Duration? videoDuration;
+  VideoPlayerController? _controller;
+  Duration? videoDuration;
+  String? imageUrl;
+
+  late Future<void> initializeVideo;
+  ValueNotifier<double> downloadingProgress = ValueNotifier(0);
+  ValueNotifier<bool> isDownloading = ValueNotifier(false);
+  CancelToken cancelToken = CancelToken();
+
   @override
   void initState() {
-    if(widget.videoUrl != null) {
-      FileSaving().downloadFileToLocalStorage(widget.videoUrl!);
-      _controller = VideoPlayerController.networkUrl(
-        Uri.parse(widget.videoUrl!),
-      );
-    }else{
-      _controller = VideoPlayerController.file(widget.videoFile!);
+    if (widget.videoUrl != null) {
+      imageUrl = widget.videoUrl!
+          .replaceFirst(widget.videoUrl!.split('.').last, 'JPG') + '?w=300&h=300';
     }
-    _initializeVideoPlayerFuture = _controller.initialize();
-    _controller.addListener(() {setState(() {
-    });});
+    if (widget.videoFile != null) {
+      print('yes from memory');
+      _controller = VideoPlayerController.file(widget.videoFile!);
+      initializeController();
+    }
     super.initState();
+  }
+
+  void initializeController() {
+    initializeVideo = _controller!.initialize().then((value) {
+      setState(() {});
+    });
+    _controller!.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   String getPosition() {
     final Duration duration;
-    if( _controller.value.isPlaying) {
-      duration = Duration(milliseconds: _controller.value.position.inMilliseconds.round());
-    }else{
-      duration = Duration(milliseconds: _controller.value.duration.inMilliseconds.round());
+    if (_controller!.value.isPlaying) {
+      duration = Duration(
+          milliseconds: _controller!.value.position.inMilliseconds.round());
+    } else {
+      duration = Duration(
+          milliseconds: _controller!.value.duration.inMilliseconds.round());
     }
 
     return [duration.inHours, duration.inMinutes, duration.inSeconds]
         .map((seg) => seg.remainder(60).toString().padLeft(2, '0'))
-        .join(':').padLeft(2,'0');
+        .join(':')
+        .padLeft(2, '0');
   }
+
   @override
   Widget build(BuildContext context) {
-    if(_controller.value.position==_controller.value.duration){
-      _controller.seekTo(Duration.zero);
+    if (_controller?.value.position == _controller?.value.duration) {
+      _controller?.seekTo(Duration.zero);
     }
-    return FutureBuilder(
-      future: _initializeVideoPlayerFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          // If the VideoPlayerController has finished initialization, use
-          // the data it provides to limit the aspect ratio of the video.
-          return GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => {
-              setState(() {
-                _controller.value.isPlaying
-                    ? _controller.pause()
-                    : _controller.play();
-              }),
-            },
-            child: SizedBox(
-              height: 400.h,
-              width: 300,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    // Use the VideoPlayer widget to display the video.
-                    child: ClipRRect(
-                        borderRadius:
-                        BorderRadius.circular(12.0),
-                        child: VideoPlayer(_controller)),
-                  ),
-                  _controller.value.isPlaying
-                      ? Container()
-                      :  Icon(Icons.play_arrow,
-                          size: 50, color: Colors.grey.shade300),
-                  buildSpeed(),
-                  Positioned(
-                    left: 8,
-                    bottom: 38,
-                    child: Text(getPosition(),style: context.textTheme.bodyText2?.rr.copyWith(
-                      color: Colors.white
-                    )),
-                  ),
-                  Positioned(
-                    bottom: 15,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      margin: const EdgeInsets.all(8),
-                      height: 16,
-                      child: VideoProgressIndicator(
-                        _controller,
-                        allowScrubbing: true,
-                        colors: VideoProgressColors(
-                            bufferedColor:
-                                Colors.white,
-                            playedColor: const Color(0xff388CFF),
-                            backgroundColor: Colors.white.withOpacity(0.3)),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          );
-        } else {
-          return SizedBox(
+    // If the VideoPlayerController has finished initialization, use
+    // the data it provides to limit the aspect ratio of the video.
+    return imageUrl != null && _controller == null
+        ? SizedBox(
+      width: 300,
+      height: 300,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          CachedNetworkImage(
+            imageUrl: imageUrl!,
             width: 300,
             height: 300,
-            child: Center(
-              child:TrydosLoader()
-            ),
-          );
-        }
-      },
-    );
+          ),
+          ValueListenableBuilder<bool>(
+              valueListenable: isDownloading,
+              builder: (context, downloading, _) {
+                return !downloading
+                    ? InkWell(
+                  onTap: () {
+                    isDownloading.value = true;
+                    FileSaving().downloadFileUsingDio(
+                        widget.videoUrl!, cancelToken,
+                            (progress) {
+                          downloadingProgress.value = progress;
+                        }, action: (File file) {
+                      _controller =
+                          VideoPlayerController.file(file);
+                      initializeController();
+                    });
+                  },
+                  child: Icon(Icons.play_arrow,
+                      size: 50, color: Colors.grey.shade300),
+                )
+                    : ValueListenableBuilder<double>(
+                    valueListenable: downloadingProgress,
+                    builder: (context, progress, _) {
+                      print('progress: $progress');
+                      return InkWell(
+                        onTap: () {
+                          isDownloading.value = false;
+                          cancelToken.cancel();
+                        },
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            CircularProgressIndicator(
+                              value: progress/100,
+                              strokeWidth: 5,
+                              backgroundColor: Colors.grey,
+                              color: Color(0xff388CFF),
+                            ),
+                            Text(
+                              'X',
+                              style: context
+                                  .textTheme.headline6?.ba
+                                  .copyWith(
+                                color: Colors.grey,
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    });
+              }),
+        ],
+      ),
+    ) : FutureBuilder(
+        future: initializeVideo,
+        builder: (context, snapShot) {
+          if (snapShot.connectionState == ConnectionState.done) {
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => {
+                setState(() {
+                  _controller!.value.isPlaying
+                      ? _controller!.pause()
+                      : _controller!.play();
+                }),
+              },
+              child: SizedBox(
+                height: 400.h,
+                width: 300,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    AspectRatio(
+                      aspectRatio: _controller!.value.aspectRatio,
+                      // Use the VideoPlayer widget to display the video.
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12.0),
+                          child: VideoPlayer(_controller!)),
+                    ),
+                    _controller!.value.isPlaying
+                        ? Container()
+                        : Icon(Icons.play_arrow,
+                            size: 50, color: Colors.grey.shade300),
+                    buildSpeed(),
+                    Positioned(
+                      left: 8,
+                      bottom: 38,
+                      child: Text(getPosition(),
+                          style: context.textTheme.bodyText2?.rr
+                              .copyWith(color: Colors.white)),
+                    ),
+                    Positioned(
+                      bottom: 15,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        margin: const EdgeInsets.all(8),
+                        height: 16,
+                        child: VideoProgressIndicator(
+                          _controller!,
+                          allowScrubbing: true,
+                          colors: VideoProgressColors(
+                              bufferedColor: Colors.white,
+                              playedColor: const Color(0xff388CFF),
+                              backgroundColor: Colors.white.withOpacity(0.3)),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          }
+          return
+            SizedBox(
+                  width: 300,
+                  height: 300,
+                  child: Center(child: TrydosLoader()),
+                );
+        });
   }
 
   Widget buildSpeed() {
@@ -141,15 +222,17 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
       bottom: 38,
       right: 8,
       child: PopupMenuButton<double>(
-        initialValue: _controller.value.playbackSpeed,
+        initialValue: _controller!.value.playbackSpeed,
         tooltip: 'Playback speed',
-        onSelected: _controller.setPlaybackSpeed,
+        onSelected: _controller!.setPlaybackSpeed,
         itemBuilder: (context) => allSpeeds
             .map<PopupMenuEntry<double>>((speed) => PopupMenuItem(
                   value: speed,
                   child: Text(
                     '${speed}x',
-                    style: const TextStyle(color: Color(0xff388CFF),),
+                    style: const TextStyle(
+                      color: Color(0xff388CFF),
+                    ),
                   ),
                 ))
             .toList(),
@@ -160,8 +243,10 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
           ),
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           child: Text(
-            '${_controller.value.playbackSpeed}x',
-           style: const TextStyle(color: Color(0xff388CFF),),
+            '${_controller!.value.playbackSpeed}x',
+            style: const TextStyle(
+              color: Color(0xff388CFF),
+            ),
           ),
         ),
       ),

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:contacts_service/contacts_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
@@ -9,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:trydos/common/constant/countries.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
-import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -97,8 +95,6 @@ class HelperFunctions {
     );
   }
 
-
-
   static Future<List<Map<String, dynamic>>> getContactsFromDevice() async {
     final PermissionStatus permissionStatus =
         await Permission.contacts.request();
@@ -106,9 +102,9 @@ class HelperFunctions {
     if (permissionStatus == PermissionStatus.granted) {
       contacts = await ContactsService.getContacts(withThumbnails: false);
     }
-    List<Contact> myContacts=[];
-    for (Contact contact in contacts ){
-      if(contact.phones?.isNotEmpty ?? false){
+    List<Contact> myContacts = [];
+    for (Contact contact in contacts) {
+      if (contact.phones?.isNotEmpty ?? false) {
         myContacts.add(contact);
       }
     }
@@ -137,10 +133,10 @@ class HelperFunctions {
         themeColor: const Color(0xff137AC9),
         specialItemPosition: SpecialItemPosition.prepend,
         specialItemBuilder: (
-          BuildContext context,
-          AssetPathEntity? path,
-          int length,
-        ) {
+            BuildContext context,
+            AssetPathEntity? path,
+            int length,
+            ) {
           if (path?.isAll != true) {
             return null;
           }
@@ -148,30 +144,6 @@ class HelperFunctions {
             label: textDelegate.sActionUseCameraHint,
             button: true,
             onTapHint: textDelegate.sActionUseCameraHint,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () async {
-                final AssetEntity? result = await _pickFromCamera(context);
-                if (result == null) {
-                  return;
-                }
-                final AssetPicker<AssetEntity, AssetPathEntity> picker =
-                    context.findAncestorWidgetOfExactType()!;
-                final DefaultAssetPickerBuilderDelegate builder =
-                    picker.builder as DefaultAssetPickerBuilderDelegate;
-                final DefaultAssetPickerProvider p = builder.provider;
-                await p.switchPath(
-                  PathWrapper<AssetPathEntity>(
-                    path: await p.currentPath!.path.obtainForNewProperties(),
-                  ),
-                );
-                p.selectAsset(result);
-              },
-              child: const Center(
-                child: Icon(Icons.camera_alt_outlined,
-                    size: 42.0, color: Colors.white),
-              ),
-            ),
           );
         },
       ),
@@ -181,7 +153,9 @@ class HelperFunctions {
   static String getTheFirstTwoLettersOfName(String name) {
     return name.split(' ').length == 2
         ? name.split(' ')[0][0] + name.split(' ')[1][0]
-        : name.split(' ').first.length >1 ? (name.split(' ')[0][0] + name.split(' ')[0][1]):name.split(' ').first ;
+        : name.split(' ').first.length > 1
+            ? (name.split(' ')[0][0] + name.split(' ')[0][1])
+            : name.split(' ').first;
   }
 
   static Future<File?> pickDocumentFile() async {
@@ -195,18 +169,6 @@ class HelperFunctions {
     }
   }
 
-  static Future<AssetEntity?> _pickFromCamera(BuildContext c) {
-    CameraPickerTextDelegate textDelegate = LanguageService.languageCode != 'ar'
-        ? const EnglishCameraPickerTextDelegate()
-        : const ArabicCameraPickerTextDelegate();
-    return CameraPicker.pickFromCamera(
-      c,
-      locale: LanguageService.currentLanguage,
-
-      pickerConfig:
-          CameraPickerConfig(enableRecording: true, textDelegate: textDelegate),
-    );
-  }
 
   static String replaceArabicNumber(String input) {
     const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];

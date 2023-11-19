@@ -23,9 +23,11 @@ String get _sFRoundedBoldFamily => 'SF-Pro-Rounded-Bold';
 String get _sFRoundedRegularFamily => 'SF-Pro-Rounded-Regular';
 String get _sFRoundedMediumFamily => 'SF-Pro-Rounded-Medium';
 String get _sFDisplayBoldFamily => 'SF-Pro-Display-Bold';
-String get _sFAdobeCleanLightFamily => 'AdobeCleanLight';
-String get _sFAdobeCleanRegularFamily => 'AdobeCleanRegular';
-String get _sFAdobeCleanBoldFamily => 'AdobeCleanBold';
+String get _adobeCleanLightFamily => 'AdobeCleanLight';
+String get _adobeCleanRegularFamily => 'AdobeCleanRegular';
+String get _adobeCleanBoldFamily => 'AdobeCleanBold';
+String get _quickSandRegularFamily => 'Quicksand-Regular';
+String get _quickSandMediumFamily => 'Quicksand-Medium';
 
 extension FamilyUtils on TextStyle {
 
@@ -52,11 +54,15 @@ extension FamilyUtils on TextStyle {
 
   TextStyle get br => copyWith(fontWeight: _bold,fontFamily: _sFRoundedBoldFamily);
 
-  TextStyle get la => copyWith(fontWeight: _light,fontFamily: _sFAdobeCleanLightFamily);
+  TextStyle get la => copyWith(fontWeight: _light,fontFamily: _adobeCleanLightFamily);
 
-  TextStyle get ra => copyWith(fontWeight: _regular,fontFamily: _sFAdobeCleanRegularFamily);
+  TextStyle get ra => copyWith(fontWeight: _regular,fontFamily: _adobeCleanRegularFamily);
 
-  TextStyle get ba => copyWith(fontWeight: _bold,fontFamily: _sFAdobeCleanBoldFamily);
+  TextStyle get ba => copyWith(fontWeight: _bold,fontFamily: _adobeCleanBoldFamily);
+
+  TextStyle get rq => copyWith(fontWeight: _regular,fontFamily: _quickSandRegularFamily);
+
+  TextStyle get mq => copyWith(fontWeight: _medium,fontFamily: _quickSandMediumFamily);
 
 
 }

@@ -63,15 +63,21 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final RenderBox renderBox =
-      key.currentContext?.findRenderObject() as RenderBox;
-      height = renderBox.size.height;
+      final RenderObject? renderBox =key.currentContext?.findRenderObject();
+      if(renderBox != null) {
+        height = (renderBox as RenderBox).size.height;
+      }
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Column(
       children: [
         Stack(
@@ -104,7 +110,7 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                   time: DateTime.now(),
                   messageId: widget.messageId,
                     isRead: widget.isAnswerMessageRead,
-                  senderId: GetIt.I<PrefsRepository>().myId!,
+                  senderId: GetIt.I<PrefsRepository>().myChatId!,
                   isFirstMessage: widget.isFirstMessage,
                     isReceived: widget.isAnswerMessageReceived,
                     userMessageName: widget.senderAnswerName,
@@ -116,7 +122,7 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                 TextMessage(
                     message: widget.messageAnswer!,
                     withImageShadow: true,
-                    senderId: GetIt.I<PrefsRepository>().myId!,
+                    senderId: GetIt.I<PrefsRepository>().myChatId!,
                     isRead: widget.isAnswerMessageRead,
                     disableMessageAlignment: false,
                     isReceived: widget.isAnswerMessageReceived,

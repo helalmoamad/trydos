@@ -18,10 +18,13 @@ import 'package:trydos/core/utils/form_state_mixin.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/app_widgets/app_text_field.dart';
+import '../../../app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
@@ -93,9 +96,16 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocBuilder<AppBloc, AppState>(
       buildWhen: (p,c)=> p.thereIsReply != c.thereIsReply,
       builder: (context, state) {
+        print('imageUrl:  ${state.imageUrl}');
+
         return Stack(
           alignment: Alignment.bottomCenter,
           children: [
@@ -111,7 +121,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                         boxShadow: [
                           BoxShadow(
                               offset: const Offset(0, 2),
-                              color: colorScheme.black.withOpacity(0.16),
+                              color: Color.fromARGB(41, 255, 255, 255),
+//                              colorScheme.black.withOpacity(0.16)
                               blurRadius: 10)
                         ]),
                     child: Align(
@@ -129,6 +140,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                 ),
                                 15.horizontalSpace,
                                 InkWell(
+                                  focusColor: Colors.transparent,
+                                  splashColor: Colors.transparent,
                                   onTap: () {
                                     BlocProvider.of<AppBloc>(context).add(
                                         RefreshChatInputField(false, '', false,
@@ -161,6 +174,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         imageUrl: ChatUrls.baseUrl +
                                             widget.senderUserImage!,
                                         imageFit: BoxFit.cover,
+                                    progressIndicatorBuilderWidget: TrydosLoader(),
                                         radius: 8,
                                         width: 30.sp,
                                         height: 30.sp)
@@ -190,6 +204,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     ),
                                     15.horizontalSpace,
                                     InkWell(
+                                      focusColor: Colors.transparent,
+                                      splashColor: Colors.transparent,
                                       onTap: () {
                                         BlocProvider.of<AppBloc>(context).add(
                                             RefreshChatInputField(
@@ -202,11 +218,12 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     ),
                                     20.horizontalSpace,
-                                    state.imageUrl?.contains('images/test') ??
+                                    state.imageUrl?.contains('cloudinary') ??
                                             false
                                         ? MyCachedNetworkImage(
                                             height: 40.sp,
                                             width: 40.sp,
+                                      progressIndicatorBuilderWidget: TrydosLoader(),
                                             imageFit: BoxFit.cover,
                                             imageUrl: state.imageUrl!,
                                           )
@@ -223,9 +240,12 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                   BorderRadius.circular(12.0),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: context
-                                                      .colorScheme.black
-                                                      .withOpacity(0.05),
+                                                  color: Color.fromARGB(1,0,0,0)
+//                                                  context
+//                                                      .colorScheme.black
+//                                                      .withOpacity(0.05)
+
+                                                  ,
                                                   offset: const Offset(0, 3),
                                                   blurRadius: 6,
                                                 ),
@@ -247,6 +267,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             imageUrl: ChatUrls.baseUrl +
                                                 widget.senderUserImage!,
                                             imageFit: BoxFit.cover,
+                                        progressIndicatorBuilderWidget: TrydosLoader(),
                                             radius: 8,
                                             width: 30.sp,
                                             height: 30.sp)
@@ -280,6 +301,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         ),
                                         15.horizontalSpace,
                                         InkWell(
+                                          focusColor: Colors.transparent,
+                                          splashColor: Colors.transparent,
                                           onTap: () {
                                             BlocProvider.of<AppBloc>(context)
                                                 .add(RefreshChatInputField(
@@ -316,6 +339,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 imageUrl: ChatUrls.baseUrl +
                                                     widget.senderUserImage!,
                                                 imageFit: BoxFit.cover,
+                                            progressIndicatorBuilderWidget: TrydosLoader(),
                                                 radius: 8,
                                                 width: 30.sp,
                                                 height: 30.sp)
@@ -349,6 +373,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             ),
                                             15.horizontalSpace,
                                             InkWell(
+                                              focusColor: Colors.transparent,
+                                              splashColor: Colors.transparent,
                                               onTap: () {
                                                 BlocProvider.of<AppBloc>(
                                                         context)
@@ -387,6 +413,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                     imageUrl: ChatUrls.baseUrl +
                                                         widget.senderUserImage!,
                                                     imageFit: BoxFit.cover,
+                                                withImageShadow: true,
+                                                progressIndicatorBuilderWidget: TrydosLoader(),
                                                     radius: 8,
                                                     width: 30.sp,
                                                     height: 30.sp)
@@ -419,6 +447,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             ),
                                             15.horizontalSpace,
                                             InkWell(
+                                              focusColor: Colors.transparent,
+                                              splashColor: Colors.transparent,
                                               onTap: () {
                                                 BlocProvider.of<AppBloc>(
                                                         context)
@@ -451,10 +481,10 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             const Spacer(),
                                             widget.senderUserImage != null
                                                 ? MyCachedNetworkImage(
-                                                    imageUrl: ChatUrls.baseUrl +
-                                                        widget.senderUserImage!,
+                                                    imageUrl: ChatUrls.baseUrl + widget.senderUserImage!,
                                                     imageFit: BoxFit.cover,
                                                     radius: 8,
+                                                    progressIndicatorBuilderWidget: TrydosLoader(),
                                                     width: 30.sp,
                                                     height: 30.sp)
                                                 : NoImageWidget(
@@ -522,6 +552,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     const VoiceWavesInRecording(),
                                     20.horizontalSpace,
                                     InkWell(
+                                      focusColor: Colors.transparent,
+                                      splashColor: Colors.transparent,
                                       onTap: () async {
                                         if (!recorderReady) {
                                           initializeRecorder();
@@ -546,6 +578,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     ),
                                     const Spacer(),
                                     InkWell(
+                                      focusColor: Colors.transparent,
+                                      splashColor: Colors.transparent,
                                       onTap: () async {
                                         final path = await recorder.stopRecorder();
                                         final audioFile = File(path!);
@@ -556,19 +590,24 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         widget.onSendFile(audioFile, 'voice');
                                         recordingNotifier.value = false;
                                       },
-                                      child: SvgPicture.asset(
-                                        AppAssets.messageReadArrowSvg,
-                                        width: 20.w,
-                                        height: 20,
+                                      child: Padding(
+                                        padding: HWEdgeInsets.all(10.0),
+                                        child: SvgPicture.asset(
+                                          AppAssets.messageReadArrowSvg,
+                                          width: 20.w,
+                                          height: 20,
+                                        ),
                                       ),
                                     ),
-                                    24.horizontalSpace,
+                                    14.horizontalSpace,
                                   ],
                                 )
                               : Row(
                                   children: [
                                     13.horizontalSpace,
                                     InkWell(
+                                      focusColor: Colors.transparent,
+                                      splashColor: Colors.transparent,
                                       onTap: () async {
                                         pusherChatService.sendActivityEvent(
                                             widget.channelId,
@@ -625,35 +664,57 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     5.horizontalSpace,
                                     if (!thereText) ...{
                                       InkWell(
+                                        focusColor: Colors.transparent,
+                                        splashColor: Colors.transparent,
                                         onTap: () async {
                                           pusherChatService.sendActivityEvent(
                                               widget.channelId,
                                               widget.channelPusherName,
                                               'Sending file...');
-                                          AssetEntity? assetEntity =
-                                              await HelperFunctions
-                                                  .getAssetFromCamera(context);
-
-                                          if (assetEntity != null) {
-                                            File file =
-                                                (await assetEntity.file)!;
-                                            String mimeStr = lookupMimeType(
-                                                    file.absolute.path) ??
-                                                '';
-                                            var fileType = mimeStr.split('/');
-                                            log(fileType.toString());
-                                            if (fileType[0] == 'image') {
-                                              widget.onSendFile
-                                                  .call(file, 'image');
-                                            }else{
-                                              widget.onSendFile
-                                                  .call(file, 'video');
-                                            }
-                                          }
-                                          pusherChatService.sendActivityEvent(
-                                              widget.channelId,
-                                              widget.channelPusherName,
-                                              null);
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return GalleryAndCameraDialogWidget(
+                                                    onChooseFileFromGalleryAction:
+                                                        (AssetEntity?
+                                                    assetEntity) async {
+                                                      if (assetEntity != null) {
+                                                        File file = (await assetEntity.originFile)!;
+                                                        String mimeStr = lookupMimeType(file.absolute.path) ??'';
+                                                        var fileType = mimeStr.split('/');
+                                                        log(fileType.toString());
+                                                        if (fileType[0] == 'image') {
+                                                          widget.onSendFile.call(file, 'image');
+                                                        }else{
+                                                          widget.onSendFile
+                                                              .call(file, 'video');
+                                                        }
+                                                        pusherChatService.sendActivityEvent(
+                                                            widget.channelId,
+                                                            widget.channelPusherName,
+                                                            null
+                                                        );
+                                                      }
+                                                    }, onChooseFileFromCameraAction:
+                                                    (File? file) {
+                                                  if (file != null) {
+                                                    String mimeStr = lookupMimeType(file.absolute.path) ??'';
+                                                    var fileType = mimeStr.split('/');
+                                                    log(fileType.toString());
+                                                    if (fileType[0] == 'image') {
+                                                      widget.onSendFile.call(file, 'image');
+                                                    }else{
+                                                      widget.onSendFile
+                                                          .call(file, 'video');
+                                                    }
+                                                    pusherChatService.sendActivityEvent(
+                                                        widget.channelId,
+                                                        widget.channelPusherName,
+                                                        null
+                                                    );
+                                                  }
+                                                });
+                                              });
                                         },
                                         child: SvgPicture.asset(
                                           AppAssets.takePictureSvg,
@@ -663,6 +724,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                       10.horizontalSpace,
                                       InkWell(
+                                        focusColor: Colors.transparent,
+                                        splashColor: Colors.transparent,
                                         onTap: () async {
                                           if (!recorderReady) {
                                             initializeRecorder();
@@ -689,6 +752,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     } else ...{
                                       InkWell(
+                                        focusColor: Colors.transparent,
+                                        splashColor: Colors.transparent,
                                         onTap: () {
                                           String message =
                                               form.controllers[0].text;

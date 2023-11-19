@@ -1,4 +1,5 @@
 
+
 typedef FromJson<T> = T Function(dynamic json);
 
 class RequestConfig<T> {

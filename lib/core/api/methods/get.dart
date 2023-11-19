@@ -48,7 +48,7 @@ class GetClient<T> extends BaseApi<T> {
 
       stopWatch.stop();
 
-      Logger(printer: PrettyPrinter(methodCount: 0)).wtf(stopWatch.elapsed.toString());
+      prettyPrinterI(stopWatch.elapsed.toString());
 
       if (response.statusCode == StatusCode.operationSucceeded.code) {
         if (_fromJson == null) {

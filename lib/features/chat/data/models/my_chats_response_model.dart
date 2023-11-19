@@ -1,7 +1,5 @@
-
 import 'dart:convert';
 import 'dart:io';
-
 
 MyChatsResponseModel myChatsResponseModelFromJson(String str) =>
     MyChatsResponseModel.fromJson(json.decode(str));
@@ -14,7 +12,7 @@ class MyChatsResponseModel {
   final bool? hasContent;
   final int? code;
   final String? message;
-  final String? detailedError;
+  final List<dynamic>? detailedError;
   final Data? data;
 
   MyChatsResponseModel({
@@ -61,7 +59,8 @@ class Data {
             : List<Chat>.from(json["channels"]!.map((x) => Chat.fromJson(x))),
         pinnedChats: json["pinned_channels"] == null
             ? []
-            : List<Chat>.from(json["pinned_channels"]!.map((x) => Chat.fromJson(x))),
+            : List<Chat>.from(
+                json["pinned_channels"]!.map((x) => Chat.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -90,6 +89,13 @@ class SenderInfo {
 }
 
 class Message {
+  //todo local variable
+  final int? width;
+
+  //todo local variable
+  final int? height;
+
+  final bool checkedExistence;
   final String? id;
   final String? localId;
   final String? localParentMessageId;
@@ -123,8 +129,19 @@ class Message {
   final Message? parentMessage;
   final SenderInfo? senderInfo;
   final File? file;
+  bool isFirstMessageForThisDay;
+  bool isFirstMessage;
+  bool isDateMessage;
+  String dateValue;
 
   Message({
+    this.width = 0,
+    this.height = 0,
+    this.isFirstMessageForThisDay = false,
+    this.checkedExistence = false,
+    this.isDateMessage = false,
+    this.dateValue = '',
+    this.isFirstMessage = false,
     this.id,
     this.senderUserId,
     this.localParentMessageId,
@@ -161,6 +178,10 @@ class Message {
   });
 
   Message copyWith({
+    final int? width,
+    final int? height,
+    final bool? isFirstMessageForThisDay,
+    final bool? isFirstMessage,
     final String? id,
     final String? localId,
     final String? localParentMessageId,
@@ -170,6 +191,7 @@ class Message {
     final DateTime? createdAt,
     final MessageType? messageType,
     final dynamic predefinedEmotionId,
+    final bool? checkedExistence,
     final String? predefinedMessageId,
     final dynamic messageStatusId,
     final dynamic taskId,
@@ -194,51 +216,62 @@ class Message {
     final Message? parentMessage,
     final SenderInfo? senderInfo,
     final File? file,
-  } ){
+  }) {
     return Message(
+      height: height??this.height,
+
+width: width??this.width,
       id: id ?? this.id,
       localId: localId ?? this.localId,
       localParentMessageId: localParentMessageId ?? this.localParentMessageId,
       isLockedByAdminForDelete:
-      isLockedByAdminForDelete ?? this.isLockedByAdminForDelete,
+          isLockedByAdminForDelete ?? this.isLockedByAdminForDelete,
       isLockedByAdminForUpdate:
-      isLockedByAdminForUpdate ?? this.isLockedByAdminForUpdate,
-      senderUserId :  senderUserId ??this.senderUserId,
-      senderInfo : senderInfo ?? this.senderInfo,
-      receiverUserId : receiverUserId ?? this.receiverUserId,
-      channelId : channelId ??this.channelId,
-      createdAt : createdAt ??this.createdAt,
-      messageType : messageType ?? this.messageType,
-      predefinedEmotionId : predefinedEmotionId ?? this.predefinedEmotionId,
-      predefinedMessageId : predefinedMessageId ?? this.predefinedMessageId,
-      file : file ?? this.file,
-      messageStatusId : messageStatusId ?? this.messageStatusId,
-      taskId : taskId ?? this.taskId,
-      extraFields  : extraFields ?? this.extraFields,
-      productId : productId  ?? this.productId,
-      serviceId : serviceId ?? this.serviceId,
-      offerId : offerId ?? this.offerId,
-      senderRoleId : senderRoleId ?? this.senderRoleId,
-      parentMessageId : parentMessageId ?? this.parentMessageId,
-      isForward : isForward ?? this.isForward,
-      senderMobilePhone : senderMobilePhone ?? this.senderMobilePhone,
-      senderWhatsappContact : senderWhatsappContact ?? this.senderWhatsappContact,
-      isFromWhatsapp : isFromWhatsapp ?? this.isFromWhatsapp,
-      messageContent : messageContent ?? this.messageContent,
-      body :  body ?? this.body,
-      image : image ?? this.image,
-      messageStatus :  messageStatus ?? this.messageStatus,
-      mediaMessageContent : mediaMessageContent ?? this.mediaMessageContent,
-      channel :  channel ?? this.channel,
-      parentMessage :  parentMessage ?? this.parentMessage,
+          isLockedByAdminForUpdate ?? this.isLockedByAdminForUpdate,
+      senderUserId: senderUserId ?? this.senderUserId,
+      senderInfo: senderInfo ?? this.senderInfo,
+      receiverUserId: receiverUserId ?? this.receiverUserId,
+      checkedExistence: checkedExistence ?? this.checkedExistence,
+      channelId: channelId ?? this.channelId,
+      createdAt: createdAt ?? this.createdAt,
+      messageType: messageType ?? this.messageType,
+      predefinedEmotionId: predefinedEmotionId ?? this.predefinedEmotionId,
+      predefinedMessageId: predefinedMessageId ?? this.predefinedMessageId,
+      file: file ?? this.file,
+      messageStatusId: messageStatusId ?? this.messageStatusId,
+      taskId: taskId ?? this.taskId,
+      extraFields: extraFields ?? this.extraFields,
+      productId: productId ?? this.productId,
+      serviceId: serviceId ?? this.serviceId,
+      offerId: offerId ?? this.offerId,
+      senderRoleId: senderRoleId ?? this.senderRoleId,
+      parentMessageId: parentMessageId ?? this.parentMessageId,
+      isForward: isForward ?? this.isForward,
+      senderMobilePhone: senderMobilePhone ?? this.senderMobilePhone,
+      senderWhatsappContact:
+          senderWhatsappContact ?? this.senderWhatsappContact,
+      isFromWhatsapp: isFromWhatsapp ?? this.isFromWhatsapp,
+      messageContent: messageContent ?? this.messageContent,
+      body: body ?? this.body,
+      isFirstMessageForThisDay:
+          isFirstMessageForThisDay ?? this.isFirstMessageForThisDay,
+      isFirstMessage: isFirstMessage ?? this.isFirstMessage,
+      image: image ?? this.image,
+      messageStatus: messageStatus ?? this.messageStatus,
+      mediaMessageContent: mediaMessageContent ?? this.mediaMessageContent,
+      channel: channel ?? this.channel,
+      parentMessage: parentMessage ?? this.parentMessage,
     );
   }
+
   factory Message.fromJson(Map<String, dynamic> json) => Message(
         id: json["id"].toString(),
         senderUserId: json["sender_user_id"],
         receiverUserId: json["receiver_user_id"],
         channelId: json["channel_id"].toString(),
-        senderInfo:json['sender_user'] == null ? null : SenderInfo.fromJson(json['sender_user']),
+        senderInfo: json['sender_user'] == null
+            ? null
+            : SenderInfo.fromJson(json['sender_user']),
         createdAt: json["created_at"] == null
             ? null
             : DateTime.parse(json["created_at"]),
@@ -265,26 +298,28 @@ class Message {
         senderMobilePhone: json["sender_mobile_phone"],
         senderWhatsappContact: json["sender_whatsapp_contact"],
         isFromWhatsapp: json["is_from_whatsapp"],
-        messageContent: json["message_type"]["name"] != "TextMessage"
-            ? null
-            : json["message_content"] == null
-                ? null
-                : MessageContent.fromJson(json["message_content"]),
         mediaMessageContent: json["message_type"]["name"] == "TextMessage"
             ? null
             : json["message_content"] == null
                 ? []
                 : List<MediaMessageContent>.from(json["message_content"]!
                     .map((x) => MediaMessageContent.fromJson(x))),
+        messageContent: json["message_type"]["name"] != "TextMessage"
+            ? null
+            : json["message_content"] == null
+                ? null
+                : MessageContent.fromJson(json["message_content"]),
         body: json["body"],
         image: json["image"],
         messageStatus: json["message_status"] == null
             ? []
             : List<MessageStatus>.from(
-            json["message_status"]!.map((x) => MessageStatus.fromJson(x))),
+                json["message_status"]!.map((x) => MessageStatus.fromJson(x))),
         channel:
             json["channel"] == null ? null : Chat.fromJson(json["channel"]),
-        parentMessage: json["parent_message"] != null ? Message.fromJson(json["parent_message"]) : null,
+        parentMessage: json["parent_message"] != null
+            ? Message.fromJson(json["parent_message"])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -323,7 +358,8 @@ class Message {
       };
 }
 
-enum PaginationStatus { initial, success, failure , loading }
+enum PaginationStatus { initial, success, failure, loading }
+
 class Chat {
   final String? id;
   final String? localId;
@@ -407,7 +443,6 @@ class Chat {
         closesAt: closesAt ?? this.closesAt,
         channelTypeId: channelTypeId ?? this.channelTypeId,
         ownerRoleId: ownerRoleId ?? this.ownerRoleId,
-
         isLockedByAdminForDelete:
             isLockedByAdminForDelete ?? this.isLockedByAdminForDelete,
         isLockedByAdminForUpdate:
@@ -424,7 +459,9 @@ class Chat {
       );
 
   bool get isLoading => paginationStatus == PaginationStatus.loading;
+
   bool get isFailure => paginationStatus == PaginationStatus.failure;
+
   bool get isSuccess => paginationStatus == PaginationStatus.success;
 
   factory Chat.fromJson(Map<String, dynamic> json) => Chat(
@@ -528,7 +565,7 @@ class MediaMessageContent {
 }
 
 class MessageContent {
-  final String? messageId;
+  final int? messageId;
   final String? content;
   final int? isLockedByAdminForDelete;
   final int? isLockedByAdminForUpdate;
@@ -541,7 +578,7 @@ class MessageContent {
   });
 
   factory MessageContent.fromJson(Map<String, dynamic> json) => MessageContent(
-        messageId: json["message_id"].toString(),
+        messageId: json["message_id"],
         content: json["content"],
         isLockedByAdminForDelete: json["is_locked_by_admin_for_delete"],
         isLockedByAdminForUpdate: json["is_locked_by_admin_for_update"],
@@ -579,6 +616,7 @@ class MessageStatus {
     this.receivedAt,
     this.mobilePhone,
   });
+
   MessageStatus copyWith({
     final int? id,
     final String? messageId,
@@ -590,20 +628,23 @@ class MessageStatus {
     final DateTime? watchedAt,
     final DateTime? receivedAt,
     final dynamic mobilePhone,
-  } ){
-    return  MessageStatus(
-      id : id ??  this.id,
-      messageId : messageId ?? this.messageId,
-      userId : userId ?? this.userId,
-      isReceived : isReceived ?? this.isReceived,
-      isWatched : isWatched ?? this.isWatched,
-      isLockedByAdminForDelete : isLockedByAdminForDelete ?? this.isLockedByAdminForDelete,
-      isLockedByAdminForUpdate : isLockedByAdminForUpdate ?? this.isLockedByAdminForUpdate,
-      watchedAt : watchedAt ?? this.watchedAt,
-      receivedAt : receivedAt ?? this.receivedAt,
-      mobilePhone : mobilePhone ?? this.mobilePhone,
+  }) {
+    return MessageStatus(
+      id: id ?? this.id,
+      messageId: messageId ?? this.messageId,
+      userId: userId ?? this.userId,
+      isReceived: isReceived ?? this.isReceived,
+      isWatched: isWatched ?? this.isWatched,
+      isLockedByAdminForDelete:
+          isLockedByAdminForDelete ?? this.isLockedByAdminForDelete,
+      isLockedByAdminForUpdate:
+          isLockedByAdminForUpdate ?? this.isLockedByAdminForUpdate,
+      watchedAt: watchedAt ?? this.watchedAt,
+      receivedAt: receivedAt ?? this.receivedAt,
+      mobilePhone: mobilePhone ?? this.mobilePhone,
     );
   }
+
   factory MessageStatus.fromJson(Map<String, dynamic> json) => MessageStatus(
         id: json["id"],
         messageId: json["message_id"].toString(),
@@ -695,6 +736,7 @@ class ChannelMember {
     this.mobilePhone,
     this.user,
   });
+
   ChannelMember copyWith({
     int? id,
     String? channelId,
@@ -721,8 +763,10 @@ class ChannelMember {
         mute: mute ?? this.mute,
         isAdmin: isAdmin ?? this.isAdmin,
         roleId: roleId ?? this.roleId,
-        isLockedByAdminForDelete: isLockedByAdminForDelete ?? this.isLockedByAdminForDelete,
-        isLockedByAdminForUpdate: isLockedByAdminForUpdate ?? this.isLockedByAdminForUpdate,
+        isLockedByAdminForDelete:
+            isLockedByAdminForDelete ?? this.isLockedByAdminForDelete,
+        isLockedByAdminForUpdate:
+            isLockedByAdminForUpdate ?? this.isLockedByAdminForUpdate,
         userType: userType ?? this.userType,
         mobilePhone: mobilePhone ?? this.mobilePhone,
         user: user ?? this.user,
@@ -763,7 +807,55 @@ class ChannelMember {
       };
 }
 
+class ContactUser {
+  int? id;
+  int? userId;
+  String? name;
+  String? mobilePhone;
+  int? contactUserId;
+
+  ContactUser({
+    this.id,
+    this.userId,
+    this.name,
+    this.mobilePhone,
+    this.contactUserId,
+  });
+
+  ContactUser copyWith({
+    int? id,
+    int? userId,
+    String? name,
+    String? mobilePhone,
+    int? contactUserId,
+  }) =>
+      ContactUser(
+        id: id ?? this.id,
+        userId: userId ?? this.userId,
+        name: name ?? this.name,
+        mobilePhone: mobilePhone ?? this.mobilePhone,
+        contactUserId: contactUserId ?? this.contactUserId,
+      );
+
+  factory ContactUser.fromJson(Map<String, dynamic> json) => ContactUser(
+        id: json["id"],
+        userId: json["user_id"],
+        name: json["name"],
+        mobilePhone: json["mobile_phone"],
+        contactUserId: json["contact_user_id"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "user_id": userId,
+        "name": name,
+        "mobile_phone": mobilePhone,
+        "contact_user_id": contactUserId,
+      };
+}
+
 class User {
+  ContactUser? contactUser;
   final int? id;
   final String? mobilePhone;
   final dynamic photoPath;
@@ -776,6 +868,7 @@ class User {
   final dynamic username;
 
   User({
+    this.contactUser,
     this.id,
     this.mobilePhone,
     this.photoPath,
@@ -789,6 +882,9 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
+        contactUser: json["contact_user"] == null
+            ? null
+            : ContactUser.fromJson(json["contact_user"]),
         id: json["id"],
         mobilePhone: json["mobile_phone"],
         photoPath: json["photo_path"],
@@ -806,6 +902,7 @@ class User {
       );
 
   Map<String, dynamic> toJson() => {
+        "contact_user": contactUser?.toJson(),
         "id": id,
         "mobile_phone": mobilePhone,
         "photo_path": photoPath,
@@ -821,14 +918,14 @@ class User {
 
 class ChannelType {
   final int? id;
-  final dynamic isDefault;
+  final int? isDefault;
   final dynamic photoPath;
   final int? hasBot;
   final dynamic rootChatBotTopicId;
   final int? isLockedByAdminForDelete;
   final int? isLockedByAdminForUpdate;
   final dynamic roleId;
-  final String? slug;
+  final int? slug;
   final List<dynamic>? channelTypeTranslations;
   final dynamic channelTypeTranslation;
 

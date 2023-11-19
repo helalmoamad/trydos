@@ -15,79 +15,119 @@ import '../manager/chat_bloc.dart';
 class ChatPageContent extends StatefulWidget {
   const ChatPageContent({Key? key, this.onSendForwardMessage})
       : super(key: key);
-  final Function(int receiverId , String channelId)? onSendForwardMessage;
+  final Function(int receiverId, String channelId)? onSendForwardMessage;
 
   @override
   State<ChatPageContent> createState() => ChatPageContentState();
 }
 
 class ChatPageContentState extends State<ChatPageContent> {
-  late ChatBloc chatBloc;
+// todo 9/21 unused code
+//  late ChatBloc chatBloc;
 
-  @override
-  void initState() {
-    chatBloc = BlocProvider.of<ChatBloc>(context);
-    super.initState();
-  }
-  static ValueNotifier<List<Chat>> searchChats=ValueNotifier([]);
-  static List<Chat> initialChats=[];
+//  @override
+//  void initState() {
+//
+//    chatBloc = BlocProvider.of<ChatBloc>(context);
+//    super.initState();
+//  }
+  static ValueNotifier<List<Chat>> searchChats = ValueNotifier([]);
+  static List<Chat> initialChats = [];
 
-  static searchInChats(String? text){
-    if(text?.isEmpty ?? true){
-      searchChats.value=initialChats;
-    }else{
-      List<Chat> search=[];
-      for(Chat chat in initialChats){
-        ChannelMember member=chat.channelMembers!.firstWhere((element) => element.userId!=GetIt.I<PrefsRepository>().myId);
-        if((member.user?.name ?? 'Un Known User').toLowerCase().contains(text?.toLowerCase() ?? '') || (member.user?.mobilePhone ?? 'No Number').toLowerCase().contains(text?.toLowerCase() ?? '')){
+  static searchInChats(String? text) {
+    if (text?.isEmpty ?? true) {
+      searchChats.value = initialChats;
+    } else {
+      List<Chat> search = [];
+      for (Chat chat in initialChats) {
+        ChannelMember member = chat.channelMembers!.firstWhere(
+            (element) => element.userId != GetIt.I<PrefsRepository>().myChatId);
+        if ((member.user?.name ?? 'UnKnown User')
+                .toLowerCase()
+                .contains(text?.toLowerCase() ?? '') ||
+            (member.user?.mobilePhone ?? 'No Number')
+                .toLowerCase()
+                .contains(text?.toLowerCase() ?? '')) {
           search.add(chat);
         }
       }
-      searchChats.value=search;
+      searchChats.value = search;
     }
   }
+
   @override
+// ! asd
   Widget build(BuildContext context) {
-    return BlocConsumer<ChatBloc, ChatState>(
-      listener: (context, state) {},
-      buildWhen: (p,c)=> p.getChatsStatus != c.getChatsStatus,
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
+    //todo  9/21  change it to BlocBuilder
+    return BlocBuilder<ChatBloc, ChatState>(
+      buildWhen: (p, c) =>
+          p.getChatsStatus != c.getChatsStatus ||
+          p.unReadMessagesFromAllChats != c.unReadMessagesFromAllChats ||
+          (p.changeChatPropertyStatus != c.changeChatPropertyStatus &&
+              c.changeChatPropertyStatus != ChangeChatPropertyStatus.success) ||
+          p.deleteChatStatus != c.deleteChatStatus ||
+          c.createAnewChat ||
+          c.sendMessageStatus == SendMessageStatus.loading ||
+          c.receiveMessageStatus == ReceiveMessageStatus.success,
       builder: (context, state) {
-        if (state.getChatsStatus == GetChatsStatus.loading && state.chats.isEmpty && state.pinnedChats.isEmpty) {
+        if ((state.getChatsStatus == GetChatsStatus.loading ||
+                state.getChatsStatus == GetChatsStatus.init) &&
+            state.chats.isEmpty &&
+            state.pinnedChats.isEmpty) {
           return SliverToBoxAdapter(child: TrydosLoader());
         }
+        // todo (future update) here we can return try again if the status failure
+
         List<Chat> chats = [];
         chats.addAll(state.pinnedChats);
         chats.addAll(state.chats);
-        chats.removeWhere((element) => int.tryParse(element.id.toString())==null && (element.messages?.isEmpty ?? true));
-        initialChats=chats;
+
+        // todo  (future update) remove this from here handle it in the back of in bloc
+        chats.removeWhere((element) =>
+            int.tryParse(element.id.toString()) == null &&
+            (element.messages?.isEmpty ?? true));
+        initialChats = chats;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          searchChats.value=chats;
+          searchChats.value = chats;
         });
         return SlidableAutoCloseBehavior(
           closeWhenOpened: true,
           closeWhenTapped: true,
           child: BlocBuilder<AppBloc, AppState>(
-            buildWhen: (p,c)=> p.pusherActivityIds.length != c.pusherActivityIds.length,
+            buildWhen: (p, c) =>
+                p.pusherActivityIds.length != c.pusherActivityIds.length,
             builder: (context, appState) {
               return ValueListenableBuilder<List<Chat>>(
-                valueListenable: searchChats,
-                builder: (context , searchedChats , _) {
-                  return sliverListSeparated(
-                    itemBuilder: (_, index) {
-                      bool thereActivity=appState.pusherActivityIds.containsKey(int.parse(searchedChats[index].id.toString()));
-                      return ChatCard(
-                        onSendForwardMessage: widget.onSendForwardMessage,
-                        chat: searchedChats[index],
-                        thereActivity: thereActivity,
-                        index: index,
-                        activityDescription: thereActivity ? appState.pusherActivityDescription[int.parse(searchedChats[index].id.toString())]: null,
-                      );
-                    },
-                    separator: const SizedBox.shrink(),
-                    childCount: searchedChats.length,
-                  );
-                }
-              );
+                  valueListenable: searchChats,
+                  builder: (context, searchedChats, _) {
+                    return sliverListSeparated(
+                      itemBuilder: (_, index) {
+                        bool thereActivity = int.tryParse(
+                                    searchedChats[index].id.toString()) !=
+                                null
+                            ? appState.pusherActivityIds.containsKey(
+                                int.parse(searchedChats[index].id.toString()))
+                            : false;
+                        return ChatCard(
+                          onSendForwardMessage: widget.onSendForwardMessage,
+                          chat: searchedChats[index],
+                          thereActivity: thereActivity,
+                          index: index,
+                          activityDescription: thereActivity
+                              ? appState.pusherActivityDescription[
+                                  int.parse(searchedChats[index].id.toString())]
+                              : null,
+                        );
+                      },
+                      separator: const SizedBox.shrink(),
+                      childCount: searchedChats.length,
+                    );
+                  });
             },
           ),
         );

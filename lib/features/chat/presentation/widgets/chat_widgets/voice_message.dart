@@ -1,22 +1,20 @@
 import 'dart:io';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/voice_waves.dart';
-
-import '../../../../../common/helper/file_saving.dart';
 import '../../../../../common/helper/helper_functions.dart';
+import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
@@ -63,7 +61,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
   late final Source audioSource;
-  final ValueNotifier<int> _loadingFile =  ValueNotifier(0);
+//  final ValueNotifier<int> _loadingFile =  ValueNotifier(0);
 
 
   getAudioDuration() async {
@@ -73,8 +71,8 @@ class _VoiceMessageState extends State<VoiceMessage> {
       );
       await audioPlayer.setSource(audioSource);
     } else {
-      audioSource = UrlSource(widget.fileUrl!);
-      await audioPlayer.setSource(audioSource);
+        audioSource = UrlSource(widget.fileUrl!);
+        await audioPlayer.setSource(audioSource);
     }
     duration = (await audioPlayer.getDuration())!;
     audioPlayingNotifier.notifyListeners();
@@ -91,7 +89,6 @@ class _VoiceMessageState extends State<VoiceMessage> {
       position = Duration.zero;
       audioPlayingNotifier.value = false;
     });
-
     getAudioDuration();
     audioPlayer.onPositionChanged.listen((newDuration) {
       audioPlayingNotifier.notifyListeners();
@@ -115,6 +112,11 @@ class _VoiceMessageState extends State<VoiceMessage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocConsumer<ChatBloc, ChatState>(
       listenWhen: (p, c) =>
       p.changeMessageStateFromPusherStatus !=
@@ -143,7 +145,8 @@ class _VoiceMessageState extends State<VoiceMessage> {
             animationDuration: const Duration(milliseconds: 150),
             offsetDx: 0.15,
             iconSize: 0,
-            onLeftSwipe: () {
+            onLeftSwipe: ()
+               {
               if((state.sendMessageStatus ==
                   SendMessageStatus.loading &&
                   state.currentMessage
@@ -186,8 +189,11 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                      color: context.colorScheme.black
-                                          .withOpacity(0.05),
+                                    //todo change the commented opacity to fromARGB for better performance
+                                      color:Color.fromARGB(50,0, 0, 0)
+//                                      context.colorScheme.black
+//                                          .withOpacity(0.05)
+                                      ,
                                       offset: const Offset(0, 3),
                                       blurRadius: 6)
                                 ]),
@@ -332,19 +338,27 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                     width: 25.w,
                                                     height: 28,
                                                   )
-                                                } else ...{
-                                                  Transform(
-                                                      alignment:
-                                                          Alignment.center,
-                                                      transform: Matrix4
-                                                          .diagonal3Values(
-                                                              -1.0, 1.0, 1.0),
-                                                      child: SvgPicture.asset(
-                                                        AppAssets
-                                                            .voicePlayedSvg,
-                                                        width: 25.w,
-                                                        height: 28,
-                                                      )),
+                                                }
+                                                else ...{
+                                                  //todo these transform cost a lot of resources i make a trick to avoid use this transformer
+//                                                  Transform(
+//                                                      alignment:
+//                                                          Alignment.center,
+//                                                      transform: Matrix4
+//                                                          .diagonal3Values(
+//                                                              -1.0, 1.0, 2.0),
+//                                                      child: SvgPicture.asset(
+//                                                        AppAssets
+//                                                            .voicePlayedSvg,
+//                                                        width: 25.w,
+//                                                        height: 28,
+//                                                      )),
+                                                  SvgPicture.asset(
+                                                    AppAssets
+                                                        .voicePlayedSvg,
+                                                    width: 25.w,
+                                                    height: 28,
+                                                  ),
                                                   15.horizontalSpace,
                                                   InkWell(
                                                     onTap: audioToggle,
@@ -545,6 +559,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                        widget.userMessagePhoto != null
                                           ? MyCachedNetworkImage(
                                         imageUrl: ChatUrls.baseUrl + widget.userMessagePhoto!,
+                                         progressIndicatorBuilderWidget: TrydosLoader(),
                                         imageFit: BoxFit.cover,
                                         radius: 8,
                                         width: 30.w,
@@ -596,8 +611,9 @@ class _VoiceMessageState extends State<VoiceMessage> {
       return;
     }
     if (audioPlayerState == PlayerState.playing) {
-      await audioPlayer.pause();
       audioPlayingNotifier.value = false;
+      await audioPlayer.pause();
+
     } else if (audioPlayerState == PlayerState.paused) {
       audioPlayingNotifier.value = true;
       await audioPlayer.resume();

@@ -1,15 +1,25 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import '../../../enums/status_code_type.dart';
 import '../api.dart';
 import '../client_config.dart';
+import '../log_interceptor.dart';
 import 'detect_server.dart';
 
+typedef whenComplete = FutureOr<void> Function();
+
 class PostClient<T> extends BaseApi<T> {
+  final void Function(bool isUploadingSuccess)? onUploadingFinished;
+
   PostClient({
     required this.requestPrams,
     required this.serverName,
+    this.onUploadingFinished,
     this.onSendProgress,
     this.onReceiveProgress,
   })  : _fromJson = requestPrams.response.fromJson,
@@ -17,8 +27,9 @@ class PostClient<T> extends BaseApi<T> {
         _queryParameters = requestPrams.queryParameters,
         _data = requestPrams.data,
         _endpoint = requestPrams.endpoint,
-  _receiveTimeout = requestPrams.receiveTimeout,
-  _sendTimeout = requestPrams.sendTimeout, super(serverName);
+        _receiveTimeout = requestPrams.receiveTimeout,
+        _sendTimeout = requestPrams.sendTimeout,
+        super(serverName);
   final Stopwatch stopWatch = Stopwatch();
   final RequestConfig<T> requestPrams;
 
@@ -26,20 +37,27 @@ class PostClient<T> extends BaseApi<T> {
   final ProgressCallback? onReceiveProgress;
   final Duration? _receiveTimeout;
   final Duration? _sendTimeout;
-
   final FromJson<T>? _fromJson;
   final T? _valueOnSuccess;
   final dynamic _queryParameters;
   final dynamic _data;
   final String _endpoint;
-  final ServerName serverName ;
+  final ServerName serverName;
 
   @override
   Future<T> call() async {
     try {
       final baseUri = getBaseUriForSpecificServer(serverName);
+      //todo just in case the server is Cloudinary i want to clear the header
+      if (serverName == ServerName.cloudinary) {
+        options = Options();
+        client.options.headers = {};
+        // Fluttertoast.showToast(msg: client.options.headers.toString());
+      }
+
       stopWatch.start();
-      final Response response = await client.postUri(
+     final Response response = await client
+          .postUri(
         Uri(
           host: baseUri.host,
           scheme: baseUri.scheme,
@@ -47,13 +65,21 @@ class PostClient<T> extends BaseApi<T> {
           queryParameters: _queryParameters,
         ),
         options: options.copyWith(
-            receiveTimeout: _receiveTimeout ?? options.receiveTimeout, sendTimeout: _sendTimeout ?? options.sendTimeout),
+            receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
+            sendTimeout: _sendTimeout ?? options.sendTimeout),
         data: _data,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
-      );
+      )
+          .then((response) {
+        onUploadingFinished?.call(true);
+        return response;
+      }).catchError((error , errorStack) {
+       onUploadingFinished?.call(false);
+       return error;
+     });
       stopWatch.stop();
-      Logger(printer: PrettyPrinter(methodCount: 0)).wtf(stopWatch.elapsed.toString());
+
       if (response.statusCode == StatusCode.operationSucceeded.code) {
         if (_fromJson == null) {
           return Future.value(_valueOnSuccess);

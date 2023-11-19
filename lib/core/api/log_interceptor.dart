@@ -1,11 +1,9 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import '../../../common/constant/configuration/chat_url_routes.dart';
-import '../../common/helper/show_message.dart';
 import '../../enums/status_code_type.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'api.dart';
@@ -23,7 +21,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     if (kDebugMode) {
       log(_prefsRepository.chatToken.toString());
       prettyPrinterI(
-        "***|| INFO Request ${options.path.substring(ChatUrls.baseUrl.length)} ||***"
+        "***|| INFO Request ${options.path} ||***"
         "\n HTTP Method: ${options.method}"
         "\n token : ${options.headers[HttpHeaders.authorizationHeader]?.substring(0, 20)}"
         "\n param : ${options.data}"
@@ -32,6 +30,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n timeout: ${options.connectTimeout! ~/ 1000}s",
       );
     }
+    _prefsRepository.saveRequestsData(options.path, options.data is! FormData ? options.data : {'data' : 'formData'}, options.headers, null, options.method, options.queryParameters, options.data is! FormData ? options.data : {'data' : 'formData'});
 
     handler.next(options);
   }
@@ -46,7 +45,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         statusType = _StatusType.failed;
       }
       final requestRoute =
-          response.requestOptions.path.substring(ChatUrls.baseUrl.length);
+          response.requestOptions.path;
 
       if (statusType == _StatusType.failed) {
         prettyPrinterError(
@@ -62,14 +61,8 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n Data: ${response.data}",
       );
     }
-    _prefsRepository.saveRequestsData(
-        response.requestOptions.path,
-        response.data,
-        response.headers.map,
-        response.statusCode,
-        response.requestOptions.method,
-        response.requestOptions.queryParameters,
-        response.data);
+    _prefsRepository.saveRequestsData(response.requestOptions.path, response.data is! FormData ? response.data : {'data' : 'formData'}, response.requestOptions.headers, response.statusCode, response.requestOptions.method, response.requestOptions.queryParameters, response.data is! FormData ? response.data : {'data' : 'formData'});
+
     handler.next(response);
   }
 
@@ -85,16 +78,10 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n stackTrace: ${err.stackTrace}",
       );
     }
-    _prefsRepository.saveRequestsData(
-        err.requestOptions.path,
-        err.response?.data ?? {},
-        err.response?.headers.map ?? {},
-        err.response?.statusCode,
-        err.requestOptions.method,
-        err.requestOptions.queryParameters,
-        err.response?.data ?? {});
+    _prefsRepository.saveRequestsData(err.requestOptions.path, err.response?.data ?? {}, err.response?.headers.map ?? {}, err.response?.statusCode, err.requestOptions.method, err.requestOptions.queryParameters, err.response?.data ?? {});
+
     // GetIt.I<Dio>().post('${ChatUrls.baseUrl}/${ChatEndPoints.createBugEP}', data: {
-    //   "user_id": _prefsRepository.myId,
+    //   "user_id": _prefsRepository.myChatId,
     //   "title": "request error",
     //   "description": err.toString()
     // });
