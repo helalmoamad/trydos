@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/di/di_container.dart';
@@ -13,14 +12,14 @@ import 'package:trydos/trydos_application.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
 
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  if (!isDependencyInitialized) {
-    await configureDependencies();
-    isDependencyInitialized = true;
-  }
-  LocalNotificationService().showNotificationWithPayload(message: message);
-}
+// @pragma('vm:entry-point')
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   if (!isDependencyInitialized) {
+//     await configureDependencies();
+//     isDependencyInitialized = true;
+//   }
+//   LocalNotificationService().showNotificationWithPayload(message: message);
+// }
 
 bool isDependencyInitialized = false;
 Timer? timer;
@@ -45,12 +44,12 @@ void main() async {
   isDependencyInitialized = true;
   HttpOverrides.global = MyHttpOverrides();
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
-    RemoteMessage? openedMessage = await FirebaseMessaging.instance.getInitialMessage();
-    if (initialMessage != null) {
-      initialMessage = Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
-    }
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  //   RemoteMessage? openedMessage = await FirebaseMessaging.instance.getInitialMessage();
+  //   if (initialMessage != null) {
+  //     initialMessage = Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
+  //   }
+  //   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FlutterError.onError = (FlutterErrorDetails error) {
     GetIt.I<PrefsRepository>().saveRequestsData(
         null, null, null, null, null, null, null,

@@ -3,7 +3,6 @@ import 'dart:convert' as convert;
 import 'dart:io';
 
 import 'package:adobe_xd/pinned.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -142,7 +141,7 @@ class _BasePageState extends State<BasePage> {
     chatBloc = BlocProvider.of<ChatBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     if(Platform.isAndroid) {
-      onMessage();
+      //onMessage();
     }
     super.initState();
   }
@@ -157,24 +156,24 @@ class _BasePageState extends State<BasePage> {
     super.didChangeDependencies();
   }
 
-  void onMessage() {
-    FirebaseMessaging.onMessage.listen((event) {
-
-      ChatBloc bloc = BlocProvider.of<ChatBloc>(context);
-      Message message =
-          Message.fromJson(convert.jsonDecode(event.data['message']));
-      String prevMessageId = event.data['prev_message_id'];
-      bloc.add(
-          ReceiveMessageEvent(message: message, prevMessageId: prevMessageId));
-      log('object ${event.data}');
-      log('object ${event.senderId}');
-      log('object ${event.notification?.title}');
-      log('object ${event.notification?.body}');
-      log('object ${event.notification?.bodyLocArgs}');
-      log('object ${event.data}');
-      //LocalNotificationService().showNotificationWithPayload(message: event);
-    });
-  }
+  // void onMessage() {
+  //   FirebaseMessaging.onMessage.listen((event) {
+  //
+  //     ChatBloc bloc = BlocProvider.of<ChatBloc>(context);
+  //     Message message =
+  //         Message.fromJson(convert.jsonDecode(event.data['message']));
+  //     String prevMessageId = event.data['prev_message_id'];
+  //     bloc.add(
+  //         ReceiveMessageEvent(message: message, prevMessageId: prevMessageId));
+  //     log('object ${event.data}');
+  //     log('object ${event.senderId}');
+  //     log('object ${event.notification?.title}');
+  //     log('object ${event.notification?.body}');
+  //     log('object ${event.notification?.bodyLocArgs}');
+  //     log('object ${event.data}');
+  //     //LocalNotificationService().showNotificationWithPayload(message: event);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

@@ -4,7 +4,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
@@ -62,31 +61,31 @@ class LocalNotificationService {
     );
   }
 
-  Future<void> showNotificationWithPayload(
-      {required RemoteMessage message}) async {
-    chat.Message myMessage =
-        chat.Message.fromJson(convert.jsonDecode(message.data['message']));
-    sendIReceivedTheMessage(myMessage.channelId!);
-    String type = myMessage.messageType!.name.toString();
-    String prevMessageId = message.data['prev_message_id'];
-    await _localNotificationPlugin.show(
-        0,
-        message.data['contact_name'] ??
-            myMessage.senderInfo!.name ??
-            myMessage.senderMobilePhone ??
-            'UnKnown User',
-        type == 'TextMessage'
-            ? myMessage.messageContent!.content.toString()
-            : type == 'ImageMessage'
-                ? 'Photo'
-                : type == 'VoiceMessage'
-                    ? 'Voice'
-                    : type == 'VideoMessage'
-                        ? 'Video'
-                        : 'File',
-        _notificationDetails(),
-        payload: '${message.data['message']},,${prevMessageId}');
-  }
+  // Future<void> showNotificationWithPayload(
+  //     {required RemoteMessage message}) async {
+  //   chat.Message myMessage =
+  //       chat.Message.fromJson(convert.jsonDecode(message.data['message']));
+  //   sendIReceivedTheMessage(myMessage.channelId!);
+  //   String type = myMessage.messageType!.name.toString();
+  //   String prevMessageId = message.data['prev_message_id'];
+  //   await _localNotificationPlugin.show(
+  //       0,
+  //       message.data['contact_name'] ??
+  //           myMessage.senderInfo!.name ??
+  //           myMessage.senderMobilePhone ??
+  //           'UnKnown User',
+  //       type == 'TextMessage'
+  //           ? myMessage.messageContent!.content.toString()
+  //           : type == 'ImageMessage'
+  //               ? 'Photo'
+  //               : type == 'VoiceMessage'
+  //                   ? 'Voice'
+  //                   : type == 'VideoMessage'
+  //                       ? 'Video'
+  //                       : 'File',
+  //       _notificationDetails(),
+  //       payload: '${message.data['message']},,${prevMessageId}');
+  // }
 
   static void sendIReceivedTheMessage(String channelId) async {
     HttpOverrides.global = MyHttpOverrides();
