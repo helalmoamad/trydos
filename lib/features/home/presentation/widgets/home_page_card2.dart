@@ -236,7 +236,7 @@ return List<double>.from(<double>[
             builder: (context, focused, _) {
               return GestureDetector(
                 onLongPressStart: (details) {
-                  HapticFeedback.mediumImpact();
+                  HapticFeedback.lightImpact();
                   resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
                 },
                 onLongPressUp: () {
@@ -247,7 +247,7 @@ return List<double>.from(<double>[
                   resizeItems.value =
                       (details.globalPosition.dx - 40) ~/ 35.w;
                   if(prev != resizeItems.value){
-                    HapticFeedback.mediumImpact();
+                    HapticFeedback.lightImpact();
                   }
                 },
                 child: Column(

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import '../../../enums/status_code_type.dart';
 import '../api.dart';
 import '../client_config.dart';
@@ -56,7 +57,7 @@ class PostClient<T> extends BaseApi<T> {
       }
 
       stopWatch.start();
-     final Response response = await client
+      final Response response = await client
           .postUri(
         Uri(
           host: baseUri.host,
@@ -72,13 +73,24 @@ class PostClient<T> extends BaseApi<T> {
         onReceiveProgress: onReceiveProgress,
       )
           .then((response) {
+        stopWatch.stop();
+        prettyPrinterI(stopWatch.elapsed.toString());
+        GetIt.I<PrefsRepository>().saveRequestsData(
+            response.requestOptions.path,
+            response.data is! FormData ? response.data : {'data': 'formData'},
+            response.requestOptions.headers,
+            response.statusCode,
+            response.requestOptions.method,
+            response.requestOptions.queryParameters,
+            response.data is! FormData ? response.data : {'data': 'formData'},
+        responseTime: stopWatch.elapsed.toString()
+        );
         onUploadingFinished?.call(true);
         return response;
-      }).catchError((error , errorStack) {
-       onUploadingFinished?.call(false);
-       return error;
-     });
-      stopWatch.stop();
+      }).catchError((error, errorStack) {
+        onUploadingFinished?.call(false);
+        return error;
+      });
 
       if (response.statusCode == StatusCode.operationSucceeded.code) {
         if (_fromJson == null) {

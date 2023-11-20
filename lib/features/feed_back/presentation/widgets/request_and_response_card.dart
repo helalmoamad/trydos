@@ -50,6 +50,14 @@ class RequestAndResponseCard extends StatelessWidget {
                       title: 'Request: ',
                       body: data['request'].toString(),
                     )),
+                if (data['response_time'] != null) ...{
+                  4.verticalSpace,
+                  Expanded(
+                      child: TitledTextWidget(
+                        title: 'Response Time: ',
+                        body: data['response_time'].toString(),
+                      )),
+                },
                 4.verticalSpace,
                 Expanded(
                     child: TitledTextWidget(
