@@ -33,7 +33,7 @@ dependencies:
   flutter_screenutil: ^5.9.0
   flutter_svg: ^1.0.3
   tuple: ^2.0.2
-  flutter_smartlook: ^4.1.9
+  #flutter_smartlook: ^4.1.9
   device_info_plus: ^9.1.0
   go_router: ^12.0.0
   country_flags: ^2.1.1
