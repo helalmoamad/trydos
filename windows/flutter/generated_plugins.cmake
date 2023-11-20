@@ -6,7 +6,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
   connectivity_plus
   file_saver
-  firebase_core
   permission_handler_windows
   sentry_flutter
   share_plus
