@@ -5,13 +5,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 
 class MyCachedNetworkImage extends StatelessWidget {
   MyCachedNetworkImage(
       {Key? key,
       required this.imageUrl,
       required this.width,
+        this.logoTextWidth,
+        this.logoTextHeight,
       required this.imageFit,
+        this.imageBuilder,
+        this.progressIndicatorBuilderWidget,
        this.radius=12,
        this.withImageShadow=false,
       required this.height})
@@ -23,10 +28,16 @@ class MyCachedNetworkImage extends StatelessWidget {
   bool enable = true;
   final String imageUrl;
   final double width;
+  final double? logoTextWidth;
   final double height;
+  final double? logoTextHeight;
   final BoxFit imageFit;
   final double radius;
   final bool withImageShadow;
+  final ImageWidgetBuilder? imageBuilder;
+
+
+  final Widget? progressIndicatorBuilderWidget;
 
   Widget getErrorImageWidget() {
     return Center(
@@ -65,8 +76,31 @@ class MyCachedNetworkImage extends StatelessWidget {
               child: CachedNetworkImage(
                   imageUrl: imageUrl,
                   fit: imageFit,
+                  width: width,
+                  height: height,
                   cacheManager: CustomCacheManager(),
-                  placeholder: (context, url) => TrydosLoader(),
+                  progressIndicatorBuilder: (context, _, progress){
+                    return progressIndicatorBuilderWidget ?? TrydosShimmerLoading(
+                      width: width,
+                      height: height,
+                      logoTextHeight: 14,
+                      logoTextWidth: 48.w,
+                    );
+                  } ,
+                  imageBuilder: imageBuilder ?? (ctx , image){
+                    return
+                      Container(
+                      width: width,
+                      height: height,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(radius),
+                        image: DecorationImage(
+                          image: image,
+                          fit: imageFit,
+                        )
+                      ),
+                    );
+                  },
                   errorWidget: (context, url, error) {
                     if (enable) {
                       enable = false;

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:open_file/open_file.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:trydos/common/constant/constant.dart';
@@ -11,7 +12,9 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../core/utils/responsive_padding.dart';
+import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
@@ -58,6 +61,11 @@ class _DocumentMessageState extends State<DocumentMessage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: BlocConsumer<ChatBloc, ChatState>(
@@ -266,9 +274,11 @@ class _DocumentMessageState extends State<DocumentMessage> {
                         ),
                       ),
                       widget.isFirstMessage
-                          ? Transform.translate(
-                        offset: Offset(widget.isSent ? 15.w : -15.w, 0),
-                        child: Stack(
+                          ?
+                     Transform.translate(
+                       offset: Offset(widget.isSent ? 15.w : -15.w, 0),
+                       child:
+                        Stack(
                           alignment: Alignment.center,
                           children: [
                             Stack(
@@ -306,6 +316,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                 ? MyCachedNetworkImage(
                               imageUrl:
                               ChatUrls.baseUrl + widget.userMessagePhoto!,
+                              progressIndicatorBuilderWidget: TrydosLoader(),
                               imageFit: BoxFit.cover,
                               radius: 8,
                               width: 30.w,
@@ -324,8 +335,9 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                 radius: 8,
                                 name: widget.userMessageName)
                           ],
-                        ),
-                      )
+                        )
+                       ,
+                     )
                           : const SizedBox.shrink()
                     ],
                   ),

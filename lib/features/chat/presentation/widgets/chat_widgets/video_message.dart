@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -12,7 +13,9 @@ import 'package:trydos/features/app/vedio_player.dart';
 import '../../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../common/helper/helper_functions.dart';
+import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../core/utils/responsive_padding.dart';
+import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
@@ -20,7 +23,7 @@ import '../../manager/chat_bloc.dart';
 import 'no_image_widget.dart';
 
 class VideoMessage extends StatefulWidget {
-  VideoMessage(
+  const VideoMessage(
       {Key? key,
       this.isForwarded = false,
       this.isLocalMessage = true,
@@ -41,12 +44,12 @@ class VideoMessage extends StatefulWidget {
   final bool isFirstMessage;
   final bool isForwarded;
   final String messageId;
-  File? videoFile;
+  final File? videoFile;
   final bool isLocalMessage;
   final String? videoUrl;
   final DateTime time;
-   bool isRead;
-   bool isReceived;
+  final bool isRead;
+  final bool isReceived;
   final int senderId;
   final String? userMessagePhoto;
   final String userMessageName;
@@ -57,9 +60,24 @@ class VideoMessage extends StatefulWidget {
 }
 
 class _VideoMessageState extends State<VideoMessage> {
+
+ late bool isRead ;
+ late bool isReceived ;
+
+  @override
+  void initState() {
+    isRead = widget.isRead;
+    isReceived = widget.isReceived;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    print('widget.isLocalMessage ${widget.isLocalMessage}');
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: BlocConsumer<ChatBloc, ChatState>(
@@ -74,11 +92,11 @@ class _VideoMessageState extends State<VideoMessage> {
               return;
             }
             setState(() {
-              widget.isRead=true;
+              isRead=true;
             });
           }else if(!widget.isReceived){
             setState(() {
-              widget.isReceived=true;
+              isReceived=true;
             });
           }
         },
@@ -128,7 +146,7 @@ class _VideoMessageState extends State<VideoMessage> {
                                       : const Color(0xffB4FFD9),
                                 ),
                               ),
-                              child:MYVideoPlayer(videoUrl: widget.videoUrl,videoFile: widget.videoFile,)
+                              child:MYVideoPlayer(videoUrl: widget.videoUrl,videoFile: widget.videoFile)
                             ),
                             Transform.translate(
                               offset: const Offset(0, -3),
@@ -242,6 +260,7 @@ class _VideoMessageState extends State<VideoMessage> {
                               imageUrl:
                               ChatUrls.baseUrl + widget.userMessagePhoto!,
                               imageFit: BoxFit.cover,
+                              progressIndicatorBuilderWidget: TrydosLoader(),
                               radius: 8,
                               width: 30.w,
                               height: 30,

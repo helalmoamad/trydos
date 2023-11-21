@@ -28,10 +28,15 @@ class ContactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     final String receiverName, fullReceiverName;
     if (contact.name == null) {
       receiverName = 'UK';
-      fullReceiverName = contact.mobilePhone ?? 'Un Known User';
+      fullReceiverName = contact.mobilePhone ?? 'UnKnown User';
     } else {
       receiverName = HelperFunctions.getTheFirstTwoLettersOfName(contact.name!);
       fullReceiverName = contact.name!;
@@ -68,15 +73,15 @@ class ContactCard extends StatelessWidget {
                                   chat=chats.firstWhere((element) => element.channelMembers!.any((element) => element.userId==contact.contactUserId));
                                       final preferences=GetIt.I<PrefsRepository>();
                                       id=chat.id!;
-                                      sender=chat.channelMembers?.firstWhere((element) => element.userId==preferences.myId,orElse: ()=> ChannelMember()).user;
-                                      receiver=chat.channelMembers?.firstWhere((element) => element.userId!=preferences.myId,orElse: ()=> ChannelMember()).user;
+                                      sender=chat.channelMembers?.firstWhere((element) => element.userId==preferences.myChatId,orElse: ()=> ChannelMember()).user;
+                                      receiver=chat.channelMembers?.firstWhere((element) => element.userId!=preferences.myChatId,orElse: ()=> ChannelMember()).user;
                                   return SinglePageChat(
                                     chatId: id,
                                     receiverName: receiverName,
                                     fullReceiverName: fullReceiverName,
                                     receiverPhone: receiver?.mobilePhone ??
                                         'No Number',
-                                    senderName: HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myName!),
+                                    senderName: HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!),
                                     receiverPhoto: sender?.photoPath,
                                     senderPhoto: receiver?.photoPath,
                                   );
@@ -103,7 +108,7 @@ class ContactCard extends StatelessWidget {
                           //         BorderRadius.circular(12.0),
                           //       ),
                           //       child: MyCachedNetworkImage(
-                          //           imageUrl: ChatChatUrls.baseUrl +
+                          //           imageUrl: ChatUrls.baseUrl +
                           //               receiver?.photoPath,
                           //           imageFit: BoxFit.cover,
                           //           height: 80.h,

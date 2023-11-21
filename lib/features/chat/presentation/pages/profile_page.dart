@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -9,8 +10,10 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../service/language_service.dart';
+import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../widgets/chat_widgets/no_image_widget.dart';
 
@@ -27,6 +30,11 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Scaffold(
       backgroundColor: const Color(0xffF8F8F8),
       body: SafeArea(
@@ -48,16 +56,19 @@ class _ProfilePageState extends State<ProfilePage> {
 
                         boxShadow:  [
                           BoxShadow(
-                            color: colorScheme.black.withOpacity(0.16),
+                            color:
+                            Color.fromARGB(2, 0, 0, 0)
+//                            colorScheme.black.withOpacity(0.16)
+                            ,
                             offset: const Offset(0, 3),
                             blurRadius: 10,
                           ),
                         ],
                       ),
                       child: MyCachedNetworkImage(
-                        imageUrl:
-                        ChatUrls.baseUrl + widget.receiverPhoto!,
+                        imageUrl: ChatUrls.baseUrl + widget.receiverPhoto!,
                         imageFit: BoxFit.cover,
+                        progressIndicatorBuilderWidget: TrydosLoader(),
                         height: 150.h,
                         width: 150.w,
                       ),

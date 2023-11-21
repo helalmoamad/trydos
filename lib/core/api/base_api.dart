@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import '../../service/language_service.dart';
@@ -11,21 +13,29 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
   BaseApi(this.serverName) {
     Map<String, dynamic> headers = client.options.headers;
     final String? token = getServerToken(serverName);
-    if (token != null) {
-      headers = client.options.headers..[HttpHeaders.authorizationHeader] = 'Bearer ${token}';
-    }
 
-    headers = client.options.headers..[HttpHeaders.acceptLanguageHeader] = LanguageService.languageCode;
-
+    if (token != null)
+      headers = client.options.headers
+        ..[HttpHeaders.authorizationHeader] = 'Bearer ${token}';
+if(serverName!=ServerName.cloudinary){
+    headers = client.options.headers
+      ..['country'] = GetIt.I<PrefsRepository>().countryName;
+    headers = client.options.headers
+      ..[HttpHeaders.acceptLanguageHeader] = LanguageService.languageCode;
+    headers.addAll({
+      'User-Agent': 'device OS:' +
+          (Platform.isAndroid ? 'Android' : 'IOS') +
+          ' '
+              ', application version: 1.0.0',
+    });}
     options = Options(headers: headers);
   }
-  final ServerName serverName ;
-  @protected
+
+  final ServerName serverName;
+
   final client = GetIt.I<Dio>();
 
-
   late Options options;
-
 
   Future<T> call();
 }

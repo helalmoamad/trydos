@@ -1,11 +1,11 @@
 
 import 'dart:convert';
 
-LoginUserResponseModel loginUserResponseModelFromJson(String str) => LoginUserResponseModel.fromJson(json.decode(str));
+LoginToChatResponseModel loginUserResponseModelFromJson(String str) => LoginToChatResponseModel.fromJson(json.decode(str));
 
-String loginUserResponseModelToJson(LoginUserResponseModel data) => json.encode(data.toJson());
+String loginToChatResponseModel(LoginToChatResponseModel data) => json.encode(data.toJson());
 
-class LoginUserResponseModel {
+class LoginToChatResponseModel {
   bool? isSuccessful;
   bool? hasContent;
   int? code;
@@ -13,7 +13,7 @@ class LoginUserResponseModel {
   dynamic detailedError;
   Data? data;
 
-  LoginUserResponseModel({
+  LoginToChatResponseModel({
     this.isSuccessful,
     this.hasContent,
     this.code,
@@ -22,7 +22,7 @@ class LoginUserResponseModel {
     this.data,
   });
 
-  factory LoginUserResponseModel.fromJson(Map<String, dynamic> json) => LoginUserResponseModel(
+  factory LoginToChatResponseModel.fromJson(Map<String, dynamic> json) => LoginToChatResponseModel(
     isSuccessful: json["isSuccessful"],
     hasContent: json["hasContent"],
     code: json["code"],

@@ -2,8 +2,6 @@
 
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
-import 'package:trydos/features/authentication/data/models/login_user_response_model.dart';
 import 'package:trydos/features/chat/domain/repositories/chat_repository.dart';
 
 

@@ -9,7 +9,7 @@ TextFieldValidator requiredValidator(
       trim: trim,
     );
 
-MultiValidator emailValidator({String? errorMessage, bool trim = false}) =>
+MultiValidator emailValidator( {String? errorMessage, bool trim = false}) =>
     MultiValidator([
       requiredValidator(
           errorMessage: errorMessage ?? 'هذا الحقل مطلوب', trim: trim),

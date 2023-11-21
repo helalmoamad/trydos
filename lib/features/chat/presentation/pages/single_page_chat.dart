@@ -1,25 +1,23 @@
-import 'dart:developer';
+import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
 import 'package:audioplayers/audioplayers.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mime/mime.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/file_saving.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/pages/create_call_page.dart';
 import 'package:trydos/features/chat/presentation/pages/profile_page.dart';
@@ -30,7 +28,6 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_mes
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_me_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/video_message.dart';
 import 'package:uuid/uuid.dart';
-import 'dart:ui' as ui;
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
 import '../../../../service/language_service.dart';
@@ -49,6 +46,7 @@ import '../widgets/chat_widgets/voice_message.dart';
 class SinglePageChat extends StatefulWidget {
   const SinglePageChat(
       {Key? key,
+      this.dataLength,
       required this.chatId,
       required this.receiverName,
       required this.receiverPhone,
@@ -57,7 +55,7 @@ class SinglePageChat extends StatefulWidget {
       this.senderPhoto,
       this.receiverPhoto})
       : super(key: key);
-
+  final int? dataLength;
   final String chatId;
   final String receiverName;
   final String fullReceiverName;
@@ -77,11 +75,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
   final ValueNotifier<int> rebuildMessage = ValueNotifier(-1);
   final ValueNotifier<int> currentFocusedIcon = ValueNotifier(-2);
   final ValueNotifier<bool> clickBackButton = ValueNotifier(false);
-  double currentHoverPosition = -1;
-  double x = -1, xActionSubtitle = -1, yActionSubtitle = -1;
-  late final AutoScrollController autoScrollController;
+  late AutoScrollController autoScrollController;
 
-  final key = GlobalKey();
+  void _scrollToBottom() {
+    autoScrollController.jumpTo(0);
+  }
+
   int? previousMessageSenderId, currentMessageSenderId;
   List<Widget> data = [];
   Map<String, List<Message>> messagesByDate = {};
@@ -90,6 +89,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   int countMessagesReceivedToMeNow = 0;
   late Chat chat;
   AudioPlayer _audioPlayer = AudioPlayer();
+  Map<String, int> messagesIndexes = {};
 
   void playSound() async {
     await _audioPlayer.play(
@@ -102,37 +102,39 @@ class _SinglePageChatState extends State<SinglePageChat> {
   @override
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    autoScrollController = AutoScrollController(initialScrollOffset: autoScrollController.position.maxScrollExtent );
+    autoScrollController = AutoScrollController();
+    chatBloc.add(ReadAllMessagesEvent(widget.chatId.toString()));
     autoScrollController.addListener(() {
       if (rebuild) {
         rebuildMessage.value = -1;
       }
-      if (autoScrollController.offset <=
-              autoScrollController.position.minScrollExtent + 400 &&
-          autoScrollController.position.userScrollDirection ==
-              ScrollDirection.forward) {
+      if ((autoScrollController.offset >=
+          autoScrollController.position.maxScrollExtent - 400)) {
         _loadMoreMessages();
       }
     });
     super.initState();
   }
 
-  void scrollToTheEnd() {
-    scrollToIndex(3 * data.length, duration: const Duration(milliseconds: 50));
+  @override
+  void dispose() {
+    autoScrollController.dispose();
+    _audioPlayer.dispose();
+    super.dispose();
   }
 
   int currentScrolledIndex = -1;
-  bool isPaginationEvent = false;
-  bool rebuildScreen = true,
-      fromPagination = false,
-      getChats = false,
-      getMessagesBetween = false,
-      sendOrReceiveMessage = false;
 
   @override
   Widget build(BuildContext context) {
-    print('chat id: ${widget.chatId}');
-    scrollToTheEnd();
+    FlutterError.onError = (details) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: details.toString());
+    };
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _scrollToBottom();
+    });
     return Scaffold(
         backgroundColor: const Color(0xffEBFFF8),
         appBar: TrydosAppBar(
@@ -142,839 +144,977 @@ class _SinglePageChatState extends State<SinglePageChat> {
               surfaceTintColor: Colors.transparent,
               elevation: 0,
               child: SafeArea(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        ValueListenableBuilder<bool>(
-                          valueListenable: clickBackButton,
-                          builder: (context , clicked ,_) {
-                            return InkWell(
-                              onTap: () {
-                                clickBackButton.value=true;
-                                Future.delayed(Duration(milliseconds: 100),() {
-                                  clickBackButton.value=false;
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    ValueListenableBuilder<bool>(
+                        valueListenable: clickBackButton,
+                        builder: (context, clicked, _) {
+                          return InkWell(
+                            onTap: () {
+                              clickBackButton.value = true;
+                              Future.delayed(
+                                Duration(milliseconds: 100),
+                                () {
+                                  clickBackButton.value = false;
                                   GoRouter.of(context).pop();
-                                },);
-                              },
-                              child: Container(
-                                color: clicked ? Colors.grey.shade100 : Colors.transparent,
-                                padding: HWEdgeInsetsDirectional.fromSTEB(
-                                    20.w, 15, 0, 15),
-                                child: Transform(
-                                  alignment: Alignment.center,
-                                  transform: (Matrix4.identity()
-                                    ..scale(
-                                        LanguageService.languageCode == 'ar'
-                                            ? -1.0
-                                            : 1.0,
-                                        1.0,
-                                        1.0)),
-                                  child: SvgPicture.asset(
-                                    AppAssets.backFromCallSvg,
-                                    width: 8.w,
-                                    color: const Color(0xff388CFF),
-                                  ),
-                                ),
+                                },
+                              );
+                            },
+                            child: Container(
+                              color: clicked
+                                  ? Colors.grey.shade100
+                                  : Colors.transparent,
+                              padding: HWEdgeInsetsDirectional.fromSTEB(
+                                  20.w, 15, 10, 15),
+                              child: SvgPicture.asset(
+                                !LanguageService.rtl
+                                    ? AppAssets.backFromCallSvg
+                                    : AppAssets.backArrowArabic,
+                                width: 8.w,
+                                color: const Color(0xff388CFF),
                               ),
-                            );
-                          }
-                        ),
-                        BlocBuilder<ChatBloc , ChatState>(builder: (context , state){
-                          if ((state.unReadMessagesFromAllChats -
+//                              )
+//                              ,
+                            ),
+                          );
+                        }),
+                    BlocBuilder<ChatBloc, ChatState>(builder: (context, state) {
+                      if ((state.unReadMessagesFromAllChats -
                               countMessagesReceivedToMeNow) >
-                              0){
-                            return Column(
-                              children: [
-                                10.horizontalSpace,
-                                Text(
-                                  (state.unReadMessagesFromAllChats -
+                          0) {
+                        return Row(
+                          children: [
+                            Text(
+                              (state.unReadMessagesFromAllChats -
                                       countMessagesReceivedToMeNow)
-                                      .toString(),
-                                  style: textTheme.subtitle1?.rr
-                                      .copyWith(color: const Color(0xff388CFF)),
+                                  .toString(),
+                              style: textTheme.subtitle1?.rr
+                                  .copyWith(color: const Color(0xff388CFF)),
+                            ),
+                          ],
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
+                    20.horizontalSpace,
+                    widget.receiverPhoto != null
+                        ? Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                  width: 1.0, color: const Color(0xff388cff)),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color(0x29388cff),
+                                  offset: Offset(0, 3),
+                                  blurRadius: 6,
                                 ),
                               ],
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        }),
-                        20.horizontalSpace,
-                        widget.receiverPhoto != null
-                            ? Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 1.0,
-                                      color: const Color(0xff388cff)),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Color(0x29388cff),
-                                      offset: Offset(0, 3),
-                                      blurRadius: 6,
-                                    ),
-                                  ],
-                                ),
-                                child: MyCachedNetworkImage(
-                                  imageUrl:
-                                      ChatUrls.baseUrl + widget.receiverPhoto!,
-                                  imageFit: BoxFit.cover,
-                                  height: 40,
-                                  width: 40.w,
-                                ),
-                              )
-                            : NoImageWidget(
-                                height: 40,
-                                width: 40.w,
-                                textStyle: context.textTheme.subtitle1?.br
-                                    .copyWith(
-                                        color: const Color(0xff6638FF),
-                                        letterSpacing: 0.18,
-                                        height: 1.33),
-                                name: widget.receiverName),
-                        20.horizontalSpace,
-                        Expanded(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (_) => ProfilePage(
-                                          receiverName: widget.receiverName,
-                                          receiverPhoto: widget.receiverPhoto,
-                                          fullReceiverName:
-                                              widget.fullReceiverName,
-                                          receiverPhone:
-                                              widget.receiverPhone)));
-                                },
-                                child: Text(
-                                  widget.fullReceiverName,
-                                  style: textTheme.subtitle1?.mr
-                                      .copyWith(color: const Color(0xff5D5C5D)),
-                                ),
-                              ),
-                              if (int.tryParse(widget.chatId) != null)
-                                BlocBuilder<AppBloc, AppState>(
-                                  builder: (context, state) {
-                                    if (state.pusherActivityIds[
-                                            int.parse(widget.chatId)] !=
-                                        null) {
-                                      return Text(
-                                        state.pusherActivityDescription[
-                                                int.parse(widget.chatId)]
-                                            .toString(),
-                                        overflow: TextOverflow.ellipsis,
-                                        style: textTheme.caption?.mr.copyWith(
-                                            color: const Color(0xff007CFF)),
-                                      );
-                                    } else {
-                                      return const SizedBox.shrink();
-                                    }
-                                  },
-                                ),
-                            ],
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () =>
+                            ),
+                            child: MyCachedNetworkImage(
+                              imageUrl:
+                                  ChatUrls.baseUrl + widget.receiverPhoto!,
+                              imageFit: BoxFit.cover,
+                              progressIndicatorBuilderWidget: TrydosLoader(),
+                              height: 40,
+                              width: 40.w,
+                            ),
+                          )
+                        : NoImageWidget(
+                            height: 40,
+                            width: 40.w,
+                            textStyle: context.textTheme.subtitle1?.br.copyWith(
+                                color: const Color(0xff6638FF),
+                                letterSpacing: 0.18,
+                                height: 1.33),
+                            name: widget.receiverName),
+                    20.horizontalSpace,
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          InkWell(
+                            onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (_) => CreateCallPage(
-                                        fullReceiverName:
-                                            widget.fullReceiverName,
-                                        receiverName: widget.receiverName,
-                                        receiverPhoto: widget.receiverPhone,
-                                      ))),
-                          child: SvgPicture.asset(
-                            AppAssets.makeVideoCallSvg,
-                            width: 34.w,
-                            height: 25,
+                                  builder: (_) => ProfilePage(
+                                      receiverName: widget.receiverName,
+                                      receiverPhoto: widget.receiverPhoto,
+                                      fullReceiverName: widget.fullReceiverName,
+                                      receiverPhone: widget.receiverPhone)));
+                            },
+                            child: Text(
+                              widget.fullReceiverName,
+                              style: textTheme.subtitle1?.mr
+                                  .copyWith(color: const Color(0xff5D5C5D)),
+                            ),
                           ),
-                        ),
-                        30.horizontalSpace,
-                        InkWell(
-                          onTap: () =>
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (_) => CreateCallPage(
-                                        fullReceiverName:
-                                            widget.fullReceiverName,
-                                        receiverName: widget.receiverName,
-                                        receiverPhoto: widget.receiverPhone,
-                                      ))),
-                          child: SvgPicture.asset(
-                            AppAssets.makeCallSvg,
-                            width: 25.w,
-                            height: 25,
-                          ),
-                        ),
-                        20.horizontalSpace
-                      ],
+                          if (int.tryParse(widget.chatId) != null)
+                            BlocBuilder<AppBloc, AppState>(
+                              builder: (context, state) {
+                                if (state.pusherActivityIds[
+                                        int.parse(widget.chatId)] !=
+                                    null) {
+                                  return Text(
+                                    state.pusherActivityDescription[
+                                            int.parse(widget.chatId)]
+                                        .toString(),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: textTheme.caption?.mr.copyWith(
+                                        color: const Color(0xff007CFF)),
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              },
+                            ),
+                        ],
+                      ),
                     ),
+                    InkWell(
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => CreateCallPage(
+                                fullReceiverName: widget.fullReceiverName,
+                                receiverName: widget.receiverName,
+                                receiverPhoto: widget.receiverPhone,
+                              ))),
+                      child: SvgPicture.asset(
+                        AppAssets.makeVideoCallSvg,
+                        width: 34.w,
+                        height: 25,
+                      ),
+                    ),
+                    30.horizontalSpace,
+                    InkWell(
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => CreateCallPage(
+                                fullReceiverName: widget.fullReceiverName,
+                                receiverName: widget.receiverName,
+                                receiverPhoto: widget.receiverPhone,
+                              ))),
+                      child: SvgPicture.asset(
+                        AppAssets.makeCallSvg,
+                        width: 25.w,
+                        height: 25,
+                      ),
+                    ),
+                    20.horizontalSpace
+                  ],
+                ),
               )),
         ),
-        body: Column(
-          children: [
-            Flexible(
-              child: BlocBuilder<ChatBloc, ChatState>(
-                buildWhen: (p, c) {
-                  Chat previousChat = p.chats.firstWhere(
-                      (element) =>
-                          element.id.toString() == widget.chatId ||
-                          element.localId.toString() == widget.chatId,
-                      orElse: () => p.pinnedChats.firstWhere((element) =>
-                          element.id.toString() == widget.chatId ||
-                          element.localId.toString() == widget.chatId));
-                  Chat currentChat = c.chats.firstWhere(
-                      (element) =>
-                          element.id.toString() == widget.chatId ||
-                          element.localId.toString() == widget.chatId,
-                      orElse: () => c.pinnedChats.firstWhere((element) =>
-                          element.id.toString() == widget.chatId ||
-                          element.localId.toString() == widget.chatId));
-                  rebuildScreen = (previousChat.messages?.length !=
-                          currentChat.messages?.length) ||
-                      getMessagesBetween;
-                  fromPagination = previousChat.paginationStatus !=
-                          currentChat.paginationStatus &&
-                      currentChat.paginationStatus == PaginationStatus.success;
-                  getChats = p.getChatsStatus != c.getChatsStatus && c.getChatsStatus == GetChatsStatus.success;
-                  sendOrReceiveMessage = c.sendMessageStatus ==
-                          SendMessageStatus.loading ||
-                      (c.receiveMessageStatus == ReceiveMessageStatus.success &&
-                          widget.chatId ==
-                              c.currentChannelReceivedMessage.toString());
-                  getMessagesBetween =
-                      p.getMessagesBetweenStatus != c.getMessagesBetweenStatus;
-                  if (getChats) {
-                    fromPagination = false;
-                    sendOrReceiveMessage = false;
-                    getMessagesBetween = false;
-                  }
-                  return rebuildScreen ||
-                      p.unReadMessagesFromAllChats !=
-                          c.unReadMessagesFromAllChats ||
-                      getMessagesBetween;
-                },
-                builder: (context, chatState) {
-                  print(rebuildScreen);
-                  print(sendOrReceiveMessage);
-                  if (rebuildScreen) {
+        body: BlocListener<ChatBloc, ChatState>(
+          listenWhen: (p, c) => (p.getMessagesBetweenStatus !=
+                  c.getMessagesBetweenStatus &&
+              c.getMessagesBetweenStatus == GetMessagesBetweenStatus.success &&
+              c.scrollToParentMessage),
+          listener: (context, state) {
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              scrollToIndex(1);
+            });
+          },
+          child: Column(
+            children: [
+              Flexible(
+                child: BlocConsumer<ChatBloc, ChatState>(
+                  listenWhen: (p, c) =>
+                      p.sendMessageStatus != c.sendMessageStatus ||
+                      p.receiveMessageStatus != c.receiveMessageStatus,
+                  listener: (context, state) {
+                    if (state.sendMessageStatus == SendMessageStatus.loading ||
+                        state.receiveMessageStatus ==
+                            ReceiveMessageStatus.success) {
+                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                        _scrollToBottom();
+                      });
+                    }
+                    if (state.receiveMessageStatus ==
+                            ReceiveMessageStatus.success &&
+                        chat.id == state.currentChannelReceivedMessage) {
+                      chatBloc.add(ReadAllMessagesEvent(widget.chatId));
+                    }
+                  },
+                  builder: (context, chatState) {
                     chat = chatState.chats.firstWhere(
-                        (element) => element.id.toString() == widget.chatId,
+                        (element) =>
+                            element.id.toString() == widget.chatId ||
+                            element.localId.toString() == widget.chatId,
                         orElse: () => chatState.pinnedChats.firstWhere(
-                            (element) => element.id.toString() == widget.chatId));
-
-                    if (getMessagesBetween) {
-                      print('messages between');
-                      bool enableTake=false;
-                      List<Message> messages = [];
-                      for (int i = chat.messages!.length - 1; i >= 0; i--) {
-                        if(chatState.scrollToParentMessage) {
-                          if (getMessageIndex(chat.messages![i].id, null) !=
-                              -1) {
-                            break;
-                          }
-                          messages.insert(0, chat.messages![i]);
-                        }else{
-                          if(chat.messages![i].id==chatState.firstMessageId) enableTake=true;
-                          if(chat.messages![i].id==chatState.secondMessageId) break;
-                          if(enableTake)messages.insert(0, chat.messages![i]);
-                        }
-                      }
-                      preProcessingOfMessaging(
-                          messages,
-                          chatState.scrollToParentMessage ? 0 : getMessageIndex(chatState.secondMessageId, null ),
-                          false,
-                          widget.senderName,
-                          widget.receiverName,
-                          widget.senderPhoto,
-                          widget.receiverPhoto,
-                          fromGetMessagesBetween: true,
-                          replacedReplyMessage: chatState.scrollToParentMessage
-                              ? chat.messages!.firstWhere((element) =>
-                                  element.id == chatState.secondMessageId)
-                              : null);
-                    }
-                    if (data.isEmpty) {
-                      print('data empty');
-                      preProcessingOfMessaging(
-                        chat.messages ?? [],
-                        0,
-                        true,
-                        widget.senderName,
-                        widget.receiverName,
-                        widget.senderPhoto,
-                        widget.receiverPhoto,
-                      );
-                    }
-                    if (getChats) {
-                      print('get chats');
-                      data = [];
-                      previousMessageSenderId = null;
-                      currentMessageSenderId = null;
-                      messagesByDate = {};
-                      preProcessingOfMessaging(
-                        chat.messages ?? [],
-                        0,
-                        true,
-                        widget.senderName,
-                        widget.receiverName,
-                        widget.senderPhoto,
-                        widget.receiverPhoto,
-                      );
-                    }
-                    if (sendOrReceiveMessage) {
-                      print('sending or receive');
-                      preProcessingOfMessaging(
-                        [chat.messages![0]],
-                        -1,
-                        true,
-                        widget.senderName,
-                        widget.receiverName,
-                        widget.senderPhoto,
-                        widget.receiverPhoto,
-                      );
-                      rebuildMessage.value = -1;
-                      if ((chatState.receiveMessageStatus ==
-                              ReceiveMessageStatus.success &&
-                          widget.chatId ==
-                              chatState.currentChannelReceivedMessage
-                                  .toString())) {
-                        playSound();
-                      }
-                      if (chat.messages![0].senderUserId !=
-                          _prefsRepository.myId) {
-                        chatBloc.add(ReadAllMessagesEvent(widget.chatId));
-                      }
-                    }
-                    if (fromPagination) {
-                      print('pagination');
-                      List<Message> messages = [];
-                      for (int i = chat.messages!.length - 10;
-                          i < chat.messages!.length;
-                          i++) {
-                        messages.add(chat.messages![i]);
-                      }
-                      preProcessingOfMessaging(
-                        messages,
-                        0,
-                        false,
-                        widget.senderName,
-                        widget.receiverName,
-                        widget.senderPhoto,
-                        widget.receiverPhoto,
-                      );
-                    }
-                    if (chatState.currentChannelReceivedMessage == chat.id) {
-                      countMessagesReceivedToMeNow++;
-                    }
-                    rebuildScreen = false;
-                  }
-                  return GestureDetector(
-                      onTap: () {
-                        rebuildMessage.value = -1;
-                      },
-                      child: SafeArea(
-                          child: ValueListenableBuilder<int>(
-                              valueListenable: rebuildMessage,
-                              builder: (context, currentIndex, _) {
-                                currentFocusedIcon.value = -2;
-                                print('data length: ${data.length}');
-                                return Column(
-                                  children: [
-                                    Expanded(
-                                      child: ScrollConfiguration(
-                                        behavior: const CupertinoScrollBehavior(),
-                                        child: ListView.builder(
-                                          controller: autoScrollController,
-                                          physics: const ClampingScrollPhysics(),
-                                          itemBuilder: (context, index) {
-                                            return ValueListenableBuilder<int>(
-                                                valueListenable:
-                                                    currentFocusedIcon,
-                                                builder:
-                                                    (context, focusedIndex, _) {
-                                                  bool isSent = (data[index]
-                                                          is TextMessage &&
-                                                      (data[index] as TextMessage)
-                                                          .isSent);
-                                                  String? messageId = (data[index]
-                                                          is TextMessage)
-                                                      ? (data[index]
-                                                              as TextMessage)
-                                                          .messageId
-                                                      : (data[index]
-                                                              is ImageMessage)
-                                                          ? (data[index]
-                                                                  as ImageMessage)
-                                                              .messageId
-                                                          : (data[index]
-                                                                  is VoiceMessage)
-                                                              ? (data[index]
-                                                                      as VoiceMessage)
-                                                                  .messageId
-                                                              : (data[index]
-                                                                      is ReplayMessage)
-                                                                  ? (data[index]
-                                                                          as ReplayMessage)
-                                                                      .messageId
-                                                                  : (data[index]
-                                                                          is ReplayOnMeMessage)
-                                                                      ? (data[index]
-                                                                              as ReplayOnMeMessage)
-                                                                          .messageId
-                                                                      : null;
+                            (element) =>
+                                element.id.toString() == widget.chatId ||
+                                element.localId.toString() == widget.chatId));
+                    return GestureDetector(
+                        onTap: () {
+                          rebuildMessage.value = -1;
+                        },
+                        child: SafeArea(
+                            child: ValueListenableBuilder<int>(
+                                valueListenable: rebuildMessage,
+                                builder: (context, currentIndex, _) {
+                                  currentFocusedIcon.value = -2;
+                                  return ValueListenableBuilder<int>(
+                                      valueListenable: currentFocusedIcon,
+                                      builder: (context, focusedIndex, _) {
+                                        return Column(
+                                          children: [
+                                            chat.paginationStatus ==
+                                                    PaginationStatus.loading
+                                                ? TrydosLoader()
+                                                : SizedBox.shrink(),
+                                            chat.paginationStatus ==
+                                                    PaginationStatus.loading
+                                                ? 8.verticalSpace
+                                                : SizedBox.shrink(),
+                                            Flexible(
+                                              child: ListView.builder(
+                                                physics:
+                                                    const ClampingScrollPhysics(),
+                                                shrinkWrap: true,
+                                                reverse: true,
+                                                controller:
+                                                    autoScrollController,
+                                                itemBuilder: (context, index) {
+                                                  List<Message> messages =
+                                                      chatState
+                                                          .newSortedChatsByDate![
+                                                              chat.id
+                                                                  .toString()]!
+                                                          .reversed
+                                                          .toList();
+                                                  if (messages[index]
+                                                      .isDateMessage) {
+                                                    return AutoScrollTag(
+                                                        key: ValueKey(index),
+                                                        index: index,
+                                                        controller:
+                                                            autoScrollController,
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            10.verticalSpace,
+                                                            MessagesDate(
+                                                                date: messages[
+                                                                        index]
+                                                                    .dateValue),
+                                                          ],
+                                                        ));
+                                                  }
+                                                  print('isForward : ${messages[index].isForward}');
+                                                  print('senderUserId : ${messages[index].senderUserId}');
+                                                  print('myChatId : ${_prefsRepository.myChatId}');
+                                                  bool isSent = messages[index]
+                                                          .senderUserId ==
+                                                      _prefsRepository.myChatId;
+                                                  String? messageId =
+                                                      messages[index].id;
+                                                  messagesIndexes[
+                                                      messages[index]
+                                                          .id
+                                                          .toString()] = index;
                                                   return AutoScrollTag(
-                                                    key: ValueKey(index),
-                                                    index: index,
-                                                    controller:
-                                                        autoScrollController,
-                                                    child: Column(
-                                                      children: [
-                                                        GestureDetector(
-                                                            onLongPress: () {
-                                                              if ((chatState
-                                                                          .sendMessageStatus ==
-                                                                      SendMessageStatus
-                                                                          .loading &&
-                                                                  chatState
-                                                                      .currentMessage
-                                                                      .contains(
-                                                                          messageId))) {
-                                                                return;
-                                                              }
-                                                              if (index != 0) {
-                                                                rebuild = false;
+                                                      key: ValueKey(messageId),
+                                                      index: index,
+                                                      controller:
+                                                          autoScrollController,
+                                                      child: Column(
+                                                          mainAxisSize:
+                                                          MainAxisSize.min,
+                                                          children: [
+                                                            messages[index]
+                                                                    .isFirstMessage
+                                                                ? 30.verticalSpace
+                                                                : 10.verticalSpace,
+                                                            GestureDetector(
+                                                              onLongPress: () {
+                                                                if ((chatState
+                                                                            .sendMessageStatus ==
+                                                                        SendMessageStatus
+                                                                            .loading &&
+                                                                    chatState
+                                                                        .currentMessage
+                                                                        .contains(
+                                                                            messageId))) {
+                                                                  return;
+                                                                }
                                                                 rebuildMessage
                                                                         .value =
                                                                     index;
-                                                                if (rebuildMessage
-                                                                        .value ==
-                                                                    (data.length -
-                                                                        2)) {
-                                                                  autoScrollController
-                                                                      .animateTo(
-                                                                    autoScrollController
-                                                                            .position
-                                                                            .maxScrollExtent +
-                                                                        100,
-                                                                    duration: const Duration(
-                                                                        milliseconds:
-                                                                            100),
-                                                                    curve: Curves
-                                                                        .easeOut,
-                                                                  );
-                                                                }
-                                                                Future.delayed(
-                                                                  const Duration(
-                                                                      milliseconds:
-                                                                          150),
-                                                                  () => rebuild =
-                                                                      true,
-                                                                );
-                                                              }
-                                                            },
-                                                            onTap: () {
-                                                              print('tap');
-                                                              rebuildMessage
-                                                                  .value = -1;
-                                                            },
-                                                            child: Container(
+                                                              },
+                                                              onTap: () {
+                                                                rebuildMessage
+                                                                    .value = -1;
+                                                              },
+                                                              child: Container(
                                                                 color: currentScrolledIndex ==
                                                                         index
-                                                                    ? Colors.grey
-                                                                        .shade100
-                                                                    : Colors
-                                                                        .transparent,
+                                                                    ? Colors
+                                                                        .black12
+                                                                        .withOpacity(
+                                                                            0.05)
+                                                                    : null,
                                                                 child:
-                                                                    data[index])),
-                                                        currentIndex == index
-                                                            ? 5.verticalSpace
-                                                            : const SizedBox
-                                                                .shrink(),
-                                                        currentIndex == index
-                                                            ? Padding(
-                                                                padding: HWEdgeInsets.only(
-                                                                    left: isSent
-                                                                        ? 40.w
-                                                                        : 20.w,
-                                                                    top: 10,
-                                                                    right: isSent
-                                                                        ? 20.w
-                                                                        : 40.w),
-                                                                child:
-                                                                    GestureDetector(
-                                                                  key: key,
-                                                                  onPanDown:
-                                                                      (details) {
-                                                                    print('down');
-                                                                    if (details
-                                                                            .localPosition
-                                                                            .dx <
-                                                                        5) {
-                                                                      return;
-                                                                    }
-                                                                    print(isSent);
-                                                                    if (isSent) {
-                                                                      x = 130;
-                                                                    } else {
-                                                                      final RenderBox
-                                                                          renderBox =
-                                                                          key.currentContext?.findRenderObject()
-                                                                              as RenderBox;
-                                                                      final position =
-                                                                          renderBox
-                                                                              .localToGlobal(Offset.zero);
-                                                                      x = position
-                                                                          .dx;
-                                                                      xActionSubtitle =
-                                                                          x;
-                                                                      yActionSubtitle =
-                                                                          position
-                                                                              .dy;
-                                                                    }
-                                                                    currentHoverPosition =
-                                                                        details
-                                                                            .localPosition
-                                                                            .dx;
-                                                                    print(x);
-                                                                    if ((currentHoverPosition -
-                                                                            x) <
-                                                                        40) {
-                                                                      currentFocusedIcon
-                                                                          .value = -1;
-                                                                    } else {
-                                                                      print(
-                                                                          currentHoverPosition -
-                                                                              x);
-                                                                      currentFocusedIcon
-                                                                          .value = ((currentHoverPosition -
-                                                                              x -
-                                                                              40) ~/
-                                                                          25);
-                                                                    }
-                                                                    dealWithMessageOptions(
-                                                                        currentFocusedIcon
-                                                                            .value,
-                                                                        messageId);
-                                                                  },
-                                                                  onPanEnd:
-                                                                      (details) {
-                                                                    print('end');
-                                                                    rebuildMessage
-                                                                        .value = -1;
-                                                                    dealWithMessageOptions(
-                                                                        currentFocusedIcon
-                                                                            .value,
-                                                                        messageId);
-                                                                  },
-                                                                  onPanUpdate:
-                                                                      (details) {
-                                                                    print(
-                                                                        'update');
-                                                                    if (details.localPosition
-                                                                                .dx <
-                                                                            x &&
-                                                                        currentFocusedIcon
-                                                                                .value ==
-                                                                            -1) {
-                                                                      currentFocusedIcon
-                                                                          .value = -1;
-                                                                      return;
-                                                                    }
-                                                                    if (details.localPosition
-                                                                                .dx >
-                                                                            x +
-                                                                                225
-                                                                                    .w &&
-                                                                        currentFocusedIcon
-                                                                                .value ==
-                                                                            5) {
-                                                                      currentFocusedIcon
-                                                                          .value = 5;
-                                                                      return;
-                                                                    }
-                                                                    final dragDifference = details
-                                                                            .localPosition
-                                                                            .dx -
-                                                                        currentHoverPosition;
-                                                                    if (dragDifference
-                                                                            .abs() >
-                                                                        20) {
-                                                                      currentHoverPosition =
-                                                                          details
-                                                                              .localPosition
-                                                                              .dx;
-                                                                      if (dragDifference >
-                                                                          0) {
-                                                                        currentFocusedIcon
-                                                                                .value =
-                                                                            math.min(
-                                                                                5,
-                                                                                currentFocusedIcon.value + 1);
-                                                                      } else {
-                                                                        currentFocusedIcon
-                                                                                .value =
-                                                                            math.max(
-                                                                                -1,
-                                                                                currentFocusedIcon.value - 1);
-                                                                      }
-                                                                    }
-                                                                  },
-                                                                  child:
-                                                                      Directionality(
-                                                                    textDirection:
-                                                                        ui.TextDirection
-                                                                            .ltr,
-                                                                    child:
-                                                                        Container(
-                                                                      child: Row(
-                                                                        mainAxisAlignment: isSent
-                                                                            ? MainAxisAlignment
-                                                                                .end
-                                                                            : MainAxisAlignment
-                                                                                .start,
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment
-                                                                                .start,
-                                                                        children: [
-                                                                          Column(
-                                                                            children: [
-                                                                              InkWell(
-                                                                                highlightColor: const Color(0xfffafafa),
-                                                                                splashColor: const Color(0xfffafafa),
-                                                                                onTap: () {
-                                                                                  currentFocusedIcon.value = -1;
-                                                                                },
-                                                                                child: Container(
-                                                                                  height: 40,
-                                                                                  width: 35.w,
-                                                                                  decoration: BoxDecoration(
-                                                                                    color: const Color(0xfffafafa),
-                                                                                    borderRadius: BorderRadius.circular(12.0),
-                                                                                    boxShadow: const [
-                                                                                      BoxShadow(
-                                                                                        color: Color(0x29000000),
-                                                                                        offset: Offset(0, 2),
-                                                                                        blurRadius: 10,
+                                                                    getTheMessageWidget(
+                                                                  message:
+                                                                      messages[
+                                                                          index],
+                                                                  senderName: widget
+                                                                      .senderName,
+                                                                  receiverName:
+                                                                      widget
+                                                                          .receiverName,
+                                                                  receiverPhoto:
+                                                                      widget
+                                                                          .receiverPhoto,
+                                                                  senderPhoto:
+                                                                      widget
+                                                                          .senderPhoto,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            index == 0
+                                                                ? 10
+                                                                    .verticalSpace
+                                                                : const SizedBox
+                                                                    .shrink(),
+                                                            currentIndex ==
+                                                                    index
+                                                                ? 5
+                                                                    .verticalSpace
+                                                                : const SizedBox
+                                                                    .shrink(),
+                                                            currentIndex ==
+                                                                    index
+                                                                ? Padding(
+                                                                    padding:
+                                                                    HWEdgeInsets.only(
+                                                                        left: isSent
+                                                                            ? 40
+                                                                            .w
+                                                                            : 20
+                                                                            .w,
+                                                                        top: 10,
+                                                                        right: isSent
+                                                                            ? 20.w
+                                                                            : 40.w),
+                                                                    child: GestureDetector(
+                                                                        onPanDown: (details) {
+                                                                          if ((details.localPosition.dx - (isSent ? 140 : 0)) <
+                                                                              40) {
+                                                                            currentFocusedIcon.value =
+                                                                                -1;
+                                                                          } else if ((details.localPosition.dx - (isSent ? 140 : 0))>
+                                                                              210.w) {
+                                                                            currentFocusedIcon.value =
+                                                                                5;
+                                                                          } else {
+                                                                            currentFocusedIcon.value =
+                                                                                (details.localPosition.dx - 40 - (isSent ? 140 : 0)) ~/ 30.w;
+                                                                          }
+                                                                        },
+                                                                        onPanEnd: (details) {
+                                                                          print(
+                                                                              'end');
+                                                                          rebuildMessage.value =
+                                                                              -1;
+                                                                          dealWithMessageOptions(
+                                                                              currentFocusedIcon.value,
+                                                                              messageId);
+                                                                        },
+                                                                        onPanUpdate: (details) {
+                                                                          if ((details.localPosition.dx - (isSent ? 140 : 0)) <
+                                                                              40) {
+                                                                            currentFocusedIcon.value =
+                                                                            -1;
+                                                                          } else if ((details.localPosition.dx - (isSent ? 140 : 0))>
+                                                                              210.w) {
+                                                                            currentFocusedIcon.value =
+                                                                            5;
+                                                                          } else {
+                                                                            currentFocusedIcon.value =
+                                                                                (details.localPosition.dx - 40 - (isSent ? 140 : 0)) ~/ 30.w;
+                                                                          }
+                                                                        },
+                                                                        child: Directionality(
+                                                                            textDirection: TextDirection.ltr,
+                                                                            child: Container(
+                                                                                //color: Colors.red,
+                                                                                child: Row(
+                                                                                  mainAxisAlignment:isSent ?  MainAxisAlignment.end : MainAxisAlignment.start,
+                                                                                    children: [
+                                                                                  Column(
+                                                                                    children: [
+                                                                                      InkWell(
+                                                                                        highlightColor: const Color(0xfffafafa),
+                                                                                        splashColor: const Color(0xfffafafa),
+                                                                                        onTap: () {
+                                                                                          currentFocusedIcon.value = -1;
+                                                                                        },
+                                                                                        child: InkWell(
+                                                                                          onTap: () {
+                                                                                            dealWithMessageOptions(-1, messageId);
+                                                                                          },
+                                                                                          child: Container(
+                                                                                            height: 40,
+                                                                                            width: 35.w,
+                                                                                            decoration: BoxDecoration(
+                                                                                              color: const Color(0xfffafafa),
+                                                                                              borderRadius: BorderRadius.circular(12.0),
+                                                                                              boxShadow: const [
+                                                                                                BoxShadow(
+                                                                                                  color: Color(0x29000000),
+                                                                                                  offset: Offset(0, 2),
+                                                                                                  blurRadius: 10,
+                                                                                                ),
+                                                                                              ],
+                                                                                            ),
+                                                                                            child: Center(
+                                                                                                child: SvgPicture.asset(
+                                                                                                  AppAssets.replyButtonLogoSvg,
+                                                                                                )),
+                                                                                          ),
+                                                                                        ),
                                                                                       ),
+                                                                                      10.verticalSpace,
+                                                                                      focusedIndex == -1
+                                                                                          ? Container(
+                                                                                        width: 50.w,
+                                                                                        height: 22,
+                                                                                        decoration: BoxDecoration(
+                                                                                          color: const Color(0xff404040),
+                                                                                          borderRadius: BorderRadius.circular(8.0),
+                                                                                          boxShadow: const [
+                                                                                            BoxShadow(
+                                                                                              color: Color(0x34000000),
+                                                                                              offset: Offset(0, 3),
+                                                                                              blurRadius: 6,
+                                                                                            ),
+                                                                                          ],
+                                                                                        ),
+                                                                                        child: Center(
+                                                                                          child: Text(
+                                                                                            'Replay',
+                                                                                            style: textTheme.overline?.rr.copyWith(color: colorScheme.white, height: 1.4),
+                                                                                          ),
+                                                                                        ),
+                                                                                      )
+                                                                                          : const SizedBox.shrink()
                                                                                     ],
                                                                                   ),
-                                                                                  child: Center(
-                                                                                      child: SvgPicture.asset(
-                                                                                    AppAssets.replyButtonLogoSvg,
-                                                                                  )),
-                                                                                ),
-                                                                              ),
-                                                                              7.verticalSpace,
-                                                                              focusedIndex == -1
-                                                                                  ? Container(
-                                                                                      width: 50.w,
-                                                                                      height: 22,
-                                                                                      decoration: BoxDecoration(
-                                                                                        color: const Color(0xff404040),
-                                                                                        borderRadius: BorderRadius.circular(8.0),
-                                                                                        boxShadow: const [
-                                                                                          BoxShadow(
-                                                                                            color: Color(0x34000000),
-                                                                                            offset: Offset(0, 3),
-                                                                                            blurRadius: 6,
+                                                                                  5.horizontalSpace,
+                                                                                  Column(
+                                                                                    mainAxisSize: MainAxisSize.min,
+                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                    children: [
+                                                                                      Row(
+                                                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                                                        children: [
+                                                                                          Container(
+                                                                                            width: 185.w,
+                                                                                            height: 40,
+                                                                                            padding: HWEdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                                                                                            decoration: BoxDecoration(
+                                                                                              color: const Color(0xfffafafa),
+                                                                                              borderRadius: BorderRadius.circular(12.0),
+                                                                                              boxShadow: const [
+                                                                                                BoxShadow(
+                                                                                                  color: Color(0x29000000),
+                                                                                                  offset: Offset(0, 2),
+                                                                                                  blurRadius: 10,
+                                                                                                ),
+                                                                                              ],
+                                                                                            ),
+                                                                                            child: Row(
+                                                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                              children: [
+                                                                                                MessageActionWidget(
+                                                                                                  onTap: () => forwardMessageMethod(messages.firstWhere((element) => element.id == messageId)),
+                                                                                                  iconUrl: AppAssets.goBackIconSvg,
+                                                                                                  myIndex: 0,
+                                                                                                  focusedIndex: focusedIndex,
+                                                                                                ),
+                                                                                                MessageActionWidget(
+                                                                                                  onTap: () {},
+                                                                                                  iconUrl: AppAssets.copyIconSvg,
+                                                                                                  myIndex: 1,
+                                                                                                  focusedIndex: focusedIndex,
+                                                                                                ),
+                                                                                                MessageActionWidget(
+                                                                                                  onTap: () {},
+                                                                                                  iconUrl: AppAssets.addToGroupSvg,
+                                                                                                  myIndex: 2,
+                                                                                                  focusedIndex: focusedIndex,
+                                                                                                ),
+                                                                                                MessageActionWidget(
+                                                                                                  onTap: () {},
+                                                                                                  iconUrl: AppAssets.removeIconSvg,
+                                                                                                  myIndex: 3,
+                                                                                                  focusedIndex: focusedIndex,
+                                                                                                ),
+                                                                                                MessageActionWidget(
+                                                                                                  onTap: () {},
+                                                                                                  iconUrl: AppAssets.editIconSvg,
+                                                                                                  myIndex: 4,
+                                                                                                  focusedIndex: focusedIndex,
+                                                                                                ),
+                                                                                                MessageActionWidget(
+                                                                                                  onTap: () {
+                                                                                                  },
+                                                                                                  iconUrl: AppAssets.notificationIconSvg,
+                                                                                                  myIndex: 5,
+                                                                                                  focusedIndex: focusedIndex,
+                                                                                                ),
+                                                                                              ],
+                                                                                            ),
                                                                                           ),
                                                                                         ],
                                                                                       ),
-                                                                                      child: Center(
-                                                                                        child: Text(
-                                                                                          'Replay',
-                                                                                          style: textTheme.overline?.rr.copyWith(color: colorScheme.white, height: 1.4),
-                                                                                        ),
-                                                                                      ),
-                                                                                    )
-                                                                                  : const SizedBox.shrink()
-                                                                            ],
-                                                                          ),
-                                                                          5.horizontalSpace,
-                                                                          Column(
-                                                                            mainAxisSize:
-                                                                                MainAxisSize.min,
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Row(
-                                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                                children: [
-                                                                                  Container(
-                                                                                    width: 185.w,
-                                                                                    height: 40,
-                                                                                    padding: HWEdgeInsets.symmetric(vertical: 12, horizontal: 10),
-                                                                                    decoration: BoxDecoration(
-                                                                                      color: const Color(0xfffafafa),
-                                                                                      borderRadius: BorderRadius.circular(12.0),
-                                                                                      boxShadow: const [
-                                                                                        BoxShadow(
-                                                                                          color: Color(0x29000000),
-                                                                                          offset: Offset(0, 2),
-                                                                                          blurRadius: 10,
-                                                                                        ),
-                                                                                      ],
-                                                                                    ),
-                                                                                    child: Row(
-                                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                      children: [
-                                                                                        MessageActionWidget(
-                                                                                          onTap: () => forwardMessageMethod(chat.messages!.firstWhere((element) => element.id == messageId)),
-                                                                                          iconUrl: AppAssets.goBackIconSvg,
-                                                                                          myIndex: 0,
-                                                                                          focusedIndex: focusedIndex,
-                                                                                        ),
-                                                                                        MessageActionWidget(
-                                                                                          onTap: () {},
-                                                                                          iconUrl: AppAssets.copyIconSvg,
-                                                                                          myIndex: 1,
-                                                                                          focusedIndex: focusedIndex,
-                                                                                        ),
-                                                                                        MessageActionWidget(
-                                                                                          onTap: () {},
-                                                                                          iconUrl: AppAssets.addToGroupSvg,
-                                                                                          myIndex: 2,
-                                                                                          focusedIndex: focusedIndex,
-                                                                                        ),
-                                                                                        MessageActionWidget(
-                                                                                          onTap: () {},
-                                                                                          iconUrl: AppAssets.removeIconSvg,
-                                                                                          myIndex: 3,
-                                                                                          focusedIndex: focusedIndex,
-                                                                                        ),
-                                                                                        MessageActionWidget(
-                                                                                          onTap: () {},
-                                                                                          iconUrl: AppAssets.editIconSvg,
-                                                                                          myIndex: 4,
-                                                                                          focusedIndex: focusedIndex,
-                                                                                        ),
-                                                                                        MessageActionWidget(
-                                                                                          onTap: () {},
-                                                                                          iconUrl: AppAssets.notificationIconSvg,
-                                                                                          myIndex: 5,
-                                                                                          focusedIndex: focusedIndex,
-                                                                                        ),
-                                                                                      ],
-                                                                                    ),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                              10.verticalSpace,
-                                                                              focusedIndex >= 0
-                                                                                  ? Align(alignment: Alignment(xActionSubtitle, yActionSubtitle + 50), child: Transform.translate(offset: Offset((focusedIndex + 1) * 22, 0), child: MessageSubtitleWidget(focusedIndex: focusedIndex)))
-                                                                                  : const SizedBox.shrink()
-                                                                            ],
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              )
-                                                            : const SizedBox
-                                                                .shrink(),
-                                                      ],
-                                                    ),
-                                                  );
-                                                });
-                                          },
-                                          itemCount: data.length,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              })));
+                                                                                      10.verticalSpace,
+                                                                                      focusedIndex >= 0 ? Transform.translate(offset: Offset(focusedIndex * 30.w , 0),child: MessageSubtitleWidget(focusedIndex: focusedIndex)) : const SizedBox.shrink()
+                                                                                    ],
+                                                                                  )
+                                                                                ])))))
+                                                                : SizedBox.shrink()
+                                                          ]));
+                                                },
+                                                itemCount: chatState
+                                                    .newSortedChatsByDate![
+                                                        chat.id]!
+                                                    .length,
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      });
+                                })));
+                  },
+                ),
+              ),
+              BlocBuilder<AppBloc, AppState>(
+                buildWhen: (p, c) => p.thereIsReply != c.thereIsReply,
+                builder: (context, state) {
+//                flutterToast.s
+                  return ChatInputField(
+                    channelId: chat.id!,
+                    senderName: widget.senderName,
+                    channelPusherName: chat.pusherChannelName ?? '',
+                    senderUserImage: widget.senderPhoto,
+                    onSendFile: (File file, String customPathType) {
+                      String id = const Uuid().v4();
+                      FileSaving().saveFileToSpecificDirectory(file);
+                      ChannelMember member = chat.channelMembers!.firstWhere(
+                          (element) =>
+                              element.userId != _prefsRepository.myChatId);
+                      String mimeStr = lookupMimeType(file.absolute.path) ??'';
+                      bool  isMediaFile = mimeStr.split('/')[0] != 'application';
+
+                      chatBloc.add(UploadFileEvent(
+                          file: file,
+                          channelId: chat.id.toString(),
+                          filePath: customPathType == 'image'
+                              ? 'images/test'
+                              : customPathType == 'file'
+                                  ? 'files/test'
+                                  : customPathType == 'video'
+                                      ? 'videos/test'
+                                      : 'voices/test',
+                          useCloudinaryToUpload: isMediaFile,
+                          fileName: file.path,
+                          messageType: customPathType == 'image'
+                              ? 'ImageMessage'
+                              : customPathType == 'file'
+                                  ? 'FileMessage'
+                                  : customPathType == 'video'
+                                      ? 'VideoMessage'
+                                      : 'VoiceMessage',
+                          isForward: false,
+                          senderParentMessageId: state.senderParentMessageId,
+                          parentMessageId:
+                              state.thereIsReply ? state.messageId : null,
+                          messageId: id,
+                          parentMessageContent: customPathType == 'image'
+                              ? 'Photo'
+                              : customPathType == 'file'
+                                  ? 'File'
+                                  : customPathType == 'video'
+                                      ? 'Video'
+                                      : 'Voice',
+                          receiverUserId: member.userId));
+                      BlocProvider.of<AppBloc>(context).add(
+                          RefreshChatInputField(false, '', false,
+                              messageId: null,
+                              message: null,
+                              senderParentMessageId: null,
+                              imageUrl: null,
+                              time: null));
+                    },
+                    onSendMessage: (String message) {
+                      String id = const Uuid().v4();
+                      ChannelMember member = chat.channelMembers!.firstWhere(
+                          (element) =>
+                              element.userId != _prefsRepository.myChatId);
+//                    print('there : ${state.thereIsReply}');
+                      chatBloc.add(SendMessageEvent(
+                          messageType: 'TextMessage',
+                          channelId: chat.id.toString(),
+                          isForward: false,
+                          parentMessageId:
+                              state.thereIsReply ? state.messageId : null,
+                          content: message,
+                          messageId: id,
+                          senderParentMessageId: state.senderParentMessageId,
+                          parentMessageContent: state.message,
+                          receiverUserId: member.userId));
+                      BlocProvider.of<AppBloc>(context).add(
+                          RefreshChatInputField(false, '', false,
+                              messageId: null,
+                              message: null,
+                              senderParentMessageId: null,
+                              imageUrl: null,
+                              time: null));
+                      // rebuildMessage.value = data.length;
+                    },
+                  );
                 },
               ),
-            ),
-            BlocBuilder<AppBloc, AppState>(
-              buildWhen: (p,c)=> p.thereIsReply != c.thereIsReply,
-              builder: (context, state) {
-                return ChatInputField(
-                  channelId: chat.id!,
-                  senderName: widget.senderName,
-                  channelPusherName: chat.pusherChannelName ?? '',
-                  senderUserImage: widget.senderPhoto,
-                  onSendFile: (File file, String type) {
-                    String id = const Uuid().v4();
-                    FileSaving().saveFileToSpecificDirectory(file);
-                    ChannelMember member = chat.channelMembers!.firstWhere(
-                        (element) => element.userId != _prefsRepository.myId);
-                    String fileName = 'Trydos-${DateTime.now()}';
-                    chatBloc.add(UploadFileEvent(
-                        file: file,
-                        channelId: widget.chatId,
-                        fileName: fileName,
-                        filePath: type == 'image'
-                            ? 'images/test'
-                            : type == 'file'
-                                ? 'files/test'
-                                : type == 'video'
-                                    ? 'videos/test'
-                                    : 'voices/test',
-                        messageType: type == 'image'
-                            ? 'ImageMessage'
-                            : type == 'file'
-                                ? 'FileMessage'
-                                : type == 'video'
-                                    ? 'VideoMessage'
-                                    : 'VoiceMessage',
-                        isForward: false,
-                        senderParentMessageId: state.senderParentMessageId,
-                        parentMessageId:
-                            state.thereIsReply ? state.messageId : null,
-                        messageId: id,
-                        parentMessageContent: type == 'image'
-                            ? 'Photo'
-                            : type == 'file'
-                                ? 'File'
-                                : type == 'video'
-                                    ? 'Video'
-                                    : 'Voice',
-                        receiverUserId: member.userId));
-                    BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                        false, '', false,
-                        messageId: null,
-                        message: null,
-                        senderParentMessageId: null,
-                        imageUrl: null,
-                        time: null));
-                  },
-                  onSendMessage: (String message) {
-                    String id = const Uuid().v4();
-                    ChannelMember member = chat.channelMembers!.firstWhere(
-                        (element) => element.userId != _prefsRepository.myId);
-                    print('there : ${state.thereIsReply}');
-                    chatBloc.add(SendMessageEvent(
-                        messageType: 'TextMessage',
-                        channelId: widget.chatId,
-                        isForward: false,
-                        parentMessageId:
-                            state.thereIsReply ? state.messageId : null,
-                        content: message,
-                        messageId: id,
-                        senderParentMessageId: state.senderParentMessageId,
-                        parentMessageContent: state.message,
-                        receiverUserId: member.userId));
-                    BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                        false, '', false,
-                        messageId: null,
-                        message: null,
-                        senderParentMessageId: null,
-                        imageUrl: null,
-                        time: null));
-                    // rebuildMessage.value = data.length;
-                  },
-                );
-              },
-            ),
-            0.2.verticalSpace
-          ],
+              0.2.verticalSpace
+            ],
+          ),
         ));
   }
+
+  void dealWithMessageOptions(int index, String? messageId) {
+    print('indexxxx:  $index');
+    if (index == -1) {
+      replayMessage(
+          chat.messages!.firstWhere((element) => element.id == messageId),
+          _prefsRepository.myChatId);
+    } else if (index == 0) {
+      forwardMessageMethod(
+          chat.messages!.firstWhere((element) => element.id == messageId));
+    }
+  }
+
+  void forwardMessageMethod(Message message) {
+
+    context.push(
+      GRouter.config.applicationRoutes.kChatPage +
+          '?hideCallsAndStories=true&description=Forward To...',
+      extra: (int receiverId, String channelId) {
+        if (message.messageType!.name == 'TextMessage') {
+          chatBloc.add(SendMessageEvent(
+              messageType: message.messageType!.name,
+              channelId: channelId,
+              isForward: true,
+              parentMessageId: null,
+              content: message.messageContent!.content,
+              messageId: message.id!,
+              senderParentMessageId: null,
+              parentMessageContent: null,
+              receiverUserId: receiverId));
+        } else {
+          chatBloc.add(SendMessageEvent(
+              channelId: channelId,
+              mediaContent: [
+                {
+                  'file_path': message.mediaMessageContent?[0].filePath,
+                  'file_name': message.mediaMessageContent?[0].fileName,
+                }
+              ],
+              messageType: message.messageType!.name,
+              isForward: true,
+              senderParentMessageId: null,
+              parentMessageId: null,
+              messageId: message.id!,
+              parentMessageContent: null,
+              receiverUserId: receiverId));
+        }
+      },
+    );
+  }
+
+  void replayMessage(Message message, int? myChatId) {
+    BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
+        true,
+        message.messageType!.name == 'TextMessage'
+            ? 'text'
+            : message.messageType!.name == 'TextMessage'
+                ? 'image'
+                : 'voice',
+        message.senderUserId == myChatId,
+        messageId: message.id,
+        senderParentMessageId: message.senderUserId,
+        message: message.messageContent?.content ??
+            (message.messageType!.name == 'TextMessage' ? 'Photo' : 'Voice'),
+        imageUrl:
+            message.mediaMessageContent?.first.filePath ?? message.file?.path,
+        time: message.createdAt));
+  }
+
+  void scrollToIndex(int index,
+      {String? currentId,
+      String? parentMessageId,
+      Duration? duration,
+      AutoScrollPosition? preferPosition}) {
+    if (index == -1) {
+      chatBloc.add(GetAllMessagesBetweenEvent(
+          firstMessageId: parentMessageId!,
+          scrollToParentMessage: true,
+          secondMessageId: currentId!,
+          channelId: widget.chatId));
+      return;
+    }
+    autoScrollController
+        .scrollToIndex(index,
+            duration: duration ?? const Duration(milliseconds: 50),
+            preferPosition: preferPosition ?? AutoScrollPosition.middle)
+        .then((value) {
+      currentScrolledIndex = index;
+      rebuildMessage.value = index;
+      Future.delayed(
+        Duration(milliseconds: 800),
+        () {
+          currentScrolledIndex = -1;
+          rebuildMessage.value = -1;
+        },
+      );
+    });
+  }
+
+  void _loadMoreMessages() {
+    chatBloc.add(GetMessagesForChatEvent(channelId: widget.chatId));
+  }
+
+  getTheMessageWidget({
+    required Message message,
+    required String senderName,
+    required String receiverName,
+    String? senderPhoto,
+    String? receiverPhoto,
+  }) {
+    String? filePath = message.mediaMessageContent?[0].filePath;
+    if (message.file == null &&
+        filePath != null &&
+        _prefsRepository.isAFilePathExist(filePath)) {
+      //todo
+      debugPrint('filePath${filePath}');
+      debugPrint('senderName${senderName}');
+      debugPrint('receiverName${receiverName}');
+      String? path = _prefsRepository.getTheLocalPathForFile(filePath);
+      File? file = File(path!);
+      message = message.copyWith(file: file, checkedExistence: true);
+    }
+    MessageStatus? messageStatus = message.messageStatus
+        ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
+    if (message.parentMessageId != null && message.parentMessage != null) {
+      Message parentMessage = message.parentMessage!;
+      MessageStatus? parentMessageStatus = parentMessage.messageStatus
+          ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
+      if (parentMessage.senderUserId != message.senderUserId) {
+        return ReplayMessage(
+            messageDate: message.createdAt!,
+            scrollToMessage: () => scrollToIndex(
+                messagesIndexes[parentMessage.id.toString()] ?? -1,
+                currentId: message.id!,
+                parentMessageId: message.parentMessageId!),
+            messageId: message.parentMessageId!,
+            answeredFilePath: message.mediaMessageContent?[0].filePath,
+            messageAnswer: message.messageContent?.content,
+            isFirstMessage: message.isFirstMessage,
+            replayedPhoto:
+                parentMessage.id == _prefsRepository.myChatId.toString()
+                    ? senderPhoto
+                    : receiverPhoto,
+            replayedName:
+                parentMessage.id == _prefsRepository.myChatId.toString()
+                    ? senderName
+                    : receiverName,
+            senderAnswerName: senderName,
+            senderAnswerPhoto: senderPhoto,
+            isISentFirstMessage:
+                parentMessage.senderUserId == _prefsRepository.myChatId,
+            isSent: message.senderUserId == _prefsRepository.myChatId,
+            parentSenderId: parentMessage.senderUserId!,
+            isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
+            isReplayedMessageReceived:
+                (parentMessageStatus?.isReceived ?? 0) == 1,
+            isAnswerMessageRead: messageStatus?.isWatched ?? false,
+            isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
+            answeredFile: message.file,
+            message: parentMessage.messageContent?.content == null
+                ? parentMessage.messageType!.name == 'ImageMessage'
+                    ? 'Photo'
+                    : parentMessage.messageType!.name == 'FileMessage'
+                        ? 'File'
+                        : parentMessage.messageType!.name == 'VideoMessage'
+                            ? 'Video'
+                            : 'Voice'
+                : parentMessage.messageContent!.content.toString(),
+            messageAnswerId: message.id!);
+      } else {
+        return ReplayOnMeMessage(
+            messageDate: message.createdAt!,
+            messageId: message.parentMessageId!,
+            answeredFilePath: message.mediaMessageContent?[0].filePath,
+            messageAnswer: message.messageContent?.content,
+            answeredFile: message.file,
+            scrollToMessage: () => scrollToIndex(
+                messagesIndexes[parentMessage.id.toString()] ?? -1,
+                currentId: message.id!,
+                parentMessageId: message.parentMessageId!),
+            isISentFirstMessage:
+                parentMessage.senderUserId == _prefsRepository.myChatId,
+            isSent: message.senderUserId == _prefsRepository.myChatId,
+            isFirstMessage: message.isFirstMessage,
+            parentSenderId: parentMessage.senderUserId!,
+            replayedPhoto:
+                parentMessage.id == _prefsRepository.myChatId.toString()
+                    ? senderPhoto
+                    : receiverPhoto,
+            replayedName:
+                parentMessage.id == _prefsRepository.myChatId.toString()
+                    ? senderName
+                    : receiverName,
+            senderAnswerName: senderName,
+            senderAnswerPhoto: senderPhoto,
+            isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
+            isReplayedMessageReceived:
+                (parentMessageStatus?.isReceived ?? 0) == 1,
+            isAnswerMessageRead: messageStatus?.isWatched ?? false,
+            isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
+            message: parentMessage.messageContent?.content == null
+                ? parentMessage.messageType!.name == 'ImageMessage'
+                    ? 'Photo'
+                    : parentMessage.messageType!.name == 'FileMessage'
+                        ? 'File'
+                        : parentMessage.messageType!.name == 'VideoMessage'
+                            ? 'Video'
+                            : 'Voice'
+                : parentMessage.messageContent!.content.toString(),
+            messageAnswerId: message.id!);
+      }
+    }
+    else {
+      switch (message.messageType!.name) {
+        case 'TextMessage':
+          return TextMessage(
+            message: message.messageContent!.content.toString(),
+            messageId: message.id!,
+            senderId: message.senderUserId!,
+            isSent: message.receiverUserId != _prefsRepository.myChatId,
+            isRead: messageStatus?.isWatched ?? false,
+            userMessageName: message.receiverUserId != _prefsRepository.myChatId
+                ? senderName
+                : receiverName,
+            userMessagePhoto:
+                message.receiverUserId != _prefsRepository.myChatId
+                    ? senderPhoto
+                    : receiverPhoto,
+            isReceived: (messageStatus?.isReceived ?? 0) == 1,
+            isFirstMessage:
+                message.isFirstMessage || message.isFirstMessageForThisDay,
+            time: message.createdAt!,
+            isForwarded: message.isForward == 1,
+          );
+        case 'ImageMessage':
+          return ImageMessage(
+            isSent: message.receiverUserId != _prefsRepository.myChatId,
+            imageFile: message.file,
+            messageId: message.id.toString(),
+            senderId: message.senderUserId!,
+            imageUrl: message.mediaMessageContent?[0].filePath,
+            time: message.createdAt!,
+            userMessageName: message.receiverUserId != _prefsRepository.myChatId
+                ? senderName
+                : receiverName,
+            userMessagePhoto:
+                message.receiverUserId != _prefsRepository.myChatId
+                    ? senderPhoto
+                    : receiverPhoto,
+            isFirstMessage:
+                message.isFirstMessage || message.isFirstMessageForThisDay,
+            isRead: messageStatus?.isWatched ?? false,
+            isReceived: (messageStatus?.isReceived ?? 0) == 1,
+            isLocalMessage: true,
+            isForwarded: message.isForward == 1,
+          );
+        case 'VideoMessage':
+          return VideoMessage(
+            key: ValueKey(message.id),
+            isSent: message.receiverUserId != _prefsRepository.myChatId,
+            videoFile: message.file,
+            videoUrl: message.mediaMessageContent?[0].filePath,
+            messageId: message.id.toString(),
+            senderId: message.senderUserId!,
+            time: message.createdAt!,
+            userMessageName: message.receiverUserId != _prefsRepository.myChatId
+                ? senderName
+                : receiverName,
+            userMessagePhoto:
+                message.receiverUserId != _prefsRepository.myChatId
+                    ? senderPhoto
+                    : receiverPhoto,
+            isFirstMessage:
+                message.isFirstMessage || message.isFirstMessageForThisDay,
+            isRead: messageStatus?.isWatched ?? false,
+            isReceived: (messageStatus?.isReceived ?? 0) == 1,
+            isLocalMessage: true,
+            isForwarded: message.isForward == 1,
+          );
+        case 'VoiceMessage':
+          return VoiceMessage(
+            isSent: message.receiverUserId != _prefsRepository.myChatId,
+            file: message.file,
+            fileUrl: message.mediaMessageContent?[0].filePath,
+            messageId: message.id.toString(),
+            senderId: message.senderUserId!,
+            userMessageName: message.receiverUserId != _prefsRepository.myChatId
+                ? senderName
+                : receiverName,
+            userMessagePhoto:
+                message.receiverUserId != _prefsRepository.myChatId
+                    ? senderPhoto
+                    : receiverPhoto,
+            time: message.createdAt!,
+            isRead: messageStatus?.isWatched ?? false,
+            isReceived: (messageStatus?.isReceived ?? 0) == 1,
+            isFirstMessage:
+                message.isFirstMessage || message.isFirstMessageForThisDay,
+            isForwarded: message.isForward == 1,
+          );
+        case 'FileMessage':
+          String fileName = message.file?.path.split('/').last ??
+              message.mediaMessageContent![0].filePath!.split('/').last;
+          return DocumentMessage(
+            isSent: message.receiverUserId != _prefsRepository.myChatId,
+            documentFile: message.file,
+            fileName: fileName,
+            documentFileUrl: message.mediaMessageContent?[0].filePath,
+            messageId: message.id.toString(),
+            senderId: message.senderUserId!,
+            userMessageName: message.receiverUserId != _prefsRepository.myChatId
+                ? senderName
+                : receiverName,
+            userMessagePhoto:
+                message.receiverUserId != _prefsRepository.myChatId
+                    ? senderPhoto
+                    : receiverPhoto,
+            time: message.createdAt!,
+            isRead: messageStatus?.isWatched ?? false,
+            isReceived: (messageStatus?.isReceived ?? 0) == 1,
+            isFirstMessage:
+                message.isFirstMessage || message.isFirstMessageForThisDay,
+            isForwarded: message.isForward == 1,
+          );
+      }
+    }
+  }
+}
+
+class MessagesDate extends StatelessWidget {
+  const MessagesDate({Key? key, required this.date}) : super(key: key);
+  final String date;
 
   String formatDate(String dateStr) {
     DateTime date = DateTime.parse(dateStr);
@@ -990,682 +1130,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
     }
   }
 
-  void dealWithExistMessage(
-    String senderName,
-    String receiverName,
-    String? senderPhoto,
-    String? receiverPhoto, {
-    required Message element,
-  }) async {
-    int index = getMessageIndex(element.id, null);
-    data.removeAt(index);
-    data.removeAt(index - 1);
-    bool thereIsDate = (data[index - 2] is MessagesDate);
-    await addTheMessageWidget(index - 1, element, senderName, receiverName,
-        senderPhoto, receiverPhoto, getIsFirstMessage(element.id), thereIsDate);
-    index =
-        getMessageIndex(element.parentMessageId, element.localParentMessageId);
-    rebuildMessage.value = data.length;
-    scrollToIndex(index);
-  }
-
-  void preProcessingOfMessaging(
-      List<Message> messages,
-      int insertPosition,
-      bool scrollToLastMessage,
-      String senderName,
-      String receiverName,
-      String? senderPhoto,
-      String? receiverPhoto,
-      {bool fromGetMessagesBetween = false,
-      Message? replacedReplyMessage}) async {
-    print('change data');
-    if (messages.isEmpty && replacedReplyMessage == null) {
-      return;
-    }
-    if (data.isNotEmpty) {
-      data.removeLast();
-    }
-    Map<String, List<Message>> newMessagesByDate = {};
-    for (int i = 0; i < messages.length; i++) {
-      Message element = messages[i];
-      final zonedDate = HelperFunctions.replaceArabicNumber(
-          DateFormat("yyyy-MM-dd")
-              .format(HelperFunctions.getZonedDate(element.createdAt!)));
-      if (!newMessagesByDate.containsKey(zonedDate)) {
-        newMessagesByDate[zonedDate] = [];
-      }
-      newMessagesByDate[zonedDate]!.add(element);
-    }
-    for (String sendDate in newMessagesByDate.keys) {
-      bool thereIsDate = false;
-      if (!messagesByDate.containsKey(sendDate) && insertPosition == -1) {
-        thereIsDate = true;
-        data.insert(data.length, 10.verticalSpace);
-        data.insert(data.length, MessagesDate(date: formatDate(sendDate)));
-        messagesByDate[sendDate] = newMessagesByDate[sendDate] ?? [];
-      }
-      bool isFirstMessage = false;
-      for (int i = 0; i < newMessagesByDate[sendDate]!.length; i++) {
-        Message element = newMessagesByDate[sendDate]![i];
-        isFirstMessage = false;
-        if (insertPosition == 0) {
-          isFirstMessage = newMessagesByDate[sendDate]![
-                      math.min(i + 1, newMessagesByDate[sendDate]!.length - 1)]
-                  .senderUserId !=
-              element.senderUserId;
-        } else {
-          isFirstMessage = !(element.senderUserId == currentMessageSenderId);
-        }
-        if (currentMessageSenderId == null && insertPosition == -1) {
-          isFirstMessage = true;
-        }
-        if (i == newMessagesByDate[sendDate]!.length - 1 &&
-            insertPosition == 0) {
-          isFirstMessage = true;
-          thereIsDate = true;
-        }
-        print('$i : $isFirstMessage');
-        await addTheMessageWidget(
-            insertPosition,
-            element,
-            senderName,
-            receiverName,
-            senderPhoto,
-            receiverPhoto,
-            isFirstMessage,
-            thereIsDate);
-      }
-      thereIsDate = false;
-      if (!messagesByDate.containsKey(sendDate) && insertPosition == 0) {
-        print(sendDate);
-        data.insert(0, MessagesDate(date: formatDate(sendDate)));
-        data.insert(0, 10.verticalSpace);
-        messagesByDate[sendDate] = newMessagesByDate[sendDate] ?? [];
-      }
-    }
-    if (!fromGetMessagesBetween) {
-      currentMessageSenderId = messages[0].senderUserId;
-    }
-    if (scrollToLastMessage) {
-      log('scrolling');
-      scrollToTheEnd();
-    }
-    data.add(30.verticalSpace);
-    log('replacedReplyMessage $replacedReplyMessage');
-    if (replacedReplyMessage != null) {
-      log('executed!!!!!!!!!');
-      dealWithExistMessage(widget.senderName, widget.receiverName,
-          widget.senderPhoto, widget.receiverPhoto,
-          element: replacedReplyMessage);
-      rebuildMessage.value = data.length;
-    } else {
-      rebuildMessage.value = data.length;
-    }
-  }
-
-  addTheMessageWidget(
-      int insertPosition,
-      Message element,
-      String senderName,
-      String receiverName,
-      String? senderPhoto,
-      String? receiverPhoto,
-      bool isFirstMessage,
-      bool thereIsDate) async {
-    String messageType = element.messageType!.name.toString();
-    MessageStatus? messageStatus = element.messageStatus
-        ?.firstWhere((e) => e.userId != _prefsRepository.myId);
-    print('ee: ${element.parentMessageId}');
-    print('ee: ${element.parentMessage}');
-    if (insertPosition == -1) {
-      data.insert(
-          data.length,
-          thereIsDate
-              ? 10.verticalSpace
-              : isFirstMessage
-                  ? 30.verticalSpace
-                  : 10.verticalSpace);
-    }
-    if (element.parentMessageId != null && element.parentMessage != null) {
-      Message parentMessage = element.parentMessage!;
-      MessageStatus? parentMessageStatus = parentMessage.messageStatus
-          ?.firstWhere((e) => e.userId != _prefsRepository.myId);
-      int index = getMessageIndex(
-          element.parentMessageId, element.localParentMessageId);
-      if (parentMessage.senderUserId != element.senderUserId) {
-        data.insert(
-            insertPosition == -1 ? data.length : insertPosition,
-            ReplayMessage(
-                messageDate: element.createdAt!,
-                scrollToMessage: () => scrollToIndex(index,
-                    currentId: element.id!,
-                    parentMessageId: element.parentMessageId!),
-                messageId: element.parentMessageId!,
-                answeredFilePath: element.mediaMessageContent?[0].filePath,
-                messageAnswer: element.messageContent?.content,
-                isFirstMessage: isFirstMessage,
-                replayedPhoto:
-                    parentMessage.id == _prefsRepository.myId.toString()
-                        ? senderPhoto
-                        : receiverPhoto,
-                replayedName:
-                    parentMessage.id == _prefsRepository.myId.toString()
-                        ? senderName
-                        : receiverName,
-                senderAnswerName: senderName,
-                senderAnswerPhoto: senderPhoto,
-                isISentFirstMessage:
-                    parentMessage.senderUserId == _prefsRepository.myId,
-                isSent: element.senderUserId == _prefsRepository.myId,
-                parentSenderId: parentMessage.senderUserId!,
-                isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
-                isReplayedMessageReceived:
-                    (parentMessageStatus?.isReceived ?? 0) == 1,
-                isAnswerMessageRead: messageStatus?.isWatched ?? false,
-                isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
-                answeredFile: element.file,
-                message: parentMessage.messageContent?.content == null
-                    ? parentMessage.messageType!.name == 'ImageMessage'
-                        ? 'Photo'
-                        : parentMessage.messageType!.name == 'FileMessage'
-                            ? 'File'
-                            : parentMessage.messageType!.name == 'VideoMessage'
-                                ? 'Video'
-                                : 'Voice'
-                    : parentMessage.messageContent!.content.toString(),
-                messageAnswerId: element.id!));
-      } else {
-        data.insert(
-            insertPosition == -1 ? data.length : insertPosition,
-            ReplayOnMeMessage(
-                messageDate: element.createdAt!,
-                messageId: element.parentMessageId!,
-                answeredFilePath: element.mediaMessageContent?[0].filePath,
-                messageAnswer: element.messageContent?.content,
-                answeredFile: element.file,
-                scrollToMessage: () => scrollToIndex(index,
-                    currentId: element.id!,
-                    parentMessageId: element.parentMessageId!),
-                isISentFirstMessage:
-                    parentMessage.senderUserId == _prefsRepository.myId,
-                isSent: element.senderUserId == _prefsRepository.myId,
-                isFirstMessage: isFirstMessage,
-                parentSenderId: parentMessage.senderUserId!,
-                replayedPhoto:
-                    parentMessage.id == _prefsRepository.myId.toString()
-                        ? senderPhoto
-                        : receiverPhoto,
-                replayedName:
-                    parentMessage.id == _prefsRepository.myId.toString()
-                        ? senderName
-                        : receiverName,
-                senderAnswerName: senderName,
-                senderAnswerPhoto: senderPhoto,
-                isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
-                isReplayedMessageReceived:
-                    (parentMessageStatus?.isReceived ?? 0) == 1,
-                isAnswerMessageRead: messageStatus?.isWatched ?? false,
-                isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
-                message: parentMessage.messageContent?.content == null
-                    ? parentMessage.messageType!.name == 'ImageMessage'
-                        ? 'Photo'
-                        : parentMessage.messageType!.name == 'FileMessage'
-                            ? 'File'
-                            : parentMessage.messageType!.name == 'VideoMessage'
-                                ? 'Video'
-                                : 'Voice'
-                    : parentMessage.messageContent!.content.toString(),
-                messageAnswerId: element.id!));
-      }
-    } else {
-      switch (messageType) {
-        case 'TextMessage':
-          data.insert(
-              insertPosition == -1 ? data.length : insertPosition,
-              TextMessage(
-                message: element.messageContent!.content.toString(),
-                messageId: element.messageContent!.messageId.toString(),
-                senderId: element.senderUserId!,
-                isSent: element.receiverUserId != _prefsRepository.myId,
-                isRead: messageStatus?.isWatched ?? false,
-                userMessageName: element.receiverUserId != _prefsRepository.myId
-                    ? senderName
-                    : receiverName,
-                userMessagePhoto:
-                    element.receiverUserId != _prefsRepository.myId
-                        ? senderPhoto
-                        : receiverPhoto,
-                isReceived: (messageStatus?.isReceived ?? 0) == 1,
-                isFirstMessage: isFirstMessage,
-                time: element.createdAt!,
-                isForwarded: element.isForward == 1,
-              ));
-          break;
-        case 'ImageMessage':
-          if (element.file != null) {
-            data.insert(
-              insertPosition == -1 ? data.length : insertPosition,
-              ImageMessage(
-                isSent: element.receiverUserId != _prefsRepository.myId,
-                imageFile: element.file,
-                messageId: element.id.toString(),
-                senderId: element.senderUserId!,
-                time: element.createdAt!,
-                userMessageName: element.receiverUserId != _prefsRepository.myId
-                    ? senderName
-                    : receiverName,
-                userMessagePhoto:
-                    element.receiverUserId != _prefsRepository.myId
-                        ? senderPhoto
-                        : receiverPhoto,
-                isFirstMessage: isFirstMessage,
-                isRead: messageStatus?.isWatched ?? false,
-                isReceived: (messageStatus?.isReceived ?? 0) == 1,
-                isLocalMessage: true,
-                isForwarded: element.isForward == 1,
-              ),
-            );
-          } else {
-            print('length : ${element.mediaMessageContent?.length}');
-            for (int i = 0;
-                i < (element.mediaMessageContent?.length ?? 0);
-                i++) {
-              File? file = await FileSaving().checkExistence(
-                  element.mediaMessageContent![i].filePath,
-                  element.mediaMessageContent![i].fileName!,
-                  download: false);
-              data.insert(
-                insertPosition == -1 ? data.length : insertPosition,
-                ImageMessage(
-                  isSent: element.receiverUserId != _prefsRepository.myId,
-                  imageUrl: element.mediaMessageContent![i].filePath,
-                  imageFile: file,
-                  messageId:
-                      element.mediaMessageContent![i].messageId.toString(),
-                  time: element.createdAt!,
-                  senderId: element.senderUserId!,
-                  userMessageName:
-                      element.receiverUserId != _prefsRepository.myId
-                          ? senderName
-                          : receiverName,
-                  userMessagePhoto:
-                      element.receiverUserId != _prefsRepository.myId
-                          ? senderPhoto
-                          : receiverPhoto,
-                  isRead: messageStatus?.isWatched ?? false,
-                  isReceived: (messageStatus?.isReceived ?? 0) == 1,
-                  isFirstMessage: isFirstMessage,
-                  isLocalMessage: file != null,
-                  isForwarded: element.isForward == 1,
-                ),
-              );
-              if (i != element.mediaMessageContent!.length - 1) {
-                data.insert(insertPosition == -1 ? data.length : insertPosition,
-                    10.verticalSpace);
-              }
-            }
-          }
-          break;
-        case 'VideoMessage':
-          if (element.file != null) {
-            data.insert(
-              insertPosition == -1 ? data.length : insertPosition,
-              VideoMessage(
-                isSent: element.receiverUserId != _prefsRepository.myId,
-                videoFile: element.file,
-                messageId: element.id.toString(),
-                senderId: element.senderUserId!,
-                time: element.createdAt!,
-                userMessageName: element.receiverUserId != _prefsRepository.myId
-                    ? senderName
-                    : receiverName,
-                userMessagePhoto:
-                    element.receiverUserId != _prefsRepository.myId
-                        ? senderPhoto
-                        : receiverPhoto,
-                isFirstMessage: isFirstMessage,
-                isRead: messageStatus?.isWatched ?? false,
-                isReceived: (messageStatus?.isReceived ?? 0) == 1,
-                isLocalMessage: true,
-                isForwarded: element.isForward == 1,
-              ),
-            );
-          } else {
-            print('length : ${element.mediaMessageContent?.length}');
-            for (int i = 0;
-                i < (element.mediaMessageContent?.length ?? 0);
-                i++) {
-              File? file = await FileSaving().checkExistence(
-                  element.mediaMessageContent![i].filePath,
-                  element.mediaMessageContent![i].fileName!,
-                  download: false);
-              data.insert(
-                insertPosition == -1 ? data.length : insertPosition,
-                VideoMessage(
-                  isSent: element.receiverUserId != _prefsRepository.myId,
-                  videoUrl: element.mediaMessageContent![i].filePath,
-                  videoFile: file,
-                  messageId:
-                      element.mediaMessageContent![i].messageId.toString(),
-                  time: element.createdAt!,
-                  senderId: element.senderUserId!,
-                  userMessageName:
-                      element.receiverUserId != _prefsRepository.myId
-                          ? senderName
-                          : receiverName,
-                  userMessagePhoto:
-                      element.receiverUserId != _prefsRepository.myId
-                          ? senderPhoto
-                          : receiverPhoto,
-                  isRead: messageStatus?.isWatched ?? false,
-                  isReceived: (messageStatus?.isReceived ?? 0) == 1,
-                  isFirstMessage: isFirstMessage,
-                  isLocalMessage: file != null,
-                  isForwarded: element.isForward == 1,
-                ),
-              );
-              if (i != element.mediaMessageContent!.length - 1) {
-                data.insert(insertPosition == -1 ? data.length : insertPosition,
-                    10.verticalSpace);
-              }
-            }
-          }
-          break;
-        case 'VoiceMessage':
-          if (element.file != null) {
-            data.insert(
-              insertPosition == -1 ? data.length : insertPosition,
-              VoiceMessage(
-                isSent: element.receiverUserId != _prefsRepository.myId,
-                file: element.file,
-                messageId: element.id.toString(),
-                senderId: element.senderUserId!,
-                userMessageName: element.receiverUserId != _prefsRepository.myId
-                    ? senderName
-                    : receiverName,
-                userMessagePhoto:
-                    element.receiverUserId != _prefsRepository.myId
-                        ? senderPhoto
-                        : receiverPhoto,
-                time: element.createdAt!,
-                isRead: messageStatus?.isWatched ?? false,
-                isReceived: (messageStatus?.isReceived ?? 0) == 1,
-                isFirstMessage: isFirstMessage,
-                isForwarded: element.isForward == 1,
-              ),
-            );
-          } else {
-            for (int i = 0;
-                i < (element.mediaMessageContent?.length ?? 0);
-                i++) {
-              String fileName = element.mediaMessageContent![i].fileName ??
-                  element.mediaMessageContent![i].filePath!.split('/').last;
-              File? file = await FileSaving().checkExistence(
-                  element.mediaMessageContent![i].filePath, fileName,
-                  download: false);
-              data.insert(
-                insertPosition == -1 ? data.length : insertPosition,
-                VoiceMessage(
-                  isSent: element.receiverUserId != _prefsRepository.myId,
-                  fileUrl: element.mediaMessageContent![i].filePath,
-                  messageId:
-                      element.mediaMessageContent![i].messageId.toString(),
-                  time: element.createdAt!,
-                  senderId: element.senderUserId!,
-                  userMessageName:
-                      element.receiverUserId != _prefsRepository.myId
-                          ? senderName
-                          : receiverName,
-                  userMessagePhoto:
-                      element.receiverUserId != _prefsRepository.myId
-                          ? senderPhoto
-                          : receiverPhoto,
-                  file: file,
-                  isFirstMessage: isFirstMessage,
-                  isRead: messageStatus?.isWatched ?? false,
-                  isReceived: (messageStatus?.isReceived ?? 0) == 1,
-                  isForwarded: element.isForward == 1,
-                ),
-              );
-              if (i != element.mediaMessageContent!.length - 1) {
-                data.insert(insertPosition == -1 ? data.length : insertPosition,
-                    10.verticalSpace);
-              }
-            }
-          }
-          break;
-        case 'FileMessage':
-          if (element.file != null) {
-            String fileName = element.file!.path.split('/').last;
-            data.insert(
-              insertPosition == -1 ? data.length : insertPosition,
-              DocumentMessage(
-                isSent: element.receiverUserId != _prefsRepository.myId,
-                documentFile: element.file,
-                fileName: fileName,
-                messageId: element.id.toString(),
-                senderId: element.senderUserId!,
-                userMessageName: element.receiverUserId != _prefsRepository.myId
-                    ? senderName
-                    : receiverName,
-                userMessagePhoto:
-                    element.receiverUserId != _prefsRepository.myId
-                        ? senderPhoto
-                        : receiverPhoto,
-                time: element.createdAt!,
-                isRead: messageStatus?.isWatched ?? false,
-                isReceived: (messageStatus?.isReceived ?? 0) == 1,
-                isFirstMessage: isFirstMessage,
-                isForwarded: element.isForward == 1,
-              ),
-            );
-          } else {
-            for (int i = 0;
-                i < (element.mediaMessageContent?.length ?? 0);
-                i++) {
-              String fileName = element.mediaMessageContent![i].fileName ??
-                  element.file!.path.split('/').last;
-              File? file = await FileSaving().checkExistence(
-                  element.mediaMessageContent![i].filePath, fileName,
-                  download: false);
-              data.insert(
-                insertPosition == -1 ? data.length : insertPosition,
-                DocumentMessage(
-                  isSent: element.receiverUserId != _prefsRepository.myId,
-                  documentFile: file,
-                  documentFileUrl: element.mediaMessageContent![i].filePath,
-                  fileName: fileName,
-                  messageId:
-                      element.mediaMessageContent![i].messageId.toString(),
-                  time: element.createdAt!,
-                  senderId: element.senderUserId!,
-                  userMessageName:
-                      element.receiverUserId != _prefsRepository.myId
-                          ? senderName
-                          : receiverName,
-                  userMessagePhoto:
-                      element.receiverUserId != _prefsRepository.myId
-                          ? senderPhoto
-                          : receiverPhoto,
-                  isFirstMessage: isFirstMessage,
-                  isRead: messageStatus?.isWatched ?? false,
-                  isReceived: (messageStatus?.isReceived ?? 0) == 1,
-                  isForwarded: element.isForward == 1,
-                ),
-              );
-              if (i != element.mediaMessageContent!.length - 1) {
-                data.insert(insertPosition == -1 ? data.length : insertPosition,
-                    10.verticalSpace);
-              }
-            }
-          }
-      }
-    }
-    print('isFirst: $isFirstMessage');
-    if (insertPosition != -1) {
-      data.insert(
-          insertPosition,
-          thereIsDate
-              ? 10.verticalSpace
-              : isFirstMessage
-                  ? 30.verticalSpace
-                  : 10.verticalSpace);
-    }
-  }
-
-  int getMessageIndex(String? messageId, String? localParentMessageId) {
-    return data.indexWhere((e) {
-      if (e is TextMessage) {
-        return e.messageId == messageId || e.messageId == localParentMessageId;
-      } else if (e is ImageMessage) {
-        return e.messageId == messageId || e.messageId == localParentMessageId;
-      } else if (e is VoiceMessage) {
-        return e.messageId == messageId || e.messageId == localParentMessageId;
-      } else if (e is VideoMessage) {
-        return e.messageId == messageId || e.messageId == localParentMessageId;
-      } else if (e is DocumentMessage) {
-        return e.messageId == messageId || e.messageId == localParentMessageId;
-      } else if (e is ReplayMessage) {
-        return e.messageAnswerId == messageId ||
-            e.messageAnswerId == localParentMessageId;
-      } else if (e is ReplayOnMeMessage) {
-        return e.messageAnswerId == messageId ||
-            e.messageAnswerId == localParentMessageId;
-      } else {
-        return false;
-      }
-    });
-  }
-
-  bool getIsFirstMessage(String? messageId) {
-    for (var e in data) {
-      if (e is TextMessage && e.messageId == messageId) {
-        return e.isFirstMessage;
-      } else if (e is ImageMessage && e.messageId == messageId) {
-        return e.isFirstMessage;
-      } else if (e is VoiceMessage && e.messageId == messageId) {
-        return e.isFirstMessage;
-      } else if (e is VideoMessage && e.messageId == messageId) {
-        return e.isFirstMessage;
-      } else if (e is DocumentMessage && e.messageId == messageId) {
-        return e.isFirstMessage;
-      } else if (e is ReplayMessage && e.messageId == messageId) {
-        return e.isFirstMessage;
-      } else if (e is ReplayOnMeMessage && e.messageId == messageId) {
-        return e.isFirstMessage;
-      }
-    }
-    return false;
-  }
-
-  void dealWithMessageOptions(int index, String? messageId) {
-    if (index == -1) {
-      replayMessage(
-          chat.messages!.firstWhere((element) => element.id == messageId),
-          _prefsRepository.myId);
-    } else if (index == 0) {
-      forwardMessageMethod(
-          chat.messages!.firstWhere((element) => element.id == messageId));
-    }
-  }
-
-  void forwardMessageMethod(Message message) {
-    context.push(GRouter.config.applicationRoutes.kChatPage+'?hideCallsAndStories=true&description=Forward To...',extra:(int receiverId, String channelId) {
-      if (message.messageType!.name == 'TextMessage') {
-        chatBloc.add(SendMessageEvent(
-            messageType: message.messageType!.name,
-            channelId: channelId,
-            isForward: true,
-            parentMessageId: null,
-            content: message.messageContent!.content,
-            messageId: message.id!,
-            senderParentMessageId: null,
-            parentMessageContent: null,
-            receiverUserId: receiverId));
-      } else {
-        chatBloc.add(SendMessageEvent(
-            channelId: channelId,
-            mediaContent: [
-              {
-                'file_path':
-                message.mediaMessageContent?[0].filePath,
-                'file_name':
-                message.mediaMessageContent?[0].fileName,
-              }
-            ],
-            messageType: message.messageType!.name,
-            isForward: true,
-            senderParentMessageId: null,
-            parentMessageId: null,
-            messageId: message.id!,
-            parentMessageContent: null,
-            receiverUserId: receiverId));
-      }
-      // BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-      //     false, '', false,
-      //     messageId: null,
-      //     message: null,
-      //     senderParentMessageId: null,
-      //     imageUrl: null,
-      //     time: null));
-    },);
-  }
-
-  void replayMessage(Message message, int? myId) {
-    BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-        true,
-        message.messageType!.name == 'TextMessage'
-            ? 'text'
-            : message.messageType!.name == 'TextMessage'
-                ? 'image'
-                : 'voice',
-        message.senderUserId == myId,
-        messageId: message.id,
-        senderParentMessageId: message.senderUserId,
-        message: message.messageContent?.content ??
-            (message.messageType!.name == 'TextMessage' ? 'Photo' : 'Voice'),
-        imageUrl:
-            message.mediaMessageContent?.first.filePath ?? message.file?.path,
-        time: message.createdAt));
-  }
-
-  void scrollToIndex(int index,
-      {String? currentId,
-      String? parentMessageId,
-      Duration? duration,
-      AutoScrollPosition? preferPosition}) {
-    print('iii:  $index');
-    if (index == -1) {
-      chatBloc.add(GetAllMessagesBetweenEvent(
-          firstMessageId: parentMessageId!,
-          scrollToParentMessage: true,
-          secondMessageId: currentId!,
-          channelId: widget.chatId));
-      return;
-    }
-    currentScrolledIndex = index;
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await autoScrollController.scrollToIndex(index,
-          duration: duration ?? const Duration(milliseconds: 250),
-          preferPosition: preferPosition ?? AutoScrollPosition.middle);
-    });
-    Future.delayed(const Duration(milliseconds: 1000)).then((value) {
-      currentScrolledIndex = -1;
-      rebuildMessage.value = 2 * data.length;
-    });
-  }
-
-  void _loadMoreMessages() {
-    print('reach');
-    chatBloc.add(GetMessagesForChatEvent(channelId: widget.chatId));
-  }
-}
-
-class MessagesDate extends StatelessWidget {
-  const MessagesDate({Key? key, required this.date}) : super(key: key);
-  final String date;
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -1679,7 +1143,7 @@ class MessagesDate extends StatelessWidget {
             borderRadius: BorderRadius.circular(7.0),
           ),
           child: Center(
-            child: Text(date,
+            child: Text(formatDate(date),
                 style: context.textTheme.caption?.rr
                     .copyWith(color: context.colorScheme.white)),
           ),
@@ -1705,10 +1169,10 @@ class MessageActionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        onTap: () => onTap,
+        onTap: onTap,
         child: SvgPicture.asset(
           iconUrl,
-          width: focusedIndex == myIndex ? 20.sp : 15.sp,
+          width: focusedIndex == myIndex ? 20.w : 15.w,
           height: focusedIndex == myIndex ? 20 : 15,
         ));
   }

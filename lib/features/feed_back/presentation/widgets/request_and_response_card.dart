@@ -14,7 +14,6 @@ class RequestAndResponseCard extends StatelessWidget {
   const RequestAndResponseCard({Key? key, required this.data})
       : super(key: key);
   final Map<String, dynamic> data;
-
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
@@ -42,7 +41,7 @@ class RequestAndResponseCard extends StatelessWidget {
                 Expanded(
                     child: TitledTextWidget(
                       title: 'URL: ',
-                      body: data['url'],
+                      body: data['url'].toString(),
                       maxLines: 2,
                     )),
                 4.verticalSpace,
@@ -95,7 +94,7 @@ class RequestAndResponseCard extends StatelessWidget {
                               String text = "";
                               data.forEach((key, value) {
                                 if (value != null) {
-                                  text += ('${key.toUpperCase()}: $value');
+                                  text += ('${key.toUpperCase().toString()}: $value');
                                   text += '\n';
                                 }
                               });

@@ -9,3 +9,9 @@ class OperationFailedException implements Exception {
 
   OperationFailedException({this.message = "OperationFailedException"});
 }
+
+class TryAgainException implements Exception {
+  final String? message;
+  final int tryCount;
+  TryAgainException({this.message = "TryAgainException" , required this.tryCount});
+}

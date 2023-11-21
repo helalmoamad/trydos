@@ -21,17 +21,21 @@ class CreateUserEvent extends AuthEvent {
 
 class LoginToChatEvent extends AuthEvent {
   final String? mobilePhone;
-  final String? password;
+  final String? otpIdToken;
+  final String? originalUserId;
   final String fcmToken;
+  final String? name;
   const LoginToChatEvent({
     this.mobilePhone,
-    this.password,
+    this.otpIdToken,
+    this.originalUserId,
+    this.name,
     required this.fcmToken,
   });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [mobilePhone, password, fcmToken];
+  List<Object?> get props => [mobilePhone, otpIdToken, fcmToken,originalUserId , name];
 }
 class StoreFcmTokenEvent extends AuthEvent {
   final int userId;
@@ -75,27 +79,31 @@ class SendOtpEvent extends AuthEvent{
 class VerifyOtpSignInEvent extends AuthEvent{
   final String verificationId;
   final String otp;
+  final String phone;
 
   VerifyOtpSignInEvent({
     required this.verificationId,
     required this.otp,
+    required this.phone,
   });
   @override
   // TODO: implement props
-  List<Object?> get props => [otp, verificationId];
+  List<Object?> get props => [otp, verificationId , phone];
 }
 
 class VerifyOtpSignUpEvent extends AuthEvent{
   final String verificationId;
   final String otp;
+  final String? name;
 
   VerifyOtpSignUpEvent({
     required this.verificationId,
     required this.otp,
+    this.name
   });
   @override
   // TODO: implement props
-  List<Object?> get props => [otp, verificationId];
+  List<Object?> get props => [otp, name , verificationId];
 }
 
 class VerifyGuestPhoneEvent extends AuthEvent {
@@ -109,33 +117,60 @@ class VerifyGuestPhoneEvent extends AuthEvent {
   // TODO: implement props
   List<Object?> get props => [idToken];
 }
+class RegisterGuestEvent extends AuthEvent {
+  final String deviceId;
 
-class LoginToMarketEvent extends AuthEvent {
-  final String? phone;
-  final String? deviceId;
-  final String? password;
-
-  LoginToMarketEvent({
-    this.phone,
-    this.password,
-    this.deviceId,
+  RegisterGuestEvent({
+    required this.deviceId,
   });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [phone , deviceId , password];
+  List<Object?> get props => [deviceId];
+}
+
+class UpdateNameEvent extends AuthEvent {
+  final String name;
+
+  UpdateNameEvent({
+    required this.name,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [name];
+}
+class GetCustomerInfoEvent extends AuthEvent {
+
+  GetCustomerInfoEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
 }
 
 class LoginToStoriesEvent extends AuthEvent {
   final String? otpIdToken;
   final String? phone;
+  final String? name;
+  final String? originalUserId;
 
   LoginToStoriesEvent({
     this.phone,
+    this.name,
     this.otpIdToken,
+    this.originalUserId,
   });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [otpIdToken , phone];
+  List<Object?> get props => [otpIdToken , phone,originalUserId , name];
+}
+
+class GetUserCountryEvent extends AuthEvent{
+  GetUserCountryEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props =>[];
 }

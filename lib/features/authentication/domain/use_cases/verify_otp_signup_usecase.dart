@@ -5,7 +5,7 @@ import 'package:trydos/features/authentication/data/models/verify_otp_response_m
 
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
-import '../../data/models/login_user_response_model.dart';
+import '../../data/models/login_to_chat_response_model.dart';
 import '../../data/models/store_fcm_token_response_model.dart';
 import '../../data/models/verify_otp_sign_up_and_in_response_model.dart';
 import '../repositories/auth_repository.dart';
@@ -26,13 +26,16 @@ class VerifyOtpSignUpUseCase implements UseCase<VerifyOtpSignUpAndInResponseMode
 class VerifyOtpSignUpParams {
   String verificationId;
   String otp;
+  String? name;
 
   VerifyOtpSignUpParams({
     required this.verificationId,
     required this.otp,
+    this.name,
   });
   Map<String, dynamic> get map =>{
     "otp" :otp,
+    "name" :name,
     "verificationId" :verificationId,
   };
 }

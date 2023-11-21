@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
@@ -12,9 +13,9 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
-import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
-
+import '../../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
@@ -78,6 +79,11 @@ class _TextMessageState extends ThemeState<TextMessage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocConsumer<ChatBloc, ChatState>(
       listenWhen: (p, c) =>
       p.changeMessageStateFromPusherStatus !=
@@ -276,6 +282,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                         imageUrl: ChatUrls.baseUrl + widget.userMessagePhoto!,
                                         imageFit: BoxFit.cover,
                                         radius: 8,
+                                        progressIndicatorBuilderWidget: TrydosLoader(),
                                         width: widget.withImageShadow ? 30 : 20,
                                         withImageShadow: widget.withImageShadow,
                                         height:

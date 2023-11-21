@@ -3,10 +3,12 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 
 class VerificationMethods extends StatelessWidget {
@@ -18,6 +20,11 @@ class VerificationMethods extends StatelessWidget {
   final ValueNotifier<int> clickButton = ValueNotifier(-1);
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Column(
