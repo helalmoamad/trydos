@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
-import 'package:trydos/features/chat/presentation/widgets/calls_card.dart';
+import 'package:trydos/features/calls/presentation/widgets/calls_card.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
