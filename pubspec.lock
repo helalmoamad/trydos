@@ -545,6 +545,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.9"
+  firebase_analytics:
+    dependency: "direct main"
+    description:
+      name: firebase_analytics
+      sha256: fb8c29d97d29aed258d2fd98ba0ffc04ccca2c7b830b149187679524757f5d9d
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.6.3"
+  firebase_analytics_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_analytics_platform_interface
+      sha256: "85fe94377732a168896a705410441b721a49c0703679c24e3edca0c680a45bb7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.7.5"
+  firebase_analytics_web:
+    dependency: transitive
+    description:
+      name: firebase_analytics_web
+      sha256: "99a39a97e4760011ca0f2135c68a40f65dc9b260a0c27db2fdcb1258052c588b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.5+5"
   firebase_core:
     dependency: "direct main"
     description:
@@ -662,6 +686,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.4"
+  flutter_gallery_3d:
+    dependency: "direct main"
+    description:
+      name: flutter_gallery_3d
+      sha256: "1c8b5d15c4e8ab653558e2c73f7291bb7367c860749b721bcc8d625a920c5c34"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   flutter_inset_box_shadow:
     dependency: "direct main"
     description:
@@ -735,10 +767,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_smartlook
-      sha256: "2b0633a0284439e74a59e0db0259561b5c0a61447ca1fec63c06a5c7a48b211f"
+      sha256: "70e6d167cba55389abe5e906686e5c0e722889d3d9db2f437dd8a2d3a78ffc8c"
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.9"
+    version: "4.1.12"
   flutter_sound:
     dependency: "direct main"
     description:

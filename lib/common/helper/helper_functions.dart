@@ -63,6 +63,7 @@ class HelperFunctions {
   }
 
   static Locale getInitLocale() {
+    return Locale('ar-SY');
     final deviceLanguage = WidgetsBinding.instance.window.locale.languageCode;
     print(deviceLanguage);
     return mpaLanguageCodeToLocale[deviceLanguage] ?? defaultLocal;

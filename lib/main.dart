@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -41,6 +42,7 @@ void main() async {
     NotificationProcess().init(),
     NotificationProcess().setupInteractedMessage(),
   ]);
+  FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
   NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   HttpOverrides.global = MyHttpOverrides();

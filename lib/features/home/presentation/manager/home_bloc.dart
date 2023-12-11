@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:logger/logger.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
@@ -79,6 +80,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             (r)
     {
       if(r.data!.startingSetting!.smartLook ?? false){
+        Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
         initializeSmartLook();
       }
       emit(state.copyWith(

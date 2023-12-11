@@ -81,6 +81,6 @@ dependencies {
 }
 
 //smartlookCrashGradlePlugin {
-//    apiKey = "29b28f3bd01e6abb7b17a18878c9d42573ecfe5f91aff2c0d163638a33ade7e6"
+//    apiKey = "8233a073d92567bff983b06f9218eeed85cd4524ff3304afc281d6423a74b29d"
 //    force = true
 //}
