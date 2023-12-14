@@ -323,8 +323,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (_) =>
-                                                  FeedBackScreen(showRequests: true,)));
+                                              builder: (_) => FeedBackScreen(
+                                                    showRequests: true,
+                                                  )));
                                     },
                                     child: Text('requests'),
                                   ),
@@ -343,8 +344,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (_) =>
-                                                  FeedBackScreen(showRequests: false,)));
+                                              builder: (_) => FeedBackScreen(
+                                                    showRequests: false,
+                                                  )));
                                     },
                                     child: Text('flutter errors'),
                                   ),
@@ -353,7 +355,8 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (_) => FilesExistPage()));
+                                              builder: (_) =>
+                                                  FilesExistPage()));
                                     },
                                     child: Text('files exists'),
                                   ),

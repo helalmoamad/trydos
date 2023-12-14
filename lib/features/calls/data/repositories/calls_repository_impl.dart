@@ -34,4 +34,13 @@ class CallsRepositoryImpl extends CallsRepository
     return handlingExceptionRequest(
         tryCall: () => dataSource.makeAnswerCall(ChatId));
   }
+
+
+
+  @override
+  Future<Either<Failure, bool>> rejectCall(String ChatId) {
+    // TODO: implement answerCall
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.makeRejectCall(ChatId));
+  }
 }

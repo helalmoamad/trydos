@@ -50,4 +50,13 @@ class CallsRemoteDataSource {
         serverName: ServerName.chat);
     return AnswerCall();
   }
+
+  Future<bool> makeRejectCall(String ChatId) {
+    PostClient<bool> RejectCall = PostClient<bool>(
+        requestPrams: RequestConfig<bool>(
+            endpoint: ChatEndPoints.refuseCall(ChatId),
+            response: ResponseValue<bool>(returnValueOnSuccess: true)),
+        serverName: ServerName.chat);
+    return RejectCall();
+  }
 }

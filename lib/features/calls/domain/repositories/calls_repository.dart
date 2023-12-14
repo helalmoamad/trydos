@@ -8,7 +8,7 @@ abstract
 class CallsRepository {
 
 
-
+  Future<Either<Failure, bool>> rejectCall(String ChatId);
   Future<Either<Failure,VideoCallRemoteResponseModel>> videoCall({required String ChatId});
   Future<Either<Failure,bool>> answerCall(String ChatId);
   Future<Either<Failure, GetAgoraTokenResponseModel>> getAgoraToken({required String ChatId}) ;

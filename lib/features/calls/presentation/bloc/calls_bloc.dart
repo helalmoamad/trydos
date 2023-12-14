@@ -12,6 +12,7 @@ import 'package:trydos/features/calls/domain/useCase/get_agora_token_use_case.da
 
 import '../../../../common/constant/configuration/global.dart';
 import '../../domain/useCase/answer_call_usecase.dart';
+import '../../domain/useCase/reject_call_usecase.dart';
 import '../../domain/useCase/video_call_usecase.dart';
 
 part 'calls_event.dart';
@@ -22,18 +23,30 @@ part 'calls_state.dart';
 class CallsBloc extends Bloc<CallsEvent, CallsState> {
   final VideoCallUseCase videoCallUseCase;
   final AnswerCallUseCase answerCallUseCase;
+  final RejectCallUseCase rejectCallUseCase;
   final GetAgoraTokenUseCase getAgoraTokenUseCase;
 
-  CallsBloc(
-      this.videoCallUseCase, this.answerCallUseCase, this.getAgoraTokenUseCase)
+  CallsBloc(this.rejectCallUseCase, this.videoCallUseCase,
+      this.answerCallUseCase, this.getAgoraTokenUseCase)
       : super(CallsState()) {
+    on<InitResponseRejectVideoCallEvent>((event, emit) async {
+      debugPrint("asdasbcvf");
+      emit(state.copyWith(createVideoCallStatus: CreateVideoCallStatus.init));
+    });
+    on<RejectVideoCallEvent>((event, emit) async {
+      debugPrint("RejectVideoCallEvent");
+      final response = await rejectCallUseCase.call(event.chatId);
+      response.fold((l) => null, (r) {
+        emit(state.copyWith(
+            rejectVideoCallStatus: RejectVideoCallStatus.success));
+      });
+    });
     on<CallsEvent>((event, emit) {
       // TODO: implement event handler
     });
     on<AnswerVideoCallEvent>((event, emit) async {
       final tempResponse = await answerCallUseCase(event.chatId);
       tempResponse.fold((l) => null, (r) {
-
         debugPrint("cbvfbfta");
         debugPrint(r.toString());
       });
@@ -60,11 +73,9 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       });
     });
 
-//     on<AddChannelMemberToCallEvent>((event, emit) {
-//       List<int> channelMembers = List.of(state.channelMembers);
-//       channelMembers.add(event.uid);
-//       emit(state.copyWith(channelMembers: channelMembers));
-// // event.
-//     });
+    on<ResponseRejectVideoCallEvent>((event, emit) {
+      debugPrint("createVideoCallStatusdasd");
+      emit(state.copyWith(createVideoCallStatus: CreateVideoCallStatus.cancel));
+    });
   }
 }

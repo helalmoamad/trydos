@@ -1,13 +1,15 @@
 part of 'calls_bloc.dart';
 
-enum CreateVideoCallStatus { init, loading, success, failure }
+enum CreateVideoCallStatus { init, loading, success, failure ,cancel}
 
 enum OpenLocalVideoAndAudioStatus { init, loading, success, failure }
 
 enum OpenRemoteVideoAndAudioStatus { init, loading, success, failure }
+enum RejectVideoCallStatus { init, loading, success, failure }
 
 @immutable
 class CallsState {
+  final RejectVideoCallStatus rejectVideoCallStatus;
   final String? agoraToken;
   final String? channelName;
   final List<int> channelMembers;
@@ -17,6 +19,7 @@ class CallsState {
 
   CallsState(
       {
+        this.rejectVideoCallStatus=RejectVideoCallStatus.init,
         this.agoraToken=null,
         this.channelName=null,
       this.channelMembers = const [],
@@ -25,7 +28,9 @@ class CallsState {
       this.createVideoCallStatus = CreateVideoCallStatus.init});
 
   CallsState copyWith(
-      {String? agoraToken,
+      {   RejectVideoCallStatus? rejectVideoCallStatus,
+
+      String? agoraToken,
         String? channelName,
         RtcEngine? engine,
       List<int>? channelMembers,
@@ -38,6 +43,7 @@ class CallsState {
       RTCVideoRenderer? remoteVideo,
       CreateVideoCallStatus? createVideoCallStatus}) {
     return CallsState(
+      rejectVideoCallStatus: rejectVideoCallStatus??this.rejectVideoCallStatus,
       agoraToken: agoraToken??this.agoraToken,
       channelName: channelName??this.channelName,
         channelMembers: channelMembers ?? this.channelMembers,

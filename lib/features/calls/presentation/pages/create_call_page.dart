@@ -14,7 +14,7 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/calls/presentation/pages/room_call_page.dart';
-import 'package:trydos/features/chat/presentation/widgets/call_status_widget.dart';
+import 'package:trydos/features/calls/presentation/widgets/call_status_widget.dart';
 import 'package:trydos/routes/router_config.dart';
 
 import '../../../../service/language_service.dart';
@@ -42,15 +42,22 @@ class CreateCallPage extends StatefulWidget {
 class _CreateCallPageState extends ThemeState<CreateCallPage> {
   @override
   Widget build(BuildContext context) {
+    GetIt.I<CallsBloc>().add(InitResponseRejectVideoCallEvent());
+
     return Scaffold(
       backgroundColor: colorScheme.black,
       body: SafeArea(
         child: BlocConsumer<CallsBloc, CallsState>(
           listener: (context, state) {
-// if(state.createVideoCallStatus==CreateVideoCallStatus.success)
-//   Navigator.of(context).push(MaterialPageRoute(builder: (context) => RoomCallPage(channelName: state.channelName!),));
-
-              },
+            if (state.createVideoCallStatus == CreateVideoCallStatus.cancel) {
+              Future.delayed(
+                Duration(seconds: 1),
+                () {
+                  Navigator.of(context).pop();
+                },
+              );
+            }
+          },
           builder: (context, state) {
             return Stack(
               children: [
@@ -65,55 +72,59 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                             children: [
                               widget.receiverPhoto != null
                                   ? Container(
-                                height: 200,
-                                width: 200.w,
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                  BorderRadius.circular(12.0),
-                                  border: Border.all(
-                                      width: 1.0,
-                                      color:
-                                      const Color(0xff388cff)),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: colorScheme.white.withOpacity(0.35),
-                                        offset: const Offset(0, 10),
-                                        blurRadius: 30,
-                                        spreadRadius: 10),
-                                  ],
-                                ),
-                                child: MyCachedNetworkImage(
-                                    imageUrl: ChatUrls.baseUrl +
-                                        widget.receiverPhoto!,
-                                    imageFit: BoxFit.cover,
-                                    progressIndicatorBuilderWidget:
-                                    TrydosLoader(),
-                                    height: 80.h,
-                                    width: 60.w),
-                              )
+                                      height: 200,
+                                      width: 200.w,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                        border: Border.all(
+                                            width: 1.0,
+                                            color: const Color(0xff388cff)),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: colorScheme.white
+                                                  .withOpacity(0.35),
+                                              offset: const Offset(0, 10),
+                                              blurRadius: 30,
+                                              spreadRadius: 10),
+                                        ],
+                                      ),
+                                      child: MyCachedNetworkImage(
+                                          imageUrl: ChatUrls.baseUrl +
+                                              widget.receiverPhoto!,
+                                          imageFit: BoxFit.cover,
+                                          progressIndicatorBuilderWidget:
+                                              TrydosLoader(),
+                                          height: 80.h,
+                                          width: 60.w),
+                                    )
                                   : NoImageWidget(
-                                  width: 60.w,
-                                  height: 80.h,
-                                  textStyle: context
-                                      .textTheme.subtitle1?.br
-                                      .copyWith(
-                                      color:
-                                      const Color(0xff6638FF),
-                                      letterSpacing: 0.18,
-                                      height: 1.33),
-                                  name: widget.receiverName),
+                                      width: 60.w,
+                                      height: 80.h,
+                                      textStyle: context.textTheme.subtitle1?.br
+                                          .copyWith(
+                                              color: const Color(0xff6638FF),
+                                              letterSpacing: 0.18,
+                                              height: 1.33),
+                                      name: widget.receiverName),
                               15.verticalSpace,
                               Text(
                                 widget.fullReceiverName,
-                                style: textTheme.headline5?.rr.copyWith(
-                                    color: const Color(0xffD3D3D3)),
+                                style: textTheme.headline5?.rr
+                                    .copyWith(color: const Color(0xffD3D3D3)),
                               ),
                               80.verticalSpace,
-                              CallStatusWidget(
-                                text: 'Calling ...',
-                                iconUrl: AppAssets.callingSvg,
-                                textColor: colorScheme.grey200,
-                              ),
+                              state.createVideoCallStatus ==
+                                      CreateVideoCallStatus.cancel
+                                  ? CallStatusWidget(
+                                      text: 'Did Not Answer',
+                                      iconUrl: 'assets/svg/end_call.svg',
+                                      textColor: Color(0xFFFF0000))
+                                  : CallStatusWidget(
+                                      text: 'Calling ...',
+                                      iconUrl: AppAssets.callingSvg,
+                                      textColor: colorScheme.grey200,
+                                    ),
                             ],
                           ),
                         ),
@@ -144,8 +155,8 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                 10.verticalSpace,
                                 Text(
                                   'End Call',
-                                  style: textTheme.bodyText2?.lr.copyWith(
-                                      color: const Color(0xffFF5F61)),
+                                  style: textTheme.bodyText2?.lr
+                                      .copyWith(color: const Color(0xffFF5F61)),
                                 ),
                               ],
                             ),
@@ -162,8 +173,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                   ],
                 ),
                 Padding(
-                  padding:
-                  EdgeInsetsDirectional.fromSTEB(20.w, 15.h, 0, 0),
+                  padding: EdgeInsetsDirectional.fromSTEB(20.w, 15.h, 0, 0),
                   child: InkWell(
                     onTap: () {
                       Navigator.pop(context);
@@ -172,9 +182,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                       alignment: Alignment.center,
                       transform: (Matrix4.identity()
                         ..scale(
-                            LanguageService.languageCode == 'ar'
-                                ? -1.0
-                                : 1.0,
+                            LanguageService.languageCode == 'ar' ? -1.0 : 1.0,
                             1.0,
                             1.0)),
                       child: SvgPicture.asset(

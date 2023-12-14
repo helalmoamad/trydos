@@ -17,7 +17,7 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../config/theme/typography.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/my_cached_network_image.dart';
-import '../../../chat/presentation/widgets/call_status_widget.dart';
+import '../widgets/call_status_widget.dart';
 import '../../../chat/presentation/widgets/chat_widgets/no_image_widget.dart';
 
 class AnswerCall extends StatefulWidget {
@@ -124,13 +124,12 @@ class _AnswerCallState extends State<AnswerCall> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Container(
-                      width: 100,
-                      height: 100,
+                      width: 100.w,
+                      height: 100.h,
                       child: TextButton(
                         onPressed: () async {
                           await Vibration.cancel();
                           await player.stop();
-
                           await [Permission.camera, Permission.microphone]
                               .request()
                               .then((value) {
@@ -143,34 +142,30 @@ class _AnswerCallState extends State<AnswerCall> {
                           style: TextStyle(color: Colors.green),
                         ),
                       )),
-                  Container(
-                      width: 100,
-                      height: 100,
-                      child: TextButton(
-                        onPressed: () async {
-                          await Vibration.cancel();
-                          await player.stop();
-
-                          await [Permission.camera, Permission.microphone]
-                              .request()
-                              .then((value) {
-                            GetIt.I<CallsBloc>().add(AnswerVideoCallEvent(
-                                chatId: widget.channelName));
-                          });
-                        },
-                        child: Text(
-                          'Reject',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ))
+                  TextButton(
+                      onPressed: () async {
+                        GetIt.I<CallsBloc>().add(
+                            RejectVideoCallEvent(chatId: widget.channelName));
+                      },
+                      child: Container(
+                          width: 100.w,
+                          height: 100.h,
+                          child: Center(
+                              child: Text(
+                            'Reject',
+                            style: TextStyle(color: Colors.red),
+                          ))))
                 ],
               )
             ],
           );
         },
-        listenWhen: (previous, current) =>
-            previous.createVideoCallStatus != current.createVideoCallStatus,
+        // listenWhen: (previous, current) =>
+        //     previous.createVideoCallStatus != current.createVideoCallStatus,
         listener: (context, state) {
+          debugPrint("zczczxc");
+          if (state.rejectVideoCallStatus == RejectVideoCallStatus.success)
+            Navigator.pop(context);
           if (state.createVideoCallStatus == CreateVideoCallStatus.success) {
             debugPrint("anmzxch");
             Navigator.of(context).push(MaterialPageRoute(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:connectycube_flutter_call_kit/connectycube_flutter_call_kit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -86,15 +87,17 @@ class NotificationProcess {
 
     // handleTappedNotificationOnTerminatedState();
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      print('foreground message');
-      print('onMessageOpenedApp');
-      chat.Message myMessage =
-      chat.Message.fromJson(convert.jsonDecode(event.data['message']));
-      main.initialMessage = myMessage;
-      navigatorKey.currentState!.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const BasePage()),
-            (route) => false,
-      );
+
+        debugPrint('foreground message');
+        debugPrint('onMessageOpenedApp');
+        chat.Message myMessage = chat.Message.fromJson(convert.jsonDecode(event.data['message']));
+        main.initialMessage = myMessage;
+        navigatorKey.currentState!.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const BasePage()),
+              (route) => false,
+        );
+
+
     });
   }
 

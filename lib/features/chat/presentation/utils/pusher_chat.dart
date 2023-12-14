@@ -1,3 +1,4 @@
+import 'package:connectycube_flutter_call_kit/connectycube_flutter_call_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -70,52 +71,21 @@ class PusherChatService {
     });
 
     //todo later....
-    channel.bind('VideoCallEvent', (event) {
-      debugPrint("asdadasbcnghn${event!.data!.toString()}");
-      Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
-      debugPrint(
-          'VideoCallEvent ${data['channel_id'].toString() ?? 'EmptyVideoCallEvent'}');
-      debugPrint(' ${data ?? 'EmptyVideoCallEvent'}');
-
-      Chat currentChat = chatBloc.state.chats
-          .firstWhere((element) => element.id == data['channel_id'].toString());
-
-      debugPrint("myChatId${GetIt.I<PrefsRepository>().myChatId}");
-      for (var i = 0; i < currentChat.channelMembers!.length; i++) {
-        debugPrint("channel${currentChat.channelMembers![i].user!.id}");
-        debugPrint("channel${currentChat.channelMembers![i].user!.name}");
-      }
-
-      debugPrint("chatVideoEvent${currentChat.id}");
-
-      ChannelMember currentCaller = chatBloc.state.chats
-          .firstWhere((element) => element.id == data['channel_id'].toString())
-          .channelMembers!
-          .firstWhere((element) =>
-              element.user!.id != GetIt.I<PrefsRepository>().myChatId);
-      debugPrint('currentCaller${currentCaller.user!.name!}');
-      debugPrint(
-          'currentCallercontactUser${currentCaller.user!.contactUser == null ? 'nullContact' : currentCaller.user!.contactUser!.name!}');
-      debugPrint('currentCallerphotoPath${currentCaller.user!.photoPath}');
-
-      String callerName = currentCaller.user!.contactUser == null
-          ? currentCaller.user!.name!
-          : currentCaller.user!.contactUser!.name!;
-
-      Navigator.of(navigatorKey.currentState!.context).push(MaterialPageRoute(
-        builder: (context) => AnswerCall(
-          channelName: data['channel_id'].toString(),
-          callerName: callerName,
-          callerPhoto: currentCaller.user!.photoPath,
-        ),
-      ));
-    });
+    // channel.bind('VideoCallEvent', (event) {
+    //
+    //
+    //
+    //
+    // });
 
     channel.bind('AnswerCallEvent', (event) {
       Navigator.of(navigatorKey.currentState!.context).push(MaterialPageRoute(
         builder: (context) => RoomCallPage(),
       ));
     });
+
+    channel.bind('InAnotherCallEvent', (event) { });
+
 
     publicChannels[channelName] = true;
   }

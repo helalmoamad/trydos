@@ -21,7 +21,12 @@ class AnswerVideoCallEvent extends CallsEvent{
 
   AnswerVideoCallEvent({required this.chatId});
 }
-class RejectVideoCallEvent extends CallsEvent{}
+class RejectVideoCallEvent extends CallsEvent{
+
+  String chatId;
+
+  RejectVideoCallEvent({required this.chatId});
+}
 class ResponseAnswerVideoCallEvent extends CallsEvent{
 
 
@@ -33,6 +38,15 @@ class ResponseAnswerVideoCallEvent extends CallsEvent{
     required this.offer,
     required this.iceCandidate});
 
+
+
+}
+class ResponseRejectVideoCallEvent extends CallsEvent {
+
+
+}
+
+class InitResponseRejectVideoCallEvent extends CallsEvent {
 
 
 }
