@@ -121,7 +121,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
   initializeSmartLook() async {
     String deviceId = (await HelperFunctions.getDeviceId()).toString();
-    await smartLook.preferences.setProjectKey('c8c465313d257c63e0a282ba9856a427973888fe');
+    await smartLook.preferences.setProjectKey('db8b1330aa8b622827ae6092023f88bf4e56be53');
     await smartLook.preferences.setFrameRate(2);
     await smartLook.user.setIdentifier(deviceId);
     await smartLook.user.setName(GetIt.I<PrefsRepository>().myChatName ?? 'No_Name');
