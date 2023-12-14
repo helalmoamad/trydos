@@ -120,6 +120,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
           controller: scrollController,
           scrollBehavior: const CupertinoScrollBehavior(),
           slivers: [
+            //todo search bar
             SliverToBoxAdapter(
               child: Container(
                 width: 1.sw,
@@ -135,7 +136,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                       .copyWith(color: const Color(0xffD3D3D3)),
                   onChange: ChatPageContentState.searchInChats,
                   contentPadding:
-                      HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
+                  HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
                   prefixIcon: Padding(
                     padding: HWEdgeInsetsDirectional.only(top: 10, bottom: 10),
                     child: SvgPicture.asset(
@@ -147,45 +148,46 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                 ),
               ),
             ),
+//todo appNavigationBar
             if (!widget.hideCallsAndStories) ...{
               SliverToBoxAdapter(
                   child: Container(
-                padding: HWEdgeInsets.symmetric(horizontal: 40.w),
-                height: 50,
-                width: 1.sw,
-                decoration: const BoxDecoration(
-                  color: Color(0xffffffff),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x1a000000),
-                      offset: Offset(0, 0),
-                      blurRadius: 6,
+                    padding: HWEdgeInsets.symmetric(horizontal: 40.w),
+                    height: 50,
+                    width: 1.sw,
+                    decoration: const BoxDecoration(
+                      color: Color(0xffffffff),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0x1a000000),
+                          offset: Offset(0, 0),
+                          blurRadius: 6,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ChatTabItem(
-                          iconUrl: AppAssets.singleChatOutlinedActiveSvg,
-                          activeIconUrl: AppAssets.singleChatSvg,
-                          index: 0,
-                          notificationCount: '9'),
-                      ChatTabItem(
-                          iconUrl: AppAssets.callsOutlinedActiveSvg,
-                          activeIconUrl: AppAssets.callsSvg,
-                          index: 1,
-                          notificationCount: '9'),
-                      ChatTabItem(
-                          iconUrl: AppAssets.storyOutlinedSvg,
-                          activeIconUrl: AppAssets.storyFilledSvg,
-                          index: 2,
-                          notificationCount: '9'),
-                    ],
-                  ),
-                ),
-              )),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ChatTabItem(
+                              iconUrl: AppAssets.singleChatOutlinedActiveSvg,
+                              activeIconUrl: AppAssets.singleChatSvg,
+                              index: 0,
+                              notificationCount: '9'),
+                          ChatTabItem(
+                              iconUrl: AppAssets.callsOutlinedActiveSvg,
+                              activeIconUrl: AppAssets.callsSvg,
+                              index: 1,
+                              notificationCount: '9'),
+                          ChatTabItem(
+                              iconUrl: AppAssets.storyOutlinedSvg,
+                              activeIconUrl: AppAssets.storyFilledSvg,
+                              index: 2,
+                              notificationCount: '9'),
+                        ],
+                      ),
+                    ),
+                  )),
             },
             BlocBuilder<AppBloc, AppState>(
                 buildWhen: (p, c) => p.tabIndexInChat != c.tabIndexInChat  ,

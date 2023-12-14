@@ -52,6 +52,20 @@ abstract class ChatEndPoints {
   ///
   static final storeFcmEP = ''.firebaseTokensScope();
   static String deleteFcmEP(int id) => id.toString().firebaseTokensScope();
+  ///! ----< video calls >----
+  ///
+static String videoCall(String ChatId)
+  {return    '$ChatId/video_call'.channelsScope();}
+  static String answer_call(String ChatId)
+  {return    '$ChatId/answer_call'.channelsScope();}
+  static String refuseCall(String ChatId)
+  {return    '$ChatId/refuse_call'.channelsScope();}
+
+  static String inAnotherCall(String ChatId)
+  {return    '$ChatId/in_another_call'.channelsScope();}
+
+  static String getAgoraToken(String ChatId)
+  {return    '$ChatId/agora_token'.channelsScope();}
 
 }
 

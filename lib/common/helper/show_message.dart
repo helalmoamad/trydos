@@ -53,6 +53,7 @@ showMessage(
   if (kDebugMode || showInRelease) {
     Fluttertoast.cancel().then((value) =>
         Fluttertoast.showToast(
+
           msg: message,
           backgroundColor: Colors.white,
           textColor: foreGroundColor ?? Colors.red,
