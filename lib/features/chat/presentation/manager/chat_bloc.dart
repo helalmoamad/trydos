@@ -218,8 +218,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               int.tryParse(event.channelId) == null) {
             final PusherChatService pusherChatService =
             GetIt.I<PusherChatService>();
-            pusherChatService
-                .subscribe(r.channel!.pusherChannelName.toString());
+            pusherChatService.subscribe(r.channel!.pusherChannelName.toString());
             pusherChatService.createPresenceChannel(r.channel!.id.toString());
             return r.channel!.copyWith(
                 localId: event.channelId,
@@ -298,10 +297,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         final PusherChatService pusherChatService =
         GetIt.I<PusherChatService>();
         pusherChatService.initialization();
-        pusherChatService
-            .subscribe('user-${GetIt
-            .I<PrefsRepository>()
-            .myChatId}-messages');
+        pusherChatService.subscribe('user-${GetIt.I<PrefsRepository>().myChatId}-messages');
 
         r.data!.chats?.forEach((element) async {
           await pusherChatService

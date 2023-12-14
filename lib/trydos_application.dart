@@ -13,10 +13,11 @@ import 'package:trydos/service/language_service.dart';
 import 'package:trydos/service/localization_service.dart';
 import 'package:trydos/service/screen_service.dart';
 import 'package:trydos/service/service_provider.dart';
+
 class TrydosApplication extends StatefulWidget {
   const TrydosApplication({Key? key , required this.navKey }) : super(key: key);
+  final GlobalKey<NavigatorState> navKey ;
 
-   final GlobalKey<NavigatorState> navKey ;
 
   @override
   State<TrydosApplication> createState() => _TrydosApplicationState();
@@ -51,6 +52,7 @@ class _TrydosApplicationState extends State<TrydosApplication> {
             child: Builder(
               builder: (context) {
                 return MaterialApp.router(
+
                     debugShowCheckedModeBanner: false,
                     theme: AppTheme.light,
                     locale: context.locale,

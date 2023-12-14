@@ -9,7 +9,8 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
-import 'package:trydos/features/chat/presentation/pages/create_call_page.dart';
+
+import '../pages/create_call_page.dart';
 
 class CallsCard extends StatefulWidget {
   const CallsCard(
@@ -55,7 +56,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
       ),
       InkWell(
         onTap: (){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>  const CreateCallPage(fullReceiverName: 'Mahmoud',receiverName: 'MA',)));
+          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>  const CreateCallPage(fullReceiverName: 'Mahmoud',receiverName: 'MA', chatId: '',)));
         },
         child: Container(
             height: 75,

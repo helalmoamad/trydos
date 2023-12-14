@@ -5,7 +5,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:googledrivehandler/googledrivehandler.dart';
 import 'package:intl/intl.dart';
 import 'package:store_redirect/store_redirect.dart';
 import 'package:trydos/common/constant/countries.dart';

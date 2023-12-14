@@ -1,13 +1,22 @@
+import 'package:connectycube_flutter_call_kit/connectycube_flutter_call_kit.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pusher_client/pusher_client.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
+import 'package:trydos/features/calls/presentation/pages/answer_call.dart';
+import 'package:trydos/features/calls/presentation/pages/room_call_page.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/service/language_service.dart';
 import 'dart:convert' as convert;
 import '../../../../main.dart';
+import '../../../../routes/router.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
+import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_event.dart';
 
 @LazySingleton()
@@ -17,6 +26,7 @@ class PusherChatService {
   late PusherClient pusher;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   ChatBloc chatBloc = GetIt.I<ChatBloc>();
+  CallsBloc callBloc = GetIt.I<CallsBloc>();
 
   Future initialization() async {
     PusherOptions options = PusherOptions(
@@ -42,6 +52,7 @@ class PusherChatService {
     });
   }
 
+  @pragma('vm:entry-point')
   subscribe(String channelName) async {
     if (publicChannels.containsKey(channelName)) return;
     Channel channel = pusher.subscribe(channelName);
@@ -58,6 +69,24 @@ class PusherChatService {
       chatBloc.add(WatchedMessageFromPusherEvent(data['channel_id'].toString(),
           data['auth_user_id'], data['last_message_id']));
     });
+
+    //todo later....
+    // channel.bind('VideoCallEvent', (event) {
+    //
+    //
+    //
+    //
+    // });
+
+    channel.bind('AnswerCallEvent', (event) {
+      Navigator.of(navigatorKey.currentState!.context).push(MaterialPageRoute(
+        builder: (context) => RoomCallPage(),
+      ));
+    });
+
+    channel.bind('InAnotherCallEvent', (event) { });
+
+
     publicChannels[channelName] = true;
   }
 

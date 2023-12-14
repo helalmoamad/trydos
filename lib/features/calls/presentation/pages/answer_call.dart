@@ -1,0 +1,179 @@
+import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:trydos/config/theme/my_color_scheme.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
+import 'package:trydos/features/calls/presentation/pages/room_call_page.dart';
+import 'package:trydos/routes/router.dart';
+import 'package:vibration/vibration.dart';
+import '../../../../common/constant/configuration/chat_url_routes.dart';
+import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../config/theme/typography.dart';
+import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
+import '../../../app/my_cached_network_image.dart';
+import '../widgets/call_status_widget.dart';
+import '../../../chat/presentation/widgets/chat_widgets/no_image_widget.dart';
+
+class AnswerCall extends StatefulWidget {
+  String channelName;
+  String callerName;
+  String? callerPhoto;
+
+  AnswerCall(
+      {required this.callerPhoto,
+      required this.callerName,
+      required this.channelName,
+      super.key});
+
+  @override
+  State<AnswerCall> createState() => _AnswerCallState();
+}
+
+class _AnswerCallState extends State<AnswerCall> {
+  var player = AudioPlayer();
+
+  @override
+  void dispose() {
+    Vibration.cancel();
+    player.stop();
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    Vibration.vibrate(repeat: 0, pattern: [1000, 1000, 1000, 1000]);
+    player.setReleaseMode(ReleaseMode.loop);
+    player.play(AssetSource(
+      'audio/Whatsapp_Tone.mp3',
+    ));
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: colorScheme.black,
+      body: BlocConsumer<CallsBloc, CallsState>(
+        builder: (context, state) {
+          return Column(
+            children: [
+              Column(
+                // mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  140.verticalSpace,
+                  Center(
+                      child: widget.callerPhoto != null
+                          ? Container(
+                              height: 200,
+                              width: 200.w,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12.0),
+                                border: Border.all(
+                                    width: 1.0, color: const Color(0xff388cff)),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color:
+                                          colorScheme.white.withOpacity(0.35),
+                                      offset: const Offset(0, 10),
+                                      blurRadius: 30,
+                                      spreadRadius: 10),
+                                ],
+                              ),
+                              child: MyCachedNetworkImage(
+                                  imageUrl:
+                                      ChatUrls.baseUrl + widget.callerPhoto!,
+                                  imageFit: BoxFit.cover,
+                                  progressIndicatorBuilderWidget:
+                                      TrydosLoader(),
+                                  height: 80.h,
+                                  width: 60.w),
+                            )
+                          : NoImageWidget(
+                              width: 120.w,
+                              height: 180.h,
+                              textStyle: context.textTheme.subtitle1?.br
+                                  .copyWith(
+                                      color: const Color(0xff6638FF),
+                                      letterSpacing: 0.18,
+                                      height: 1.33),
+                              name: widget.callerName)),
+                  15.verticalSpace,
+                  Text(
+                    widget.callerName,
+                    style: textTheme.headline5?.rr
+                        .copyWith(color: const Color(0xffD3D3D3)),
+                  ),
+                  80.verticalSpace,
+                  CallStatusWidget(
+                    text: 'Calling ...',
+                    iconUrl: AppAssets.callingSvg,
+                    textColor: colorScheme.grey200,
+                  ),
+                ],
+              ),
+              Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Container(
+                      width: 100.w,
+                      height: 100.h,
+                      child: TextButton(
+                        onPressed: () async {
+                          await Vibration.cancel();
+                          await player.stop();
+                          await [Permission.camera, Permission.microphone]
+                              .request()
+                              .then((value) {
+                            GetIt.I<CallsBloc>().add(AnswerVideoCallEvent(
+                                chatId: widget.channelName));
+                          });
+                        },
+                        child: Text(
+                          'answer',
+                          style: TextStyle(color: Colors.green),
+                        ),
+                      )),
+                  TextButton(
+                      onPressed: () async {
+                        GetIt.I<CallsBloc>().add(
+                            RejectVideoCallEvent(chatId: widget.channelName));
+                      },
+                      child: Container(
+                          width: 100.w,
+                          height: 100.h,
+                          child: Center(
+                              child: Text(
+                            'Reject',
+                            style: TextStyle(color: Colors.red),
+                          ))))
+                ],
+              )
+            ],
+          );
+        },
+        // listenWhen: (previous, current) =>
+        //     previous.createVideoCallStatus != current.createVideoCallStatus,
+        listener: (context, state) {
+          debugPrint("zczczxc");
+          if (state.rejectVideoCallStatus == RejectVideoCallStatus.success)
+            Navigator.pop(context);
+          if (state.createVideoCallStatus == CreateVideoCallStatus.success) {
+            debugPrint("anmzxch");
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => RoomCallPage(),
+            ));
+          }
+        },
+      ),
+    );
+  }
+}

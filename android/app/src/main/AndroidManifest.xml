@@ -2,6 +2,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.trydos">
 
+
+
+<!--    <meta-data-->
+<!--        android:name="com.connectycube.flutter.connectycube_flutter_call_kit.audio_call_notification_icon"-->
+<!--        android:resource="@drawable/app_icon" />-->
+
+<!--    <meta-data-->
+<!--        android:name="com.connectycube.flutter.connectycube_flutter_call_kit.video_call_notification_icon"-->
+<!--        android:resource="@drawable/app_icon" />-->
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />

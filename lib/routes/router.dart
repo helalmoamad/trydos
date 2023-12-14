@@ -14,9 +14,12 @@ import 'package:trydos/splash_page.dart';
 import '../base_page.dart';
 import '../features/authentication/presentation/pages/already_exist_account.dart';
 import '../features/authentication/presentation/pages/number_not_registered.dart';
+import '../features/calls/presentation/pages/answer_call.dart';
+import '../features/calls/presentation/pages/room_call_page.dart';
 import '../features/chat/presentation/pages/chat_pages.dart';
 import '../features/chat/presentation/pages/contacts_page.dart';
 import '../features/story/presentation/pages/story_collection_page_view.dart';
+import '../main.dart';
 import 'error_screen.dart';
 import 'router_config.dart';
 
@@ -32,12 +35,30 @@ class GRouter {
       BotToastNavigatorObserver(),
       FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)
     ],
+    navigatorKey: navigatorKey,
     routes: <RouteBase>[
       GoRoute(
           path: _config.kRootRoute,
           pageBuilder: (BuildContext context, GoRouterState state) {
             return _builderPage(
               child: const SplashPage(),
+              state: state,
+            );
+          }),
+
+      GoRoute(
+          path: _config.applicationRoutes.kRoomCallPage,
+          pageBuilder: (BuildContext context, GoRouterState state) {
+            return _builderPage(
+              child:  RoomCallPage(),
+              state: state,
+            );
+          }),
+      GoRoute(
+          path: _config.applicationRoutes.kAnswerCall,
+          pageBuilder: (BuildContext context, GoRouterState state) {
+            return _builderPage(
+              child:  AnswerCall(channelName: '', callerName: '', callerPhoto: '',),
               state: state,
             );
           }),

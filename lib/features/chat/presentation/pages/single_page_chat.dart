@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/file_saving.dart';
@@ -19,7 +20,8 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
-import 'package:trydos/features/chat/presentation/pages/create_call_page.dart';
+import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
+import 'package:trydos/features/calls/presentation/pages/create_call_page.dart';
 import 'package:trydos/features/chat/presentation/pages/profile_page.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_input_field.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/document_message.dart';
@@ -230,11 +232,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                 height: 1.33),
                             name: widget.receiverName),
                     20.horizontalSpace,
+
                     Expanded(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          //todo click on the name show the profile page
                           InkWell(
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
@@ -272,13 +276,29 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         ],
                       ),
                     ),
+                    //todo create video call
+                    //todo work
                     InkWell(
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => CreateCallPage(
+                      onTap: () async{
+
+
+                        await [Permission.camera, Permission.microphone]
+                            .request()
+                            .then((value) {
+                          GetIt.I<CallsBloc>().add(VideoCallEvent(chatId: widget.chatId));
+
+
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => CreateCallPage(
+
                                 fullReceiverName: widget.fullReceiverName,
                                 receiverName: widget.receiverName,
-                                receiverPhoto: widget.receiverPhone,
-                              ))),
+                                receiverPhoto: widget.receiverPhone, chatId: widget.chatId,
+                              )));
+                        });
+                        //todo make event to send video call
+
+                      },
                       child: SvgPicture.asset(
                         AppAssets.makeVideoCallSvg,
                         width: 34.w,
@@ -286,12 +306,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
                       ),
                     ),
                     30.horizontalSpace,
+                    // todo CreateCallPage
                     InkWell(
                       onTap: () => Navigator.of(context).push(MaterialPageRoute(
                           builder: (_) => CreateCallPage(
                                 fullReceiverName: widget.fullReceiverName,
                                 receiverName: widget.receiverName,
-                                receiverPhoto: widget.receiverPhone,
+                                receiverPhoto: widget.receiverPhone, chatId: '',
                               ))),
                       child: SvgPicture.asset(
                         AppAssets.makeCallSvg,
@@ -401,9 +422,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                           ],
                                                         ));
                                                   }
-                                                  print('isForward : ${messages[index].isForward}');
-                                                  print('senderUserId : ${messages[index].senderUserId}');
-                                                  print('myChatId : ${_prefsRepository.myChatId}');
+                                                  print(
+                                                      'isForward : ${messages[index].isForward}');
+                                                  print(
+                                                      'senderUserId : ${messages[index].senderUserId}');
+                                                  print(
+                                                      'myChatId : ${_prefsRepository.myChatId}');
                                                   bool isSent = messages[index]
                                                           .senderUserId ==
                                                       _prefsRepository.myChatId;
@@ -420,7 +444,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                           autoScrollController,
                                                       child: Column(
                                                           mainAxisSize:
-                                                          MainAxisSize.min,
+                                                              MainAxisSize.min,
                                                           children: [
                                                             messages[index]
                                                                     .isFirstMessage
@@ -487,13 +511,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                             currentIndex ==
                                                                     index
                                                                 ? Padding(
-                                                                    padding:
-                                                                    HWEdgeInsets.only(
+                                                                    padding: HWEdgeInsets.only(
                                                                         left: isSent
                                                                             ? 40
-                                                                            .w
+                                                                                .w
                                                                             : 20
-                                                                            .w,
+                                                                                .w,
                                                                         top: 10,
                                                                         right: isSent
                                                                             ? 20.w
@@ -504,7 +527,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                               40) {
                                                                             currentFocusedIcon.value =
                                                                                 -1;
-                                                                          } else if ((details.localPosition.dx - (isSent ? 140 : 0))>
+                                                                          } else if ((details.localPosition.dx - (isSent ? 140 : 0)) >
                                                                               210.w) {
                                                                             currentFocusedIcon.value =
                                                                                 5;
@@ -526,11 +549,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                           if ((details.localPosition.dx - (isSent ? 140 : 0)) <
                                                                               40) {
                                                                             currentFocusedIcon.value =
-                                                                            -1;
-                                                                          } else if ((details.localPosition.dx - (isSent ? 140 : 0))>
+                                                                                -1;
+                                                                          } else if ((details.localPosition.dx - (isSent ? 140 : 0)) >
                                                                               210.w) {
                                                                             currentFocusedIcon.value =
-                                                                            5;
+                                                                                5;
                                                                           } else {
                                                                             currentFocusedIcon.value =
                                                                                 (details.localPosition.dx - 40 - (isSent ? 140 : 0)) ~/ 30.w;
@@ -540,141 +563,138 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                             textDirection: TextDirection.ltr,
                                                                             child: Container(
                                                                                 //color: Colors.red,
-                                                                                child: Row(
-                                                                                  mainAxisAlignment:isSent ?  MainAxisAlignment.end : MainAxisAlignment.start,
-                                                                                    children: [
-                                                                                  Column(
-                                                                                    children: [
-                                                                                      InkWell(
-                                                                                        highlightColor: const Color(0xfffafafa),
-                                                                                        splashColor: const Color(0xfffafafa),
-                                                                                        onTap: () {
-                                                                                          currentFocusedIcon.value = -1;
-                                                                                        },
-                                                                                        child: InkWell(
-                                                                                          onTap: () {
-                                                                                            dealWithMessageOptions(-1, messageId);
-                                                                                          },
-                                                                                          child: Container(
-                                                                                            height: 40,
-                                                                                            width: 35.w,
-                                                                                            decoration: BoxDecoration(
-                                                                                              color: const Color(0xfffafafa),
-                                                                                              borderRadius: BorderRadius.circular(12.0),
-                                                                                              boxShadow: const [
-                                                                                                BoxShadow(
-                                                                                                  color: Color(0x29000000),
-                                                                                                  offset: Offset(0, 2),
-                                                                                                  blurRadius: 10,
-                                                                                                ),
-                                                                                              ],
-                                                                                            ),
-                                                                                            child: Center(
-                                                                                                child: SvgPicture.asset(
-                                                                                                  AppAssets.replyButtonLogoSvg,
-                                                                                                )),
-                                                                                          ),
-                                                                                        ),
-                                                                                      ),
-                                                                                      10.verticalSpace,
-                                                                                      focusedIndex == -1
-                                                                                          ? Container(
-                                                                                        width: 50.w,
-                                                                                        height: 22,
+                                                                                child: Row(mainAxisAlignment: isSent ? MainAxisAlignment.end : MainAxisAlignment.start, children: [
+                                                                              Column(
+                                                                                children: [
+                                                                                  InkWell(
+                                                                                    highlightColor: const Color(0xfffafafa),
+                                                                                    splashColor: const Color(0xfffafafa),
+                                                                                    onTap: () {
+                                                                                      currentFocusedIcon.value = -1;
+                                                                                    },
+                                                                                    child: InkWell(
+                                                                                      onTap: () {
+                                                                                        dealWithMessageOptions(-1, messageId);
+                                                                                      },
+                                                                                      child: Container(
+                                                                                        height: 40,
+                                                                                        width: 35.w,
                                                                                         decoration: BoxDecoration(
-                                                                                          color: const Color(0xff404040),
-                                                                                          borderRadius: BorderRadius.circular(8.0),
+                                                                                          color: const Color(0xfffafafa),
+                                                                                          borderRadius: BorderRadius.circular(12.0),
                                                                                           boxShadow: const [
                                                                                             BoxShadow(
-                                                                                              color: Color(0x34000000),
-                                                                                              offset: Offset(0, 3),
-                                                                                              blurRadius: 6,
+                                                                                              color: Color(0x29000000),
+                                                                                              offset: Offset(0, 2),
+                                                                                              blurRadius: 10,
                                                                                             ),
                                                                                           ],
                                                                                         ),
                                                                                         child: Center(
-                                                                                          child: Text(
-                                                                                            'Replay',
-                                                                                            style: textTheme.overline?.rr.copyWith(color: colorScheme.white, height: 1.4),
+                                                                                            child: SvgPicture.asset(
+                                                                                          AppAssets.replyButtonLogoSvg,
+                                                                                        )),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                  10.verticalSpace,
+                                                                                  focusedIndex == -1
+                                                                                      ? Container(
+                                                                                          width: 50.w,
+                                                                                          height: 22,
+                                                                                          decoration: BoxDecoration(
+                                                                                            color: const Color(0xff404040),
+                                                                                            borderRadius: BorderRadius.circular(8.0),
+                                                                                            boxShadow: const [
+                                                                                              BoxShadow(
+                                                                                                color: Color(0x34000000),
+                                                                                                offset: Offset(0, 3),
+                                                                                                blurRadius: 6,
+                                                                                              ),
+                                                                                            ],
                                                                                           ),
+                                                                                          child: Center(
+                                                                                            child: Text(
+                                                                                              'Replay',
+                                                                                              style: textTheme.overline?.rr.copyWith(color: colorScheme.white, height: 1.4),
+                                                                                            ),
+                                                                                          ),
+                                                                                        )
+                                                                                      : const SizedBox.shrink()
+                                                                                ],
+                                                                              ),
+                                                                              5.horizontalSpace,
+                                                                              Column(
+                                                                                mainAxisSize: MainAxisSize.min,
+                                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                children: [
+                                                                                  Row(
+                                                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                                                    children: [
+                                                                                      Container(
+                                                                                        width: 185.w,
+                                                                                        height: 40,
+                                                                                        padding: HWEdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                                                                                        decoration: BoxDecoration(
+                                                                                          color: const Color(0xfffafafa),
+                                                                                          borderRadius: BorderRadius.circular(12.0),
+                                                                                          boxShadow: const [
+                                                                                            BoxShadow(
+                                                                                              color: Color(0x29000000),
+                                                                                              offset: Offset(0, 2),
+                                                                                              blurRadius: 10,
+                                                                                            ),
+                                                                                          ],
                                                                                         ),
-                                                                                      )
-                                                                                          : const SizedBox.shrink()
+                                                                                        child: Row(
+                                                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                          children: [
+                                                                                            MessageActionWidget(
+                                                                                              onTap: () => forwardMessageMethod(messages.firstWhere((element) => element.id == messageId)),
+                                                                                              iconUrl: AppAssets.goBackIconSvg,
+                                                                                              myIndex: 0,
+                                                                                              focusedIndex: focusedIndex,
+                                                                                            ),
+                                                                                            MessageActionWidget(
+                                                                                              onTap: () {},
+                                                                                              iconUrl: AppAssets.copyIconSvg,
+                                                                                              myIndex: 1,
+                                                                                              focusedIndex: focusedIndex,
+                                                                                            ),
+                                                                                            MessageActionWidget(
+                                                                                              onTap: () {},
+                                                                                              iconUrl: AppAssets.addToGroupSvg,
+                                                                                              myIndex: 2,
+                                                                                              focusedIndex: focusedIndex,
+                                                                                            ),
+                                                                                            MessageActionWidget(
+                                                                                              onTap: () {},
+                                                                                              iconUrl: AppAssets.removeIconSvg,
+                                                                                              myIndex: 3,
+                                                                                              focusedIndex: focusedIndex,
+                                                                                            ),
+                                                                                            MessageActionWidget(
+                                                                                              onTap: () {},
+                                                                                              iconUrl: AppAssets.editIconSvg,
+                                                                                              myIndex: 4,
+                                                                                              focusedIndex: focusedIndex,
+                                                                                            ),
+                                                                                            MessageActionWidget(
+                                                                                              onTap: () {},
+                                                                                              iconUrl: AppAssets.notificationIconSvg,
+                                                                                              myIndex: 5,
+                                                                                              focusedIndex: focusedIndex,
+                                                                                            ),
+                                                                                          ],
+                                                                                        ),
+                                                                                      ),
                                                                                     ],
                                                                                   ),
-                                                                                  5.horizontalSpace,
-                                                                                  Column(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                    children: [
-                                                                                      Row(
-                                                                                        mainAxisAlignment: MainAxisAlignment.start,
-                                                                                        children: [
-                                                                                          Container(
-                                                                                            width: 185.w,
-                                                                                            height: 40,
-                                                                                            padding: HWEdgeInsets.symmetric(vertical: 12, horizontal: 10),
-                                                                                            decoration: BoxDecoration(
-                                                                                              color: const Color(0xfffafafa),
-                                                                                              borderRadius: BorderRadius.circular(12.0),
-                                                                                              boxShadow: const [
-                                                                                                BoxShadow(
-                                                                                                  color: Color(0x29000000),
-                                                                                                  offset: Offset(0, 2),
-                                                                                                  blurRadius: 10,
-                                                                                                ),
-                                                                                              ],
-                                                                                            ),
-                                                                                            child: Row(
-                                                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                              children: [
-                                                                                                MessageActionWidget(
-                                                                                                  onTap: () => forwardMessageMethod(messages.firstWhere((element) => element.id == messageId)),
-                                                                                                  iconUrl: AppAssets.goBackIconSvg,
-                                                                                                  myIndex: 0,
-                                                                                                  focusedIndex: focusedIndex,
-                                                                                                ),
-                                                                                                MessageActionWidget(
-                                                                                                  onTap: () {},
-                                                                                                  iconUrl: AppAssets.copyIconSvg,
-                                                                                                  myIndex: 1,
-                                                                                                  focusedIndex: focusedIndex,
-                                                                                                ),
-                                                                                                MessageActionWidget(
-                                                                                                  onTap: () {},
-                                                                                                  iconUrl: AppAssets.addToGroupSvg,
-                                                                                                  myIndex: 2,
-                                                                                                  focusedIndex: focusedIndex,
-                                                                                                ),
-                                                                                                MessageActionWidget(
-                                                                                                  onTap: () {},
-                                                                                                  iconUrl: AppAssets.removeIconSvg,
-                                                                                                  myIndex: 3,
-                                                                                                  focusedIndex: focusedIndex,
-                                                                                                ),
-                                                                                                MessageActionWidget(
-                                                                                                  onTap: () {},
-                                                                                                  iconUrl: AppAssets.editIconSvg,
-                                                                                                  myIndex: 4,
-                                                                                                  focusedIndex: focusedIndex,
-                                                                                                ),
-                                                                                                MessageActionWidget(
-                                                                                                  onTap: () {
-                                                                                                  },
-                                                                                                  iconUrl: AppAssets.notificationIconSvg,
-                                                                                                  myIndex: 5,
-                                                                                                  focusedIndex: focusedIndex,
-                                                                                                ),
-                                                                                              ],
-                                                                                            ),
-                                                                                          ),
-                                                                                        ],
-                                                                                      ),
-                                                                                      10.verticalSpace,
-                                                                                      focusedIndex >= 0 ? Transform.translate(offset: Offset(focusedIndex * 30.w , 0),child: MessageSubtitleWidget(focusedIndex: focusedIndex)) : const SizedBox.shrink()
-                                                                                    ],
-                                                                                  )
-                                                                                ])))))
+                                                                                  10.verticalSpace,
+                                                                                  focusedIndex >= 0 ? Transform.translate(offset: Offset(focusedIndex * 30.w, 0), child: MessageSubtitleWidget(focusedIndex: focusedIndex)) : const SizedBox.shrink()
+                                                                                ],
+                                                                              )
+                                                                            ])))))
                                                                 : SizedBox.shrink()
                                                           ]));
                                                 },
@@ -706,8 +726,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                       ChannelMember member = chat.channelMembers!.firstWhere(
                           (element) =>
                               element.userId != _prefsRepository.myChatId);
-                      String mimeStr = lookupMimeType(file.absolute.path) ??'';
-                      bool  isMediaFile = mimeStr.split('/')[0] != 'application';
+                      String mimeStr = lookupMimeType(file.absolute.path) ?? '';
+                      bool isMediaFile = mimeStr.split('/')[0] != 'application';
 
                       chatBloc.add(UploadFileEvent(
                           file: file,
@@ -797,7 +817,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
   }
 
   void forwardMessageMethod(Message message) {
-
     context.push(
       GRouter.config.applicationRoutes.kChatPage +
           '?hideCallsAndStories=true&description=Forward To...',
@@ -994,8 +1013,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 : parentMessage.messageContent!.content.toString(),
             messageAnswerId: message.id!);
       }
-    }
-    else {
+    } else {
       switch (message.messageType!.name) {
         case 'TextMessage':
           return TextMessage(
