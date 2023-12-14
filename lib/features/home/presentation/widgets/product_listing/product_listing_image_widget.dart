@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 class ProductListingImageWidget extends StatelessWidget {
-  const ProductListingImageWidget({super.key, this.width, this.height, required this.innerShadowYOffset, this.borderColor, required this.circleShape});
+  const ProductListingImageWidget({super.key, this.width, this.height, required this.innerShadowYOffset, this.borderColor, required this.circleShape, required this.imageUrl});
 
   final double? width;
   final double? height;
   final bool circleShape;
   final double innerShadowYOffset;
   final Color? borderColor;
+  final String imageUrl;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,7 +23,7 @@ class ProductListingImageWidget extends StatelessWidget {
           borderRadius:  BorderRadius.all(Radius.circular(circleShape ? 180.0 : 15)),
           child: Stack(
             children: [
-              Image.asset('assets/image.png' , fit: BoxFit.fill, width: width,
+              Image.asset(imageUrl , fit: BoxFit.fill, width: width,
                 height: height,),
               Container(
                 width: width,

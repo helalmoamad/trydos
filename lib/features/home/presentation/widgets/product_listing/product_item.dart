@@ -4,11 +4,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:ui' as ui;
 
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_3d_slider.dart';
+import 'package:tuple/tuple.dart';
 
 
 class ProductItem extends StatefulWidget {
-  const ProductItem({super.key});
-
+  const ProductItem({super.key, required this.setThisEnabled, required this.slidingModeItem, required this.itemIndex});
+  final void Function(int,int) setThisEnabled;
+  final Tuple2<int,int> slidingModeItem;
+  final int itemIndex;
   @override
   State<ProductItem> createState() => _ProductItemState();
 }
@@ -89,7 +92,7 @@ class _ProductItemState extends State<ProductItem> {
               ),
             ),
           ),
-          const ProductListing3DSlider(),
+           ProductListing3DSlider(slidingModeItem : widget.slidingModeItem , itemIndex : widget.itemIndex , setThisEnabled: widget.setThisEnabled),
         ]);
   }
 }

@@ -36,272 +36,277 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
   }
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (_)=> ProductListingPage(),));
-      },
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            height: 235,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15.0),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xff000000).withOpacity(0.1),
-                  offset: Offset(0, 3),
-                  blurRadius: 10,
-                ),
-              ],
-            ),
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Image.asset(AppAssets.halloweenJpg, fit: BoxFit.cover)),
-          ),
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15.0),
-              child: BackdropFilter(
-                blendMode: BlendMode.overlay,
-                filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                child: Container(
-                  decoration: BoxDecoration(color: Color(0xfffafafa)),
-                ),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15.0),
-              child: BackdropFilter(
-                filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0,),
-                child: Container(
-                  decoration:
-                      BoxDecoration(color: Color(0xffffffff).withOpacity(0.8)),
-                ),
-              ),
-            ),
-          ),
-          Positioned.fill(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        InkWell(
+          onTap: (){
+            Navigator.push(context, MaterialPageRoute(builder: (_)=> ProductListingPage(),));
+          },
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            clipBehavior: Clip.none,
             children: [
-              Padding(
-                padding: EdgeInsets.only(left: 25.w, top: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SvgPicture.asset(
-                      AppAssets.mangoSvg,
-                      height: 20,
+              Container(
+                height: 235,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xff000000).withOpacity(0.1),
+                      offset: Offset(0, 3),
+                      blurRadius: 10,
                     ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      'Mango Famous Turkish Brand Best Discounts',
-                      style: context.textTheme.caption?.rq.copyWith(
-                        color: const Color(0xff505050),
-                      ),
-                    ),
-                    if (!widget.withSlidingImages)
-                      SizedBox(
-                        height: 10,
-                      ),
                   ],
                 ),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.asset(AppAssets.halloweenJpg, fit: BoxFit.cover)),
               ),
-              Padding(
-                padding: EdgeInsets.only(
-                    left: widget.withSlidingImages ? 0 : 10,
-                    right: widget.withSlidingImages ? 0 : 10),
-                child: widget.withSlidingImages
-                    ? cupertino.Container(
-                        //color: Colors.red,
-                        child: CarouselSlider.builder(
-                            itemCount: 5,
-                            itemBuilder: (context, index, _) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                    right: 10.0, top: 10, bottom: 10),
-                                child: Stack(
-                                  children: [
-                                    Container(
-                                      height: 155,
-                                      width: 1.sw,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15.0),
-                                        border: Border.all(
-                                            width: 0.5,
-                                            color: const Color(0xfffafafa)),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: const Color(0x33000000),
-                                            offset: Offset(0, 3),
-                                            blurRadius: 10,
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.0),
+                  child: BackdropFilter(
+                    blendMode: BlendMode.overlay,
+                    filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                    child: Container(
+                      decoration: BoxDecoration(color: Color(0xfffafafa)),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.0),
+                  child: BackdropFilter(
+                    filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0,),
+                    child: Container(
+                      decoration:
+                          BoxDecoration(color: Color(0xffffffff).withOpacity(0.8)),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 25.w, top: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SvgPicture.asset(
+                          AppAssets.mangoSvg,
+                          height: 20,
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          'Mango Famous Turkish Brand Best Discounts',
+                          style: context.textTheme.caption?.rq.copyWith(
+                            color: const Color(0xff505050),
+                          ),
+                        ),
+                        if (!widget.withSlidingImages)
+                          SizedBox(
+                            height: 10,
+                          ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: widget.withSlidingImages ? 0 : 10,
+                        right: widget.withSlidingImages ? 0 : 10),
+                    child: widget.withSlidingImages
+                        ? cupertino.Container(
+                            //color: Colors.red,
+                            child: CarouselSlider.builder(
+                                itemCount: 5,
+                                itemBuilder: (context, index, _) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                        right: 10.0, top: 10, bottom: 10),
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          height: 155,
+                                          width: 1.sw,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(15.0),
+                                            border: Border.all(
+                                                width: 0.5,
+                                                color: const Color(0xfffafafa)),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: const Color(0x33000000),
+                                                offset: Offset(0, 3),
+                                                blurRadius: 10,
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                      child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(15),
-                                          child: Image.asset(
-                                              AppAssets.halloweenJpg,
-                                              fit: BoxFit.cover)),
+                                          child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(15),
+                                              child: Image.asset(
+                                                  AppAssets.halloweenJpg,
+                                                  fit: BoxFit.cover)),
+                                        ),
+                                        Container(
+                                          height: 155,
+                                          width: 1.sw,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(15.0),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                  color:
+                                                      Colors.white.withOpacity(0.7),
+                                                  offset: Offset(0, 3),
+                                                  blurRadius: 6,
+                                                  inset: true),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Container(
-                                      height: 155,
-                                      width: 1.sw,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15.0),
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color:
-                                                  Colors.white.withOpacity(0.7),
-                                              offset: Offset(0, 3),
-                                              blurRadius: 6,
-                                              inset: true),
-                                        ],
-                                      ),
+                                  );
+                                },
+                                options: CarouselOptions(
+                                  initialPage: 0,
+                                  height: 155,
+                                  enableInfiniteScroll: false,
+                                  viewportFraction: 0.95,
+                                )
+                            ))
+                        : Stack(
+                            children: [
+                              Container(
+                                height: 135,
+                                width: 1.sw,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  border: Border.all(
+                                      width: 0.5, color: const Color(0xfffafafa)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0x33000000),
+                                      offset: Offset(0, 3),
+                                      blurRadius: 10,
                                     ),
                                   ],
                                 ),
-                              );
-                            },
-                            options: CarouselOptions(
-                              initialPage: 0,
-                              height: 155,
-                              enableInfiniteScroll: false,
-                              viewportFraction: 0.95,
-                            )
-                        ))
-                    : Stack(
-                        children: [
-                          Container(
-                            height: 135,
-                            width: 1.sw,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15.0),
-                              border: Border.all(
-                                  width: 0.5, color: const Color(0xfffafafa)),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0x33000000),
-                                  offset: Offset(0, 3),
-                                  blurRadius: 10,
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: Image.asset(AppAssets.halloweenJpg,
+                                        fit: BoxFit.cover)),
+                              ),
+                              Container(
+                                height: 135,
+                                width: 1.sw,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.white.withOpacity(0.7),
+                                        offset: Offset(0, 3),
+                                        blurRadius: 6,
+                                        inset: true),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: Image.asset(AppAssets.halloweenJpg,
-                                    fit: BoxFit.cover)),
+                              ),
+                            ],
                           ),
-                          Container(
-                            height: 135,
-                            width: 1.sw,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15.0),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.white.withOpacity(0.7),
-                                    offset: Offset(0, 3),
-                                    blurRadius: 6,
-                                    inset: true),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-              )
+                  )
+                ],
+              )),
+              Positioned(
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      AppAssets.manInactiveSvg,
+                      height: 12,
+                    ),
+                    13.horizontalSpace,
+                    SvgPicture.asset(
+                      AppAssets.womenInactiveSvg,
+                      height: 12,
+                    ),
+                    13.horizontalSpace,
+                    SvgPicture.asset(
+                      AppAssets.childrenInactiveSvg,
+                      height: 12,
+                    ),
+                  ],
+                ),
+                right: 18.w,
+                top: 18,
+              ),
             ],
-          )),
-          ValueListenableBuilder<int>(
-              valueListenable: resizeItems,
-              builder: (context, focused, _) {
-                return GestureDetector(
-                  onLongPressStart: (details) {
-                    HapticFeedback.vibrate();
-                    resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
-                  },
-                  onLongPressUp: () {
-                    resizeItems.value = -1;
-                  },
-                  onLongPressMoveUpdate: (details) {
-                    int prev = resizeItems.value;
-                    resizeItems.value =
-                        (details.globalPosition.dx - 40) ~/ 35.w;
-                    if(prev != resizeItems.value){
-                      HapticFeedback.vibrate();
-                    }
-                  },
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height:  10.w,
-                      ),
-                      Transform.translate(
-                        offset: Offset(10 , 0),
-                        child: SizedBox(
-                          width: 340.w,
-                          height: focused != -1 ? 100.w : 60.w,
-                          child: Stack(
-                              alignment: Alignment.bottomCenter,
-                              children: List.generate(
-                                  9,
-                                  (index) => AnimatedPositioned(
-                                        left: ( index * (40.w - 5.w) +
-                                            (focused != -1
-                                                ? index == (focused + 1)
-                                                ? 20.w
-                                                : index == focused
-                                                ? 5.w
-                                                : index > focused
-                                                ? 20.w
-                                                : 0
-                                                : 0)),
-                                    curve: Curves.fastEaseInToSlowEaseOut,
-                                    bottom: focused == index ? 35.w : 10.w,
-                                    duration: Duration(milliseconds: focused == index ? 150 : 10),
-                                        child: ProductItemCircle(
-                                          index: index,
-                                          isFocused: focused == index,
-                                        ),
-                                      ))),
-                        ),
-                      ),
-                      SizedBox(
-                        height:  10.w,
-                      )
-                    ],
-                  ),
-                );
-              }),
-          Positioned(
-            child: Row(
-              children: [
-                SvgPicture.asset(
-                  AppAssets.manInactiveSvg,
-                  height: 12,
-                ),
-                13.horizontalSpace,
-                SvgPicture.asset(
-                  AppAssets.womenInactiveSvg,
-                  height: 12,
-                ),
-                13.horizontalSpace,
-                SvgPicture.asset(
-                  AppAssets.childrenInactiveSvg,
-                  height: 12,
-                ),
-              ],
-            ),
-            right: 18.w,
-            top: 18,
           ),
-        ],
-      ),
+        ),
+        ValueListenableBuilder<int>(
+            valueListenable: resizeItems,
+            builder: (context, focused, _) {
+              return GestureDetector(
+                onPanDown: (details) {
+                  HapticFeedback.vibrate();
+                  resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
+                },
+                onPanEnd: (details) {
+                  resizeItems.value = -1;
+                },
+                onPanUpdate: (details) {
+                  int prev = resizeItems.value;
+                  resizeItems.value =
+                      (details.globalPosition.dx - 40) ~/ 35.w;
+                  if(prev != resizeItems.value){
+                    HapticFeedback.vibrate();
+                  }
+                },
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height:  10.w,
+                    ),
+                    Transform.translate(
+                      offset: Offset(10 , 0),
+                      child: SizedBox(
+                        width: 340.w,
+                        height: focused != -1 ? 100.w : 60.w,
+                        child: Stack(
+                            alignment: Alignment.bottomCenter,
+                            children: List.generate(
+                                9,
+                                    (index) => AnimatedPositioned(
+                                  left: ( index * (40.w - 5.w) +
+                                      (focused != -1
+                                          ? index == (focused + 1)
+                                          ? 20.w
+                                          : index == focused
+                                          ? 5.w
+                                          : index > focused
+                                          ? 20.w
+                                          : 0
+                                          : 0)),
+                                  curve: Curves.fastEaseInToSlowEaseOut,
+                                  bottom: focused == index ? 35.w : 10.w,
+                                  duration: Duration(milliseconds: focused == index ? 150 : 10),
+                                  child: ProductItemCircle(
+                                    index: index,
+                                    isFocused: focused == index,
+                                  ),
+                                ))),
+                      ),
+                    ),
+                    SizedBox(
+                      height:  10.w,
+                    )
+                  ],
+                ),
+              );
+            }),
+      ],
     );
   }
 }

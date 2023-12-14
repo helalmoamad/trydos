@@ -10,11 +10,15 @@ class MyGallery3DWidget extends StatefulWidget {
       required this.itemWidth,
       required this.gallery3dController,
       required this.itemCount,
+      required this.showProductSides,
+      required this.currentProduct,
       this.itemHeight,
       this.onItemChanged,
       required this.radius,
-      required this.galleryWidth, required this.galleryHeight});
+      required this.galleryWidth, required this.galleryHeight, this.onItemClick});
 
+  final bool showProductSides;
+  final int currentProduct;
   final int itemCount;
   final double itemWidth;
   final double? itemHeight;
@@ -23,6 +27,7 @@ class MyGallery3DWidget extends StatefulWidget {
   final double galleryHeight;
   final Gallery3DController gallery3dController;
   final void Function(int index)? onItemChanged;
+  final void Function(int index)? onItemClick;
   @override
   State<MyGallery3DWidget> createState() => _MyGallery3DWidgetState();
 }
@@ -49,6 +54,23 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
     Colors.grey,
     Colors.blue,
     Colors.brown,
+  ];
+
+  List<String> images = [
+    'assets/images/product_listing_images/bl1.jpg',
+    'assets/images/product_listing_images/p1.jpg',
+    'assets/images/product_listing_images/y2.jpg',
+    'assets/images/product_listing_images/b1.jpg',
+    'assets/images/product_listing_images/o1.jpg',
+    'assets/images/product_listing_images/r1.jpg',
+    'assets/images/product_listing_images/g1.jpg',
+    'assets/images/product_listing_images/bl1.jpg',
+    'assets/images/product_listing_images/p1.jpg',
+    'assets/images/product_listing_images/y2.jpg',
+    'assets/images/product_listing_images/b1.jpg',
+    'assets/images/product_listing_images/o1.jpg',
+    'assets/images/product_listing_images/r1.jpg',
+    'assets/images/product_listing_images/g1.jpg',
   ];
 
   int prevIndex = 0;
@@ -100,7 +122,7 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
           // ]
         ),
         onClickItem: (index) {
-          //if (kDebugMode) print("currentIndex:$index");
+          widget.onItemClick?.call(index);
         },
         itemBuilder: (context, index) {
           // return Container(
@@ -116,7 +138,7 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
           // return Container(
           //   color: threeColors[index],
           // );
-          return const ProductListingImageWidget(innerShadowYOffset: 3,circleShape: false,);
+          return  ProductListingImageWidget(innerShadowYOffset: 3,circleShape: false,imageUrl: !widget.showProductSides ? images[index] : images[widget.currentProduct],);
         });
   }
 }

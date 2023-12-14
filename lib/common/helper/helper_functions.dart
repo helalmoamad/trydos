@@ -2,15 +2,20 @@ import 'dart:io';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:googledrivehandler/googledrivehandler.dart';
 import 'package:intl/intl.dart';
+import 'package:store_redirect/store_redirect.dart';
 import 'package:trydos/common/constant/countries.dart';
+import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
-
+import 'dart:ui' as ui;
 class HelperFunctions {
   static changeAppStatus(ThemeMode theme) {
     final color = theme == ThemeMode.dark
@@ -63,7 +68,6 @@ class HelperFunctions {
   }
 
   static Locale getInitLocale() {
-    return Locale('ar-SY');
     final deviceLanguage = WidgetsBinding.instance.window.locale.languageCode;
     print(deviceLanguage);
     return mpaLanguageCodeToLocale[deviceLanguage] ?? defaultLocal;
@@ -217,5 +221,69 @@ class HelperFunctions {
       return androidInfo.id.toString() + '_' + androidInfo.model.toString();
     }
     return 'other_os';
+  }
+
+  static showVersionDialog(context) async {
+    await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        String title = 'New Update Available';
+        String message = 'There is a newer version of app available please update it now.';
+        String btnLabel = 'Update Now';
+        return WillPopScope(
+            onWillPop: () => Future.value(true),
+            child: Platform.isIOS
+                ? CupertinoAlertDialog(
+                title: Text(title, textDirection: ui.TextDirection.ltr),
+                content: Text(message, textDirection: ui.TextDirection.ltr),
+                actions: <Widget>[
+                  Row(
+                    children: [
+                      AppElevatedButton(
+                        onPressed: ()=>_getFileFromGoogleDrive(),
+                        text: btnLabel,
+                      ),
+                      AppElevatedButton(
+                        onPressed: (){
+                          Navigator.pop(context);
+                        },
+                        text: 'Not Now',
+                      ),
+                    ],
+                  )
+                ])
+                : AlertDialog(
+              title: Text(title , textDirection: ui.TextDirection.ltr),
+              content: Text(message, textDirection: ui.TextDirection.ltr),
+              actions: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AppElevatedButton(
+                      onPressed: ()=>_getFileFromGoogleDrive(),
+                      text: btnLabel,
+                    ),
+                    AppElevatedButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                      },
+                      text: 'Not Now',
+                    ),
+                  ],
+                ),
+              ],
+            ));
+      },
+    );
+  }
+   static _getFileFromGoogleDrive()  {
+     urlLauncherBrowser('https://drive.google.com/file/d/1im1-7Bmx5Qi9cTsVIvGnZIvNY7vSKQLj/view?usp=drivesdk');
+  }
+  _openStoreUrl() {
+    StoreRedirect.redirect(
+      androidAppId: 'ae.clearance.app',
+      iOSAppId: '1637100307',
+    );
   }
 }
