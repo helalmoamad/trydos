@@ -149,6 +149,7 @@ abstract class AppAssets {
   static String get quickOfferSvg=>'quick_offer'.svg;
   static String get trydosTextSvg=>'trydos_text'.svg;
   static String get backArrowArabic=>'back_arrow_arabic'.svg;
+  static String get bagSvg=>'bag'.svg;
   static String getFlagPath(String name) => name.flagSvg;
 
   ///endregion

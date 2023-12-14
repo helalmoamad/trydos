@@ -62,6 +62,17 @@ class RequestAndResponseDetailsLayout extends StatelessWidget {
                                       style: bodyStyle(context)),
                                 ],
                               ),
+                              if(data['response_time']!=null)
+                              TextSpan(
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: 'Response Time: ',
+                                      style: titleStyle(context)),
+                                  TextSpan(
+                                      text: data['response_time'].toString() + '\n',
+                                      style: bodyStyle(context)),
+                                ],
+                              ),
                               TextSpan(
                                 children: <TextSpan>[
                                   TextSpan(

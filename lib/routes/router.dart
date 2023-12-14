@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -26,7 +28,10 @@ class GRouter {
   static final RouterConfiguration _config = RouterConfiguration.init();
 
   static final GoRouter _router = GoRouter(
-    observers: [BotToastNavigatorObserver()],
+    observers: [
+      BotToastNavigatorObserver(),
+      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)
+    ],
     routes: <RouteBase>[
       GoRoute(
           path: _config.kRootRoute,

@@ -61,8 +61,6 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n Data: ${response.data}",
       );
     }
-    _prefsRepository.saveRequestsData(response.requestOptions.path, response.data is! FormData ? response.data : {'data' : 'formData'}, response.requestOptions.headers, response.statusCode, response.requestOptions.method, response.requestOptions.queryParameters, response.data is! FormData ? response.data : {'data' : 'formData'});
-
     handler.next(response);
   }
 

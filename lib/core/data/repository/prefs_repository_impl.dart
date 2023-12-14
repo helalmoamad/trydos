@@ -66,7 +66,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
       String? request,
       Map<String, dynamic>? query,
       Map<String, dynamic>? body,
-      {String? error}) {
+      {String? error ,String? responseTime}) {
     Map<String, dynamic> requestAndResponse;
     if (error == null || error == 'null' || error == '') {
       requestAndResponse = {
@@ -76,7 +76,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
         'headers': headers,
         'query': query,
         'body': body,
-        'statusCode': statusCode
+        'statusCode': statusCode,
+        'response_time' : responseTime
       };
     } else {
       requestAndResponse = {

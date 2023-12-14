@@ -10,6 +10,7 @@ class HomeState {
   HomeState({
     this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
     this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
+    this.startingSetting ,
     this.getHomeSectionsStatus = GetHomeSectionsStatus.init,
   });
 
@@ -19,12 +20,16 @@ class HomeState {
 
   final GetHomeSectionsStatus getHomeSectionsStatus;
 
+  final StartingSetting? startingSetting ;
+
   HomeState copyWith({
     final GetStartingSettingsStatus? getStartingSettingsStatus,
 
     final GetMainCategoriesStatus? getMainCategoriesStatus,
 
-    final GetHomeSectionsStatus? getHomeSectionsStatus
+    final GetHomeSectionsStatus? getHomeSectionsStatus,
+
+    final StartingSetting? startingSetting ,
   }) {
     return HomeState(
       getStartingSettingsStatus: getStartingSettingsStatus ??
@@ -33,6 +38,7 @@ class HomeState {
           this.getMainCategoriesStatus,
       getHomeSectionsStatus: getHomeSectionsStatus ??
           this.getHomeSectionsStatus,
+        startingSetting : startingSetting ?? this.startingSetting
     );
   }
 }

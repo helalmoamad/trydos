@@ -285,9 +285,7 @@ class _StoriesListState extends State<StoriesList> {
                                           }
                                         },
                                         child: (initialStory.isPhoto == 1)
-                                            ? Builder(
-                                              builder: (ctx) {
-                                                return StoryItemWidget(
+                                            ?  StoryItemWidget(
                                                     index: index,
                                                     onTapOnStoryAction: () async {
                                                       GetIt.I<StoryBloc>().add(
@@ -296,15 +294,16 @@ class _StoriesListState extends State<StoriesList> {
                                                               currentPage: index,
                                                               initialStory:
                                                                   indexOfInitialStory));
-                                                      // Navigator.of(ctx).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
+                                                      // Navigator.of(context).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
                                                       //             initialPage:
                                                       //             index)));
                                                       pushOverscrollRoute(
-                                                          context: ctx,
+                                                          context: context,
                                                           child:
                                                           StoryCollectionPageView(
                                                               initialPage:
                                                               index),
+                                                          dragToPopDirection: DragToPopDirection.toBottom,
                                                           fullscreenDialog: true);
                                                       disableResizing();
                                                     },
@@ -320,12 +319,8 @@ class _StoriesListState extends State<StoriesList> {
                                                         index == focused.value2,
                                                     firstPhotoNotShowed:
                                                         initialStory.photoPath,
-                                                  );
-                                              }
-                                            )
-                                            : Builder(
-                                              builder: (ctx) {
-                                                return StoryItemWidget(
+                                                  )
+                                            :  StoryItemWidget(
                                                     index: index,
                                                     onTapOnStoryAction: () async {
                                                       disableResizing();
@@ -335,12 +330,16 @@ class _StoriesListState extends State<StoriesList> {
                                                               currentPage: index,
                                                               initialStory:
                                                                   indexOfInitialStory));
+                                                      // Navigator.of(context).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
+                                                      //     initialPage:
+                                                      //     index)));
                                                       pushOverscrollRoute(
-                                                          context: ctx,
+                                                          context: context,
                                                           child:
                                                           StoryCollectionPageView(
                                                               initialPage:
                                                               index),
+                                                          dragToPopDirection: DragToPopDirection.toBottom,
                                                           fullscreenDialog: true);
                                                       // Navigator.push(context, MaterialPageRoute(builder: (_)=> StoryCollection(index ,   key: UniqueKey()),));
                                                     },
@@ -358,9 +357,7 @@ class _StoriesListState extends State<StoriesList> {
                                                         initialStory.fullVideoPath!
                                                             .replaceAll(
                                                                 'mp4', 'png'),
-                                                  );
-                                              }
-                                            ),
+                                                  )
                                       ),
                                     );
                                   }
@@ -384,14 +381,14 @@ class _StoriesListState extends State<StoriesList> {
                               child: Text('Try Again')),
                         );
                       case GetStoriesStatus.loading:
-                        return Container(
+                        return SizedBox(
                           width: double.infinity,
-                          height: 170,
+                          height: 220,
                           child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) => Padding(
                                   padding: EdgeInsetsDirectional.only(
-                                      start: 20, top: 35),
+                                      start: 10, top: 35 , bottom: 30),
                                   child: TrydosShimmerLoading(
                                     width: 100,
                                     height: 150,

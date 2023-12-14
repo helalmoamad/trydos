@@ -74,7 +74,7 @@ abstract class PrefsRepository {
       String? request,
       Map<String, dynamic>? query,
       Map<String, dynamic>? body,
-      {String? error});
+      {String? error , String? responseTime});
 
   void clearAllRequests();
 

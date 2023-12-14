@@ -4,9 +4,11 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:logger/logger.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_sections_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usecase.dart';
@@ -79,9 +81,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             (r)
     {
       if(r.data!.startingSetting!.smartLook ?? false){
+        Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
         initializeSmartLook();
       }
       emit(state.copyWith(
+        startingSetting: r.data!.startingSetting,
           getStartingSettingsStatus: GetStartingSettingsStatus.success));
     });
   }
@@ -108,8 +112,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   void requestAPIAfterHome() {
     if(prefsRepository.marketToken != null) {
       GetIt.I<AuthBloc>().add(GetCustomerInfoEvent());
-      add(GetStartingSettingsEvent());
     }
+    add(GetStartingSettingsEvent());
     if (prefsRepository.chatToken != null) {
 
       GetIt.I<ChatBloc>().add(GetChatsEvent());

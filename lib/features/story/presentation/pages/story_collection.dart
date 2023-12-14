@@ -116,6 +116,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                   widget.animatedController.forward();
                   _videoController?.play();
                 },
+
                 // onVerticalDragUpdate: (details) {
                 //   if (details.delta.direction > 0) {
                 //     Navigator.pop(context);
@@ -208,16 +209,19 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                         1) {
                       if (state.stories[widget.id]
                               .selectedStoriesStatusForCollection ==
-                          SelectedStoriesStatus.loading)
+                          SelectedStoriesStatus.loading) {
+                        widget.animatedController.stop();
                         return TrydosShimmerLoading(
                           width: 60,
                           height: 60,
                           logoTextHeight: 14,
                           logoTextWidth: 20.w,
                         );
+                      }
                       if (state.stories[widget.id]
                               .selectedStoriesStatusForCollection ==
                           SelectedStoriesStatus.success) {
+                        widget.animatedController.stop();
                         widget.animatedController.duration =
                             const Duration(seconds: 4);
                         if (widget.stopAnimationAndVideo) {
@@ -268,8 +272,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                         });
                       }
                       if(widget.id != state.currentPage){
-                        print('currentPage ${state.currentPage}');
-                        print('NOOOOOOOO ${widget.id}');
                         _videoController?.pause();
                         widget.animatedController.stop();
                       }else {
