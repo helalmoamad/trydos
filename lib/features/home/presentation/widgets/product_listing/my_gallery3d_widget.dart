@@ -79,13 +79,13 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
         controller: widget.gallery3dController,
         width: widget.galleryWidth,
         key: widget.key,
-        changingPagesScrollOffset: 0.5,
+        changingPagesScrollOffset: 0.3,
         height: widget.galleryHeight,
         isClip: false,
         // ellipseHeight: 80,
         // currentIndex: currentIndex,
-        onItemChanged: (index) {
-          widget.onItemChanged?.call(index);
+        onItemChanged:
+          widget.onItemChanged,
             // setState(() {
             //   if ((prevIndex == 0 && index == 2) ||
             //       (prevIndex == 2 && index == 1) ||
@@ -106,7 +106,6 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
             //   }
             //   prevIndex = index;
             // });
-        },
         itemConfig: GalleryItemConfig(
           width: widget.itemWidth,
           //height: 220,

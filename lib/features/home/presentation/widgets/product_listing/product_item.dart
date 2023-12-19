@@ -49,7 +49,7 @@ class _ProductItemState extends State<ProductItem> {
         children: [
           Container(
             height: 350,
-            width: 200,
+            width: 200.w,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15.0),
               boxShadow: [

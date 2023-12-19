@@ -10,6 +10,8 @@ import '../models/video_call_ersponse_model.dart';
 
 @injectable
 class CallsRemoteDataSource {
+
+
   Future<VideoCallRemoteResponseModel> makeCallVideo(Map<String,dynamic> params) {
     PostClient<VideoCallRemoteResponseModel> videoCall =
         PostClient<VideoCallRemoteResponseModel>(
@@ -25,6 +27,25 @@ class CallsRemoteDataSource {
     return videoCall();
   }
 
+  Future<bool> makeAnswerCall(String ChatId) {
+    PostClient<bool> AnswerCall = PostClient<bool>(
+        requestPrams: RequestConfig<bool>(
+            // data: params,
+            endpoint: ChatEndPoints.answer_call(ChatId),
+            response: ResponseValue<bool>(returnValueOnSuccess: true)),
+        serverName: ServerName.chat);
+    return AnswerCall();
+  }
+  Future<bool> makeRingingCall(String ChatId) {
+    PostClient<bool> AnswerCall = PostClient<bool>(
+        requestPrams: RequestConfig<bool>(
+            // data: params,
+            endpoint: ChatEndPoints.answer_call(ChatId),
+            response: ResponseValue<bool>(returnValueOnSuccess: true)),
+        serverName: ServerName.chat);
+    return AnswerCall();
+  }
+
   Future<GetAgoraTokenResponseModel> getAgoraToken(String ChatId) {
     PostClient<GetAgoraTokenResponseModel> videoCall =
         PostClient<GetAgoraTokenResponseModel>(
@@ -38,16 +59,6 @@ class CallsRemoteDataSource {
                 )),
             serverName: ServerName.chat);
     return videoCall();
-  }
-
-  Future<bool> makeAnswerCall(String ChatId) {
-    PostClient<bool> AnswerCall = PostClient<bool>(
-        requestPrams: RequestConfig<bool>(
-            // data: params,
-            endpoint: ChatEndPoints.answer_call(ChatId),
-            response: ResponseValue<bool>(returnValueOnSuccess: true)),
-        serverName: ServerName.chat);
-    return AnswerCall();
   }
 
   Future<bool> makeRejectCall(String ChatId) {

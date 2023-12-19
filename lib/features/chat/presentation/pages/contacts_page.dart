@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
@@ -32,8 +33,7 @@ class MyContactsPage extends StatefulWidget {
 class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
   final ScrollController scrollController = ScrollController();
   late ChatBloc chatBloc;
-  ValueNotifier<List<Contact>> searchContacts=ValueNotifier([]);
-  List<Contact> initialContacts=[];
+  ValueNotifier<List<Contact>> searchContacts=ValueNotifier(GetIt.I<ChatBloc>().state.contacts);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,10 +107,10 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                       .copyWith(color: const Color(0xffD3D3D3)),
                   onChange: (String? text){
                     if(text?.isEmpty ?? true){
-                      searchContacts.value=initialContacts;
+                      searchContacts.value=GetIt.I<ChatBloc>().state.contacts;
                     }else{
                       List<Contact> search=[];
-                      for(Contact contact in initialContacts){
+                      for(Contact contact in GetIt.I<ChatBloc>().state.contacts){
                         if(contact.name!.toLowerCase().contains(text?.toLowerCase() ?? '') || contact.mobilePhone!.toLowerCase().contains(text?.toLowerCase() ?? '')){
                           search.add(contact);
                         }
@@ -136,11 +136,13 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                 // TODO: implement listener
               },
               builder: (context, state) {
+
+
+
                 if(state.getContactsStatus == GetContactsStatus.loading){
                   return SliverToBoxAdapter(child: Center(child: TrydosLoader(),));
                 }
-                searchContacts.value=state.contacts;
-                initialContacts=state.contacts;
+
 
                 return ValueListenableBuilder<List<Contact>>(
                   valueListenable: searchContacts,

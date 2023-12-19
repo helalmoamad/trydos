@@ -104,7 +104,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
       minScale: 0.4,
       primaryshiftingOffsetDivision: 1.6,
       // 9 -> 2.5
-      scrollTime: 50);
+      scrollTime: 1);
   final Gallery3DController gallery3dControllerForTinyCircles =
       Gallery3DController(
           itemCount: 14,
@@ -112,12 +112,13 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
           minScale: 0.4,
           primaryshiftingOffsetDivision: 1,
           // 9 -> 2.5
-          scrollTime: 50);
+          scrollTime: 1);
   final ValueNotifier<int> currentColorIndex = ValueNotifier(0);
   int prevIndexInFirstSlider = 0;
   int prevIndexInSecondSlider = 0;
   int slideModeIndex = 0;
   final CarouselController carouselController = CarouselController();
+
   @override
   Widget build(BuildContext context) {
     slideModeIndex = widget.itemIndex == widget.slidingModeItem.item1
@@ -147,7 +148,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                 if (slideModeIndex == 2) ...{
                                   SizedBox(
                                     height: 45,
-                                    width: 200,
+                                    width: 200.w,
                                     child: ListView.separated(
                                       scrollDirection: Axis.horizontal,
                                       shrinkWrap: true,
@@ -232,19 +233,27 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       return Transform.translate(
                                         offset: Offset(-5, 0),
                                         child: MyGallery3DWidget(
-                                        //  key: ValueKey('gallery3dController${widget.itemIndex}'),
+                                          //  key: ValueKey('gallery3dController${widget.itemIndex}'),
                                           gallery3dController:
                                               gallery3dController,
-                                          itemWidth: 170,
+                                          itemWidth: 170.w,
                                           threeImages: sliderData.item1,
                                           onItemClick: (index) {
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback(
+                                                    (timeStamp) {
+                                              gallery3dControllerForTinyCircles
+                                                  .jumpTo(
+                                                      gallery3dControllerForCircles
+                                                          .currentIndex);
+                                            });
                                             widget.setThisEnabled.call(-1, -1);
                                           },
                                           images: sliderData.item2,
                                           showProductSides: slideModeIndex == 2,
                                           currentProduct:
                                               prevIndexInFirstSlider,
-                                          galleryHeight: 246,
+                                          galleryHeight: 226,
                                           onItemChanged: (int index) {
                                             bool scrollToLeft = false;
                                             if ((prevIndexForThreeImages == 0 &&
@@ -254,11 +263,6 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                 (prevIndexForThreeImages == 1 &&
                                                     index == 0)) {
                                               scrollToLeft = true;
-                                                updateImagesInFirstSlider(true,
-                                                    calledFromOnChanged: true);
-                                            } else {
-                                                updateImagesInFirstSlider(false,
-                                                    calledFromOnChanged: true);
                                             }
                                             prevIndexForThreeImages = index;
                                             if (slideModeIndex != 2 &&
@@ -273,10 +277,16 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                           : (gallery3dControllerForCircles
                                                                   .currentIndex +
                                                               1);
-                                              gallery3dControllerForCircles
-                                                  .animateTo(
-                                                      prevIndexInFirstSlider,
-                                                      false);
+                                              Future.delayed(
+                                                  Duration(milliseconds: 50),
+                                                  () {
+                                                currentColorIndex.value =
+                                                    prevIndexInFirstSlider;
+                                                gallery3dControllerForCircles
+                                                    .animateTo(
+                                                        prevIndexInFirstSlider,
+                                                        false);
+                                              });
                                             } else if (slideModeIndex != 2) {
                                               prevIndexInSecondSlider =
                                                   prevIndexInFirstSlider =
@@ -288,13 +298,24 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                           : (gallery3dControllerForCircles
                                                                   .currentIndex -
                                                               1);
-                                              gallery3dControllerForCircles
-                                                  .animateTo(
-                                                      prevIndexInFirstSlider,
-                                                      true);
+                                              Future.delayed(
+                                                  Duration(milliseconds: 50),
+                                                  () {
+                                                currentColorIndex.value =
+                                                    prevIndexInFirstSlider;
+                                                gallery3dControllerForCircles
+                                                    .animateTo(
+                                                        prevIndexInFirstSlider,
+                                                        true);
+                                              });
                                             }
-                                            currentColorIndex.value =
-                                                prevIndexInFirstSlider;
+                                            if (scrollToLeft) {
+                                              updateImagesInFirstSlider(true,
+                                                  calledFromOnChanged: true);
+                                            } else {
+                                              updateImagesInFirstSlider(false,
+                                                  calledFromOnChanged: true);
+                                            }
                                           },
                                           galleryWidth: 200,
                                           radius: 15,
@@ -319,7 +340,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     },
                                   ),
                                   Gallery3D(
-                                   // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
+                                      // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
                                       controller: gallery3dControllerForCircles,
                                       width: 200.w,
                                       height: null,
@@ -330,16 +351,35 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                             ((prevIndexInSecondSlider < index &&
                                                     (index -
                                                             prevIndexInSecondSlider) !=
-                                                        8) ||
-                                                (prevIndexInSecondSlider == 8 &&
+                                                        13) ||
+                                                (prevIndexInSecondSlider ==
+                                                        13 &&
                                                     index == 0))) {
+                                          prevIndexForThreeImages =
+                                              (gallery3dController
+                                                              .currentIndex +
+                                                          1) ==
+                                                      3
+                                                  ? 0
+                                                  : (gallery3dController
+                                                          .currentIndex +
+                                                      1);
+                                          gallery3dController.animateTo(
+                                              prevIndexForThreeImages, false);
                                           updateImagesInFirstSlider(false);
-                                          gallery3dController.animateTo(
-                                              index, false);
                                         } else if (slideModeIndex != 2) {
-                                          updateImagesInFirstSlider(true);
+                                          prevIndexForThreeImages =
+                                              (gallery3dController
+                                                              .currentIndex -
+                                                          1) <
+                                                      0
+                                                  ? 2
+                                                  : (gallery3dController
+                                                          .currentIndex -
+                                                      1);
                                           gallery3dController.animateTo(
-                                              index, true);
+                                              prevIndexForThreeImages, true);
+                                          updateImagesInFirstSlider(true);
                                         }
                                         if (slideModeIndex != 2) {
                                           prevIndexInFirstSlider = index;
@@ -394,16 +434,102 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                           ]),
                                       onClickItem: (index) {},
                                       itemBuilder: (context, index) {
-                                        return ProductListingImageWidget(
-                                          width: 35,
-                                          height: 35,
-                                          imageUrl: images[index],
-                                          innerShadowYOffset: 4,
-                                          borderColor: index ==
-                                                  prevIndexInFirstSlider
-                                              ? colors[prevIndexInFirstSlider]
-                                              : Colors.white,
-                                          circleShape: true,
+                                        return InkWell(
+                                          onTap: () {
+                                            if (index == prevIndexInFirstSlider)
+                                              return;
+                                            if (index >
+                                                prevIndexInFirstSlider) {
+                                              gallery3dControllerForCircles
+                                                  .animateTo(index, false);
+                                              int indexx = gallery3dController
+                                                  .currentIndex;
+                                              for (int i = 0;
+                                                  i <
+                                                      index -
+                                                          prevIndexInFirstSlider;
+                                                  i++) {
+                                                indexx++;
+                                                if (indexx == 3) {
+                                                  indexx = 0;
+                                                }
+                                                updateImagesInFirstSlider(false,
+                                                    currentIndex: indexx);
+                                              }
+                                              for (int i = 0;
+                                                  i <
+                                                      index -
+                                                          prevIndexInFirstSlider;
+                                                  i++) {
+                                                gallery3dController.animateTo(
+                                                    gallery3dController
+                                                                    .currentIndex +
+                                                                1 ==
+                                                            3
+                                                        ? 0
+                                                        : (gallery3dController
+                                                                .currentIndex +
+                                                            1),
+                                                    false);
+                                              }
+                                            } else {
+                                              gallery3dControllerForCircles
+                                                  .animateTo(index, true);
+                                              int indexx = gallery3dController
+                                                  .currentIndex;
+                                              for (int i = 0;
+                                                  i <
+                                                      prevIndexInFirstSlider -
+                                                          index -
+                                                          ((prevIndexInFirstSlider -
+                                                                      index) >
+                                                                  7
+                                                              ? 7
+                                                              : 0);
+                                                  i++) {
+                                                indexx--;
+                                                if (indexx == -1) {
+                                                  indexx = 2;
+                                                }
+                                                updateImagesInFirstSlider(true,
+                                                    currentIndex: indexx);
+                                              }
+                                              for (int i = 0;
+                                                  i <
+                                                      prevIndexInFirstSlider -
+                                                          index -
+                                                          ((prevIndexInFirstSlider -
+                                                                      index) >
+                                                                  7
+                                                              ? 7
+                                                              : 0);
+                                                  i++) {
+                                                gallery3dController.animateTo(
+                                                    (gallery3dController
+                                                                    .currentIndex -
+                                                                1) <
+                                                            0
+                                                        ? 2
+                                                        : (gallery3dController
+                                                                .currentIndex -
+                                                            1),
+                                                    true);
+                                              }
+                                            }
+                                            prevIndexInFirstSlider = index;
+                                            currentColorIndex.value = index;
+                                          },
+                                          child: ProductListingImageWidget(
+                                            width: 35,
+                                            height: 35,
+                                            imageUrl: images[index],
+                                            innerShadowYOffset: 4,
+                                            borderColor: index ==
+                                                    prevIndexInFirstSlider
+                                                ? colors[prevIndexInFirstSlider]
+                                                : Colors.white,
+                                            circleShape: true,
+                                          ),
                                         );
                                       }),
                                 }
@@ -558,7 +684,11 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                   return InkWell(
                                                     onTap: () {
                                                       if (slideModeIndex == 0) {
-                                                        widget.setThisEnabled.call(widget.itemIndex, 1);
+                                                        widget.setThisEnabled
+                                                            .call(
+                                                                widget
+                                                                    .itemIndex,
+                                                                1);
                                                         return;
                                                       }
                                                       // gallery3dControllerForCircles
@@ -730,27 +860,29 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
   }
 
   void updateImagesInFirstSlider(bool isScrollLeft,
-      {bool calledFromOnChanged = false}) {
+      {bool calledFromOnChanged = false, int? currentIndex}) {
     int index = 0;
     List<String> threeImages = firstSliderItems.value.item1;
     List<String> images = firstSliderItems.value.item2;
     if (isScrollLeft) {
-      index = calledFromOnChanged
-          ? gallery3dController.currentIndex
-          : (gallery3dController.currentIndex - 1) < 0
-              ? 2
-              : (gallery3dController.currentIndex - 1);
+      index = currentIndex ??
+          (calledFromOnChanged
+              ? gallery3dController.currentIndex
+              : (gallery3dController.currentIndex - 1) < 0
+                  ? 2
+                  : (gallery3dController.currentIndex - 1));
       String middleImageFromThree =
           threeImages[index - 1 < 0 ? 2 : (index - 1)];
       threeImages[index - 1 < 0 ? 2 : (index - 1)] = images.last;
       images.removeLast();
       images.insert(0, middleImageFromThree);
     } else {
-      index = calledFromOnChanged
-          ? gallery3dController.currentIndex
-          : (gallery3dController.currentIndex + 1) > 2
-              ? 0
-              : (gallery3dController.currentIndex + 1);
+      index = currentIndex ??
+          (calledFromOnChanged
+              ? gallery3dController.currentIndex
+              : (gallery3dController.currentIndex + 1) > 2
+                  ? 0
+                  : (gallery3dController.currentIndex + 1));
       String middleImageFromThree =
           threeImages[index + 1 > 2 ? 0 : (index + 1)];
       threeImages[index + 1 > 2 ? 0 : (index + 1)] = images.first;

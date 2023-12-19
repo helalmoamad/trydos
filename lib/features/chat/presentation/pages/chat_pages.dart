@@ -45,7 +45,6 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   late ChatBloc chatBloc;
 
   List<Widget> chatPages = [
-
     const CallsPageContent(),
     const CallsPageContent(),
   ];
@@ -78,6 +77,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
         backgroundColor: const Color(0xff388cff),
         child: Center(child: Icon(Icons.message_rounded , size: 25.sp , color: colorScheme.white)),
       ),
+
       backgroundColor: const Color(0xffF8F8F8),
       appBar: widget.hideCallsAndStories ? TrydosAppBar(
         appBarParams: AppBarParams(
