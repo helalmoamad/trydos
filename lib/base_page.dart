@@ -3,7 +3,6 @@ import 'dart:convert' as convert;
 import 'dart:io';
 
 import 'package:adobe_xd/pinned.dart';
-import 'package:connectycube_flutter_call_kit/connectycube_flutter_call_kit.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

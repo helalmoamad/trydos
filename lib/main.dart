@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:connectycube_flutter_call_kit/connectycube_flutter_call_kit.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -21,6 +20,7 @@ import 'package:trydos/trydos_application.dart';
 import 'package:uuid/uuid.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
+
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -173,7 +173,6 @@ void main() async {
     NotificationProcess().setupInteractedMessage(),
   ]);
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
-  ConnectycubeFlutterCallKit.instance.init(ringtone: 'ringtone1');
   NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   HttpOverrides.global = MyHttpOverrides();

@@ -69,23 +69,23 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                   valueListenable: denyScrollingAtEdgesNotifier,
                   builder: (context, value, _) {
                     return CarouselSlider.builder(
-                        detectingScrollingForEdges: (double dx) {
-                          if (currentPage == state.stories.length - 1) {
-                            denyScrollingAtEdgesNotifier.value = 2;
-                          } else if (currentPage == 0) {
-                            denyScrollingAtEdgesNotifier.value = 1;
-                          } else {
-                            denyScrollingAtEdgesNotifier.value = 0;
-                          }
-                        },
-                        onSlideChanged: (int? newPage){
-                          if((newPage! % state.stories.length) == state.stories.length -1 && currentPage == 0){
-                            carouselSliderController.jumpToPage(index: 0);
-                          }
-                          else if((newPage % state.stories.length) == 0 && currentPage == state.stories.length -1){
-                            carouselSliderController.jumpToPage(index: state.stories.length -1);
-                          }
-                        },
+                        // detectingScrollingForEdges: (double dx) {
+                        //   if (currentPage == state.stories.length - 1) {
+                        //     denyScrollingAtEdgesNotifier.value = 2;
+                        //   } else if (currentPage == 0) {
+                        //     denyScrollingAtEdgesNotifier.value = 1;
+                        //   } else {
+                        //     denyScrollingAtEdgesNotifier.value = 0;
+                        //   }
+                        // },
+                        // onSlideChanged: (int? newPage){
+                        //   if((newPage! % state.stories.length) == state.stories.length -1 && currentPage == 0){
+                        //     carouselSliderController.jumpToPage(index: 0);
+                        //   }
+                        //   else if((newPage % state.stories.length) == 0 && currentPage == state.stories.length -1){
+                        //     carouselSliderController.jumpToPage(index: state.stories.length -1);
+                        //   }
+                        // },
                         slideBuilder: (int index) {
                           currentPage = widget.initialPage;
                           int carouselSliderCurrentPage;
