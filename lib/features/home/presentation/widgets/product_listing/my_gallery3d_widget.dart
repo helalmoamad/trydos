@@ -5,7 +5,7 @@ import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
 
 class MyGallery3DWidget extends StatefulWidget {
-  const MyGallery3DWidget(
+   MyGallery3DWidget(
       {super.key,
       required this.itemWidth,
       required this.gallery3dController,
@@ -15,7 +15,11 @@ class MyGallery3DWidget extends StatefulWidget {
       this.itemHeight,
       this.onItemChanged,
       required this.radius,
-      required this.galleryWidth, required this.galleryHeight, this.onItemClick});
+      required this.galleryWidth,
+      required this.galleryHeight,
+      this.onItemClick,
+        required this.threeImages,
+      required this.images});
 
   final bool showProductSides;
   final int currentProduct;
@@ -28,6 +32,9 @@ class MyGallery3DWidget extends StatefulWidget {
   final Gallery3DController gallery3dController;
   final void Function(int index)? onItemChanged;
   final void Function(int index)? onItemClick;
+   List<String> images;
+   List<String> threeImages;
+
   @override
   State<MyGallery3DWidget> createState() => _MyGallery3DWidgetState();
 }
@@ -55,61 +62,50 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
     Colors.blue,
     Colors.brown,
   ];
+  List<String> threeImages = [];
 
-  List<String> images = [
-    'assets/images/product_listing_images/bl1.jpg',
-    'assets/images/product_listing_images/p1.jpg',
-    'assets/images/product_listing_images/y2.jpg',
-    'assets/images/product_listing_images/b1.jpg',
-    'assets/images/product_listing_images/o1.jpg',
-    'assets/images/product_listing_images/r1.jpg',
-    'assets/images/product_listing_images/g1.jpg',
-    'assets/images/product_listing_images/bl1.jpg',
-    'assets/images/product_listing_images/p1.jpg',
-    'assets/images/product_listing_images/y2.jpg',
-    'assets/images/product_listing_images/b1.jpg',
-    'assets/images/product_listing_images/o1.jpg',
-    'assets/images/product_listing_images/r1.jpg',
-    'assets/images/product_listing_images/g1.jpg',
-  ];
+  @override
+  void initState() {
+    // threeImages.add(widget.images[0]);
+    // threeImages.add(widget.images[1]);
+    // threeImages.add(widget.images[widget.images.length - 1]);
+    super.initState();
+  }
 
-  int prevIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Gallery3D(
         controller: widget.gallery3dController,
         width: widget.galleryWidth,
-        changingPagesScrollOffset: 0.7,
+        key: widget.key,
+        changingPagesScrollOffset: 0.5,
         height: widget.galleryHeight,
         isClip: false,
         // ellipseHeight: 80,
         // currentIndex: currentIndex,
         onItemChanged: (index) {
           widget.onItemChanged?.call(index);
-          // scroll to right
-          // if (widget.itemCount == 3) {
-          //   setState(() {
-          //     if ((prevIndex == 0 && index == 2) ||
-          //         (prevIndex == 2 && index == 1) ||
-          //         (prevIndex == 1 && index == 0)) {
-          //       Color middleColorFromThree =
-          //           threeColors[index - 1 < 0 ? 2 : (index - 1)];
-          //       threeColors[index - 1 < 0 ? 2 : (index - 1)] =
-          //           leftColors.first;
-          //       leftColors.removeAt(0);
-          //       leftColors.add(middleColorFromThree);
-          //     } else {
-          //       Color middleColorFromThree =
-          //           threeColors[index + 1 > 2 ? 0 : (index + 1)];
-          //       threeColors[index + 1 > 2 ? 0 : (index + 1)] =
-          //           leftColors.last;
-          //       leftColors.removeLast();
-          //       leftColors.insert(0, middleColorFromThree);
-          //     }
-          //     prevIndex = index;
-          //   });
-          // }
+            // setState(() {
+            //   if ((prevIndex == 0 && index == 2) ||
+            //       (prevIndex == 2 && index == 1) ||
+            //       (prevIndex == 1 && index == 0)) {
+            //     String middleImageFromThree =
+            //     widget.threeImages[index - 1 < 0 ? 2 : (index - 1)];
+            //     widget.threeImages[index - 1 < 0 ? 2 : (index - 1)] =
+            //         widget.images.last;
+            //     widget.images.removeLast();
+            //     widget.images.insert(0, middleImageFromThree);
+            //   } else {
+            //     String middleImageFromThree =
+            //     widget.threeImages[index + 1 > 2 ? 0 : (index + 1)];
+            //     widget.threeImages[index + 1 > 2 ? 0 : (index + 1)] =
+            //         widget.images.first;
+            //     widget.images.removeAt(0);
+            //     widget.images.add(middleImageFromThree);
+            //   }
+            //   prevIndex = index;
+            // });
         },
         itemConfig: GalleryItemConfig(
           width: widget.itemWidth,
@@ -138,7 +134,14 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
           // return Container(
           //   color: threeColors[index],
           // );
-          return  ProductListingImageWidget(innerShadowYOffset: 3,circleShape: false,imageUrl: !widget.showProductSides ? images[index] : images[widget.currentProduct],);
+          return ProductListingImageWidget(
+            innerShadowYOffset: 3,
+            circleShape: false,
+            width: widget.itemWidth,
+            imageUrl: !widget.showProductSides
+                ? widget.threeImages[index]
+                : widget.threeImages[widget.currentProduct],
+          );
         });
   }
 }

@@ -10,15 +10,14 @@ import '../models/video_call_ersponse_model.dart';
 
 @injectable
 class CallsRemoteDataSource {
-  Future<VideoCallRemoteResponseModel> makeCallVideo(String ChatId) {
+  Future<VideoCallRemoteResponseModel> makeCallVideo(Map<String,dynamic> params) {
     PostClient<VideoCallRemoteResponseModel> videoCall =
         PostClient<VideoCallRemoteResponseModel>(
             requestPrams: RequestConfig<VideoCallRemoteResponseModel>(
-                // data: params,
-                endpoint: ChatEndPoints.videoCall(ChatId),
+                data: {'payload':params['payload']},
+                endpoint: ChatEndPoints.videoCall(params['chatId']),
                 response: ResponseValue<VideoCallRemoteResponseModel>(
                   fromJson: (response) {
-                    debugPrint("asdascc${response}");
                     return VideoCallRemoteResponseModel.fromJson(response);
                   },
                 )),

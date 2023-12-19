@@ -41,6 +41,14 @@ class CreateCallPage extends StatefulWidget {
 
 class _CreateCallPageState extends ThemeState<CreateCallPage> {
   @override
+  void initState() {
+    if (GetIt.I<CallsBloc>().state.createVideoCallStatus == CreateVideoCallStatus.endCall) Navigator.of(context).pop();
+
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     GetIt.I<CallsBloc>().add(InitResponseRejectVideoCallEvent());
 

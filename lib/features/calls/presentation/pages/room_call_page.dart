@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 
@@ -59,17 +60,23 @@ class _RoomCallPageState extends State<RoomCallPage> {
           remoteIds.add(uid);
         });
       },
-      userOffline: (uid, reason) {
+      userOffline: (uid, reason) async{
+        await  _engine.leaveChannel();
+
+        GetIt.I<CallsBloc>().add(EndVideoCallEvent());
+       Navigator.of(context).pop();
         debugPrint("userOffLine");
-        setState(() {
-          remoteIds.remove(uid);
-        });
-      },
+        // setState(() {
+        //   remoteIds.remove(uid);
+        // });
+
+
+
+        },
     ));
 
-    await _engine
-        .joinChannel(
-            token, channelName, null, GetIt.I<PrefsRepository>().myChatId!)
+    await _engine.joinChannel(
+        token, channelName, null, GetIt.I<PrefsRepository>().myChatId!)
         .then((value) {
       setState(() {
         loading = false;
@@ -82,62 +89,80 @@ class _RoomCallPageState extends State<RoomCallPage> {
     return Scaffold(
       body: BlocConsumer<CallsBloc, CallsState>(
         builder: (context, state) {
-          initializeAgora(state.agoraToken!, state.channelName!);
-          return loading
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Stack(
-                  children: [
-                    Center(
-                      child: renderRemoteView(state.channelName!),
-                    ),
-                    Positioned(
-                        top: yPosition,
-                        left: xPosition,
-                        child: GestureDetector(
-                          onPanUpdate: (details) {
-                            setState(() {
-                              xPosition += details.delta.dx;
-                              yPosition += details.delta.dy;
-                            });
-                          },
-                          child: Container(
-                              width: 100.w,
-                              height: 130.h,
-                              child: rtc_local_view.SurfaceView()),
-                        )),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  muteAudio = !muteAudio;
-                                  _engine.muteLocalAudioStream(muteAudio);
-                                },
-                                icon: Icon(
-                                  Icons.volume_mute,
-                                  size: 18,
-                                )),
-                            IconButton(
-                                onPressed: () {
-                                  _engine.leaveChannel();
-                                },
-                                icon: Icon(
-                                  Icons.call_end,
-                                  size: 18,
-                                )),
-                            IconButton(
-                                onPressed: () {
-                                  _engine.switchCamera();
-                                },
-                                icon: Icon(Icons.switch_camera, size: 18))
-                          ]),
-                    )
-                  ],
-                );
+          if (state.createVideoCallStatus == CreateVideoCallStatus.loading)
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          else {
+            debugPrint('initializeAgoradsz');
+            initializeAgora(state.agoraToken!, state.channelName!);
+            return loading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Stack(
+                    children: [
+                      Center(
+                        child: renderRemoteView(state.channelName!),
+                      ),
+                      Positioned(
+                          top: yPosition,
+                          left: xPosition,
+                          child: GestureDetector(
+                            // onPanUpdate: (details) {
+                            //   setState(() {
+                            //     xPosition += details.delta.dx;
+                            //     yPosition += details.delta.dy;
+                            //   });
+                            // },
+                            child: Container(
+                                width: 100.w,
+                                height: 130.h,
+                                child: rtc_local_view.SurfaceView()),
+                          )),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                            CircleAvatar(backgroundColor: Colors.white,child:
+                              IconButton(
+                                  onPressed: () {
+                                    muteAudio = !muteAudio;
+                                    _engine.muteLocalAudioStream(muteAudio);
+                                  },
+                                  icon: Icon(
+
+                                    Icons.volume_mute,
+                                    size: 18,color: Colors.black,
+                                  )),
+                            ),
+                              CircleAvatar( child:                               IconButton(
+                       onPressed: () async{
+                         GetIt.I<CallsBloc>().add(EndVideoCallEvent());
+                         await _engine.leaveChannel();
+                         Navigator.of(context).pop();
+
+                       },
+                       icon: Icon(
+                         color: Colors.black,
+                         Icons.call_end,
+                         size: 18,
+                       )),radius: 20,backgroundColor: Colors.white,
+                       ),
+                              CircleAvatar(backgroundColor: Colors.white,child: IconButton(
+                                  onPressed: () {
+                                    _engine.switchCamera();
+                                  },
+                                  icon: Icon(Icons.switch_camera, size: 18,color: Colors.black,)),)
+
+
+                            ]),
+                      )
+                    ],
+                  );
+          }
+
         },
         listener: (context, state) {},
       ),

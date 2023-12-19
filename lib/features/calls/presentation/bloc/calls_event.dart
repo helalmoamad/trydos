@@ -4,17 +4,17 @@ abstract class CallsEvent {}
 // class CreateVideoCallEvent extends CallsEvent {}
 class VideoCallEvent extends CallsEvent {
   String chatId;
+  Map<String,dynamic> payload;
 
-  VideoCallEvent({required this.chatId});
+  VideoCallEvent({
+
+    required this.payload,
+    required this.chatId});
 }
-class AddChannelMemberToCallEvent extends CallsEvent
-{
-  int uid;
+class EndVideoCallEvent extends CallsEvent {
 
-  AddChannelMemberToCallEvent({required this.uid});
+
 }
-
-
 
 class AnswerVideoCallEvent extends CallsEvent{
   String chatId;
@@ -26,20 +26,6 @@ class RejectVideoCallEvent extends CallsEvent{
   String chatId;
 
   RejectVideoCallEvent({required this.chatId});
-}
-class ResponseAnswerVideoCallEvent extends CallsEvent{
-
-
-  Map<String,dynamic> offer;
-  Map<String,dynamic> iceCandidate;
-  int chatId;
-  ResponseAnswerVideoCallEvent({
-    required this.chatId,
-    required this.offer,
-    required this.iceCandidate});
-
-
-
 }
 class ResponseRejectVideoCallEvent extends CallsEvent {
 

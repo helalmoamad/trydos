@@ -16,9 +16,9 @@ class CallsRepositoryImpl extends CallsRepository
   CallsRepositoryImpl(this.dataSource);
 
   @override
-  Future<Either<Failure, VideoCallRemoteResponseModel>> videoCall({required String ChatId}) {
+  Future<Either<Failure, VideoCallRemoteResponseModel>> videoCall({required Map<String,dynamic> params}) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.makeCallVideo(ChatId));
+        tryCall: () => dataSource.makeCallVideo(params));
   }
 
   @override

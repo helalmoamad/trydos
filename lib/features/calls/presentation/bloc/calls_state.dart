@@ -1,14 +1,16 @@
 part of 'calls_bloc.dart';
 
-enum CreateVideoCallStatus { init, loading, success, failure ,cancel}
+enum CreateVideoCallStatus { init, loading, success, failure, cancel ,endCall}
 
 enum OpenLocalVideoAndAudioStatus { init, loading, success, failure }
 
 enum OpenRemoteVideoAndAudioStatus { init, loading, success, failure }
+
 enum RejectVideoCallStatus { init, loading, success, failure }
 
 @immutable
 class CallsState {
+  final int? sessionId;
   final RejectVideoCallStatus rejectVideoCallStatus;
   final String? agoraToken;
   final String? channelName;
@@ -18,21 +20,21 @@ class CallsState {
   final OpenLocalVideoAndAudioStatus openLocalVideoAndAudioStatus;
 
   CallsState(
-      {
-        this.rejectVideoCallStatus=RejectVideoCallStatus.init,
-        this.agoraToken=null,
-        this.channelName=null,
+      {this.sessionId=23,
+      this.rejectVideoCallStatus = RejectVideoCallStatus.init,
+      this.agoraToken = null,
+      this.channelName = null,
       this.channelMembers = const [],
       this.openRemoteVideoAndAudioStatus = OpenRemoteVideoAndAudioStatus.init,
       this.openLocalVideoAndAudioStatus = OpenLocalVideoAndAudioStatus.init,
       this.createVideoCallStatus = CreateVideoCallStatus.init});
 
   CallsState copyWith(
-      {   RejectVideoCallStatus? rejectVideoCallStatus,
-
+      {int? sessionId,
+      RejectVideoCallStatus? rejectVideoCallStatus,
       String? agoraToken,
-        String? channelName,
-        RtcEngine? engine,
+      String? channelName,
+      RtcEngine? engine,
       List<int>? channelMembers,
       RTCPeerConnection? peerConnection,
       MediaStream? localStream,
@@ -43,9 +45,11 @@ class CallsState {
       RTCVideoRenderer? remoteVideo,
       CreateVideoCallStatus? createVideoCallStatus}) {
     return CallsState(
-      rejectVideoCallStatus: rejectVideoCallStatus??this.rejectVideoCallStatus,
-      agoraToken: agoraToken??this.agoraToken,
-      channelName: channelName??this.channelName,
+        sessionId: sessionId ?? this.sessionId,
+        rejectVideoCallStatus:
+            rejectVideoCallStatus ?? this.rejectVideoCallStatus,
+        agoraToken: agoraToken ?? this.agoraToken,
+        channelName: channelName ?? this.channelName,
         channelMembers: channelMembers ?? this.channelMembers,
         openRemoteVideoAndAudioStatus:
             openRemoteVideoAndAudioStatus ?? this.openRemoteVideoAndAudioStatus,

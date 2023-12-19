@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:ui' as ui;
 
@@ -47,7 +48,7 @@ class _ProductItemState extends State<ProductItem> {
         clipBehavior: Clip.none,
         children: [
           Container(
-            height: 369,
+            height: 350,
             width: 200,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15.0),
