@@ -182,8 +182,7 @@ class _BasePageState extends State<BasePage> {
       if (event.data['type'] == 'VideoCallEvent') {
         debugPrint('forGroundVideo ${event.data.toString()}');
         debugPrint("asdadasbcnghn${event!.data!.toString()}");
-        Map<String, dynamic> data =
-        convert.jsonDecode(event!.data['data'].toString());
+        Map<String, dynamic> data =  convert.jsonDecode(event!.data['data'].toString());
         debugPrint(
             'VideoCallEvent ${data['channel_id'].toString() ?? 'EmptyVideoCallEvent'}');
         debugPrint(' ${data ?? 'EmptyVideoCallEvent'}');

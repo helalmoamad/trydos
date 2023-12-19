@@ -24,118 +24,126 @@ import 'dart:convert' as convert;
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // if (!isDependencyInitialized) {
-  //   await configureDependencies();
-  //   isDependencyInitialized = true;
-  // }
-  Map<String, dynamic> data =
-  convert.jsonDecode(message!.data['data'].toString());
-  debugPrint("cvxvvkhgka${message.data}");
-  if (message.data['type'] == 'VideoCallEvent') {
-    var currentUuid = Uuid().v4();
-    CallKitParams callKitParams = CallKitParams(
-      id: currentUuid,
-      nameCaller: data['payload']['callerName'],
-      appName: 'Trydos',
-      avatar: 'https://i.pravatar.cc/100',
-      handle:    data['payload']['mobilePhone'] ,
-      type: 0,
-      textAccept: 'Accept',
-      textDecline: 'Decline',
-      missedCallNotification: NotificationParams(
-        showNotification: true,
-        isShowCallback: true,
-        subtitle: 'Missed call',
-        callbackText: 'Call back',
-      ),
-      duration: 10000,
-      extra: <String, dynamic>{'channel_id': data['channel_id']},
-      headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
-      android: const AndroidParams(
-          isCustomNotification: true,
-          isShowLogo: false,
+  if (!isDependencyInitialized) {
+    await configureDependencies();
+    isDependencyInitialized = true;
+  }
+
+  debugPrint('ibahem');
+  try{
+    if (message.data['type'] == 'VideoCallEvent')
+    {
+
+      // final FlutterCallkeep callKeep = FlutterCallkeep();
+      //
+      // final callSetup = <String, dynamic>{
+      //   'ios': {
+      //     'appName': 'CallKeepDemo',
+      //   },
+      //   'android': {
+      //     'alertTitle': 'Permissions required',
+      //     'alertDescription':
+      //     'This application needs to access your phone accounts',
+      //     'cancelButton': 'Cancel',
+      //     'okButton': 'ok',
+      //     // Required to get audio in background when using Android 11
+      //     'foregroundService': {
+      //       'channelId': 'com.company.my',
+      //       'channelName': 'Foreground service for my app',
+      //       'notificationTitle': 'My app is running on background',
+      //       'notificationIcon': 'mipmap/ic_notification_launcher',
+      //     },
+      //   },
+      // };
+      //
+      // await  callKeep.setup(null,callSetup,backgroundMode: true);
+      //   await callKeep.displayIncomingCall('uuid', 'callerIdFrom', localizedCallerName: 'callerName', hasVideo: true);
+
+      // _callKeep.displayIncomingCall(Uuid().v4(),'handleType: ,hasVideo:' );
+      // await  _callKeep.backToForeground();
+      Map<String, dynamic> data = convert.jsonDecode(message!.data['data'].toString());
+      debugPrint("cvxvvkhgka${message.data}");
+
+      var currentUuid = Uuid().v4();
+      CallKitParams callKitParams = CallKitParams(
+        id: currentUuid,
+        nameCaller: data['payload']['callerName'],
+        appName: 'Trydos',
+        avatar: 'https://i.pravatar.cc/100',
+        handle:    data['payload']['mobilePhone'] ,
+        type: 0,
+        textAccept: 'Accept',
+        textDecline: 'Decline',
+        missedCallNotification: NotificationParams(
+          showNotification: true,
+          isShowCallback: true,
+          subtitle: 'Missed call',
+          callbackText: 'Call back',
+        ),
+        duration: 10000,
+        extra: <String, dynamic>{'channel_id': data['channel_id']},
+        headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
+        android: const AndroidParams(
+            isCustomNotification: true,
+            isShowLogo: false,
+            ringtonePath: 'system_ringtone_default',
+            backgroundColor: '#0955fa',
+            backgroundUrl: 'https://i.pravatar.cc/500',
+            actionColor: '#4CAF50',
+            incomingCallNotificationChannelName: "Incoming Call",
+            missedCallNotificationChannelName: "Missed Call"),
+        ios: IOSParams(
+          iconName: 'CallKitLogo',
+          handleType: 'generic',
+          supportsVideo: true,
+          maximumCallGroups: 2,
+          maximumCallsPerCallGroup: 1,
+          audioSessionMode: 'default',
+          audioSessionActive: true,
+          audioSessionPreferredSampleRate: 44100.0,
+          audioSessionPreferredIOBufferDuration: 0.005,
+          supportsDTMF: true,
+          supportsHolding: true,
+          supportsGrouping: false,
+          supportsUngrouping: false,
           ringtonePath: 'system_ringtone_default',
-          backgroundColor: '#0955fa',
-          backgroundUrl: 'https://i.pravatar.cc/500',
-          actionColor: '#4CAF50',
-          incomingCallNotificationChannelName: "Incoming Call",
-          missedCallNotificationChannelName: "Missed Call"),
-      ios: IOSParams(
-        iconName: 'CallKitLogo',
-        handleType: 'generic',
-        supportsVideo: true,
-        maximumCallGroups: 2,
-        maximumCallsPerCallGroup: 1,
-        audioSessionMode: 'default',
-        audioSessionActive: true,
-        audioSessionPreferredSampleRate: 44100.0,
-        audioSessionPreferredIOBufferDuration: 0.005,
-        supportsDTMF: true,
-        supportsHolding: true,
-        supportsGrouping: false,
-        supportsUngrouping: false,
-        ringtonePath: 'system_ringtone_default',
-      ),
-    );
-    await FlutterCallkitIncoming.showCallkitIncoming(callKitParams);
-  } //
-//     debugPrint(message.data.toString());
-//     Map<String, dynamic> data =
-//         convert.jsonDecode(message!.data['data'].toString());
-//
-// // UUID
-// // debugPrint(
-//     //     'VideoCallEvent ${data['channel_id'].toString() ?? 'EmptyVideoCallEvent'}');
-//     // debugPrint(' ${data ?? 'EmptyVideoCallEvent'}');
-//     //
-//     // Chat currentChat = GetIt.I<ChatBloc>().state
-//     //     .chats
-//     //     .firstWhere((element) => element.id == data['channel_id'].toString());
-//     //
-//     // debugPrint("myChatId${GetIt.I<PrefsRepository>().myChatId}");
-//     // debugPrint("chatVideoEvent${currentChat.id}");
-//     // debugPrint("szcjtyj${GetIt.I<ChatBloc>().state.chats}");
-//     //
-//     // ChannelMember currentCaller = GetIt.I<ChatBloc>()
-//     //     .state
-//     //     .chats
-//     //     .firstWhere((element) => element.id == data['channel_id'].toString())
-//     //     .channelMembers!
-//     //     .firstWhere((element) =>
-//     //         element.user!.id != GetIt.I<PrefsRepository>().myChatId);
-//     // String callerName = currentCaller.user!.contactUser == null
-//     //     ? (currentCaller.user!.name == null
-//     //         ? 'unKnown'
-//     //         : currentCaller.user!.name!)
-//     //     : (currentCaller.user!.name == null
-//     //         ? currentCaller.user!.contactUser!.mobilePhone!
-//     //         : currentCaller.user!.contactUser!.name!);
-//     // String photoPath = currentCaller.user == null
-//     //     ? 'https://i.imgur.com/KwrDil8b.jpg'
-//     //     : (currentCaller.user!.photoPath ?? 'https://i.imgur.com/KwrDil8b.jpg');
-//     CallEvent callEvent = CallEvent(
-//         sessionId: Uuid().v1(),
-//         callType: 1,
-//         callerId: 2,
-//         callerName: data['payload']['callerName'],
-//         opponentsIds: {2},
-//         callPhoto: data['payload']['callerPhoto'] == null
-//             ? ''
-//             : data['payload']['callerPhoto'],
-//         userInfo: {
-//           "callerName": data['payload']['callerName'],
-//           "photoPath": data['payload']['callerPhoto'] == null
-//               ? 'https://i.imgur.com/KwrDil8b.jpg'
-//               : data['payload']['callerPhoto'],
-//           'channel_id': data['channel_id'].toString()
-//         });
-//
-//     await ConnectycubeFlutterCallKit.showCallNotification(callEvent);
-//     debugPrint('asxsdas');
-//   }
-  else {
-    debugPrint('sdaxcv,s');
-    LocalNotificationService().showNotificationWithPayload(message: message);
+        ),
+      );
+      await FlutterCallkitIncoming.showCallkitIncoming(callKitParams);
+
+
+      // _callKeep.setup(
+      //     null,
+      //     <String, dynamic>{
+      //       'ios': {
+      //         'appName': 'CallKeepDemo',
+      //       },
+      //       'android': {
+      //         'alertTitle': 'Permissions required',
+      //         'alertDescription':
+      //         'This application needs to access your phone accounts',
+      //         'cancelButton': 'Cancel',
+      //         'okButton': 'ok',
+      //         'foregroundService': {
+      //           'channelId': 'com.company.my',
+      //           'channelName': 'Foreground service for my app',
+      //           'notificationTitle': 'My app is running on background',
+      //           'notificationIcon':
+      //           'Path to the resource icon of the notification',
+      //         },
+      //       },
+      //     },
+      //     backgroundMode: true);
+
+    } //
+
+    else {
+      debugPrint('sdaxcv,s');
+      LocalNotificationService().showNotificationWithPayload(message: message);
+    }
+  }catch(e){
+
+    debugPrint(e.toString());
   }
 }
 

@@ -1,4 +1,3 @@
-import 'package:connectycube_flutter_call_kit/connectycube_flutter_call_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -84,8 +83,7 @@ class PusherChatService {
       ));
     });
 
-    channel.bind('InAnotherCallEvent', (event) { });
-
+    channel.bind('InAnotherCallEvent', (event) {});
 
     publicChannels[channelName] = true;
   }

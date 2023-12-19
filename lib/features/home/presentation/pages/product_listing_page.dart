@@ -88,7 +88,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       crossAxisCount: 2,
                       controller: scrollController,
                       padding: const EdgeInsets.only(top: 50),
-                      childAspectRatio: 200 / 380,
+                      childAspectRatio: 200.w / 350,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 15,
                       children: List.generate(

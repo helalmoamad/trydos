@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
@@ -254,12 +255,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onSaveContactsEvent(SaveContactsEvent event,
       Emitter<ChatState> emit) async {
+
+    debugPrint('saveContact${state.saveContactsStatus}');
     if (state.saveContactsStatus != SaveContactsStatus.init) {
       return;
     }
     emit(state.copyWith(saveContactsStatus: SaveContactsStatus.loading));
-    final response =
-    await saveContactsUseCase(SaveContactsParams(contacts: event.contacts));
+    final response = await saveContactsUseCase(SaveContactsParams(contacts: event.contacts));
     response.fold(
           (l) {
         if (!isFailedTheFirstTime.contains('SaveContactsEvent')) {
@@ -270,8 +272,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       },
           (r) {
         isFailedTheFirstTime.remove('SaveContactsEvent');
+        GetIt.I<ChatBloc>().add(GetChatsEvent());
         emit(
           state.copyWith(
+            // contacts: ,
             saveContactsStatus: SaveContactsStatus.success,
           ),
         );
@@ -300,8 +304,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         pusherChatService.subscribe('user-${GetIt.I<PrefsRepository>().myChatId}-messages');
 
         r.data!.chats?.forEach((element) async {
-          await pusherChatService
-              .createPresenceChannel(element.id.toString());
+          await pusherChatService.createPresenceChannel(element.id.toString());
         });
         r.data!.pinnedChats?.forEach((element) async {
           await pusherChatService

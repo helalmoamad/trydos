@@ -60,23 +60,21 @@ class _RoomCallPageState extends State<RoomCallPage> {
           remoteIds.add(uid);
         });
       },
-      userOffline: (uid, reason) async{
-        await  _engine.leaveChannel();
+      userOffline: (uid, reason) async {
+        await _engine.leaveChannel();
 
         GetIt.I<CallsBloc>().add(EndVideoCallEvent());
-       Navigator.of(context).pop();
+        Navigator.of(context).pop();
         debugPrint("userOffLine");
         // setState(() {
         //   remoteIds.remove(uid);
         // });
-
-
-
-        },
+      },
     ));
 
-    await _engine.joinChannel(
-        token, channelName, null, GetIt.I<PrefsRepository>().myChatId!)
+    await _engine
+        .joinChannel(
+            token, channelName, null, GetIt.I<PrefsRepository>().myChatId!)
         .then((value) {
       setState(() {
         loading = false;
@@ -125,44 +123,52 @@ class _RoomCallPageState extends State<RoomCallPage> {
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                            CircleAvatar(backgroundColor: Colors.white,child:
-                              IconButton(
-                                  onPressed: () {
-                                    muteAudio = !muteAudio;
-                                    _engine.muteLocalAudioStream(muteAudio);
-                                  },
-                                  icon: Icon(
-
-                                    Icons.volume_mute,
-                                    size: 18,color: Colors.black,
-                                  )),
-                            ),
-                              CircleAvatar( child:                               IconButton(
-                       onPressed: () async{
-                         GetIt.I<CallsBloc>().add(EndVideoCallEvent());
-                         await _engine.leaveChannel();
-                         Navigator.of(context).pop();
-
-                       },
-                       icon: Icon(
-                         color: Colors.black,
-                         Icons.call_end,
-                         size: 18,
-                       )),radius: 20,backgroundColor: Colors.white,
-                       ),
-                              CircleAvatar(backgroundColor: Colors.white,child: IconButton(
-                                  onPressed: () {
-                                    _engine.switchCamera();
-                                  },
-                                  icon: Icon(Icons.switch_camera, size: 18,color: Colors.black,)),)
-
-
+                              CircleAvatar(
+                                backgroundColor: Colors.white,
+                                child: IconButton(
+                                    onPressed: () {
+                                      muteAudio = !muteAudio;
+                                      _engine.muteLocalAudioStream(muteAudio);
+                                    },
+                                    icon: Icon(
+                                      Icons.volume_mute,
+                                      size: 18,
+                                      color: Colors.black,
+                                    )),
+                              ),
+                              CircleAvatar(
+                                child: IconButton(
+                                    onPressed: () async {
+                                      GetIt.I<CallsBloc>()
+                                          .add(EndVideoCallEvent());
+                                      await _engine.leaveChannel();
+                                      Navigator.of(context).pop();
+                                    },
+                                    icon: Icon(
+                                      color: Colors.black,
+                                      Icons.call_end,
+                                      size: 18,
+                                    )),
+                                radius: 20,
+                                backgroundColor: Colors.white,
+                              ),
+                              CircleAvatar(
+                                backgroundColor: Colors.white,
+                                child: IconButton(
+                                    onPressed: () {
+                                      _engine.switchCamera();
+                                    },
+                                    icon: Icon(
+                                      Icons.switch_camera,
+                                      size: 18,
+                                      color: Colors.black,
+                                    )),
+                              )
                             ]),
                       )
                     ],
                   );
           }
-
         },
         listener: (context, state) {},
       ),

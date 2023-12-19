@@ -76,9 +76,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
     if (!(widget.chat.messages?.isEmpty ?? true)) {
       chatTime = widget.chat.messages!.first.createdAt!;
     }
-    User? receiver = widget.chat.channelMembers
-        ?.firstWhere((element) => element.userId != _prefsRepository.myChatId)
-        .user;
+    User? receiver = widget.chat.channelMembers?.firstWhere((element) => element.userId != _prefsRepository.myChatId).user;
     String receiverName, fullReceiverName;
     if (receiver == null) {
       receiverName = 'UK';
@@ -93,6 +91,9 @@ class _ChatCardState extends ThemeState<ChatCard> {
               : HelperFunctions.getTheFirstTwoLettersOfName(
                   receiver.contactUser!.name!);
       fullReceiverName = receiver.contactUser?.name ?? receiver.name ?? receiver.mobilePhone ?? 'Unknown User';
+      debugPrint("  fullReceiverName${  fullReceiverName}");
+
+
     }
 
     ChannelMember me = widget.chat.channelMembers!

@@ -157,6 +157,7 @@ class _AnswerCallState extends State<AnswerCall> {
                       onPressed: () async {
                         GetIt.I<CallsBloc>().add(
                             RejectVideoCallEvent(chatId: widget.channelName));
+                        Navigator.of(context).pop();
                       },
                       child: Container(
                           width: 100.w,
@@ -180,8 +181,8 @@ class _AnswerCallState extends State<AnswerCall> {
               Navigator.of(context).pop();
             }
 
-         else  if (state.rejectVideoCallStatus == RejectVideoCallStatus.success)
-            Navigator.pop(context);
+         // else  if (state.rejectVideoCallStatus == RejectVideoCallStatus.success)
+         //    Navigator.pop(context);
           else if (state.createVideoCallStatus == CreateVideoCallStatus.success) {
             debugPrint("anmzxch");
             Navigator.of(context).push(MaterialPageRoute(
