@@ -250,8 +250,11 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             builder: (context, focused, _) {
               return GestureDetector(
                 onPanDown: (details) {
-                  HapticFeedback.vibrate();
+                  HapticFeedback.lightImpact();
                   resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
+                },
+                onPanCancel: (){
+                  resizeItems.value = -1;
                 },
                 onPanEnd: (details) {
                   resizeItems.value = -1;
@@ -261,7 +264,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                   resizeItems.value =
                       (details.globalPosition.dx - 40) ~/ 35.w;
                   if(prev != resizeItems.value){
-                    HapticFeedback.vibrate();
+                    HapticFeedback.lightImpact();
                   }
                 },
                 child: Column(

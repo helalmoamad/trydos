@@ -40,6 +40,8 @@ class _AnswerCallState extends State<AnswerCall> {
 
   @override
   void dispose() {
+    GetIt.I<CallsBloc>().add(InitResponseRejectVideoCallEvent());
+
     Vibration.cancel();
     player.stop();
     // TODO: implement dispose
@@ -48,17 +50,26 @@ class _AnswerCallState extends State<AnswerCall> {
 
   @override
   void initState() {
-    Vibration.vibrate(repeat: 0, pattern: [1000, 1000, 1000, 1000]);
-    player.setReleaseMode(ReleaseMode.loop);
-    player.play(AssetSource(
-      'audio/Whatsapp_Tone.mp3',
-    ));
+    if (GetIt.I<CallsBloc>().state.createVideoCallStatus == CreateVideoCallStatus.endCall)
+      {
+        Navigator.of(context).pop();
+        debugPrint('poppp');
+      }
+
+    else{
+      Vibration.vibrate(repeat: 0, pattern: [1000, 1000, 1000, 1000]);
+      player.setReleaseMode(ReleaseMode.loop);
+      player.play(AssetSource(
+        'audio/Whatsapp_Tone.mp3',
+      ));
+    }
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    // GoRouter.of(context).p
     return Scaffold(
       backgroundColor: colorScheme.black,
       body: BlocConsumer<CallsBloc, CallsState>(
@@ -164,9 +175,14 @@ class _AnswerCallState extends State<AnswerCall> {
         //     previous.createVideoCallStatus != current.createVideoCallStatus,
         listener: (context, state) {
           debugPrint("zczczxc");
-          if (state.rejectVideoCallStatus == RejectVideoCallStatus.success)
+          if (state.createVideoCallStatus == CreateVideoCallStatus.endCall)
+            {              debugPrint("adasd");
+              Navigator.of(context).pop();
+            }
+
+         else  if (state.rejectVideoCallStatus == RejectVideoCallStatus.success)
             Navigator.pop(context);
-          if (state.createVideoCallStatus == CreateVideoCallStatus.success) {
+          else if (state.createVideoCallStatus == CreateVideoCallStatus.success) {
             debugPrint("anmzxch");
             Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => RoomCallPage(),

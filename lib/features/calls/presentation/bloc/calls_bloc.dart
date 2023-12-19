@@ -45,6 +45,10 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       // TODO: implement event handler
     });
     on<AnswerVideoCallEvent>((event, emit) async {
+      emit(state.copyWith(
+        createVideoCallStatus: CreateVideoCallStatus.loading,
+      ));
+
       final tempResponse = await answerCallUseCase(event.chatId);
       tempResponse.fold((l) => null, (r) {
         debugPrint("cbvfbfta");
@@ -61,9 +65,14 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
             channelName: event.chatId));
       });
     });
-
+    on<EndVideoCallEvent>((event, emit) async {
+      emit(
+          state.copyWith(createVideoCallStatus: CreateVideoCallStatus.endCall));
+    });
     on<VideoCallEvent>((event, emit) async {
-      final response = await videoCallUseCase(event.chatId);
+emit(state.copyWith(createVideoCallStatus: CreateVideoCallStatus.init));
+      final response = await videoCallUseCase(
+          VideoCallParams(payload: event.payload, chatId: event.chatId));
       await response.fold((l) => null, (r) async {
         String agoraToken = r.data!;
         emit(state.copyWith(

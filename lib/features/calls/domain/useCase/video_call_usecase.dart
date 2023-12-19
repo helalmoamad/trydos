@@ -7,14 +7,37 @@ import 'package:trydos/features/calls/domain/repositories/calls_repository.dart'
 import '../../data/models/video_call_ersponse_model.dart';
 
 @injectable
-class VideoCallUseCase extends UseCase<VideoCallRemoteResponseModel, String> {
+class VideoCallUseCase extends UseCase<VideoCallRemoteResponseModel, VideoCallParams> {
   final CallsRepository repository;
 
   VideoCallUseCase(this.repository);
 
   @override
-  Future<Either<Failure, VideoCallRemoteResponseModel>> call(String  ChatId) {
-    return repository.videoCall(ChatId: ChatId);
+  Future<Either<Failure, VideoCallRemoteResponseModel>> call(VideoCallParams  params) {
+    return repository.videoCall(params:params.map );
   }
+
+
+
+
+  // VideoCallEvent
+
+
+
+
+
+
+
+
 }
 
+class VideoCallParams{
+  final String chatId;
+  final Map<String,dynamic> payload;
+  const VideoCallParams( {required this.chatId,
+    required this.payload,});
+  Map<String, dynamic> get map =>{
+    "payload":payload,
+    "chatId":chatId,
+  };
+}

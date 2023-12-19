@@ -145,17 +145,6 @@ class _BasePageState extends State<BasePage> {
       onMessage();
     }
 // [ Permission.systemAlertWindow,Permission.notification].request();
-
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Color(0xffFFFFFF),
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
-    ));
     if(homeBloc.state.startingSetting != null) {
       showUpgradeApp = false;
       print('version gets successfully');
@@ -169,24 +158,21 @@ class _BasePageState extends State<BasePage> {
         });
       }
     }
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color(0xffFFFFFF),
+      statusBarBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.dark,
+    ));
     super.didChangeDependencies();
   }
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
-      ChatBloc bloc = BlocProvider.of<ChatBloc>(context);
-      Message message =
-          Message.fromJson(convert.jsonDecode(event.data['message']));
-      String prevMessageId = event.data['prev_message_id'];
-      bloc.add(
-          ReceiveMessageEvent(message: message, prevMessageId: prevMessageId));
-      log('object ${event.data}');
-      log('object ${event.senderId}');
-      log('object ${event.notification?.title}');
-      log('object ${event.notification?.body}');
-      log('object ${event.notification?.bodyLocArgs}');
-      log('object ${event.data}');
-      //LocalNotificationService().showNotificationWithPayload(message: event);
       debugPrint('czxcxsrh${event.data}');
 
 // debugPrint('czxcxsrhntimeType}');
@@ -197,13 +183,13 @@ class _BasePageState extends State<BasePage> {
         debugPrint('forGroundVideo ${event.data.toString()}');
         debugPrint("asdadasbcnghn${event!.data!.toString()}");
         Map<String, dynamic> data =
-            convert.jsonDecode(event!.data['data'].toString());
+        convert.jsonDecode(event!.data['data'].toString());
         debugPrint(
             'VideoCallEvent ${data['channel_id'].toString() ?? 'EmptyVideoCallEvent'}');
         debugPrint(' ${data ?? 'EmptyVideoCallEvent'}');
 
         Chat currentChat = chatBloc.state.chats.firstWhere(
-            (element) => element.id == data['channel_id'].toString());
+                (element) => element.id == data['channel_id'].toString());
 
         debugPrint("myChatId${GetIt.I<PrefsRepository>().myChatId}");
         // for (var i = 0; i < currentChat.channelMembers!.length; i++) {
@@ -218,7 +204,7 @@ class _BasePageState extends State<BasePage> {
                 (element) => element.id == data['channel_id'].toString())
             .channelMembers!
             .firstWhere((element) =>
-                element.user!.id != GetIt.I<PrefsRepository>().myChatId);
+        element.user!.id != GetIt.I<PrefsRepository>().myChatId);
         // debugPrint('currentCaller${currentCaller.user!.name!}');
         // debugPrint(
         //     'currentCallercontactUser${currentCaller.user!.contactUser == null ? 'nullContact' : currentCaller.user!.contactUser!.name!}');
@@ -226,24 +212,34 @@ class _BasePageState extends State<BasePage> {
 
         String callerName = currentCaller.user!.contactUser == null
             ? (currentCaller.user!.name == null
-                ? 'unKnown'
-                : currentCaller.user!.name!)
+            ? 'unKnown'
+            : currentCaller.user!.name!)
             : (currentCaller.user!.name == null
-                ? currentCaller.user!.contactUser!.mobilePhone!
-                : currentCaller.user!.contactUser!.name!);
-        Navigator.of(navigatorKey.currentState!.context).push(MaterialPageRoute(
-          builder: (context) => AnswerCall(
-            channelName: data['channel_id'].toString(),
-            callerName: callerName,
-            callerPhoto: currentCaller.user!.photoPath,
-          ),
-        ));
+            ? currentCaller.user!.contactUser!.mobilePhone!
+            : currentCaller.user!.contactUser!.name!);
+        debugPrint("GetIt.I<CallsBloc>().${GetIt.I<CallsBloc>().state.createVideoCallStatus}");
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => AnswerCall(callerPhoto: currentCaller.user!.photoPath, callerName: callerName, channelName: data['channel_id'].toString()),));
+
+        // navigatorKey.currentState!.context.push(Uri(path:GRouter.config.applicationRoutes.kAnswerCall ,
+        //     queryParameters: {
+        //       "channelName": data['channel_id'].toString(),
+        //       "callerName": callerName,
+        //       "callerPhoto": currentCaller.user!.photoPath,
+        //     }).toString())
+            ;
+        // Navigator.of(navigatorKey.currentState!.context).push(MaterialPageRoute(
+        //   builder: (context) => AnswerCall(
+        //     channelName: data['channel_id'].toString(),
+        //     callerName: callerName,
+        //     callerPhoto: currentCaller.user!.photoPath,
+        //   ),
+        // ));
       } else if (event.data['type'] == 'RefuseCallEvent') {
         GetIt.I<CallsBloc>().add(ResponseRejectVideoCallEvent());
       } else {
         ChatBloc bloc = BlocProvider.of<ChatBloc>(context);
         Message message =
-            Message.fromJson(convert.jsonDecode(event.data['message']));
+        Message.fromJson(convert.jsonDecode(event.data['message']));
         String prevMessageId = event.data['prev_message_id'];
         bloc.add(ReceiveMessageEvent(
             message: message, prevMessageId: prevMessageId));
@@ -258,6 +254,7 @@ class _BasePageState extends State<BasePage> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -267,8 +264,8 @@ class _BasePageState extends State<BasePage> {
     };
     return BlocListener<HomeBloc, HomeState>(
       listenWhen: (p, c) =>
-          p != c &&
-          c.getStartingSettingsStatus == GetStartingSettingsStatus.success && showUpgradeApp,
+          p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
+          c.getStartingSettingsStatus == GetStartingSettingsStatus.success,
       listener: (context, state) {
         print('version gets successfully');
         print('android: ${state.startingSetting?.androidMinVersion}');
@@ -279,15 +276,6 @@ class _BasePageState extends State<BasePage> {
     }},
     child: Scaffold(
       backgroundColor: colorScheme.background,
-      bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-          buildWhen: (p, c) => p.showBars != c.showBars,
-          builder: (context, state) {
-            if (state.showBars == true) {
-              return const AppBottomNavBar();
-            } else {
-              return const SizedBox.shrink();
-            }
-          }),
       body: BlocBuilder<ChatBloc, ChatState>(builder: (context, state) {
         print(initialMessage);
         print(state.chats.isNotEmpty);

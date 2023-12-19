@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
@@ -87,7 +88,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       crossAxisCount: 2,
                       controller: scrollController,
                       padding: const EdgeInsets.only(top: 50),
-                      childAspectRatio: 200 / 369,
+                      childAspectRatio: 200 / 380,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 15,
                       children: List.generate(

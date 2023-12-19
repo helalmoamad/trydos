@@ -38,6 +38,7 @@ import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/my_cached_network_image.dart';
+import '../../../calls/presentation/utils/caller_info.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_event.dart';
@@ -279,25 +280,25 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     //todo create video call
                     //todo work
                     InkWell(
-                      onTap: () async{
-
-
+                      onTap: () async {
                         await [Permission.camera, Permission.microphone]
                             .request()
                             .then((value) {
-                          GetIt.I<CallsBloc>().add(VideoCallEvent(chatId: widget.chatId));
-
+                          Map<String, dynamic> payload =
+                              callerInfo(channelId: widget.chatId);
+                          debugPrint("payload caller event ${payload}");
+                          GetIt.I<CallsBloc>().add(VideoCallEvent(
+                              chatId: widget.chatId, payload: payload));
 
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (_) => CreateCallPage(
-
-                                fullReceiverName: widget.fullReceiverName,
-                                receiverName: widget.receiverName,
-                                receiverPhoto: widget.receiverPhone, chatId: widget.chatId,
-                              )));
+                                    fullReceiverName: widget.fullReceiverName,
+                                    receiverName: widget.receiverName,
+                                    receiverPhoto: widget.receiverPhone,
+                                    chatId: widget.chatId,
+                                  )));
                         });
                         //todo make event to send video call
-
                       },
                       child: SvgPicture.asset(
                         AppAssets.makeVideoCallSvg,
@@ -312,7 +313,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           builder: (_) => CreateCallPage(
                                 fullReceiverName: widget.fullReceiverName,
                                 receiverName: widget.receiverName,
-                                receiverPhoto: widget.receiverPhone, chatId: '',
+                                receiverPhoto: widget.receiverPhone,
+                                chatId: '',
                               ))),
                       child: SvgPicture.asset(
                         AppAssets.makeCallSvg,

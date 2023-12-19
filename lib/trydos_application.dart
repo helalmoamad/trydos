@@ -52,7 +52,6 @@ class _TrydosApplicationState extends State<TrydosApplication> {
             child: Builder(
               builder: (context) {
                 return MaterialApp.router(
-
                     debugShowCheckedModeBanner: false,
                     theme: AppTheme.light,
                     locale: context.locale,

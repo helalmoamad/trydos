@@ -23,7 +23,7 @@ class ProductListingImageWidget extends StatelessWidget {
           borderRadius:  BorderRadius.all(Radius.circular(circleShape ? 180.0 : 15)),
           child: Stack(
             children: [
-              Image.asset(imageUrl , fit: BoxFit.fill, width: width,
+              Image.asset(imageUrl , fit: BoxFit.cover, width: width,
                 height: height,),
               Container(
                 width: width,
