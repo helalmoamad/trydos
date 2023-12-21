@@ -309,12 +309,14 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                         true);
                                               });
                                             }
-                                            if (scrollToLeft) {
-                                              updateImagesInFirstSlider(true,
-                                                  calledFromOnChanged: true);
-                                            } else {
-                                              updateImagesInFirstSlider(false,
-                                                  calledFromOnChanged: true);
+                                            if (slideModeIndex != 2) {
+                                              if (scrollToLeft) {
+                                                updateImagesInFirstSlider(true,
+                                                    calledFromOnChanged: true);
+                                              } else {
+                                                updateImagesInFirstSlider(false,
+                                                    calledFromOnChanged: true);
+                                              }
                                             }
                                           },
                                           galleryWidth: 200,

@@ -1,7 +1,5 @@
 // import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:agora_rtc_engine/rtc_engine.dart';
-import 'package:agora_rtc_engine/rtc_local_view.dart' as rtc_local_view;
-import 'package:agora_rtc_engine/rtc_remote_view.dart' as rtc_remote_view;
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -31,11 +29,15 @@ class _RoomCallPageState extends State<RoomCallPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    _dispose();
     // _engine.de
-    _engine.leaveChannel();
-    _engine.destroy();
+    // _engine.leaveChannel();
+    // _engine.destroy();
   }
-
+  Future<void> _dispose() async {
+    await _engine.leaveChannel();
+    await _engine.release();
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -43,24 +45,23 @@ class _RoomCallPageState extends State<RoomCallPage> {
   }
 
   Future<void> initializeAgora(String token, String channelName) async {
-    // await _engine.leaveChannel();
-    _engine = await RtcEngine.createWithContext(
-        RtcEngineContext(Constants.agoraAppId));
+
+
+    _engine = createAgoraRtcEngine();
+    await _engine.initialize(const RtcEngineContext(
+      appId: Constants.agoraAppId,
+      channelProfile: ChannelProfileType.channelProfileCommunication,
+    ));
     await _engine.enableVideo();
-    await _engine.setChannelProfile(ChannelProfile.Communication);
-    _engine.setEventHandler(RtcEngineEventHandler(
-      error: (err) {
-        debugPrint("errorAgora${err}");
-      },
-      joinChannelSuccess: (channel, uid, elapsed) =>
-          debugPrint("Channel joinde"),
-      userJoined: (uid, elapsed) {
+    _engine.registerEventHandler(RtcEngineEventHandler(
+
+      onUserJoined: (rtcConnection , uid, elapsed) {
         debugPrint("userJoinde $uid");
         setState(() {
           remoteIds.add(uid);
         });
       },
-      userOffline: (uid, reason) async {
+      onUserOffline: (rtcConnection ,uid, reason) async {
         await _engine.leaveChannel();
 
         GetIt.I<CallsBloc>().add(EndVideoCallEvent());
@@ -71,15 +72,54 @@ class _RoomCallPageState extends State<RoomCallPage> {
         // });
       },
     ));
-
     await _engine
         .joinChannel(
-            token, channelName, null, GetIt.I<PrefsRepository>().myChatId!)
+      token: token,
+        uid:  GetIt.I<PrefsRepository>().myChatId!
+        , channelId: channelName, options: const ChannelMediaOptions())
         .then((value) {
       setState(() {
         loading = false;
       });
     });
+
+    // await _engine.leaveChannel();
+    // _engine = await RtcEngine.createWithContext(
+    //     RtcEngineContext(Constants.agoraAppId));
+    // await _engine.enableVideo();
+    // await _engine.setChannelProfile(ChannelProfile.Communication);
+    // _engine.setEventHandler(RtcEngineEventHandler(
+    //   error: (err) {
+    //     debugPrint("errorAgora${err}");
+    //   },
+    //   joinChannelSuccess: (channel, uid, elapsed) =>
+    //       debugPrint("Channel joinde"),
+    //   userJoined: (uid, elapsed) {
+    //     debugPrint("userJoinde $uid");
+    //     setState(() {
+    //       remoteIds.add(uid);
+    //     });
+    //   },
+    //   userOffline: (uid, reason) async {
+    //     await _engine.leaveChannel();
+    //
+    //     GetIt.I<CallsBloc>().add(EndVideoCallEvent());
+    //     Navigator.of(context).pop();
+    //     debugPrint("userOffLine");
+    //     // setState(() {
+    //     //   remoteIds.remove(uid);
+    //     // });
+    //   },
+    // ));
+    //
+    // await _engine
+    //     .joinChannel(
+    //         token, channelName, null, GetIt.I<PrefsRepository>().myChatId!)
+    //     .then((value) {
+    //   setState(() {
+    //     loading = false;
+    //   });
+    // });
   }
 
   @override
@@ -116,7 +156,13 @@ class _RoomCallPageState extends State<RoomCallPage> {
                             child: Container(
                                 width: 100.w,
                                 height: 130.h,
-                                child: rtc_local_view.SurfaceView()),
+                                child:  AgoraVideoView(
+                                  controller: VideoViewController(
+                                    rtcEngine: _engine,
+                                    canvas: VideoCanvas(uid: GetIt.I<PrefsRepository>().myChatId!),
+                                  ),
+                                )// rtc_local_view.SurfaceView()
+                            ),
                           )),
                       Align(
                         alignment: Alignment.bottomCenter,
@@ -178,21 +224,42 @@ class _RoomCallPageState extends State<RoomCallPage> {
   Widget renderRemoteView(String channelName) {
     if (remoteIds.isNotEmpty) {
       if (remoteIds.length == 1) {
-        return rtc_remote_view.SurfaceView(
-          uid: remoteIds[0],
-          channelId: channelName,
+        return AgoraVideoView(
+          controller: VideoViewController.remote(
+            rtcEngine: _engine,
+            canvas: VideoCanvas(uid: remoteIds[0]),
+            connection:  RtcConnection(channelId: channelName),
+          ),
         );
+        // return rtc_remote_view.SurfaceView(
+        //   uid: remoteIds[0],
+        //   channelId: channelName,
+        // );
       } else if (remoteIds.length == 2) {
         return Column(
           children: [
-            rtc_remote_view.SurfaceView(
-              uid: remoteIds[0],
-              channelId: channelName,
+            // rtc_remote_view.SurfaceView(
+            //   uid: remoteIds[0],
+            //   channelId: channelName,
+            // ),
+            // rtc_remote_view.SurfaceView(
+            //   uid: remoteIds[1],
+            //   channelId: channelName,
+            // ),
+            AgoraVideoView(
+              controller: VideoViewController.remote(
+                rtcEngine: _engine,
+                canvas: VideoCanvas(uid: remoteIds[0]),
+                connection:  RtcConnection(channelId: channelName),
+              ),
             ),
-            rtc_remote_view.SurfaceView(
-              uid: remoteIds[1],
-              channelId: channelName,
-            ),
+            AgoraVideoView(
+              controller: VideoViewController.remote(
+                rtcEngine: _engine,
+                canvas: VideoCanvas(uid: remoteIds[1]),
+                connection:  RtcConnection(channelId: channelName),
+              ),
+            )
           ],
         );
       } else {
