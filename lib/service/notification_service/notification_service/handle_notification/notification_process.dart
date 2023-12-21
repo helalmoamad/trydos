@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'package:connectycube_flutter_call_kit/connectycube_flutter_call_kit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -113,7 +112,6 @@ class NotificationProcess {
   }
 
   Future<void> init() async {
-    if (Platform.isAndroid) {
       try {
         await Firebase.initializeApp(
             options: DefaultFirebaseOptions.currentPlatform);
@@ -127,23 +125,8 @@ class NotificationProcess {
         print(e);
         rethrow;
       }
-      try {
-        await Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform);
-        FlutterError.onError =
-            FirebaseCrashlytics.instance.recordFlutterFatalError;
-        PlatformDispatcher.instance.onError = (error, stack) {
-          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-          return true;
-        };
-      } catch (e) {
-        print(e);
-        rethrow;
-      }
-
       await _setForegroundNotificationPresentationOptions();
 
       await LocalNotificationService.initialize();
     }
   }
-}

@@ -104,17 +104,20 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                   state.stories.length;
                             }
                           }
-                          if (currentPage == 0 &&
-                              index == state.stories.length - 1) {
-                            return Container(
-                              color: Colors.black,
-                            );
-                          }
-                          if (currentPage == (state.stories.length - 1) &&
-                              index == 0) {
-                            return Container(
-                              color: Colors.black,
-                            );
+                          //ToDO case of 2 or 1 stories
+                          if(state.stories.length > 2) {
+                            if (currentPage == 0 &&
+                                index == state.stories.length - 1) {
+                              return Container(
+                                color: Colors.black,
+                              );
+                            }
+                            if (currentPage == (state.stories.length - 1) &&
+                                index == 0) {
+                              return Container(
+                                color: Colors.black,
+                              );
+                            }
                           }
                           return ValueListenableBuilder<bool>(
                               valueListenable: startStoriesNotifier,

@@ -185,7 +185,6 @@ void main() async {
         Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
   }
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FlutterError.onError = (FlutterErrorDetails error) {
     GetIt.I<PrefsRepository>().saveRequestsData(
         null, null, null, null, null, null, null,
