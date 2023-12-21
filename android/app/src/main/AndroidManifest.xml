@@ -11,7 +11,11 @@
 <!--    <meta-data-->
 <!--        android:name="com.connectycube.flutter.connectycube_flutter_call_kit.video_call_notification_icon"-->
 <!--        android:resource="@drawable/app_icon" />-->
-
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
+        tools:ignore="ProtectedPermissions" />
     <uses-feature android:name="android.hardware.camera" />
 
     <uses-feature android:name="android.hardware.camera.autofocus" />
