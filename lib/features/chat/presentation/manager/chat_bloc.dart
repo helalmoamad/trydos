@@ -90,18 +90,22 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onSendMessageEvent(SendMessageEvent event,
       Emitter<ChatState> emit) async {
-    //waiting messages
+    //todo waiting messages and not sent yet
     List<String> ids = List.of(state.currentMessage);
     List<Message> messages;
     bool fromPinned = false;
-    if (state.chats.any(
-          (e) => e.id == event.channelId,
-    )) {
+
+    //todo ---if-----
+    //todo check if the channel exist and get the messages of this channel
+    if (state.chats.any( (e) => e.id == event.channelId,)) {
       messages = List.of(state.chats
           .firstWhere((element) => element.id == event.channelId)
           .messages ??
           []);
-    } else {
+    }
+    //todo the same but from the pinned channels
+
+    else {
       fromPinned = true;
       messages = List.of(state.pinnedChats
           .firstWhere((element) => element.id == event.channelId)
@@ -109,15 +113,24 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           []);
     }
     String? parentMessageId;
+
+    //todo just add the message to the waiting list and give it the local info like localParentMessageId
     if (!ids.contains(event.messageId)) {
       ids.add(event.messageId);
+
+
+      //todo check if the message has a parentMessage an get it
       int index = messages.indexWhere((element) =>
       element.localId == event.parentMessageId &&
           event.parentMessageId != null);
       parentMessageId = event.parentMessageId;
+      //
       if (index != -1) {
         parentMessageId = messages[index].id;
       }
+
+
+      //todo insert the new message in the first of the list
       messages.insert(
           0,
           Message(
@@ -149,16 +162,21 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                   senderUserId: index != -1
                       ? messages[index].senderUserId
                       : event.senderParentMessageId,
-                  messageContent:
-                  MessageContent(content: event.parentMessageContent))
+                  messageContent: MessageContent(content: event.parentMessageContent))
                   : null));
     }
+
+
+    //todo remove the chat  and reinsert it in the first of the List<Chat>
     List<Chat> chats;
     if (fromPinned) {
       chats = sortChats(state.pinnedChats, event.channelId, messages);
     } else {
       chats = sortChats(state.chats, event.channelId, messages);
     }
+
+
+    //todo  createAnewChat  so if the condition true that's mean the message from the local
     emit(state.copyWith(
         sendMessageStatus: SendMessageStatus.loading,
         currentMessage: ids,
@@ -229,7 +247,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                   }
                   return e;
                 }).toList());
-          } else if (e.id == event.channelId) {
+          }
+          else if (e.id == event.channelId) {
             List<Message> messages = List.of(e.messages ?? []);
             int index =
             messages.indexWhere((element) => element.id == event.messageId);

@@ -1,6 +1,6 @@
 part of 'calls_bloc.dart';
 
-enum CreateVideoCallStatus { init, loading, success, failure, cancel ,endCall}
+enum CreateVideoCallStatus { init, loading, success, failure, cancel ,endCall,startCall}
 
 enum OpenLocalVideoAndAudioStatus { init, loading, success, failure }
 
@@ -36,13 +36,8 @@ class CallsState {
       String? channelName,
       RtcEngine? engine,
       List<int>? channelMembers,
-      RTCPeerConnection? peerConnection,
-      MediaStream? localStream,
-      MediaStream? remoteStream,
       OpenLocalVideoAndAudioStatus? openVideoAndAudioStatus,
       OpenRemoteVideoAndAudioStatus? openRemoteVideoAndAudioStatus,
-      RTCVideoRenderer? localVideo,
-      RTCVideoRenderer? remoteVideo,
       CreateVideoCallStatus? createVideoCallStatus}) {
     return CallsState(
         sessionId: sessionId ?? this.sessionId,

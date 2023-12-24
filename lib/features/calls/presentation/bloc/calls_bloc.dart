@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
@@ -11,6 +10,8 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/calls/domain/useCase/get_agora_token_use_case.dart';
 
 import '../../../../common/constant/configuration/global.dart';
+import '../../../chat/data/models/my_chats_response_model.dart';
+import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../../domain/useCase/answer_call_usecase.dart';
 import '../../domain/useCase/reject_call_usecase.dart';
 import '../../domain/useCase/video_call_usecase.dart';
@@ -21,6 +22,7 @@ part 'calls_state.dart';
 
 @LazySingleton()
 class CallsBloc extends Bloc<CallsEvent, CallsState> {
+  PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   final VideoCallUseCase videoCallUseCase;
   final AnswerCallUseCase answerCallUseCase;
   final RejectCallUseCase rejectCallUseCase;
@@ -70,16 +72,62 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
           state.copyWith(createVideoCallStatus: CreateVideoCallStatus.endCall));
     });
     on<VideoCallEvent>((event, emit) async {
-emit(state.copyWith(createVideoCallStatus: CreateVideoCallStatus.init));
-      final response = await videoCallUseCase(
-          VideoCallParams(payload: event.payload, chatId: event.chatId));
-      await response.fold((l) => null, (r) async {
-        String agoraToken = r.data!;
-        emit(state.copyWith(
-          agoraToken: agoraToken,
-          channelName: event.chatId,
-        ));
-      });
+      List<Message> messages;
+      bool fromPinned = false;
+
+      emit(state.copyWith(createVideoCallStatus: CreateVideoCallStatus.init));
+
+      // ChatState chatState = GetIt.I<ChatBloc>().state;
+      //todo check if the channel exist and get the messages of this channel
+      // if (chatState.chats.any( (e) => e.id == event.chatId,)) {
+      //   messages = List.of(chatState.chats
+      //       .firstWhere((element) => element.id == event.chatId)
+      //       .messages ??
+      //       []);
+      // }
+      //todo the same but from the pinned channels
+
+      // else {
+      //   fromPinned = true;
+      //   messages = List.of(chatState.pinnedChats
+      //       .firstWhere((element) => element.id == event.chatId)
+      //       .messages ??
+      //       []);
+      // }
+//TODO FOR LATER ADD THE VIDEO MESSAGE TO THE NEW CHAT
+      // messages.insert(
+      //     0,
+      //     Message(
+      //         channelId: event.chatId,
+      //         // id: event.messageId,
+      //         // localId: event.messageId,
+      //         createdAt: DateTime.now(),
+      //         receiverUserId: int.tryParse(event.receiverUserId),
+      //         messageContent: null,
+      //         senderUserId: _prefsRepository.myChatId,
+      //         messageType: MessageType(name:''),
+      //         isForward: 0,
+      //         parentMessage: null));
+
+      if (event.receiverUserId != null) {
+        final response = await videoCallUseCase(VideoCallParams(
+            payload: event.payload, receiverUserId: event.receiverUserId!));
+        response.fold((l) => null, (r) {
+          emit(state.copyWith(
+              createVideoCallStatus: CreateVideoCallStatus.startCall,
+              channelName: r.data!.message!.channelId.toString(),
+              agoraToken: r.data!.token));
+        });
+      } else {
+        final response = await videoCallUseCase(VideoCallParams(
+            payload: event.payload, receiverUserId: event.receiverUserId!));
+        response.fold((l) => null, (r) {
+          emit(state.copyWith(
+            agoraToken: r.data!.token,
+            channelName: event.chatId,
+          ));
+        });
+      }
     });
 
     on<ResponseRejectVideoCallEvent>((event, emit) {

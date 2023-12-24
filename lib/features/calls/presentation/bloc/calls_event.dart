@@ -3,13 +3,13 @@ part of 'calls_bloc.dart';
 abstract class CallsEvent {}
 // class CreateVideoCallEvent extends CallsEvent {}
 class VideoCallEvent extends CallsEvent {
-  String chatId;
+  String? receiverUserId;
   Map<String,dynamic> payload;
-
+String? chatId;
   VideoCallEvent({
-
+ this.chatId,
     required this.payload,
-    required this.chatId});
+ this.receiverUserId});
 }
 class EndVideoCallEvent extends CallsEvent {
 

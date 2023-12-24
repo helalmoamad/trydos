@@ -19,10 +19,8 @@
     <uses-feature android:name="android.hardware.camera" />
 
     <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-permission android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"/>
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -88,13 +86,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-           <service android:name="io.wazo.callkeep.VoiceConnectionService"
-               android:label="Wazo"
-               android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">
-               <intent-filter>
-                   <action android:name="android.telecom.ConnectionService" />
-               </intent-filter>
-           </service>
 
        </application>
 </manifest>

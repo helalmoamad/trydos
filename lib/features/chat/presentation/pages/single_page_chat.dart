@@ -279,32 +279,58 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     ),
                     //todo create video call
                     //todo work
-                    InkWell(
-                      onTap: () async {
-                        await [Permission.camera, Permission.microphone]
-                            .request()
-                            .then((value) {
-                          Map<String, dynamic> payload =
-                              callerInfo(channelId: widget.chatId);
-                          debugPrint("payload caller event ${payload}");
-                          GetIt.I<CallsBloc>().add(VideoCallEvent(
-                              chatId: widget.chatId, payload: payload));
+                    BlocConsumer<CallsBloc, CallsState>(
+                      builder: (context, state) => InkWell(
+                        onTap: () async {
+                          await [Permission.camera, Permission.microphone]
+                              .request()
+                              .then((value) {
+                            List<Map<String, dynamic>> info =
+                                callerInfo(channelId: widget.chatId);
+                            // debugPrint("payload caller event ${payload}");
 
+                            //todo we have the receiver id so the chat dose not exist
+                            if (info[0].containsKey('currentReceiver')) {
+                              GetIt.I<CallsBloc>().add(VideoCallEvent(
+                                  receiverUserId: info[0]['currentReceiver'],
+                                  payload: info[1]));
+//todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
+                            }
+
+                            //todo else the chat already exist so we don't have the receiver id just the chat id
+                            else {
+                              GetIt.I<CallsBloc>().add(VideoCallEvent(
+                                  chatId: widget.chatId, payload: info[0]));
+
+//todo we have the id of the chat so we can move to the call immediately
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) => CreateCallPage(
+                                        fullReceiverName:
+                                            widget.fullReceiverName,
+                                        receiverName: widget.receiverName,
+                                        receiverPhoto: widget.receiverPhone,
+                                        chatId: widget.chatId,
+                                      )));
+                            }
+                          });
+                        },
+                        child: SvgPicture.asset(
+                          AppAssets.makeVideoCallSvg,
+                          width: 34.w,
+                          height: 25,
+                        ),
+                      ),
+                      listener: (context, state) {
+                        if (state.createVideoCallStatus ==
+                            CreateVideoCallStatus.startCall)
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (_) => CreateCallPage(
                                     fullReceiverName: widget.fullReceiverName,
                                     receiverName: widget.receiverName,
                                     receiverPhoto: widget.receiverPhone,
-                                    chatId: widget.chatId,
+                                    chatId: state.channelName!,
                                   )));
-                        });
-                        //todo make event to send video call
                       },
-                      child: SvgPicture.asset(
-                        AppAssets.makeVideoCallSvg,
-                        width: 34.w,
-                        height: 25,
-                      ),
                     ),
                     30.horizontalSpace,
                     // todo CreateCallPage

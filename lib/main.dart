@@ -30,10 +30,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 
   debugPrint('ibahem');
-  try{
-    if (message.data['type'] == 'VideoCallEvent')
-    {
-
+  try {
+    if (message.data['type'] == 'VideoCallEvent') {
       // final FlutterCallkeep callKeep = FlutterCallkeep();
       //
       // final callSetup = <String, dynamic>{
@@ -61,7 +59,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
       // _callKeep.displayIncomingCall(Uuid().v4(),'handleType: ,hasVideo:' );
       // await  _callKeep.backToForeground();
-      Map<String, dynamic> data = convert.jsonDecode(message!.data['data'].toString());
+      Map<String, dynamic> data =
+          convert.jsonDecode(message!.data['data'].toString());
       debugPrint("cvxvvkhgka${message.data}");
 
       var currentUuid = Uuid().v4();
@@ -70,7 +69,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         nameCaller: data['payload']['callerName'],
         appName: 'Trydos',
         avatar: 'https://i.pravatar.cc/100',
-        handle:    data['payload']['mobilePhone'] ,
+        handle: data['payload']['mobilePhone'],
         type: 0,
         textAccept: 'Accept',
         textDecline: 'Decline',
@@ -80,7 +79,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           subtitle: 'Missed call',
           callbackText: 'Call back',
         ),
-        duration: 10000,
+        duration: 30000,
         extra: <String, dynamic>{'channel_id': data['channel_id']},
         headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
         android: const AndroidParams(
@@ -111,7 +110,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       );
       await FlutterCallkitIncoming.showCallkitIncoming(callKitParams);
 
-
       // _callKeep.setup(
       //     null,
       //     <String, dynamic>{
@@ -134,15 +132,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       //       },
       //     },
       //     backgroundMode: true);
-
     } //
 
     else {
       debugPrint('sdaxcv,s');
       LocalNotificationService().showNotificationWithPayload(message: message);
     }
-  }catch(e){
-
+  } catch (e) {
     debugPrint(e.toString());
   }
 }
@@ -159,13 +155,6 @@ int applicationVersion = 1;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await ConnectycubeFlutterCallKit.setOnLockScreenVisibility(isVisible: true);
-
-  // onCallRejectedWhenTerminated
-  //ConnectycubeFlutterCallKit.onCallRejectedWhenTerminated = _onCallRejected;
-  //ConnectycubeFlutterCallKit.onCallAcceptedWhenTerminated = _onCallAccepted;
-
-  // ConnectycubeFlutterCallKit.onCallRejectedWhenTerminated
   await Future.wait([
     EasyLocalization.ensureInitialized(),
     configureDependencies(),
@@ -173,7 +162,6 @@ void main() async {
     NotificationProcess().setupInteractedMessage(),
   ]);
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
-  ConnectycubeFlutterCallKit.instance.init(ringtone: 'ringtone1');
   NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   HttpOverrides.global = MyHttpOverrides();

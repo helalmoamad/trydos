@@ -32,12 +32,17 @@ class VideoCallUseCase extends UseCase<VideoCallRemoteResponseModel, VideoCallPa
 }
 
 class VideoCallParams{
-  final String chatId;
+  final String? chatId;
+  final String? receiverUserId;
   final Map<String,dynamic> payload;
-  const VideoCallParams( {required this.chatId,
+  const VideoCallParams( {
+    this.chatId,
+    this.receiverUserId,
     required this.payload,});
+
   Map<String, dynamic> get map =>{
     "payload":payload,
-    "chatId":chatId,
+    "channel_id":chatId,
+    "receiver_user_id":receiverUserId,
   };
 }
