@@ -34,7 +34,6 @@ class CallsState {
       RejectVideoCallStatus? rejectVideoCallStatus,
       String? agoraToken,
       String? channelName,
-      RtcEngine? engine,
       List<int>? channelMembers,
       OpenLocalVideoAndAudioStatus? openVideoAndAudioStatus,
       OpenRemoteVideoAndAudioStatus? openRemoteVideoAndAudioStatus,

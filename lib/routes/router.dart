@@ -46,14 +46,14 @@ class GRouter {
             );
           }),
 
-      GoRoute(
-          path: _config.applicationRoutes.kRoomCallPage,
-          pageBuilder: (BuildContext context, GoRouterState state) {
-            return _builderPage(
-              child:  RoomCallPage(),
-              state: state,
-            );
-          }),
+      // GoRoute(
+      //     path: _config.applicationRoutes.kRoomCallPage,
+      //     pageBuilder: (BuildContext context, GoRouterState state) {
+      //       return _builderPage(
+      //         child:  RoomCallPage(),
+      //         state: state,
+      //       );
+      //     }),
       GoRoute(
           path: _config.applicationRoutes.kAnswerCall,
           pageBuilder: (BuildContext context, GoRouterState state) {
