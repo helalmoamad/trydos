@@ -97,7 +97,7 @@ dependencies:
   store_redirect: ^2.0.1
   overscroll_pop: ^0.0.9
   flutter_webrtc: ^0.9.47
-  #  agora_rtc_engine: ^6.2.6
+  agora_rtc_engine: ^6.2.6
   vibration: 1.8.4
   webview_flutter: 4.4.2
   #  connectycube_flutter_call_kit: 2.5.0

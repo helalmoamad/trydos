@@ -15,7 +15,6 @@ import '../../../../main.dart';
 import '../../../../routes/router.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
-import '../../../calls/presentation/pages/webView.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_event.dart';
 
@@ -80,7 +79,7 @@ class PusherChatService {
 
     channel.bind('AnswerCallEvent', (event) {
       Navigator.of(navigatorKey.currentState!.context).push(MaterialPageRoute(
-        builder: (context) =>WebViewRoom()
+        builder: (context) =>RoomCallPage()
             ,
       ));
     });
