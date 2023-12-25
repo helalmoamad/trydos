@@ -6,5 +6,10 @@
   "sending_video" : "sending video...",
   "gallery": "gallery",
   "camera": "camera",
-  "choose_photo_or_video_from_gallery_or_camera": "choose  photo or video from gallery or camera"
+  "choose_photo_or_video_from_gallery_or_camera": "choose  photo or video from gallery or camera",
+  "welcome_page_description": "To Take Advantage Of All The Advantages Of The Application, Please Join Us In Quick And Easy Steps And For Just One Time",
+  "why_we_know_you_label" : "Why We Know You ?",
+  "i_have_account": "I Have Already Account",
+  "create_new_account": "Create New Account",
+  "later_take_look" : "Later, Take A Look At The App"
 }

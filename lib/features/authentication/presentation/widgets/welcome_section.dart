@@ -1,4 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,8 +7,8 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-
-import '../../../../base_page.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'dart:ui' as ui;
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
@@ -28,7 +29,7 @@ class WelcomeSection extends StatelessWidget {
           error: error.toString());
     };
     return Directionality(
-      textDirection: TextDirection.ltr,
+      textDirection: ui.TextDirection.ltr,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -36,7 +37,7 @@ class WelcomeSection extends StatelessWidget {
           Padding(
             padding: HWEdgeInsets.symmetric(horizontal: 30.0),
             child: Text(
-              'To Take Advantage Of All The Advantages Of The Application,\nPlease Join Us In Quick And Easy Steps And For Just One Time',
+              LocaleKeys.welcome_page_description.tr(),
               textAlign: TextAlign.start,
               textHeightBehavior:
               TextHeightBehavior(applyHeightToFirstAscent: false),
@@ -49,7 +50,7 @@ class WelcomeSection extends StatelessWidget {
           ),
           SizedBox(height: 20,),
           Text(
-            'Why We Know You ?',
+            LocaleKeys.why_we_know_you_label.tr(),
             textAlign: TextAlign.center,
             style: context.textTheme.bodyText2?.la.copyWith(
               color: Color(0xffF85555),
@@ -98,7 +99,7 @@ class WelcomeSection extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            'I Have Already Account',
+                            LocaleKeys.i_have_account.tr(),
                             style: context.textTheme.bodyText1?.ra.copyWith(
                               color: Color(0xff5D5C5D),
                               letterSpacing: 0.16,
@@ -153,7 +154,7 @@ class WelcomeSection extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            'Create New Account',
+                            LocaleKeys.create_new_account.tr(),
                             style: context.textTheme.bodyText1?.ra.copyWith(
                               color: Color(0xff5D5C5D),
                               letterSpacing: 0.16,
@@ -185,7 +186,7 @@ class WelcomeSection extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: Text(
-                'Later, Take A Look At The App',
+                LocaleKeys.later_take_look.tr(),
                 textAlign: TextAlign.center,
                 textHeightBehavior:
                 TextHeightBehavior(applyHeightToFirstAscent: false),

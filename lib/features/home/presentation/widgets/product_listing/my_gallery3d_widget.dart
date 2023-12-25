@@ -9,10 +9,12 @@ class MyGallery3DWidget extends StatefulWidget {
       {super.key,
       required this.itemWidth,
       required this.gallery3dController,
+      required this.gallery3dControllerForCircles,
       required this.itemCount,
       required this.showProductSides,
       required this.currentProduct,
       this.itemHeight,
+        this.stopScrollingOnEdges,
       this.onItemChanged,
       required this.radius,
       required this.galleryWidth,
@@ -29,7 +31,9 @@ class MyGallery3DWidget extends StatefulWidget {
   final double radius;
   final double galleryWidth;
   final double galleryHeight;
+   final bool Function(double primaryDelta)? stopScrollingOnEdges;
   final Gallery3DController gallery3dController;
+  final Gallery3DController gallery3dControllerForCircles;
   final void Function(int index)? onItemChanged;
   final void Function(int index)? onItemClick;
    List<String> images;
@@ -78,6 +82,7 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
     return Gallery3D(
         controller: widget.gallery3dController,
         width: widget.galleryWidth,
+        stopScrollingOnEdges: widget.stopScrollingOnEdges,
         key: widget.key,
         changingPagesScrollOffset: 0.3,
         height: widget.galleryHeight,
@@ -133,13 +138,16 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
           // return Container(
           //   color: threeColors[index],
           // );
-          return ProductListingImageWidget(
-            innerShadowYOffset: 3,
-            circleShape: false,
-            width: widget.itemWidth,
-            imageUrl: !widget.showProductSides
-                ? widget.threeImages[index]
-                : widget.threeImages[widget.currentProduct],
+          return Visibility(
+            visible: !((widget.gallery3dControllerForCircles.currentIndex == 0 && index == 2) || (widget.gallery3dControllerForCircles.currentIndex == 6 && index == 1)),
+            child: ProductListingImageWidget(
+              innerShadowYOffset: 3,
+              circleShape: false,
+              width: widget.itemWidth,
+              imageUrl: !widget.showProductSides
+                  ? widget.threeImages[index]
+                  : widget.threeImages[widget.currentProduct],
+            ),
           );
         });
   }

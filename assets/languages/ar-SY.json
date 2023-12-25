@@ -6,5 +6,10 @@
   "sending_video" : "يرسل مقطع فيديو...",
   "gallery": "المعرض",
   "camera": "الكاميرا",
-  "choose_photo_or_video_from_gallery_or_camera": "اختر صورة او فيديو من المعرض او الكاميرا"
+  "choose_photo_or_video_from_gallery_or_camera": "اختر صورة او فيديو من المعرض او الكاميرا",
+  "welcome_page_description" : "للاستفادة من جميع مزايا التطبيق، يرجى الانضمام إلينا بخطوات سريعة وسهلة ولمرة واحدة فقط",
+  "why_we_know_you_label" : "لماذا نعرفك ؟",
+  "i_have_account": "لدي حساب مسبقا",
+  "create_new_account": "إنشاء حساب جديد",
+  "later_take_look" : "لاحقا, خذ نظرة في التطبيق"
 }

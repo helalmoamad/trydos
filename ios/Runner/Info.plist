@@ -7,7 +7,7 @@
 <array>
     <string>voip</string>
     <string>remote-notification</string>
-    <string>processing</string> //you can add this if needed
+    <string>processing</string>
 </array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
