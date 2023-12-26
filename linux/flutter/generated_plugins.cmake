@@ -5,7 +5,6 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_linux
   file_saver
-  flutter_webrtc
   url_launcher_linux
 )
 

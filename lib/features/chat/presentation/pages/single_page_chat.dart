@@ -38,6 +38,8 @@ import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/my_cached_network_image.dart';
+import '../../../calls/presentation/pages/agora_webview.dart';
+import '../../../calls/presentation/pages/in_app_view.dart';
 import '../../../calls/presentation/utils/caller_info.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_bloc.dart';
@@ -131,6 +133,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (details) {
+      debugPrint("asfsd${details.toString()}");
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: details.toString());
@@ -279,32 +282,75 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     ),
                     //todo create video call
                     //todo work
-                    InkWell(
-                      onTap: () async {
-                        await [Permission.camera, Permission.microphone]
-                            .request()
-                            .then((value) {
-                          Map<String, dynamic> payload =
-                              callerInfo(channelId: widget.chatId);
-                          debugPrint("payload caller event ${payload}");
-                          GetIt.I<CallsBloc>().add(VideoCallEvent(
-                              chatId: widget.chatId, payload: payload));
+                    BlocConsumer<CallsBloc, CallsState>(
+                      builder: (context, state) => InkWell(
+                        onTap: () async {
 
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => CreateCallPage(
-                                    fullReceiverName: widget.fullReceiverName,
-                                    receiverName: widget.receiverName,
-                                    receiverPhoto: widget.receiverPhone,
-                                    chatId: widget.chatId,
-                                  )));
-                        });
-                        //todo make event to send video call
-                      },
-                      child: SvgPicture.asset(
-                        AppAssets.makeVideoCallSvg,
-                        width: 34.w,
-                        height: 25,
+                          await [
+                            Permission.accessMediaLocation,Permission.mediaLibrary,
+                            Permission.bluetooth,Permission.camera, Permission.microphone]
+                              .request()
+                              .then((value) {
+                            List<Map<String, dynamic>> info =
+                                callerInfo(channelId: widget.chatId);
+                            // debugPrint("payload caller event ${payload}");
+
+                            //todo we have the receiver id so the chat dose not exist
+                            if (info[0].containsKey('currentReceiver')) {
+                              debugPrint(
+                                  'currentReceiver${info[0]['currentReceiver']}');
+
+                              GetIt.I<CallsBloc>().add(VideoCallEvent(
+                                  receiverUserId:
+                                      info[0]['currentReceiver'].toString(),
+                                  payload: info[1]));
+
+                              // GetIt.I<CallsBloc>().add(VideoCallEvent(
+                              //     receiverUserId: info[0]['currentReceiver'],
+                              //     payload: info[1]));
+//todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
+                            }
+
+                            //todo else the chat already exist so we don't have the receiver id just the chat id
+                            else {
+                              debugPrint('widget.chatId${widget.chatId}');
+                              debugPrint('info[0]${info[0]}');
+
+                              GetIt.I<CallsBloc>().add(VideoCallEvent(
+                                  chatId: widget.chatId, payload: info[0]));
+                              //todo we have the id of the chat so we can move to the call immediately
+                            }
+                          });
+                        },
+                        child: SvgPicture.asset(
+                          AppAssets.makeVideoCallSvg,
+                          width: 34.w,
+                          height: 25,
+                        ),
                       ),
+                      listener: (context, state) {
+                        if (state.createVideoCallStatus ==
+                            CreateVideoCallStatus.startCall) {
+                          {
+                            debugPrint("state.channelName${state.channelName}");
+                            debugPrint("video");
+                            debugPrint("state.channelName${state.channelName}");
+                            debugPrint("state.message_id${state.message_id}");
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (_) => AgoraInAppWebView(
+                                      type: 'video',
+                                      channelId: state.channelName!,
+                                      auth_token:
+                                          GetIt.I<PrefsRepository>().chatToken!,
+                                      uId: GetIt.I<PrefsRepository>()
+                                          .myChatId
+                                          .toString(),
+                                      action: 'sent',
+                                      message_id: state.message_id!,
+                                    )));
+                          }
+                        }
+                      },
                     ),
                     30.horizontalSpace,
                     // todo CreateCallPage
@@ -472,32 +518,38 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                 rebuildMessage
                                                                     .value = -1;
                                                               },
-                                                              child: Container(
-                                                                color: currentScrolledIndex ==
-                                                                        index
-                                                                    ? Colors
-                                                                        .black12
-                                                                        .withOpacity(
-                                                                            0.05)
-                                                                    : null,
-                                                                child:
-                                                                    getTheMessageWidget(
-                                                                  message:
-                                                                      messages[
-                                                                          index],
-                                                                  senderName: widget
-                                                                      .senderName,
-                                                                  receiverName:
-                                                                      widget
-                                                                          .receiverName,
-                                                                  receiverPhoto:
-                                                                      widget
-                                                                          .receiverPhoto,
-                                                                  senderPhoto:
-                                                                      widget
-                                                                          .senderPhoto,
-                                                                ),
-                                                              ),
+                                                              child: messages[index]
+                                                                          .messageType!
+                                                                          .name! ==
+                                                                      'VideoCall'
+                                                                  ? Container(
+                                                                      color: Colors
+                                                                          .teal,
+                                                                      width: 20,
+                                                                      height:
+                                                                          20,
+                                                                    )
+                                                                  : Container(
+                                                                      color: currentScrolledIndex ==
+                                                                              index
+                                                                          ? Colors
+                                                                              .black12
+                                                                              .withOpacity(0.05)
+                                                                          : null,
+                                                                      child:
+                                                                          getTheMessageWidget(
+                                                                        message:
+                                                                            messages[index],
+                                                                        senderName:
+                                                                            widget.senderName,
+                                                                        receiverName:
+                                                                            widget.receiverName,
+                                                                        receiverPhoto:
+                                                                            widget.receiverPhoto,
+                                                                        senderPhoto:
+                                                                            widget.senderPhoto,
+                                                                      ),
+                                                                    ),
                                                             ),
                                                             index == 0
                                                                 ? 10
@@ -1126,6 +1178,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isFirstMessage:
                 message.isFirstMessage || message.isFirstMessageForThisDay,
             isForwarded: message.isForward == 1,
+          );
+        case 'VideoCall':
+          debugPrint('VideoCallagfsd');
+          return Container(
+            width: 20,
+            height: 20,
+            color: Colors.teal,
           );
       }
     }

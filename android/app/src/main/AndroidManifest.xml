@@ -1,9 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.trydos">
+    <uses-permission android:name="android.permission.VIDEO_CAPTURE" />
 
+    <uses-permission android:name="android.permission.AUDIO_CAPTURE" />
 
-
+<!--    <uses-permission android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"/>-->
 <!--    <meta-data-->
 <!--        android:name="com.connectycube.flutter.connectycube_flutter_call_kit.audio_call_notification_icon"-->
 <!--        android:resource="@drawable/app_icon" />-->
@@ -17,9 +19,10 @@
     <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
         tools:ignore="ProtectedPermissions" />
     <uses-feature android:name="android.hardware.camera" />
+
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -80,10 +83,19 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-    </application>
+<!--           <service android:name="io.wazo.callkeep.VoiceConnectionService"-->
+<!--               android:label="Wazo"-->
+<!--               android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">-->
+<!--               <intent-filter>-->
+<!--                   <action android:name="android.telecom.ConnectionService" />-->
+<!--               </intent-filter>-->
+<!--           </service>-->
+
+       </application>
 </manifest>
