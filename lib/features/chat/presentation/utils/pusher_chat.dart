@@ -15,6 +15,7 @@ import '../../../../main.dart';
 import '../../../../routes/router.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
+import '../../../calls/presentation/pages/agora_webview.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_event.dart';
 
@@ -77,11 +78,16 @@ class PusherChatService {
     //
     // });
 
-    channel.bind('AnswerCallEvent', (event) {
-      Navigator.of(navigatorKey.currentState!.context).push(MaterialPageRoute(
-        builder: (context) => RoomCallPage(),
-      ));
-    });
+    // channel.bind('AnswerCallEvent', (event) {
+    //   Navigator.of(navigatorKey.currentState!.context).push(MaterialPageRoute(
+    //     builder: (context) =>
+    //
+    //         // AgoraWebView(type: "video", channelId: widget.channelName, token: state.agoraToken!, uId: GetIt.I<PrefsRepository>().myChatId!.toString(),),
+    //
+    //     AgoraWebView()
+    //         ,
+    //   ));
+    // });
 
     channel.bind('InAnotherCallEvent', (event) {});
 
