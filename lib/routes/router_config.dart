@@ -9,6 +9,7 @@ class RouterConfiguration {
 class _ApplicationRoutes{
   final String test='/test';
   final String kBasePage = '/BasePage';
+  final String kWebView = '/WebView';
   final String kRoomCallPage = '/RoomCallPage';
   final String kAnswerCall = '/AnswerCall';
   final String kSinglePageChatPageName = 'SinglePageChatPage';

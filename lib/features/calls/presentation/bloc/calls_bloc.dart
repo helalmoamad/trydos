@@ -117,11 +117,17 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
               channelName: r.data!.message!.channelId.toString(),
               agoraToken: r.data!.token));
         });
+
+        debugPrint("the channel not exist");
       } else {
-        final response = await videoCallUseCase(VideoCallParams(
-            payload: event.payload, receiverUserId: event.receiverUserId!));
+        debugPrint("the channel exist");
+
+        final response = await videoCallUseCase(
+            VideoCallParams(payload: event.payload, chatId: event.chatId!));
         response.fold((l) => null, (r) {
           emit(state.copyWith(
+            message_id: r.data!.message!.id!.toString(),
+            createVideoCallStatus: CreateVideoCallStatus.startCall,
             agoraToken: r.data!.token,
             channelName: event.chatId,
           ));

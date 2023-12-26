@@ -10,14 +10,22 @@ import '../models/video_call_ersponse_model.dart';
 
 @injectable
 class CallsRemoteDataSource {
+  Future<VideoCallRemoteResponseModel> makeCallVideo(
+      Map<String, dynamic> params) {
+    Map<String, dynamic> data = {};
+    if (params['receiver_user_id'] != null) {
+      data['payload'] = params['payload'];
+      data['receiver_user_id'] = params['receiver_user_id'];
+    } else {
+      data['payload'] = params['payload'];
+      data['channel_id'] = params['channel_id'];
+    }
 
-
-  Future<VideoCallRemoteResponseModel> makeCallVideo(Map<String,dynamic> params) {
     PostClient<VideoCallRemoteResponseModel> videoCall =
         PostClient<VideoCallRemoteResponseModel>(
             requestPrams: RequestConfig<VideoCallRemoteResponseModel>(
-                data: {'payload':params['payload']},
-                endpoint: ChatEndPoints.videoCall(params['chatId']),
+                data: data,
+                endpoint: ChatEndPoints.videoCall(params['channel_id']),
                 response: ResponseValue<VideoCallRemoteResponseModel>(
                   fromJson: (response) {
                     return VideoCallRemoteResponseModel.fromJson(response);
@@ -36,6 +44,7 @@ class CallsRemoteDataSource {
         serverName: ServerName.chat);
     return AnswerCall();
   }
+
   Future<bool> makeRingingCall(String ChatId) {
     PostClient<bool> AnswerCall = PostClient<bool>(
         requestPrams: RequestConfig<bool>(

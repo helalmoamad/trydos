@@ -1,5 +1,4 @@
 # This is a generated file; do not edit or check into version control.
-agora_rtc_engine=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\agora_rtc_engine-6.2.6\\
 audioplayers=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\audioplayers-5.2.0\\
 audioplayers_android=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\audioplayers_android-4.0.2\\
 audioplayers_darwin=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\audioplayers_darwin-5.0.2\\
@@ -24,13 +23,17 @@ firebase_messaging=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.d
 firebase_messaging_web=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\firebase_messaging_web-3.5.12\\
 flutter_callkit_incoming=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_callkit_incoming-2.0.0+2\\
 flutter_file_downloader=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_file_downloader-1.1.4\\
+flutter_inappwebview=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_inappwebview-6.0.0\\
+flutter_inappwebview_android=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_inappwebview_android-1.0.12\\
+flutter_inappwebview_ios=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_inappwebview_ios-1.0.13\\
+flutter_inappwebview_macos=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_inappwebview_macos-1.0.11\\
+flutter_inappwebview_web=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_inappwebview_web-1.0.8\\
 flutter_local_notifications=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_local_notifications-16.1.0\\
 flutter_plugin_android_lifecycle=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_plugin_android_lifecycle-2.0.17\\
 flutter_sound=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_sound-9.2.13\\
 flutter_sound_web=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_sound_web-9.2.13\\
 flutter_webrtc=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_webrtc-0.9.47\\
 fluttertoast=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\fluttertoast-8.2.3\\
-iris_method_channel=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\iris_method_channel-2.0.0-dev.4\\
 open_file=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\open_file-3.3.2\\
 overscroll_pop=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\overscroll_pop-0.0.9\\
 path_provider=C:\\Users\\ibrahem\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\path_provider-2.1.1\\

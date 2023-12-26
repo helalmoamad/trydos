@@ -10,6 +10,7 @@ enum RejectVideoCallStatus { init, loading, success, failure }
 
 @immutable
 class CallsState {
+  final String? message_id;
   final int? sessionId;
   final RejectVideoCallStatus rejectVideoCallStatus;
   final String? agoraToken;
@@ -20,7 +21,9 @@ class CallsState {
   final OpenLocalVideoAndAudioStatus openLocalVideoAndAudioStatus;
 
   CallsState(
-      {this.sessionId=23,
+      {
+        this.message_id,
+        this.sessionId=23,
       this.rejectVideoCallStatus = RejectVideoCallStatus.init,
       this.agoraToken = null,
       this.channelName = null,
@@ -30,7 +33,8 @@ class CallsState {
       this.createVideoCallStatus = CreateVideoCallStatus.init});
 
   CallsState copyWith(
-      {int? sessionId,
+      {String? message_id,
+        int? sessionId,
       RejectVideoCallStatus? rejectVideoCallStatus,
       String? agoraToken,
       String? channelName,
@@ -39,6 +43,7 @@ class CallsState {
       OpenRemoteVideoAndAudioStatus? openRemoteVideoAndAudioStatus,
       CreateVideoCallStatus? createVideoCallStatus}) {
     return CallsState(
+      message_id: message_id,
         sessionId: sessionId ?? this.sessionId,
         rejectVideoCallStatus:
             rejectVideoCallStatus ?? this.rejectVideoCallStatus,

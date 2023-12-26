@@ -50,9 +50,11 @@ List<Map<String, dynamic>> callerInfo({required String channelId}) {
 
   if(int.tryParse(currentChat.id!)==null)
   {
+
+    debugPrint('currentChatId${currentChat.id}');
 //todo the chat dose not exist yet cause we generate the id for it
     return [
-      {"currentReceiver": currentReceiver},
+      {"currentReceiver": currentReceiver.id},
       {
         "callerName": callerName,
         "callerPhoto": callerPhoto,

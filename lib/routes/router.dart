@@ -14,6 +14,7 @@ import 'package:trydos/splash_page.dart';
 import '../base_page.dart';
 import '../features/authentication/presentation/pages/already_exist_account.dart';
 import '../features/authentication/presentation/pages/number_not_registered.dart';
+import '../features/calls/presentation/pages/agora_webview.dart';
 import '../features/calls/presentation/pages/answer_call.dart';
 import '../features/calls/presentation/pages/room_call_page.dart';
 import '../features/chat/presentation/pages/chat_pages.dart';
@@ -35,6 +36,7 @@ class GRouter {
       BotToastNavigatorObserver(),
       FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)
     ],
+    // initialLocation: _config.applicationRoutes.kWebView,
     navigatorKey: navigatorKey,
     routes: <RouteBase>[
       GoRoute(
@@ -42,6 +44,21 @@ class GRouter {
           pageBuilder: (BuildContext context, GoRouterState state) {
             return _builderPage(
               child: const SplashPage(),
+              state: state,
+            );
+          }),
+      GoRoute(
+          path: _config.applicationRoutes.kWebView,
+          pageBuilder: (BuildContext context, GoRouterState state) {
+            return _builderPage(
+              child: AgoraWebView(
+                type: 'video',
+                channelId: '155',
+                uId: '6',
+                message_id: '',
+                action: '',
+                auth_token: '',
+              ),
               state: state,
             );
           }),
@@ -58,7 +75,11 @@ class GRouter {
           path: _config.applicationRoutes.kAnswerCall,
           pageBuilder: (BuildContext context, GoRouterState state) {
             return _builderPage(
-              child:  AnswerCall(channelName: '', callerName: '', callerPhoto: '',),
+              child: AnswerCall(
+                channelName: state.uri.queryParameters['channelName']!,
+                callerName: state.uri.queryParameters['callerName']!,
+                callerPhoto: state.uri.queryParameters['callerPhoto']!,
+              ),
               state: state,
             );
           }),
