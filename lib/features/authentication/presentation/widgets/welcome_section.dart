@@ -1,5 +1,6 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,7 +21,7 @@ class WelcomeSection extends StatelessWidget {
   final void Function() goToLoginSection;
 
   final ValueNotifier<int> clickButton = ValueNotifier(-1);
-
+  final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -62,7 +63,7 @@ class WelcomeSection extends StatelessWidget {
           InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: () {
+            onTap: () async{
               clickButton.value = 0;
               Future.delayed(
                   Duration(milliseconds: 100),
@@ -71,6 +72,13 @@ class WelcomeSection extends StatelessWidget {
                     goToLoginSection.call();
                   }
               );
+              await FirebaseAnalytics.instance.logEvent(
+                  name: 'button_clicked',
+                  parameters:{
+                    'user_id': prefsRepository.myMarketId.toString(),
+                    'user_name':prefsRepository.myMarketName.toString(),
+                    'clicked_button_name': 'i have already account',
+                  });
             },
             child: ValueListenableBuilder<int>(
                 valueListenable: clickButton,
@@ -119,12 +127,19 @@ class WelcomeSection extends StatelessWidget {
           InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: () {
+            onTap: () async{
               clickButton.value = 1;
               Future.delayed(Duration(milliseconds: 100), () {
                 clickButton.value = -1;
                 goToCreateAccount.call();
               });
+              await FirebaseAnalytics.instance.logEvent(
+                  name: 'button_clicked',
+                  parameters:{
+                    'user_id': prefsRepository.myMarketId.toString(),
+                    'user_name':prefsRepository.myMarketName.toString(),
+                    'clicked_button_name': 'create new account',
+                  });
             },
             child: ValueListenableBuilder<int>(
                 valueListenable: clickButton,
@@ -175,12 +190,19 @@ class WelcomeSection extends StatelessWidget {
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: ()async{
-              if(GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
+              if(prefsRepository.isVerifiedPhone != false) {
                 String? deviceId = await HelperFunctions
                     .getDeviceId();
                 BlocProvider.of<AuthBloc>(context).add(
                     RegisterGuestEvent(deviceId: deviceId!));
               }
+              await FirebaseAnalytics.instance.logEvent(
+                  name: 'button_clicked',
+                  parameters:{
+                    'user_id': prefsRepository.myMarketId.toString(),
+                    'user_name':prefsRepository.myMarketName.toString(),
+                    'clicked_button_name': 'Later, Take Look',
+                  });
               context.go(GRouter.config.applicationRoutes.kBasePage);
             },
             child: Padding(

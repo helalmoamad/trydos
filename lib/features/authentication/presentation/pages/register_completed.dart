@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,6 +34,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
       statusBarBrightness: Brightness.dark,
       statusBarIconBrightness: Brightness.dark,
     ));
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: "Register Completed Page");
     super.didChangeDependencies();
   }
 

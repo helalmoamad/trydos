@@ -22,7 +22,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
   double? _previousOffset;
   double? _velocity;
   final ScrollController scrollController = ScrollController();
-  final ValueNotifier<Tuple2<int,int>> setThisEnabledNotifier = ValueNotifier(Tuple2(-1,-1));
+  final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
+      ValueNotifier(Tuple2(-1, -1));
+
   @override
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
@@ -30,6 +32,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
       if (scrollController.position.pixels <= 80) {
         print(scrollController.position.pixels);
         appBloc.add(ShowOrHideBars(true));
+      }
+      if (setThisEnabledNotifier.value.item1 != -1) {
+        setThisEnabledNotifier.value = Tuple2(-1, -1);
       }
     });
     super.initState();
@@ -81,7 +86,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
           child: Stack(
             alignment: Alignment.topCenter,
             children: [
-              ValueListenableBuilder<Tuple2<int,int>>(
+              ValueListenableBuilder<Tuple2<int, int>>(
                   valueListenable: setThisEnabledNotifier,
                   builder: (context, slidingMode, _) {
                     return GridView.count(
@@ -90,14 +95,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       padding: const EdgeInsets.only(top: 50),
                       childAspectRatio: 200.w / 350,
                       crossAxisSpacing: 10,
+                      primary: false,
                       mainAxisSpacing: 15,
                       children: List.generate(
                           30,
                           (index) => ProductItem(
-                            slidingModeItem : slidingMode,
-                                itemIndex : index,
-                                setThisEnabled: (int index , int slideMode) {
-                                  setThisEnabledNotifier.value = Tuple2(index ,slideMode );
+                                slidingModeItem: slidingMode,
+                                itemIndex: index,
+                                setThisEnabled: (int index, int slideMode) {
+                                  setThisEnabledNotifier.value =
+                                      Tuple2(index, slideMode);
                                 },
                               )),
                     );

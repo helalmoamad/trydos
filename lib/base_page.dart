@@ -3,6 +3,7 @@ import 'dart:convert' as convert;
 import 'dart:io';
 
 import 'package:adobe_xd/pinned.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -166,6 +167,7 @@ class _BasePageState extends State<BasePage> {
       statusBarBrightness: Brightness.dark,
       statusBarIconBrightness: Brightness.dark,
     ));
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: "Base Page");
     super.didChangeDependencies();
   }
 

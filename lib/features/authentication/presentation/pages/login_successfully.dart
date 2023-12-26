@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,6 +32,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
       statusBarBrightness: Brightness.dark,
       statusBarIconBrightness: Brightness.dark,
     ));
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: "Login Successfully Page");
     Future.delayed(
       Duration(seconds: 1),
       () {
