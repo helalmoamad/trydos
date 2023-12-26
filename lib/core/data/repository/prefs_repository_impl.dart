@@ -66,7 +66,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
       String? request,
       Map<String, dynamic>? query,
       Map<String, dynamic>? body,
-      {String? error ,String? responseTime}) {
+      {String? error,
+      String? responseTime}) {
     Map<String, dynamic> requestAndResponse;
     if (error == null || error == 'null' || error == '') {
       requestAndResponse = {
@@ -77,7 +78,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
         'query': query,
         'body': body,
         'statusCode': statusCode,
-        'response_time' : responseTime
+        'response_time': responseTime
       };
     } else {
       requestAndResponse = {
@@ -219,6 +220,20 @@ class PrefsRepositoryImpl extends PrefsRepository {
     print('pathhhh: $path');
     return path.split(' ').length > 1 ? path.split(' ')[1] : null;
   }
+
+  @override
+  String? get myMarketId => _preferences.getString(PrefsKey.userMarketId);
+
+  @override
+  Future<bool> setMyMarketId(String id) =>
+      _preferences.setString(PrefsKey.userMarketId, id);
+
+  @override
+  String? get myMarketName => _preferences.getString(PrefsKey.marketName);
+
+  @override
+  Future<bool> setMyMarketName(String name) =>
+      _preferences.setString(PrefsKey.marketName, name);
 
 // @override
 // // TODO: implement localMessages

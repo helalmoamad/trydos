@@ -11,9 +11,13 @@ abstract class PrefsRepository {
 
   int? get myStoriesId;
 
+  String? get myMarketId;
+
   bool? get isVerifiedPhone;
 
   String? get myChatName;
+
+  String? get myMarketName;
 
   String? get myPhoneNumber;
 
@@ -43,6 +47,10 @@ abstract class PrefsRepository {
   Future<bool> setMyChatId(int id);
 
   Future<bool> setMyStoriesId(int id);
+
+  Future<bool> setMyMarketId(String id);
+
+  Future<bool> setMyMarketName(String name);
 
   Future<bool> setTheme(ThemeMode themeMode);
 

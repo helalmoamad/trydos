@@ -1,9 +1,13 @@
 abstract class PrefsKey {
+  static const userMarketId = r'__$__userMarketId__$__';
+
   static const userChatId = r'__$__userChatId__$__';
 
   static const userStoriesId = r'__$__userStoriesId__$__';
 
   static const chatName = r'__$__chatName__$__';
+
+  static const marketName = r'__$__marketName__$__';
 
   static const chatToken = r'__$__chatToken__$__';
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -34,6 +35,11 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
   }
 
+  @override
+  void didChangeDependencies() {
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: "Splash Page");
+    super.didChangeDependencies();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

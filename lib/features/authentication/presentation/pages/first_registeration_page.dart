@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,6 +56,7 @@ class _RegistrationPageState extends State<RegistrationPage>
       statusBarBrightness: Brightness.dark,
       statusBarIconBrightness: Brightness.dark,
     ));
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: "Registration Page");
     super.didChangeDependencies();
   }
 
