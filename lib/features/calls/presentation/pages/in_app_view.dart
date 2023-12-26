@@ -85,10 +85,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
             initialOptions: InAppWebViewGroupOptions(
               // android: ,
               crossPlatform: InAppWebViewOptions(
-
                 mediaPlaybackRequiresUserGesture: false,
- javaScriptCanOpenWindowsAutomatically: true,
-               ),
+                javaScriptCanOpenWindowsAutomatically: true,
+              ),
             ),
 
             // onPermissionRequest: (controller, permissionRequest) async {
@@ -102,7 +101,6 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
             initialUrlRequest: URLRequest(url: WebUri(source)),
             androidOnPermissionRequest: (controller, origin, resources) async {
               return await PermissionRequestResponse(
-
                   resources: resources,
                   action: PermissionRequestResponseAction.GRANT);
             },
