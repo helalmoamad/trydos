@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
@@ -285,42 +286,58 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     BlocConsumer<CallsBloc, CallsState>(
                       builder: (context, state) => InkWell(
                         onTap: () async {
+                          // if(status2)
 
-                          await [
-                            Permission.accessMediaLocation,Permission.mediaLibrary,
-                            Permission.bluetooth,Permission.camera, Permission.microphone]
-                              .request()
-                              .then((value) {
+
+
                             List<Map<String, dynamic>> info =
-                                callerInfo(channelId: widget.chatId);
-                            // debugPrint("payload caller event ${payload}");
+                            callerInfo(channelId: widget.chatId);
+                            var status1 = await Permission.microphone.status;
+                            // var status2 = await Permission.mediaLibrary.status;
+                            var status3= await Permission.camera.status;
+if(status1.isGranted&&    // status2.isGranted&&
+    status3.isGranted)
+                            {
 
-                            //todo we have the receiver id so the chat dose not exist
-                            if (info[0].containsKey('currentReceiver')) {
-                              debugPrint(
-                                  'currentReceiver${info[0]['currentReceiver']}');
+                              Fluttertoast.showToast(msg: 'asdasesjpsddas');
+                              // debugPrint("payload caller event ${payload}");
+                              //todo we have the receiver id so the chat dose not exist
+                              if (info[0].containsKey('currentReceiver')) {
+                                debugPrint(
+                                    'currentReceiver${info[0]['currentReceiver']}');
 
-                              GetIt.I<CallsBloc>().add(VideoCallEvent(
-                                  receiverUserId:
-                                      info[0]['currentReceiver'].toString(),
-                                  payload: info[1]));
+                                GetIt.I<CallsBloc>().add(VideoCallEvent(
+                                    receiverUserId:
+                                    info[0]['currentReceiver'].toString(),
+                                    payload: info[1]));
 
-                              // GetIt.I<CallsBloc>().add(VideoCallEvent(
-                              //     receiverUserId: info[0]['currentReceiver'],
-                              //     payload: info[1]));
+                                // GetIt.I<CallsBloc>().add(VideoCallEvent(
+                                //     receiverUserId: info[0]['currentReceiver'],
+                                //     payload: info[1]));
 //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
-                            }
+                              }
+                              //todo else the chat already exist so we don't have the receiver id just the chat id
+                              else {
+                                debugPrint('widget.chatId${widget.chatId}');
+                                debugPrint('info[0]${info[0]}');
 
-                            //todo else the chat already exist so we don't have the receiver id just the chat id
-                            else {
-                              debugPrint('widget.chatId${widget.chatId}');
-                              debugPrint('info[0]${info[0]}');
+                                GetIt.I<CallsBloc>().add(VideoCallEvent(
+                                    chatId: widget.chatId, payload: info[0]));
+                                //todo we have the id of the chat so we can move to the call immediately
+                              }
 
-                              GetIt.I<CallsBloc>().add(VideoCallEvent(
-                                  chatId: widget.chatId, payload: info[0]));
-                              //todo we have the id of the chat so we can move to the call immediately
-                            }
-                          });
+
+                            }else if (status1.isDenied
+    // &&status2.isDenied
+
+    ||status3.isDenied){
+  Fluttertoast.showToast(msg: 'asdasd;;;;;;as');
+
+
+  openAppSettings();
+}
+
+
                         },
                         child: SvgPicture.asset(
                           AppAssets.makeVideoCallSvg,
@@ -523,6 +540,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                           .name! ==
                                                                       'VideoCall'
                                                                   ? Container(
+
+
                                                                       color: Colors
                                                                           .teal,
                                                                       width: 20,

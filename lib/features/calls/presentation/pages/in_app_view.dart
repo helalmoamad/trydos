@@ -73,8 +73,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
       'type': widget.type,
       'action': widget.action,
       'ch_id': widget.channelId
-    }, host: baseUrl.host, scheme: baseUrl.scheme, path: '/call_direct')
-        .toString();
+    }, host: baseUrl.host, scheme: baseUrl.scheme, path: '/call_direct').toString();
     String urlBasd = source;
     log("asfsdsd${source}");
 

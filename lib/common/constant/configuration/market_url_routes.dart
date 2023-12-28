@@ -2,10 +2,15 @@ extension ScopeApi on String {
   String get _api => 'api';
 
   String get _currentVersion => 'new_v1';
+
   String phoneScope() => '$_api/${_currentVersion}/phone/$this';
+
   String authFirebaseScope() => '$_api/${_currentVersion}/auth/firebase/$this';
+
   String authScope() => '$_api/${_currentVersion}/auth/$this';
+
   String customerScope() => '$_api/${_currentVersion}/customer/$this';
+
   String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
 }
 
@@ -27,6 +32,7 @@ abstract class MarketEndPoints {
 
 abstract class MarketUrls {
   static String get baseUrl => _baseUrlDev;
+
   static String get baseUrlWithHttp => _baseUrlDevWithHttp;
 
   static Uri get baseUri => Uri.parse(_baseUrlDev);
