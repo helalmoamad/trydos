@@ -10,7 +10,7 @@ extension ScopeApi on String {
   String authScope() => '$_api/${_currentVersion}/auth/$this';
 
   String customerScope() => '$_api/${_currentVersion}/customer/$this';
-
+  String productsScope() => '$_api/${_currentVersion}/products/$this';
   String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
 }
 
@@ -28,6 +28,7 @@ abstract class MarketEndPoints {
   static final getStartingSettingsEP = 'startingSettings'.homeScope();
   static final getHomeSectionsEP = 'home_sections'.homeScope();
   static final getMainCategoriesEP = 'mainCategories'.homeScope();
+  static final getProductListingWithoutFiltersEP = 'with_colors_without_filter'.productsScope();
 }
 
 abstract class MarketUrls {
