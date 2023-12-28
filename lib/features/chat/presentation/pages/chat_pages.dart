@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -50,6 +51,11 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   ];
 
   void saveUserContacts() async {
+    await
+    [
+      Permission.accessMediaLocation,Permission.mediaLibrary,
+      Permission.bluetooth,Permission.camera, Permission.microphone]
+        .request();
     List<Map<String, dynamic>> contacts = await HelperFunctions.getContactsFromDevice();
     //todo debug
 //    Fluttertoast.showToast(msg: contacts.toString(),toastLength: Toast.LENGTH_LONG);
@@ -63,6 +69,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
       BlocProvider.of<AppBloc>(context).add(ChangeTabInChat(0));
     }
     saveUserContacts();
+
     chatBloc = BlocProvider.of<ChatBloc>(context);
     super.initState();
   }

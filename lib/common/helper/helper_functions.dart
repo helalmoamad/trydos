@@ -100,9 +100,9 @@ class HelperFunctions {
   }
 
   static Future<List<Map<String, dynamic>>> getContactsFromDevice() async {
-    final PermissionStatus permissionStatus =
-        await Permission.contacts.request();
+    final PermissionStatus permissionStatus = await Permission.contacts.request();
     List<Contact> contacts = [];
+
     if (permissionStatus == PermissionStatus.granted) {
       contacts = await ContactsService.getContacts(withThumbnails: false);
     }
