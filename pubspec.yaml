@@ -68,6 +68,7 @@ dependencies:
   permission_handler: ^11.0.1
   flutter_local_notifications: ^16.1.0
   audio_wave: ^0.1.5
+  #flutter_smartlook: ^4.1.14
   shared_preferences: ^2.2.2
   file_saver: 0.2.8
   flutter_countdown_timer: ^4.1.0

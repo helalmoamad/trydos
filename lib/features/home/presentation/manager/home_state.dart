@@ -6,11 +6,15 @@ enum GetMainCategoriesStatus { init, loading, success, failure }
 
 enum GetHomeSectionsStatus { init, loading, success, failure }
 
+enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
+
 class HomeState {
   HomeState({
     this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
     this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
+    this.getProductsWithoutFiltersStatus = GetProductsWithoutFiltersStatus.init,
     this.startingSetting ,
+    this.getProductListingWithoutFiltersModel ,
     this.getHomeSectionsStatus = GetHomeSectionsStatus.init,
   });
 
@@ -19,6 +23,10 @@ class HomeState {
   final GetMainCategoriesStatus getMainCategoriesStatus;
 
   final GetHomeSectionsStatus getHomeSectionsStatus;
+
+  final GetProductsWithoutFiltersStatus getProductsWithoutFiltersStatus;
+
+  final GetProductListingWithoutFiltersModel? getProductListingWithoutFiltersModel;
 
   final StartingSetting? startingSetting ;
 
@@ -30,6 +38,10 @@ class HomeState {
     final GetHomeSectionsStatus? getHomeSectionsStatus,
 
     final StartingSetting? startingSetting ,
+
+    final GetProductsWithoutFiltersStatus? getProductsWithoutFiltersStatus,
+
+    final GetProductListingWithoutFiltersModel? getProductListingWithoutFiltersModel
   }) {
     return HomeState(
       getStartingSettingsStatus: getStartingSettingsStatus ??
@@ -38,7 +50,9 @@ class HomeState {
           this.getMainCategoriesStatus,
       getHomeSectionsStatus: getHomeSectionsStatus ??
           this.getHomeSectionsStatus,
-        startingSetting : startingSetting ?? this.startingSetting
+        startingSetting : startingSetting ?? this.startingSetting,
+        getProductsWithoutFiltersStatus : getProductsWithoutFiltersStatus ?? this.getProductsWithoutFiltersStatus,
+      getProductListingWithoutFiltersModel : getProductListingWithoutFiltersModel ?? this.getProductListingWithoutFiltersModel,
     );
   }
 }

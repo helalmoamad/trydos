@@ -39,7 +39,7 @@ class WelcomeSection extends StatelessWidget {
             padding: HWEdgeInsets.symmetric(horizontal: 30.0),
             child: Text(
               LocaleKeys.welcome_page_description.tr(),
-              textAlign: TextAlign.start,
+              textAlign: TextAlign.center,
               textHeightBehavior:
               TextHeightBehavior(applyHeightToFirstAscent: false),
               style: context.textTheme.bodyText2?.la.copyWith(
