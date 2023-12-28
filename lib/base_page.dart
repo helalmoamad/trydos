@@ -24,6 +24,7 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
+import 'package:vibration/vibration.dart';
 import 'features/authentication/presentation/pages/first_registeration_page.dart';
 import 'features/calls/presentation/pages/agora_webview.dart';
 import 'features/calls/presentation/pages/answer_call.dart';
@@ -181,7 +182,14 @@ class _BasePageState extends State<BasePage> {
       debugPrint('czxcxsrh${event.data}');
       debugPrint('czxcxsrh${event.data.runtimeType}');
       debugPrint('czxcxsrh${event.data['type'].runtimeType}');
+
+      if (event.data['type'] == 'RefuseCallEvent') {
+        navigatorKey.currentState!.context.pop();
+
+      }
       if (event.data['type'] == 'VideoCallEvent') {
+
+
         debugPrint('forGroundVideo ${event.data.toString()}');
         // debugPrint("asdadasbcnghn${event!.data!.toString()}");
         Map<String, dynamic> data =

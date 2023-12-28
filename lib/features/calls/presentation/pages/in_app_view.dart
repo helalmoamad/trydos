@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:vibration/vibration.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -30,11 +31,11 @@ class AgoraInAppWebView extends StatefulWidget {
 }
 
 class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
-  late WebViewController controller;
+  late WebViewController controller1;
 
   @override
   void initState() {
-    // Per
+    Vibration.vibrate(pattern: [500, 1000, 500, 1000], duration: 3);
 
     // final flutterWebviewPlugin = new FlutterWebviewPlugin();
     debugPrint("asdafsd{${widget.channelId}");
@@ -44,7 +45,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     debugPrint("asdafsd{${widget.action}");
     debugPrint("asdafsd{${widget.auth_token}");
     Uri baseUrl = Uri.parse('https://webdev.trydos.com');
-    controller = WebViewController()
+    controller1 = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
       ..loadRequest(Uri(queryParameters: {
@@ -57,6 +58,12 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
       }, host: baseUrl.host, scheme: baseUrl.scheme, path: '/call_direct'));
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    Vibration.cancel();
   }
 
   int loading = 0;
@@ -73,7 +80,8 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
       'type': widget.type,
       'action': widget.action,
       'ch_id': widget.channelId
-    }, host: baseUrl.host, scheme: baseUrl.scheme, path: '/call_direct').toString();
+    }, host: baseUrl.host, scheme: baseUrl.scheme, path: '/call_direct')
+        .toString();
     String urlBasd = source;
     log("asfsdsd${source}");
 
@@ -81,8 +89,19 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
       body: Stack(
         children: [
           InAppWebView(
+            // onLoadStop: (controller, url) {
+            //   // controller.dispose();
+            // },
+            onUpdateVisitedHistory: (controller, url, isReload) {
+              if (url.toString().contains('end')) {
+                controller.stopLoading();
+                controller.dispose();
+                Navigator.of(context).pop();
+              }
+
+              log('asdhtf${url.toString().contains('end')}');
+            },
             initialOptions: InAppWebViewGroupOptions(
-              // android: ,
               crossPlatform: InAppWebViewOptions(
                 mediaPlaybackRequiresUserGesture: false,
                 javaScriptCanOpenWindowsAutomatically: true,
@@ -111,10 +130,6 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
             },
           ),
           if (loading < 100) Center(child: CircularProgressIndicator()),
-          Text(
-            urlBasd,
-            style: TextStyle(color: Colors.teal),
-          )
         ],
       ),
     );
