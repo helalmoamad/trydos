@@ -78,12 +78,12 @@ abstract class ChatEndPoints {
     return 'video_call'.messagesScope();
   }
 
-  static String answer_call(String ChatId) {
-    return '$ChatId/answer_call'.channelsScope();
+  static String answer_call(String messageId) {
+    return 'answer_call/$messageId'.messagesScope();
   }
 
-  static String refuseCall(String ChatId) {
-    return '$ChatId/refuse_call'.channelsScope();
+  static String refuseCall(String messageId) {
+    return 'refuse_call/$messageId'.messagesScope();
   }
 
   static String inAnotherCall(String ChatId) {

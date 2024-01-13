@@ -124,7 +124,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                       children: [
                                         BlocBuilder<AuthBloc, AuthState>(
                                           builder: (context, state) {
-                                            if(state.marketUser!.name==null){
+                                            if(state.marketUser!.name==null || state.marketUser!.name==''){
                                               return const SizedBox.shrink();
                                             }
                                             return Text(','+state.marketUser!.name.toString(),

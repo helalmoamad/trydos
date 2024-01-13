@@ -29,18 +29,18 @@ class CallsRepositoryImpl extends CallsRepository
 
 
   @override
-  Future<Either<Failure, bool>> answerCall(String ChatId) {
+  Future<Either<Failure, bool>> answerCall(String messageId) {
     // TODO: implement answerCall
     return handlingExceptionRequest(
-        tryCall: () => dataSource.makeAnswerCall(ChatId));
+        tryCall: () => dataSource.makeAnswerCall(messageId));
   }
 
 
 
   @override
-  Future<Either<Failure, bool>> rejectCall(String ChatId) {
+  Future<Either<Failure, bool>> rejectCall(String messageId) {
     // TODO: implement answerCall
     return handlingExceptionRequest(
-        tryCall: () => dataSource.makeRejectCall(ChatId));
+        tryCall: () => dataSource.makeRejectCall(messageId));
   }
 }

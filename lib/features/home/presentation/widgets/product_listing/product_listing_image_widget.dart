@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 class ProductListingImageWidget extends StatelessWidget {
   const ProductListingImageWidget({super.key, this.width, this.height, required this.innerShadowYOffset, this.borderColor, required this.circleShape, required this.imageUrl});
 
@@ -23,8 +24,8 @@ class ProductListingImageWidget extends StatelessWidget {
           borderRadius:  BorderRadius.all(Radius.circular(circleShape ? 180.0 : 15)),
           child: Stack(
             children: [
-              Image.asset(imageUrl , fit: BoxFit.cover, width: width,
-                height: height,),
+              MyCachedNetworkImage(imageUrl: imageUrl, width: width!, imageFit: BoxFit.cover, height: height!),
+              //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
               Container(
                 width: width,
                 height: height,

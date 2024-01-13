@@ -1,24 +1,16 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:dartz/dartz_unsafe.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pusher_client/pusher_client.dart';
+import 'package:pusher_client_fixed/pusher_client_fixed.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
-import 'package:trydos/features/calls/presentation/pages/answer_call.dart';
-import 'package:trydos/features/calls/presentation/pages/room_call_page.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/service/language_service.dart';
 import 'dart:convert' as convert;
-import '../../../../main.dart';
-import '../../../../routes/router.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
-import '../../../calls/presentation/pages/agora_webview.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_event.dart';
-
 @LazySingleton()
 class PusherChatService {
   Map<String, Channel> presenceChannels = {};
@@ -27,7 +19,6 @@ class PusherChatService {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   ChatBloc chatBloc = GetIt.I<ChatBloc>();
   CallsBloc callBloc = GetIt.I<CallsBloc>();
-
   Future initialization() async {
     PusherOptions options = PusherOptions(
       encrypted: true,
@@ -52,7 +43,7 @@ class PusherChatService {
     });
   }
 
-  @pragma('vm:entry-point')
+  //@pragma('vm:entry-point')
   subscribe(String channelName) async {
     if (publicChannels.containsKey(channelName)) return;
     Channel channel = pusher.subscribe(channelName);
@@ -89,7 +80,7 @@ class PusherChatService {
     //   ));
     // });
 
-    channel.bind('InAnotherCallEvent', (event) {});
+    //channel.bind('InAnotherCallEvent', (event) {});
 
     publicChannels[channelName] = true;
   }
@@ -99,9 +90,24 @@ class PusherChatService {
     "Recording...": "يسجل مقطع صوتي...",
     "Sending file...": "يرسل ملف...",
   };
-
+  deleteAllPresenceChannels(List<Chat> chats){
+    for(int i=0; i< chats.length ; i++) {
+      if (!presenceChannels.containsKey("presence-typing-${chats[i].id}"))
+        continue;
+      pusher.unsubscribe("presence-typing-${chats[i].id}");
+      presenceChannels.remove("presence-typing-${chats[i].id}");
+    }
+  }
+  subscribeToAllPresenceChannels(List<Chat> chats){
+    if(presenceChannels.length == chats.length)return;
+    for(int i=0; i< chats.length ; i++) {
+      if (presenceChannels.containsKey("presence-typing-${chats[i].id}"))
+        continue;
+      createPresenceChannel(chats[i].id.toString());
+    }
+  }
   createPresenceChannel(String channelName) async {
-    if (presenceChannels.containsKey(channelName)) return;
+    if (presenceChannels.containsKey("presence-typing-$channelName")) return;
     Channel channel = pusher.subscribe("presence-typing-$channelName");
     presenceChannels["presence-typing-$channelName"] = channel;
     channel.bind('client-TypingEvent', (event) {
@@ -123,11 +129,11 @@ class PusherChatService {
   }
 
   void sendActivityEvent(
-      String channelId, String channelName, String? description) async {
+      String channelId, String? description) async {
     if (int.tryParse(channelId) == null) {
       return;
     }
-    var y = await presenceChannels["presence-typing-$channelId"]!.trigger(
+   await presenceChannels["presence-typing-$channelId"]!.trigger(
         'client-TypingEvent',
         convert.jsonEncode({
           "uid": _prefsRepository.myChatId.toString(),

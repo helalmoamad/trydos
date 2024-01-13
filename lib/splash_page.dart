@@ -10,6 +10,7 @@ import 'package:trydos/features/authentication/presentation/manager/auth_bloc.da
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/routes/router.dart';
 import 'core/domin/repositories/prefs_repository.dart';
+import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
 import 'features/home/presentation/manager/home_bloc.dart';
 import 'features/story/presentation/bloc/story_bloc.dart';
 
@@ -27,11 +28,15 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   void initState() {
-    homeBloc=BlocProvider.of<HomeBloc>(context);
-    BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetHomeSectionsEvent('Women_1'));
     homeBloc.add(GetMainCategoriesEvent());
-    Future.delayed(Duration(seconds: 2),() => context.go(prefsRepository.marketToken == null ? GRouter.config.applicationRoutes.kRegistrationPage : GRouter.config.applicationRoutes.kBasePage),);
+    BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
+    checkAndNavigationCallingPage(context , fromTerminated : true , whereToNavigationAfterCheck: (){
+      context.go(prefsRepository.marketToken == null
+          ? GRouter.config.applicationRoutes.kRegistrationPage
+          : GRouter.config.applicationRoutes.kBasePage);
+    });
     super.initState();
   }
 
@@ -40,6 +45,7 @@ class _SplashPageState extends State<SplashPage> {
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "Splash Page");
     super.didChangeDependencies();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

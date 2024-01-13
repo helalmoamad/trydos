@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
@@ -135,7 +136,9 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                   if (!isReachTheLeftMost) {
                                     if (collectionIndex ==
                                         state.stories.length - 1) {
-                                      Navigator.of(context).pop();
+                                      if(context.canPop()) {
+                                        Navigator.of(context).pop();
+                                      }
                                       return;
                                     }
                                     GetIt.I<StoryBloc>().add(StorySelectedEvent(
@@ -147,7 +150,9 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                     prevPageNumber = collectionIndex + 1;
                                   } else {
                                     if (collectionIndex == 0) {
-                                      Navigator.of(context).pop();
+                                      if(context.canPop()) {
+                                        Navigator.of(context).pop();
+                                      }
                                       return;
                                     }
                                     GetIt.I<StoryBloc>().add(StorySelectedEvent(

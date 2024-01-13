@@ -58,7 +58,7 @@ class NotificationService {
         channelDescription: "Inform user files uploaded",
         channelShowBadge: false,
         importance: Importance.max,
-        priority: Priority.high,
+        priority: Priority.max,
         onlyAlertOnce: true,
       );
 

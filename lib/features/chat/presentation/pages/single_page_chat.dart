@@ -17,6 +17,7 @@ import 'package:trydos/common/helper/file_saving.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -134,7 +135,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (details) {
-      debugPrint("asfsd${details.toString()}");
+      print("asfsd${details.toString()}");
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: details.toString());
@@ -290,12 +291,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
                           List<Map<String, dynamic>> info =
                               callerInfo(channelId: widget.chatId);
-                          var status1 = await Permission.microphone.status;
+                          PermissionStatus microphone = await Permission.microphone.status;
                           // var status2 = await Permission.mediaLibrary.status;
-                          var status3 = await Permission.camera.status;
-                          if (status1.isGranted && // status2.isGranted&&
-                              status3.isGranted) {
-                            Fluttertoast.showToast(msg: 'asdasesjpsddas');
+                          PermissionStatus camera = await Permission.camera.status;
+                          if (microphone.isGranted && // status2.isGranted&&
+                              camera.isGranted) {
+                            Fluttertoast.showToast(msg: 'permission granted');
                             // debugPrint("payload caller event ${payload}");
                             //todo we have the receiver id so the chat dose not exist
                             if (info[0].containsKey('currentReceiver')) {
@@ -321,12 +322,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                   chatId: widget.chatId, payload: info[0]));
                               //todo we have the id of the chat so we can move to the call immediately
                             }
-                          } else if (status1.isDenied
+                          } else if (microphone.isDenied
                               // &&status2.isDenied
 
                               ||
-                              status3.isDenied) {
-                            Fluttertoast.showToast(msg: 'asdasd;;;;;;as');
+                              camera.isDenied) {
+                            Fluttertoast.showToast(msg: 'permission denied');
 
                             openAppSettings();
                           }
@@ -337,17 +338,16 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           height: 25,
                         ),
                       ),
+                      listenWhen: (p,c)=> p.createVideoCallStatus != c.createVideoCallStatus && c.createVideoCallStatus == CreateVideoCallStatus.startCall,
                       listener: (context, state) {
-                        if (state.createVideoCallStatus ==
-                            CreateVideoCallStatus.startCall) {
-                          {
                             debugPrint("state.channelName${state.channelName}");
                             debugPrint("video");
                             debugPrint("state.channelName${state.channelName}");
-                            debugPrint("state.message_id${state.message_id}");
+                            debugPrint("state.message_id${state.messageId}");
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (_) => AgoraInAppWebView(
                                       type: 'video',
+                                      isReceivingCall: false,
                                       channelId: state.channelName!,
                                       auth_token:
                                           GetIt.I<PrefsRepository>().chatToken!,
@@ -355,10 +355,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                           .myChatId
                                           .toString(),
                                       action: 'sent',
-                                      message_id: state.message_id!,
+                                  messageId: state.messageId!,
                                     )));
-                          }
-                        }
                       },
                     ),
                     30.horizontalSpace,
@@ -794,7 +792,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   return ChatInputField(
                     channelId: chat.id!,
                     senderName: widget.senderName,
-                    channelPusherName: chat.pusherChannelName ?? '',
                     senderUserImage: widget.senderPhoto,
                     onSendFile: (File file, String customPathType) {
                       String id = const Uuid().v4();
@@ -988,7 +985,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
     String? senderPhoto,
     String? receiverPhoto,
   }) {
-    String? filePath = message.mediaMessageContent?[0].filePath;
+    FlutterError.onError = (details) {
+      print("asfsd${details.toString()}");
+    };
+    String? filePath = message.mediaMessageContent.isNullOrEmpty ? null : message.mediaMessageContent?[0].filePath;
     if (message.file == null &&
         filePath != null &&
         _prefsRepository.isAFilePathExist(filePath)) {

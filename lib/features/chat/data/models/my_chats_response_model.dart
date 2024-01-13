@@ -47,10 +47,12 @@ class MyChatsResponseModel {
 class Data {
   final List<Chat>? chats;
   final List<Chat>? pinnedChats;
+  final bool missedFcmToken;
 
   Data({
     this.chats,
     this.pinnedChats,
+    required this.missedFcmToken,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -61,6 +63,7 @@ class Data {
             ? []
             : List<Chat>.from(
                 json["pinned_channels"]!.map((x) => Chat.fromJson(x))),
+      missedFcmToken : json['missed_fcm_token']
       );
 
   Map<String, dynamic> toJson() => {

@@ -18,6 +18,7 @@ import 'package:trydos/features/authentication/domain/use_cases/verify_otp_signi
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
+import '../../../../common/constant/countries.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../main.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
@@ -412,7 +413,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     }, (r) {
       isFailedTheFirstTime.remove('GetUserCountryEvent');
-      _prefsRepository.setCountryName(r.country.toString());
+
+      _prefsRepository.setCountryName(countries.firstWhere((element) => element.code == r.countryCode).name);
     });
   }
 }

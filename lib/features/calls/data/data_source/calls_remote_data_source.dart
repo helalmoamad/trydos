@@ -35,11 +35,11 @@ class CallsRemoteDataSource {
     return videoCall();
   }
 
-  Future<bool> makeAnswerCall(String ChatId) {
+  Future<bool> makeAnswerCall(String messageId) {
     PostClient<bool> AnswerCall = PostClient<bool>(
         requestPrams: RequestConfig<bool>(
             // data: params,
-            endpoint: ChatEndPoints.answer_call(ChatId),
+            endpoint: ChatEndPoints.answer_call(messageId),
             response: ResponseValue<bool>(returnValueOnSuccess: true)),
         serverName: ServerName.chat);
     return AnswerCall();
@@ -70,10 +70,10 @@ class CallsRemoteDataSource {
     return videoCall();
   }
 
-  Future<bool> makeRejectCall(String ChatId) {
+  Future<bool> makeRejectCall(String messageId) {
     PostClient<bool> RejectCall = PostClient<bool>(
         requestPrams: RequestConfig<bool>(
-            endpoint: ChatEndPoints.refuseCall(ChatId),
+            endpoint: ChatEndPoints.refuseCall(messageId),
             response: ResponseValue<bool>(returnValueOnSuccess: true)),
         serverName: ServerName.chat);
     return RejectCall();

@@ -154,6 +154,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onGetProductsWithoutFiltersEvent(
       GetProductsWithoutFiltersEvent event, Emitter<HomeState> emit) async {
+    if(state.getProductListingWithoutFiltersModel != null){
+      return;
+    }
     emit(state.copyWith(
         getProductsWithoutFiltersStatus:
             GetProductsWithoutFiltersStatus.loading));

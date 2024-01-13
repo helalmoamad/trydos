@@ -17,15 +17,16 @@ class EndVideoCallEvent extends CallsEvent {
 }
 
 class AnswerVideoCallEvent extends CallsEvent{
+  String messageId;
   String chatId;
 
-  AnswerVideoCallEvent({required this.chatId});
+  AnswerVideoCallEvent({required this.messageId,required this.chatId});
 }
 class RejectVideoCallEvent extends CallsEvent{
 
-  String chatId;
+  String messageId;
 
-  RejectVideoCallEvent({required this.chatId});
+  RejectVideoCallEvent({required this.messageId});
 }
 class ResponseRejectVideoCallEvent extends CallsEvent {
 
@@ -36,3 +37,10 @@ class InitResponseRejectVideoCallEvent extends CallsEvent {
 
 
 }
+class UserInteractWithCall extends CallsEvent {
+  final bool rejectIt;
+
+  UserInteractWithCall({required this.rejectIt});
+
+}
+

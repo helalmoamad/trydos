@@ -8,6 +8,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -29,9 +30,11 @@ import 'features/authentication/presentation/pages/first_registeration_page.dart
 import 'features/calls/presentation/pages/agora_webview.dart';
 import 'features/calls/presentation/pages/answer_call.dart';
 import 'features/calls/presentation/pages/in_app_view.dart';
+import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
 import 'features/chat/data/models/my_chats_response_model.dart';
 import 'features/chat/presentation/manager/chat_bloc.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
+import 'features/chat/presentation/utils/pusher_chat.dart';
 
 Widget get logo {
   debugPrint('deblogo');
@@ -128,10 +131,12 @@ class BasePage extends StatefulWidget {
   State<BasePage> createState() => _BasePageState();
 }
 
-class _BasePageState extends State<BasePage> {
+class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   late ChatBloc chatBloc;
   late HomeBloc homeBloc;
+  late CallsBloc callsBloc;
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
+  late final PusherChatService pusherChatService ;
   final List<Widget> pages = [
     const HomePage(),
     const HomePage(),
@@ -141,10 +146,30 @@ class _BasePageState extends State<BasePage> {
   bool showUpgradeApp = true;
 
   @override
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+    print(state);
+    if (state == AppLifecycleState.resumed) {
+      //Check call when open app from background
+      if (prefsRepository.chatToken != null) {
+        checkAndNavigationCallingPage(context);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    pusherChatService = GetIt.I<PusherChatService>();
     chatBloc = BlocProvider.of<ChatBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    if (Platform.isAndroid) {
+    callsBloc = BlocProvider.of<CallsBloc>(context);
+    if (prefsRepository.chatToken != null) {
       onMessage();
     }
 // [ Permission.systemAlertWindow,Permission.notification].request();
@@ -177,62 +202,29 @@ class _BasePageState extends State<BasePage> {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
-      debugPrint('czxcxsrh${event.data}');
-
-      debugPrint('czxcxsrh${event.data}');
-      debugPrint('czxcxsrh${event.data.runtimeType}');
-      debugPrint('czxcxsrh${event.data['type'].runtimeType}');
-
       if (event.data['type'] == 'RefuseCallEvent') {
-        navigatorKey.currentState!.context.pop();
-
-      }
-      if (event.data['type'] == 'VideoCallEvent') {
-
-
-        debugPrint('forGroundVideo ${event.data.toString()}');
-        // debugPrint("asdadasbcnghn${event!.data!.toString()}");
+        print('RefuseCallEvent RefuseCallEvent RefuseCallEvent');
+        callsBloc.add(UserInteractWithCall(rejectIt: true));
+        callsBloc.add(ResponseRejectVideoCallEvent());
+        if (navigatorKey.currentState!.context.canPop()) {
+          navigatorKey.currentState!.context.pop();
+        }
+      } else if (event.data['type'] == 'VideoCallEvent') {
         Map<String, dynamic> data =
-            convert.jsonDecode(event!.data['data'].toString());
-        debugPrint("dzvfsfg${data["message"]["id"]}");
-        debugPrint("dzvfsfg${data["message"]["channel_id"]}");
-
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => AgoraInAppWebView(message_id: data["message"]["id"].toString(), action: 'receive', type: 'video', channelId: data["message"]["channel_id"].toString(), auth_token: GetIt.I<PrefsRepository>().chatToken!, uId:GetIt.I<PrefsRepository>().myChatId!.toString()),));
-        // debugPrint(
-        //     'VideoCallEvent ${data['channel_id'].toString() ?? 'EmptyVideoCallEvent'}');
-        // debugPrint(' ${data ?? 'EmptyVideoCallEvent'}');
-        //
-        // Chat currentChat = chatBloc.state.chats.firstWhere(
-        //     (element) => element.id == data['channel_id'].toString());
-        //
-        // debugPrint("myChatId${GetIt.I<PrefsRepository>().myChatId}");
-        //
-        // debugPrint("chatVideoEvent${currentChat.id}");
-        //
-        // ChannelMember currentCaller = chatBloc.state.chats
-        //     .firstWhere(
-        //         (element) => element.id == data['channel_id'].toString())
-        //     .channelMembers!
-        //     .firstWhere((element) =>
-        //         element.user!.id != GetIt.I<PrefsRepository>().myChatId);
-        //
-        // String callerName = currentCaller.user!.contactUser == null
-        //     ? (currentCaller.user!.name == null
-        //         ? 'unKnown'
-        //         : currentCaller.user!.name!)
-        //     : (currentCaller.user!.name == null
-        //         ? currentCaller.user!.contactUser!.mobilePhone!
-        //         : currentCaller.user!.contactUser!.name!);
-        // debugPrint(
-        //     "GetIt.I<CallsBloc>().${GetIt.I<CallsBloc>().state.createVideoCallStatus}");
-
-        // ata['channel_id'].toString()
-      }
-      else if (event.data['type'] == 'RefuseCallEvent') {
-        GetIt.I<CallsBloc>().add(ResponseRejectVideoCallEvent());
-      }
-
-      else if (event.data['type'] == 'AnswerCallEvent') {
+            convert.jsonDecode(event.data['data'].toString());
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => AgoraInAppWebView(
+              messageId: data["message"]["id"].toString(),
+              action: 'receive',
+              type: 'video',
+              channelId: data["message"]["channel_id"].toString(),
+              auth_token: prefsRepository.chatToken!,
+              uId: prefsRepository.myChatId!.toString()),
+        ));
+      } else if (event.data['type'] == 'AnswerCallEvent') {
+        print(
+            'GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false))');
+        callsBloc.add(UserInteractWithCall(rejectIt: false));
         // debugPrint(event.data.toString());
         // debugPrint(
         //     'AnswerCallEventChannelNmae${GetIt.I<CallsBloc>().state.channelName!}');
@@ -270,90 +262,115 @@ class _BasePageState extends State<BasePage> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
+      print('error $error');
     };
-    return BlocListener<HomeBloc, HomeState>(
-        listenWhen: (p, c) =>
-            p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
-            c.getStartingSettingsStatus == GetStartingSettingsStatus.success,
-        listener: (context, state) {
-          print('version gets successfully');
-          print('android: ${state.startingSetting?.androidMinVersion}');
-          print('ios: ${state.startingSetting?.iosMinVersion}');
-          if (applicationVersion < state.startingSetting!.androidMinVersion! ||
-              applicationVersion < state.startingSetting!.iosMinVersion!) {
-            HelperFunctions.showVersionDialog(context);
-          }
-        },
-        child: Scaffold(
-          backgroundColor: colorScheme.background,
-          bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-              buildWhen: (p, c) => p.showBars != c.showBars,
-              builder: (context, state) {
-                if (state.showBars == true) {
-                  return const AppBottomNavBar();
-                } else {
-                  return const SizedBox.shrink();
-                }
-              }),
-          body: BlocBuilder<ChatBloc, ChatState>(builder: (context, state) {
-            print(initialMessage);
-            print(state.chats.isNotEmpty);
-            if (initialMessage != null && state.chats.isNotEmpty) {
-              AppBloc appBloc = BlocProvider.of<AppBloc>(context);
-              appBloc.add(ChangeBasePage(2));
-              chatBloc.add(
-                  ReadAllMessagesEvent(initialMessage!.channelId!.toString()));
-              List<Chat> chats = [];
-              chats.addAll(state.pinnedChats);
-              chats.addAll(state.chats);
-              Chat chat = chats.firstWhere(
-                  (element) => element.id == initialMessage!.channelId);
-              initialMessage = null;
-              // int chatIndex = chats.indexWhere((element) => element.id == initialMessage!.channelId);
-              User? receiver = chat.channelMembers!
-                  .firstWhere((element) =>
-                      element.userId != GetIt.I<PrefsRepository>().myChatId)
-                  .user;
-              String receiverName, fullReceiverName;
-              if (receiver == null) {
-                receiverName = 'UK';
-                fullReceiverName = 'Unknown User';
-              } else {
-                receiverName = receiver.contactUser == null
-                    ? receiver.name == null
-                        ? 'UK'
-                        : HelperFunctions.getTheFirstTwoLettersOfName(
-                            receiver.name!)
-                    : receiver.contactUser!.name == null
-                        ? 'UK'
-                        : HelperFunctions.getTheFirstTwoLettersOfName(
-                            receiver.contactUser!.name!);
-                fullReceiverName = receiver.contactUser?.name ??
-                    receiver.name ??
-                    receiver.mobilePhone ??
-                    'Unknown User';
-              }
-              ChannelMember me = chat.channelMembers!.firstWhere((element) =>
-                  element.userId == GetIt.I<PrefsRepository>().myChatId);
-              User? sender = me.user;
-              String senderName = sender?.name == null
-                  ? 'UK'
-                  : HelperFunctions.getTheFirstTwoLettersOfName(sender!.name!);
-              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                context.go(GRouter
-                        .config.applicationRoutes.kSinglePageChatPagePath +
-                    '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}');
-              });
+    return BlocListener<ChatBloc, ChatState>(
+      listener: (context, chatState) {
+        pusherChatService.subscribeToAllPresenceChannels(chatState.chats);
+        pusherChatService
+            .subscribeToAllPresenceChannels(chatState.pinnedChats);
+      },
+      listenWhen: (p, c) =>
+          p.getChatsStatus != c.getChatsStatus &&
+          c.getChatsStatus == GetChatsStatus.success,
+      child: BlocListener<HomeBloc, HomeState>(
+          listenWhen: (p, c) =>
+              p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
+              c.getStartingSettingsStatus == GetStartingSettingsStatus.success,
+          listener: (context, state) {
+            print('version gets successfully');
+            print('android: ${state.startingSetting?.androidMinVersion}');
+            print('ios: ${state.startingSetting?.iosMinVersion}');
+            if (applicationVersion <
+                    state.startingSetting!.androidMinVersion! ||
+                applicationVersion < state.startingSetting!.iosMinVersion!) {
+              HelperFunctions.showVersionDialog(context);
             }
+          },
+          child: Scaffold(
+            backgroundColor: colorScheme.background,
+            bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
+                buildWhen: (p, c) => p.showBars != c.showBars,
+                builder: (context, state) {
+                  if (state.showBars == true) {
+                    return const AppBottomNavBar();
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                }),
+            body:
+                BlocBuilder<ChatBloc, ChatState>(builder: (context, chatState) {
+              print(initialMessage);
+              print(chatState.chats.isNotEmpty);
+              if (initialMessage != null && chatState.chats.isNotEmpty) {
+                AppBloc appBloc = BlocProvider.of<AppBloc>(context);
+                appBloc.add(ChangeBasePage(2));
+                chatBloc.add(ReadAllMessagesEvent(
+                    initialMessage!.channelId!.toString()));
+                List<Chat> chats = [];
+                chats.addAll(chatState.pinnedChats);
+                chats.addAll(chatState.chats);
+                Chat chat = chats.firstWhere(
+                    (element) => element.id == initialMessage!.channelId);
+                initialMessage = null;
+                // int chatIndex = chats.indexWhere((element) => element.id == initialMessage!.channelId);
+                User? receiver = chat.channelMembers!
+                    .firstWhere((element) =>
+                        element.userId != GetIt.I<PrefsRepository>().myChatId)
+                    .user;
+                String receiverName, fullReceiverName;
+                if (receiver == null) {
+                  receiverName = 'UK';
+                  fullReceiverName = 'Unknown User';
+                } else {
+                  receiverName = receiver.contactUser == null
+                      ? receiver.name == null
+                          ? 'UK'
+                          : HelperFunctions.getTheFirstTwoLettersOfName(
+                              receiver.name!)
+                      : receiver.contactUser!.name == null
+                          ? 'UK'
+                          : HelperFunctions.getTheFirstTwoLettersOfName(
+                              receiver.contactUser!.name!);
+                  fullReceiverName = receiver.contactUser?.name ??
+                      receiver.name ??
+                      receiver.mobilePhone ??
+                      'Unknown User';
+                }
+                ChannelMember me = chat.channelMembers!.firstWhere((element) =>
+                    element.userId == GetIt.I<PrefsRepository>().myChatId);
+                User? sender = me.user;
+                String senderName = sender?.name == null
+                    ? 'UK'
+                    : HelperFunctions.getTheFirstTwoLettersOfName(
+                        sender!.name!);
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                  context.go(GRouter
+                          .config.applicationRoutes.kSinglePageChatPagePath +
+                      '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}');
+                });
+              }
 
-            return BlocBuilder<AppBloc, AppState>(
-              buildWhen: (oldState, newState) =>
-                  oldState.currentIndex != newState.currentIndex,
-              builder: (_, state) {
-                return pages[state.currentIndex];
-              },
-            );
-          }),
-        ));
+              return BlocBuilder<AppBloc, AppState>(
+                buildWhen: (oldState, newState) =>
+                    oldState.currentIndex != newState.currentIndex,
+                builder: (_, state) {
+                  if (state.currentIndex == 2) {
+                    pusherChatService
+                        .subscribeToAllPresenceChannels(chatState.chats);
+                    pusherChatService
+                        .subscribeToAllPresenceChannels(chatState.pinnedChats);
+                  } else {
+                    pusherChatService
+                        .deleteAllPresenceChannels(chatState.chats);
+                    pusherChatService
+                        .deleteAllPresenceChannels(chatState.pinnedChats);
+                  }
+                  return pages[state.currentIndex];
+                },
+              );
+            }),
+          )),
+    );
   }
 }

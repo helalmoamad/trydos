@@ -40,14 +40,12 @@ class ChatInputField extends StatefulWidget {
     required this.onSendFile,
     required this.channelId,
     required this.senderName,
-    required this.channelPusherName,
     required this.senderUserImage,
   }) : super(key: key);
   final void Function(String message) onSendMessage;
   final void Function(File file, String type) onSendFile;
   final String channelId;
   final String? senderUserImage;
-  final String channelPusherName;
   final String senderName;
 
   @override
@@ -562,7 +560,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         recordingNotifier.value = false;
                                         pusherChatService.sendActivityEvent(
                                             widget.channelId,
-                                            widget.channelPusherName,
                                             null);
                                         final String path =
                                             (await recorder.stopRecorder())!;
@@ -585,7 +582,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         final audioFile = File(path!);
                                         pusherChatService.sendActivityEvent(
                                             widget.channelId,
-                                            widget.channelPusherName,
                                             null);
                                         widget.onSendFile(audioFile, 'voice');
                                         recordingNotifier.value = false;
@@ -611,14 +607,12 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       onTap: () async {
                                         pusherChatService.sendActivityEvent(
                                             widget.channelId,
-                                            widget.channelPusherName,
                                             'Sending file...');
                                         File? file = await HelperFunctions
                                             .pickDocumentFile();
                                         if (file != null) {
                                           pusherChatService.sendActivityEvent(
                                               widget.channelId,
-                                              widget.channelPusherName,
                                               null);
                                           widget.onSendFile(file, 'file');
                                         }
@@ -641,7 +635,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             try {
                                               pusherChatService.sendActivityEvent(
                                                   widget.channelId,
-                                                  widget.channelPusherName,
                                                    'Typing...');
                                             } catch (e) {
                                               print(e);
@@ -650,7 +643,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 const Duration(seconds: 1), () {
                                               pusherChatService.sendActivityEvent(
                                                   widget.channelId,
-                                                  widget.channelPusherName,
                                                   null);
                                             });
                                           },
@@ -669,7 +661,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         onTap: () async {
                                           pusherChatService.sendActivityEvent(
                                               widget.channelId,
-                                              widget.channelPusherName,
                                               'Sending file...');
                                           showDialog(
                                               context: context,
@@ -691,7 +682,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                         }
                                                         pusherChatService.sendActivityEvent(
                                                             widget.channelId,
-                                                            widget.channelPusherName,
                                                             null
                                                         );
                                                       }
@@ -709,7 +699,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                     }
                                                     pusherChatService.sendActivityEvent(
                                                         widget.channelId,
-                                                        widget.channelPusherName,
                                                         null
                                                     );
                                                   }
@@ -737,7 +726,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           recordingNotifier.value = true;
                                           pusherChatService.sendActivityEvent(
                                               widget.channelId,
-                                              widget.channelPusherName,
                                               'Recording...');
                                           await recorder.startRecorder(
                                             toFile:
