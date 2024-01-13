@@ -8,9 +8,11 @@ enum OpenRemoteVideoAndAudioStatus { init, loading, success, failure }
 
 enum RejectVideoCallStatus { init, loading, success, failure }
 
+enum StopRingToneReason {init , refuse , accept}
+
 @immutable
 class CallsState {
-  final String? message_id;
+  final String? messageId;
   final int? sessionId;
   final RejectVideoCallStatus rejectVideoCallStatus;
   final String? agoraToken;
@@ -19,23 +21,25 @@ class CallsState {
   final OpenRemoteVideoAndAudioStatus openRemoteVideoAndAudioStatus;
   final CreateVideoCallStatus createVideoCallStatus;
   final OpenLocalVideoAndAudioStatus openLocalVideoAndAudioStatus;
-
+  final StopRingToneReason stopRingToneReason;
   CallsState(
       {
-        this.message_id,
+        this.messageId,
         this.sessionId=23,
       this.rejectVideoCallStatus = RejectVideoCallStatus.init,
       this.agoraToken = null,
       this.channelName = null,
+      this.stopRingToneReason = StopRingToneReason.init,
       this.channelMembers = const [],
       this.openRemoteVideoAndAudioStatus = OpenRemoteVideoAndAudioStatus.init,
       this.openLocalVideoAndAudioStatus = OpenLocalVideoAndAudioStatus.init,
       this.createVideoCallStatus = CreateVideoCallStatus.init});
 
   CallsState copyWith(
-      {String? message_id,
+      {String? messageId,
         int? sessionId,
       RejectVideoCallStatus? rejectVideoCallStatus,
+      StopRingToneReason? stopRingToneReason,
       String? agoraToken,
       String? channelName,
       List<int>? channelMembers,
@@ -43,12 +47,13 @@ class CallsState {
       OpenRemoteVideoAndAudioStatus? openRemoteVideoAndAudioStatus,
       CreateVideoCallStatus? createVideoCallStatus}) {
     return CallsState(
-      message_id: message_id,
+        messageId: messageId,
         sessionId: sessionId ?? this.sessionId,
         rejectVideoCallStatus:
             rejectVideoCallStatus ?? this.rejectVideoCallStatus,
         agoraToken: agoraToken ?? this.agoraToken,
         channelName: channelName ?? this.channelName,
+        stopRingToneReason: stopRingToneReason ?? this.stopRingToneReason,
         channelMembers: channelMembers ?? this.channelMembers,
         openRemoteVideoAndAudioStatus:
             openRemoteVideoAndAudioStatus ?? this.openRemoteVideoAndAudioStatus,

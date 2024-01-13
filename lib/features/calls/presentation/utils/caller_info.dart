@@ -9,7 +9,10 @@ List<Map<String, dynamic>> callerInfo({required String channelId}) {
   Chat currentChat = GetIt.I<ChatBloc>()
       .state
       .chats
-      .firstWhere((element) => element.id == channelId);
+      .firstWhere((element) => element.id == channelId , orElse: ()=> GetIt.I<ChatBloc>()
+      .state
+      .pinnedChats
+      .firstWhere((element) => element.id == channelId));
 
   ChannelMember currentReceiver = currentChat
       .channelMembers!
@@ -27,7 +30,10 @@ List<Map<String, dynamic>> callerInfo({required String channelId}) {
   ChannelMember currentCaller = GetIt.I<ChatBloc>()
       .state
       .chats
-      .firstWhere((element) => element.id == channelId)
+      .firstWhere((element) => element.id == channelId , orElse: ()=> GetIt.I<ChatBloc>()
+      .state
+      .pinnedChats
+      .firstWhere((element) => element.id == channelId))
       .channelMembers!
       .firstWhere(
           (element) => element.user!.id == GetIt.I<PrefsRepository>().myChatId);

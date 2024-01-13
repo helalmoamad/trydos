@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart' as productListingModel;
 import 'dart:ui' as ui;
 
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_3d_slider.dart';
@@ -9,9 +8,10 @@ import 'package:tuple/tuple.dart';
 
 
 class ProductItem extends StatefulWidget {
-  const ProductItem({super.key, required this.setThisEnabled, required this.slidingModeItem, required this.itemIndex});
+  const ProductItem({super.key, required this.setThisEnabled, required this.slidingModeItem, required this.itemIndex, required this.productItem});
   final void Function(int,int) setThisEnabled;
   final Tuple2<int,int> slidingModeItem;
+  final productListingModel.Product productItem;
   final int itemIndex;
   @override
   State<ProductItem> createState() => _ProductItemState();
@@ -19,28 +19,6 @@ class ProductItem extends StatefulWidget {
 
 class _ProductItemState extends State<ProductItem> {
   final PageController pageController = PageController();
-  List<Color> colors = [
-    Colors.green,
-    Colors.yellow,
-    Colors.red,
-    Colors.purple,
-    Colors.pink,
-    Colors.black,
-    Colors.grey,
-    Colors.blue,
-    Colors.brown,
-    Colors.green,
-    Colors.yellow,
-    Colors.red,
-    Colors.purple,
-    Colors.pink,
-    Colors.black,
-    Colors.grey,
-    Colors.blue,
-    Colors.brown,
-    // Colors.white,
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -93,29 +71,7 @@ class _ProductItemState extends State<ProductItem> {
               ),
             ),
           ),
-           ProductListing3DSlider(slidingModeItem : widget.slidingModeItem , itemIndex : widget.itemIndex , setThisEnabled: widget.setThisEnabled),
+           ProductListing3DSlider(productItem :  widget.productItem , slidingModeItem : widget.slidingModeItem , itemIndex : widget.itemIndex , setThisEnabled: widget.setThisEnabled),
         ]);
   }
 }
-
-// class MyStackItem extends StatelessWidget {
-//   const MyStackItem({super.key, required this.color, required this.x, required this.scale});
-//   final Color color;
-//   final double x;
-//   final double scale;
-//   @override
-//   Widget build(BuildContext context) {
-//     print('x: $x');
-//     return Transform.translate(
-//       offset: Offset(x, 0),
-//       child: Transform.scale(
-//         scale: scale,
-//         child: Container(
-//           width: 170,
-//           height: 200,
-//           color: color,
-//         ),
-//       ),
-//     );
-//   }
-// }

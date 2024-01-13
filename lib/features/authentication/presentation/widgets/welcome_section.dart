@@ -75,7 +75,7 @@ class WelcomeSection extends StatelessWidget {
               await FirebaseAnalytics.instance.logEvent(
                   name: 'button_clicked',
                   parameters:{
-                    'user_id': prefsRepository.myMarketId.toString(),
+                    'userID': prefsRepository.myMarketId.toString(),
                     'user_name':prefsRepository.myMarketName.toString(),
                     'clicked_button_name': 'i have already account',
                   });
@@ -136,7 +136,7 @@ class WelcomeSection extends StatelessWidget {
               await FirebaseAnalytics.instance.logEvent(
                   name: 'button_clicked',
                   parameters:{
-                    'user_id': prefsRepository.myMarketId.toString(),
+                    'userID': prefsRepository.myMarketId.toString(),
                     'user_name':prefsRepository.myMarketName.toString(),
                     'clicked_button_name': 'create new account',
                   });
@@ -189,7 +189,7 @@ class WelcomeSection extends StatelessWidget {
           InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: ()async{
+            onTap: () async{
               if(prefsRepository.isVerifiedPhone != false) {
                 String? deviceId = await HelperFunctions
                     .getDeviceId();
@@ -199,7 +199,7 @@ class WelcomeSection extends StatelessWidget {
               await FirebaseAnalytics.instance.logEvent(
                   name: 'button_clicked',
                   parameters:{
-                    'user_id': prefsRepository.myMarketId.toString(),
+                    'userID': prefsRepository.myMarketId.toString(),
                     'user_name':prefsRepository.myMarketName.toString(),
                     'clicked_button_name': 'Later, Take Look',
                   });

@@ -24,13 +24,16 @@ import 'agora_webview.dart';
 
 class AnswerCall extends StatefulWidget {
   String channelName;
+  String messageId;
   String callerName;
   String? callerPhoto;
+
 
   AnswerCall(
       {required this.callerPhoto,
       required this.callerName,
       required this.channelName,
+      required this.messageId,
       super.key});
 
   @override
@@ -147,7 +150,8 @@ class _AnswerCallState extends State<AnswerCall> {
                               .request()
                               .then((value) {
                             GetIt.I<CallsBloc>().add(AnswerVideoCallEvent(
-                                chatId: widget.channelName));
+                              chatId: widget.channelName,
+                                messageId: widget.messageId));
                           });
                         },
                         child: Text(
@@ -158,7 +162,7 @@ class _AnswerCallState extends State<AnswerCall> {
                   TextButton(
                       onPressed: () async {
                         GetIt.I<CallsBloc>().add(
-                            RejectVideoCallEvent(chatId: widget.channelName));
+                            RejectVideoCallEvent(messageId: widget.messageId));
                         Navigator.of(context).pop();
                       },
                       child: Container(

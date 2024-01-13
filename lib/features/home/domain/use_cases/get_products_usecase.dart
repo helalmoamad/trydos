@@ -38,5 +38,5 @@ class GetProductsWithoutFiltersParams{
     "search_text" : searchText,
     "offset" : offset,
     "limit" : limit,
-  };
+  }..removeWhere((key, value) => value==null);
 }

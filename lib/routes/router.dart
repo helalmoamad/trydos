@@ -5,6 +5,7 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/authentication/presentation/pages/register_completed.dart';
@@ -34,6 +35,7 @@ class GRouter {
   static final GoRouter _router = GoRouter(
     observers: [
       BotToastNavigatorObserver(),
+      SentryNavigatorObserver(),
       FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)
     ],
     // initialLocation: _config.applicationRoutes.kWebView,
@@ -77,6 +79,7 @@ class GRouter {
             return _builderPage(
               child: AnswerCall(
                 channelName: state.uri.queryParameters['channelName']!,
+                messageId: state.uri.queryParameters['messageId']!,
                 callerName: state.uri.queryParameters['callerName']!,
                 callerPhoto: state.uri.queryParameters['callerPhoto']!,
               ),

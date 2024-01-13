@@ -11,8 +11,8 @@ class AnswerCallUseCase extends UseCase<bool, String> {
   AnswerCallUseCase(this.repository);
 
   @override
-  Future<Either<Failure, bool>> call(String ChatId) {
-    return repository.answerCall(ChatId);
+  Future<Either<Failure, bool>> call(String messageId) {
+    return repository.answerCall(messageId);
   }
 
 

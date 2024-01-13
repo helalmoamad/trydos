@@ -11,8 +11,8 @@ class RejectCallUseCase extends UseCase<bool, String> {
   RejectCallUseCase(this.repository);
 
   @override
-  Future<Either<Failure, bool>> call(String ChatId) {
-    return repository.rejectCall(ChatId);
+  Future<Either<Failure, bool>> call(String messageId) {
+    return repository.rejectCall(messageId);
   }
 }
 
