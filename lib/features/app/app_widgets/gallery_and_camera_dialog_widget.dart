@@ -13,7 +13,7 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
       required this.onChooseFileFromGalleryAction,
       required this.onChooseFileFromCameraAction});
 
-  final void Function(AssetEntity? assetEntity) onChooseFileFromGalleryAction;
+ final void Function(AssetEntity? assetEntity) onChooseFileFromGalleryAction;
   final void Function(File? file) onChooseFileFromCameraAction;
 
   @override
@@ -42,13 +42,13 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
             ),
             TextButton(
               onPressed: () async {
-                AssetEntity? assetEntity =
-                    await HelperFunctions.getAssetFromCamera(context);
-                if (assetEntity != null) {
-                  File? file = (await assetEntity.originFile);
-                  onChooseFileFromCameraAction.call(file);
-                }
-                Navigator.of(context).pop();
+                // AssetEntity? assetEntity =
+                //     await HelperFunctions.getAssetFromCamera(context);
+                // if (assetEntity != null) {
+                //   File? file = (await assetEntity.originFile);
+                //   onChooseFileFromCameraAction.call(file);
+                // }
+                // Navigator.of(context).pop();
               },
               child: Text(LocaleKeys.gallery.tr()),
             ),

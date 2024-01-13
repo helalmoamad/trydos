@@ -142,7 +142,8 @@ class _StoriesListState extends State<StoriesList> {
                                                                   //
                                                                   //   CloudinaryFile.fromFile(
                                                                 }
-                                                              }, onChooseFileFromGalleryAction:
+                                                              },
+                                                                  onChooseFileFromGalleryAction:
                                                                       (AssetEntity?
                                                                           assetEntity) async {
                                                                 if (assetEntity !=
@@ -154,7 +155,8 @@ class _StoriesListState extends State<StoriesList> {
                                                                       UploadStoryCloudinaryEvent(
                                                                           file));
                                                                 }
-                                                              });
+                                                              }
+                                                              );
                                                             });
                                                       }
                                                     },

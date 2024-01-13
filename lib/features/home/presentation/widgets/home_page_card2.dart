@@ -34,6 +34,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
     autoScrollController = AutoScrollController();
     super.initState();
   }
+
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -251,6 +253,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
               return GestureDetector(
                 onPanDown: (details) {
                   HapticFeedback.lightImpact();
+                },
+                onLongPressStart: (details) {
+                  HapticFeedback.vibrate();
                   resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
                 },
                 onPanCancel: (){
@@ -265,6 +270,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                       (details.globalPosition.dx - 40) ~/ 35.w;
                   if(prev != resizeItems.value){
                     HapticFeedback.lightImpact();
+                    HapticFeedback.vibrate();
                   }
                 },
                 child: Column(

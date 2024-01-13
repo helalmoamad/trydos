@@ -29,7 +29,7 @@ class VerificationMethods extends StatelessWidget {
       textDirection: TextDirection.ltr,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Padding(
             padding: HWEdgeInsets.symmetric(horizontal: 40.0),

@@ -685,7 +685,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                             null
                                                         );
                                                       }
-                                                    }, onChooseFileFromCameraAction:
+                                                    },
+                                                    onChooseFileFromCameraAction:
                                                     (File? file) {
                                                   if (file != null) {
                                                     String mimeStr = lookupMimeType(file.absolute.path) ??'';

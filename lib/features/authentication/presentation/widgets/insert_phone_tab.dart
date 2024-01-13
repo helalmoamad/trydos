@@ -39,7 +39,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
 
   @override
   void initState() {
-    widget.focusNode.requestFocus();
+    //widget.focusNode.requestFocus();
     super.initState();
   }
 
@@ -56,8 +56,8 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
 
   @override
   Widget build(BuildContext context) {
-    print('yes rebuilt');
     FlutterError.onError = (FlutterErrorDetails error) {
+      print(error);
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
