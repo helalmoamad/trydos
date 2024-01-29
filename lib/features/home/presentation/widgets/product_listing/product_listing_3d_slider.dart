@@ -702,26 +702,33 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     height: 10,
                                     child: Transform.translate(
                                       offset: Offset(0, 1),
-                                      child: ListView.separated(
-                                          itemCount: widget.productItem
-                                              .categories?.length ?? 0,
-                                          separatorBuilder: (ctx , index){
-                                            return 5.horizontalSpace;
-                                          },
-                                          shrinkWrap: true,
-                                          scrollDirection: Axis.horizontal,
-                                          itemBuilder: (ctx , index){
-                                        return MyCachedNetworkImage(imageUrl: widget.productItem
-                                            .categories![index].icon.toString(),
-                                            logoTextWidth: 5,
-                                            logoTextHeight: 5,
-                                            circleDimensions: 5,
-                                            width: 10,
-                                            imageFit: BoxFit.cover,
-                                            height: 10);
-                                      }),
+                                      child: MyCachedNetworkImage(imageUrl: widget.productItem
+                                                  .category!.icon.toString(),
+                                                  logoTextWidth: 5,
+                                                  logoTextHeight: 5,
+                                                  circleDimensions: 5,
+                                                  width: 10,
+                                                  imageFit: BoxFit.cover,
+                                                  height: 10)
                                     ),
                                   ),
+                                  // ListView.separated(
+                                  //     itemCount: widget.productItem.categories?.length ?? 0,
+                                  //     separatorBuilder: (ctx , index){
+                                  //       return 5.horizontalSpace;
+                                  //     },
+                                  //     shrinkWrap: true,
+                                  //     scrollDirection: Axis.horizontal,
+                                  //     itemBuilder: (ctx , index){
+                                  //       return MyCachedNetworkImage(imageUrl: widget.productItem
+                                  //           .categories![index].icon.toString(),
+                                  //           logoTextWidth: 5,
+                                  //           logoTextHeight: 5,
+                                  //           circleDimensions: 5,
+                                  //           width: 10,
+                                  //           imageFit: BoxFit.cover,
+                                  //           height: 10);
+                                  //     }),
                                   const SizedBox(
                                     width: 3,
                                   ),

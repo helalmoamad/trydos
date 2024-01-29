@@ -6,6 +6,7 @@ import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../bloc/calls_bloc.dart';
 import '../pages/in_app_view.dart';
 
 Future<void> checkAndNavigationCallingPage(BuildContext context , {bool fromTerminated = false ,  void Function()? whereToNavigationAfterCheck}) async {
@@ -26,6 +27,9 @@ Future<void> checkAndNavigationCallingPage(BuildContext context , {bool fromTerm
   if (currentCall != null) {
     print(currentCall['extra']['message_id']);
     print(currentCall['extra']['channel_id']);
+    GetIt.I<CallsBloc>().add(AnswerVideoCallEvent(
+        chatId: currentCall['extra']['channel_id'],
+        messageId: currentCall['extra']['message_id']));
     Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
         AgoraInAppWebView(messageId: currentCall['extra']['message_id'],
             action: 'sent',

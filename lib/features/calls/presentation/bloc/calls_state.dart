@@ -1,6 +1,6 @@
 part of 'calls_bloc.dart';
 
-enum CreateVideoCallStatus { init, loading, success, failure, cancel ,endCall,startCall}
+enum MakeCallStatus { init, loading, success, failure, cancel ,endCall,startCall}
 
 enum OpenLocalVideoAndAudioStatus { init, loading, success, failure }
 
@@ -19,9 +19,10 @@ class CallsState {
   final String? channelName;
   final List<int> channelMembers;
   final OpenRemoteVideoAndAudioStatus openRemoteVideoAndAudioStatus;
-  final CreateVideoCallStatus createVideoCallStatus;
+  final MakeCallStatus makeCallStatus;
   final OpenLocalVideoAndAudioStatus openLocalVideoAndAudioStatus;
   final StopRingToneReason stopRingToneReason;
+  final bool isVideoCall;
   CallsState(
       {
         this.messageId,
@@ -29,11 +30,12 @@ class CallsState {
       this.rejectVideoCallStatus = RejectVideoCallStatus.init,
       this.agoraToken = null,
       this.channelName = null,
+        this.isVideoCall = false,
       this.stopRingToneReason = StopRingToneReason.init,
       this.channelMembers = const [],
       this.openRemoteVideoAndAudioStatus = OpenRemoteVideoAndAudioStatus.init,
       this.openLocalVideoAndAudioStatus = OpenLocalVideoAndAudioStatus.init,
-      this.createVideoCallStatus = CreateVideoCallStatus.init});
+      this.makeCallStatus = MakeCallStatus.init});
 
   CallsState copyWith(
       {String? messageId,
@@ -43,12 +45,14 @@ class CallsState {
       String? agoraToken,
       String? channelName,
       List<int>? channelMembers,
+        bool? isVideoCall,
       OpenLocalVideoAndAudioStatus? openVideoAndAudioStatus,
       OpenRemoteVideoAndAudioStatus? openRemoteVideoAndAudioStatus,
-      CreateVideoCallStatus? createVideoCallStatus}) {
+        MakeCallStatus? makeCallStatus}) {
     return CallsState(
         messageId: messageId,
         sessionId: sessionId ?? this.sessionId,
+        isVideoCall: isVideoCall ?? this.isVideoCall,
         rejectVideoCallStatus:
             rejectVideoCallStatus ?? this.rejectVideoCallStatus,
         agoraToken: agoraToken ?? this.agoraToken,
@@ -59,8 +63,8 @@ class CallsState {
             openRemoteVideoAndAudioStatus ?? this.openRemoteVideoAndAudioStatus,
         openLocalVideoAndAudioStatus:
             openVideoAndAudioStatus ?? this.openLocalVideoAndAudioStatus,
-        createVideoCallStatus:
-            createVideoCallStatus ?? this.createVideoCallStatus);
+        makeCallStatus:
+        makeCallStatus ?? this.makeCallStatus);
   }
 }
 

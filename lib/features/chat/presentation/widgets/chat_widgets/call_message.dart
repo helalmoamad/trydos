@@ -7,10 +7,13 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 
-class MissedCall extends StatelessWidget {
-  const MissedCall({Key? key , required this.message, required this.isFirstMessage}) : super(key: key);
+import '../../../../../common/helper/helper_functions.dart';
+
+class CallMessage extends StatelessWidget {
+  const CallMessage({Key? key , required this.message, required this.isVideo, required this.time}) : super(key: key);
   final String message;
-  final bool isFirstMessage;
+  final bool isVideo;
+  final DateTime time;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -45,7 +48,12 @@ class MissedCall extends StatelessWidget {
                         SvgPicture.asset(AppAssets.missedCallInChatSvg , width: 20.w , height: 20,),
                         20.horizontalSpace,
                         Text(
-                          message,
+                          '$message ${!time.isUtc
+                              ? HelperFunctions.getDateInFormat(
+                               time)
+                              : HelperFunctions
+                              .getZonedDateInFormat(
+                             time)}',
                           style: context.textTheme.caption?.rr.copyWith(
                               color: const Color(0xff404040),
                               height: 1.66
@@ -56,7 +64,7 @@ class MissedCall extends StatelessWidget {
                   ),
                 ),
               ),
-              isFirstMessage ? Transform.translate(
+               Transform.translate(
                 offset: Offset( -12.w,0),
                 child: Stack(
                   alignment: Alignment.center,
@@ -89,7 +97,7 @@ class MissedCall extends StatelessWidget {
                     )
                   ],
                 ),
-              ):const SizedBox.shrink()
+              )
             ],
           ),
         ],

@@ -82,6 +82,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   void dispose() {
     Vibration.cancel();
     timer?.cancel();
+    if(_audioPlayer.state == PlayerState.playing) {
+      _audioPlayer.dispose();
+    }
     super.dispose();
   }
 
@@ -97,9 +100,11 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     };
     return BlocListener<CallsBloc, CallsState>(
       listener: (context, state) {
-        print('xxxxxxxxxx');
+        print('xxxxxxxxxx ${state.stopRingToneReason}');
         timer?.cancel();
-        _audioPlayer.dispose();
+        if(_audioPlayer.state == PlayerState.playing) {
+          _audioPlayer.dispose();
+        }
       },
       listenWhen: (p, c) => p.stopRingToneReason != c.stopRingToneReason,
       child: WillPopScope(
@@ -112,13 +117,14 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 //   // controller.dispose();
                 // },
                 onUpdateVisitedHistory: (controller, url, isReload) {
+                  log('ring? ${url?.queryParameters.containsKey('ring')}');
                   if (_audioPlayer.state == PlayerState.playing &&
                       widget.isReceivingCall &&
                       !(url?.queryParameters.containsKey('ring') ?? false)) {
                     timer?.cancel();
                     _audioPlayer.dispose();
                   }
-                  if (url.toString().contains('callمnProg')) {
+                  if (url.toString().contains('calllnProg')) {
                     Timer.periodic(Duration(seconds: 7), (timer) {
                       controller.stopLoading();
                       controller.dispose();
@@ -152,15 +158,13 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 initialUrlRequest: URLRequest(url: WebUri(source.toString())),
                 onPermissionRequest: (controller, request) async {
                   final resources = <PermissionResourceType>[];
-                  if (request.resources
-                      .contains(PermissionResourceType.CAMERA)) {
+                  if (widget.type == 'video' && request.resources.contains(PermissionResourceType.CAMERA)) {
                     final cameraStatus = await Permission.camera.request();
                     if (!cameraStatus.isDenied) {
                       resources.add(PermissionResourceType.CAMERA);
                     }
                   }
-                  if (request.resources
-                      .contains(PermissionResourceType.MICROPHONE)) {
+                  if (request.resources.contains(PermissionResourceType.MICROPHONE)) {
                     final microphoneStatus =
                         await Permission.microphone.request();
                     if (!microphoneStatus.isDenied) {
@@ -168,14 +172,11 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     }
                   }
                   // only for iOS and macOS
-                  if (request.resources
-                      .contains(PermissionResourceType.CAMERA_AND_MICROPHONE)) {
+                  if (widget.type == 'video' && request.resources.contains(PermissionResourceType.CAMERA_AND_MICROPHONE)) {
                     final cameraStatus = await Permission.camera.request();
-                    final microphoneStatus =
-                        await Permission.microphone.request();
+                    final microphoneStatus = await Permission.microphone.request();
                     if (!cameraStatus.isDenied && !microphoneStatus.isDenied) {
-                      resources
-                          .add(PermissionResourceType.CAMERA_AND_MICROPHONE);
+                      resources.add(PermissionResourceType.CAMERA_AND_MICROPHONE);
                     }
                   }
 
@@ -197,15 +198,28 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                   builder: (context, progress, child) {
                     if (progress < 100)
                       return Center(child: CircularProgressIndicator());
-                    print('reacheddddd');
                     if (timer == null && !widget.isReceivingCall) {
-                      timer = Timer.periodic(Duration(seconds: 14), (timer) {
-                        playWaitingCall();
+                      print('startWaitingCall');
+                        timer = Timer.periodic(Duration(seconds: 14), (timer) {
+                          playWaitingCall();
+                        });
+                        Future.delayed(Duration(seconds: 7), (){
+                          timer?.cancel();
+                          if(_audioPlayer.state == PlayerState.playing){
+                            _audioPlayer.dispose();
+                          }
+                        });
+                    } else if (timer == null && widget.isReceivingCall) {
+                      print('startIncomingCall');
+                        startVibration();
+                        timer = Timer.periodic(Duration(seconds: 2), (timer) {
+                          playIncomingCall();
                       });
-                    } else if (widget.isReceivingCall) {
-                      startVibration();
-                      timer = Timer.periodic(Duration(seconds: 2), (timer) {
-                        playIncomingCall();
+                      Future.delayed(Duration(seconds: 7), (){
+                        timer?.cancel();
+                        if(_audioPlayer.state == PlayerState.playing){
+                          _audioPlayer.dispose();
+                        }
                       });
                     }
                     return const SizedBox.shrink();

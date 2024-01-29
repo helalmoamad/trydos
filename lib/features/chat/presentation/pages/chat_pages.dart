@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/common/constant/constant.dart';
@@ -22,6 +23,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/pages/calls_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/story_page_content.dart';
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
 import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
@@ -51,11 +53,11 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   ];
 
   void saveUserContacts() async {
-    await
-    [
-      Permission.accessMediaLocation,Permission.mediaLibrary,
-      Permission.bluetooth,Permission.camera, Permission.microphone]
-        .request();
+    // await
+    // [
+    //   Permission.accessMediaLocation,Permission.mediaLibrary,
+    //   Permission.bluetooth,Permission.camera, Permission.microphone]
+    //     .request();
     List<Map<String, dynamic>> contacts = await HelperFunctions.getContactsFromDevice();
     //todo debug
 //    Fluttertoast.showToast(msg: contacts.toString(),toastLength: Toast.LENGTH_LONG);
@@ -76,6 +78,12 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (details) {
+      print("asfsd${details.toString()}");
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: details.toString());
+    };
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: (){

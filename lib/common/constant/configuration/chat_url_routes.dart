@@ -74,9 +74,8 @@ abstract class ChatEndPoints {
   ///! ----< video calls >----
   ///
   /// }/api/v1/messages/video_call
-  static String videoCall(String ChatId) {
-    return 'video_call'.messagesScope();
-  }
+  static String videoCallEP = 'video_call'.messagesScope();
+  static String voiceCallEP = 'voice_call'.messagesScope();
 
   static String answer_call(String messageId) {
     return 'answer_call/$messageId'.messagesScope();

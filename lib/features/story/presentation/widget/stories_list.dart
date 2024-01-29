@@ -23,6 +23,7 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
 import '../../../app/trydos_shimmer_loading.dart';
 import '../../data/models/get_stories_model.dart';
+import '../bloc/story_state.dart';
 
 class StoriesList extends StatefulWidget {
   StoriesList({super.key});

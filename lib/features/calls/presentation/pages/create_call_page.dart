@@ -40,7 +40,7 @@ class CreateCallPage extends StatefulWidget {
 class _CreateCallPageState extends ThemeState<CreateCallPage> {
   @override
   void initState() {
-    if (GetIt.I<CallsBloc>().state.createVideoCallStatus == CreateVideoCallStatus.endCall) Navigator.of(context).pop();
+    if (GetIt.I<CallsBloc>().state.makeCallStatus == MakeCallStatus.endCall) Navigator.of(context).pop();
 
     // TODO: implement initState
     super.initState();
@@ -55,7 +55,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
       body: SafeArea(
         child: BlocConsumer<CallsBloc, CallsState>(
           listener: (context, state) {
-            if (state.createVideoCallStatus == CreateVideoCallStatus.cancel) {
+            if (state.makeCallStatus == MakeCallStatus.cancel) {
               Future.delayed(
                 Duration(seconds: 1),
                 () {
@@ -120,8 +120,8 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                     .copyWith(color: const Color(0xffD3D3D3)),
                               ),
                               80.verticalSpace,
-                              state.createVideoCallStatus ==
-                                      CreateVideoCallStatus.cancel
+                              state.makeCallStatus ==
+                                  MakeCallStatus.cancel
                                   ? CallStatusWidget(
                                       text: 'Did Not Answer',
                                       iconUrl: 'assets/svg/end_call.svg',

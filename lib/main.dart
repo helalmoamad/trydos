@@ -11,11 +11,14 @@ import 'package:flutter_callkit_incoming/entities/ios_params.dart';
 import 'package:flutter_callkit_incoming/entities/notification_params.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:trydos/core/di/di_container.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/notification_process.dart';
 import 'package:trydos/trydos_application.dart';
@@ -23,17 +26,20 @@ import 'package:uuid/uuid.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
 
+import 'features/chat/presentation/manager/chat_event.dart';
 import 'features/chat/presentation/utils/pusher_chat.dart';
+import 'features/chat/presentation/utils/pusher_chat_official_package.dart';
 
-showCallKitIncoming(Map<String, dynamic> data, String currentUuid) async {
+showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
+    {required bool isVideo}) async {
   CallKitParams callKitParams = CallKitParams(
     id: currentUuid,
-    nameCaller: data['payload']['callerName'] ?? 'Un Known',
+    nameCaller: data['user']['name'] ?? 'Un Known',
     appName: 'Trydos',
     avatar:
         'https://trydos.s3.ap-south-1.amazonaws.com/images/5TPxSXKGAv3kLkbKIz5noTTmaZBwXNtSpJMoh7lE.jpg',
     handle: data['payload']['mobilePhone'],
-    type: 0,
+    type: isVideo ? 1 : 0,
     textAccept: 'Accept',
     textDecline: 'Decline',
     missedCallNotification: NotificationParams(
@@ -85,14 +91,23 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     isDependencyInitialized = true;
   }
   try {
-    if (message.data['type'] == 'VideoCallEvent') {
+    if (message.data['type'] == 'VideoCallEvent' ||
+        message.data['type'] == 'VoiceCallEvent') {
       String currentUuid = const Uuid().v4();
       Map<String, dynamic> data =
           convert.jsonDecode(message.data['data'].toString());
-      showCallKitIncoming(data, currentUuid);
+      showCallKitIncoming(data, currentUuid,
+          isVideo: message.data['type'] == 'VideoCallEvent');
       FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
         switch (event!.event) {
           case Event.actionCallDecline:
+            {
+              HttpOverrides.global = MyHttpOverrides();
+              GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
+                  messageId: data["message"]["id"].toString()));
+            }
+            break;
+          case Event.actionCallTimeout:
             {
               HttpOverrides.global = MyHttpOverrides();
               GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
@@ -105,6 +120,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: true));
     } else if (message.data['type'] == 'AnswerCallEvent') {
       GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false));
+    } else if (message.data['type'] == 'ChannelReceivedEvent') {
+      Map<String, dynamic> data =
+          convert.jsonDecode(message.data['data'].toString());
+      GetIt.I<ChatBloc>().add(ReceiveMessageFromPusherEvent(
+          data['channel_id'].toString(),
+          data['auth_user_id'],
+          data['last_message_id']));
     } else {
       LocalNotificationService().showNotificationWithPayload(message: message);
     }
@@ -120,6 +142,7 @@ bool notificationClicked = false;
 Message? initialMessage;
 //todo this list will store on it the api's that we try to load it and returned a failure for the first time so we check if it's not  in this list we try to reload it
 List<String> isFailedTheFirstTime = [];
+List<String> apisMustNotToRequest = [];
 int applicationVersion = 1;
 
 void main() async {
@@ -130,8 +153,10 @@ void main() async {
     NotificationProcess().init(),
     NotificationProcess().setupInteractedMessage(),
   ]);
-  await GetIt.I<PusherChatService>().initialization();
-  if(GetIt.I<PrefsRepository>().chatToken != null) {
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: await getApplicationDocumentsDirectory(),
+  );
+  if (GetIt.I<PrefsRepository>().chatToken != null) {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
@@ -145,11 +170,6 @@ void main() async {
     initialMessage =
         Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
   }
-  FlutterError.onError = (FlutterErrorDetails error) {
-    GetIt.I<PrefsRepository>().saveRequestsData(
-        null, null, null, null, null, null, null,
-        error: error.toString());
-  };
   await SentryFlutter.init(
     (options) {
       options.dsn =

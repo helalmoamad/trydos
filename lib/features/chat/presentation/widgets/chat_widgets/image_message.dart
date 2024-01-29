@@ -23,6 +23,7 @@ import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../data/models/ImageDetail.dart';
+import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 
 class ImageMessage extends StatefulWidget {

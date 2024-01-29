@@ -11,6 +11,7 @@ import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../home/presentation/widgets/sliver_list_seprated.dart';
 import '../manager/chat_bloc.dart';
+import '../manager/chat_state.dart';
 
 class ChatPageContent extends StatefulWidget {
   const ChatPageContent({Key? key, this.onSendForwardMessage})
@@ -82,15 +83,14 @@ class ChatPageContentState extends State<ChatPageContent> {
           return SliverToBoxAdapter(child: TrydosLoader());
         }
         // todo (future update) here we can return try again if the status failure
-
-        List<Chat> chats = [];
+        List<Chat> chats = List.of(state.chats);
         chats.addAll(state.pinnedChats);
-        chats.addAll(state.chats);
 
         // todo  (future update) remove this from here handle it in the back of in bloc
         chats.removeWhere((element) =>
             int.tryParse(element.id.toString()) == null &&
             (element.messages?.isEmpty ?? true));
+
         initialChats = chats;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           searchChats.value = chats;

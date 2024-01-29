@@ -99,7 +99,7 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading> with Single
                 )
               ],
             ),
-            SizedBox(height: 16,),
+            SizedBox(height: widget.height/10,),
             SvgPicture.asset(AppAssets.trydosTextSvg , width: widget.logoTextWidth ,height: widget.logoTextHeight,)
           ],
         ),
