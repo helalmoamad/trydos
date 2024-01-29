@@ -142,7 +142,10 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                   mainAxisAlignment: (state.verifyOtpSignInStatus !=
                               VerifyOtpSignInStatus.loading &&
                           state.verifyOtpSignUpStatus !=
-                              VerifyOtpSignUpStatus.loading)
+                              VerifyOtpSignUpStatus.loading && state.verifyOtpSignInStatus != VerifyOtpSignInStatus.success &&
+                      state.verifyOtpSignUpStatus !=
+                          VerifyOtpSignUpStatus.success
+                  )
                       ? MainAxisAlignment.end
                       : MainAxisAlignment.start,
                   children: [

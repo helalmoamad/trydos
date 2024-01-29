@@ -10,7 +10,7 @@ String homeSectionResponseModelToJson(HomeSectionResponseModel data) => json.enc
 
 class HomeSectionResponseModel {
   final String? message;
-  final List<Datum>? data;
+  final List<HomeSectionDataObject>? data;
 
   HomeSectionResponseModel({
     this.message,
@@ -19,7 +19,7 @@ class HomeSectionResponseModel {
 
   HomeSectionResponseModel copyWith({
     String? message,
-    List<Datum>? data,
+    List<HomeSectionDataObject>? data,
   }) =>
       HomeSectionResponseModel(
         message: message ?? this.message,
@@ -28,7 +28,7 @@ class HomeSectionResponseModel {
 
   factory HomeSectionResponseModel.fromJson(Map<String, dynamic> json) => HomeSectionResponseModel(
     message: json["message"],
-    data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+    data: json["data"] == null ? [] : List<HomeSectionDataObject>.from(json["data"]!.map((x) => HomeSectionDataObject.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -37,14 +37,14 @@ class HomeSectionResponseModel {
   };
 }
 
-class Datum {
+class HomeSectionDataObject {
   final int? total;
   final int? limit;
   final int? offset;
   final List<Section>? sections;
   final List<SubCategory>? subCategories;
 
-  Datum({
+  HomeSectionDataObject({
     this.total,
     this.limit,
     this.offset,
@@ -52,14 +52,14 @@ class Datum {
     this.subCategories,
   });
 
-  Datum copyWith({
+  HomeSectionDataObject copyWith({
     int? total,
     int? limit,
     int? offset,
     List<Section>? sections,
     List<SubCategory>? subCategories,
   }) =>
-      Datum(
+      HomeSectionDataObject(
         total: total ?? this.total,
         limit: limit ?? this.limit,
         offset: offset ?? this.offset,
@@ -67,7 +67,7 @@ class Datum {
         subCategories: subCategories ?? this.subCategories,
       );
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+  factory HomeSectionDataObject.fromJson(Map<String, dynamic> json) => HomeSectionDataObject(
     total: json["total"],
     limit: json["limit"],
     offset: json["offset"],

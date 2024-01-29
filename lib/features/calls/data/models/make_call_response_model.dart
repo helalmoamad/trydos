@@ -4,11 +4,11 @@
 
 import 'dart:convert';
 
-VideoCallRemoteResponseModel videoCallRemoteResponseModelFromJson(String str) => VideoCallRemoteResponseModel.fromJson(json.decode(str));
+MakeCallRemoteResponseModel makeCallRemoteResponseModelFromJson(String str) => MakeCallRemoteResponseModel.fromJson(json.decode(str));
 
-String videoCallRemoteResponseModelToJson(VideoCallRemoteResponseModel data) => json.encode(data.toJson());
+String makeCallRemoteResponseModelToJson(MakeCallRemoteResponseModel data) => json.encode(data.toJson());
 
-class VideoCallRemoteResponseModel {
+class MakeCallRemoteResponseModel {
   bool? isSuccessful;
   bool? hasContent;
   int? code;
@@ -16,7 +16,7 @@ class VideoCallRemoteResponseModel {
   dynamic detailedError;
   Data? data;
 
-  VideoCallRemoteResponseModel({
+  MakeCallRemoteResponseModel({
     this.isSuccessful,
     this.hasContent,
     this.code,
@@ -25,7 +25,7 @@ class VideoCallRemoteResponseModel {
     this.data,
   });
 
-  VideoCallRemoteResponseModel copyWith({
+  MakeCallRemoteResponseModel copyWith({
     bool? isSuccessful,
     bool? hasContent,
     int? code,
@@ -33,7 +33,7 @@ class VideoCallRemoteResponseModel {
     dynamic detailedError,
     Data? data,
   }) =>
-      VideoCallRemoteResponseModel(
+      MakeCallRemoteResponseModel(
         isSuccessful: isSuccessful ?? this.isSuccessful,
         hasContent: hasContent ?? this.hasContent,
         code: code ?? this.code,
@@ -42,7 +42,7 @@ class VideoCallRemoteResponseModel {
         data: data ?? this.data,
       );
 
-  factory VideoCallRemoteResponseModel.fromJson(Map<String, dynamic> json) => VideoCallRemoteResponseModel(
+  factory MakeCallRemoteResponseModel.fromJson(Map<String, dynamic> json) => MakeCallRemoteResponseModel(
     isSuccessful: json["isSuccessful"],
     hasContent: json["hasContent"],
     code: json["code"],
@@ -92,7 +92,7 @@ class Data {
 
 class Message {
   int? senderUserId;
-  int? receiverUserId;
+  String? receiverUserId;
   String? messageType;
   int? channelId;
   String? userAgent;
@@ -119,7 +119,7 @@ class Message {
 
   Message copyWith({
     int? senderUserId,
-    int? receiverUserId,
+    String? receiverUserId,
     String? messageType,
     int? channelId,
     String? userAgent,

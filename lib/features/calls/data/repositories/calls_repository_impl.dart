@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/api.dart';
 import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/features/calls/data/data_source/calls_remote_data_source.dart';
-import 'package:trydos/features/calls/data/models/video_call_ersponse_model.dart';
+import 'package:trydos/features/calls/data/models/make_call_response_model.dart';
 
 import '../../domain/repositories/calls_repository.dart';
 import '../models/agora_token_remote_response_model.dart';
@@ -16,9 +16,9 @@ class CallsRepositoryImpl extends CallsRepository
   CallsRepositoryImpl(this.dataSource);
 
   @override
-  Future<Either<Failure, VideoCallRemoteResponseModel>> videoCall({required Map<String,dynamic> params}) {
+  Future<Either<Failure, MakeCallRemoteResponseModel>> makeCall({required Map<String,dynamic> params}) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.makeCallVideo(params));
+        tryCall: () => dataSource.makeCall(params));
   }
 
   @override

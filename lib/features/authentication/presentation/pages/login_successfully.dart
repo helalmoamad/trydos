@@ -4,12 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
 import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
@@ -44,6 +46,18 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          error: error.toString());
+      print('error $error');
+    };
     return Scaffold(
       backgroundColor: const Color(0xffE0FFEE),
       body: Stack(

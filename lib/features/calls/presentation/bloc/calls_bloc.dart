@@ -13,7 +13,7 @@ import '../../../chat/data/models/my_chats_response_model.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../../domain/useCase/answer_call_usecase.dart';
 import '../../domain/useCase/reject_call_usecase.dart';
-import '../../domain/useCase/video_call_usecase.dart';
+import '../../domain/useCase/make_call_usecase.dart';
 
 part 'calls_event.dart';
 
@@ -22,12 +22,12 @@ part 'calls_state.dart';
 @LazySingleton()
 class CallsBloc extends Bloc<CallsEvent, CallsState> {
   PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
-  final VideoCallUseCase videoCallUseCase;
+  final MakeCallUseCase makeCallUseCase;
   final AnswerCallUseCase answerCallUseCase;
   final RejectCallUseCase rejectCallUseCase;
   final GetAgoraTokenUseCase getAgoraTokenUseCase;
 
-  CallsBloc(this.rejectCallUseCase, this.videoCallUseCase,
+  CallsBloc(this.rejectCallUseCase, this.makeCallUseCase,
       this.answerCallUseCase, this.getAgoraTokenUseCase)
       : super(CallsState()) {
     on<CallsEvent>((event, emit) {});
@@ -35,21 +35,23 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     on<RejectVideoCallEvent>(_onRejectVideoCallEvent);
     on<AnswerVideoCallEvent>(_onAnswerVideoCallEvent);
     on<EndVideoCallEvent>(_onEndVideoCallEvent);
-    on<VideoCallEvent>(_onVideoCallEvent);
+    on<MakeCallEvent>(_onMakeCallEvent);
     on<UserInteractWithCall>(_onUserInteractWithCall);
     on<ResponseRejectVideoCallEvent>(_onResponseRejectVideoCallEvent);
   }
 
-  FutureOr<void> _onResponseRejectVideoCallEvent(ResponseRejectVideoCallEvent event, Emitter<CallsState> emit) {
+  FutureOr<void> _onResponseRejectVideoCallEvent(
+      ResponseRejectVideoCallEvent event, Emitter<CallsState> emit) {
     debugPrint("createVideoCallStatusdasd");
-    emit(state.copyWith(createVideoCallStatus: CreateVideoCallStatus.cancel));
+    emit(state.copyWith(makeCallStatus: MakeCallStatus.cancel));
   }
 
-  FutureOr<void> _onVideoCallEvent(VideoCallEvent event, Emitter<CallsState> emit) async {
+  FutureOr<void> _onMakeCallEvent(
+      MakeCallEvent event, Emitter<CallsState> emit) async {
     List<Message> messages;
     bool fromPinned = false;
 
-    emit(state.copyWith(createVideoCallStatus: CreateVideoCallStatus.init));
+    emit(state.copyWith(makeCallStatus: MakeCallStatus.init , isVideoCall: event.isVideo));
 
     // ChatState chatState = GetIt.I<ChatBloc>().state;
     //todo check if the channel exist and get the messages of this channel
@@ -68,7 +70,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     //       .messages ??
     //       []);
     // }
-  //TODO FOR LATER ADD THE VIDEO MESSAGE TO THE NEW CHAT
+    //TODO FOR LATER ADD THE VIDEO MESSAGE TO THE NEW CHAT
     // messages.insert(
     //     0,
     //     Message(
@@ -84,11 +86,15 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     //         parentMessage: null));
 
     if (event.receiverUserId != null) {
-      final response = await videoCallUseCase(VideoCallParams(
-          payload: event.payload, receiverUserId: event.receiverUserId!));
+      final response = await makeCallUseCase(MakeCallParams(
+          isVideo: event.isVideo,
+          payload: event.payload,
+          receiverUserId: event.receiverUserId!));
       response.fold((l) => null, (r) {
         emit(state.copyWith(
-            createVideoCallStatus: CreateVideoCallStatus.startCall,
+            makeCallStatus: MakeCallStatus.startCall,
+             isVideoCall: event.isVideo,
+            messageId: r.data!.message!.id!.toString(),
             channelName: r.data!.message!.channelId.toString(),
             agoraToken: r.data!.token));
       });
@@ -97,12 +103,15 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     } else {
       debugPrint("the channel exist");
 
-      final response = await videoCallUseCase(
-          VideoCallParams(payload: event.payload, chatId: event.chatId!));
+      final response = await makeCallUseCase(MakeCallParams(
+          payload: event.payload,
+          chatId: event.chatId!,
+          isVideo: event.isVideo));
       response.fold((l) => null, (r) {
         emit(state.copyWith(
           messageId: r.data!.message!.id!.toString(),
-          createVideoCallStatus: CreateVideoCallStatus.startCall,
+          isVideoCall: event.isVideo,
+          makeCallStatus: MakeCallStatus.startCall,
           agoraToken: r.data!.token,
           channelName: event.chatId,
         ));
@@ -110,14 +119,15 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     }
   }
 
-  FutureOr<void> _onEndVideoCallEvent(EndVideoCallEvent event, Emitter<CallsState> emit) async {
-    emit(
-        state.copyWith(createVideoCallStatus: CreateVideoCallStatus.endCall));
+  FutureOr<void> _onEndVideoCallEvent(
+      EndVideoCallEvent event, Emitter<CallsState> emit) async {
+    emit(state.copyWith(makeCallStatus: MakeCallStatus.endCall));
   }
 
-  FutureOr<void> _onAnswerVideoCallEvent(AnswerVideoCallEvent event, Emitter<CallsState> emit) async {
+  FutureOr<void> _onAnswerVideoCallEvent(
+      AnswerVideoCallEvent event, Emitter<CallsState> emit) async {
     emit(state.copyWith(
-      createVideoCallStatus: CreateVideoCallStatus.loading,
+      makeCallStatus: MakeCallStatus.loading,
     ));
 
     final tempResponse = await answerCallUseCase(event.messageId);
@@ -131,29 +141,33 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     await response.fold((l) => null, (r) async {
       String agoraToken = r.data!;
       emit(state.copyWith(
-          createVideoCallStatus: CreateVideoCallStatus.success,
+          makeCallStatus: MakeCallStatus.success,
           agoraToken: agoraToken,
           channelName: event.chatId));
     });
   }
 
-  FutureOr<void> _onRejectVideoCallEvent(RejectVideoCallEvent event,Emitter<CallsState> emit) async {
+  FutureOr<void> _onRejectVideoCallEvent(
+      RejectVideoCallEvent event, Emitter<CallsState> emit) async {
     debugPrint("RejectVideoCallEvent");
     final response = await rejectCallUseCase.call(event.messageId);
     response.fold((l) => null, (r) {
-      emit(state.copyWith(
-          rejectVideoCallStatus: RejectVideoCallStatus.success));
+      emit(
+          state.copyWith(rejectVideoCallStatus: RejectVideoCallStatus.success));
     });
   }
 
-  FutureOr<void> _onInitResponseRejectVideoCallEvent(InitResponseRejectVideoCallEvent event, Emitter<CallsState> emit) async {
+  FutureOr<void> _onInitResponseRejectVideoCallEvent(
+      InitResponseRejectVideoCallEvent event, Emitter<CallsState> emit) async {
     debugPrint("asdasbcvf");
-    emit(state.copyWith(createVideoCallStatus: CreateVideoCallStatus.init));
+    emit(state.copyWith(makeCallStatus: MakeCallStatus.init));
   }
 
-  FutureOr<void> _onUserInteractWithCall(UserInteractWithCall event, Emitter<CallsState> emit) {
+  FutureOr<void> _onUserInteractWithCall(
+      UserInteractWithCall event, Emitter<CallsState> emit) {
     emit(state.copyWith(
-      stopRingToneReason: event.rejectIt ? StopRingToneReason.refuse : StopRingToneReason.accept
-    ));
+        stopRingToneReason: event.rejectIt
+            ? StopRingToneReason.refuse
+            : StopRingToneReason.accept));
   }
 }

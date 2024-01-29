@@ -8,6 +8,7 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/text_message.dart';
 
+import '../../manager/chat_state.dart';
 import 'image_message.dart';
 
 class ReplayMessage extends StatefulWidget {

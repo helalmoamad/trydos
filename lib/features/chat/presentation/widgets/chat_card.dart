@@ -26,6 +26,7 @@ import '../../../../service/language_service.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_event.dart';
+import '../manager/chat_state.dart';
 class ChatCard extends StatefulWidget {
   const ChatCard(
       {Key? key,

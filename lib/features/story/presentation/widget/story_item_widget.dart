@@ -15,6 +15,7 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../chat/presentation/widgets/chat_widgets/no_image_widget.dart';
+import '../bloc/story_state.dart';
 import '../pages/story_collection.dart';
 
 class StoryItemWidget extends StatefulWidget {
