@@ -136,7 +136,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   late HomeBloc homeBloc;
   late CallsBloc callsBloc;
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
-  late final PusherChatService pusherChatService ;
+  //late final PusherChatService pusherChatService ;
   final List<Widget> pages = [
     const HomePage(),
     const HomePage(),
@@ -165,7 +165,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    pusherChatService = GetIt.I<PusherChatService>();
+    //pusherChatService = GetIt.I<PusherChatService>();
     chatBloc = BlocProvider.of<ChatBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
@@ -266,9 +266,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     };
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, chatState) {
-        pusherChatService.subscribeToAllPresenceChannels(chatState.chats);
-        pusherChatService
-            .subscribeToAllPresenceChannels(chatState.pinnedChats);
+        // pusherChatService.subscribeToAllPresenceChannels(chatState.chats);
+        // pusherChatService
+        //     .subscribeToAllPresenceChannels(chatState.pinnedChats);
       },
       listenWhen: (p, c) =>
           p.getChatsStatus != c.getChatsStatus &&
@@ -355,17 +355,17 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                 buildWhen: (oldState, newState) =>
                     oldState.currentIndex != newState.currentIndex,
                 builder: (_, state) {
-                  if (state.currentIndex == 2) {
-                    pusherChatService
-                        .subscribeToAllPresenceChannels(chatState.chats);
-                    pusherChatService
-                        .subscribeToAllPresenceChannels(chatState.pinnedChats);
-                  } else {
-                    pusherChatService
-                        .deleteAllPresenceChannels(chatState.chats);
-                    pusherChatService
-                        .deleteAllPresenceChannels(chatState.pinnedChats);
-                  }
+                  // if (state.currentIndex == 2) {
+                  //   pusherChatService
+                  //       .subscribeToAllPresenceChannels(chatState.chats);
+                  //   pusherChatService
+                  //       .subscribeToAllPresenceChannels(chatState.pinnedChats);
+                  // } else {
+                  //   pusherChatService
+                  //       .deleteAllPresenceChannels(chatState.chats);
+                  //   pusherChatService
+                  //       .deleteAllPresenceChannels(chatState.pinnedChats);
+                  // }
                   return pages[state.currentIndex];
                 },
               );

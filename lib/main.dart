@@ -130,7 +130,6 @@ void main() async {
     NotificationProcess().init(),
     NotificationProcess().setupInteractedMessage(),
   ]);
-  await GetIt.I<PusherChatService>().initialization();
   if(GetIt.I<PrefsRepository>().chatToken != null) {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }

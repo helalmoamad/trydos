@@ -237,9 +237,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         List<Chat> chats = state.chats.map((e) {
           if (e.localId == event.channelId &&
               int.tryParse(event.channelId) == null) {
-            final PusherChatService pusherChatService =
-                GetIt.I<PusherChatService>();
-            pusherChatService.createPresenceChannel(r.channel!.id.toString());
+            // final PusherChatService pusherChatService =
+            //     GetIt.I<PusherChatService>();
+            // pusherChatService.createPresenceChannel(r.channel!.id.toString());
             return r.channel!.copyWith(
                 localId: event.channelId,
                 messages: e.messages?.map((e) {
@@ -322,11 +322,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               fcmToken: NotificationProcess.myFcmToken!));
         }
         isFailedTheFirstTime.remove('GetChatsEvent');
-        final PusherChatService pusherChatService =
-            GetIt.I<PusherChatService>();
+        // final PusherChatService pusherChatService =
+        //     GetIt.I<PusherChatService>();
         //pusherChatService.initialization();
-        pusherChatService.subscribe('user-${GetIt.I<PrefsRepository>().myChatId}-messages');
-        if(pusherChatService.presenceChannels.length == 0) {
+        // pusherChatService.subscribe('user-${GetIt.I<PrefsRepository>().myChatId}-messages');
+        // if(pusherChatService.presenceChannels.length == 0) {
           //pusherChatService.subscribeToAllPresenceChannels(r.data!.chats ?? []);
           //pusherChatService.subscribeToAllPresenceChannels(r.data!.pinnedChats ?? []);
           // r.data!.chats?.forEach((element) async {
@@ -337,7 +337,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           //   await pusherChatService.createPresenceChannel(
           //       element.id.toString());
           // });
-        }
+        //}
         int unReadMessagesFromAllChats = 0;
         r.data!.chats?.forEach((element) {
           unReadMessagesFromAllChats += element.totalUnreadMessageCount!;

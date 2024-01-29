@@ -20,7 +20,7 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:uuid/uuid.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+// import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/app_widgets/app_text_field.dart';
@@ -61,7 +61,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
     const Duration(microseconds: 1),
     () {},
   );
-  PusherChatService pusherChatService =GetIt.I<PusherChatService>();
+  //PusherChatService pusherChatService =GetIt.I<PusherChatService>();
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -558,9 +558,9 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           return;
                                         }
                                         recordingNotifier.value = false;
-                                        pusherChatService.sendActivityEvent(
-                                            widget.channelId,
-                                            null);
+                                        // pusherChatService.sendActivityEvent(
+                                        //     widget.channelId,
+                                        //     null);
                                         final String path =
                                             (await recorder.stopRecorder())!;
                                         recorder.deleteRecord(fileName: path);
@@ -580,9 +580,9 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       onTap: () async {
                                         final path = await recorder.stopRecorder();
                                         final audioFile = File(path!);
-                                        pusherChatService.sendActivityEvent(
-                                            widget.channelId,
-                                            null);
+                                        // pusherChatService.sendActivityEvent(
+                                        //     widget.channelId,
+                                        //     null);
                                         widget.onSendFile(audioFile, 'voice');
                                         recordingNotifier.value = false;
                                       },
@@ -605,15 +605,15 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       focusColor: Colors.transparent,
                                       splashColor: Colors.transparent,
                                       onTap: () async {
-                                        pusherChatService.sendActivityEvent(
-                                            widget.channelId,
-                                            'Sending file...');
+                                        // pusherChatService.sendActivityEvent(
+                                        //     widget.channelId,
+                                        //     'Sending file...');
                                         File? file = await HelperFunctions
                                             .pickDocumentFile();
                                         if (file != null) {
-                                          pusherChatService.sendActivityEvent(
-                                              widget.channelId,
-                                              null);
+                                          // pusherChatService.sendActivityEvent(
+                                          //     widget.channelId,
+                                          //     null);
                                           widget.onSendFile(file, 'file');
                                         }
                                       },
@@ -633,17 +633,17 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           onChange: (text) {
                                             _typingTimer.cancel();
                                             try {
-                                              pusherChatService.sendActivityEvent(
-                                                  widget.channelId,
-                                                   'Typing...');
+                                              // pusherChatService.sendActivityEvent(
+                                              //     widget.channelId,
+                                              //      'Typing...');
                                             } catch (e) {
                                               print(e);
                                             }
                                             _typingTimer = Timer(
                                                 const Duration(seconds: 1), () {
-                                              pusherChatService.sendActivityEvent(
-                                                  widget.channelId,
-                                                  null);
+                                              // pusherChatService.sendActivityEvent(
+                                              //     widget.channelId,
+                                              //     null);
                                             });
                                           },
                                           contentPadding:
@@ -659,33 +659,33 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         focusColor: Colors.transparent,
                                         splashColor: Colors.transparent,
                                         onTap: () async {
-                                          pusherChatService.sendActivityEvent(
-                                              widget.channelId,
-                                              'Sending file...');
+                                          // pusherChatService.sendActivityEvent(
+                                          //     widget.channelId,
+                                          //     'Sending file...');
                                           showDialog(
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return GalleryAndCameraDialogWidget(
-                                                    onChooseFileFromGalleryAction:
-                                                        (AssetEntity?
-                                                    assetEntity) async {
-                                                      if (assetEntity != null) {
-                                                        File file = (await assetEntity.originFile)!;
-                                                        String mimeStr = lookupMimeType(file.absolute.path) ??'';
-                                                        var fileType = mimeStr.split('/');
-                                                        log(fileType.toString());
-                                                        if (fileType[0] == 'image') {
-                                                          widget.onSendFile.call(file, 'image');
-                                                        }else{
-                                                          widget.onSendFile
-                                                              .call(file, 'video');
-                                                        }
-                                                        pusherChatService.sendActivityEvent(
-                                                            widget.channelId,
-                                                            null
-                                                        );
-                                                      }
-                                                    },
+                                                    // onChooseFileFromGalleryAction:
+                                                    //     (AssetEntity?
+                                                    // assetEntity) async {
+                                                    //   if (assetEntity != null) {
+                                                    //     File file = (await assetEntity.originFile)!;
+                                                    //     String mimeStr = lookupMimeType(file.absolute.path) ??'';
+                                                    //     var fileType = mimeStr.split('/');
+                                                    //     log(fileType.toString());
+                                                    //     if (fileType[0] == 'image') {
+                                                    //       widget.onSendFile.call(file, 'image');
+                                                    //     }else{
+                                                    //       widget.onSendFile
+                                                    //           .call(file, 'video');
+                                                    //     }
+                                                    //     pusherChatService.sendActivityEvent(
+                                                    //         widget.channelId,
+                                                    //         null
+                                                    //     );
+                                                    //   }
+                                                    // },
                                                     onChooseFileFromCameraAction:
                                                     (File? file) {
                                                   if (file != null) {
@@ -698,10 +698,10 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                       widget.onSendFile
                                                           .call(file, 'video');
                                                     }
-                                                    pusherChatService.sendActivityEvent(
-                                                        widget.channelId,
-                                                        null
-                                                    );
+                                                    // pusherChatService.sendActivityEvent(
+                                                    //     widget.channelId,
+                                                    //     null
+                                                    // );
                                                   }
                                                 });
                                               });
@@ -725,9 +725,9 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             return;
                                           }
                                           recordingNotifier.value = true;
-                                          pusherChatService.sendActivityEvent(
-                                              widget.channelId,
-                                              'Recording...');
+                                          // pusherChatService.sendActivityEvent(
+                                          //     widget.channelId,
+                                          //     'Recording...');
                                           await recorder.startRecorder(
                                             toFile:
                                                 'audio${const Uuid().v4()}.aac',

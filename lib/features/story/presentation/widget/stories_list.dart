@@ -17,7 +17,7 @@ import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection_page_view.dart';
 import 'package:trydos/features/story/presentation/widget/story_item_widget.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+// import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
@@ -143,19 +143,19 @@ class _StoriesListState extends State<StoriesList> {
                                                                   //   CloudinaryFile.fromFile(
                                                                 }
                                                               },
-                                                                  onChooseFileFromGalleryAction:
-                                                                      (AssetEntity?
-                                                                          assetEntity) async {
-                                                                if (assetEntity !=
-                                                                    null) {
-                                                                  File file =
-                                                                      (await assetEntity
-                                                                          .originFile)!;
-                                                                  GetIt.I<StoryBloc>().add(
-                                                                      UploadStoryCloudinaryEvent(
-                                                                          file));
-                                                                }
-                                                              }
+                                                              //     onChooseFileFromGalleryAction:
+                                                              //         (AssetEntity?
+                                                              //             assetEntity) async {
+                                                              //   if (assetEntity !=
+                                                              //       null) {
+                                                              //     File file =
+                                                              //         (await assetEntity
+                                                              //             .originFile)!;
+                                                              //     GetIt.I<StoryBloc>().add(
+                                                              //         UploadStoryCloudinaryEvent(
+                                                              //             file));
+                                                              //   }
+                                                              // }
                                                               );
                                                             });
                                                       }

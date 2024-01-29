@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+// import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../common/helper/camera_screen.dart';
 import '../../../common/helper/helper_functions.dart';
 import '../../../generated/locale_keys.g.dart';
@@ -10,10 +10,10 @@ import '../../../generated/locale_keys.g.dart';
 class GalleryAndCameraDialogWidget extends StatelessWidget {
   const GalleryAndCameraDialogWidget(
       {super.key,
-      required this.onChooseFileFromGalleryAction,
+      //required this.onChooseFileFromGalleryAction,
       required this.onChooseFileFromCameraAction});
 
- final void Function(AssetEntity? assetEntity) onChooseFileFromGalleryAction;
+ //final void Function(AssetEntity? assetEntity) onChooseFileFromGalleryAction;
   final void Function(File? file) onChooseFileFromCameraAction;
 
   @override
