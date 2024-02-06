@@ -81,37 +81,39 @@ class _ChatCardState extends ThemeState<ChatCard> {
     User? receiver = widget.chat.channelMembers
         ?.firstWhere((element) => element.userId != _prefsRepository.myChatId)
         .user;
-    String receiverName, fullReceiverName;
-    if (receiver == null) {
-      receiverName = 'UK';
-      fullReceiverName = 'Unknown User';
-    } else {
-      receiverName = receiver.contactUser == null
-          ? receiver.name == null
-              ? 'UK'
-              : HelperFunctions.getTheFirstTwoLettersOfName(receiver.name!)
-          : receiver.contactUser!.name == null
-              ? 'UK'
-              : HelperFunctions.getTheFirstTwoLettersOfName(
-                  receiver.contactUser!.name!);
-      fullReceiverName = receiver.contactUser?.name ??
-          receiver.name ??
-          receiver.mobilePhone ??
-          'Unknown User';
-      debugPrint("  fullReceiverName${fullReceiverName}");
-    }
-
+    String receiverName = HelperFunctions.getTheFirstTwoLettersOfName(
+            widget.chat.channelName ?? 'No Channel Name'),
+        fullReceiverName = widget.chat.channelName ?? 'No Channel Name';
+    // if (receiver == null) {
+    //   receiverName = 'UK';
+    //   fullReceiverName = 'Unknown User';
+    // } else {
+    //   receiverName = receiver.contactUser == null
+    //       ? receiver.name == null
+    //           ? 'UK'
+    //           : HelperFunctions.getTheFirstTwoLettersOfName(receiver.name!)
+    //       : receiver.contactUser!.name == null
+    //           ? 'UK'
+    //           : HelperFunctions.getTheFirstTwoLettersOfName(
+    //               receiver.contactUser!.name!);
+    //   fullReceiverName = receiver.contactUser?.name ??
+    //       receiver.name ??
+    //       receiver.mobilePhone ??
+    //       'Unknown User';
+    // }
+    String senderName = HelperFunctions.getTheFirstTwoLettersOfName(
+        _prefsRepository.myChatName ?? 'No Channel Name');
     ChannelMember me = widget.chat.channelMembers!
         .firstWhere((element) => element.userId == _prefsRepository.myChatId);
-    User? sender = me.user;
-    String senderName;
-    if (sender == null) {
-      senderName = 'UK';
-    } else {
-      senderName = sender.name == null
-          ? 'UK'
-          : HelperFunctions.getTheFirstTwoLettersOfName(sender.name!);
-    }
+    // User? sender = me.user;
+    // String senderName;
+    // if (sender == null) {
+    //   senderName = 'UK';
+    // } else {
+    //   senderName = sender.name == null
+    //       ? 'UK'
+    //       : HelperFunctions.getTheFirstTwoLettersOfName(sender.name!);
+    // }
     if (widget.thereActivity) {
       timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (typingIndicator.value == 5) {
@@ -152,7 +154,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                     widget.chat.id.toString());
                 context.go(GRouter
                         .config.applicationRoutes.kSinglePageChatPagePath +
-                    '?chatId=${widget.chat.id!.toString()}&data_length=${widget.chat.messages!.length}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}&receiverPhoto=${receiver?.photoPath}&senderPhoto=${sender?.photoPath}');
+                    '?chatId=${widget.chat.id!.toString()}&data_length=${widget.chat.messages!.length}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}&receiverPhoto=${receiver?.photoPath}&senderPhoto=${_prefsRepository.myChatPhoto}');
               },
               child: Slidable(
                 endActionPane: ActionPane(
@@ -364,99 +366,106 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                               height: widget.thereActivity
                                                   ? 33
                                                   : 51,
-                                              child:
-                                                  (widget.chat.messages
-                                                              ?.isEmpty ??
-                                                          true)
-                                                      ? const SizedBox.shrink()
-                                                      : Row(
-                                                          children: [
-                                                            if ((widget
-                                                                .chat
-                                                                .messages
-                                                                ?.first
-                                                                .mediaMessageContent
-                                                                ?.isNotEmpty ??
+                                              child: (widget.chat.messages
+                                                          ?.isEmpty ??
+                                                      true)
+                                                  ? const SizedBox.shrink()
+                                                  : Row(
+                                                      children: [
+                                                        if ((widget
+                                                                    .chat
+                                                                    .messages
+                                                                    ?.first
+                                                                    .mediaMessageContent
+                                                                    ?.isNotEmpty ??
                                                                 false) ||
-                                                                (widget.chat.messages?.first
+                                                            (widget
+                                                                    .chat
+                                                                    .messages
+                                                                    ?.first
                                                                     .file !=
-                                                                    null) ||
-                                                                messageType
-                                                                    .contains('Call')) ...{
-                                                              SvgPicture.asset(
-                                                                messageType ==
-                                                                        'ImageMessage'
+                                                                null) ||
+                                                            messageType.contains(
+                                                                'Call')) ...{
+                                                          SvgPicture.asset(
+                                                            messageType ==
+                                                                    'ImageMessage'
+                                                                ? AppAssets
+                                                                    .lastMessageImageSvg
+                                                                : messageType ==
+                                                                        'VideoMessage'
                                                                     ? AppAssets
-                                                                        .lastMessageImageSvg
+                                                                        .lastMessageVideoSvg
+                                                                    : messageType ==
+                                                                            'FileMessage'
+                                                                        ? AppAssets
+                                                                            .documentSvg
+                                                                        : messageType ==
+                                                                                'VoiceCall'
+                                                                            ? AppAssets.missedCallInChatSvg
+                                                                            : messageType == 'VideoCall'
+                                                                                ? AppAssets.missedVideoCallInChatSvg
+                                                                                : AppAssets.lastMessageAudioSvg,
+                                                            width: 20.w,
+                                                            height: 20.h,
+                                                            color: messageType
+                                                                    .contains(
+                                                                        'Call')
+                                                                ? colorScheme
+                                                                    .grey200
+                                                                    .withOpacity(
+                                                                        0.6)
+                                                                : null,
+                                                          ),
+                                                          10.horizontalSpace,
+                                                        },
+                                                        Flexible(
+                                                          child: Text(
+                                                            messageType !=
+                                                                    'TextMessage'
+                                                                ? (messageType ==
+                                                                        'ImageMessage'
+                                                                    ? 'Photo'
                                                                     : messageType ==
                                                                             'VideoMessage'
-                                                                        ? AppAssets
-                                                                            .lastMessageVideoSvg
+                                                                        ? 'Video'
                                                                         : messageType ==
                                                                                 'FileMessage'
-                                                                            ? AppAssets.documentSvg
-                                                                            : messageType == 'VoiceCall'
-                                                                                ? AppAssets.missedCallInChatSvg
-                                                                                : messageType == 'VideoCall'
-                                                                                    ? AppAssets.missedVideoCallInChatSvg
-                                                                                    : AppAssets.lastMessageAudioSvg,
-                                                                width: 20.w,
-                                                                height: 20.h,
-                                                                color: messageType
-                                                                    .contains('Call') ? colorScheme
-                                                                    .grey200.withOpacity(0.6) : null,
-                                                              ),
-                                                              10.horizontalSpace,
-                                                            },
-                                                            Flexible(
-                                                              child: Text(
-                                                                messageType !=
-                                                                        'TextMessage'
-                                                                    ? (messageType ==
-                                                                            'ImageMessage'
-                                                                        ? 'Photo'
-                                                                        : messageType ==
-                                                                                'VideoMessage'
-                                                                            ? 'Video'
+                                                                            ? 'File'
                                                                             : messageType ==
-                                                                                    'FileMessage'
-                                                                                ? 'File'
+                                                                                    'VoiceCall'
+                                                                                ? 'Voice Call'
                                                                                 : messageType ==
-                                                                                        'VoiceCall'
-                                                                                    ? 'Voice Call'
-                                                                                    : messageType ==
-                                                                                            'VideoCall'
-                                                                                        ? 'Video Call'
-                                                                                        : 'Voice')
-                                                                    : widget
-                                                                        .chat
-                                                                        .messages!
-                                                                        .first
-                                                                        .messageContent!
-                                                                        .content
-                                                                        .toString(),
-                                                                maxLines: widget
-                                                                        .thereActivity
-                                                                    ? 1
-                                                                    : 3,
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .start,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                style: textTheme
-                                                                    .bodyText2
-                                                                    ?.lr
-                                                                    .copyWith(
-                                                                        height:
-                                                                            1.22,
-                                                                        color: colorScheme
-                                                                            .grey200),
-                                                              ),
-                                                            ),
-                                                          ],
+                                                                                        'VideoCall'
+                                                                                    ? 'Video Call'
+                                                                                    : 'Voice')
+                                                                : widget
+                                                                    .chat
+                                                                    .messages!
+                                                                    .first
+                                                                    .messageContent!
+                                                                    .content
+                                                                    .toString(),
+                                                            maxLines: widget
+                                                                    .thereActivity
+                                                                ? 1
+                                                                : 3,
+                                                            textAlign:
+                                                                TextAlign.start,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: textTheme
+                                                                .bodyText2?.lr
+                                                                .copyWith(
+                                                                    height:
+                                                                        1.22,
+                                                                    color: colorScheme
+                                                                        .grey200),
+                                                          ),
                                                         ),
+                                                      ],
+                                                    ),
                                             ),
                                           );
                                         },
@@ -518,7 +527,10 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        widget.activityDescription!.substring(0 , widget.activityDescription!.length - 3),
+                                        widget.activityDescription!.substring(
+                                            0,
+                                            widget.activityDescription!.length -
+                                                3),
                                         maxLines: 1,
                                         style: textTheme.caption?.rr.copyWith(
                                             color: const Color(0xff007CFF)),

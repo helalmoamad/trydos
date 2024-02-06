@@ -40,7 +40,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 }
 
 @LazySingleton()
-class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin{
+class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
   ChatBloc(
       this.getContactsUseCase,
       this.getMyChatsUseCase,
@@ -557,22 +557,26 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin{
       chats.insert(
           0,
           chat.copyWith(
-              totalUnreadMessageCount: event.increaseUnReadMessages ? ((chat.totalUnreadMessageCount ?? 0) +
-                  (event.message.senderUserId! != _prefsRepository.myChatId
-                      ? 1
-                      : 0)) : chat.totalUnreadMessageCount));
+              totalUnreadMessageCount: event.increaseUnReadMessages
+                  ? ((chat.totalUnreadMessageCount ?? 0) +
+                      (event.message.senderUserId! != _prefsRepository.myChatId
+                          ? 1
+                          : 0))
+                  : chat.totalUnreadMessageCount));
     }
     messages = List.of(chat.messages ?? []);
     messages.insert(0, event.message);
-    int index = messages.indexWhere((element) => element.id == event.prevMessageId);
+    int index =
+        messages.indexWhere((element) => element.id == event.prevMessageId);
     chats = sortChats(chats, event.message.channelId, messages);
     emit(state.copyWith(
       receiveMessageStatus: ReceiveMessageStatus.success,
-      unReadMessagesFromAllChats:
-      event.increaseUnReadMessages ?  (state.unReadMessagesFromAllChats + event.message.senderUserId! !=
+      unReadMessagesFromAllChats: event.increaseUnReadMessages
+          ? (state.unReadMessagesFromAllChats + event.message.senderUserId! !=
                   _prefsRepository.myChatId
               ? 1
-              : 0) : state.unReadMessagesFromAllChats,
+              : 0)
+          : state.unReadMessagesFromAllChats,
       newSortedChatsByDate: groupReceivedMessageOnDays(
           chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)]),
       currentChannelReceivedMessage: event.message.channelId,
@@ -580,7 +584,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin{
       chats: fromPinned ? state.chats : chats,
       pinnedChats: !fromPinned ? state.pinnedChats : chats,
     ));
-    if(event.prevMessageId != null) {
+    if (event.prevMessageId != null) {
       add(NotifyThatIReceivedMessageEvent(channelId: event.message.channelId!));
     }
     if (index == -1 && event.prevMessageId != null) {
@@ -602,7 +606,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin{
         ReadAllMessagesParams(channelId: event.channelId));
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('ReadAllMessagesEvent')) {
-        add(SaveContactsEvent());
+        add(ReadAllMessagesEvent(event.channelId));
         isFailedTheFirstTime.add('ReadAllMessagesEvent');
       }
       emit(state.copyWith(readMessagesStatus: ResetReadMessagesStatus.failure));
@@ -638,7 +642,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin{
         ReceiveMessageParams(channelId: event.channelId));
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('NotifyThatIReceivedMessageEvent')) {
-        add(SaveContactsEvent());
+        add(NotifyThatIReceivedMessageEvent(channelId: event.channelId));
         isFailedTheFirstTime.add('NotifyThatIReceivedMessageEvent');
       }
       emit(state.copyWith(
@@ -852,7 +856,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin{
 
   FutureOr<void> _onReceiveMessageFromPusherEvent(
       ReceiveMessageFromPusherEvent event, Emitter<ChatState> emit) {
-
     emit(state.copyWith(
         changeMessageStateFromPusherStatus:
             ChangeMessageStateFromPusherStatus.init));
@@ -877,7 +880,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin{
 
   FutureOr<void> _onWatchedMessageFromPusherEvent(
       WatchedMessageFromPusherEvent event, Emitter<ChatState> emit) {
-
     emit(state.copyWith(
         changeMessageStateFromPusherStatus:
             ChangeMessageStateFromPusherStatus.init));
