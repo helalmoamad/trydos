@@ -8,8 +8,8 @@ enum GetStoriesStatus { init, loading, success, failure }
 enum SelectedVideoStatus { init, loading, success, failure }
 enum UploadStoryStatus { init, loading, success, failure }
 enum UploadStoryCloudinaryStatus { init, loading, success, failure }
-@JsonSerializable()
 
+@JsonSerializable(explicitToJson: true)
 class StoryState {
   UploadStoryStatus uploadStoryStatus;
   UploadStoryCloudinaryStatus uploadStoryCloudinaryStatus;

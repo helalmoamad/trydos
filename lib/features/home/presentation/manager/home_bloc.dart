@@ -38,7 +38,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 }
 
 @LazySingleton()
-class HomeBloc extends Bloc<HomeEvent, HomeState> with HydratedMixin {
+class HomeBloc extends Bloc<HomeEvent, HomeState> with HydratedMixin{
   HomeBloc(this.getHomeSectionsUseCase, this.getMainCategoriesUseCase,
       this.getStartingSettingsUseCase, this.getProductsWithoutFiltersUseCase)
       : super(HomeState()) {
@@ -68,7 +68,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> with HydratedMixin {
         Map.of(state.getHomeSectionsPaginationObject);
     if (getHomeSectionsPaginationObject[event.categorySlug] == null) {
       getHomeSectionsPaginationObject[event.categorySlug] =
-          PaginationModel.init();
+      PaginationModel<HomeSectionDataObject>.init();
     }
     if (!event.getWithPagination &&
         (getHomeSectionsPaginationObject[event.categorySlug]!.items.length >
@@ -240,6 +240,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> with HydratedMixin {
 
   @override
   Map<String, dynamic>? toJson(HomeState state) {
-    return state.toJson();
+      return state.toJson();
   }
 }

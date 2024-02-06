@@ -1,10 +1,11 @@
 import 'package:json_annotation/json_annotation.dart';
+
 part 'pagination_model.g.dart';
 
 const int kPageSize = 10;
 
-enum PaginationStatus { initial, success, failure, loading}
-@JsonSerializable(genericArgumentFactories: true)
+enum PaginationStatus { initial, success, failure, loading }
+@JsonSerializable(genericArgumentFactories: true , explicitToJson: true)
 class PaginationModel<T> {
   const PaginationModel.init({
     this.items = const [],
@@ -19,11 +20,11 @@ class PaginationModel<T> {
     required this.paginationStatus,
     required this.hasReachedMax,
   });
+
   final List<T> items;
   final PaginationStatus paginationStatus;
   final int page;
   final bool hasReachedMax;
-
 
   PaginationModel<T> copyWith({
     List<T>? items,
@@ -38,10 +39,17 @@ class PaginationModel<T> {
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
     );
   }
-factory PaginationModel.fromJson(Map<String,dynamic> data , T Function(Object? json) fromJsonT) => _$PaginationModelFromJson(data , fromJsonT);
 
-  Map<String,dynamic> toJson(Object Function(T value) toJsonT) => _$PaginationModelToJson(this , toJsonT);
+  factory PaginationModel.fromJson(Map<String,dynamic> json, T Function(Object? json) fromJsonT) =>
+      _$PaginationModelFromJson<T>(json, fromJsonT);
+
+  Map<String, dynamic> toJson(Object Function(T) toJsonT) =>
+      _$PaginationModelToJson<T>(this, toJsonT);
+
   bool get isLoading => paginationStatus == PaginationStatus.initial;
+
   bool get isFailure => paginationStatus == PaginationStatus.failure;
+
   bool get isSuccess => paginationStatus == PaginationStatus.success;
+
 }

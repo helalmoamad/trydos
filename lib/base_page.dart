@@ -214,26 +214,30 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           navigatorKey.currentState!.context.pop();
         }
       } else if (event.data['type'] == 'VideoCallEvent') {
-        Map<String, dynamic> data =
-            convert.jsonDecode(event.data['data'].toString());
+        Map<String, dynamic> data = convert.jsonDecode(event.data['data']);
+        Message message = Message.fromJson(convert.jsonDecode(data['message']));
+        chatBloc.add(ReceiveMessageEvent(
+            message: message, increaseUnReadMessages: false));
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => AgoraInAppWebView(
-              messageId: data["message"]["id"].toString(),
+              messageId: message.id.toString(),
               action: 'receive',
               type: 'video',
-              channelId: data["message"]["channel_id"].toString(),
+              channelId: message.channelId.toString(),
               auth_token: prefsRepository.chatToken!,
               uId: prefsRepository.myChatId!.toString()),
         ));
       } else if (event.data['type'] == 'VoiceCallEvent') {
-        Map<String, dynamic> data =
-            convert.jsonDecode(event.data['data'].toString());
+        Map<String, dynamic> data = convert.jsonDecode(event.data['data']);
+        Message message = Message.fromJson(convert.jsonDecode(data['message']));
+        chatBloc.add(ReceiveMessageEvent(
+            message: message, increaseUnReadMessages: false));
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => AgoraInAppWebView(
-              messageId: data["message"]["id"].toString(),
+              messageId: message.id.toString(),
               action: 'receive',
               type: 'voice',
-              channelId: data["message"]["channel_id"].toString(),
+              channelId: message.channelId.toString(),
               auth_token: prefsRepository.chatToken!,
               uId: prefsRepository.myChatId!.toString()),
         ));
@@ -269,11 +273,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             data['auth_user_id'],
             data['last_message_id']));
       } else {
-        ChatBloc bloc = BlocProvider.of<ChatBloc>(context);
         Message message =
             Message.fromJson(convert.jsonDecode(event.data['message']));
         String prevMessageId = event.data['prev_message_id'];
-        bloc.add(ReceiveMessageEvent(
+        chatBloc.add(ReceiveMessageEvent(
             message: message, prevMessageId: prevMessageId));
         log('object ${event.data}');
         log('object ${event.senderId}');
@@ -296,6 +299,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     };
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, chatState) {
+        print('CahtListeninggggggggggggggggggggg');
         FirebasePresence.listenToAllChats(
             [...chatState.chats, ...chatState.pinnedChats]);
       },

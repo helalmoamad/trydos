@@ -84,136 +84,142 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
           null, null, null, null, null, null, null,
           error: details.toString());
     };
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          context.go(GRouter.config.applicationRoutes.kMyContactsPagePath);
-        },
-        backgroundColor: const Color(0xff388cff),
-        child: Center(child: Icon(Icons.message_rounded , size: 25.sp , color: colorScheme.white)),
-      ),
+    return WillPopScope(
+      onWillPop: () async {
+        BlocProvider.of<AppBloc>(context).add(ChangeBasePage(0));
+        return false;
+      },
+      child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: (){
+            context.go(GRouter.config.applicationRoutes.kMyContactsPagePath);
+          },
+          backgroundColor: const Color(0xff388cff),
+          child: Center(child: Icon(Icons.message_rounded , size: 25.sp , color: colorScheme.white)),
+        ),
 
-      backgroundColor: const Color(0xffF8F8F8),
-      appBar: widget.hideCallsAndStories ? TrydosAppBar(
-        appBarParams: AppBarParams(
-            dividerBottom: false,
-            hasLeading: false,
-            surfaceTintColor: Colors.transparent,
-            elevation: 0,
-            child: SafeArea(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      GoRouter.of(context).pop();
-                    },
-                    child: Padding(
-                      padding: HWEdgeInsetsDirectional.fromSTEB(
-                          20.w, 15, 0, 15),
-                      child: SvgPicture.asset(
-                        AppAssets.backFromCallSvg,
-                        width: 8.w,
-                        color: const Color(0xff388CFF),
+        backgroundColor: const Color(0xffF8F8F8),
+        appBar: widget.hideCallsAndStories ? TrydosAppBar(
+          appBarParams: AppBarParams(
+              dividerBottom: false,
+              hasLeading: false,
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              child: SafeArea(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        GoRouter.of(context).pop();
+                      },
+                      child: Padding(
+                        padding: HWEdgeInsetsDirectional.fromSTEB(
+                            20.w, 15, 0, 15),
+                        child: SvgPicture.asset(
+                          AppAssets.backFromCallSvg,
+                          width: 8.w,
+                          color: const Color(0xff388CFF),
+                        ),
                       ),
                     ),
-                  ),
-                  10.horizontalSpace,
-                  Text(
-                    widget.description,
-                    style: textTheme.subtitle1?.rr
-                        .copyWith(color: const Color(0xff388CFF)),
-                  ),
-                ],
-              ),
-            )),
-      ) : null,
-      body: SafeArea(
-        child: CustomScrollView(
-          physics: const ClampingScrollPhysics(),
-          controller: scrollController,
-          scrollBehavior: const CupertinoScrollBehavior(),
-          slivers: [
-            //todo search bar
-            SliverToBoxAdapter(
-              child: Container(
-                width: 1.sw,
-                height: 50,
-                color: colorScheme.white,
-                padding: HWEdgeInsets.symmetric(horizontal: 10.w, vertical: 5),
-                child: AppTextField(
-                  controller: form.controllers[0],
-                  filledColor: colorScheme.grey50,
-                  bordersColor: colorScheme.grey50,
-                  hintText: 'Search, Chat, Contact, Start New Chat',
-                  hintTextStyle: textTheme.subtitle2?.lr
-                      .copyWith(color: const Color(0xffD3D3D3)),
-                  onChange: ChatPageContentState.searchInChats,
-                  contentPadding:
-                  HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
-                  prefixIcon: Padding(
-                    padding: HWEdgeInsetsDirectional.only(top: 10, bottom: 10),
-                    child: SvgPicture.asset(
-                      AppAssets.searchSvg,
-                      height: 20,
-                      width: 20.h,
+                    10.horizontalSpace,
+                    Text(
+                      widget.description,
+                      style: textTheme.subtitle1?.rr
+                          .copyWith(color: const Color(0xff388CFF)),
+                    ),
+                  ],
+                ),
+              )),
+        ) : null,
+        body: SafeArea(
+          child: CustomScrollView(
+            physics: const ClampingScrollPhysics(),
+            controller: scrollController,
+            scrollBehavior: const CupertinoScrollBehavior(),
+            slivers: [
+              //todo search bar
+              SliverToBoxAdapter(
+                child: Container(
+                  width: 1.sw,
+                  height: 50,
+                  color: colorScheme.white,
+                  padding: HWEdgeInsets.symmetric(horizontal: 10.w, vertical: 5),
+                  child: AppTextField(
+                    controller: form.controllers[0],
+                    filledColor: colorScheme.grey50,
+                    bordersColor: colorScheme.grey50,
+                    hintText: 'Search, Chat, Contact, Start New Chat',
+                    hintTextStyle: textTheme.subtitle2?.lr
+                        .copyWith(color: const Color(0xffD3D3D3)),
+                    onChange: ChatPageContentState.searchInChats,
+                    contentPadding:
+                    HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
+                    prefixIcon: Padding(
+                      padding: HWEdgeInsetsDirectional.only(top: 10, bottom: 10),
+                      child: SvgPicture.asset(
+                        AppAssets.searchSvg,
+                        height: 20,
+                        width: 20.h,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
 //todo appNavigationBar
-            if (!widget.hideCallsAndStories) ...{
-              SliverToBoxAdapter(
-                  child: Container(
-                    padding: HWEdgeInsets.symmetric(horizontal: 40.w),
-                    height: 50,
-                    width: 1.sw,
-                    decoration: const BoxDecoration(
-                      color: Color(0xffffffff),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0x1a000000),
-                          offset: Offset(0, 0),
-                          blurRadius: 6,
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ChatTabItem(
-                              iconUrl: AppAssets.singleChatOutlinedActiveSvg,
-                              activeIconUrl: AppAssets.singleChatSvg,
-                              index: 0,
-                              notificationCount: '9'),
-                          ChatTabItem(
-                              iconUrl: AppAssets.callsOutlinedActiveSvg,
-                              activeIconUrl: AppAssets.callsSvg,
-                              index: 1,
-                              notificationCount: '9'),
-                          ChatTabItem(
-                              iconUrl: AppAssets.storyOutlinedSvg,
-                              activeIconUrl: AppAssets.storyFilledSvg,
-                              index: 2,
-                              notificationCount: '9'),
+              if (!widget.hideCallsAndStories) ...{
+                SliverToBoxAdapter(
+                    child: Container(
+                      padding: HWEdgeInsets.symmetric(horizontal: 40.w),
+                      height: 50,
+                      width: 1.sw,
+                      decoration: const BoxDecoration(
+                        color: Color(0xffffffff),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0x1a000000),
+                            offset: Offset(0, 0),
+                            blurRadius: 6,
+                          ),
                         ],
                       ),
-                    ),
-                  )),
-            },
-            BlocBuilder<AppBloc, AppState>(
-                buildWhen: (p, c) => p.tabIndexInChat != c.tabIndexInChat  ,
-                builder: (context, state) {
-                  return chatPages[state.tabIndexInChat];
-                }),
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ChatTabItem(
+                                iconUrl: AppAssets.singleChatOutlinedActiveSvg,
+                                activeIconUrl: AppAssets.singleChatSvg,
+                                index: 0,
+                                notificationCount: '9'),
+                            ChatTabItem(
+                                iconUrl: AppAssets.callsOutlinedActiveSvg,
+                                activeIconUrl: AppAssets.callsSvg,
+                                index: 1,
+                                notificationCount: '9'),
+                            ChatTabItem(
+                                iconUrl: AppAssets.storyOutlinedSvg,
+                                activeIconUrl: AppAssets.storyFilledSvg,
+                                index: 2,
+                                notificationCount: '9'),
+                          ],
+                        ),
+                      ),
+                    )),
+              },
+              BlocBuilder<AppBloc, AppState>(
+                  buildWhen: (p, c) => p.tabIndexInChat != c.tabIndexInChat  ,
+                  builder: (context, state) {
+                    return chatPages[state.tabIndexInChat];
+                  }),
 
-            SliverToBoxAdapter(
-              child: 20.verticalSpace,
-            ),
-          ],
+              SliverToBoxAdapter(
+                child: 20.verticalSpace,
+              ),
+            ],
+          ),
         ),
       ),
     );

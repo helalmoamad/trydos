@@ -157,8 +157,10 @@ class _ImageMessageState extends State<ImageMessage> {
                                           widget.imageUrl!,
                                           action: (File? file) {
                                         // _loadingImage.value = 2;
-                                        widget.imageFile = file;
-                                        setState(() {});
+                                        if (file != null) {
+                                          widget.imageFile = file;
+                                          setState(() {});
+                                        }
                                       });
                                       return CircularProgressIndicator(
                                         backgroundColor: Colors.grey.shade100,
@@ -344,7 +346,8 @@ class _ImageMessageState extends State<ImageMessage> {
                                           imageUrl: ChatUrls.baseUrl +
                                               widget.userMessagePhoto!,
                                           imageFit: BoxFit.fitWidth,
-                                    progressIndicatorBuilderWidget: TrydosLoader(),
+                                          progressIndicatorBuilderWidget:
+                                              TrydosLoader(),
                                           radius: 8,
                                           width: 30.w,
                                           height: 30,

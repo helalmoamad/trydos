@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/client_config.dart';
@@ -25,6 +27,7 @@ class CallsRemoteDataSource {
                 endpoint: isVideo ? ChatEndPoints.videoCallEP : ChatEndPoints.voiceCallEP,
                 response: ResponseValue<MakeCallRemoteResponseModel>(
                   fromJson: (response) {
+                    log(response.toString());
                     return MakeCallRemoteResponseModel.fromJson(response);
                   },
                 )),

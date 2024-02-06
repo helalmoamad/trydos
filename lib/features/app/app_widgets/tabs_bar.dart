@@ -1,16 +1,21 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 
 import '../../../common/constant/design/assets_provider.dart';
+import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/responsive_padding.dart';
 import '../../home/presentation/manager/home_bloc.dart';
 import '../../home/presentation/manager/home_state.dart';
@@ -45,7 +50,7 @@ class _TabsBarState extends State<TabsBar> {
           if (homeState.mainCategoriesResponseModel == null) {
             return Container(
               width: 1.sw,
-              height: 50.h,
+              height: 55.h,
               padding: EdgeInsets.all(4.r),
               decoration: BoxDecoration(
                 color: colorScheme.white,
@@ -58,15 +63,11 @@ class _TabsBarState extends State<TabsBar> {
                 ],
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(
                       5,
-                      (index) => TrydosShimmerLoading(
-                            width: 1.sw / 8,
-                            height: 50.h,
-                            circleDimensions: 10.r,
-                            logoTextHeight: 10.h,
-                            logoTextWidth: 0.08.sw,
+                      (index) => TrydosLoader(
+                            size: 15.sp,
                           ))),
             );
           }
@@ -76,7 +77,7 @@ class _TabsBarState extends State<TabsBar> {
             builder: (context, state) {
               return Container(
                 width: 1.sw,
-                height: 50.h,
+                height: 55.h,
                 padding: EdgeInsets.all(4.r),
                 decoration: BoxDecoration(
                   color: colorScheme.white,
@@ -100,36 +101,25 @@ class _TabsBarState extends State<TabsBar> {
                         .data!
                         .mainCategories![index];
                     return Padding(
-                      padding:  HWEdgeInsets.only(right: 15.0),
+                      padding: HWEdgeInsets.only(right: 15.0),
                       child: InkWell(
                         onTap: () {
                           appBloc.add(ChangeTab(index));
-                          BlocProvider.of<HomeBloc>(context).add(GetHomeSectionsEvent(mainCategory.slug.toString()));
+                          BlocProvider.of<HomeBloc>(context).add(
+                              GetHomeSectionsEvent(
+                                  mainCategory.slug.toString()));
                         },
                         child: Column(
                           //crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            MyCachedNetworkImage(
-                                imageUrl: mainCategory.icon.toString(),
-                                width: 0.1.sw,
-                                radius: 0,
-                                circleDimensions: 8.r,
-                                logoTextWidth: 0.05.sw,
-                                logoTextHeight: 5.h,
-                                imageColor: state.tabIndex == index
-                                    ? Colors.black
-                                    : Color(0xff0ffC4C2C2),
-                                imageFit: BoxFit.cover,
-                                height: 25.h),
-                            // SvgPicture.asset(
-                            //   AppAssets.manActiveSvg,
-                            //   height: 25.h,
-                            // )
-                            //     : SvgPicture.asset(
-                            //   AppAssets.manInactiveSvg,
-                            //   height: 25.h,
-                            // ),
+                            SvgPicture.network(
+                              mainCategory.icon.toString(),
+                              height: 25.h,
+                              color: state.tabIndex == index
+                                  ? Colors.black
+                                  : Color(0xff0ffC4C2C2),
+                            ),
                             4.verticalSpace,
                             Text(
                               mainCategory.name.toString(),

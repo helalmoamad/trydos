@@ -147,15 +147,15 @@ int applicationVersion = 1;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: await getApplicationDocumentsDirectory(),
+  );
   await Future.wait([
     EasyLocalization.ensureInitialized(),
     configureDependencies(),
     NotificationProcess().init(),
     NotificationProcess().setupInteractedMessage(),
   ]);
-  HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: await getApplicationDocumentsDirectory(),
-  );
   if (GetIt.I<PrefsRepository>().chatToken != null) {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }

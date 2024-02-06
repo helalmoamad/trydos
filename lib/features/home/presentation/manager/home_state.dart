@@ -14,7 +14,7 @@ enum GetMainCategoriesStatus { init, loading, success, failure }
 enum GetHomeSectionsStatus { init, loading, success, failure }
 
 enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class HomeState {
   HomeState({
     this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
@@ -39,7 +39,6 @@ class HomeState {
 
   final MainCategoriesResponseModel? mainCategoriesResponseModel;
   final StartingSetting? startingSetting ;
-
   HomeState copyWith({
     final GetStartingSettingsStatus? getStartingSettingsStatus,
 

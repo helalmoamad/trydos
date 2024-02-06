@@ -55,15 +55,16 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getHomeSectionsPaginationObject.map((k, e) => MapEntry(
               k,
               e.toJson(
-                (value) => value,
+                (value) => value.toJson(),
               ))),
       'getProductsWithoutFiltersStatus':
           _$GetProductsWithoutFiltersStatusEnumMap[
               instance.getProductsWithoutFiltersStatus]!,
       'getProductListingWithoutFiltersModel':
-          instance.getProductListingWithoutFiltersModel,
-      'mainCategoriesResponseModel': instance.mainCategoriesResponseModel,
-      'startingSetting': instance.startingSetting,
+          instance.getProductListingWithoutFiltersModel?.toJson(),
+      'mainCategoriesResponseModel':
+          instance.mainCategoriesResponseModel?.toJson(),
+      'startingSetting': instance.startingSetting?.toJson(),
     };
 
 const _$GetStartingSettingsStatusEnumMap = {

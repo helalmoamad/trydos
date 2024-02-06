@@ -329,9 +329,9 @@ class HsProduct {
   final String? shareLink;
   final String? thumbnail;
   final List<String>? images;
-  final double? price;
+  final int? price;
   final String? priceFormatted;
-  final double? offerPrice;
+  final int? offerPrice;
   final String? offerPriceFormatted;
   final bool? isFavourite;
   final bool? inStock;
@@ -364,9 +364,9 @@ class HsProduct {
     String? shareLink,
     String? thumbnail,
     List<String>? images,
-    double? price,
+    int? price,
     String? priceFormatted,
-    double? offerPrice,
+    int? offerPrice,
     String? offerPriceFormatted,
     bool? isFavourite,
     bool? inStock,
@@ -399,9 +399,9 @@ class HsProduct {
     shareLink: json["share_link"],
     thumbnail: json["thumbnail"],
     images: json["images"] == null ? [] : List<String>.from(json["images"]!.map((x) => x)),
-    price: json["price"]?.toDouble(),
+    price: json["price"],
     priceFormatted: json["price_formatted"],
-    offerPrice: json["offer_price"]?.toDouble(),
+    offerPrice: json["offer_price"],
     offerPriceFormatted: json["offer_price_formatted"],
     isFavourite: json["is_favourite"],
     inStock: json["in_stock"],

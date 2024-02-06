@@ -193,10 +193,10 @@ class SaveContactsEvent extends ChatEvent {
 
 class ReceiveMessageEvent extends ChatEvent {
   final Message message;
-  final String prevMessageId;
-
+  final String? prevMessageId;
+  final bool increaseUnReadMessages;
   const ReceiveMessageEvent(
-      {required this.message, required this.prevMessageId});
+      {required this.message, this.prevMessageId , this.increaseUnReadMessages = true});
 
   @override
   // TODO: implement props

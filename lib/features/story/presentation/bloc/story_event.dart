@@ -19,40 +19,34 @@ class LoadFailureEvent extends StoryEvent
   final int collectionId;
   const LoadFailureEvent({required this.collectionId});
   @override
-  // TODO: implement props
   List<Object?> get props => [collectionId];
 
 }
 class StorySelectedEvent extends StoryEvent
 {
-  int selected;
-  int initialStory;
-  int currentPage;
-  StorySelectedEvent({
+  final int selected;
+  final int initialStory;
+  final int currentPage;
+  const StorySelectedEvent({
     required this.selected, required this.initialStory, required this.currentPage});
 
   @override
-  // TODO: implement props
   List<Object?> get props => [selected,initialStory,currentPage];
 }
 
 class LoadingVideoEvent extends StoryEvent
 {
   @override
-  // TODO: implement props
   List<Object?> get props => [];
-
-
 }
 
 class UploadStoryEvent extends StoryEvent
 {
-File file;
+final File file;
 
 
-UploadStoryEvent(this.file);
+const UploadStoryEvent(this.file);
 
-  @override
   // TODO: implement props
   List<Object?> get props => [];
 
@@ -71,7 +65,6 @@ class AddStoryToOurServerEvent extends StoryEvent
   const AddStoryToOurServerEvent({required this.filePath , required this.isVideo , this.width , this.height});
 
   @override
-  // TODO: implement props
   List<Object?> get props => [filePath , isVideo , width , height];
 
 
@@ -80,13 +73,12 @@ class AddStoryToOurServerEvent extends StoryEvent
 
 class UploadStoryCloudinaryEvent extends StoryEvent
 {
-  File file;
+  final File file;
 
 
-  UploadStoryCloudinaryEvent(this.file);
+  const UploadStoryCloudinaryEvent(this.file);
 
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 
 
@@ -95,8 +87,18 @@ class UploadStoryCloudinaryEvent extends StoryEvent
 class FailureVideoEvent extends StoryEvent
 {
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 
+
+}
+
+class IncreaseViewersEvent extends StoryEvent{
+  const IncreaseViewersEvent({required this.collectionId , required this.storyId});
+
+  final String storyId;
+  final String collectionId;
+
+  @override
+  List<Object?> get props => [];
 
 }

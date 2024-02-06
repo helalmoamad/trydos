@@ -105,6 +105,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       child: TrydosLoader(),
                     );
                   }
+                  if (state.getProductsWithoutFiltersStatus ==
+                      GetProductsWithoutFiltersStatus.failure) {
+                    return Center(
+                      child: ElevatedButton(
+                          onPressed: () {
+                           homeBloc.add(GetProductsWithoutFiltersEvent(category: 'رجالي_36'));
+                          },
+                          child: Text('Try Again')),
+                    );
+                  }
                   return ValueListenableBuilder<Tuple2<int, int>>(
                       valueListenable: setThisEnabledNotifier,
                       builder: (context, slidingMode, _) {

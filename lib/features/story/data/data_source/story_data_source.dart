@@ -9,10 +9,9 @@ import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/post.dart';
 import '../../../../core/api/methods/get.dart';
 import '../../presentation/bloc/story_bloc.dart';
-import '../models/get_stories_model.dart';
 import '../models/image_detail.dart';
 import '../models/upload_story_response_model.dart';
-
+import '../../data/models/get_stories_model.dart' as stories;
 @injectable
 class StoriesDataSource {
   Completer<ImageDetail> completer = Completer<ImageDetail>();
@@ -49,13 +48,13 @@ class StoriesDataSource {
     return completer.future;
   }
 
-  Future<GetStoriesModel> getStories() {
-    GetClient<GetStoriesModel> getStories = GetClient<GetStoriesModel>(
+  Future<stories.GetStoriesModel> getStories() {
+    GetClient<stories.GetStoriesModel> getStories = GetClient<stories.GetStoriesModel>(
       serverName: ServerName.stories,
-      requestPrams: RequestConfig<GetStoriesModel>(
+      requestPrams: RequestConfig<stories.GetStoriesModel>(
         endpoint: StoriesEndPoints.getStoriesEP,
-        response: ResponseValue<GetStoriesModel>(
-            fromJson: (response) => GetStoriesModel.fromJson(response)),
+        response: ResponseValue<stories.GetStoriesModel>(
+            fromJson: (response) => stories.GetStoriesModel.fromJson(response)),
       ),
     );
 
@@ -80,11 +79,24 @@ class StoriesDataSource {
     return uploadStory();
   }
 
-  Future<bool> addStoryToOurServer(Map<String, dynamic> params) {
-    PostClient<bool> addStoryToOurServer = PostClient<bool>(
-      requestPrams: RequestConfig<bool>(
+  Future<stories.Datum?> addStoryToOurServer(Map<String, dynamic> params) {
+    PostClient<stories.Datum?> addStoryToOurServer = PostClient<stories.Datum?>(
+      requestPrams: RequestConfig<stories.Datum?>(
         endpoint: StoriesEndPoints.addStoryToOurServerEP,
         data: params,
+        response: ResponseValue<stories.Datum?>(
+          fromJson: (response) => stories.Datum?.fromJson(response['data'])
+        )
+      ),
+      serverName: ServerName.stories,
+    );
+    // uploadStory.call();
+    return addStoryToOurServer();
+  }
+  Future<bool> increaseViewers(Map<String, dynamic> params) {
+    GetClient<bool> addStoryToOurServer = GetClient<bool>(
+      requestPrams: RequestConfig<bool>(
+        endpoint: StoriesEndPoints.increaseViewersEP(params['storyId']),
         response: ResponseValue<bool>(returnValueOnSuccess: true),
       ),
       serverName: ServerName.stories,
