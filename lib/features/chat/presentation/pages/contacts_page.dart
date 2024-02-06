@@ -138,8 +138,10 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
               ),
             ),
             BlocConsumer<ChatBloc, ChatState>(
+              buildWhen: (p,c)=> p.getContactsStatus != c.getContactsStatus,
+              listenWhen: (p,c)=> p.getContactsStatus != c.getContactsStatus,
               listener: (context, state) {
-                // TODO: implement listener
+                searchContacts.value = state.contacts;
               },
               builder: (context, state) {
                 if ((state.getContactsStatus == GetContactsStatus.loading ||

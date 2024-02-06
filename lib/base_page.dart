@@ -214,8 +214,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           navigatorKey.currentState!.context.pop();
         }
       } else if (event.data['type'] == 'VideoCallEvent') {
-        Map<String, dynamic> data = convert.jsonDecode(event.data['data']);
-        Message message = Message.fromJson(convert.jsonDecode(data['message']));
+          Map<String, dynamic> data = convert.jsonDecode(event.data['data']);
+          Message message = Message.fromJson(data['message']);
         chatBloc.add(ReceiveMessageEvent(
             message: message, increaseUnReadMessages: false));
         Navigator.of(context).push(MaterialPageRoute(
@@ -229,7 +229,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         ));
       } else if (event.data['type'] == 'VoiceCallEvent') {
         Map<String, dynamic> data = convert.jsonDecode(event.data['data']);
-        Message message = Message.fromJson(convert.jsonDecode(data['message']));
+        Message message = Message.fromJson(data['message']);
         chatBloc.add(ReceiveMessageEvent(
             message: message, increaseUnReadMessages: false));
         Navigator.of(context).push(MaterialPageRoute(

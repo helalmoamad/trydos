@@ -58,15 +58,14 @@ class Data {
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        chats: json["channels"] == null
-            ? []
-            : List<Chat>.from(json["channels"]!.map((x) => Chat.fromJson(x))),
-        pinnedChats: json["pinned_channels"] == null
-            ? []
-            : List<Chat>.from(
-                json["pinned_channels"]!.map((x) => Chat.fromJson(x))),
-      missedFcmToken : json['missed_fcm_token']
-      );
+      chats: json["channels"] == null
+          ? []
+          : List<Chat>.from(json["channels"]!.map((x) => Chat.fromJson(x))),
+      pinnedChats: json["pinned_channels"] == null
+          ? []
+          : List<Chat>.from(
+              json["pinned_channels"]!.map((x) => Chat.fromJson(x))),
+      missedFcmToken: json['missed_fcm_token']);
 
   Map<String, dynamic> toJson() => {
         "channels": chats == null
@@ -223,9 +222,8 @@ class Message {
     final File? file,
   }) {
     return Message(
-      height: height??this.height,
-
-width: width??this.width,
+      height: height ?? this.height,
+      width: width ?? this.width,
       id: id ?? this.id,
       localId: localId ?? this.localId,
       localParentMessageId: localParentMessageId ?? this.localParentMessageId,
@@ -363,15 +361,15 @@ width: width??this.width,
       };
 }
 
-
 class Chat {
   final String? id;
+  final String? channelName;
+  final String? photoPath;
   final String? localId;
   final int? ownerUserId;
   final dynamic isAllowedByUserId;
   final dynamic isChatAllowed;
   final dynamic isMaskedByCustomerService;
-  final dynamic photoPath;
   final DateTime? opensAt;
   final dynamic closesAt;
   final int? channelTypeId;
@@ -395,6 +393,7 @@ class Chat {
     this.isChatAllowed,
     this.isMaskedByCustomerService,
     this.photoPath,
+    this.channelName,
     this.opensAt,
     this.closesAt,
     this.channelTypeId,
@@ -419,6 +418,7 @@ class Chat {
     dynamic isChatAllowed,
     dynamic isMaskedByCustomerService,
     dynamic photoPath,
+    dynamic channelName,
     DateTime? opensAt,
     dynamic closesAt,
     int? channelTypeId,
@@ -443,6 +443,7 @@ class Chat {
         isMaskedByCustomerService:
             isMaskedByCustomerService ?? this.isMaskedByCustomerService,
         photoPath: photoPath ?? this.photoPath,
+        channelName: channelName ?? this.channelName,
         opensAt: opensAt ?? this.opensAt,
         closesAt: closesAt ?? this.closesAt,
         channelTypeId: channelTypeId ?? this.channelTypeId,
@@ -475,6 +476,7 @@ class Chat {
         isChatAllowed: json["is_chat_allowed"],
         isMaskedByCustomerService: json["is_masked_by_customer_service"],
         photoPath: json["photo_path"],
+        channelName: json["channel_name"],
         opensAt: json["opens_at"],
         closesAt: json["closes_at"],
         channelTypeId: json["channel_type_id"],
