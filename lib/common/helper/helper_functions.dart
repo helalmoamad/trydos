@@ -120,36 +120,23 @@ class HelperFunctions {
         .toList();
   }
 
-  static Future<AssetEntity?> getAssetFromCamera(BuildContext context) async {
+  static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
+
     final List<AssetEntity>? assets = await myMultiAssetPicker(context);
     return assets?[0];
   }
 
-  static Future<List<AssetEntity>?> myMultiAssetPicker(BuildContext context) {
-    AssetPickerTextDelegate textDelegate = LanguageService.languageCode != 'ar'
-        ? const EnglishAssetPickerTextDelegate()
-        : const ArabicAssetPickerTextDelegate();
+  static Future<List<AssetEntity>?> myMultiAssetPicker(BuildContext context) async{
+    // AssetPickerTextDelegate textDelegate = LanguageService.languageCode != 'ar'
+    //     ? const EnglishAssetPickerTextDelegate()
+    //     : const ArabicAssetPickerTextDelegate();
     return AssetPicker.pickAssets(
       context,
+
       pickerConfig: AssetPickerConfig(
         maxAssets: 1,
-        textDelegate: textDelegate,
+        specialPickerType: SpecialPickerType.noPreview,
         themeColor: const Color(0xff137AC9),
-        specialItemPosition: SpecialItemPosition.prepend,
-        specialItemBuilder: (
-            BuildContext context,
-            AssetPathEntity? path,
-            int length,
-            ) {
-          if (path?.isAll != true) {
-            return null;
-          }
-          return Semantics(
-            label: textDelegate.sActionUseCameraHint,
-            button: true,
-            onTapHint: textDelegate.sActionUseCameraHint,
-          );
-        },
       ),
     );
   }

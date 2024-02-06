@@ -32,6 +32,7 @@ class ContactCard extends StatelessWidget {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
+      print(error);
     };
     final String receiverName, fullReceiverName;
     if (contact.name == null) {
@@ -57,35 +58,31 @@ class ContactCard extends StatelessWidget {
                   return;
                 }
                 Navigator.of(context).pop();
+                Chat? chat;
+                User? sender,receiver;
+                String id;
+                List<Chat> chats=List.of(GetIt.I<ChatBloc>().state.chats);
+                print(chats);
+                chats.addAll(GetIt.I<ChatBloc>().state.pinnedChats);
+                chat=chats.firstWhere((element) => element.channelMembers!.any((element) => element.userId==contact.contactUserId));
+                final preferences=GetIt.I<PrefsRepository>();
+                id=chat.id!;
+                sender=chat.channelMembers?.firstWhere((element) => element.userId==preferences.myChatId,orElse: ()=> ChannelMember()).user;
+                receiver=chat.channelMembers?.firstWhere((element) => element.userId!=preferences.myChatId,orElse: ()=> ChannelMember()).user;
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => BlocBuilder<AppBloc, AppState>(
                             builder: (context, state) {
-                              return BlocBuilder<ChatBloc, ChatState>(
-                                buildWhen: (p,c)=> p.getChatsStatus != c.getChatsStatus,
-                                builder: (context, chatState) {
-                                  Chat? chat;
-                                  User? sender,receiver;
-                                  String? id;
-                                  List<Chat> chats=List.of(chatState.chats);
-                                  chats.addAll(chatState.pinnedChats);
-                                  chat=chats.firstWhere((element) => element.channelMembers!.any((element) => element.userId==contact.contactUserId));
-                                      final preferences=GetIt.I<PrefsRepository>();
-                                      id=chat.id!;
-                                      sender=chat.channelMembers?.firstWhere((element) => element.userId==preferences.myChatId,orElse: ()=> ChannelMember()).user;
-                                      receiver=chat.channelMembers?.firstWhere((element) => element.userId!=preferences.myChatId,orElse: ()=> ChannelMember()).user;
-                                  return SinglePageChat(
-                                    chatId: id,
-                                    receiverName: receiverName,
-                                    fullReceiverName: fullReceiverName,
-                                    receiverPhone: receiver?.mobilePhone ??
-                                        'No Number',
-                                    senderName: HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!),
-                                    receiverPhoto: sender?.photoPath,
-                                    senderPhoto: receiver?.photoPath,
-                                  );
-                                },
+                              return SinglePageChat(
+                                chatId: id,
+                                receiverName: receiverName,
+                                fullReceiverName: fullReceiverName,
+                                receiverPhone: receiver?.mobilePhone ??
+                                    'No Number',
+                                senderName: HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!),
+                                receiverPhoto: sender?.photoPath,
+                                senderPhoto: receiver?.photoPath,
                               );
                             },
                           )),

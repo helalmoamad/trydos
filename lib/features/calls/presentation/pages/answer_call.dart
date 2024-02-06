@@ -55,7 +55,7 @@ class _AnswerCallState extends State<AnswerCall> {
 
   @override
   void initState() {
-    if (GetIt.I<CallsBloc>().state.createVideoCallStatus == CreateVideoCallStatus.endCall)
+    if (GetIt.I<CallsBloc>().state.makeCallStatus == MakeCallStatus.endCall)
       {
         Navigator.of(context).pop();
         debugPrint('poppp');
@@ -182,7 +182,7 @@ class _AnswerCallState extends State<AnswerCall> {
         //     previous.createVideoCallStatus != current.createVideoCallStatus,
         listener: (context, state) {
           debugPrint("zczczxc");
-          if (state.createVideoCallStatus == CreateVideoCallStatus.endCall)
+          if (state.makeCallStatus == MakeCallStatus.endCall)
             {              debugPrint("adasd");
               Navigator.of(context).pop();
             }

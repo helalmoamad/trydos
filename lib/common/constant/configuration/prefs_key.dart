@@ -7,6 +7,8 @@ abstract class PrefsKey {
 
   static const chatName = r'__$__chatName__$__';
 
+  static const chatPhoto = r'__$__chatPhoto__$__';
+
   static const marketName = r'__$__marketName__$__';
 
   static const chatToken = r'__$__chatToken__$__';
@@ -34,4 +36,6 @@ abstract class PrefsKey {
   static const messages = r'__$__messages__$__';
 
   static const error = r'__$__error__$__';
+
+  static const isAuthorizedGetAssets = r'__$__isAuthorizedGetAssets__$__';
 }

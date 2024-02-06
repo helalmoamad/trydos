@@ -6,13 +6,16 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/form_utils.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/widgets/contact_card.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../../main.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/app_widgets/app_text_field.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -21,6 +24,7 @@ import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../home/presentation/widgets/sliver_list_seprated.dart';
 import '../../data/models/my_contacts_response_model.dart';
 import '../manager/chat_bloc.dart';
+import '../manager/chat_state.dart';
 import '../widgets/chat_card.dart';
 
 class MyContactsPage extends StatefulWidget {
@@ -33,7 +37,9 @@ class MyContactsPage extends StatefulWidget {
 class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
   final ScrollController scrollController = ScrollController();
   late ChatBloc chatBloc;
-  ValueNotifier<List<Contact>> searchContacts=ValueNotifier(GetIt.I<ChatBloc>().state.contacts);
+  ValueNotifier<List<Contact>> searchContacts =
+      ValueNotifier(GetIt.I<ChatBloc>().state.contacts);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,21 +58,15 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                   Transform(
                     alignment: Alignment.center,
                     transform: (Matrix4.identity()
-                      ..scale(
-                          LanguageService
-                              .languageCode ==
-                              'ar'
-                              ? -1.0
-                              : 1.0,
-                          1.0,
-                          1.0)),
+                      ..scale(LanguageService.languageCode == 'ar' ? -1.0 : 1.0,
+                          1.0, 1.0)),
                     child: InkWell(
                       onTap: () {
                         Navigator.pop(context);
                       },
                       child: Padding(
-                        padding: HWEdgeInsetsDirectional.fromSTEB(
-                            20.w, 15, 15, 15),
+                        padding:
+                            HWEdgeInsetsDirectional.fromSTEB(20.w, 15, 15, 15),
                         child: SvgPicture.asset(
                           AppAssets.backFromCallSvg,
                           width: 8.w,
@@ -95,7 +95,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
               child: Container(
                 width: 1.sw,
                 height: 50,
-                margin: HWEdgeInsets.symmetric( vertical: 5),
+                margin: HWEdgeInsets.symmetric(vertical: 5),
                 color: colorScheme.white,
                 padding: HWEdgeInsets.symmetric(horizontal: 10.w, vertical: 5),
                 child: AppTextField(
@@ -105,21 +105,27 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                   hintText: 'Search, Chat, Contact, Start New Chat',
                   hintTextStyle: textTheme.subtitle2?.lr
                       .copyWith(color: const Color(0xffD3D3D3)),
-                  onChange: (String? text){
-                    if(text?.isEmpty ?? true){
-                      searchContacts.value=GetIt.I<ChatBloc>().state.contacts;
-                    }else{
-                      List<Contact> search=[];
-                      for(Contact contact in GetIt.I<ChatBloc>().state.contacts){
-                        if(contact.name!.toLowerCase().contains(text?.toLowerCase() ?? '') || contact.mobilePhone!.toLowerCase().contains(text?.toLowerCase() ?? '')){
+                  onChange: (String? text) {
+                    if (text?.isEmpty ?? true) {
+                      searchContacts.value = chatBloc.state.contacts;
+                    } else {
+                      List<Contact> search = [];
+                      for (Contact contact
+                          in GetIt.I<ChatBloc>().state.contacts) {
+                        if (contact.name!
+                                .toLowerCase()
+                                .contains(text?.toLowerCase() ?? '') ||
+                            contact.mobilePhone!
+                                .toLowerCase()
+                                .contains(text?.toLowerCase() ?? '')) {
                           search.add(contact);
                         }
                       }
-                      searchContacts.value=search;
+                      searchContacts.value = search;
                     }
                   },
                   contentPadding:
-                  HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
+                      HWEdgeInsetsDirectional.fromSTEB(20.w, 10, 20.w, 10),
                   prefixIcon: Padding(
                     padding: HWEdgeInsetsDirectional.only(top: 10, bottom: 10),
                     child: SvgPicture.asset(
@@ -136,29 +142,37 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                 // TODO: implement listener
               },
               builder: (context, state) {
-
-
-
-                if(state.getContactsStatus == GetContactsStatus.loading){
-                  return SliverToBoxAdapter(child: Center(child: TrydosLoader(),));
+                if ((state.getContactsStatus == GetContactsStatus.loading ||
+                        state.getContactsStatus == GetContactsStatus.init) &&
+                    state.contacts.isNullOrEmpty) {
+                  return SliverToBoxAdapter(
+                      child: Center(
+                    child: TrydosLoader(),
+                  ));
                 }
-
-
+                if (state.getContactsStatus == GetContactsStatus.failure) {
+                  return Center(
+                    child: ElevatedButton(
+                        onPressed: () {
+                          chatBloc.add(GetContactsEvent());
+                        },
+                        child: Text('Try Again')),
+                  );
+                }
                 return ValueListenableBuilder<List<Contact>>(
-                  valueListenable: searchContacts,
-                  builder: (context , searchedContacts , _) {
-                    return sliverListSeparated(
-                      itemBuilder: (_, index) {
-                        return ContactCard(index: index, contact: searchedContacts[index]);
-                      },
-                      separator: const SizedBox.shrink(),
-                      childCount: searchedContacts.length,
-                    );
-                  }
-                );
+                    valueListenable: searchContacts,
+                    builder: (context, searchedContacts, _) {
+                      return sliverListSeparated(
+                        itemBuilder: (_, index) {
+                          return ContactCard(
+                              index: index, contact: searchedContacts[index]);
+                        },
+                        separator: const SizedBox.shrink(),
+                        childCount: searchedContacts.length,
+                      );
+                    });
               },
             ),
-
             SliverToBoxAdapter(
               child: 20.verticalSpace,
             ),

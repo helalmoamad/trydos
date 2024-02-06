@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -16,6 +18,7 @@ class MyCachedNetworkImage extends StatelessWidget {
         this.logoTextHeight,
       required this.imageFit,
         this.imageBuilder,
+        this.imageColor,
         this.progressIndicatorBuilderWidget,
        this.radius=12,
        this.withImageShadow=false,
@@ -36,6 +39,7 @@ class MyCachedNetworkImage extends StatelessWidget {
   final bool withImageShadow;
   final ImageWidgetBuilder? imageBuilder;
   final double? circleDimensions;
+  final Color? imageColor;
 
 
   final Widget? progressIndicatorBuilderWidget;
@@ -50,13 +54,14 @@ class MyCachedNetworkImage extends StatelessWidget {
           rebuildImage.value++;
         });
       },
-      child: Icon(Icons.refresh, color: const Color(0xffff5f61), size: height),
+      child: Icon(Icons.refresh, color: const Color(0xffff5f61), size: min(25 ,height)),
     ));
   }
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
+      key: UniqueKey(),
         valueListenable: rebuildImage,
         builder: (context, count, _) {
           return Container(
@@ -78,6 +83,7 @@ class MyCachedNetworkImage extends StatelessWidget {
                   imageUrl: imageUrl,
                   fit: imageFit,
                   width: width,
+                  color: imageColor,
                   height: height,
                   cacheManager: CustomCacheManager(),
                   progressIndicatorBuilder: (context, _, progress){

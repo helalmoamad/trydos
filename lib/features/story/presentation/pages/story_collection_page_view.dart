@@ -9,6 +9,7 @@ import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
 import '../../presentation/pages/story_collection.dart';
+import '../bloc/story_state.dart';
 
 class StoryCollectionPageView extends StatefulWidget {
   const StoryCollectionPageView({super.key, required this.initialPage});

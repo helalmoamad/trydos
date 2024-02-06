@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/client_config.dart';
@@ -6,33 +8,31 @@ import 'package:trydos/core/api/methods/post.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../models/agora_token_remote_response_model.dart';
-import '../models/video_call_ersponse_model.dart';
+import '../models/make_call_response_model.dart';
 
 @injectable
 class CallsRemoteDataSource {
-  Future<VideoCallRemoteResponseModel> makeCallVideo(
+  Future<MakeCallRemoteResponseModel> makeCall(
       Map<String, dynamic> params) {
-    Map<String, dynamic> data = {};
-    if (params['receiver_user_id'] != null) {
-      data['payload'] = params['payload'];
-      data['receiver_user_id'] = params['receiver_user_id'];
+    if (params['data']['receiver_user_id'] != null) {
+      params['data'].remove('channel_id');
     } else {
-      data['payload'] = params['payload'];
-      data['channel_id'] = params['channel_id'];
+      params['data'].remove('receiver_user_id');
     }
-
-    PostClient<VideoCallRemoteResponseModel> videoCall =
-        PostClient<VideoCallRemoteResponseModel>(
-            requestPrams: RequestConfig<VideoCallRemoteResponseModel>(
-                data: data,
-                endpoint: ChatEndPoints.videoCall(params['channel_id']),
-                response: ResponseValue<VideoCallRemoteResponseModel>(
+    bool isVideo = params['isVideo'];
+    PostClient<MakeCallRemoteResponseModel> makeCall =
+        PostClient<MakeCallRemoteResponseModel>(
+            requestPrams: RequestConfig<MakeCallRemoteResponseModel>(
+                data: params['data'],
+                endpoint: isVideo ? ChatEndPoints.videoCallEP : ChatEndPoints.voiceCallEP,
+                response: ResponseValue<MakeCallRemoteResponseModel>(
                   fromJson: (response) {
-                    return VideoCallRemoteResponseModel.fromJson(response);
+                    log(response.toString());
+                    return MakeCallRemoteResponseModel.fromJson(response);
                   },
                 )),
             serverName: ServerName.chat);
-    return videoCall();
+    return makeCall();
   }
 
   Future<bool> makeAnswerCall(String messageId) {

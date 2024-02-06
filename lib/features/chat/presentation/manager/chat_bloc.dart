@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -21,16 +21,15 @@ import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart'
 import 'package:trydos/features/chat/domain/use_cases/upload_file_usecase.dart';
 import 'package:trydos/main.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/domin/usecases/upload_file_cloudinary_usecase.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../../data/models/my_contacts_response_model.dart';
-import '../utils/pusher_chat.dart';
 import 'chat_event.dart';
+import 'chat_state.dart';
 import 'helper_function_for_chat_bloc/group_received_message_on_days.dart';
-
-part 'chat_state.dart';
 
 const throttleDuration = Duration(milliseconds: 1000);
 
@@ -41,7 +40,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 }
 
 @LazySingleton()
-class ChatBloc extends Bloc<ChatEvent, ChatState> {
+class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin{
   ChatBloc(
       this.getContactsUseCase,
       this.getMyChatsUseCase,
@@ -237,9 +236,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         List<Chat> chats = state.chats.map((e) {
           if (e.localId == event.channelId &&
               int.tryParse(event.channelId) == null) {
-            final PusherChatService pusherChatService =
-                GetIt.I<PusherChatService>();
-            pusherChatService.createPresenceChannel(r.channel!.id.toString());
             return r.channel!.copyWith(
                 localId: event.channelId,
                 messages: e.messages?.map((e) {
@@ -274,8 +270,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onSaveContactsEvent(
       SaveContactsEvent event, Emitter<ChatState> emit) async {
-    debugPrint('saveContact${state.saveContactsStatus}');
-    if (state.saveContactsStatus != SaveContactsStatus.init) {
+    if (apisMustNotToRequest.contains('SaveContactsEvent')) {
       return;
     }
     emit(state.copyWith(saveContactsStatus: SaveContactsStatus.loading));
@@ -290,20 +285,23 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         emit(state.copyWith(saveContactsStatus: SaveContactsStatus.failure));
       },
       (r) {
+        apisMustNotToRequest.add('SaveContactsEvent');
         isFailedTheFirstTime.remove('SaveContactsEvent');
-        GetIt.I<ChatBloc>().add(GetChatsEvent());
         emit(
           state.copyWith(
-            // contacts: ,
             saveContactsStatus: SaveContactsStatus.success,
           ),
         );
+        getContactsAfterSavingItAndGettingChannels();
       },
     );
   }
 
   FutureOr<void> _onGetChatsEvent(
       GetChatsEvent event, Emitter<ChatState> emit) async {
+    if (apisMustNotToRequest.contains('GetChatsEvent')) {
+      return;
+    }
     emit(state.copyWith(getChatsStatus: GetChatsStatus.loading));
     final response = await getMyChatsUseCase(NoParams());
     response.fold(
@@ -316,28 +314,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         emit(state.copyWith(getChatsStatus: GetChatsStatus.failure));
       },
       (r) {
+        apisMustNotToRequest.add('GetChatsEvent');
         if (r.data!.missedFcmToken) {
           GetIt.I<AuthBloc>().add(StoreFcmTokenEvent(
               userId: _prefsRepository.myChatId!,
               fcmToken: NotificationProcess.myFcmToken!));
         }
         isFailedTheFirstTime.remove('GetChatsEvent');
-        final PusherChatService pusherChatService =
-            GetIt.I<PusherChatService>();
-        //pusherChatService.initialization();
-        pusherChatService.subscribe('user-${GetIt.I<PrefsRepository>().myChatId}-messages');
-        if(pusherChatService.presenceChannels.length == 0) {
-          //pusherChatService.subscribeToAllPresenceChannels(r.data!.chats ?? []);
-          //pusherChatService.subscribeToAllPresenceChannels(r.data!.pinnedChats ?? []);
-          // r.data!.chats?.forEach((element) async {
-          //   await pusherChatService.createPresenceChannel(
-          //       element.id.toString());
-          // });
-          // r.data!.pinnedChats?.forEach((element) async {
-          //   await pusherChatService.createPresenceChannel(
-          //       element.id.toString());
-          // });
-        }
         int unReadMessagesFromAllChats = 0;
         r.data!.chats?.forEach((element) {
           unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
@@ -345,7 +328,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         r.data!.pinnedChats?.forEach((element) {
           unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
         });
-
         emit(
           state.copyWith(
               getChatsStatus: GetChatsStatus.success,
@@ -355,15 +337,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               pinnedChats: r.data!.pinnedChats!,
               unReadMessagesFromAllChats: unReadMessagesFromAllChats),
         );
-        if (state.contacts.isEmpty) {
-          add(const GetContactsEvent());
-        }
+        getContactsAfterSavingItAndGettingChannels();
       },
     );
   }
 
   FutureOr<void> _onGetContactsEvent(
       GetContactsEvent event, Emitter<ChatState> emit) async {
+    if (apisMustNotToRequest.contains('GetContactsEvent')) return;
     emit(state.copyWith(getContactsStatus: GetContactsStatus.loading));
     final response = await getContactsUseCase(NoParams());
     response.fold(
@@ -375,6 +356,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         emit(state.copyWith(getContactsStatus: GetContactsStatus.failure));
       },
       (r) {
+        apisMustNotToRequest.add('GetContactsEvent');
         isFailedTheFirstTime.remove('GetContactsEvent');
         List<Chat> newChats = List.of(state.chats);
         bool changed = false;
@@ -393,7 +375,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                       orElse: () => ChannelMember(userId: -1))
                   .userId !=
               -1);
-//          print('index : $index');
+          print('index : $index');
           if (index == -1) {
             print('new chat');
             changed = true;
@@ -547,8 +529,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onReceiveMessageEvent(
       ReceiveMessageEvent event, Emitter<ChatState> emit) async {
-    log('***** message received *****');
-    print('message ${event.message}');
     List<Message> messages = [];
     bool fromPinned = false;
     List<Chat> chats;
@@ -573,29 +553,26 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             hasReachedMax: false,
           ));
     } else {
-      print('totalUnreadMessageCount: ${chat.totalUnreadMessageCount}');
       chats.removeWhere((element) => element.id == chat.id);
       chats.insert(
           0,
           chat.copyWith(
-              totalUnreadMessageCount: ((chat.totalUnreadMessageCount ?? 0) +
+              totalUnreadMessageCount: event.increaseUnReadMessages ? ((chat.totalUnreadMessageCount ?? 0) +
                   (event.message.senderUserId! != _prefsRepository.myChatId
                       ? 1
-                      : 0))));
+                      : 0)) : chat.totalUnreadMessageCount));
     }
     messages = List.of(chat.messages ?? []);
     messages.insert(0, event.message);
-
-    int index =
-        messages.indexWhere((element) => element.id == event.prevMessageId);
+    int index = messages.indexWhere((element) => element.id == event.prevMessageId);
     chats = sortChats(chats, event.message.channelId, messages);
     emit(state.copyWith(
       receiveMessageStatus: ReceiveMessageStatus.success,
       unReadMessagesFromAllChats:
-          state.unReadMessagesFromAllChats + event.message.senderUserId! !=
+      event.increaseUnReadMessages ?  (state.unReadMessagesFromAllChats + event.message.senderUserId! !=
                   _prefsRepository.myChatId
               ? 1
-              : 0,
+              : 0) : state.unReadMessagesFromAllChats,
       newSortedChatsByDate: groupReceivedMessageOnDays(
           chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)]),
       currentChannelReceivedMessage: event.message.channelId,
@@ -603,10 +580,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       chats: fromPinned ? state.chats : chats,
       pinnedChats: !fromPinned ? state.pinnedChats : chats,
     ));
-    add(NotifyThatIReceivedMessageEvent(channelId: event.message.channelId!));
-    if (index == -1) {
+    if(event.prevMessageId != null) {
+      add(NotifyThatIReceivedMessageEvent(channelId: event.message.channelId!));
+    }
+    if (index == -1 && event.prevMessageId != null) {
       add(GetAllMessagesBetweenEvent(
-          firstMessageId: event.prevMessageId,
+          firstMessageId: event.prevMessageId!,
           secondMessageId: event.message.id.toString(),
           scrollToParentMessage: false,
           channelId: event.message.channelId.toString()));
@@ -873,7 +852,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onReceiveMessageFromPusherEvent(
       ReceiveMessageFromPusherEvent event, Emitter<ChatState> emit) {
-    print('_onReceiveMessageFromPusherEventExecuted');
 
     emit(state.copyWith(
         changeMessageStateFromPusherStatus:
@@ -899,7 +877,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onWatchedMessageFromPusherEvent(
       WatchedMessageFromPusherEvent event, Emitter<ChatState> emit) {
-    print('_onWatchedMessageFromPusherEventExecuted');
 
     emit(state.copyWith(
         changeMessageStateFromPusherStatus:
@@ -1043,9 +1020,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onGetAllMessagesBetweenEvent(
       GetAllMessagesBetweenEvent event, Emitter<ChatState> emit) async {
+    print('ssssssssss ${state.getMessagesBetweenStatus}');
     if (state.getMessagesBetweenStatus == GetMessagesBetweenStatus.loading) {
       return;
     }
+    emit(state.copyWith(
+      getMessagesBetweenStatus: GetMessagesBetweenStatus.loading,
+    ));
     bool fromPinned = false;
     Chat chat;
     chat = state.chats.firstWhere(
@@ -1056,9 +1037,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       chat = state.pinnedChats
           .firstWhere((element) => element.id == event.channelId);
     }
-    emit(state.copyWith(
-      getMessagesBetweenStatus: GetMessagesBetweenStatus.loading,
-    ));
     final response = await getMessagesBetweenUseCase(GetMessagesBetweenParams(
         firstMessageId: event.firstMessageId,
         secondMessageId: event.secondMessageId,
@@ -1109,5 +1087,22 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           scrollToParentMessage: event.scrollToParentMessage,
           pinnedChats: pinnedChats));
     });
+  }
+
+  getContactsAfterSavingItAndGettingChannels() {
+    if (state.getChatsStatus == GetChatsStatus.success &&
+        state.saveContactsStatus == SaveContactsStatus.success) {
+      add(GetContactsEvent());
+    }
+  }
+
+  @override
+  ChatState? fromJson(Map<String, dynamic> json) {
+    return ChatState.fromJson(json);
+  }
+
+  @override
+  Map<String, dynamic>? toJson(ChatState state) {
+    return state.toJson();
   }
 }

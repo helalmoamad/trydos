@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
@@ -102,6 +103,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       GetProductsWithoutFiltersStatus.loading) {
                     return Center(
                       child: TrydosLoader(),
+                    );
+                  }
+                  if (state.getProductsWithoutFiltersStatus ==
+                      GetProductsWithoutFiltersStatus.failure) {
+                    return Center(
+                      child: ElevatedButton(
+                          onPressed: () {
+                           homeBloc.add(GetProductsWithoutFiltersEvent(category: 'رجالي_36'));
+                          },
+                          child: Text('Try Again')),
                     );
                   }
                   return ValueListenableBuilder<Tuple2<int, int>>(

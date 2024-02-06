@@ -224,12 +224,13 @@ class Product {
   final String? thumbnail;
   final List<String>? images;
   final List<CategoryElement>? categories;
+  final CategoryElement? category;
   final Brand? brand;
   final List<Color>? colors;
   final List<SyncColorImage>? syncColorImages;
-  final double? price;
+  final int? price;
   final String? priceFormatted;
-  final double? offerPrice;
+  final int? offerPrice;
   final String? offerPriceFormatted;
   final bool? isFavourite;
   final bool? inStock;
@@ -246,6 +247,7 @@ class Product {
     this.thumbnail,
     this.images,
     this.categories,
+    this.category,
     this.brand,
     this.colors,
     this.syncColorImages,
@@ -269,12 +271,13 @@ class Product {
     String? thumbnail,
     List<String>? images,
     List<CategoryElement>? categories,
+    CategoryElement? category,
     Brand? brand,
     List<Color>? colors,
     List<SyncColorImage>? syncColorImages,
-    double? price,
+    int? price,
     String? priceFormatted,
-    double? offerPrice,
+    int? offerPrice,
     String? offerPriceFormatted,
     bool? isFavourite,
     bool? inStock,
@@ -291,6 +294,7 @@ class Product {
         thumbnail: thumbnail ?? this.thumbnail,
         images: images ?? this.images,
         categories: categories ?? this.categories,
+        category: category ?? this.category,
         brand: brand ?? this.brand,
         colors: colors ?? this.colors,
         syncColorImages: syncColorImages ?? this.syncColorImages,
@@ -314,12 +318,13 @@ class Product {
     thumbnail: json["thumbnail"],
     images: json["images"] == null ? [] : List<String>.from(json["images"]!.map((x) => x)),
     categories: json["categories"] == null ? [] : List<CategoryElement>.from(json["categories"]!.map((x) => CategoryElement.fromJson(x))),
+    category: json["category"] == null ? null : CategoryElement.fromJson(json["category"]),
     brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
     colors: json["colors"] == null ? [] : List<Color>.from(json["colors"]!.map((x) => Color.fromJson(x))),
     syncColorImages: json["sync_color_images"] == null ? [] : List<SyncColorImage>.from(json["sync_color_images"]!.map((x) => SyncColorImage.fromJson(x))),
-    price: json["price"]?.toDouble(),
+    price: json["price"],
     priceFormatted: json["price_formatted"],
-    offerPrice: json["offer_price"]?.toDouble(),
+    offerPrice: json["offer_price"],
     offerPriceFormatted: json["offer_price_formatted"],
     isFavourite: json["is_favourite"],
     inStock: json["in_stock"],
@@ -337,6 +342,7 @@ class Product {
     "thumbnail": thumbnail,
     "images": images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
     "categories": categories == null ? [] : List<dynamic>.from(categories!.map((x) => x.toJson())),
+    "category": category?.toJson(),
     "brand": brand?.toJson(),
     "colors": colors == null ? [] : List<dynamic>.from(colors!.map((x) => x.toJson())),
     "sync_color_images": syncColorImages == null ? [] : List<dynamic>.from(syncColorImages!.map((x) => x.toJson())),

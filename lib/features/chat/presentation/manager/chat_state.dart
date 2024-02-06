@@ -1,4 +1,8 @@
-part of 'chat_bloc.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+import '../../data/models/my_chats_response_model.dart';
+import '../../data/models/my_contacts_response_model.dart';
+part 'chat_state.g.dart';
 
 enum SaveContactsStatus { init, loading, success, failure }
 
@@ -24,6 +28,7 @@ enum DeleteChatStatus { init, loading, success, failure }
 
 enum ChangeMessageStateFromPusherStatus { init, received, watched }
 
+@JsonSerializable(explicitToJson: true)
 class ChatState {
   final int width;
   final int height;
@@ -40,7 +45,7 @@ class ChatState {
   final ChangeChatPropertyStatus changeChatPropertyStatus;
   final DeleteChatStatus deleteChatStatus;
   final List<Contact> contacts;
-   List<Chat> chats;
+  List<Chat> chats;
   final List<Chat> pinnedChats;
   final List<String> currentMessage;
   final List<String> currentFailedMessage;
@@ -162,4 +167,7 @@ class ChatState {
           getMessagesBetweenStatus ?? this.getMessagesBetweenStatus,
     );
   }
+  factory ChatState.fromJson(Map<String,dynamic> data) => _$ChatStateFromJson(data);
+
+  Map<String,dynamic> toJson() => _$ChatStateToJson(this);
 }

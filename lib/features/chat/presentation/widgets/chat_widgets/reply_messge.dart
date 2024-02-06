@@ -8,6 +8,7 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/text_message.dart';
 
+import '../../manager/chat_state.dart';
 import 'image_message.dart';
 
 class ReplayMessage extends StatefulWidget {
@@ -107,7 +108,7 @@ class _ReplayMessageState extends State<ReplayMessage> {
         alignment: Alignment.bottomCenter,
           children: [
             Padding(
-              padding: const EdgeInsetsDirectional.only(end: 25.0),
+              padding:  EdgeInsetsDirectional.only(end:  widget.isSent ? 25.0 : 0 , start:  widget.isSent ? 0.0 : 25),
               child: InkWell(
                 focusColor: Colors.transparent,
                 splashColor: Colors.transparent,

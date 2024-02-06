@@ -19,6 +19,7 @@ import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
+import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 
 class TextMessage extends StatefulWidget {

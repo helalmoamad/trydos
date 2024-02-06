@@ -34,7 +34,11 @@ import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
 import 'features/chat/data/models/my_chats_response_model.dart';
 import 'features/chat/presentation/manager/chat_bloc.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
+import 'features/chat/presentation/manager/chat_state.dart';
+import 'features/chat/presentation/utils/firebase_presence.dart';
 import 'features/chat/presentation/utils/pusher_chat.dart';
+import 'features/chat/presentation/utils/pusher_chat_official_package.dart';
+import 'features/home/presentation/manager/home_state.dart';
 
 Widget get logo {
   debugPrint('deblogo');
@@ -136,7 +140,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   late HomeBloc homeBloc;
   late CallsBloc callsBloc;
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
-  late final PusherChatService pusherChatService ;
+
   final List<Widget> pages = [
     const HomePage(),
     const HomePage(),
@@ -159,13 +163,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    FirebasePresence.disconnect();
     super.dispose();
   }
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    pusherChatService = GetIt.I<PusherChatService>();
     chatBloc = BlocProvider.of<ChatBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
@@ -210,14 +214,30 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           navigatorKey.currentState!.context.pop();
         }
       } else if (event.data['type'] == 'VideoCallEvent') {
-        Map<String, dynamic> data =
-            convert.jsonDecode(event.data['data'].toString());
+        Map<String, dynamic> data = convert.jsonDecode(event.data['data']);
+        Message message = Message.fromJson(convert.jsonDecode(data['message']));
+        chatBloc.add(ReceiveMessageEvent(
+            message: message, increaseUnReadMessages: false));
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => AgoraInAppWebView(
-              messageId: data["message"]["id"].toString(),
+              messageId: message.id.toString(),
               action: 'receive',
               type: 'video',
-              channelId: data["message"]["channel_id"].toString(),
+              channelId: message.channelId.toString(),
+              auth_token: prefsRepository.chatToken!,
+              uId: prefsRepository.myChatId!.toString()),
+        ));
+      } else if (event.data['type'] == 'VoiceCallEvent') {
+        Map<String, dynamic> data = convert.jsonDecode(event.data['data']);
+        Message message = Message.fromJson(convert.jsonDecode(data['message']));
+        chatBloc.add(ReceiveMessageEvent(
+            message: message, increaseUnReadMessages: false));
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => AgoraInAppWebView(
+              messageId: message.id.toString(),
+              action: 'receive',
+              type: 'voice',
+              channelId: message.channelId.toString(),
               auth_token: prefsRepository.chatToken!,
               uId: prefsRepository.myChatId!.toString()),
         ));
@@ -238,12 +258,25 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         //     uId: GetIt.I<PrefsRepository>().myChatId!.toString(),
         //   ),
         // ));
+      } else if (event.data['type'] == 'ChannelWatchedEvent') {
+        Map<String, dynamic> data =
+            convert.jsonDecode(event.data['data'].toString());
+        chatBloc.add(WatchedMessageFromPusherEvent(
+            data['channel_id'].toString(),
+            data['auth_user_id'],
+            data['last_message_id']));
+      } else if (event.data['type'] == 'ChannelReceivedEvent') {
+        Map<String, dynamic> data =
+            convert.jsonDecode(event.data['data'].toString());
+        chatBloc.add(ReceiveMessageFromPusherEvent(
+            data['channel_id'].toString(),
+            data['auth_user_id'],
+            data['last_message_id']));
       } else {
-        ChatBloc bloc = BlocProvider.of<ChatBloc>(context);
         Message message =
             Message.fromJson(convert.jsonDecode(event.data['message']));
         String prevMessageId = event.data['prev_message_id'];
-        bloc.add(ReceiveMessageEvent(
+        chatBloc.add(ReceiveMessageEvent(
             message: message, prevMessageId: prevMessageId));
         log('object ${event.data}');
         log('object ${event.senderId}');
@@ -266,9 +299,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     };
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, chatState) {
-        pusherChatService.subscribeToAllPresenceChannels(chatState.chats);
-        pusherChatService
-            .subscribeToAllPresenceChannels(chatState.pinnedChats);
+        print('CahtListeninggggggggggggggggggggg');
+        FirebasePresence.listenToAllChats(
+            [...chatState.chats, ...chatState.pinnedChats]);
       },
       listenWhen: (p, c) =>
           p.getChatsStatus != c.getChatsStatus &&
@@ -350,22 +383,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                       '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}');
                 });
               }
-
               return BlocBuilder<AppBloc, AppState>(
                 buildWhen: (oldState, newState) =>
                     oldState.currentIndex != newState.currentIndex,
                 builder: (_, state) {
-                  if (state.currentIndex == 2) {
-                    pusherChatService
-                        .subscribeToAllPresenceChannels(chatState.chats);
-                    pusherChatService
-                        .subscribeToAllPresenceChannels(chatState.pinnedChats);
-                  } else {
-                    pusherChatService
-                        .deleteAllPresenceChannels(chatState.chats);
-                    pusherChatService
-                        .deleteAllPresenceChannels(chatState.pinnedChats);
-                  }
                   return pages[state.currentIndex];
                 },
               );

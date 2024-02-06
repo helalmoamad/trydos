@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import '../../../../core/data/model/pagination_model.dart';
+
 MyChatsResponseModel myChatsResponseModelFromJson(String str) =>
     MyChatsResponseModel.fromJson(json.decode(str));
 
@@ -361,7 +363,6 @@ width: width??this.width,
       };
 }
 
-enum PaginationStatus { initial, success, failure, loading }
 
 class Chat {
   final String? id;

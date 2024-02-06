@@ -128,9 +128,6 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
     prevIndexInFirstSlider =
         prevIndexInSecondSlider = syncColorImageList!.length ~/ 4;
     currentColorIndex = ValueNotifier(prevIndexInFirstSlider);
-    print('xxxx');
-    print(indicatorValues);
-    print(prevIndexInSecondSlider);
     gallery3dControllerForColors = Gallery3DController(
         itemCount: 3,
         primaryshiftingOffsetDivision: 2.6,
@@ -159,12 +156,12 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
         : Gallery3DController(
         itemCount: syncColorImageList!.length,
         autoLoop: false,
-        minScale: (syncColorImageList!.length) == 4 ? 0.7 : 0.4,
+        minScale: (syncColorImageList!.length) == 4 ? 0.7 : (syncColorImageList!.length) <= 8  ? 0.55 : 0.4,
         initialIndex: syncColorImageList!.length ~/ 4,
         primaryshiftingOffsetDivision: (syncColorImageList!.length) == 4
             ? 4.5
             : (syncColorImageList!.length) <= 8
-            ? 3
+            ? 2.5
             : 1.6,
         scrollTime: 1);
     super.initState();
@@ -677,7 +674,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                   logoTextHeight: 5,
                                   circleDimensions: 5,
                                   width: 169.w,
-                                  imageFit: BoxFit.cover,
+                                  imageFit: BoxFit.fitHeight,
                                   height: 10),
                               // SvgPicture.asset(
                               //   AppAssets.mangoSvg,
@@ -702,26 +699,33 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     height: 10,
                                     child: Transform.translate(
                                       offset: Offset(0, 1),
-                                      child: ListView.separated(
-                                          itemCount: widget.productItem
-                                              .categories?.length ?? 0,
-                                          separatorBuilder: (ctx , index){
-                                            return 5.horizontalSpace;
-                                          },
-                                          shrinkWrap: true,
-                                          scrollDirection: Axis.horizontal,
-                                          itemBuilder: (ctx , index){
-                                        return MyCachedNetworkImage(imageUrl: widget.productItem
-                                            .categories![index].icon.toString(),
-                                            logoTextWidth: 5,
-                                            logoTextHeight: 5,
-                                            circleDimensions: 5,
-                                            width: 10,
-                                            imageFit: BoxFit.cover,
-                                            height: 10);
-                                      }),
+                                      child: MyCachedNetworkImage(imageUrl: widget.productItem
+                                                  .category!.icon.toString(),
+                                                  logoTextWidth: 5,
+                                                  logoTextHeight: 5,
+                                                  circleDimensions: 5,
+                                                  width: 10,
+                                                  imageFit: BoxFit.cover,
+                                                  height: 10)
                                     ),
                                   ),
+                                  // ListView.separated(
+                                  //     itemCount: widget.productItem.categories?.length ?? 0,
+                                  //     separatorBuilder: (ctx , index){
+                                  //       return 5.horizontalSpace;
+                                  //     },
+                                  //     shrinkWrap: true,
+                                  //     scrollDirection: Axis.horizontal,
+                                  //     itemBuilder: (ctx , index){
+                                  //       return MyCachedNetworkImage(imageUrl: widget.productItem
+                                  //           .categories![index].icon.toString(),
+                                  //           logoTextWidth: 5,
+                                  //           logoTextHeight: 5,
+                                  //           circleDimensions: 5,
+                                  //           width: 10,
+                                  //           imageFit: BoxFit.cover,
+                                  //           height: 10);
+                                  //     }),
                                   const SizedBox(
                                     width: 3,
                                   ),

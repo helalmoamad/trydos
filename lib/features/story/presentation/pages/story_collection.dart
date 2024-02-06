@@ -16,6 +16,7 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/trydos_shimmer_loading.dart';
 import '../../data/models/get_stories_model.dart';
+import '../bloc/story_state.dart';
 import '../widget/animated_builder.dart';
 import 'dart:ui';
 

@@ -5,23 +5,23 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/use_case/use_case.dart';
-import 'package:trydos/features/story/data/models/image_detail.dart';
 import 'package:trydos/features/story/domain/useCases/get_stories_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/core/domin/usecases/upload_file_cloudinary_usecase.dart';
+import 'package:trydos/features/story/domain/useCases/increase_viewers_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/upload_story_usecase.dart';
+import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/main.dart';
 import '../../data/models/get_stories_model.dart';
 import '../../domain/useCases/add_story_to_our_server_usecase.dart';
 
 part 'story_event.dart';
-
-part 'story_state.dart';
 
 const throttleDuration = Duration(milliseconds: 1000);
 
@@ -32,42 +32,45 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 }
 
 @LazySingleton()
-class StoryBloc extends Bloc<StoryEvent, StoryState> {
+class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
   final GetStoryUseCase getStoryUseCase;
   final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
   final UploadStoryUseCase uploadStoryUseCase;
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final AddStoryToOurServerUseCase addStoryToOurServerUseCase;
+  final IncreaseViewersUseCase increaseViewersUseCase;
 
-  StoryBloc(this.uploadFileCloudinaryUseCase,
+  StoryBloc(
+      this.uploadFileCloudinaryUseCase,
       this.getStoryUseCase,
       this.getWidthAndHeightUseCase,
       this.uploadStoryUseCase,
+      this.increaseViewersUseCase,
       this.addStoryToOurServerUseCase)
       : super(StoryState()) {
     on<UploadStoryEvent>(_uploadStoryEvent);
     on<AddStoryToOurServerEvent>(_AddStoryToOurServerEvent);
+    on<IncreaseViewersEvent>(_IncreaseViewersEvent);
     on<StoryEvent>((event, emit) {});
     on<GetStoryEvent>(
       _onGetStoryEvent,
       // transformer: throttleDroppable(throttleDuration)
     );
-    on<LoadFailureEvent>(((event, emit) =>
-        emit(state.copyWith(
+    on<LoadFailureEvent>(((event, emit) => emit(state.copyWith(
             stories: state.stories.map((e) {
-              if (e.id == event.collectionId) {
-                return e.copyWith(
-                    selectedStoriesStatusForCollection:
+          if (e.id == event.collectionId) {
+            return e.copyWith(
+                selectedStoriesStatusForCollection:
                     SelectedStoriesStatus.failure);
-              }
-              return e;
-            }).toList()))));
+          }
+          return e;
+        }).toList()))));
     on<StorySelectedEvent>(_onStorySelectedEvent);
     on<UploadStoryCloudinaryEvent>(_uploadStoryCloudinaryEvent);
   }
 
-  _uploadStoryCloudinaryEvent(UploadStoryCloudinaryEvent event,
-      Emitter emit) async {
+  _uploadStoryCloudinaryEvent(
+      UploadStoryCloudinaryEvent event, Emitter emit) async {
     emit(state.copyWith(
         uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.loading));
     final response = await uploadFileCloudinaryUseCase(
@@ -93,9 +96,7 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
       //     toastLength: Toast.LENGTH_LONG);
     }, (r) {
       isFailedTheFirstTime.remove('UploadStoryCloudinaryEvent');
-      String fileName = event.file.path
-          .split('/')
-          .last;
+      String fileName = event.file.path.split('/').last;
       String mimeType = mime(fileName) ?? '';
       String mimee = mimeType.split('/')[0];
       bool isVideoFile;
@@ -114,18 +115,15 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
   }
 
   _uploadStoryEvent(UploadStoryEvent event, Emitter<StoryState> emit) async {
-    print('uplaod22ss');
     emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.loading));
 
     final response =
-    await uploadStoryUseCase.call(UploadStoryParams(file: event.file));
+        await uploadStoryUseCase.call(UploadStoryParams(file: event.file));
 
     response.fold((l) {
       emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.failure));
     }, (r) {
-      if (GetIt
-          .I<PrefsRepository>()
-          .myStoriesId ==
+      if (GetIt.I<PrefsRepository>().myStoriesId ==
           state.stories.first.stories![0].userId) {
         List<Story> currentUserStories = List.of(state.stories.first.stories!);
         currentUserStories.insert(currentUserStories.length, r.data!);
@@ -145,16 +143,24 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     });
   }
 
-  _onStorySelectedEvent(StorySelectedEvent event,
-      Emitter<StoryState> emit) async {
+  _onStorySelectedEvent(
+      StorySelectedEvent event, Emitter<StoryState> emit) async {
     //todo make the story seen when he press to show it
     print('initialStory ${event.initialStory}');
     print('selected ${event.selected}');
     print('state.initialStory ${state.initialStory[event.selected]}');
-    state
+    Story story =  state
         .stories[event.selected]
-        .stories![max(state.initialStory[event.selected]!, event.initialStory)]
-        .isSeen = true;
+        .stories![max(state.initialStory[event.selected]!, event.initialStory)];
+    // state
+    //     .stories[event.selected]
+    //     .stories![max(state.initialStory[event.selected]!, event.initialStory)]
+    //     .isSeen = true;
+    if(!(story.isSeen ?? false)) {
+      add(IncreaseViewersEvent(
+          collectionId: state.stories[event.selected].toString(),
+          storyId: story.id.toString()));
+    }
     Map<int, int?> initialStories = Map.of(state.initialStory);
     initialStories[event.selected] = event.initialStory == -1
         ? initialStories[event.selected]
@@ -162,7 +168,8 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     //todo make  the state loading
     emit(state.copyWith(
       //selectedStoriesStatus: SelectedStoriesStatus.loading,
-      currentPage: event.currentPage == -1 ? state.currentPage : event.currentPage,
+      currentPage:
+          event.currentPage == -1 ? state.currentPage : event.currentPage,
       selectedStory: event.selected,
       initialStory: initialStories,
     ));
@@ -180,30 +187,33 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
           isFailedTheFirstTime.remove('StorySelectedEvent');
           emit(state.copyWith(
               stories: state.stories.map((e) {
-                if (e.id == state.stories[event.selected].id) {
-                  return e.copyWith(
-                      selectedStoriesStatusForCollection:
+            if (e.id == state.stories[event.selected].id) {
+              return e.copyWith(
+                  selectedStoriesStatusForCollection:
                       SelectedStoriesStatus.failure);
-                }
-                return e;
-              }).toList()));
+            }
+            return e;
+          }).toList()));
         } else {
           isFailedTheFirstTime.insert(
               isFailedTheFirstTime.length, 'StorySelectedEvent');
-          GetIt.I<StoryBloc>().add(StorySelectedEvent(selected: event.selected, initialStory: event.initialStory , currentPage: event.currentPage));
+          GetIt.I<StoryBloc>().add(StorySelectedEvent(
+              selected: event.selected,
+              initialStory: event.initialStory,
+              currentPage: event.currentPage));
         }
       }, (r) {
 //todo just make the state success with the width and height for the image and in the emitter above you changed the initial  story
         emit(state.copyWith(
             stories: state.stories.map((e) {
-              if (e.id == state.stories[event.selected].id) {
-                return e.copyWith(
-                    selectedStoriesStatusForCollection:
+          if (e.id == state.stories[event.selected].id) {
+            return e.copyWith(
+                selectedStoriesStatusForCollection:
                     SelectedStoriesStatus.success,
-                    imageDetail: r);
-              }
-              return e;
-            }).toList()));
+                imageDetail: r);
+          }
+          return e;
+        }).toList()));
       });
     } else {
       //todo it's a video all what i will do is make it seen
@@ -223,12 +233,17 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
   }
 
   Future<void> _onGetStoryEvent(GetStoryEvent, Emitter<StoryState> emit) async {
-    emit(state.copyWith(getStoriesStatus: GetStoriesStatus.loading));
+    if (apisMustNotToRequest.contains('GetStoryEvent')) {
+      return;
+    }
+    emit(state.copyWith(
+        getStoriesStatus: state.getStoriesStatus == GetStoriesStatus.success
+            ? state.getStoriesStatus
+            : GetStoriesStatus.loading));
     final response = await getStoryUseCase(NoParams());
 
     response.fold((l) {
       if (isFailedTheFirstTime.contains('GetStoryEvent')) {
-        //
         isFailedTheFirstTime.remove('GetStoryEvent');
         emit(state.copyWith(getStoriesStatus: GetStoriesStatus.failure));
       } else {
@@ -237,6 +252,7 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
         GetIt.I<StoryBloc>().add(GetStoryEvent);
       }
     }, (r) {
+      apisMustNotToRequest.add('GetStoryEvent');
       Map<int, int> initialStory = {};
       int i = 0;
       r.data?.data?.forEach((element) {
@@ -249,8 +265,8 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
     });
   }
 
-  FutureOr<void> _AddStoryToOurServerEvent(AddStoryToOurServerEvent event,
-      Emitter<StoryState> emit) async {
+  FutureOr<void> _AddStoryToOurServerEvent(
+      AddStoryToOurServerEvent event, Emitter<StoryState> emit) async {
     final response = await addStoryToOurServerUseCase(AddStoryToOurServerParams(
         filePath: event.filePath, isVideo: event.isVideo));
     response.fold((l) {
@@ -263,17 +279,17 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
         isFailedTheFirstTime.insert(
             isFailedTheFirstTime.length, 'AddStoryToOurServerEvent');
         add(AddStoryToOurServerEvent(
-            filePath: event.filePath, isVideo: event.isVideo ,width: event.width , height: event.height));
+            filePath: event.filePath,
+            isVideo: event.isVideo,
+            width: event.width,
+            height: event.height));
       }
     }, (r) {
       isFailedTheFirstTime.remove('AddStoryToOurServerEvent');
-      String fileName = event.filePath
-          .split('/')
-          .last;
+      String fileName = event.filePath.split('/').last;
       String mimeType = mime(fileName) ?? '';
       String mimee = mimeType.split('/')[0];
       bool isVideoFile;
-
       if (mimee == 'image') {
         isVideoFile = false;
       } else {
@@ -281,33 +297,54 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
       }
       Story story = Story(
           isSeen: false,
-          userId: GetIt
-              .I<PrefsRepository>()
-              .myStoriesId,
+          userId: GetIt.I<PrefsRepository>().myStoriesId,
           height: event.height,
           width: event.width,
           isVideo: isVideoFile ? 1 : 0,
           isPhoto: !isVideoFile ? 1 : 0,
           photoPath: !isVideoFile ? event.filePath : null,
           fullVideoPath: isVideoFile ? event.filePath : null);
-
-      if (GetIt
-          .I<PrefsRepository>()
-          .myStoriesId ==
+      if (GetIt.I<PrefsRepository>().myStoriesId ==
           state.stories.first.stories![0].userId) {
         List<Story> currentUserStories = List.of(state.stories.first.stories!);
         currentUserStories.insert(currentUserStories.length, story);
-//      //todo check if the use exist in the array and the story to it's stories
         state.stories.first.stories = currentUserStories;
-        emit(state.copyWith(
-            stories: state.stories,
-            uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
       } else {
-        state.stories.insert(0, Datum(stories: [story]));
-        emit(state.copyWith(
-            stories: state.stories,
-            uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
+        state.stories.insert(0, r!);
       }
+      emit(state.copyWith(
+          stories: state.stories,
+          uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
+    });
+  }
+
+  @override
+  StoryState? fromJson(Map<String, dynamic> json) {
+    return StoryState.fromJson(json);
+  }
+
+  @override
+  Map<String, dynamic>? toJson(StoryState state) {
+    return state.toJson();
+  }
+
+  FutureOr<void> _IncreaseViewersEvent(
+      IncreaseViewersEvent event, Emitter<StoryState> emit) async {
+    final response = await increaseViewersUseCase(
+        IncreaseViewersParams(storyId: event.storyId));
+    response.fold((l) => null, (r) {
+      emit(state.copyWith(
+          stories: state.stories.map((e) {
+        if (e.id.toString() == event.collectionId) {
+          return e.copyWith(
+              stories: e.stories?.map((e) {
+            if (e.id.toString() == event.storyId)
+              return e.copyWith(isSeen: true);
+            return e;
+          }).toList());
+        }
+        return e;
+      }).toList()));
     });
   }
 }

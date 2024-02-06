@@ -2,6 +2,9 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../common/helper/camera_screen.dart';
 import '../../../common/helper/helper_functions.dart';
@@ -34,23 +37,27 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (context) => CameraScreen(cameras)),
                 );
-                print('file path ${selectedFile?.path}');
                 onChooseFileFromCameraAction.call(selectedFile);
                 Navigator.of(context).pop();
               },
               child: Text(LocaleKeys.camera.tr()),
             ),
-            TextButton(
-              onPressed: () async {
-                AssetEntity? assetEntity =
-                    await HelperFunctions.getAssetFromCamera(context);
-                if (assetEntity != null) {
-                  File? file = (await assetEntity.originFile);
-                  onChooseFileFromCameraAction.call(file);
-                }
-                Navigator.of(context).pop();
-              },
-              child: Text(LocaleKeys.gallery.tr()),
+            Builder(
+              builder: (context) {
+                return TextButton(
+                  onPressed: () async {
+                    AssetEntity? assetEntity;
+                    // necessary to open the picker
+                      HelperFunctions.getAssetFromGallery(context);
+                      assetEntity = await HelperFunctions.getAssetFromGallery(context);
+                    if (assetEntity != null) {
+                      onChooseFileFromGalleryAction.call(assetEntity);
+                    }
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(LocaleKeys.gallery.tr()),
+                );
+              }
             ),
           ],
         )

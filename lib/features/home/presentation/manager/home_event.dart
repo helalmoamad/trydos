@@ -22,8 +22,9 @@ class GetMainCategoriesEvent extends HomeEvent {
 
 class GetHomeSectionsEvent extends HomeEvent {
   final String categorySlug;
+  final bool getWithPagination;
 
-  const GetHomeSectionsEvent(this.categorySlug);
+  const GetHomeSectionsEvent(this.categorySlug , {this.getWithPagination = false});
 
   @override
   // TODO: implement props

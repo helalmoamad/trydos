@@ -6,11 +6,14 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
+import 'package:trydos/main.dart';
 
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../home/presentation/widgets/sliver_list_seprated.dart';
 import '../manager/chat_bloc.dart';
+import '../manager/chat_state.dart';
 
 class ChatPageContent extends StatefulWidget {
   const ChatPageContent({Key? key, this.onSendForwardMessage})
@@ -81,16 +84,24 @@ class ChatPageContentState extends State<ChatPageContent> {
             state.pinnedChats.isEmpty) {
           return SliverToBoxAdapter(child: TrydosLoader());
         }
+        if(state.getChatsStatus == GetChatsStatus.failure){
+          return Center(
+            child: ElevatedButton(
+                onPressed: () {
+                  GetIt.I<ChatBloc>().add(GetChatsEvent());
+                },
+                child: Text('Try Again')),
+          );
+        }
         // todo (future update) here we can return try again if the status failure
-
-        List<Chat> chats = [];
-        chats.addAll(state.pinnedChats);
+        List<Chat> chats = List.of(state.pinnedChats);
         chats.addAll(state.chats);
 
         // todo  (future update) remove this from here handle it in the back of in bloc
         chats.removeWhere((element) =>
             int.tryParse(element.id.toString()) == null &&
             (element.messages?.isEmpty ?? true));
+
         initialChats = chats;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           searchChats.value = chats;

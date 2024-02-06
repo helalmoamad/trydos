@@ -1,0 +1,77 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'story_state.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+StoryState _$StoryStateFromJson(Map<String, dynamic> json) => StoryState(
+      uploadStoryCloudinaryStatus: $enumDecodeNullable(
+              _$UploadStoryCloudinaryStatusEnumMap,
+              json['uploadStoryCloudinaryStatus']) ??
+          UploadStoryCloudinaryStatus.init,
+      uploadStoryStatus: $enumDecodeNullable(
+              _$UploadStoryStatusEnumMap, json['uploadStoryStatus']) ??
+          UploadStoryStatus.init,
+      selectedVideoStatus: $enumDecodeNullable(
+              _$SelectedVideoStatusEnumMap, json['selectedVideoStatus']) ??
+          SelectedVideoStatus.init,
+      getStoriesStatus: $enumDecodeNullable(
+              _$GetStoriesStatusEnumMap, json['getStoriesStatus']) ??
+          GetStoriesStatus.init,
+      stories: (json['stories'] as List<dynamic>?)
+              ?.map((e) => Datum.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      currentPage: json['currentPage'] as int? ?? 0,
+      initialStory: (json['initialStory'] as Map<String, dynamic>?)?.map(
+            (k, e) => MapEntry(int.parse(k), e as int?),
+          ) ??
+          const {},
+      selectedStory: json['selectedStory'] as int?,
+    );
+
+Map<String, dynamic> _$StoryStateToJson(StoryState instance) =>
+    <String, dynamic>{
+      'uploadStoryStatus':
+          _$UploadStoryStatusEnumMap[instance.uploadStoryStatus]!,
+      'uploadStoryCloudinaryStatus': _$UploadStoryCloudinaryStatusEnumMap[
+          instance.uploadStoryCloudinaryStatus]!,
+      'getStoriesStatus': _$GetStoriesStatusEnumMap[instance.getStoriesStatus]!,
+      'selectedVideoStatus':
+          _$SelectedVideoStatusEnumMap[instance.selectedVideoStatus]!,
+      'stories': instance.stories.map((e) => e.toJson()).toList(),
+      'currentPage': instance.currentPage,
+      'selectedStory': instance.selectedStory,
+      'initialStory':
+          instance.initialStory.map((k, e) => MapEntry(k.toString(), e)),
+    };
+
+const _$UploadStoryCloudinaryStatusEnumMap = {
+  UploadStoryCloudinaryStatus.init: 'init',
+  UploadStoryCloudinaryStatus.loading: 'loading',
+  UploadStoryCloudinaryStatus.success: 'success',
+  UploadStoryCloudinaryStatus.failure: 'failure',
+};
+
+const _$UploadStoryStatusEnumMap = {
+  UploadStoryStatus.init: 'init',
+  UploadStoryStatus.loading: 'loading',
+  UploadStoryStatus.success: 'success',
+  UploadStoryStatus.failure: 'failure',
+};
+
+const _$SelectedVideoStatusEnumMap = {
+  SelectedVideoStatus.init: 'init',
+  SelectedVideoStatus.loading: 'loading',
+  SelectedVideoStatus.success: 'success',
+  SelectedVideoStatus.failure: 'failure',
+};
+
+const _$GetStoriesStatusEnumMap = {
+  GetStoriesStatus.init: 'init',
+  GetStoriesStatus.loading: 'loading',
+  GetStoriesStatus.success: 'success',
+  GetStoriesStatus.failure: 'failure',
+};

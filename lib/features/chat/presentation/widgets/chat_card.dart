@@ -26,6 +26,8 @@ import '../../../../service/language_service.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_event.dart';
+import '../manager/chat_state.dart';
+
 class ChatCard extends StatefulWidget {
   const ChatCard(
       {Key? key,
@@ -76,7 +78,9 @@ class _ChatCardState extends ThemeState<ChatCard> {
     if (!(widget.chat.messages?.isEmpty ?? true)) {
       chatTime = widget.chat.messages!.first.createdAt!;
     }
-    User? receiver = widget.chat.channelMembers?.firstWhere((element) => element.userId != _prefsRepository.myChatId).user;
+    User? receiver = widget.chat.channelMembers
+        ?.firstWhere((element) => element.userId != _prefsRepository.myChatId)
+        .user;
     String receiverName, fullReceiverName;
     if (receiver == null) {
       receiverName = 'UK';
@@ -90,10 +94,11 @@ class _ChatCardState extends ThemeState<ChatCard> {
               ? 'UK'
               : HelperFunctions.getTheFirstTwoLettersOfName(
                   receiver.contactUser!.name!);
-      fullReceiverName = receiver.contactUser?.name ?? receiver.name ?? receiver.mobilePhone ?? 'Unknown User';
-      debugPrint("  fullReceiverName${  fullReceiverName}");
-
-
+      fullReceiverName = receiver.contactUser?.name ??
+          receiver.name ??
+          receiver.mobilePhone ??
+          'Unknown User';
+      debugPrint("  fullReceiverName${fullReceiverName}");
     }
 
     ChannelMember me = widget.chat.channelMembers!
@@ -366,17 +371,18 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                       ? const SizedBox.shrink()
                                                       : Row(
                                                           children: [
-                                                            if (widget
-                                                                    .chat
-                                                                    .messages
-                                                                    ?.first
-                                                                    .mediaMessageContent
-                                                                    ?.isNotEmpty ??
-                                                                false || widget
-                                                                    .chat
-                                                                    .messages
-                                                                    ?.first
-                                                                    .file != null) ...{
+                                                            if ((widget
+                                                                .chat
+                                                                .messages
+                                                                ?.first
+                                                                .mediaMessageContent
+                                                                ?.isNotEmpty ??
+                                                                false) ||
+                                                                (widget.chat.messages?.first
+                                                                    .file !=
+                                                                    null) ||
+                                                                messageType
+                                                                    .contains('Call')) ...{
                                                               SvgPicture.asset(
                                                                 messageType ==
                                                                         'ImageMessage'
@@ -389,9 +395,16 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                         : messageType ==
                                                                                 'FileMessage'
                                                                             ? AppAssets.documentSvg
-                                                                            : AppAssets.lastMessageAudioSvg,
+                                                                            : messageType == 'VoiceCall'
+                                                                                ? AppAssets.missedCallInChatSvg
+                                                                                : messageType == 'VideoCall'
+                                                                                    ? AppAssets.missedVideoCallInChatSvg
+                                                                                    : AppAssets.lastMessageAudioSvg,
                                                                 width: 20.w,
                                                                 height: 20.h,
+                                                                color: messageType
+                                                                    .contains('Call') ? colorScheme
+                                                                    .grey200.withOpacity(0.6) : null,
                                                               ),
                                                               10.horizontalSpace,
                                                             },
@@ -408,7 +421,13 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                             : messageType ==
                                                                                     'FileMessage'
                                                                                 ? 'File'
-                                                                                : 'Voice')
+                                                                                : messageType ==
+                                                                                        'VoiceCall'
+                                                                                    ? 'Voice Call'
+                                                                                    : messageType ==
+                                                                                            'VideoCall'
+                                                                                        ? 'Video Call'
+                                                                                        : 'Voice')
                                                                     : widget
                                                                         .chat
                                                                         .messages!
@@ -499,7 +518,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        widget.activityDescription.toString(),
+                                        widget.activityDescription!.substring(0 , widget.activityDescription!.length - 3),
                                         maxLines: 1,
                                         style: textTheme.caption?.rr.copyWith(
                                             color: const Color(0xff007CFF)),

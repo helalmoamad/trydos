@@ -1,10 +1,15 @@
-part of 'story_bloc.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+import '../../data/models/get_stories_model.dart';
+import '../../data/models/image_detail.dart';
+part 'story_state.g.dart';
 
 enum GetStoriesStatus { init, loading, success, failure }
 enum SelectedVideoStatus { init, loading, success, failure }
 enum UploadStoryStatus { init, loading, success, failure }
 enum UploadStoryCloudinaryStatus { init, loading, success, failure }
 
+@JsonSerializable(explicitToJson: true)
 class StoryState {
   UploadStoryStatus uploadStoryStatus;
   UploadStoryCloudinaryStatus uploadStoryCloudinaryStatus;
@@ -51,4 +56,9 @@ class StoryState {
         initialStory: initialStory ?? this.initialStory,
         selectedStory: selectedStory ?? this.selectedStory);
   }
+
+  factory StoryState.fromJson(Map<String,dynamic> data) => _$StoryStateFromJson(data);
+
+  Map<String,dynamic> toJson() => _$StoryStateToJson(this);
+
 }

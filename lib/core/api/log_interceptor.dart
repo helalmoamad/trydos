@@ -20,6 +20,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (kDebugMode) {
       log(_prefsRepository.chatToken.toString());
+      log('story ${_prefsRepository.storiesToken.toString()}');
       prettyPrinterI(
         "***|| INFO Request ${options.path} ||***"
         "\n HTTP Method: ${options.method}"

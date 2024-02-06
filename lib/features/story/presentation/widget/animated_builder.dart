@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/story_bloc.dart';
+import '../bloc/story_state.dart';
 
 class AnimatedBar extends StatelessWidget {
   final AnimationController animController;
