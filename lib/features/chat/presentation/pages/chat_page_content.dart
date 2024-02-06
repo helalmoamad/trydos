@@ -44,8 +44,8 @@ class ChatPageContentState extends State<ChatPageContent> {
       List<Chat> search = [];
       for (Chat chat in initialChats) {
         ChannelMember member = chat.channelMembers!.firstWhere(
-            (element) => element.userId != GetIt.I<PrefsRepository>().myChatId);
-        if ((member.user?.name ?? 'UnKnown User')
+                (element) => element.userId != GetIt.I<PrefsRepository>().myChatId);
+        if ((chat.channelName ?? 'UnKnown User')
                 .toLowerCase()
                 .contains(text?.toLowerCase() ?? '') ||
             (member.user?.mobilePhone ?? 'No Number')
