@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:vibration/vibration.dart';
 
@@ -100,7 +101,6 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     };
     return BlocListener<CallsBloc, CallsState>(
       listener: (context, state) {
-        print('xxxxxxxxxx ${state.stopRingToneReason}');
         timer?.cancel();
         if(_audioPlayer.state == PlayerState.playing) {
           _audioPlayer.dispose();
@@ -117,6 +117,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 //   // controller.dispose();
                 // },
                 onUpdateVisitedHistory: (controller, url, isReload) {
+
                   log('ring? ${url?.queryParameters.containsKey('ring')}');
                   if (_audioPlayer.state == PlayerState.playing &&
                       widget.isReceivingCall &&
@@ -158,7 +159,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 initialUrlRequest: URLRequest(url: WebUri(source.toString())),
                 onPermissionRequest: (controller, request) async {
                   final resources = <PermissionResourceType>[];
-                  if (widget.type == 'video' && request.resources.contains(PermissionResourceType.CAMERA)) {
+                  if (request.resources.contains(PermissionResourceType.CAMERA)) {
                     final cameraStatus = await Permission.camera.request();
                     if (!cameraStatus.isDenied) {
                       resources.add(PermissionResourceType.CAMERA);
@@ -172,7 +173,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     }
                   }
                   // only for iOS and macOS
-                  if (widget.type == 'video' && request.resources.contains(PermissionResourceType.CAMERA_AND_MICROPHONE)) {
+                  if (request.resources.contains(PermissionResourceType.CAMERA_AND_MICROPHONE)) {
                     final cameraStatus = await Permission.camera.request();
                     final microphoneStatus = await Permission.microphone.request();
                     if (!cameraStatus.isDenied && !microphoneStatus.isDenied) {
@@ -199,7 +200,6 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     if (progress < 100)
                       return Center(child: CircularProgressIndicator());
                     if (timer == null && !widget.isReceivingCall) {
-                      print('startWaitingCall');
                         timer = Timer.periodic(Duration(seconds: 14), (timer) {
                           playWaitingCall();
                         });
@@ -210,7 +210,6 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                           }
                         });
                     } else if (timer == null && widget.isReceivingCall) {
-                      print('startIncomingCall');
                         startVibration();
                         timer = Timer.periodic(Duration(seconds: 2), (timer) {
                           playIncomingCall();

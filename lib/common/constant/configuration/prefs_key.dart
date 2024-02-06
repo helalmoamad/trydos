@@ -36,4 +36,6 @@ abstract class PrefsKey {
   static const messages = r'__$__messages__$__';
 
   static const error = r'__$__error__$__';
+
+  static const isAuthorizedGetAssets = r'__$__isAuthorizedGetAssets__$__';
 }

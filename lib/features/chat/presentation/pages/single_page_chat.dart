@@ -14,6 +14,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/file_saving.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -247,7 +248,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          //todo click on the name show the profile page
                           InkWell(
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
@@ -285,56 +285,38 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         ],
                       ),
                     ),
-                    //todo create video call
-                    //todo work
                     BlocConsumer<CallsBloc, CallsState>(
                       builder: (context, state) => InkWell(
                         onTap: () async {
                           List<Map<String, dynamic>> info =
                               callerInfo(channelId: widget.chatId);
                           PermissionStatus microphone =
-                              await Permission.microphone.status;
-                           var status2 = await Permission.mediaLibrary.status;
+                              await Permission.microphone.request();
+                          var status2 = await Permission.mediaLibrary.request();
                           PermissionStatus camera =
-                              await Permission.camera.status;
-                          if (microphone.isGranted && status2.isGranted &&
+                              await Permission.camera.request();
+                          if (microphone.isGranted &&
+                              status2.isGranted &&
                               camera.isGranted) {
-                            Fluttertoast.showToast(msg: 'permission granted');
-                            // debugPrint("payload caller event ${payload}");
-                            //todo we have the receiver id so the chat dose not exist
                             if (info[0].containsKey('currentReceiver')) {
-                              debugPrint(
-                                  'currentReceiver${info[0]['currentReceiver']}');
-
                               GetIt.I<CallsBloc>().add(MakeCallEvent(
                                   receiverUserId:
                                       info[0]['currentReceiver'].toString(),
                                   isVideo: true,
                                   payload: info[1]));
 
-                              // GetIt.I<CallsBloc>().add(VideoCallEvent(
-                              //     receiverUserId: info[0]['currentReceiver'],
-                              //     payload: info[1]));
-//todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
                             }
-                            //todo else the chat already exist so we don't have the receiver id just the chat id
                             else {
-                              debugPrint('widget.chatId${widget.chatId}');
-                              debugPrint('info[0]${info[0]}');
-
                               GetIt.I<CallsBloc>().add(MakeCallEvent(
                                   isVideo: true,
                                   chatId: widget.chatId,
                                   payload: info[0]));
                               //todo we have the id of the chat so we can move to the call immediately
                             }
-                          } else if (microphone.isDenied
-                                || status2.isDenied
-
-                              ||
+                          } else if (microphone.isDenied ||
+                              status2.isDenied ||
                               camera.isDenied) {
-                            Fluttertoast.showToast(msg: 'permission denied');
-
+                            showMessage('permission denied');
                             openAppSettings();
                           }
                         },
@@ -373,8 +355,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                             await Permission.microphone.request();
                         var status2 = await Permission.mediaLibrary.request();
                         if (microphone.isGranted && status2.isGranted) {
-                          Fluttertoast.showToast(msg: 'permission granted');
-                          // debugPrint("payload caller event ${payload}");
                           //todo we have the receiver id so the chat dose not exist
                           if (info[0].containsKey('currentReceiver')) {
                             debugPrint(
@@ -403,8 +383,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                             //todo we have the id of the chat so we can move to the call immediately
                           }
                         } else if (microphone.isDenied || status2.isDenied) {
-                          Fluttertoast.showToast(msg: 'permission denied');
-                          //openAppSettings();
+                          showMessage('permission denied');
+                          openAppSettings();
                         }
                       },
                       child: SvgPicture.asset(
@@ -555,6 +535,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                             messageId))) {
                                                                   return;
                                                                 }
+                                                                if(messages[index].messageType?.name?.contains('Call') ?? false){
+                                                                  return ;
+                                                                }
                                                                 rebuildMessage
                                                                         .value =
                                                                     index;
@@ -563,31 +546,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                 rebuildMessage
                                                                     .value = -1;
                                                               },
-                                                              child: messages[index]
-                                                                          .messageType!
-                                                                          .name! ==
-                                                                      'VideoCall'
-                                                                  ? Padding(
-                                                                      padding: messages[index].senderUserId! ==
-                                                                              GetIt.I<PrefsRepository>().myChatId
-                                                                          ? EdgeInsetsDirectional.only(start: 258.0.w)
-                                                                          : EdgeInsetsDirectional.only(end: 258.0.w),
-                                                                      child:
-                                                                          Container(
-                                                                        child: Center(
-                                                                            child:
-                                                                                Text('video call')),
-                                                                        decoration: BoxDecoration(
-                                                                            color:
-                                                                                Colors.blueGrey,
-                                                                            borderRadius: BorderRadius.circular(10)),
-                                                                        width:
-                                                                            90.w,
-                                                                        height:
-                                                                            70.h,
-                                                                      ),
-                                                                    )
-                                                                  : Container(
+                                                              child:  Container(
                                                                       color: currentScrolledIndex ==
                                                                               index
                                                                           ? Colors
@@ -1037,11 +996,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
       debugPrint('senderName${senderName}');
       debugPrint('receiverName${receiverName}');
       String? path = _prefsRepository.getTheLocalPathForFile(filePath);
-      if(path != null) {
+      if (path != null) {
         File? file = File(path);
         message = message.copyWith(file: file, checkedExistence: true);
       }
     }
+    bool isSentMessage = (message.senderUserId == _prefsRepository.myChatId && message.senderUserId != null) || (message.receiverUserId != _prefsRepository.myChatId && message.receiverUserId != null);
     MessageStatus? messageStatus = message.messageStatus
         ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
     if (message.parentMessageId != null && message.parentMessage != null) {
@@ -1071,7 +1031,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
             senderAnswerPhoto: senderPhoto,
             isISentFirstMessage:
                 parentMessage.senderUserId == _prefsRepository.myChatId,
-            isSent: message.senderUserId == _prefsRepository.myChatId,
+            isSent: isSentMessage,
             parentSenderId: parentMessage.senderUserId!,
             isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
             isReplayedMessageReceived:
@@ -1102,7 +1062,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 parentMessageId: message.parentMessageId!),
             isISentFirstMessage:
                 parentMessage.senderUserId == _prefsRepository.myChatId,
-            isSent: message.senderUserId == _prefsRepository.myChatId,
+            isSent: isSentMessage,
             isFirstMessage: message.isFirstMessage,
             parentSenderId: parentMessage.senderUserId!,
             replayedPhoto:
@@ -1138,7 +1098,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
             message: message.messageContent!.content.toString(),
             messageId: message.id!,
             senderId: message.senderUserId!,
-            isSent: message.receiverUserId != _prefsRepository.myChatId,
+            isSent: isSentMessage,
             isRead: messageStatus?.isWatched ?? false,
             userMessageName: message.receiverUserId != _prefsRepository.myChatId
                 ? senderName
@@ -1155,7 +1115,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
           );
         case 'ImageMessage':
           return ImageMessage(
-            isSent: message.receiverUserId != _prefsRepository.myChatId,
+            isSent: isSentMessage,
             imageFile: message.file,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
@@ -1178,7 +1138,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         case 'VideoMessage':
           return VideoMessage(
             key: ValueKey(message.id),
-            isSent: message.receiverUserId != _prefsRepository.myChatId,
+            isSent: isSentMessage,
             videoFile: message.file,
             videoUrl: message.mediaMessageContent?[0].filePath,
             messageId: message.id.toString(),
@@ -1200,7 +1160,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
           );
         case 'VoiceMessage':
           return VoiceMessage(
-            isSent: message.receiverUserId != _prefsRepository.myChatId,
+            isSent: isSentMessage,
             file: message.file,
             fileUrl: message.mediaMessageContent?[0].filePath,
             messageId: message.id.toString(),
@@ -1223,7 +1183,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
           String fileName = message.file?.path.split('/').last ??
               message.mediaMessageContent![0].filePath!.split('/').last;
           return DocumentMessage(
-            isSent: message.receiverUserId != _prefsRepository.myChatId,
+            isSent: isSentMessage,
             documentFile: message.file,
             fileName: fileName,
             documentFileUrl: message.mediaMessageContent?[0].filePath,
@@ -1244,9 +1204,33 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isForwarded: message.isForward == 1,
           );
         case 'VideoCall':
-          return CallMessage(isVideo: true,message: 'Video Call At',time: message.createdAt!,);
+          return CallMessage(
+            isVideo: true,
+            message: 'Video Call At',
+            time: message.createdAt!,
+            isSent: isSentMessage,
+            userMessageName: message.receiverUserId != _prefsRepository.myChatId
+                ? senderName
+                : receiverName,
+            userMessagePhoto:
+                message.receiverUserId != _prefsRepository.myChatId
+                    ? senderPhoto
+                    : receiverPhoto,
+          );
         case 'VoiceCall':
-          return CallMessage(isVideo: false,message: 'Voice Call At',time: message.createdAt!,);
+          return CallMessage(
+            isVideo: false,
+            message: 'Voice Call At',
+            isSent: isSentMessage,
+            time: message.createdAt!,
+            userMessageName: message.receiverUserId != _prefsRepository.myChatId
+                ? senderName
+                : receiverName,
+            userMessagePhoto:
+                message.receiverUserId != _prefsRepository.myChatId
+                    ? senderPhoto
+                    : receiverPhoto,
+          );
       }
     }
   }

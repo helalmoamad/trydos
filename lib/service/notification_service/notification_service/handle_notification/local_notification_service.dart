@@ -9,17 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trydos/base_page.dart';
-import 'package:trydos/features/chat/data/data_sources/chat_remote_datasource.dart';
-import 'package:trydos/features/chat/data/repositories/chat_repository_impl.dart';
-import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
 import '../../../../core/di/di_container.dart';
-import '../../../../features/app/blocs/sensitive_connectivity/connectivity_observer.dart';
 import '../../../../features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../features/chat/presentation/manager/chat_event.dart';
-import 'notification_process.dart';
 import '../../../../features/chat/data/models/my_chats_response_model.dart' as chat;
 import 'dart:convert' as convert;
 @pragma('vm:entry-point')

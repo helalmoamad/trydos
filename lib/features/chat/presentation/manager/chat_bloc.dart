@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'dart:convert' as convert;
-import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
@@ -42,7 +40,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 }
 
 @LazySingleton()
-class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
+class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin{
   ChatBloc(
       this.getContactsUseCase,
       this.getMyChatsUseCase,
@@ -272,8 +270,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
 
   FutureOr<void> _onSaveContactsEvent(
       SaveContactsEvent event, Emitter<ChatState> emit) async {
-    debugPrint('saveContact${state.saveContactsStatus}');
-    if (state.saveContactsStatus != SaveContactsStatus.init) {
+    if (apisMustNotToRequest.contains('SaveContactsEvent')) {
       return;
     }
     emit(state.copyWith(saveContactsStatus: SaveContactsStatus.loading));
@@ -288,21 +285,21 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
         emit(state.copyWith(saveContactsStatus: SaveContactsStatus.failure));
       },
       (r) {
-        getContactsAfterSavingItAndGettingChannels();
+        apisMustNotToRequest.add('SaveContactsEvent');
         isFailedTheFirstTime.remove('SaveContactsEvent');
-        GetIt.I<ChatBloc>().add(GetChatsEvent());
         emit(
           state.copyWith(
             saveContactsStatus: SaveContactsStatus.success,
           ),
         );
+        getContactsAfterSavingItAndGettingChannels();
       },
     );
   }
 
   FutureOr<void> _onGetChatsEvent(
       GetChatsEvent event, Emitter<ChatState> emit) async {
-    if (apisMustNotToRequest.contains(GetChatsEvent)) {
+    if (apisMustNotToRequest.contains('GetChatsEvent')) {
       return;
     }
     emit(state.copyWith(getChatsStatus: GetChatsStatus.loading));
@@ -331,7 +328,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
         r.data!.pinnedChats?.forEach((element) {
           unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
         });
-        getContactsAfterSavingItAndGettingChannels();
         emit(
           state.copyWith(
               getChatsStatus: GetChatsStatus.success,
@@ -341,6 +337,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
               pinnedChats: r.data!.pinnedChats!,
               unReadMessagesFromAllChats: unReadMessagesFromAllChats),
         );
+        getContactsAfterSavingItAndGettingChannels();
       },
     );
   }
@@ -532,8 +529,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
 
   FutureOr<void> _onReceiveMessageEvent(
       ReceiveMessageEvent event, Emitter<ChatState> emit) async {
-    log('***** message received *****');
-    print('message ${event.message}');
     List<Message> messages = [];
     bool fromPinned = false;
     List<Chat> chats;
@@ -558,29 +553,26 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
             hasReachedMax: false,
           ));
     } else {
-      print('totalUnreadMessageCount: ${chat.totalUnreadMessageCount}');
       chats.removeWhere((element) => element.id == chat.id);
       chats.insert(
           0,
           chat.copyWith(
-              totalUnreadMessageCount: ((chat.totalUnreadMessageCount ?? 0) +
+              totalUnreadMessageCount: event.increaseUnReadMessages ? ((chat.totalUnreadMessageCount ?? 0) +
                   (event.message.senderUserId! != _prefsRepository.myChatId
                       ? 1
-                      : 0))));
+                      : 0)) : chat.totalUnreadMessageCount));
     }
     messages = List.of(chat.messages ?? []);
     messages.insert(0, event.message);
-
-    int index =
-        messages.indexWhere((element) => element.id == event.prevMessageId);
+    int index = messages.indexWhere((element) => element.id == event.prevMessageId);
     chats = sortChats(chats, event.message.channelId, messages);
     emit(state.copyWith(
       receiveMessageStatus: ReceiveMessageStatus.success,
       unReadMessagesFromAllChats:
-          state.unReadMessagesFromAllChats + event.message.senderUserId! !=
+      event.increaseUnReadMessages ?  (state.unReadMessagesFromAllChats + event.message.senderUserId! !=
                   _prefsRepository.myChatId
               ? 1
-              : 0,
+              : 0) : state.unReadMessagesFromAllChats,
       newSortedChatsByDate: groupReceivedMessageOnDays(
           chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)]),
       currentChannelReceivedMessage: event.message.channelId,
@@ -588,10 +580,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
       chats: fromPinned ? state.chats : chats,
       pinnedChats: !fromPinned ? state.pinnedChats : chats,
     ));
-    add(NotifyThatIReceivedMessageEvent(channelId: event.message.channelId!));
-    if (index == -1) {
+    if(event.prevMessageId != null) {
+      add(NotifyThatIReceivedMessageEvent(channelId: event.message.channelId!));
+    }
+    if (index == -1 && event.prevMessageId != null) {
       add(GetAllMessagesBetweenEvent(
-          firstMessageId: event.prevMessageId,
+          firstMessageId: event.prevMessageId!,
           secondMessageId: event.message.id.toString(),
           scrollToParentMessage: false,
           channelId: event.message.channelId.toString()));
@@ -858,7 +852,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
 
   FutureOr<void> _onReceiveMessageFromPusherEvent(
       ReceiveMessageFromPusherEvent event, Emitter<ChatState> emit) {
-    print('_onReceiveMessageFromPusherEventExecuted');
 
     emit(state.copyWith(
         changeMessageStateFromPusherStatus:
@@ -884,7 +877,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
 
   FutureOr<void> _onWatchedMessageFromPusherEvent(
       WatchedMessageFromPusherEvent event, Emitter<ChatState> emit) {
-    print('_onWatchedMessageFromPusherEventExecuted');
 
     emit(state.copyWith(
         changeMessageStateFromPusherStatus:
@@ -1028,9 +1020,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
 
   FutureOr<void> _onGetAllMessagesBetweenEvent(
       GetAllMessagesBetweenEvent event, Emitter<ChatState> emit) async {
+    print('ssssssssss ${state.getMessagesBetweenStatus}');
     if (state.getMessagesBetweenStatus == GetMessagesBetweenStatus.loading) {
       return;
     }
+    emit(state.copyWith(
+      getMessagesBetweenStatus: GetMessagesBetweenStatus.loading,
+    ));
     bool fromPinned = false;
     Chat chat;
     chat = state.chats.firstWhere(
@@ -1041,9 +1037,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
       chat = state.pinnedChats
           .firstWhere((element) => element.id == event.channelId);
     }
-    emit(state.copyWith(
-      getMessagesBetweenStatus: GetMessagesBetweenStatus.loading,
-    ));
     final response = await getMessagesBetweenUseCase(GetMessagesBetweenParams(
         firstMessageId: event.firstMessageId,
         secondMessageId: event.secondMessageId,

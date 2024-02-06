@@ -9,11 +9,13 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/form_utils.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/widgets/contact_card.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../../main.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/app_widgets/app_text_field.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -105,7 +107,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                       .copyWith(color: const Color(0xffD3D3D3)),
                   onChange: (String? text) {
                     if (text?.isEmpty ?? true) {
-                      searchContacts.value = GetIt.I<ChatBloc>().state.contacts;
+                      searchContacts.value = chatBloc.state.contacts;
                     } else {
                       List<Contact> search = [];
                       for (Contact contact
@@ -141,13 +143,22 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
               },
               builder: (context, state) {
                 if ((state.getContactsStatus == GetContactsStatus.loading ||
-                    state.getContactsStatus == GetContactsStatus.init) && state.contacts.isNullOrEmpty) {
+                        state.getContactsStatus == GetContactsStatus.init) &&
+                    state.contacts.isNullOrEmpty) {
                   return SliverToBoxAdapter(
                       child: Center(
                     child: TrydosLoader(),
                   ));
                 }
-
+                if (state.getContactsStatus == GetContactsStatus.failure) {
+                  return Center(
+                    child: ElevatedButton(
+                        onPressed: () {
+                          chatBloc.add(GetContactsEvent());
+                        },
+                        child: Text('Try Again')),
+                  );
+                }
                 return ValueListenableBuilder<List<Contact>>(
                     valueListenable: searchContacts,
                     builder: (context, searchedContacts, _) {

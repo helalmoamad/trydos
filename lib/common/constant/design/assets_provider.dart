@@ -98,6 +98,7 @@ abstract class AppAssets {
   static String get voiceReceivedSvg=>'voice_received'.svg;
   static String get voicePlayedSvg=>'voice_played'.svg;
   static String get missedCallInChatSvg=>'missed_call_in_chat'.svg;
+  static String get missedVideoCallInChatSvg=>'missing_video_call_in_chat'.svg;
   static String get forwardedSvg=>'forwarded'.svg;
   static String get addStickersSvg=>'add_stickers'.svg;
   static String get replyOnMessageSvg=>'reply_on_message'.svg;

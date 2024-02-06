@@ -22,7 +22,7 @@ import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 
 class VoiceMessage extends StatefulWidget {
-   VoiceMessage(
+  VoiceMessage(
       {Key? key,
       required this.isSent,
       required this.messageId,
@@ -30,8 +30,8 @@ class VoiceMessage extends StatefulWidget {
       required this.isRead,
       required this.isReceived,
       required this.senderId,
-        this.userMessagePhoto,
-        required this.userMessageName,
+      this.userMessagePhoto,
+      required this.userMessageName,
       this.file,
       this.fileUrl,
       this.isForwarded = false,
@@ -41,16 +41,16 @@ class VoiceMessage extends StatefulWidget {
   final bool isFirstMessage;
   final bool isForwarded;
   final String messageId;
-   File? file;
+  File? file;
   final String? fileUrl;
   final DateTime time;
-   bool isRead;
-   bool isReceived;
+  bool isRead;
+  bool isReceived;
   final int senderId;
   final String? userMessagePhoto;
   final String userMessageName;
 
-   @override
+  @override
   State<VoiceMessage> createState() => _VoiceMessageState();
 }
 
@@ -62,20 +62,19 @@ class _VoiceMessageState extends State<VoiceMessage> {
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
   late final Source audioSource;
-//  final ValueNotifier<int> _loadingFile =  ValueNotifier(0);
 
+//  final ValueNotifier<int> _loadingFile =  ValueNotifier(0);
 
   getAudioDuration() async {
     if (widget.file != null) {
       audioSource = DeviceFileSource(
         widget.file!.path,
       );
-      await audioPlayer.setSource(audioSource);
     } else {
-        audioSource = UrlSource(widget.fileUrl!);
-        await audioPlayer.setSource(audioSource);
+      audioSource = UrlSource(widget.fileUrl!);
     }
-    duration = (await audioPlayer.getDuration())!;
+    await audioPlayer.setSource(audioSource);
+    duration = (await audioPlayer.getDuration()) ?? Duration.zero;
     audioPlayingNotifier.notifyListeners();
   }
 
@@ -120,21 +119,22 @@ class _VoiceMessageState extends State<VoiceMessage> {
     };
     return BlocConsumer<ChatBloc, ChatState>(
       listenWhen: (p, c) =>
-      p.changeMessageStateFromPusherStatus !=
-          c.changeMessageStateFromPusherStatus &&
+          p.changeMessageStateFromPusherStatus !=
+              c.changeMessageStateFromPusherStatus &&
           c.changeMessageStateFromPusherStatus !=
               ChangeMessageStateFromPusherStatus.init,
       listener: (context, state) {
-        if (state.changeMessageStateFromPusherStatus==ChangeMessageStateFromPusherStatus.watched){
-          if(widget.isRead){
+        if (state.changeMessageStateFromPusherStatus ==
+            ChangeMessageStateFromPusherStatus.watched) {
+          if (widget.isRead) {
             return;
           }
           setState(() {
-            widget.isRead=true;
+            widget.isRead = true;
           });
-        }else if(!widget.isReceived){
+        } else if (!widget.isReceived) {
           setState(() {
-            widget.isReceived=true;
+            widget.isReceived = true;
           });
         }
       },
@@ -146,13 +146,10 @@ class _VoiceMessageState extends State<VoiceMessage> {
             animationDuration: const Duration(milliseconds: 150),
             offsetDx: 0.15,
             iconSize: 0,
-            onLeftSwipe: ()
-               {
-              if((state.sendMessageStatus ==
-                  SendMessageStatus.loading &&
-                  state.currentMessage
-                      .contains(widget.messageId))){
-                return ;
+            onLeftSwipe: () {
+              if ((state.sendMessageStatus == SendMessageStatus.loading &&
+                  state.currentMessage.contains(widget.messageId))) {
+                return;
               }
               BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
                   true,
@@ -190,8 +187,8 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                    //todo change the commented opacity to fromARGB for better performance
-                                      color:Color.fromARGB(50,0, 0, 0)
+                                      //todo change the commented opacity to fromARGB for better performance
+                                      color: Color.fromARGB(50, 0, 0, 0)
 //                                      context.colorScheme.black
 //                                          .withOpacity(0.05)
                                       ,
@@ -232,51 +229,55 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      duration==Duration.zero ? Padding(
-                                                        padding: HWEdgeInsets.only(top: 5.0),
-                                                        child: TrydosLoader(size: 15.sp,),
-                                                      ) :Container(
-                                                          width: 47.w,
-                                                          height: 20,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        15.0),
-                                                            border: Border.all(
-                                                                width: 0.4,
-                                                                color: const Color(
-                                                                    0xff388cff)),
-                                                          ),
-                                                          child: Center(
-                                                            child: ValueListenableBuilder<
-                                                                    bool>(
-                                                                valueListenable:
-                                                                    durationChangedNotifier,
-                                                                builder: (context,
-                                                                    durationChanged,
-                                                                    _) {
-                                                                  return Text(
-                                                                    (isPlaying)
-                                                                        ? HelperFunctions.getTimeInFormat(
-                                                                            position)
-                                                                        : HelperFunctions.getTimeInFormat(
-                                                                            duration),
-                                                                    style: context
-                                                                        .textTheme
-                                                                        .overline
-                                                                        ?.rt
-                                                                        .copyWith(
-                                                                            color:
-                                                                                const Color(0xff404040),
-                                                                            height: 1.4),
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .center,
-                                                                  );
-                                                                }),
-                                                          )),
+                                                      duration == Duration.zero
+                                                          ? Padding(
+                                                              padding: HWEdgeInsets
+                                                                  .only(
+                                                                      top: 5.0),
+                                                              child:
+                                                                  TrydosLoader(
+                                                                size: 15.sp,
+                                                              ),
+                                                            )
+                                                          : Container(
+                                                              width: 47.w,
+                                                              height: 20,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            15.0),
+                                                                border: Border.all(
+                                                                    width: 0.4,
+                                                                    color: const Color(
+                                                                        0xff388cff)),
+                                                              ),
+                                                              child: Center(
+                                                                child: ValueListenableBuilder<
+                                                                        bool>(
+                                                                    valueListenable:
+                                                                        durationChangedNotifier,
+                                                                    builder:
+                                                                        (context,
+                                                                            durationChanged,
+                                                                            _) {
+                                                                      return Text(
+                                                                        (isPlaying)
+                                                                            ? HelperFunctions.getTimeInFormat(position)
+                                                                            : HelperFunctions.getTimeInFormat(duration),
+                                                                        style: context
+                                                                            .textTheme
+                                                                            .overline
+                                                                            ?.rt
+                                                                            .copyWith(
+                                                                                color: const Color(0xff404040),
+                                                                                height: 1.4),
+                                                                        textAlign:
+                                                                            TextAlign.center,
+                                                                      );
+                                                                    }),
+                                                              )),
                                                       1.verticalSpace,
                                                       SizedBox(
                                                         height: 20,
@@ -339,8 +340,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                     width: 25.w,
                                                     height: 28,
                                                   )
-                                                }
-                                                else ...{
+                                                } else ...{
                                                   //todo these transform cost a lot of resources i make a trick to avoid use this transformer
 //                                                  Transform(
 //                                                      alignment:
@@ -355,8 +355,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
 //                                                        height: 28,
 //                                                      )),
                                                   SvgPicture.asset(
-                                                    AppAssets
-                                                        .voicePlayedSvg,
+                                                    AppAssets.voicePlayedSvg,
                                                     width: 25.w,
                                                     height: 28,
                                                   ),
@@ -377,51 +376,55 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      duration==Duration.zero ? Padding(
-                                                        padding: HWEdgeInsets.only(top: 5.0),
-                                                        child: TrydosLoader(size: 15.sp,),
-                                                      ) :Container(
-                                                          width: 47.w,
-                                                          height: 20,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        15.0),
-                                                            border: Border.all(
-                                                                width: 0.4,
-                                                                color: const Color(
-                                                                    0xff388cff)),
-                                                          ),
-                                                          child: Center(
-                                                            child: ValueListenableBuilder<
-                                                                    bool>(
-                                                                valueListenable:
-                                                                    durationChangedNotifier,
-                                                                builder: (context,
-                                                                    durationChanged,
-                                                                    _) {
-                                                                  return Text(
-                                                                    (isPlaying)
-                                                                        ? HelperFunctions.getTimeInFormat(
-                                                                            position)
-                                                                        : HelperFunctions.getTimeInFormat(
-                                                                            duration),
-                                                                    style: context
-                                                                        .textTheme
-                                                                        .overline
-                                                                        ?.rt
-                                                                        .copyWith(
-                                                                            color:
-                                                                                const Color(0xff404040),
-                                                                            height: 1.4),
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .center,
-                                                                  );
-                                                                }),
-                                                          )),
+                                                      duration == Duration.zero
+                                                          ? Padding(
+                                                              padding: HWEdgeInsets
+                                                                  .only(
+                                                                      top: 5.0),
+                                                              child:
+                                                                  TrydosLoader(
+                                                                size: 15.sp,
+                                                              ),
+                                                            )
+                                                          : Container(
+                                                              width: 47.w,
+                                                              height: 20,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            15.0),
+                                                                border: Border.all(
+                                                                    width: 0.4,
+                                                                    color: const Color(
+                                                                        0xff388cff)),
+                                                              ),
+                                                              child: Center(
+                                                                child: ValueListenableBuilder<
+                                                                        bool>(
+                                                                    valueListenable:
+                                                                        durationChangedNotifier,
+                                                                    builder:
+                                                                        (context,
+                                                                            durationChanged,
+                                                                            _) {
+                                                                      return Text(
+                                                                        (isPlaying)
+                                                                            ? HelperFunctions.getTimeInFormat(position)
+                                                                            : HelperFunctions.getTimeInFormat(duration),
+                                                                        style: context
+                                                                            .textTheme
+                                                                            .overline
+                                                                            ?.rt
+                                                                            .copyWith(
+                                                                                color: const Color(0xff404040),
+                                                                                height: 1.4),
+                                                                        textAlign:
+                                                                            TextAlign.center,
+                                                                      );
+                                                                    }),
+                                                              )),
                                                       1.verticalSpace,
                                                       SizedBox(
                                                         height: 20,
@@ -482,8 +485,8 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                               ],
                                             )),
                                         Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 0),
+                                          padding:
+                                              const EdgeInsets.only(top: 0),
                                           child: Directionality(
                                             textDirection: TextDirection.ltr,
                                             child: Row(
@@ -509,17 +512,25 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                   10.horizontalSpace,
                                                   SvgPicture.asset(
                                                     (state.currentMessage
-                                                        .contains(
-                                                        widget.messageId))
-                                                        ? AppAssets.sandClockSvg :
-                                                    (state.currentFailedMessage
-                                                        .contains(
-                                                        widget.messageId)) ?
-                                                    AppAssets.MessageFailedSvg: widget.isRead
-                                                        ? AppAssets
-                                                        .messageReadArrowSvg
-                                                        : widget.isReceived ? AppAssets.messageDeliveredArrowSvg :AppAssets
-                                                        .messageSentArrowSvg,
+                                                            .contains(
+                                                                widget
+                                                                    .messageId))
+                                                        ? AppAssets.sandClockSvg
+                                                        : (state
+                                                                .currentFailedMessage
+                                                                .contains(widget
+                                                                    .messageId))
+                                                            ? AppAssets
+                                                                .MessageFailedSvg
+                                                            : widget.isRead
+                                                                ? AppAssets
+                                                                    .messageReadArrowSvg
+                                                                : widget
+                                                                        .isReceived
+                                                                    ? AppAssets
+                                                                        .messageDeliveredArrowSvg
+                                                                    : AppAssets
+                                                                        .messageSentArrowSvg,
                                                     width: 10.sp,
                                                     height: 10.sp,
                                                   )
@@ -557,25 +568,29 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                               BorderRadius.circular(12),
                                         ),
                                       ),
-                                       widget.userMessagePhoto != null
+                                      widget.userMessagePhoto != null
                                           ? MyCachedNetworkImage(
-                                        imageUrl: ChatUrls.baseUrl + widget.userMessagePhoto!,
-                                         progressIndicatorBuilderWidget: TrydosLoader(),
-                                        imageFit: BoxFit.cover,
-                                        radius: 8,
-                                        width: 30.w,
-                                        height: 30,
-                                      )
+                                              imageUrl: ChatUrls.baseUrl +
+                                                  widget.userMessagePhoto!,
+                                              progressIndicatorBuilderWidget:
+                                                  TrydosLoader(),
+                                              imageFit: BoxFit.cover,
+                                              radius: 8,
+                                              width: 30.w,
+                                              height: 30,
+                                            )
                                           : NoImageWidget(
-                                          width: 30.w,
-                                          height: 30,
-                                           textStyle:context.textTheme.caption?.br.copyWith(
-                                               color: const Color(0xff6638FF),
-                                               letterSpacing: 0.18,
-                                               height: 1.33),
-                                          radius: 8,
-                                          name:widget.userMessageName
-                                      )
+                                              width: 30.w,
+                                              height: 30,
+                                              textStyle: context
+                                                  .textTheme.caption?.br
+                                                  .copyWith(
+                                                      color: const Color(
+                                                          0xff6638FF),
+                                                      letterSpacing: 0.18,
+                                                      height: 1.33),
+                                              radius: 8,
+                                              name: widget.userMessageName)
                                     ],
                                   ),
                                 )
@@ -608,13 +623,12 @@ class _VoiceMessageState extends State<VoiceMessage> {
   }
 
   void audioToggle() async {
-    if(duration==Duration.zero){
+    if (duration == Duration.zero) {
       return;
     }
     if (audioPlayerState == PlayerState.playing) {
       audioPlayingNotifier.value = false;
       await audioPlayer.pause();
-
     } else if (audioPlayerState == PlayerState.paused) {
       audioPlayingNotifier.value = true;
       await audioPlayer.resume();

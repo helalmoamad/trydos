@@ -106,14 +106,14 @@ class _StoriesListState extends State<StoriesList> {
                                                     ),
                                                     onTap: () async {
                                                       disableResizing();
-                                                      if (GetIt.I<PrefsRepository>()
-                                                              .isVerifiedPhone ==
-                                                          false) {
-                                                        context.go(GRouter
-                                                            .config
-                                                            .applicationRoutes
-                                                            .kRegistrationPage);
-                                                      } else {
+                                                      // if (GetIt.I<PrefsRepository>()
+                                                      //         .isVerifiedPhone ==
+                                                      //     false) {
+                                                      //   context.go(GRouter
+                                                      //       .config
+                                                      //       .applicationRoutes
+                                                      //       .kRegistrationPage);
+                                                      // } else {
 //
                                                         showDialog(
                                                             context: context,
@@ -157,7 +157,7 @@ class _StoriesListState extends State<StoriesList> {
                                                                 }
                                                               });
                                                             });
-                                                      }
+                                                    //  }
                                                     },
                                                   ),
                                                 ),

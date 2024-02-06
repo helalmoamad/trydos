@@ -128,9 +128,6 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
     prevIndexInFirstSlider =
         prevIndexInSecondSlider = syncColorImageList!.length ~/ 4;
     currentColorIndex = ValueNotifier(prevIndexInFirstSlider);
-    print('xxxx');
-    print(indicatorValues);
-    print(prevIndexInSecondSlider);
     gallery3dControllerForColors = Gallery3DController(
         itemCount: 3,
         primaryshiftingOffsetDivision: 2.6,
@@ -159,12 +156,12 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
         : Gallery3DController(
         itemCount: syncColorImageList!.length,
         autoLoop: false,
-        minScale: (syncColorImageList!.length) == 4 ? 0.7 : 0.4,
+        minScale: (syncColorImageList!.length) == 4 ? 0.7 : (syncColorImageList!.length) <= 8  ? 0.55 : 0.4,
         initialIndex: syncColorImageList!.length ~/ 4,
         primaryshiftingOffsetDivision: (syncColorImageList!.length) == 4
             ? 4.5
             : (syncColorImageList!.length) <= 8
-            ? 3
+            ? 2.5
             : 1.6,
         scrollTime: 1);
     super.initState();
@@ -677,7 +674,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                   logoTextHeight: 5,
                                   circleDimensions: 5,
                                   width: 169.w,
-                                  imageFit: BoxFit.cover,
+                                  imageFit: BoxFit.fitHeight,
                                   height: 10),
                               // SvgPicture.asset(
                               //   AppAssets.mangoSvg,

@@ -41,7 +41,7 @@ Map<String, dynamic> _$StoryStateToJson(StoryState instance) =>
       'getStoriesStatus': _$GetStoriesStatusEnumMap[instance.getStoriesStatus]!,
       'selectedVideoStatus':
           _$SelectedVideoStatusEnumMap[instance.selectedVideoStatus]!,
-      'stories': instance.stories,
+      'stories': instance.stories.map((e) => e.toJson()).toList(),
       'currentPage': instance.currentPage,
       'selectedStory': instance.selectedStory,
       'initialStory':

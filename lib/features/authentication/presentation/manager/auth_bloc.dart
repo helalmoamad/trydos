@@ -163,6 +163,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setMyChatPhoto(photo);
         }
         add(StoreFcmTokenEvent(userId: id!, fcmToken: event.fcmToken));
+        apisMustNotToRequest.remove('GetChatsEvent');
         GetIt.I<ChatBloc>().add(GetChatsEvent());
       },
     );
@@ -251,7 +252,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setStoriesToken(token!);
           _prefsRepository.setMyStoriesId(id!);
         }
-
+        apisMustNotToRequest.remove('GetStoryEvent');
         GetIt.I<StoryBloc>().add(GetStoryEvent());
       },
     );

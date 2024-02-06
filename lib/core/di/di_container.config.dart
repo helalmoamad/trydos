@@ -113,14 +113,16 @@ import '../../features/story/domain/useCases/add_story_to_our_server_usecase.dar
 import '../../features/story/domain/useCases/get_stories_usecase.dart' as _i68;
 import '../../features/story/domain/useCases/get_width_and_height_usecase.dart'
     as _i69;
+import '../../features/story/domain/useCases/increase_viewers_usecase.dart'
+    as _i71;
 import '../../features/story/domain/useCases/upload_story_usecase.dart' as _i54;
-import '../../features/story/presentation/bloc/story_bloc.dart' as _i71;
+import '../../features/story/presentation/bloc/story_bloc.dart' as _i72;
 import '../data/data_source/common_use_repo_data_source.dart' as _i14;
 import '../data/repository/common_use_repository_impl.dart' as _i16;
 import '../domin/repositories/common_use_repository.dart' as _i15;
 import '../domin/repositories/prefs_repository.dart' as _i36;
 import '../domin/usecases/upload_file_cloudinary_usecase.dart' as _i52;
-import 'di_container.dart' as _i72;
+import 'di_container.dart' as _i73;
 
 // initializes the registration of main-scope dependencies inside of GetIt
 Future<_i1.GetIt> $initGetIt(
@@ -290,14 +292,17 @@ Future<_i1.GetIt> $initGetIt(
         gh<_i67.GetStartingSettingsUseCase>(),
         gh<_i66.GetProductsWithoutFiltersUseCase>(),
       ));
-  gh.lazySingleton<_i71.StoryBloc>(() => _i71.StoryBloc(
+  gh.factory<_i71.IncreaseViewersUseCase>(
+      () => _i71.IncreaseViewersUseCase(gh<_i49.StoryRepository>()));
+  gh.lazySingleton<_i72.StoryBloc>(() => _i72.StoryBloc(
         gh<_i52.UploadFileCloudinaryUseCase>(),
         gh<_i68.GetStoryUseCase>(),
         gh<_i69.GetWidthAndHeightUseCase>(),
         gh<_i54.UploadStoryUseCase>(),
+        gh<_i71.IncreaseViewersUseCase>(),
         gh<_i58.AddStoryToOurServerUseCase>(),
       ));
   return getIt;
 }
 
-class _$AppModule extends _i72.AppModule {}
+class _$AppModule extends _i73.AppModule {}

@@ -27,7 +27,8 @@ enum ChangeChatPropertyStatus { init, loading, success, failure }
 enum DeleteChatStatus { init, loading, success, failure }
 
 enum ChangeMessageStateFromPusherStatus { init, received, watched }
-@JsonSerializable()
+
+@JsonSerializable(explicitToJson: true)
 class ChatState {
   final int width;
   final int height;

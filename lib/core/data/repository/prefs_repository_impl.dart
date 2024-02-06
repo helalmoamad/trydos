@@ -240,6 +240,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setMyChatPhoto(String? photo) => _preferences.setString(PrefsKey.chatPhoto, photo ?? 'null');
+
 // @override
 // // TODO: implement localMessages
 // List<Map<String,dynamic>> get localMessages {

@@ -4,8 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -507,7 +509,9 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                         otp: insertedCode));
                                               }
                                             } else {
-                                              checkOtp.value = 2;
+                                              showMessage('please wait 5 seconds and try again');
+                                              pasteOtpCode('');
+                                              //checkOtp.value = 2;
                                             }
                                           },
                                           controller: form.controllers[5],

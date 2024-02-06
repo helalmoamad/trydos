@@ -150,14 +150,18 @@ class _HomePageState extends State<HomePage> {
                                 padding:
                                     HWEdgeInsets.symmetric(horizontal: 15.w),
                                 child: currentSlug == null ||(
-                                        homeState
+                                    (homeState
                                                 .getHomeSectionsPaginationObject[
                                                     currentSlug]
                                                 ?.paginationStatus ==
-                                            PaginationStatus.loading && homeState
+                                            PaginationStatus.loading ||  homeState
+                                        .getHomeSectionsPaginationObject[
+                                    currentSlug]
+                                        ?.paginationStatus ==
+                                        PaginationStatus.initial)&& (homeState
                                             .getHomeSectionsPaginationObject[
                                         currentSlug]
-                                            ?.items.length == 0)
+                                            ?.items.length ?? 0) == 0)
                                     ? TrydosShimmerLoading(
                                         width: 1.sw,
                                         logoTextWidth: 70.w,

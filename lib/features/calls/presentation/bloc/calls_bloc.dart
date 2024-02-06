@@ -7,6 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/calls/domain/useCase/get_agora_token_use_case.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 
 import '../../../../common/constant/configuration/global.dart';
 import '../../../chat/data/models/my_chats_response_model.dart';
@@ -108,6 +109,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
           chatId: event.chatId!,
           isVideo: event.isVideo));
       response.fold((l) => null, (r) {
+        GetIt.I<ChatBloc>().add(ReceiveMessageEvent(message: r.data!.message!, increaseUnReadMessages: false));
         emit(state.copyWith(
           messageId: r.data!.message!.id!.toString(),
           isVideoCall: event.isVideo,
@@ -136,7 +138,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       debugPrint(r.toString());
     });
 
-    final response = await getAgoraTokenUseCase(event.messageId);
+    final response = await getAgoraTokenUseCase(event.chatId);
 
     await response.fold((l) => null, (r) async {
       String agoraToken = r.data!;

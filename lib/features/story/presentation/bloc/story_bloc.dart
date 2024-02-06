@@ -11,10 +11,10 @@ import 'package:mime_type/mime_type.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/use_case/use_case.dart';
-import 'package:trydos/features/story/data/models/image_detail.dart';
 import 'package:trydos/features/story/domain/useCases/get_stories_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/core/domin/usecases/upload_file_cloudinary_usecase.dart';
+import 'package:trydos/features/story/domain/useCases/increase_viewers_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/upload_story_usecase.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/main.dart';
@@ -38,16 +38,19 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
   final UploadStoryUseCase uploadStoryUseCase;
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final AddStoryToOurServerUseCase addStoryToOurServerUseCase;
+  final IncreaseViewersUseCase increaseViewersUseCase;
 
   StoryBloc(
       this.uploadFileCloudinaryUseCase,
       this.getStoryUseCase,
       this.getWidthAndHeightUseCase,
       this.uploadStoryUseCase,
+      this.increaseViewersUseCase,
       this.addStoryToOurServerUseCase)
       : super(StoryState()) {
     on<UploadStoryEvent>(_uploadStoryEvent);
     on<AddStoryToOurServerEvent>(_AddStoryToOurServerEvent);
+    on<IncreaseViewersEvent>(_IncreaseViewersEvent);
     on<StoryEvent>((event, emit) {});
     on<GetStoryEvent>(
       _onGetStoryEvent,
@@ -146,10 +149,18 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
     print('initialStory ${event.initialStory}');
     print('selected ${event.selected}');
     print('state.initialStory ${state.initialStory[event.selected]}');
-    state
+    Story story =  state
         .stories[event.selected]
-        .stories![max(state.initialStory[event.selected]!, event.initialStory)]
-        .isSeen = true;
+        .stories![max(state.initialStory[event.selected]!, event.initialStory)];
+    // state
+    //     .stories[event.selected]
+    //     .stories![max(state.initialStory[event.selected]!, event.initialStory)]
+    //     .isSeen = true;
+    if(!(story.isSeen ?? false)) {
+      add(IncreaseViewersEvent(
+          collectionId: state.stories[event.selected].toString(),
+          storyId: story.id.toString()));
+    }
     Map<int, int?> initialStories = Map.of(state.initialStory);
     initialStories[event.selected] = event.initialStory == -1
         ? initialStories[event.selected]
@@ -220,11 +231,15 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
       ));
     }
   }
+
   Future<void> _onGetStoryEvent(GetStoryEvent, Emitter<StoryState> emit) async {
-    if(apisMustNotToRequest.contains('GetStoryEvent')){
-      return ;
+    if (apisMustNotToRequest.contains('GetStoryEvent')) {
+      return;
     }
-    emit(state.copyWith(getStoriesStatus: state.getStoriesStatus == GetStoriesStatus.success ? state.getStoriesStatus : GetStoriesStatus.loading));
+    emit(state.copyWith(
+        getStoriesStatus: state.getStoriesStatus == GetStoriesStatus.success
+            ? state.getStoriesStatus
+            : GetStoriesStatus.loading));
     final response = await getStoryUseCase(NoParams());
 
     response.fold((l) {
@@ -275,7 +290,6 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
       String mimeType = mime(fileName) ?? '';
       String mimee = mimeType.split('/')[0];
       bool isVideoFile;
-
       if (mimee == 'image') {
         isVideoFile = false;
       } else {
@@ -290,22 +304,17 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
           isPhoto: !isVideoFile ? 1 : 0,
           photoPath: !isVideoFile ? event.filePath : null,
           fullVideoPath: isVideoFile ? event.filePath : null);
-
       if (GetIt.I<PrefsRepository>().myStoriesId ==
           state.stories.first.stories![0].userId) {
         List<Story> currentUserStories = List.of(state.stories.first.stories!);
         currentUserStories.insert(currentUserStories.length, story);
-//      //todo check if the use exist in the array and the story to it's stories
         state.stories.first.stories = currentUserStories;
-        emit(state.copyWith(
-            stories: state.stories,
-            uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
       } else {
-        state.stories.insert(0, Datum(stories: [story]));
-        emit(state.copyWith(
-            stories: state.stories,
-            uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
+        state.stories.insert(0, r!);
       }
+      emit(state.copyWith(
+          stories: state.stories,
+          uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
     });
   }
 
@@ -317,5 +326,25 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
   @override
   Map<String, dynamic>? toJson(StoryState state) {
     return state.toJson();
+  }
+
+  FutureOr<void> _IncreaseViewersEvent(
+      IncreaseViewersEvent event, Emitter<StoryState> emit) async {
+    final response = await increaseViewersUseCase(
+        IncreaseViewersParams(storyId: event.storyId));
+    response.fold((l) => null, (r) {
+      emit(state.copyWith(
+          stories: state.stories.map((e) {
+        if (e.id.toString() == event.collectionId) {
+          return e.copyWith(
+              stories: e.stories?.map((e) {
+            if (e.id.toString() == event.storyId)
+              return e.copyWith(isSeen: true);
+            return e;
+          }).toList());
+        }
+        return e;
+      }).toList()));
+    });
   }
 }

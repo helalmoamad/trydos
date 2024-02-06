@@ -119,9 +119,9 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'changeChatPropertyStatus':
           _$ChangeChatPropertyStatusEnumMap[instance.changeChatPropertyStatus]!,
       'deleteChatStatus': _$DeleteChatStatusEnumMap[instance.deleteChatStatus]!,
-      'contacts': instance.contacts,
-      'chats': instance.chats,
-      'pinnedChats': instance.pinnedChats,
+      'contacts': instance.contacts.map((e) => e.toJson()).toList(),
+      'chats': instance.chats.map((e) => e.toJson()).toList(),
+      'pinnedChats': instance.pinnedChats.map((e) => e.toJson()).toList(),
       'currentMessage': instance.currentMessage,
       'currentFailedMessage': instance.currentFailedMessage,
       'channelId': instance.channelId,
@@ -133,7 +133,8 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'currentChannelReceivedMessage': instance.currentChannelReceivedMessage,
       'scrollToParentMessage': instance.scrollToParentMessage,
       'createAnewChat': instance.createAnewChat,
-      'newSortedChatsByDate': instance.newSortedChatsByDate,
+      'newSortedChatsByDate': instance.newSortedChatsByDate
+          ?.map((k, e) => MapEntry(k, e.map((e) => e.toJson()).toList())),
     };
 
 const _$LoadImageWidthAndHeightEnumMap = {
