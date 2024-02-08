@@ -43,17 +43,15 @@ FToast fToast = FToast();
 // }
 
 showMessage(
-    String message, {
-      bool hasError = true,
-      bool showInRelease = false,
-      Color? backGroundColor,
-      Color? foreGroundColor,
-      Toast timeShowing = Toast.LENGTH_LONG,
-    }) {
+  String message, {
+  bool hasError = true,
+  bool showInRelease = false,
+  Color? backGroundColor,
+  Color? foreGroundColor,
+  Toast timeShowing = Toast.LENGTH_LONG,
+}) {
   if (kDebugMode || showInRelease) {
-    Fluttertoast.cancel().then((value) =>
-        Fluttertoast.showToast(
-
+    Fluttertoast.cancel().then((value) => Fluttertoast.showToast(
           msg: message,
           backgroundColor: Colors.white,
           textColor: foreGroundColor ?? Colors.red,

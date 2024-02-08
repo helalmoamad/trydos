@@ -2,7 +2,15 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/features/calls/domain/useCase/delete_Call_reg.dart';
+import 'package:trydos/features/calls/domain/useCase/get_my_calls.dart';
+import 'package:trydos/main.dart';
+import '../../data/models/my_calls.dart' as calls;
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -26,10 +34,18 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   final MakeCallUseCase makeCallUseCase;
   final AnswerCallUseCase answerCallUseCase;
   final RejectCallUseCase rejectCallUseCase;
-  final GetAgoraTokenUseCase getAgoraTokenUseCase;
 
-  CallsBloc(this.rejectCallUseCase, this.makeCallUseCase,
-      this.answerCallUseCase, this.getAgoraTokenUseCase)
+  final GetAgoraTokenUseCase getAgoraTokenUseCase;
+  final DeleteCallRegUseCase deleteCallRegUseCase;
+  final GetMyCallsUseCase getMyCallsUseCase;
+
+  CallsBloc(
+      this.rejectCallUseCase,
+      this.makeCallUseCase,
+      this.getMyCallsUseCase,
+      this.answerCallUseCase,
+      this.getAgoraTokenUseCase,
+      this.deleteCallRegUseCase)
       : super(CallsState()) {
     on<CallsEvent>((event, emit) {});
     on<InitResponseRejectVideoCallEvent>(_onInitResponseRejectVideoCallEvent);
@@ -37,6 +53,9 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     on<AnswerVideoCallEvent>(_onAnswerVideoCallEvent);
     on<EndVideoCallEvent>(_onEndVideoCallEvent);
     on<MakeCallEvent>(_onMakeCallEvent);
+    on<DeleteCallRegEvent>(_onDeleteCallRegEvent);
+    on<GetMyCallsEvent>(_onGetMyCalls,
+        transformer: throttleDroppable(throttleDuration));
     on<UserInteractWithCall>(_onUserInteractWithCall);
     on<ResponseRejectVideoCallEvent>(_onResponseRejectVideoCallEvent);
   }
@@ -47,12 +66,37 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     emit(state.copyWith(makeCallStatus: MakeCallStatus.cancel));
   }
 
+  FutureOr<void> _onGetMyCalls(
+      GetMyCallsEvent event, Emitter<CallsState> emit) async {
+    emit(state.copyWith(getMyCallsStatus: GetMyCallsStatus.loading));
+    final response = await getMyCallsUseCase(NoParams());
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('GetMyCall')) {
+          add(GetMyCallsEvent());
+          isFailedTheFirstTime.add('GetMyCall');
+        }
+
+        emit(state.copyWith(getMyCallsStatus: GetMyCallsStatus.failure));
+      },
+      (r) {
+        apisMustNotToRequest.add('GetMyCalls');
+
+        isFailedTheFirstTime.remove('GetMyCalls');
+
+        emit(state.copyWith(
+            getMyCallsStatus: GetMyCallsStatus.success, callRegister: r.data));
+      },
+    );
+  }
+
   FutureOr<void> _onMakeCallEvent(
       MakeCallEvent event, Emitter<CallsState> emit) async {
     List<Message> messages;
     bool fromPinned = false;
 
-    emit(state.copyWith(makeCallStatus: MakeCallStatus.init , isVideoCall: event.isVideo));
+    emit(state.copyWith(
+        makeCallStatus: MakeCallStatus.init, isVideoCall: event.isVideo));
 
     // ChatState chatState = GetIt.I<ChatBloc>().state;
     //todo check if the channel exist and get the messages of this channel
@@ -94,7 +138,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       response.fold((l) => null, (r) {
         emit(state.copyWith(
             makeCallStatus: MakeCallStatus.startCall,
-             isVideoCall: event.isVideo,
+            isVideoCall: event.isVideo,
             messageId: r.data!.message!.id!.toString(),
             channelName: r.data!.message!.channelId.toString(),
             agoraToken: r.data!.token));
@@ -109,7 +153,8 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
           chatId: event.chatId!,
           isVideo: event.isVideo));
       response.fold((l) => null, (r) {
-        GetIt.I<ChatBloc>().add(ReceiveMessageEvent(message: r.data!.message!, increaseUnReadMessages: false));
+        GetIt.I<ChatBloc>().add(ReceiveMessageEvent(
+            message: r.data!.message!, increaseUnReadMessages: false));
         emit(state.copyWith(
           messageId: r.data!.message!.id!.toString(),
           isVideoCall: event.isVideo,
@@ -117,6 +162,8 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
           agoraToken: r.data!.token,
           channelName: event.chatId,
         ));
+
+        emit(state.copyWith(callRegister: state.callRegister));
       });
     }
   }
@@ -124,6 +171,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   FutureOr<void> _onEndVideoCallEvent(
       EndVideoCallEvent event, Emitter<CallsState> emit) async {
     emit(state.copyWith(makeCallStatus: MakeCallStatus.endCall));
+    add(GetMyCallsEvent());
   }
 
   FutureOr<void> _onAnswerVideoCallEvent(
@@ -171,5 +219,42 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
         stopRingToneReason: event.rejectIt
             ? StopRingToneReason.refuse
             : StopRingToneReason.accept));
+  }
+
+  FutureOr<void> _onDeleteCallRegEvent(
+      DeleteCallRegEvent event, Emitter<CallsState> emit) async {
+    /*bool fromPinned = false;
+    List<Chat> chats;
+    if (state.chats.any((element) => element.id == event.channelId)) {
+      chats = List.of(state.chats);
+    } else {
+      fromPinned = true;
+      chats = List.of(state.pinnedChats);
+    }
+    String uuid = const Uuid().v4();
+    int index = chats.indexWhere((element) => element.id == event.channelId);
+    chats[index] = chats[index].copyWith(id: uuid, localId: uuid, messages: []);
+    emit(state.copyWith(
+        chats: fromPinned ? state.chats : chats,
+        deleteChatStatus: DeleteChatStatus.loading,
+        newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
+          ...chats,
+          ...(fromPinned ? state.chats : state.pinnedChats)
+        ]),
+        pinnedChats: !fromPinned ? state.pinnedChats : chats));*/
+    final response = await deleteCallRegUseCase(
+        DeleteCallRegParams.DeleteCallRegParams(callId: event.callId));
+    response.fold((l) {
+      showMessage("لا يوجد اتصال بالانترنيت ");
+    }, (r) {
+      state.callRegister!.removeWhere(
+        (element) => element.id == event.callId,
+      );
+      add(GetMyCallsEvent());
+      emit((state.copyWith(
+        callRegister: state.callRegister,
+        deleteCallRegStatus: DeleteCallRegStatus.success,
+      )));
+    });
   }
 }
