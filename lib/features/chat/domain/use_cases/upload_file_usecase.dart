@@ -30,7 +30,6 @@ class UploadFileParams{
   File file;
   final String filePath;
   Future<Map<String, dynamic>> map() async {
-    print(file.path);
     String fileName = file.path.split('/').last;
     String mimeType = mime(fileName) ?? '';
     String mimee = mimeType.split('/')[0];

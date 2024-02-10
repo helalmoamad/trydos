@@ -19,6 +19,7 @@ import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
+import '../../../../app/my_text_widget.dart';
 import '../../manager/chat_bloc.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
@@ -172,7 +173,7 @@ class _VideoMessageState extends State<VideoMessage> {
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      Text(
+                                      MyTextWidget(
                                         !widget.time.isUtc
                                             ? HelperFunctions.getDateInFormat(
                                             widget.time)

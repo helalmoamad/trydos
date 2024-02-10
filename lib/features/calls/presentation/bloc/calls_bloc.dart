@@ -4,10 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
-import 'package:trydos/features/authentication/data/models/login_to_chat_response_model.dart';
 import 'package:trydos/features/calls/domain/useCase/delete_Call_reg.dart';
 import 'package:trydos/features/calls/domain/useCase/get_my_calls.dart';
 import 'package:trydos/main.dart';
@@ -17,8 +15,6 @@ import 'package:meta/meta.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/calls/domain/useCase/get_agora_token_use_case.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
-
-import '../../../../common/constant/configuration/global.dart';
 import '../../../chat/data/models/my_chats_response_model.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../../domain/useCase/answer_call_usecase.dart';
@@ -31,7 +27,6 @@ part 'calls_state.dart';
 
 @LazySingleton()
 class CallsBloc extends Bloc<CallsEvent, CallsState> {
-  PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   final MakeCallUseCase makeCallUseCase;
   final AnswerCallUseCase answerCallUseCase;
   final RejectCallUseCase rejectCallUseCase;
@@ -93,55 +88,28 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
 
   FutureOr<void> _onMakeCallEvent(
       MakeCallEvent event, Emitter<CallsState> emit) async {
-    List<Message> messages;
-    bool fromPinned = false;
-
+    emit(state.copyWith(makeCallStatus: MakeCallStatus.loading ,
+        receiverCallName: event.receiverCallName,
+        isVideoCall: event.isVideo));
     emit(state.copyWith(
         makeCallStatus: MakeCallStatus.init, isVideoCall: event.isVideo));
-
-    // ChatState chatState = GetIt.I<ChatBloc>().state;
-    //todo check if the channel exist and get the messages of this channel
-    // if (chatState.chats.any( (e) => e.id == event.chatId,)) {
-    //   messages = List.of(chatState.chats
-    //       .firstWhere((element) => element.id == event.chatId)
-    //       .messages ??
-    //       []);
-    // }
-    //todo the same but from the pinned channels
-
-    // else {
-    //   fromPinned = true;
-    //   messages = List.of(chatState.pinnedChats
-    //       .firstWhere((element) => element.id == event.chatId)
-    //       .messages ??
-    //       []);
-    // }
-    //TODO FOR LATER ADD THE VIDEO MESSAGE TO THE NEW CHAT
-    // messages.insert(
-    //     0,
-    //     Message(
-    //         channelId: event.chatId,
-    //         // id: event.messageId,
-    //         // localId: event.messageId,
-    //         createdAt: DateTime.now(),
-    //         receiverUserId: int.tryParse(event.receiverUserId),
-    //         messageContent: null,
-    //         senderUserId: _prefsRepository.myChatId,
-    //         messageType: MessageType(name:''),
-    //         isForward: 0,
-    //         parentMessage: null));
-
     if (event.receiverUserId != null) {
       final response = await makeCallUseCase(MakeCallParams(
           isVideo: event.isVideo,
           payload: event.payload,
           receiverUserId: event.receiverUserId!));
-      response.fold((l) => null, (r) {
+      response.fold((l) {
+        emit(state.copyWith(
+            makeCallStatus: MakeCallStatus.failure
+        ));
+      }, (r) {
+        GetIt.I<ChatBloc>().add(AddAMessageToAChannel(message: r.data!.message!, localChannelId: event.chatId! ));
         emit(state.copyWith(
             makeCallStatus: MakeCallStatus.startCall,
-            isVideoCall: event.isVideo,
+             isVideoCall: event.isVideo,
+            currentActiveCallId: r.data!.message!.id!.toString(),
             messageId: r.data!.message!.id!.toString(),
-            channelName: r.data!.message!.channelId.toString(),
+            channelIdForCurrentCall: r.data!.message!.channelId.toString(),
             agoraToken: r.data!.token));
       });
 
@@ -153,15 +121,19 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
           payload: event.payload,
           chatId: event.chatId!,
           isVideo: event.isVideo));
-      response.fold((l) => null, (r) {
+      response.fold((l) {
+        emit(state.copyWith(
+            makeCallStatus: MakeCallStatus.failure));
+      }, (r) {
         GetIt.I<ChatBloc>().add(ReceiveMessageEvent(
             message: r.data!.message!, increaseUnReadMessages: false));
         emit(state.copyWith(
           messageId: r.data!.message!.id!.toString(),
           isVideoCall: event.isVideo,
           makeCallStatus: MakeCallStatus.startCall,
+          currentActiveCallId: r.data!.message!.id!.toString(),
           agoraToken: r.data!.token,
-          channelName: event.chatId,
+          channelIdForCurrentCall: r.data!.message!.channelId.toString(),
         ));
 
         emit(state.copyWith(callRegister: state.callRegister));
@@ -194,7 +166,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       emit(state.copyWith(
           makeCallStatus: MakeCallStatus.success,
           agoraToken: agoraToken,
-          channelName: event.chatId));
+          channelIdForCurrentCall: event.chatId));
     });
   }
 
@@ -217,6 +189,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   FutureOr<void> _onUserInteractWithCall(
       UserInteractWithCall event, Emitter<CallsState> emit) {
     emit(state.copyWith(
+      currentActiveCallId: null,
         stopRingToneReason: event.rejectIt
             ? StopRingToneReason.refuse
             : StopRingToneReason.accept));

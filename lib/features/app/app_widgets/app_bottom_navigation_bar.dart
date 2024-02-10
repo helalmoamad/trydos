@@ -21,6 +21,7 @@ import '../../chat/presentation/manager/chat_event.dart';
 import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
 import '../blocs/app_bloc/app_state.dart';
+import '../my_text_widget.dart';
 
 class AppBottomNavBar extends StatefulWidget {
   const AppBottomNavBar({Key? key}) : super(key: key);
@@ -256,7 +257,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                               height: 30.h,
                             ),
                       10.verticalSpace,
-                      Text(
+                      MyTextWidget(
                         'Cart',
                         maxLines: 1,
                         style: textTheme.overline?.lr.copyWith(
@@ -292,7 +293,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                               height: 30.h,
                             ),
                       10.verticalSpace,
-                      Text(
+                      MyTextWidget(
                         'Chat',
                         maxLines: 1,
                         style: textTheme.overline?.lr.copyWith(
@@ -312,7 +313,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: Text('Dev tools'),
+                            content: MyTextWidget('Dev tools'),
                             actions: [
                               Column(
                                 mainAxisAlignment:
@@ -327,7 +328,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                     showRequests: true,
                                                   )));
                                     },
-                                    child: Text('requests'),
+                                    child: MyTextWidget('requests'),
                                   ),
                                   TextButton(
                                     onPressed: () {
@@ -337,7 +338,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                               builder: (_) =>
                                                   SharedPreferencePage()));
                                     },
-                                    child: Text('shared preferences'),
+                                    child: MyTextWidget('shared preferences'),
                                   ),
                                   TextButton(
                                     onPressed: () {
@@ -348,7 +349,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                     showRequests: false,
                                                   )));
                                     },
-                                    child: Text('flutter errors'),
+                                    child: MyTextWidget('flutter errors'),
                                   ),
                                   TextButton(
                                     onPressed: () {
@@ -358,7 +359,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                               builder: (_) =>
                                                   FilesExistPage()));
                                     },
-                                    child: Text('files exists'),
+                                    child: MyTextWidget('files exists'),
                                   ),
                                 ],
                               )
@@ -443,7 +444,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                               ),
                             ),
                       10.verticalSpace,
-                      Text(
+                      MyTextWidget(
                         'Me',
                         maxLines: 1,
                         style: textTheme.overline?.lr.copyWith(

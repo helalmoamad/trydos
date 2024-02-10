@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'dart:math' as math;
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
@@ -12,6 +15,7 @@ Map<String, List<Message>> groupReceivedMessageOnDays(
   //todo map for store all chats after we group every messages chat depending on it's day sent
   Map<String, Map<String, List<Message>>> newSortedChatsByDate = {};
   chats.forEach((chat) {
+    chat.messages?.removeWhere((element) => element.localId == null && int.tryParse(element.id.toString()) == null);
     //todo here bring all the days that have messages send on it and put the date as key in the messages in this day as value
     Map<String, List<Message>> newMessagesByDate = {};
     for (int i = chat.messages!.length - 1; i >= 0; i--) {
@@ -43,9 +47,6 @@ Map<String, List<Message>> groupReceivedMessageOnDays(
     newSortedChatsByDate['${chat.id}'] = newMessagesByDate;
   });
 
-  //todo after we sort the message and add it in the right order depend on date
-  //todo here we will walk on every chat   {newSortedChatsByDate} the value of this map is the {channel id }
-  //todo the value is Map<String,List<Message> {the key is the date } {the value is list of message in this date}
   Map<String, List<Message>> result = {};
   newSortedChatsByDate.forEach((channelId, value) {
     result[channelId] = [];

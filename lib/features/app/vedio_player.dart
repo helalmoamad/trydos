@@ -10,6 +10,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:video_player/video_player.dart';
 
+import 'my_text_widget.dart';
+
 class MYVideoPlayer extends StatefulWidget {
   const MYVideoPlayer({Key? key, this.videoUrl, this.videoFile})
       : super(key: key);
@@ -37,7 +39,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
           .replaceFirst(widget.videoUrl!.split('.').last, 'JPG') + '?w=300&h=300';
     }
     if (widget.videoFile != null) {
-      print('yes from memory');
+      debugPrint('yes from memory');
       _controller = VideoPlayerController.file(widget.videoFile!);
       initializeController();
     }
@@ -117,7 +119,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                     : ValueListenableBuilder<double>(
                     valueListenable: downloadingProgress,
                     builder: (context, progress, _) {
-                      print('progress: $progress');
+                      debugPrint('progress: $progress');
                       return InkWell(
                         onTap: () {
                           isDownloading.value = false;
@@ -132,7 +134,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                               backgroundColor: Colors.grey,
                               color: Color(0xff388CFF),
                             ),
-                            Text(
+                            MyTextWidget(
                               'X',
                               style: context
                                   .textTheme.headline6?.ba
@@ -181,7 +183,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                     Positioned(
                       left: 8,
                       bottom: 38,
-                      child: Text(getPosition(),
+                      child: MyTextWidget(getPosition(),
                           style: context.textTheme.bodyText2?.rr
                               .copyWith(color: Colors.white)),
                     ),
@@ -228,7 +230,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
         itemBuilder: (context) => allSpeeds
             .map<PopupMenuEntry<double>>((speed) => PopupMenuItem(
                   value: speed,
-                  child: Text(
+                  child: MyTextWidget(
                     '${speed}x',
                     style: const TextStyle(
                       color: Color(0xff388CFF),
@@ -242,7 +244,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
             borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          child: Text(
+          child: MyTextWidget(
             '${_controller!.value.playbackSpeed}x',
             style: const TextStyle(
               color: Color(0xff388CFF),

@@ -19,6 +19,7 @@ import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
+import '../../../../app/my_text_widget.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 
@@ -182,7 +183,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                   children: [
                                     Container(
                                       constraints: BoxConstraints(maxWidth: 310.w),
-                                      child: Text(
+                                      child: MyTextWidget(
                                         widget.message,
                                         style: textTheme.bodyText2?.rr.copyWith(
                                             color: widget.withImageShadow
@@ -196,7 +197,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                           vertical: 5),
                                       child: Row(
                                         children: [
-                                          Text(
+                                          MyTextWidget(
                                             !widget.time.isUtc
                                                 ? HelperFunctions.getDateInFormat(
                                                     widget.time)

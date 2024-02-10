@@ -20,16 +20,18 @@ StoryState _$StoryStateFromJson(Map<String, dynamic> json) => StoryState(
       getStoriesStatus: $enumDecodeNullable(
               _$GetStoriesStatusEnumMap, json['getStoriesStatus']) ??
           GetStoriesStatus.init,
-      stories: (json['stories'] as List<dynamic>?)
-              ?.map((e) => Datum.fromJson(e as Map<String, dynamic>))
+      storiesCollections: (json['storiesCollections'] as List<dynamic>?)
+              ?.map((e) =>
+                  CollectionStoryModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
       currentPage: json['currentPage'] as int? ?? 0,
-      initialStory: (json['initialStory'] as Map<String, dynamic>?)?.map(
-            (k, e) => MapEntry(int.parse(k), e as int?),
-          ) ??
-          const {},
-      selectedStory: json['selectedStory'] as int?,
+      currentStoryInEachCollection:
+          (json['currentStoryInEachCollection'] as Map<String, dynamic>?)?.map(
+                (k, e) => MapEntry(int.parse(k), e as int?),
+              ) ??
+              const {},
+      selectedCollection: json['selectedCollection'] as int?,
     );
 
 Map<String, dynamic> _$StoryStateToJson(StoryState instance) =>
@@ -41,11 +43,12 @@ Map<String, dynamic> _$StoryStateToJson(StoryState instance) =>
       'getStoriesStatus': _$GetStoriesStatusEnumMap[instance.getStoriesStatus]!,
       'selectedVideoStatus':
           _$SelectedVideoStatusEnumMap[instance.selectedVideoStatus]!,
-      'stories': instance.stories.map((e) => e.toJson()).toList(),
+      'storiesCollections':
+          instance.storiesCollections.map((e) => e.toJson()).toList(),
       'currentPage': instance.currentPage,
-      'selectedStory': instance.selectedStory,
-      'initialStory':
-          instance.initialStory.map((k, e) => MapEntry(k.toString(), e)),
+      'selectedCollection': instance.selectedCollection,
+      'currentStoryInEachCollection': instance.currentStoryInEachCollection
+          .map((k, e) => MapEntry(k.toString(), e)),
     };
 
 const _$UploadStoryCloudinaryStatusEnumMap = {

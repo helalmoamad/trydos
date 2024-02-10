@@ -6,6 +6,7 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../my_text_widget.dart';
 import 'app_bar_params.dart';
 
 class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -72,7 +73,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
             appBarParams.child!,
           },
           if (appBarParams.title != null)
-            Text(
+            MyTextWidget(
                appBarParams.title!,
               style: appBarParams.tittleStyle ??
                   Theme.of(context).textTheme.headline3?.copyWith(

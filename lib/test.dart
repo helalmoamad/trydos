@@ -69,13 +69,13 @@
 //
 //   @override
 //   Widget build(BuildContext context) {
-//     print(widget.imageFile);
+//     debugPrint(widget.imageFile);
 //     FlutterError.onError = (FlutterErrorDetails error) {
 //       GetIt.I<PrefsRepository>().saveRequestsData(
 //           null, null, null, null, null, null, null,
 //           error: error.toString());
 //     };
-//     print('widget.isLocalMessage ${widget.isLocalMessage}');
+//     debugPrint('widget.isLocalMessage ${widget.isLocalMessage}');
 //     return Directionality(
 //       textDirection: TextDirection.ltr,
 //       child: BlocConsumer<ChatBloc, ChatState>(
@@ -248,7 +248,7 @@
 //                                 //       child: Row(
 //                                 //         crossAxisAlignment: CrossAxisAlignment.end,
 //                                 //         children: [
-//                                 //           Text(
+//                                 //           MyTextWidget(
 //                                 //             !widget.time.isUtc
 //                                 //                 ? HelperFunctions.getDateInFormat(
 //                                 //                 widget.time)

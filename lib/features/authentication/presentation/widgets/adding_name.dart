@@ -16,6 +16,7 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
+import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
 class AddingName extends StatefulWidget {
@@ -93,7 +94,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          MyTextWidget(
                             'The Number Verified Successfully !',
                             style: context.textTheme.caption?.ra.copyWith(
                                 color: Color(0xff5D5C5D), height: 1.42),
@@ -109,7 +110,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                                     height: 10),
                               ),
                               5.horizontalSpace,
-                              Text(
+                              MyTextWidget(
                                 'Last Step And Enjoy Our Services',
                                 textAlign: TextAlign.start,
                                 style: context.textTheme.caption?.ra.copyWith(
@@ -124,7 +125,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                               SvgPicture.asset(AppAssets.privacySvg,
                                   width: 10, height: 10),
                               5.horizontalSpace,
-                              Text(
+                              MyTextWidget(
                                 'Your Privacy Is Completely Safe, We Not Share Your\nInformation With Anyone',
                                 style: context.textTheme.caption?.ra.copyWith(
                                     color: Color(0xffC4C2C2), height: 1.25),

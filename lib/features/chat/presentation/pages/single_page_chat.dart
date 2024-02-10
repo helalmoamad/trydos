@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math' as math;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
@@ -24,7 +22,6 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
-import 'package:trydos/features/calls/presentation/pages/create_call_page.dart';
 import 'package:trydos/features/chat/presentation/pages/profile_page.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_input_field.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/document_message.dart';
@@ -42,7 +39,7 @@ import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/my_cached_network_image.dart';
-import '../../../calls/presentation/pages/agora_webview.dart';
+import '../../../app/my_text_widget.dart';
 import '../../../calls/presentation/pages/in_app_view.dart';
 import '../../../calls/presentation/utils/caller_info.dart';
 import '../../data/models/my_chats_response_model.dart';
@@ -139,7 +136,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (details) {
-      print("asfsd${details.toString()}");
+      debugPrint("asfsd${details.toString()}");
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: details.toString());
@@ -198,7 +195,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           0) {
                         return Row(
                           children: [
-                            Text(
+                            MyTextWidget(
                               (state.unReadMessagesFromAllChats -
                                       countMessagesReceivedToMeNow)
                                   .toString(),
@@ -254,10 +251,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                   builder: (_) => ProfilePage(
                                       receiverName: widget.receiverName,
                                       receiverPhoto: widget.receiverPhoto,
-                                      fullReceiverName: widget.fullReceiverName,
-                                      receiverPhone: widget.receiverPhone)));
+                                      fullReceiverName:
+                                          widget.fullReceiverName,
+                                      receiverPhone:
+                                          widget.receiverPhone)));
                             },
-                            child: Text(
+                            child: MyTextWidget(
                               widget.fullReceiverName,
                               style: textTheme.subtitle1?.mr
                                   .copyWith(color: const Color(0xff5D5C5D)),
@@ -269,7 +268,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                 if (state.pusherActivityIds[
                                         int.parse(widget.chatId)] !=
                                     null) {
-                                  return Text(
+                                  return MyTextWidget(
                                     state.pusherActivityDescription[
                                             int.parse(widget.chatId)]
                                         .toString(),
@@ -285,7 +284,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         ],
                       ),
                     ),
-                    BlocConsumer<CallsBloc, CallsState>(
+                    BlocBuilder<CallsBloc, CallsState>(
                       builder: (context, state) => InkWell(
                         onTap: () async {
                           List<Map<String, dynamic>> info =
@@ -302,13 +301,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               GetIt.I<CallsBloc>().add(MakeCallEvent(
                                   receiverUserId:
                                       info[0]['currentReceiver'].toString(),
+                                  receiverCallName: widget.fullReceiverName,
+                                  chatId: widget.chatId,
                                   isVideo: true,
                                   payload: info[1]));
-
-                            }
-                            else {
+                            } else {
                               GetIt.I<CallsBloc>().add(MakeCallEvent(
                                   isVideo: true,
+                                  receiverCallName: widget.fullReceiverName,
                                   chatId: widget.chatId,
                                   payload: info[0]));
                               //todo we have the id of the chat so we can move to the call immediately
@@ -326,24 +326,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           height: 25,
                         ),
                       ),
-                      listenWhen: (p, c) =>
-                          p.makeCallStatus != c.makeCallStatus &&
-                          c.makeCallStatus == MakeCallStatus.startCall,
-                      listener: (context, state) {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (_) => AgoraInAppWebView(
-                                  type: state.isVideoCall ? 'video' : 'voice',
-                                  isReceivingCall: false,
-                                  channelId: state.channelName!,
-                                  auth_token:
-                                      GetIt.I<PrefsRepository>().chatToken!,
-                                  uId: GetIt.I<PrefsRepository>()
-                                      .myChatId
-                                      .toString(),
-                                  action: 'sent',
-                                  messageId: state.messageId!,
-                                )));
-                      },
                     ),
                     30.horizontalSpace,
                     // todo CreateCallPage
@@ -363,6 +345,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                             GetIt.I<CallsBloc>().add(MakeCallEvent(
                                 receiverUserId:
                                     info[0]['currentReceiver'].toString(),
+                                receiverCallName: widget.fullReceiverName,
+                                chatId: widget.chatId,
                                 isVideo: false,
                                 payload: info[1]));
 
@@ -378,6 +362,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
                             GetIt.I<CallsBloc>().add(MakeCallEvent(
                                 isVideo: false,
+                                receiverCallName: widget.fullReceiverName,
                                 chatId: widget.chatId,
                                 payload: info[0]));
                             //todo we have the id of the chat so we can move to the call immediately
@@ -414,7 +399,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 child: BlocConsumer<ChatBloc, ChatState>(
                   listenWhen: (p, c) =>
                       p.sendMessageStatus != c.sendMessageStatus ||
-                      p.receiveMessageStatus != c.receiveMessageStatus,
+                      (p.receiveMessageStatus != c.receiveMessageStatus &&
+                          c.receiveMessageStatus ==
+                              ReceiveMessageStatus.success),
                   listener: (context, state) {
                     if (state.sendMessageStatus == SendMessageStatus.loading ||
                         state.receiveMessageStatus ==
@@ -495,11 +482,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                           ],
                                                         ));
                                                   }
-                                                  print(
+                                                  debugPrint(
                                                       'isForward : ${messages[index].isForward}');
-                                                  print(
+                                                  debugPrint(
                                                       'senderUserId : ${messages[index].senderUserId}');
-                                                  print(
+                                                  debugPrint(
                                                       'myChatId : ${_prefsRepository.myChatId}');
                                                   bool isSent = messages[index]
                                                           .senderUserId ==
@@ -535,8 +522,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                             messageId))) {
                                                                   return;
                                                                 }
-                                                                if(messages[index].messageType?.name?.contains('Call') ?? false){
-                                                                  return ;
+                                                                if (messages[
+                                                                            index]
+                                                                        .messageType
+                                                                        ?.name
+                                                                        ?.contains(
+                                                                            'Call') ??
+                                                                    false) {
+                                                                  return;
                                                                 }
                                                                 rebuildMessage
                                                                         .value =
@@ -546,27 +539,32 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                 rebuildMessage
                                                                     .value = -1;
                                                               },
-                                                              child:  Container(
-                                                                      color: currentScrolledIndex ==
-                                                                              index
-                                                                          ? Colors
-                                                                              .black12
-                                                                              .withOpacity(0.05)
-                                                                          : null,
-                                                                      child:
-                                                                          getTheMessageWidget(
-                                                                        message:
-                                                                            messages[index],
-                                                                        senderName:
-                                                                            widget.senderName,
-                                                                        receiverName:
-                                                                            widget.receiverName,
-                                                                        receiverPhoto:
-                                                                            widget.receiverPhoto,
-                                                                        senderPhoto:
-                                                                            widget.senderPhoto,
-                                                                      ),
-                                                                    ),
+                                                              child: Container(
+                                                                color: currentScrolledIndex ==
+                                                                        index
+                                                                    ? Colors
+                                                                        .black12
+                                                                        .withOpacity(
+                                                                            0.05)
+                                                                    : null,
+                                                                child:
+                                                                    getTheMessageWidget(
+                                                                  message:
+                                                                      messages[
+                                                                          index],
+                                                                  senderName: widget
+                                                                      .senderName,
+                                                                  receiverName:
+                                                                      widget
+                                                                          .receiverName,
+                                                                  receiverPhoto:
+                                                                      widget
+                                                                          .receiverPhoto,
+                                                                  senderPhoto:
+                                                                      widget
+                                                                          .senderPhoto,
+                                                                ),
+                                                              ),
                                                             ),
                                                             index == 0
                                                                 ? 10
@@ -608,7 +606,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                           }
                                                                         },
                                                                         onPanEnd: (details) {
-                                                                          print(
+                                                                          debugPrint(
                                                                               'end');
                                                                           rebuildMessage.value =
                                                                               -1;
@@ -685,7 +683,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                             ],
                                                                                           ),
                                                                                           child: Center(
-                                                                                            child: Text(
+                                                                                            child: MyTextWidget(
                                                                                               'Replay',
                                                                                               style: textTheme.overline?.rr.copyWith(color: colorScheme.white, height: 1.4),
                                                                                             ),
@@ -844,7 +842,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                       ChannelMember member = chat.channelMembers!.firstWhere(
                           (element) =>
                               element.userId != _prefsRepository.myChatId);
-//                    print('there : ${state.thereIsReply}');
+//                    debugPrint('there : ${state.thereIsReply}');
                       chatBloc.add(SendMessageEvent(
                           messageType: 'TextMessage',
                           channelId: chat.id.toString(),
@@ -875,7 +873,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   }
 
   void dealWithMessageOptions(int index, String? messageId) {
-    print('indexxxx:  $index');
+    debugPrint('indexxxx:  $index');
     if (index == -1) {
       replayMessage(
           chat.messages!.firstWhere((element) => element.id == messageId),
@@ -982,8 +980,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
     String? senderPhoto,
     String? receiverPhoto,
   }) {
+    debugPrint("id${message.id.toString()}");
+    debugPrint("localId${message.localId.toString()}");
     FlutterError.onError = (details) {
-      print("asfsd${details.toString()}");
+      debugPrint("asfsd${details.toString()}");
     };
     String? filePath = message.mediaMessageContent.isNullOrEmpty
         ? null
@@ -991,17 +991,16 @@ class _SinglePageChatState extends State<SinglePageChat> {
     if (message.file == null &&
         filePath != null &&
         _prefsRepository.isAFilePathExist(filePath)) {
-      //todo
-      debugPrint('filePath${filePath}');
-      debugPrint('senderName${senderName}');
-      debugPrint('receiverName${receiverName}');
       String? path = _prefsRepository.getTheLocalPathForFile(filePath);
       if (path != null) {
         File? file = File(path);
-        message = message.copyWith(file: file, checkedExistence: true);
+        message = message.copyWith(file: file);
       }
     }
-    bool isSentMessage = (message.senderUserId == _prefsRepository.myChatId && message.senderUserId != null) || (message.receiverUserId != _prefsRepository.myChatId && message.receiverUserId != null);
+    bool isSentMessage = (message.senderUserId == _prefsRepository.myChatId &&
+            message.senderUserId != null) ||
+        (message.receiverUserId != _prefsRepository.myChatId &&
+            message.receiverUserId != null);
     MessageStatus? messageStatus = message.messageStatus
         ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
     if (message.parentMessageId != null && message.parentMessage != null) {
@@ -1267,7 +1266,7 @@ class MessagesDate extends StatelessWidget {
             borderRadius: BorderRadius.circular(7.0),
           ),
           child: Center(
-            child: Text(formatDate(date),
+            child: MyTextWidget(formatDate(date),
                 style: context.textTheme.caption?.rr
                     .copyWith(color: context.colorScheme.white)),
           ),
@@ -1347,7 +1346,7 @@ class MessageSubtitleWidget extends StatelessWidget {
         ],
       ),
       child: Center(
-        child: Text(
+        child: MyTextWidget(
           hoverText,
           style: context.textTheme.overline?.rr
               .copyWith(color: context.colorScheme.white, height: 1.4),

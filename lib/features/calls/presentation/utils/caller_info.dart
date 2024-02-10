@@ -7,7 +7,7 @@ import '../../../chat/presentation/manager/chat_bloc.dart';
 
 List<Map<String, dynamic>> callerInfo({required String channelId}) {
   FlutterError.onError = (details) {
-    print("asfsd${details.toString()}");
+    debugPrint("asfsd${details.toString()}");
     GetIt.I<PrefsRepository>().saveRequestsData(
         null, null, null, null, null, null, null,
         error: details.toString());

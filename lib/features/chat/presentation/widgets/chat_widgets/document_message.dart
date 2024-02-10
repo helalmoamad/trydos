@@ -18,6 +18,7 @@ import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
+import '../../../../app/my_text_widget.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 
@@ -105,7 +106,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                         .contains(widget.messageId))) {
                   return;
                 }
-                print(widget.time);
+                debugPrint(widget.time.toString());
                 BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
                     true, 'file', widget.isSent,
                     senderParentMessageId: widget.senderId,
@@ -163,7 +164,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                         BoxConstraints(maxWidth: 310.w),
                                         child: SizedBox(
                                           width: 200.w,
-                                          child: Text(
+                                          child: MyTextWidget(
                                             widget.fileName,
                                             maxLines: 3,
                                             style: context.textTheme.bodyText2
@@ -223,7 +224,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                     const EdgeInsets.symmetric(vertical: 5),
                                     child: Row(
                                       children: [
-                                        Text(
+                                        MyTextWidget(
                                           !widget.time.isUtc
                                               ? HelperFunctions.getDateInFormat(
                                               widget.time)

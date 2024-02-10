@@ -17,6 +17,7 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
+import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
 class AlreadyExistAccount extends StatefulWidget {
@@ -83,7 +84,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  MyTextWidget(
                                     'This Number Already Registered With Us !',
                                     style: context.textTheme.bodyText2?.ra.copyWith(
                                         color: Color(0xff5D5C5D), height: 1.42),
@@ -97,7 +98,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                                             width: 10, height: 10),
                                       ),
                                       5.horizontalSpace,
-                                      Text(
+                                      MyTextWidget(
                                         widget.phoneNumber,
                                         textAlign: TextAlign.start,
                                         style: context.textTheme.caption?.ra.copyWith(
@@ -110,7 +111,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       15.horizontalSpace,
-                                      Text(
+                                      MyTextWidget(
                                         'You Can Log In Now',
                                         style: context.textTheme.caption?.ra.copyWith(
                                             color: Color(0xffC4C2C2), height: 1.25),
@@ -145,7 +146,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          MyTextWidget(
                             'Login & Continue',
                             style: textTheme.bodyText1?.ra.copyWith(
                               color: Color(0xff5D5C5D),
@@ -172,7 +173,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: Text(
+                      child: MyTextWidget(
                         'Cancel & Take A Look At The App',
                         style: textTheme.bodyText2?.ra.copyWith(
                           color: Color(0xff4d84ff),

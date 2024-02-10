@@ -62,14 +62,14 @@ class FileSaving {
     }
     String fileName = fileUrl.split('/').last;
     String path = await getFilePath(fileName);
-    print('check path : $path');
+    debugPrint('check path : $path');
     File file = File(path);
     bool exist = await file.exists();
-    print('exist? : $exist');
+    debugPrint('exist? : $exist');
     if (exist) {
       return file;
     } else if (download) {
-      print('go to download');
+      debugPrint('go to download');
       await downloadFileToLocalStorage(fileUrl, action: action);
       return null;
     }

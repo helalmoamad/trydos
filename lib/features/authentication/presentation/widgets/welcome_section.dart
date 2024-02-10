@@ -14,6 +14,7 @@ import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
+import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 class WelcomeSection extends StatelessWidget {
   WelcomeSection({required this.goToCreateAccount , required this.goToLoginSection ,Key? key}) : super(key: key);
@@ -37,11 +38,9 @@ class WelcomeSection extends StatelessWidget {
         children: [
           Padding(
             padding: HWEdgeInsets.symmetric(horizontal: 30.0),
-            child: Text(
+            child: MyTextWidget(
               LocaleKeys.welcome_page_description.tr(),
               textAlign: TextAlign.center,
-              textHeightBehavior:
-              TextHeightBehavior(applyHeightToFirstAscent: false),
               style: context.textTheme.bodyText2?.la.copyWith(
                 color: Color(0xff5D5C5D),
                 letterSpacing: 0.14,
@@ -50,7 +49,7 @@ class WelcomeSection extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20,),
-          Text(
+          MyTextWidget(
             LocaleKeys.why_we_know_you_label.tr(),
             textAlign: TextAlign.center,
             style: context.textTheme.bodyText2?.la.copyWith(
@@ -106,15 +105,13 @@ class WelcomeSection extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20.0),
                         ),
                         child: Center(
-                          child: Text(
+                          child: MyTextWidget(
                             LocaleKeys.i_have_account.tr(),
                             style: context.textTheme.bodyText1?.ra.copyWith(
                               color: Color(0xff5D5C5D),
                               letterSpacing: 0.16,
                               height: 1.25,
                             ),
-                            textHeightBehavior: TextHeightBehavior(
-                                applyHeightToFirstAscent: false),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -144,7 +141,6 @@ class WelcomeSection extends StatelessWidget {
             child: ValueListenableBuilder<int>(
                 valueListenable: clickButton,
                 builder: (context, index, _) {
-                  print(index);
                   return Padding(
                     padding:  EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                     child: DottedBorder(
@@ -168,15 +164,13 @@ class WelcomeSection extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20.0),
                         ),
                         child: Center(
-                          child: Text(
+                          child: MyTextWidget(
                             LocaleKeys.create_new_account.tr(),
                             style: context.textTheme.bodyText1?.ra.copyWith(
                               color: Color(0xff5D5C5D),
                               letterSpacing: 0.16,
                               height: 1.25,
                             ),
-                            textHeightBehavior: TextHeightBehavior(
-                                applyHeightToFirstAscent: false),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -207,11 +201,9 @@ class WelcomeSection extends StatelessWidget {
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Text(
+              child: MyTextWidget(
                 LocaleKeys.later_take_look.tr(),
                 textAlign: TextAlign.center,
-                textHeightBehavior:
-                TextHeightBehavior(applyHeightToFirstAscent: false),
                 style: context.textTheme.bodyText2?.ra.copyWith(
                   color: Color(0xff4d84ff),
                   letterSpacing: 0.14,

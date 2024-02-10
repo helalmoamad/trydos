@@ -12,6 +12,7 @@ import '../../../../base_page.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
+import '../../../app/my_text_widget.dart';
 
 class RegisterCompleted extends StatefulWidget {
   const RegisterCompleted({Key? key, required this.userName}) : super(key: key);
@@ -64,7 +65,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                       children: [
                         Padding(
                           padding: HWEdgeInsets.only(left: 4.0),
-                          child: Text('Hello',
+                          child: MyTextWidget('Hello',
                               textAlign: TextAlign.start,
                               style: textTheme.headline3?.ba.copyWith(
                                   color: Color(0xff5D5C5D), height: 1.25)),
@@ -75,7 +76,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(',' + widget.userName,
+                            MyTextWidget(',' + widget.userName,
                                 textAlign: TextAlign.start,
                                 style: textTheme.headline3?.la.copyWith(
                                   color: Color(0xff5D5C5D),
@@ -85,7 +86,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                             SizedBox(
                               height: 18,
                             ),
-                            Text('Enjoy With Our Services',
+                            MyTextWidget('Enjoy With Our Services',
                                 textAlign: TextAlign.center,
                                 style: textTheme.subtitle1?.la.copyWith(
                                     color: Color(0xff5D5C5D), height: 1.25)),
@@ -95,7 +96,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                     ),
                   ),
                   Spacer(),
-                  Text(
+                  MyTextWidget(
                       'We Recommend That You Complete Your Profile To Make The\nMost Of The App’s Features, Such As Shopping, Chatting,Stories,\nTaking Advantage Of Offers, Interests, And Much More',
                       textAlign: TextAlign.center,
                       style: textTheme.bodyText2?.la.copyWith(
@@ -117,7 +118,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        MyTextWidget(
                           'Complete My Profile',
                           style: textTheme.bodyText1?.ra.copyWith(
                             color: Color(0xff5D5C5D),
@@ -139,7 +140,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: Text(
+                      child: MyTextWidget(
                         'Skip For Now',
                         style: textTheme.bodyText2?.ra.copyWith(
                           color: Color(0xff4d84ff),

@@ -200,7 +200,7 @@ class ReceiveMessageEvent extends ChatEvent {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [message];
+  List<Object?> get props => [message , prevMessageId  , increaseUnReadMessages];
 }
 
 class ReceiveMessageFromPusherEvent extends ChatEvent {
@@ -290,4 +290,18 @@ class GetAllMessagesBetweenEvent extends ChatEvent {
   // TODO: implement props
   List<Object?> get props =>
       [firstMessageId, secondMessageId, channelId, scrollToParentMessage];
+}
+
+class AddAMessageToAChannel extends ChatEvent{
+  final Message message;
+  final String localChannelId;
+
+  const AddAMessageToAChannel(
+      {required this.message,
+        required this.localChannelId,
+      });
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message , localChannelId];
+
 }

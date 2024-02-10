@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/app/my_text_widget.dart';
+
 class ErrorScreen extends StatelessWidget {
   const ErrorScreen({  this.exception , Key? key}) : super(key: key);
   final GoException?  exception;
@@ -9,7 +11,7 @@ class ErrorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text(exception?.message ?? 'No Error Message'),
+        child: MyTextWidget(exception?.message ?? 'No Error Message'),
       ),
     );
   }

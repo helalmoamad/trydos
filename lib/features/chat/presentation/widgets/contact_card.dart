@@ -16,6 +16,7 @@ import '../../../../core/utils/responsive_padding.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
+import '../../../app/my_text_widget.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../pages/single_page_chat.dart';
 import 'chat_widgets/no_image_widget.dart';
@@ -32,7 +33,7 @@ class ContactCard extends StatelessWidget {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
-      print(error);
+      debugPrint(error.toString());
     };
     final String receiverName, fullReceiverName;
     if (contact.name == null) {
@@ -62,7 +63,7 @@ class ContactCard extends StatelessWidget {
                 User? sender,receiver;
                 String id;
                 List<Chat> chats=List.of(GetIt.I<ChatBloc>().state.chats);
-                print(chats);
+                debugPrint(chats.toString());
                 chats.addAll(GetIt.I<ChatBloc>().state.pinnedChats);
                 chat=chats.firstWhere((element) => element.channelMembers!.any((element) => element.userId==contact.contactUserId));
                 final preferences=GetIt.I<PrefsRepository>();
@@ -81,8 +82,8 @@ class ContactCard extends StatelessWidget {
                                 receiverPhone: receiver?.mobilePhone ??
                                     'No Number',
                                 senderName: HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!),
-                                receiverPhoto: sender?.photoPath,
-                                senderPhoto: receiver?.photoPath,
+                                receiverPhoto: receiver?.photoPath,
+                                senderPhoto: sender?.photoPath,
                               );
                             },
                           )),
@@ -130,7 +131,7 @@ class ContactCard extends StatelessWidget {
                                 Flexible(
                                     child: Row(
                                   children: [
-                                    Text(
+                                    MyTextWidget(
                                       fullReceiverName,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -141,7 +142,7 @@ class ContactCard extends StatelessWidget {
                                     ),
                                     const Spacer(),
                                     if (contact.contactUserId == null) ...{
-                                      Text(
+                                      MyTextWidget(
                                         'Invite',
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,

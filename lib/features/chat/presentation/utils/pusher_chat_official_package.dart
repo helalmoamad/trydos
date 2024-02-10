@@ -88,8 +88,8 @@
 //     // if (pusher.getChannel(channelName) != null ) return;
 //     // try {
 //     //   await pusher.subscribe(channelName: channelName, onEvent: (event) {
-//     //     print('eventPusher $event');
-//     //     // print('ChannelReceivedEventData ${event?.data ?? 'Empty'}');
+//     //     debugPrint('eventPusher $event');
+//     //     // debugPrint('ChannelReceivedEventData ${event?.data ?? 'Empty'}');
 //     //     Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
 //     //     chatBloc.add(
 //     //         ReceiveMessageFromPusherEvent(data['channel_id'].toString(),
@@ -98,10 +98,10 @@
 //     //       onSubscriptionError: onSubscriptionError
 //     //   );
 //     // }catch(error){
-//     //   print('ERRORRRRR $error');
+//     //   debugPrint('ERRORRRRR $error');
 //     // }
 //     // channel.bind('ChannelWatchedEvent', (event) {
-//     //   print('ChannelWatchedEventData ${event?.data ?? 'Empty'}');
+//     //   debugPrint('ChannelWatchedEventData ${event?.data ?? 'Empty'}');
 //     //   Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
 //     //   chatBloc.add(WatchedMessageFromPusherEvent(data['channel_id'].toString(),
 //     //       data['auth_user_id'], data['last_message_id']));
@@ -151,12 +151,12 @@
 //   createPresenceChannel(String channelName) async {
 //    //  if (pusher.getChannel("presence-typing-$channelName") != null) return;
 //    // await  pusher.subscribe(channelName: "presence-typing-$channelName" , onEvent: (event){
-//    //    print('Presence Event $event');
+//    //    debugPrint('Presence Event $event');
 //    //  });
 //     // channel.bind('client-TypingEvent', (event) {
 //     //   Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
 //     //   if (data['desc'] == 'null' || data['desc'] == null) {
-//     //     print('yes it is');
+//     //     debugPrint('yes it is');
 //     //     GetIt.I<AppBloc>()
 //     //         .add(RemoveUserFromTypingList(int.parse(data['id'].toString())));
 //     //     return;
@@ -176,7 +176,7 @@
 //     // if (int.tryParse(channelId) == null) {
 //     //   return;
 //     // }
-//     // print('presenceChannels["presence-typing-$channelId"] ${pusher.getChannel("presence-typing-$channelId")}');
+//     // debugPrint('presenceChannels["presence-typing-$channelId"] ${pusher.getChannel("presence-typing-$channelId")}');
 //     // pusher.trigger(
 //     //   PusherEvent(channelName: "presence-typing-$channelId", eventName: 'client-TypingEvent',data: convert.jsonEncode({
 //     //     "uid": _prefsRepository.myChatId.toString(),

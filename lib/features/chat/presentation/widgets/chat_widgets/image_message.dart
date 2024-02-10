@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,6 +20,7 @@ import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
+import '../../../../app/my_text_widget.dart';
 import '../../../data/models/ImageDetail.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
@@ -73,13 +72,13 @@ class _ImageMessageState extends State<ImageMessage> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.imageFile);
+    debugPrint(widget.imageFile.toString());
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
     };
-    print('widget.isLocalMessage ${widget.isLocalMessage}');
+    debugPrint('widget.isLocalMessage ${widget.isLocalMessage}');
     return Directionality(
       textDirection: TextDirection.ltr,
       child: BlocConsumer<ChatBloc, ChatState>(
@@ -154,7 +153,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                     valueListenable: _loadingImage,
                                     builder: (context, status, _) {
                                       FileSaving().downloadFileToLocalStorage(
-                                          widget.imageUrl!,
+                                          widget.imageUrl!+'?width=${200.w}&height=400',
                                           action: (File? file) {
                                         // _loadingImage.value = 2;
                                         if (file != null) {
@@ -168,13 +167,14 @@ class _ImageMessageState extends State<ImageMessage> {
                                       );
                                     }))),
                       } else ...{
-                        FutureBuilder(
-                          future: loadWidthAndHeightForImage(
-                              ImageFile: widget.imageFile!),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.done)
-                              return Stack(
+                        // FutureBuilder(
+                        //   future: loadWidthAndHeightForImage(
+                        //       ImageFile: widget.imageFile!),
+                        //   builder: (context, snapshot) {
+                        //     if (snapshot.connectionState ==
+                        //         ConnectionState.done)
+                        //       return
+                                Stack(
                                 alignment: Alignment.bottomCenter,
                                 children: [
                                   FullScreenWidget(
@@ -184,19 +184,21 @@ class _ImageMessageState extends State<ImageMessage> {
                                     child: Hero(
                                       tag: "hero${DateTime.now()}",
                                       child: Container(
-                                        width: (snapshot.data!.width.w < 200.w)
-                                            ? snapshot.data!.width.toDouble()
-                                            : 200.w
+                                        width: 200.w
+                                        // (snapshot.data!.width.w < 200.w)
+                                        //     ? snapshot.data!.width.toDouble()
+                                        //     : 200.w
 
                                         // (snapshot.data!.width.w / 3 >
                                         //             200.w)
                                         //         ? 200.w.toDouble()
                                         //         : snapshot.data!.width / 3
                                         ,
-                                        height: (snapshot.data!.height.h <
-                                                200.h)
-                                            ? snapshot.data!.height.toDouble()
-                                            : 200.h
+                                        height: 400
+                                        // (snapshot.data!.height.h <
+                                        //         200.h)
+                                        //     ? snapshot.data!.height.toDouble()
+                                        //     : 200.h
 
                                         // snapshot.data!.height / 3
 
@@ -204,7 +206,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                         decoration: BoxDecoration(
                                           image: DecorationImage(
                                             image: FileImage(widget.imageFile!),
-                                            fit: BoxFit.fitWidth,
+                                            fit: BoxFit.fill,
                                           ),
                                           borderRadius:
                                               BorderRadius.circular(12.0),
@@ -222,9 +224,10 @@ class _ImageMessageState extends State<ImageMessage> {
                                     offset: const Offset(0, -3),
                                     child: Container(
                                       height: 40.h,
-                                      width: (snapshot.data!.width.w < 200.w)
-                                          ? snapshot.data!.width.toDouble()
-                                          : 200.w,
+                                      width: 200.w,
+                                      // (snapshot.data!.width.w < 200.w)
+                                      //     ? snapshot.data!.width.toDouble()
+                                      //     : 200.w,
                                       decoration: BoxDecoration(
                                         gradient: const LinearGradient(
                                           begin: Alignment(0.0, 0),
@@ -245,7 +248,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.end,
                                           children: [
-                                            Text(
+                                            MyTextWidget(
                                               !widget.time.isUtc
                                                   ? HelperFunctions
                                                       .getDateInFormat(
@@ -298,9 +301,9 @@ class _ImageMessageState extends State<ImageMessage> {
                                     ),
                                   ),
                                 ],
-                              );
-                            return CircularProgressIndicator();
-                          },
+                          //     );
+                          //   return CircularProgressIndicator();
+                          // },
                         ),
                       },
                       //todo until i solve the translate

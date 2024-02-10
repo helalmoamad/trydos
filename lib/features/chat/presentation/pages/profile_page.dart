@@ -15,6 +15,7 @@ import '../../../../core/utils/responsive_padding.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/my_cached_network_image.dart';
+import '../../../app/my_text_widget.dart';
 import '../widgets/chat_widgets/no_image_widget.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -83,13 +84,13 @@ class _ProfilePageState extends State<ProfilePage> {
                             height: 1.33),
                         name: widget.receiverName),
                     17.verticalSpace,
-                      Text(
+                      MyTextWidget(
                         widget.fullReceiverName,
                         style: textTheme.headline5?.rr
                             .copyWith(color: const Color(0xff5D5C5D)),
                       ),
                     8.verticalSpace,
-                    Text(
+                    MyTextWidget(
                       widget.receiverPhone,
                       style: textTheme.bodyText2?.rr
                           .copyWith(color: const Color(0xff5D5C5D)),
@@ -115,7 +116,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               height: 25.sp,
                             ),
                             10.verticalSpace,
-                            Text(
+                            MyTextWidget(
                               'Call',
                               style: textTheme.caption?.rr
                                   .copyWith(color: const Color(0xff5D5C5D)),
@@ -134,7 +135,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               height: 25.sp,
                             ),
                             10.verticalSpace,
-                            Text(
+                            MyTextWidget(
                               'Video',
                               style: textTheme.caption?.rr
                                   .copyWith(color: const Color(0xff5D5C5D)),
@@ -154,7 +155,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               height: 25.sp,
                             ),
                             10.verticalSpace,
-                            Text(
+                            MyTextWidget(
                               'Search',
                               style: textTheme.caption?.rr
                                   .copyWith(color: const Color(0xff5D5C5D)),
@@ -187,7 +188,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            MyTextWidget(
                               'Media & Files',
                               style: textTheme.bodyText1?.rr
                                   .copyWith(color: const Color(0xff5D5C5D)),
@@ -204,7 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         height: 15.sp,
                                       ),
                                       5.horizontalSpace,
-                                      Text(
+                                      MyTextWidget(
                                         '3122',
                                         style: textTheme.caption?.lr
                                             .copyWith(color: const Color(0xff5D5C5D)),
@@ -220,7 +221,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         height: 15.sp,
                                       ),
                                       5.horizontalSpace,
-                                      Text(
+                                      MyTextWidget(
                                         '18',
                                         style: textTheme.caption?.lr
                                             .copyWith(color: const Color(0xff5D5C5D)),
@@ -236,7 +237,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         height: 15.sp,
                                       ),
                                       5.horizontalSpace,
-                                      Text(
+                                      MyTextWidget(
                                         '2',
                                         style: textTheme.caption?.lr
                                             .copyWith(color: const Color(0xff5D5C5D)),
@@ -286,11 +287,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: 25.sp,
                       ),
                       20.horizontalSpace,
-                      Text('Save To Gallery',
+                      MyTextWidget('Save To Gallery',
                         style: textTheme.bodyText1?.rr
                             .copyWith(color: const Color(0xff5D5C5D)),),
                       const Spacer(),
-                      Text('Never',
+                      MyTextWidget('Never',
                         style: textTheme.bodyText1?.lr
                             .copyWith(color: const Color(0xff5D5C5D)),),
                       36.horizontalSpace,

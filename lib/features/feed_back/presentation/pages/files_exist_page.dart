@@ -4,6 +4,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../app/my_text_widget.dart';
 
 
 class FilesExistPage extends StatelessWidget {
@@ -15,7 +16,7 @@ class FilesExistPage extends StatelessWidget {
     final List<String> files = prefsRepository.getExistenceFiles();
     return Scaffold(
       backgroundColor: context.colorScheme.background,
-      body: files.length == 0 ? Center(child: Text('No Files'),) :  ListView.builder(itemBuilder: (context , index){
+      body: files.length == 0 ? Center(child: MyTextWidget('No Files'),) :  ListView.builder(itemBuilder: (context , index){
         return Container(
           padding: EdgeInsets.all(8),
           margin: EdgeInsets.all(8),
@@ -33,7 +34,7 @@ class FilesExistPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                MyTextWidget(
                   files[index],
                   style:context.textTheme.subtitle1?.rr.copyWith(color: Colors.black)),
               ],

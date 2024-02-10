@@ -29,11 +29,11 @@ class AnimatedBar extends StatelessWidget {
                   children: <Widget>[
                     _buildContainer(
                       double.infinity,
-                      position < state.initialStory[collectionIndex]!
+                      position < state.currentStoryInEachCollection[collectionIndex]!
                           ? Colors.white
                           : Colors.white.withOpacity(0.5),
                     ),
-                    position == state.initialStory[collectionIndex]
+                    position == state.currentStoryInEachCollection[collectionIndex]
                         ? AnimatedBuilder(
                       animation: animController,
                       builder: (context, child) {

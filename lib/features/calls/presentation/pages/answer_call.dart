@@ -18,6 +18,7 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../config/theme/typography.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/my_cached_network_image.dart';
+import '../../../app/my_text_widget.dart';
 import '../widgets/call_status_widget.dart';
 import '../../../chat/presentation/widgets/chat_widgets/no_image_widget.dart';
 import 'agora_webview.dart';
@@ -122,7 +123,7 @@ class _AnswerCallState extends State<AnswerCall> {
                                       height: 1.33),
                               name: widget.callerName)),
                   15.verticalSpace,
-                  Text(
+                  MyTextWidget(
                     widget.callerName,
                     style: textTheme.headline5?.rr
                         .copyWith(color: const Color(0xffD3D3D3)),
@@ -154,7 +155,7 @@ class _AnswerCallState extends State<AnswerCall> {
                                 messageId: widget.messageId));
                           });
                         },
-                        child: Text(
+                        child: MyTextWidget(
                           'answer',
                           style: TextStyle(color: Colors.green),
                         ),
@@ -169,7 +170,7 @@ class _AnswerCallState extends State<AnswerCall> {
                           width: 100.w,
                           height: 100.h,
                           child: Center(
-                              child: Text(
+                              child: MyTextWidget(
                             'Reject',
                             style: TextStyle(color: Colors.red),
                           ))))

@@ -8,6 +8,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 
+import '../../../app/my_text_widget.dart';
+
 class CallStatusWidget extends StatefulWidget {
   const CallStatusWidget(
       {Key? key,
@@ -40,7 +42,7 @@ class _CallStatusWidgetState extends ThemeState<CallStatusWidget> {
           ),
         ),
         10.verticalSpace,
-        Text(
+        MyTextWidget(
           widget.text,
           textAlign: TextAlign.center,
           style: textTheme.bodyText2?.lr.copyWith(color: widget.textColor),

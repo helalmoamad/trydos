@@ -10,6 +10,7 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/my_cached_network_image.dart';
+import '../../../../app/my_text_widget.dart';
 import '../../../../calls/presentation/widgets/no_image_widget.dart';
 
 class CallMessage extends StatelessWidget {
@@ -35,15 +36,15 @@ class CallMessage extends StatelessWidget {
       textDirection: TextDirection.ltr,
       child: Padding(
         padding: HWEdgeInsets.only(
-          right: !isSent ? 25.w : 0,
-          left: !isSent ? 0 : 25.w,
+          right: isSent ? 25.w : 0,
+          left: isSent ? 0 : 25.w,
         ),
         child: Row(
           mainAxisAlignment:
-          !isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+          isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
             Stack(
-              alignment: !isSent ? Alignment.centerRight : Alignment
+              alignment: isSent ? Alignment.centerRight : Alignment
             .centerLeft,
               children: [
                 Container(
@@ -58,8 +59,8 @@ class CallMessage extends StatelessWidget {
                             blurRadius: 6)
                       ]),
                   child: Padding(
-                    padding: HWEdgeInsets.only(left: !isSent ? 20.w : 40.w,
-                        right: !isSent ? 40.w : 20.w),
+                    padding: HWEdgeInsets.only(left: isSent ? 20.w : 40.w,
+                        right: isSent ? 40.w : 20.w),
                     child: Center(
                       child: Directionality(
                         textDirection: TextDirection.ltr,
@@ -74,7 +75,7 @@ class CallMessage extends StatelessWidget {
                               height: 20,
                             ),
                             10.horizontalSpace,
-                            Text(
+                            MyTextWidget(
                               '$message  ${!time.isUtc ? HelperFunctions.getDateInFormat(time) : HelperFunctions.getZonedDateInFormat(time)}',
                               style: context.textTheme.caption?.rr.copyWith(
                                   color: const Color(0xff404040), height: 1.66),
@@ -87,7 +88,7 @@ class CallMessage extends StatelessWidget {
                   ),
                 ),
                 Transform.translate(
-                  offset: Offset(isSent ? -10.w : 10.w, 0),
+                  offset: Offset(!isSent ? -10.w : 10.w, 0),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [

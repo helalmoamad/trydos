@@ -15,10 +15,10 @@ class StoryState {
   UploadStoryCloudinaryStatus uploadStoryCloudinaryStatus;
   GetStoriesStatus getStoriesStatus;
    SelectedVideoStatus selectedVideoStatus;
-  List<Datum> stories;
+  List<CollectionStoryModel> storiesCollections;
   int currentPage;
-  int? selectedStory;
-  Map<int , int?> initialStory;
+  int? selectedCollection;
+  Map<int , int?> currentStoryInEachCollection;
 
 
   StoryState(
@@ -28,10 +28,10 @@ class StoryState {
         this.uploadStoryStatus=UploadStoryStatus.init,
         this.selectedVideoStatus=SelectedVideoStatus.init,
         this.getStoriesStatus = GetStoriesStatus.init,
-      this.stories = const [],
+      this.storiesCollections = const [],
         this.currentPage = 0,
-      this.initialStory=const {},
-      this.selectedStory});
+      this.currentStoryInEachCollection=const {},
+      this.selectedCollection});
 
   StoryState copyWith(
       {
@@ -40,9 +40,9 @@ class StoryState {
         UploadStoryStatus? uploadStoryStatus,
         SelectedVideoStatus? selectedVideoStatus,
         GetStoriesStatus? getStoriesStatus,
-      List<Datum>? stories,
-      Map<int ,int?>? initialStory,
-      int? selectedStory,
+      List<CollectionStoryModel>? storiesCollections,
+      Map<int ,int?>? currentStoryInEachCollection,
+      int? selectedCollection,
         int? currentPage,
       ImageDetail? imageDetail
       }) {
@@ -51,10 +51,10 @@ class StoryState {
       uploadStoryStatus: uploadStoryStatus??this.uploadStoryStatus,
       selectedVideoStatus: selectedVideoStatus??this.selectedVideoStatus,
         getStoriesStatus: getStoriesStatus ?? this.getStoriesStatus,
-        stories: stories ?? this.stories,
+        storiesCollections: storiesCollections ?? this.storiesCollections,
         currentPage: currentPage ?? this.currentPage,
-        initialStory: initialStory ?? this.initialStory,
-        selectedStory: selectedStory ?? this.selectedStory);
+        currentStoryInEachCollection: currentStoryInEachCollection ?? this.currentStoryInEachCollection,
+        selectedCollection: selectedCollection ?? this.selectedCollection);
   }
 
   factory StoryState.fromJson(Map<String,dynamic> data) => _$StoryStateFromJson(data);

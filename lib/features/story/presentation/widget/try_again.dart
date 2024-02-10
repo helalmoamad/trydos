@@ -1,17 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class TryAgainWidget extends StatelessWidget {
-  Function tryAgain;
+import '../../../app/my_text_widget.dart';
 
-  TryAgainWidget({required this.tryAgain, super.key});
+class TryAgainWidget extends StatelessWidget {
+  final Function tryAgain;
+
+  const TryAgainWidget({required this.tryAgain, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Center(
         child: Column(
       children: [
-        ElevatedButton(onPressed: tryAgain.call(), child: Text('Try Again'))
+        ElevatedButton(onPressed: tryAgain.call(), child: MyTextWidget('Try Again'))
       ],
     ));
   }

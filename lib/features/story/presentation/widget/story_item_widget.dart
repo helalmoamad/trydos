@@ -14,6 +14,7 @@ import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../app/my_cached_network_image.dart';
+import '../../../app/my_text_widget.dart';
 import '../../../chat/presentation/widgets/chat_widgets/no_image_widget.dart';
 import '../bloc/story_state.dart';
 import '../pages/story_collection.dart';
@@ -55,9 +56,9 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
           error: error.toString());
     };
     return BlocBuilder<StoryBloc, StoryState>(builder: (context, state) {
-      bool isLastStoryShowed = state.stories[widget.index].stories!.length ==
+      bool isLastStoryShowed = state.storiesCollections[widget.index].stories!.length ==
           (firstWhereNotShowedStoryCollection(
-              state.stories[widget.index].stories!));
+              state.storiesCollections[widget.index].stories!));
 
       return  Material(
         color: Colors.transparent,
@@ -106,13 +107,13 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                         children: [
 //todo just in case you to show the behavior of last  story have been seen
 // Container(width: 90,height:90,
-// child: Text('${state.stories[index].stories!.length}'),
+// child: MyTextWidget('${state.stories[index].stories!.length}'),
 // ),
 // // SizedBox(:)
 // Padding(
 //   padding: const EdgeInsets.all(28.0),
 //   child:   Container(width: 90,height:90,
-//   child: Text('${firstWhereNotShowedStoryCollection(state.stories[index].stories!)}'),
+//   child: MyTextWidget('${firstWhereNotShowedStoryCollection(state.stories[index].stories!)}'),
 //   ),
 // )
                           MyCachedNetworkImage(
@@ -162,8 +163,8 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                   ),
                                   SizedBox(
                                     width: 80,
-                                    child: Text(
-                                      state.stories[widget.index].name ?? 'UnKnown User',
+                                    child: MyTextWidget(
+                                      state.storiesCollections[widget.index].name ?? 'UnKnown User',
                                       textAlign: TextAlign.center,
                                       overflow: TextOverflow.ellipsis,
                                       style: !widget.resize ? textTheme.caption?.rr.copyWith(
@@ -204,7 +205,7 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                                           width: widget.resizeUserImage ? 0.4 : widget.resize ? 0.6 : 1),
                                                       shape: BoxShape.circle
                                                   ),
-                                                  child: state.stories[widget.index].photoPath == null
+                                                  child: state.storiesCollections[widget.index].photoPath == null
                                                       ? NoImageWidget(
                                                       height: 28,
                                                       width: 28,
@@ -215,17 +216,17 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                                           letterSpacing: 0.18,
 
                                                           height: 1.33),
-                                                      name: state.stories[widget.index].name ==
+                                                      name: state.storiesCollections[widget.index].name ==
                                                           null
                                                           ? 'UK'
                                                           : HelperFunctions
                                                           .getTheFirstTwoLettersOfName(state
-                                                          .stories[widget.index].name!))
+                                                          .storiesCollections[widget.index].name!))
                                                       : MyCachedNetworkImage(
                                                     height: 28,
                                                     width: 28,
                                                     imageUrl:
-                                                    state.stories[widget.index].photoPath,
+                                                    state.storiesCollections[widget.index].photoPath,
                                                     imageFit: BoxFit.cover,
                                                   ),
                                                 ),),

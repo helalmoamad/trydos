@@ -22,6 +22,7 @@ import '../../home/presentation/manager/home_state.dart';
 import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
 import '../blocs/app_bloc/app_state.dart';
+import '../my_text_widget.dart';
 
 class TabsBar extends StatefulWidget {
   const TabsBar({Key? key}) : super(key: key);
@@ -121,7 +122,7 @@ class _TabsBarState extends State<TabsBar> {
                                   : Color(0xff0ffC4C2C2),
                             ),
                             4.verticalSpace,
-                            Text(
+                            MyTextWidget(
                               mainCategory.name.toString(),
                               maxLines: 1,
                               style: textTheme.overline?.lr.copyWith(

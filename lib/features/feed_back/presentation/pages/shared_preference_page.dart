@@ -5,6 +5,8 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
+import '../../../app/my_text_widget.dart';
+
 class SharedPreferencePage extends StatelessWidget {
   SharedPreferencePage({super.key});
 
@@ -20,6 +22,11 @@ class SharedPreferencePage extends StatelessWidget {
             SharedPreferenceCard(
               title: 'is verified phone',
               value: prefsRepository.isVerifiedPhone.toString(),
+            ),
+            10.verticalSpace,
+            SharedPreferenceCard(
+              title: 'Fcm Tokens count',
+              value: prefsRepository.getFcmTokens.length.toString(),
             ),
             10.verticalSpace,
             SharedPreferenceCard(
@@ -102,13 +109,13 @@ class SharedPreferenceCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            MyTextWidget(
               title,
               style: context.textTheme.headline6?.rr
                   .copyWith(color: Colors.deepOrangeAccent),
             ),
             10.verticalSpace,
-            Text(
+            MyTextWidget(
               value,
               style:
                   context.textTheme.subtitle1?.rr.copyWith(color: Colors.black),

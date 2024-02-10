@@ -7,9 +7,11 @@ class MakeCallEvent extends CallsEvent {
   String? receiverUserId;
   Map<String, dynamic> payload;
   String? chatId;
+  String receiverCallName;
   final bool isVideo;
   MakeCallEvent(
       {this.chatId,
+      required this.receiverCallName,
       required this.payload,
       required this.isVideo,
       this.receiverUserId});

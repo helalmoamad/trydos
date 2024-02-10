@@ -15,6 +15,7 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
+import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
 class LoginSuccessfully extends StatefulWidget {
@@ -56,7 +57,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
           null,
           null,
           error: error.toString());
-      print('error $error');
+      debugPrint('error $error');
     };
     return Scaffold(
       backgroundColor: const Color(0xffE0FFEE),
@@ -90,7 +91,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              MyTextWidget(
                                 'Logged In Successfully !',
                                 style: context.textTheme.bodyText2?.ra.copyWith(
                                     color: Color(0xff5D5C5D), height: 1.42),
@@ -106,7 +107,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                         height: 10),
                                   ),
                                   5.horizontalSpace,
-                                  Text(
+                                  MyTextWidget(
                                     widget.phoneNumber,
                                     textAlign: TextAlign.start,
                                     style: context.textTheme.caption?.ra
@@ -124,7 +125,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                   children: [
                                     Padding(
                                       padding: HWEdgeInsets.only(left: 4.0),
-                                      child: Text('Hello',
+                                      child: MyTextWidget('Hello',
                                           textAlign: TextAlign.start,
                                           style: textTheme.headline3?.ba
                                               .copyWith(
@@ -141,7 +142,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                             if(state.marketUser!.name==null || state.marketUser!.name==''){
                                               return const SizedBox.shrink();
                                             }
-                                            return Text(','+state.marketUser!.name.toString(),
+                                            return MyTextWidget(','+state.marketUser!.name.toString(),
                                                 textAlign: TextAlign.start,
                                                 style: textTheme.headline3?.la
                                                     .copyWith(
@@ -152,7 +153,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                           },
                                         ),
                                         18.verticalSpace,
-                                        Text('Enjoy With Our Services',
+                                        MyTextWidget('Enjoy With Our Services',
                                             textAlign: TextAlign.center,
                                             style: textTheme.subtitle1?.la
                                                 .copyWith(

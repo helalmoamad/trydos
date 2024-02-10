@@ -142,7 +142,7 @@ class GRouter {
             GoRoute(
               path: _config.applicationRoutes.kSinglePageChatPageName,
               pageBuilder: (BuildContext context, GoRouterState state) {
-                print(state.uri.queryParameters);
+                debugPrint(state.uri.queryParameters.toString());
                 return _builderPage(
                   child: SinglePageChat(
                     chatId: state.uri.queryParameters['chatId']!,

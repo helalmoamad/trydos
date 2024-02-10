@@ -217,7 +217,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
   String? getTheLocalPathForFile(String filePath) {
     List<String> files = getExistenceFiles();
     String path = files.firstWhere((element) => element.startsWith(filePath));
-    print('pathhhh: $path');
+    debugPrint('pathhhh: $path');
     return path.split(' ').length > 1 ? path.split(' ')[1] : null;
   }
 
@@ -239,7 +239,20 @@ class PrefsRepositoryImpl extends PrefsRepository {
   String? get myChatPhoto => _preferences.getString(PrefsKey.chatPhoto);
 
   @override
-  Future<bool> setMyChatPhoto(String? photo) => _preferences.setString(PrefsKey.chatPhoto, photo ?? 'null');
+  Future<bool> setMyChatPhoto(String? photo) =>
+      _preferences.setString(PrefsKey.chatPhoto, photo ?? 'null');
+
+  @override
+  Future<bool> addFcmToken(String fcmToken) {
+    List<String> tokens = getFcmTokens;
+    if(tokens.contains(fcmToken)) return Future.value(true);
+    tokens.add(fcmToken);
+    return _preferences.setStringList(PrefsKey.fcmToken, tokens);
+  }
+
+  @override
+  List<String> get getFcmTokens =>
+      _preferences.getStringList(PrefsKey.fcmToken) ?? [];
 
 // @override
 // // TODO: implement localMessages

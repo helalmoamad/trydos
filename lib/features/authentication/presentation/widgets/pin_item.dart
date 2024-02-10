@@ -88,7 +88,7 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
 
   void _updateStatus(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
-      print('hello');
+      debugPrint('hello');
       animationController.reset();
       resetPins();
     }
@@ -131,7 +131,7 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                   child: AnimatedBuilder(
                       animation: fadingController,
                       builder: (context, child) {
-                        print(fadingController.value);
+                        debugPrint(fadingController.value.toString());
                         return SizedBox(
                             height: 60 ,
                             width: 50.w,
@@ -162,9 +162,9 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                                     }
                                   },
                                   onChanged: (String? text) {
-                                    print(widget.index);
-                                    print(text);
-                                    print(text?.length);
+                                    debugPrint(widget.index.toString());
+                                    debugPrint(text);
+                                    debugPrint(text?.length.toString());
                                     widget.onChange.call();
                                     if (widget.index == 0 &&
                                         (text?.length ?? 0) == 6) {

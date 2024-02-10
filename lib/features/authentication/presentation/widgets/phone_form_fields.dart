@@ -272,7 +272,7 @@ class PhoneNumberFormatter extends TextInputFormatter {
     if((oldText.length+1) == country.dialCode.length && newText[newText.length-1]=='0'){
       needEdit =  oldText;
     }
-    print(needEdit);
+    debugPrint(needEdit);
       String result = needEdit.substring(0 , country.dialCode.length-1) + ' ';
     for(int i=country.dialCode.length-1; i < needEdit.length ; i++){
       result+=needEdit[i];

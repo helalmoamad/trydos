@@ -66,6 +66,10 @@ abstract class PrefsRepository {
 
   String? getTheLocalPathForFile(String filePath);
 
+  Future<bool> addFcmToken(String fcmToken);
+
+  List<String> get getFcmTokens;
+
   // Future<bool> setUser(User user);
   //
   // User? get user;

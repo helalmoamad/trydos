@@ -507,7 +507,7 @@ class SenderUser {
 
   factory SenderUser.fromJson(Map<String, dynamic> json) => SenderUser(
         id: json["id"],
-        name: contactUserNameValues.map[json["name"]]!,
+        name: contactUserNameValues.map[json["name"]],
         username: json["username"],
         mobilePhone: json["mobile_phone"],
         photoPath: json["photo_path"],

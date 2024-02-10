@@ -171,11 +171,6 @@ abstract class AppAssets {
 
   static String get profileJpg=>'profile'.jpg;
   static String get backgroundJpg=>'background'.jpg;
-  static String get chatProfileJpg=>'chat_profile_image'.jpg;
-  static String get chatProfile2Jpg=>'chat_profile2'.jpg;
-  static String get chatImageJpg=>'chat_image'.jpg;
-  static String get storyImageJpg=>'story_image'.jpg;
-  static String get storyImageMinJpg=>'story_image_min'.jpg;
   static String get halloweenJpg=>'Halloween'.jpg;
 
 
