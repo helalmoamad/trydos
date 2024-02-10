@@ -31,8 +31,6 @@ import '../../../app/blocs/app_bloc/app_state.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
 import '../utils/firebase_presence.dart';
-import '../utils/pusher_chat.dart';
-import '../utils/pusher_chat_official_package.dart';
 import 'chat_widgets/no_image_widget.dart';
 import 'chat_widgets/voice_waves_in_recording.dart';
 
@@ -571,10 +569,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           if (!isInitialized) return;
                                         }
                                         recordingNotifier.value = false;
-                                        FirebasePresence
-                                            .deleteUserTransaction(
-                                          channelId:
-                                          widget.channelId,
+                                        FirebasePresence.deleteUserTransaction(
+                                          channelId: widget.channelId,
                                         );
                                         final String path =
                                             (await recorder.stopRecorder())!;
@@ -596,10 +592,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         final path =
                                             await recorder.stopRecorder();
                                         final audioFile = File(path!);
-                                        FirebasePresence
-                                            .deleteUserTransaction(
-                                          channelId:
-                                          widget.channelId,
+                                        FirebasePresence.deleteUserTransaction(
+                                          channelId: widget.channelId,
                                         );
                                         widget.onSendFile(audioFile, 'voice');
                                         recordingNotifier.value = false;
@@ -623,18 +617,14 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       focusColor: Colors.transparent,
                                       splashColor: Colors.transparent,
                                       onTap: () async {
-                                        FirebasePresence
-                                            .sendUserTransaction(
-                                            channelId:
-                                            widget.channelId,
-                                            description: 'Sending file...',
-                                            );
+                                        FirebasePresence.sendUserTransaction(
+                                          channelId: widget.channelId,
+                                          description: 'Sending file...',
+                                        );
                                         File? file = await HelperFunctions
                                             .pickDocumentFile();
-                                        FirebasePresence
-                                            .deleteUserTransaction(
-                                          channelId:
-                                          widget.channelId,
+                                        FirebasePresence.deleteUserTransaction(
+                                          channelId: widget.channelId,
                                         );
                                         if (file != null) {
                                           widget.onSendFile(file, 'file');
@@ -658,10 +648,9 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             try {
                                               FirebasePresence
                                                   .sendUserTransaction(
-                                                      channelId:
-                                                          widget.channelId,
-                                                      description: 'Typing...',
-                                                      );
+                                                channelId: widget.channelId,
+                                                description: 'Typing...',
+                                              );
                                               // pusherChatService
                                               //     .sendActivityEvent(
                                               //         widget.channelId,
@@ -670,13 +659,11 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               debugPrint(e.toString());
                                             }
                                             _typingTimer = Timer(
-                                                const Duration(seconds: 1),
-                                                () {
-                                                  FirebasePresence
-                                                      .deleteUserTransaction(
-                                                    channelId:
-                                                    widget.channelId,
-                                                  );
+                                                const Duration(seconds: 1), () {
+                                              FirebasePresence
+                                                  .deleteUserTransaction(
+                                                channelId: widget.channelId,
+                                              );
                                             });
                                           },
                                           contentPadding:
@@ -692,17 +679,15 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         focusColor: Colors.transparent,
                                         splashColor: Colors.transparent,
                                         onTap: () async {
-                                          FirebasePresence
-                                              .sendUserTransaction(
-                                              channelId:
-                                              widget.channelId,
-                                              description: 'Sending file...',
-                                              );
+                                          FirebasePresence.sendUserTransaction(
+                                            channelId: widget.channelId,
+                                            description: 'Sending file...',
+                                          );
                                           showDialog(
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return GalleryAndCameraDialogWidget(
-                                                    onChooseFileFromGalleryAction:
+                                                     onChooseFileFromGalleryAction:
                                                         (AssetEntity?
                                                             assetEntity) async {
                                                   if (assetEntity != null) {
@@ -726,7 +711,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                           .call(file, 'video');
                                                     }
                                                   }
-                                                }, onChooseFileFromCameraAction:
+                                                },
+                                                    onChooseFileFromCameraAction:
                                                         (File? file) {
                                                   if (file != null) {
                                                     String mimeStr =
@@ -750,8 +736,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               }).then((value) {
                                             FirebasePresence
                                                 .deleteUserTransaction(
-                                              channelId:
-                                              widget.channelId,
+                                              channelId: widget.channelId,
                                             );
                                           });
                                         },
@@ -767,18 +752,17 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         splashColor: Colors.transparent,
                                         onTap: () async {
                                           if (!recorderReady) {
-                                            bool isInitialized = await initializeRecorder();
-                                            if(!isInitialized)return;
+                                            bool isInitialized =
+                                                await initializeRecorder();
+                                            if (!isInitialized) return;
                                           }
                                           if (recorder.isRecording) {
                                             return;
                                           }
-                                          FirebasePresence
-                                              .sendUserTransaction(
-                                              channelId:
-                                              widget.channelId,
-                                              description: 'Recording...',
-                                              );
+                                          FirebasePresence.sendUserTransaction(
+                                            channelId: widget.channelId,
+                                            description: 'Recording...',
+                                          );
                                           await recorder.startRecorder(
                                             toFile:
                                                 'audio${const Uuid().v4()}.aac',
