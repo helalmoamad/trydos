@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/features/authentication/data/models/login_to_chat_response_model.dart';
 import 'package:trydos/features/calls/domain/useCase/delete_Call_reg.dart';
 import 'package:trydos/features/calls/domain/useCase/get_my_calls.dart';
 import 'package:trydos/main.dart';
@@ -248,7 +249,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       showMessage("لا يوجد اتصال بالانترنيت ");
     }, (r) {
       state.callRegister!.removeWhere(
-        (element) => element.id == event.callId,
+        (element) => element!.id == event.callId,
       );
       add(GetMyCallsEvent());
       emit((state.copyWith(

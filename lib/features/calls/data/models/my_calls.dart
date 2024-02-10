@@ -78,11 +78,12 @@ class Data {
   final dynamic extraFields;
   final String? parentMessageId;
   final int? isForward;
-  final String? callStatus;
+  final CallStatus? callStatus;
   final DateTime? createdAt;
   final int? durationInSeconds;
   final dynamic messageContent;
   final MessageType? messageType;
+  final SenderUser? senderUser;
   final Channel? channel;
   final dynamic parentMessage;
   final List<MessageStatus>? messageStatus;
@@ -103,6 +104,7 @@ class Data {
     this.durationInSeconds,
     this.messageContent,
     this.messageType,
+    this.senderUser,
     this.channel,
     this.parentMessage,
     this.messageStatus,
@@ -119,11 +121,12 @@ class Data {
     dynamic extraFields,
     String? parentMessageId,
     int? isForward,
-    String? callStatus,
+    CallStatus? callStatus,
     DateTime? createdAt,
     int? durationInSeconds,
     dynamic messageContent,
     MessageType? messageType,
+    SenderUser? senderUser,
     Channel? channel,
     dynamic parentMessage,
     List<MessageStatus>? messageStatus,
@@ -144,6 +147,7 @@ class Data {
         durationInSeconds: durationInSeconds ?? this.durationInSeconds,
         messageContent: messageContent ?? this.messageContent,
         messageType: messageType ?? this.messageType,
+        senderUser: senderUser ?? this.senderUser,
         channel: channel ?? this.channel,
         parentMessage: parentMessage ?? this.parentMessage,
         messageStatus: messageStatus ?? this.messageStatus,
@@ -160,7 +164,7 @@ class Data {
         extraFields: json["extra_fields"],
         parentMessageId: json["parent_message_id"],
         isForward: json["is_forward"],
-        callStatus: json["call_status"] == null ? "null" : json["call_status"],
+        callStatus: callStatusValues.map[json["call_status"]],
         createdAt: json["created_at"] == null
             ? null
             : DateTime.parse(json["created_at"]),
@@ -169,6 +173,9 @@ class Data {
         messageType: json["message_type"] == null
             ? null
             : MessageType.fromJson(json["message_type"]),
+        senderUser: json["sender_user"] == null
+            ? null
+            : SenderUser.fromJson(json["sender_user"]),
         channel:
             json["channel"] == null ? null : Channel.fromJson(json["channel"]),
         parentMessage: json["parent_message"],
@@ -191,11 +198,12 @@ class Data {
         "extra_fields": extraFields,
         "parent_message_id": parentMessageId,
         "is_forward": isForward,
-        "call_status": callStatus!,
+        "call_status": callStatusValues.reverse[callStatus],
         "created_at": createdAt?.toIso8601String(),
         "duration_in_seconds": durationInSeconds,
         "message_content": messageContent,
         "message_type": messageType?.toJson(),
+        "sender_user": senderUser?.toJson(),
         "channel": channel?.toJson(),
         "parent_message": parentMessage,
         "message_status": messageStatus == null
@@ -207,10 +215,9 @@ class Data {
       };
 }
 
-//enum CallStatus { ANSWERED, REFUSE }
+enum CallStatus { REFUSE }
 
-//final callStatusValues =
-//  EnumValues({"answered": CallStatus.ANSWERED, "refuse": CallStatus.REFUSE});
+final callStatusValues = EnumValues({"refuse": CallStatus.REFUSE});
 
 class Channel {
   final String? id;
@@ -249,7 +256,7 @@ class Channel {
 
   factory Channel.fromJson(Map<String, dynamic> json) => Channel(
         id: json["id"],
-        channelName: json["channel_name"],
+        channelName: json["channel_name"]!,
         photoPath: json["photo_path"],
         totalUnreadMessageCount: json["total_unread_message_count"],
         createdAt: json["created_at"] == null
@@ -340,14 +347,6 @@ class ChannelMember {
       };
 }
 
-// enum ChannelName { ANAS, MAHMOUD_FLUTTER, YASSER_OMRAN }
-
-// final channelNameValues = EnumValues({
-//   "Anas": ChannelName.ANAS,
-//   "Mahmoud Flutter": ChannelName.MAHMOUD_FLUTTER,
-//   "Yasser Omran": ChannelName.YASSER_OMRAN
-// });
-
 class MessageStatus {
   final int? id;
   final int? userId;
@@ -420,8 +419,8 @@ class MessageStatus {
 }
 
 class MessageType {
-  final Name? name;
-  final EventName? eventName;
+  final String? name;
+  final String? eventName;
   final DateTime? createdAt;
 
   MessageType({
@@ -431,8 +430,8 @@ class MessageType {
   });
 
   MessageType copyWith({
-    Name? name,
-    EventName? eventName,
+    String? name,
+    String? eventName,
     DateTime? createdAt,
   }) =>
       MessageType(
@@ -442,31 +441,151 @@ class MessageType {
       );
 
   factory MessageType.fromJson(Map<String, dynamic> json) => MessageType(
-        name: nameValues.map[json["name"]]!,
-        eventName: eventNameValues.map[json["event_name"]]!,
+        name: json["name"],
+        eventName: json["event_name"],
         createdAt: json["created_at"] == null
             ? null
             : DateTime.parse(json["created_at"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "name": nameValues.reverse[name],
-        "event_name": eventNameValues.reverse[eventName],
+        "name": messageTypeNameValues.reverse[name],
+        "event_name": eventName,
         "created_at": createdAt?.toIso8601String(),
       };
 }
 
-enum EventName { VIDEO_CALL_EVENT, VOICE_CALL_EVENT }
+enum MessageTypeName { EMPTY, VIDEO_CALL, VOICE_CALL }
 
-final eventNameValues = EnumValues({
-  "VideoCallEvent": EventName.VIDEO_CALL_EVENT,
-  "VoiceCallEvent": EventName.VOICE_CALL_EVENT
+final messageTypeNameValues = EnumValues({
+  "": MessageTypeName.EMPTY,
+  "VideoCall": MessageTypeName.VIDEO_CALL,
+  "VoiceCall": MessageTypeName.VOICE_CALL
 });
 
-enum Name { VIDEO_CALL, VOICE_CALL }
+class SenderUser {
+  final int? id;
+  final ContactUserName? name;
+  final String? username;
+  final String? mobilePhone;
+  final dynamic photoPath;
+  final DateTime? createdAt;
+  final dynamic accessToken;
+  final ContactUser? contactUser;
 
-final nameValues =
-    EnumValues({"VideoCall": Name.VIDEO_CALL, "VoiceCall": Name.VOICE_CALL});
+  SenderUser({
+    this.id,
+    this.name,
+    this.username,
+    this.mobilePhone,
+    this.photoPath,
+    this.createdAt,
+    this.accessToken,
+    this.contactUser,
+  });
+
+  SenderUser copyWith({
+    int? id,
+    ContactUserName? name,
+    String? username,
+    String? mobilePhone,
+    dynamic photoPath,
+    DateTime? createdAt,
+    dynamic accessToken,
+    ContactUser? contactUser,
+  }) =>
+      SenderUser(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        username: username ?? this.username,
+        mobilePhone: mobilePhone ?? this.mobilePhone,
+        photoPath: photoPath ?? this.photoPath,
+        createdAt: createdAt ?? this.createdAt,
+        accessToken: accessToken ?? this.accessToken,
+        contactUser: contactUser ?? this.contactUser,
+      );
+
+  factory SenderUser.fromJson(Map<String, dynamic> json) => SenderUser(
+        id: json["id"],
+        name: contactUserNameValues.map[json["name"]]!,
+        username: json["username"],
+        mobilePhone: json["mobile_phone"],
+        photoPath: json["photo_path"],
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
+        accessToken: json["access_token"],
+        contactUser: json["contact_user"] == null
+            ? null
+            : ContactUser.fromJson(json["contact_user"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": contactUserNameValues.reverse[name],
+        "username": username,
+        "mobile_phone": mobilePhone,
+        "photo_path": photoPath,
+        "created_at": createdAt?.toIso8601String(),
+        "access_token": accessToken,
+        "contact_user": contactUser?.toJson(),
+      };
+}
+
+class ContactUser {
+  final int? id;
+  final int? userId;
+  final ContactUserName? name;
+  final String? mobilePhone;
+  final int? contactUserId;
+
+  ContactUser({
+    this.id,
+    this.userId,
+    this.name,
+    this.mobilePhone,
+    this.contactUserId,
+  });
+
+  ContactUser copyWith({
+    int? id,
+    int? userId,
+    ContactUserName? name,
+    String? mobilePhone,
+    int? contactUserId,
+  }) =>
+      ContactUser(
+        id: id ?? this.id,
+        userId: userId ?? this.userId,
+        name: name ?? this.name,
+        mobilePhone: mobilePhone ?? this.mobilePhone,
+        contactUserId: contactUserId ?? this.contactUserId,
+      );
+
+  factory ContactUser.fromJson(Map<String, dynamic> json) => ContactUser(
+        id: json["id"],
+        userId: json["user_id"],
+        name: contactUserNameValues.map[json["name"]]!,
+        mobilePhone: json["mobile_phone"],
+        contactUserId: json["contact_user_id"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "user_id": userId,
+        "name": contactUserNameValues.reverse[name],
+        "mobile_phone": mobilePhone,
+        "contact_user_id": contactUserId,
+      };
+}
+
+enum ContactUserName { MAHMOUD_FLUTTER, THE_963934330889, YASSER_OMRAN }
+
+final contactUserNameValues = EnumValues({
+  "Mahmoud Flutter": ContactUserName.MAHMOUD_FLUTTER,
+  "+963934330889": ContactUserName.THE_963934330889,
+  "Yasser Omran": ContactUserName.YASSER_OMRAN
+});
 
 class EnumValues<T> {
   Map<String, T> map;

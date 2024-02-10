@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -80,6 +82,8 @@ class _CallsPageContentState extends State<CallsPageContent> {
                 : state.callRegister![index].durationInSeconds!,
             messageType: "",
             callRegId: state.callRegister![index].id!,
+            isvoice:
+                state.callRegister![index].messageType!.name == "VoiceCall",
           ),
           separator: const SizedBox.shrink(),
           childCount: state.callRegister!.length,
