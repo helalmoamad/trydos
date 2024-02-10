@@ -18,6 +18,7 @@ import 'package:trydos/routes/router_config.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/my_cached_network_image.dart';
+import '../../../app/my_text_widget.dart';
 import '../widgets/no_image_widget.dart';
 
 class CreateCallPage extends StatefulWidget {
@@ -114,7 +115,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                               height: 1.33),
                                       name: widget.receiverName),
                               15.verticalSpace,
-                              Text(
+                              MyTextWidget(
                                 widget.fullReceiverName,
                                 style: textTheme.headline5?.rr
                                     .copyWith(color: const Color(0xffD3D3D3)),
@@ -159,7 +160,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                   height: 25.sp,
                                 ),
                                 10.verticalSpace,
-                                Text(
+                                MyTextWidget(
                                   'End Call',
                                   style: textTheme.bodyText2?.lr
                                       .copyWith(color: const Color(0xffFF5F61)),

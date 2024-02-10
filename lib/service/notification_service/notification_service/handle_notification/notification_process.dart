@@ -10,6 +10,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart'
 import 'package:get_it/get_it.dart';
 import 'package:trydos/main.dart';
 import '../../../../base_page.dart';
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../features/chat/presentation/manager/chat_event.dart';
 import '../../../../features/chat/presentation/pages/single_page_chat.dart';
@@ -46,13 +47,15 @@ class NotificationProcess {
 
   Future fcmToken() async {
     myFcmToken = await FirebaseMessaging.instance.getToken();
-
+    if (myFcmToken != null) {
+      GetIt.I<PrefsRepository>().addFcmToken(myFcmToken!);
+    }
     log(myFcmToken.toString());
   }
 
   void onRefreshToken() {
     FirebaseMessaging.instance.onTokenRefresh.listen((token) {
-      print('onRefreshToken: $token');
+      debugPrint('onRefreshToken: $token');
     });
   }
 
@@ -115,7 +118,7 @@ class NotificationProcess {
         await Firebase.initializeApp(
             options: DefaultFirebaseOptions.currentPlatform);
       } catch (e) {
-        print('firebase error $e');
+        debugPrint('firebase error $e');
         rethrow;
       }
       await _setForegroundNotificationPresentationOptions();

@@ -18,6 +18,7 @@ import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
+import '../../../../app/my_text_widget.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 
@@ -81,7 +82,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
   @override
   void initState() {
     // audioPlayer.onDurationChanged.listen((Duration duration) {
-    //   print(duration);
+    //   debugPrint(duration);
     //
     // });
     audioPlayer.audioCache = AudioCache();
@@ -94,7 +95,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
       audioPlayingNotifier.notifyListeners();
       if (newDuration.inSeconds.compareTo(position.inSeconds) > 0) {
         position = newDuration;
-        print(position);
+        debugPrint(position.toString());
         durationChangedNotifier.value = !durationChangedNotifier.value;
       }
     });
@@ -146,7 +147,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
             animationDuration: const Duration(milliseconds: 150),
             offsetDx: 0.15,
             iconSize: 0,
-            onLeftSwipe: () {
+            onRightSwipe: () {
               if ((state.sendMessageStatus == SendMessageStatus.loading &&
                   state.currentMessage.contains(widget.messageId))) {
                 return;
@@ -262,7 +263,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                                         (context,
                                                                             durationChanged,
                                                                             _) {
-                                                                      return Text(
+                                                                      return MyTextWidget(
                                                                         (isPlaying)
                                                                             ? HelperFunctions.getTimeInFormat(position)
                                                                             : HelperFunctions.getTimeInFormat(duration),
@@ -409,7 +410,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                                         (context,
                                                                             durationChanged,
                                                                             _) {
-                                                                      return Text(
+                                                                      return MyTextWidget(
                                                                         (isPlaying)
                                                                             ? HelperFunctions.getTimeInFormat(position)
                                                                             : HelperFunctions.getTimeInFormat(duration),
@@ -494,7 +495,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                   ? MainAxisAlignment.start
                                                   : MainAxisAlignment.end,
                                               children: [
-                                                Text(
+                                                MyTextWidget(
                                                   !widget.time.isUtc
                                                       ? HelperFunctions
                                                           .getDateInFormat(
@@ -605,7 +606,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                       //   ),
                       //   padding: HWEdgeInsets.symmetric(horizontal: 16 , vertical: 5),
                       //   child: Center(
-                      //     child: Text('Forwarded Message' , style: context.textTheme.overline?.rr.copyWith(
+                      //     child: MyTextWidget('Forwarded Message' , style: context.textTheme.overline?.rr.copyWith(
                       //       color: const Color(0xff505050),
                       //       height: 1.4
                       //     )),

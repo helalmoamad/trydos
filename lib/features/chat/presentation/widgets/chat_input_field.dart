@@ -29,6 +29,7 @@ import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
 import '../../../app/my_cached_network_image.dart';
+import '../../../app/my_text_widget.dart';
 import '../utils/firebase_presence.dart';
 import '../utils/pusher_chat.dart';
 import '../utils/pusher_chat_official_package.dart';
@@ -103,9 +104,9 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
           error: error.toString());
     };
     return BlocBuilder<AppBloc, AppState>(
-      buildWhen: (p, c) => p.thereIsReply != c.thereIsReply,
+      buildWhen: (p, c) => p.thereIsReply != c.thereIsReply || p.messageId != c.messageId,
       builder: (context, state) {
-        print('imageUrl:  ${state.imageUrl}');
+        debugPrint('imageUrl:  ${state.imageUrl}');
 
         return Stack(
           alignment: Alignment.bottomCenter,
@@ -160,7 +161,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                 ),
                                 20.horizontalSpace,
                                 Expanded(
-                                  child: Text(
+                                  child: MyTextWidget(
                                     state.message.toString(),
                                     style: textTheme.caption?.lr.copyWith(
                                         color: colorScheme.grey200,
@@ -257,7 +258,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             ),
                                           ),
                                     10.horizontalSpace,
-                                    Text(
+                                    MyTextWidget(
                                       'Photo',
                                       style: textTheme.caption?.lr.copyWith(
                                           color: colorScheme.grey200,
@@ -328,7 +329,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         10.horizontalSpace,
                                         SizedBox(
                                           width: 200.w,
-                                          child: Text(
+                                          child: MyTextWidget(
                                             state.message.toString(),
                                             style: textTheme.caption?.lr
                                                 .copyWith(
@@ -402,7 +403,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             10.horizontalSpace,
                                             SizedBox(
                                               width: 200.w,
-                                              child: Text(
+                                              child: MyTextWidget(
                                                 state.message.toString(),
                                                 style: textTheme.caption?.lr
                                                     .copyWith(
@@ -475,7 +476,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               height: 40.sp,
                                             ),
                                             10.horizontalSpace,
-                                            Text(
+                                            MyTextWidget(
                                               'Voice',
                                               style: textTheme.caption?.lr
                                                   .copyWith(
@@ -549,7 +550,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                   .inSeconds
                                                   .remainder(60));
 
-                                          return Text('$minutes:$seconds',
+                                          return MyTextWidget('$minutes:$seconds',
                                               style: textTheme.subtitle1?.rr
                                                   .copyWith(
                                                 color: const Color(0xff404040),
@@ -579,7 +580,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             (await recorder.stopRecorder())!;
                                         recorder.deleteRecord(fileName: path);
                                       },
-                                      child: Text('Cancel',
+                                      child: MyTextWidget('Cancel',
                                           style: textTheme.bodyText2?.rr
                                               .copyWith(
                                                   letterSpacing: 0.14,
@@ -666,7 +667,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               //         widget.channelId,
                                               //         'Typing...');
                                             } catch (e) {
-                                              print(e);
+                                              debugPrint(e.toString());
                                             }
                                             _typingTimer = Timer(
                                                 const Duration(seconds: 1),

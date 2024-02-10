@@ -11,6 +11,7 @@ import '../../../app/app_widgets/tabs_bar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
+import '../../../app/my_text_widget.dart';
 import '../manager/home_bloc.dart';
 import '../widgets/product_listing/product_item.dart';
 
@@ -37,7 +38,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     homeBloc.add(GetProductsWithoutFiltersEvent(category: 'رجالي_36'));
     scrollController.addListener(() {
       if (scrollController.position.pixels <= 80) {
-        print(scrollController.position.pixels);
+        debugPrint(scrollController.position.pixels.toString());
         appBloc.add(ShowOrHideBars(true));
       }
       if (setThisEnabledNotifier.value.item1 != -1) {
@@ -87,7 +88,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 appBloc.add(ShowOrHideBars(false));
               }
             }
-            print(_velocity);
+            debugPrint(_velocity.toString());
             _previousOffset = currentOffset;
             return true;
           },
@@ -112,7 +113,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           onPressed: () {
                            homeBloc.add(GetProductsWithoutFiltersEvent(category: 'رجالي_36'));
                           },
-                          child: Text('Try Again')),
+                          child: MyTextWidget('Try Again')),
                     );
                   }
                   return ValueListenableBuilder<Tuple2<int, int>>(

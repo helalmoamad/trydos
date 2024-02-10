@@ -21,6 +21,7 @@ import '../../../app/app_widgets/app_text_field.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
+import '../../../app/my_text_widget.dart';
 import '../../../home/presentation/widgets/sliver_list_seprated.dart';
 import '../../data/models/my_contacts_response_model.dart';
 import '../manager/chat_bloc.dart';
@@ -76,7 +77,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                     ),
                   ),
                   10.horizontalSpace,
-                  Text(
+                  MyTextWidget(
                     'Contacts List',
                     style: textTheme.subtitle1?.rr
                         .copyWith(color: const Color(0xff388CFF)),
@@ -158,7 +159,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                         onPressed: () {
                           chatBloc.add(GetContactsEvent());
                         },
-                        child: Text('Try Again')),
+                        child: MyTextWidget('Try Again')),
                   );
                 }
                 return ValueListenableBuilder<List<Contact>>(

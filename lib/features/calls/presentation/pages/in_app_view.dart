@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
+import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:vibration/vibration.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -97,7 +98,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
-      print('error $error');
+      debugPrint('error $error');
     };
     return BlocListener<CallsBloc, CallsState>(
       listener: (context, state) {
@@ -129,15 +130,15 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     Timer.periodic(Duration(seconds: 7), (timer) {
                       controller.stopLoading();
                       controller.dispose();
-                      if (context.canPop()) {
+                      if (context.canPop() && context.widget is! SinglePageChat) {
                         Navigator.of(context).pop();
                       }
                     });
                   }
-                  if (url.toString().contains('end')) {
+                  if (url.toString().contains('end') ) {
                     controller.stopLoading();
                     controller.dispose();
-                    if (context.canPop()) {
+                    if (context.canPop() && context.widget is! SinglePageChat) {
                       Navigator.of(context).pop();
                     }
                   }

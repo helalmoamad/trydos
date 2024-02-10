@@ -66,7 +66,7 @@ class GetStoriesModel {
 
 class Data {
   int? currentPage;
-  List<Datum>? data;
+  List<CollectionStoryModel>? collections;
   String? firstPageUrl;
   int? from;
   int? lastPage;
@@ -81,7 +81,7 @@ class Data {
 
   Data({
     this.currentPage,
-    this.data,
+    this.collections,
     this.firstPageUrl,
     this.from,
     this.lastPage,
@@ -97,7 +97,7 @@ class Data {
 
   Data copyWith({
     int? currentPage,
-    List<Datum>? data,
+    List<CollectionStoryModel>? collections,
     String? firstPageUrl,
     int? from,
     int? lastPage,
@@ -112,7 +112,7 @@ class Data {
   }) =>
       Data(
         currentPage: currentPage ?? this.currentPage,
-        data: data ?? this.data,
+        collections: collections ?? this.collections,
         firstPageUrl: firstPageUrl ?? this.firstPageUrl,
         from: from ?? this.from,
         lastPage: lastPage ?? this.lastPage,
@@ -128,7 +128,7 @@ class Data {
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     currentPage: json["current_page"],
-    data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+    collections: json["data"] == null ? [] : List<CollectionStoryModel>.from(json["data"]!.map((x) => CollectionStoryModel.fromJson(x))),
     firstPageUrl: json["first_page_url"],
     from: json["from"],
     lastPage: json["last_page"],
@@ -144,7 +144,7 @@ class Data {
 
   Map<String, dynamic> toJson() => {
     "current_page": currentPage,
-    "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toJson())),
+    "data": collections == null ? [] : List<dynamic>.from(collections!.map((x) => x.toJson())),
     "first_page_url": firstPageUrl,
     "from": from,
     "last_page": lastPage,
@@ -160,7 +160,7 @@ class Data {
 }
 enum SelectedStoriesStatus { init, loading, success, failure }
 
-class Datum {
+class CollectionStoryModel {
   int? id;
   String? mobilePhone;
   dynamic photoPath;
@@ -173,7 +173,7 @@ class Datum {
   SelectedStoriesStatus selectedStoriesStatusForCollection;
   ImageDetail? imageDetail;
 
-  Datum({
+  CollectionStoryModel({
     this.id,
     this.mobilePhone,
     this.photoPath,
@@ -187,7 +187,7 @@ class Datum {
     this.media,
   });
 
-  Datum copyWith({
+  CollectionStoryModel copyWith({
     int? id,
     String? mobilePhone,
     dynamic photoPath,
@@ -200,7 +200,7 @@ class Datum {
     List<Story>? stories,
     List<dynamic>? media,
   }) =>
-      Datum(
+      CollectionStoryModel(
         id: id ?? this.id,
         mobilePhone: mobilePhone ?? this.mobilePhone,
         selectedStoriesStatusForCollection: selectedStoriesStatusForCollection ?? this.selectedStoriesStatusForCollection,
@@ -214,7 +214,7 @@ class Datum {
         media: media ?? this.media,
       );
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+  factory CollectionStoryModel.fromJson(Map<String, dynamic> json) => CollectionStoryModel(
     id: json["id"],
     mobilePhone: json["mobile_phone"],
     photoPath: json["photo_path"],

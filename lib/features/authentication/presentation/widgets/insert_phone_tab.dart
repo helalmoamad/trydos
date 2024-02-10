@@ -14,6 +14,7 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../app/my_text_widget.dart';
 
 class InsertPhoneTab extends StatefulWidget {
   const InsertPhoneTab(
@@ -56,7 +57,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
 
   @override
   Widget build(BuildContext context) {
-    print('yes rebuilt');
+    debugPrint('yes rebuilt');
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
@@ -86,7 +87,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      MyTextWidget(
                         'Enter Your Phone Number ' +
                             (widget.fromLogin
                                 ? 'To Login'
@@ -103,7 +104,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                 width: 10, height: 10),
                           ),
                           5.horizontalSpace,
-                          Text(
+                          MyTextWidget(
                             'Enter Your Phone Number Registered With Us',
                             textAlign: TextAlign.start,
                             style: context.textTheme.caption?.ra.copyWith(
@@ -121,7 +122,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                             SvgPicture.asset(AppAssets.phoneOtpSvg,
                                 width: 10, height: 10),
                             5.horizontalSpace,
-                            Text(
+                            MyTextWidget(
                               'We Will Send A Verification Code To The Number',
                               style: context.textTheme.caption?.ra.copyWith(
                                   color: Color(0xffC4C2C2), height: 1.25),
@@ -138,7 +139,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                   width: 10, height: 10),
                             ),
                             5.horizontalSpace,
-                            Text(
+                            MyTextWidget(
                               'Your Privacy Is Completely Safe, We Not Share Your\nInformation With Anyone',
                               textAlign: TextAlign.start,
                               style: context.textTheme.caption?.ra.copyWith(
@@ -220,7 +221,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                     );
                                 }),
                             10.horizontalSpace,
-                            Text(
+                            MyTextWidget(
                               '+',
                               style: context.textTheme.subtitle1?.rr
                                   .copyWith(color: Color(0xff8E8E8E)),

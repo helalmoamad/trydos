@@ -19,6 +19,7 @@ import 'package:trydos/features/home/presentation/widgets/home_page_card.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../app/my_text_widget.dart';
 import '../../../story/presentation/widget/stories_list.dart';
 import '../manager/home_state.dart';
 import '../widgets/home_page_card2.dart';
@@ -42,7 +43,7 @@ class _HomePageState extends State<HomePage> {
     appBloc = BlocProvider.of<AppBloc>(context);
     scrollController.addListener(() {
       if (scrollController.position.pixels <= 80) {
-        print(scrollController.position.pixels);
+        debugPrint(scrollController.position.pixels.toString());
         appBloc.add(ShowOrHideBars(true));
       }
     });
@@ -85,7 +86,7 @@ class _HomePageState extends State<HomePage> {
               appBloc.add(ShowOrHideBars(false));
             }
           }
-          print(_velocity);
+          debugPrint(_velocity.toString());
           _previousOffset = currentOffset;
           return true;
         },
@@ -121,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                                 SizedBox(
                                   width: 7,
                                 ),
-                                Text(
+                                MyTextWidget(
                                   'Story',
                                   style: context.textTheme.bodyText2?.rr
                                       .copyWith(

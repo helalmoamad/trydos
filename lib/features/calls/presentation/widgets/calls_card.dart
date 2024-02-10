@@ -10,6 +10,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 
+import '../../../app/my_text_widget.dart';
 import '../pages/create_call_page.dart';
 
 class CallsCard extends StatefulWidget {
@@ -69,7 +70,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                 width: 55.w,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(AppAssets.chatProfileJpg),
+                    image: AssetImage(AppAssets.profileJpg),
                     fit: BoxFit.cover,
                   ),
                   borderRadius: BorderRadius.circular(12.0),
@@ -92,7 +93,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                         mainAxisAlignment: MainAxisAlignment.center, children: [
                       Row(
                         children: [
-                          Text(
+                          MyTextWidget(
                             'Grant Marshall',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -116,7 +117,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                             width: 15.sp,
                           ),
                           10.horizontalSpace,
-                          Text(
+                          MyTextWidget(
                             widget.isMissing
                                 ? 'Missed Call'
                                 : widget.isIncome
@@ -131,7 +132,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                       ),
                     ]),
                     const Spacer(),
-                    Text(
+                    MyTextWidget(
                       '01:58',
                       maxLines: 1,
                       style: textTheme.caption?.rr
@@ -180,7 +181,7 @@ class SlidableActionWidget extends StatelessWidget {
               height: 25.h,
             ),
             8.verticalSpace,
-            Text(
+            MyTextWidget(
               text,
               style: context.textTheme.caption?.rr
                   .copyWith(color: foregroundColor),

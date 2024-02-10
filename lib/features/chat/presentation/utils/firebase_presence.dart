@@ -30,7 +30,7 @@
 //     final typingRef = database.ref().child('Transaction');
 //     typingRef.onValue.listen((event) {
 //       if (event.snapshot.exists) {
-//         print('data  ${event.snapshot.value}');
+//         debugPrint('data  ${event.snapshot.value}');
 //         data = (event.snapshot.value as Map<dynamic, dynamic>);
 //         data.forEach((key, value) {
 //           if (value['myId'] != myChatId.toString()) {
@@ -87,7 +87,7 @@
 //       });
 //     } else {
 //       con = typingRef.child(pathToChange!);
-//       print('pathToChange $pathToChange');
+//       debugPrint('pathToChange $pathToChange');
 //       con.update({
 //         'description': description.toString(),
 //       });
@@ -123,6 +123,7 @@
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -165,7 +166,7 @@ class FirebasePresence {
               (event.snapshot.value as Map<dynamic, dynamic>).values.first
                   .toString();
         }
-        print('description  $description');
+        debugPrint('description  $description');
         if (LanguageService.languageCode == 'ar') {
           description = descTranslation[description] ?? description;
         }

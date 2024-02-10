@@ -265,7 +265,7 @@
 //         return SizedBox();
 //       }
 //     } else {
-//       return Text("no user joindex");
+//       return MyTextWidget("no user joindex");
 //     }
 //   }
 // }

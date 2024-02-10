@@ -34,12 +34,12 @@
 //         autoConnect: false, enableLogging: false);
 //     await pusher.connect();
 //     pusher.onConnectionStateChange((state) {
-//       print(state?.currentState ?? 'null state');
+//       debugPrint(state?.currentState ?? 'null state');
 //     });
 //     pusher.onConnectionError((state) {
-//       print(state?.message ?? 'null message');
-//       print(state?.code ?? 'null code');
-//       print(state?.exception ?? 'null exception');
+//       debugPrint(state?.message ?? 'null message');
+//       debugPrint(state?.code ?? 'null code');
+//       debugPrint(state?.exception ?? 'null exception');
 //     });
 //   }
 //
@@ -48,14 +48,14 @@
 //     if (publicChannels.containsKey(channelName)) return;
 //     Channel channel = pusher.subscribe(channelName);
 //     channel.bind('ChannelReceivedEvent', (event) {
-//       // print('ChannelReceivedEventData ${event?.data ?? 'Empty'}');
+//       // debugPrint('ChannelReceivedEventData ${event?.data ?? 'Empty'}');
 //       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
 //       chatBloc.add(ReceiveMessageFromPusherEvent(data['channel_id'].toString(),
 //           data['auth_user_id'], data['last_message_id']));
 //     });
 //
 //     channel.bind('ChannelWatchedEvent', (event) {
-//       print('ChannelWatchedEventData ${event?.data ?? 'Empty'}');
+//       debugPrint('ChannelWatchedEventData ${event?.data ?? 'Empty'}');
 //       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
 //       chatBloc.add(WatchedMessageFromPusherEvent(data['channel_id'].toString(),
 //           data['auth_user_id'], data['last_message_id']));
@@ -113,7 +113,7 @@
 //     channel.bind('client-TypingEvent', (event) {
 //       Map<String, dynamic> data = convert.jsonDecode(event!.data.toString());
 //       if (data['desc'] == 'null' || data['desc'] == null) {
-//         print('yes it is');
+//         debugPrint('yes it is');
 //         GetIt.I<AppBloc>()
 //             .add(RemoveUserFromTypingList(int.parse(data['id'].toString())));
 //         return;

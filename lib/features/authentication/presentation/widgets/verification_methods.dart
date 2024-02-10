@@ -10,6 +10,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../app/my_text_widget.dart';
 
 class VerificationMethods extends StatelessWidget {
    VerificationMethods({Key? key , required this.phoneNumber, required this.goBackToPhone, required this.onChooseWhatsapp, required this.onChooseSms}) : super(key: key);
@@ -46,7 +47,7 @@ class VerificationMethods extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          MyTextWidget(
                             'We Will Send A Verification Code To The Number',
                             style: context.textTheme.caption?.ra.copyWith(
                                 color: Color(0xff5D5C5D), height: 1.42),
@@ -60,7 +61,7 @@ class VerificationMethods extends StatelessWidget {
                                     width: 10, height: 10),
                               ),
                               5.horizontalSpace,
-                              Text(
+                              MyTextWidget(
                                 phoneNumber,
                                 textAlign: TextAlign.start,
                                 style: context.textTheme.caption?.ra.copyWith(
@@ -87,7 +88,7 @@ class VerificationMethods extends StatelessWidget {
                               SvgPicture.asset(AppAssets.registerInfoSvg,
                                   width: 10, height: 10),
                               5.horizontalSpace,
-                              Text(
+                              MyTextWidget(
                                 'Choose The Verification Method, Receive Code Via:',
                                 style: context.textTheme.caption?.ra.copyWith(
                                     color: Color(0xffC4C2C2), height: 1.25),
@@ -142,7 +143,7 @@ class VerificationMethods extends StatelessWidget {
                                   SvgPicture.asset(AppAssets.whatsappSvg,
                                       width: 20, height: 20),
                                   10.horizontalSpace,
-                                  Text(
+                                  MyTextWidget(
                                     'Whatsapp',
                                     style: context.textTheme.bodyText2?.ra.copyWith(
                                         color: Color(0xff5D5C5D), height: 1.42),
@@ -191,7 +192,7 @@ class VerificationMethods extends StatelessWidget {
                                   SvgPicture.asset(AppAssets.smsSvg,
                                       width: 20, height: 20),
                                   10.horizontalSpace,
-                                  Text(
+                                  MyTextWidget(
                                     'SMS',
                                     style: context.textTheme.bodyText2?.ra.copyWith(
                                         color: Color(0xff5D5C5D), height: 1.42),

@@ -14,8 +14,10 @@ import 'package:trydos/routes/router.dart';
 import '../../../../core/di/di_container.dart';
 import '../../../../features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../features/chat/presentation/manager/chat_event.dart';
-import '../../../../features/chat/data/models/my_chats_response_model.dart' as chat;
+import '../../../../features/chat/data/models/my_chats_response_model.dart'
+    as chat;
 import 'dart:convert' as convert;
+
 @pragma('vm:entry-point')
 class LocalNotificationService {
   static final _localNotificationPlugin = FlutterLocalNotificationsPlugin();
@@ -54,19 +56,24 @@ class LocalNotificationService {
       onDidReceiveNotificationResponse: _onSelectNotification,
     );
   }
+
   @pragma('vm:entry-point')
-  Future<void> showNotificationWithPayload({required RemoteMessage message}) async {
-    chat.Message myMessage =chat.Message.fromJson(convert.jsonDecode(message.data['message']));
-    sendIReceivedTheMessage(myMessage.channelId!);
-    String type = myMessage.messageType!.name.toString();
+  Future<void> showNotificationWithPayload(
+      {required RemoteMessage message}) async {
+    chat.Message myMessage = chat.Message.fromJson(convert.jsonDecode(message.data['message']));
     String prevMessageId = message.data['prev_message_id'];
-    await _localNotificationPlugin.show
-      (
+    sendIReceivedTheMessage(myMessage.channelId!);
+    try {
+      GetIt.I<ChatBloc>().add(ReceiveMessageEvent(
+          message: myMessage, prevMessageId: prevMessageId));
+    }catch(e,st){
+      print(e);
+      print(st);
+    }
+    String type = myMessage.messageType!.name.toString();
+    await _localNotificationPlugin.show(
         0,
-        message.data['contact_name'] ??
-            myMessage.senderInfo!.name ??
-            myMessage.senderMobilePhone ??
-            'UnKnown User',
+        myMessage.channel?.channelName ?? 'No Channel Name',
         type == 'TextMessage'
             ? myMessage.messageContent!.content.toString()
             : type == 'ImageMessage'
@@ -82,10 +89,13 @@ class LocalNotificationService {
 
   static void sendIReceivedTheMessage(String channelId) async {
     HttpOverrides.global = MyHttpOverrides();
-    GetIt.I<ChatBloc>().add(NotifyThatIReceivedMessageEvent(channelId: channelId));
+    GetIt.I<ChatBloc>()
+        .add(NotifyThatIReceivedMessageEvent(channelId: channelId));
   }
+
   @pragma('vm:entry-point')
-  Future<void> uploadingNotification(maxProgress, progress, isUploading, bool isUploadingSuccess) async {
+  Future<void> uploadingNotification(
+      maxProgress, progress, isUploading, bool isUploadingSuccess) async {
     if (isUploading) {
       final AndroidNotificationDetails androidPlatformChannelSpecifics =
           AndroidNotificationDetails(
@@ -139,10 +149,12 @@ class LocalNotificationService {
         convert.jsonDecode(notificationResponse.payload!.split(',,')[0]));
     String prevMessageId = notificationResponse.payload!.split(',,')[1];
     initialMessage = myMessage;
-    GetIt.I<ChatBloc>().add( ReceiveMessageEvent(message: myMessage, prevMessageId: prevMessageId) );
+    GetIt.I<ChatBloc>().add(
+        ReceiveMessageEvent(message: myMessage, prevMessageId: prevMessageId));
     debugPrint(navigatorKey.currentState.toString());
-     navigatorKey.currentState!.context.go(GRouter.config.applicationRoutes.kBasePage);
-    }
+    navigatorKey.currentState!.context
+        .go(GRouter.config.applicationRoutes.kBasePage);
+  }
 
   _notificationDetails() {
     final channel = LocalNotificationService().getAndroidChannel;

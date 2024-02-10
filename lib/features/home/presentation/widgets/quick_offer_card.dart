@@ -8,6 +8,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
 import '../../../../core/utils/theme_state.dart';
+import '../../../app/my_text_widget.dart';
 import 'home_page_card2.dart';
 import 'offer_time_widget.dart';
 
@@ -83,7 +84,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                   SizedBox(
                     height: 5,
                   ),
-                  Text(
+                  MyTextWidget(
                     'Mango Famous Turkish Brand Best Discounts',
                     style: context.textTheme.caption?.rq.copyWith(
                       color: const Color(0xff505050),
@@ -104,14 +105,14 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          MyTextWidget(
                             'Quick Offer',
                             style: textTheme.bodyText2?.mq.copyWith(
                               color: const Color(0xff3c3c3c),
                               height: 0.85,
                             )
                           ),
-                          Text(
+                          MyTextWidget(
                             'This Offer Is For Only 4 Hours, Remaining:',
                             style: textTheme.overline?.rq.copyWith(
                               color: const Color(0xff505050),
@@ -185,7 +186,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                       onLongPressStart: (details) {
                         resizeItems.value =
                             (details.globalPosition.dx - 40) ~/ 35.w;
-                        print(resizeItems.value);
+                        debugPrint(resizeItems.value.toString());
                       },
                       onLongPressUp: () {
                         resizeItems.value = -1;

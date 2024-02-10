@@ -11,7 +11,7 @@ import '../../../../core/api/methods/get.dart';
 import '../../presentation/bloc/story_bloc.dart';
 import '../models/image_detail.dart';
 import '../models/upload_story_response_model.dart';
-import '../../data/models/get_stories_model.dart' as stories;
+import '../../data/models/get_stories_model.dart';
 @injectable
 class StoriesDataSource {
   Completer<ImageDetail> completer = Completer<ImageDetail>();
@@ -48,13 +48,13 @@ class StoriesDataSource {
     return completer.future;
   }
 
-  Future<stories.GetStoriesModel> getStories() {
-    GetClient<stories.GetStoriesModel> getStories = GetClient<stories.GetStoriesModel>(
+  Future<GetStoriesModel> getStories() {
+    GetClient<GetStoriesModel> getStories = GetClient<GetStoriesModel>(
       serverName: ServerName.stories,
-      requestPrams: RequestConfig<stories.GetStoriesModel>(
+      requestPrams: RequestConfig<GetStoriesModel>(
         endpoint: StoriesEndPoints.getStoriesEP,
-        response: ResponseValue<stories.GetStoriesModel>(
-            fromJson: (response) => stories.GetStoriesModel.fromJson(response)),
+        response: ResponseValue<GetStoriesModel>(
+            fromJson: (response) => GetStoriesModel.fromJson(response)),
       ),
     );
 
@@ -79,13 +79,13 @@ class StoriesDataSource {
     return uploadStory();
   }
 
-  Future<stories.Datum?> addStoryToOurServer(Map<String, dynamic> params) {
-    PostClient<stories.Datum?> addStoryToOurServer = PostClient<stories.Datum?>(
-      requestPrams: RequestConfig<stories.Datum?>(
+  Future<CollectionStoryModel?> addStoryToOurServer(Map<String, dynamic> params) {
+    PostClient<CollectionStoryModel?> addStoryToOurServer = PostClient<CollectionStoryModel?>(
+      requestPrams: RequestConfig<CollectionStoryModel?>(
         endpoint: StoriesEndPoints.addStoryToOurServerEP,
         data: params,
-        response: ResponseValue<stories.Datum?>(
-          fromJson: (response) => stories.Datum?.fromJson(response['data'])
+        response: ResponseValue<CollectionStoryModel?>(
+          fromJson: (response) => CollectionStoryModel?.fromJson(response['data'])
         )
       ),
       serverName: ServerName.stories,

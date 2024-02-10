@@ -21,6 +21,7 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
+import '../../../app/my_text_widget.dart';
 import '../../../app/trydos_shimmer_loading.dart';
 import '../../data/models/get_stories_model.dart';
 import '../bloc/story_state.dart';
@@ -95,7 +96,7 @@ class _StoriesListState extends State<StoriesList> {
                                                     child: Container(
                                                       child: Center(
                                                           child:
-                                                              Text('uplaod')),
+                                                              MyTextWidget('uplaod')),
                                                       decoration: BoxDecoration(
                                                         borderRadius:
                                                             BorderRadius
@@ -173,10 +174,10 @@ class _StoriesListState extends State<StoriesList> {
                                     Story initialStory;
                                     if (GetIt.I<PrefsRepository>()
                                             .myStoriesId ==
-                                        state.stories[index].stories![0]
+                                        state.storiesCollections[index].stories![0]
                                             .userId) {
                                       indexOfInitialStory = state
-                                          .stories[index].stories!
+                                          .storiesCollections[index].stories!
                                           .lastIndexWhere((element) =>
                                               element.isSeen == false);
                                       indexOfInitialStory =
@@ -185,9 +186,9 @@ class _StoriesListState extends State<StoriesList> {
                                               : indexOfInitialStory;
                                     } else {
                                       indexOfInitialStory = firstWhereNotShowed(
-                                          state.stories[index].stories!);
+                                          state.storiesCollections[index].stories!);
                                     }
-                                    initialStory = state.stories[index]
+                                    initialStory = state.storiesCollections[index]
                                         .stories![indexOfInitialStory];
 
                                     return AnimatedPadding(
@@ -291,9 +292,9 @@ class _StoriesListState extends State<StoriesList> {
                                                     onTapOnStoryAction: () async {
                                                       GetIt.I<StoryBloc>().add(
                                                           StorySelectedEvent(
-                                                              selected: index,
+                                                              collectionIndex: index,
                                                               currentPage: index,
-                                                              initialStory:
+                                                              selectedStoryIndexInCollection:
                                                                   indexOfInitialStory));
                                                       // Navigator.of(context).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
                                                       //             initialPage:
@@ -327,9 +328,9 @@ class _StoriesListState extends State<StoriesList> {
                                                       disableResizing();
                                                       GetIt.I<StoryBloc>().add(
                                                           StorySelectedEvent(
-                                                              selected: index,
+                                                              collectionIndex: index,
                                                               currentPage: index,
-                                                              initialStory:
+                                                              selectedStoryIndexInCollection:
                                                                   indexOfInitialStory));
                                                       // Navigator.of(context).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
                                                       //     initialPage:
@@ -370,7 +371,7 @@ class _StoriesListState extends State<StoriesList> {
                                 separatorBuilder: (context, index) => SizedBox(
                                       width: 15,
                                     ),
-                                itemCount: state.stories.length + 1));
+                                itemCount: state.storiesCollections.length + 1));
                       case GetStoriesStatus.init:
                         return Container();
                       case GetStoriesStatus.failure:
@@ -379,7 +380,7 @@ class _StoriesListState extends State<StoriesList> {
                               onPressed: () {
                                 GetIt.I<StoryBloc>().add(GetStoryEvent());
                               },
-                              child: Text('Try Again')),
+                              child: MyTextWidget('Try Again')),
                         );
                       case GetStoriesStatus.loading:
                         return SizedBox(

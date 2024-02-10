@@ -18,6 +18,7 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
+import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
 class VerifyOtp extends StatefulWidget {
@@ -166,7 +167,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                MyTextWidget(
                                   'We Have Sent A Verification Code:',
                                   style: context.textTheme.caption?.ra.copyWith(
                                       color: Color(0xff5D5C5D), height: 1.42),
@@ -182,7 +183,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                           height: 10),
                                     ),
                                     5.horizontalSpace,
-                                    Text(
+                                    MyTextWidget(
                                       widget.phoneNumber,
                                       textAlign: TextAlign.start,
                                       style: context.textTheme.caption?.ra
@@ -199,7 +200,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                     SvgPicture.asset(widget.methodIcon,
                                         width: 10, height: 10),
                                     5.horizontalSpace,
-                                    Text(
+                                    MyTextWidget(
                                       'Please Enter The Verification Code Sent To Your ${widget.methodIcon == AppAssets.whatsappSvg ? 'Whatsapp' : 'SMS'}',
                                       style: context.textTheme.caption?.ra
                                           .copyWith(
@@ -225,7 +226,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                   width: 10,
                                                   height: 10),
                                               5.horizontalSpace,
-                                              Text(
+                                              MyTextWidget(
                                                 resend
                                                     ? 'You Can Resend The Code After'
                                                     : 'Didn’t You Receive A Code?',
@@ -252,7 +253,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                                   10
                                                               ? '0${remainingTime?.sec}'
                                                               : '${remainingTime?.sec}';
-                                                          return Text(
+                                                          return MyTextWidget(
                                                             '0${remainingTime?.min ?? '0'} : $seconds ',
                                                             style: context
                                                                 .textTheme
@@ -273,7 +274,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                       );
                                                     return InkWell(
                                                       onTap: _onResendSucceed,
-                                                      child: Text(
+                                                      child: MyTextWidget(
                                                         'Resend Code',
                                                         style: context.textTheme
                                                             .caption?.ra
@@ -285,7 +286,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                     );
                                                   }),
                                               resend
-                                                  ? Text(
+                                                  ? MyTextWidget(
                                                       ' Or ',
                                                       style: context
                                                           .textTheme.caption?.ra
@@ -298,10 +299,9 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                               resend
                                                   ? InkWell(
                                                       onTap: widget.goBack,
-                                                      child: Text(
+                                                      child: MyTextWidget(
                                                         'Change',
                                                         maxLines: 2,
-                                                        softWrap: true,
                                                         style: context.textTheme
                                                             .caption?.ra
                                                             .copyWith(
@@ -319,10 +319,9 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                       left: 15.0),
                                                   child: InkWell(
                                                     onTap: widget.goBack,
-                                                    child: Text(
+                                                    child: MyTextWidget(
                                                       'The Method Of Receiving',
                                                       maxLines: 2,
-                                                      softWrap: true,
                                                       style: context
                                                           .textTheme.caption?.ra
                                                           .copyWith(
@@ -531,7 +530,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                 return codeStatus == 2 || isExpired
                                     ? Column(
                                         children: [
-                                          Text(
+                                          MyTextWidget(
                                             codeStatus == 2
                                                 ? 'Please Enter The Correct Code Sent To Your Phone'
                                                 : 'The Code Sent Has Expired',

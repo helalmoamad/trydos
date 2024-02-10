@@ -49,54 +49,25 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
 
   FutureOr<void> _onMakeCallEvent(
       MakeCallEvent event, Emitter<CallsState> emit) async {
-    List<Message> messages;
-    bool fromPinned = false;
-
-    emit(state.copyWith(makeCallStatus: MakeCallStatus.init , isVideoCall: event.isVideo));
-
-    // ChatState chatState = GetIt.I<ChatBloc>().state;
-    //todo check if the channel exist and get the messages of this channel
-    // if (chatState.chats.any( (e) => e.id == event.chatId,)) {
-    //   messages = List.of(chatState.chats
-    //       .firstWhere((element) => element.id == event.chatId)
-    //       .messages ??
-    //       []);
-    // }
-    //todo the same but from the pinned channels
-
-    // else {
-    //   fromPinned = true;
-    //   messages = List.of(chatState.pinnedChats
-    //       .firstWhere((element) => element.id == event.chatId)
-    //       .messages ??
-    //       []);
-    // }
-    //TODO FOR LATER ADD THE VIDEO MESSAGE TO THE NEW CHAT
-    // messages.insert(
-    //     0,
-    //     Message(
-    //         channelId: event.chatId,
-    //         // id: event.messageId,
-    //         // localId: event.messageId,
-    //         createdAt: DateTime.now(),
-    //         receiverUserId: int.tryParse(event.receiverUserId),
-    //         messageContent: null,
-    //         senderUserId: _prefsRepository.myChatId,
-    //         messageType: MessageType(name:''),
-    //         isForward: 0,
-    //         parentMessage: null));
+    emit(state.copyWith(makeCallStatus: MakeCallStatus.loading , isVideoCall: event.isVideo));
 
     if (event.receiverUserId != null) {
       final response = await makeCallUseCase(MakeCallParams(
           isVideo: event.isVideo,
           payload: event.payload,
           receiverUserId: event.receiverUserId!));
-      response.fold((l) => null, (r) {
+      response.fold((l) {
+        emit(state.copyWith(
+            makeCallStatus: MakeCallStatus.failure
+        ));
+      }, (r) {
+        GetIt.I<ChatBloc>().add(AddAMessageToAChannel(message: r.data!.message!, localChannelId: event.chatId! ));
         emit(state.copyWith(
             makeCallStatus: MakeCallStatus.startCall,
              isVideoCall: event.isVideo,
+            currentActiveCallId: r.data!.message!.id!.toString(),
             messageId: r.data!.message!.id!.toString(),
-            channelName: r.data!.message!.channelId.toString(),
+            channelIdForCurrentCall: r.data!.message!.channelId.toString(),
             agoraToken: r.data!.token));
       });
 
@@ -108,14 +79,18 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
           payload: event.payload,
           chatId: event.chatId!,
           isVideo: event.isVideo));
-      response.fold((l) => null, (r) {
+      response.fold((l) {
+        emit(state.copyWith(
+            makeCallStatus: MakeCallStatus.failure));
+      }, (r) {
         GetIt.I<ChatBloc>().add(ReceiveMessageEvent(message: r.data!.message!, increaseUnReadMessages: false));
         emit(state.copyWith(
           messageId: r.data!.message!.id!.toString(),
           isVideoCall: event.isVideo,
           makeCallStatus: MakeCallStatus.startCall,
+          currentActiveCallId: r.data!.message!.id!.toString(),
           agoraToken: r.data!.token,
-          channelName: event.chatId,
+          channelIdForCurrentCall: r.data!.message!.channelId.toString(),
         ));
       });
     }
@@ -145,7 +120,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       emit(state.copyWith(
           makeCallStatus: MakeCallStatus.success,
           agoraToken: agoraToken,
-          channelName: event.chatId));
+          channelIdForCurrentCall: event.chatId));
     });
   }
 
@@ -168,6 +143,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   FutureOr<void> _onUserInteractWithCall(
       UserInteractWithCall event, Emitter<CallsState> emit) {
     emit(state.copyWith(
+      currentActiveCallId: null,
         stopRingToneReason: event.rejectIt
             ? StopRingToneReason.refuse
             : StopRingToneReason.accept));

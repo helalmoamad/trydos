@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../app/my_text_widget.dart';
 
 class AgoraWebView extends StatefulWidget {
   String type;
@@ -114,7 +115,7 @@ class _AgoraWebViewState extends State<AgoraWebView> {
             controller: controller,
           ),
           if (loading < 100) Center(child: CircularProgressIndicator()),
-          Text(urlBasd,style: TextStyle(color:Colors.teal),)
+          MyTextWidget(urlBasd,style: TextStyle(color:Colors.teal),)
         ],
       ),
     );
