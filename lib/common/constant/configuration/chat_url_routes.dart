@@ -33,6 +33,7 @@ abstract class ChatEndPoints {
   static final loginEP = 'login'.usersScope();
   static final getMyContactsEP = 'my_contacts'.usersScope();
   static final saveContactsEP = 'save_contacts'.usersScope();
+  static final myCallReg = 'my_calls'.channelsScope();
 
   ///! ----< No scope >----
   static final createUserEP = 'create_user'.noScope();
@@ -45,6 +46,7 @@ abstract class ChatEndPoints {
   ///
   static final getMyChatsEP = 'my_channels'.channelsScope(current: true);
   static final deleteChatEP = 'destroy'.channelsScope();
+  static final deleteCallREg = 'destroy'.messagesScope();
 
   static String readAllMessagesEP(String channelId) =>
       '$channelId/watched'.channelsScope();

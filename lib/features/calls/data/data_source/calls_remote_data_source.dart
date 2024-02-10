@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/client_config.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/post.dart';
+import 'package:trydos/features/calls/data/models/my_calls.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../models/agora_token_remote_response_model.dart';
@@ -12,8 +13,7 @@ import '../models/make_call_response_model.dart';
 
 @injectable
 class CallsRemoteDataSource {
-  Future<MakeCallRemoteResponseModel> makeCall(
-      Map<String, dynamic> params) {
+  Future<MakeCallRemoteResponseModel> makeCall(Map<String, dynamic> params) {
     if (params['data']['receiver_user_id'] != null) {
       params['data'].remove('channel_id');
     } else {
@@ -24,7 +24,9 @@ class CallsRemoteDataSource {
         PostClient<MakeCallRemoteResponseModel>(
             requestPrams: RequestConfig<MakeCallRemoteResponseModel>(
                 data: params['data'],
-                endpoint: isVideo ? ChatEndPoints.videoCallEP : ChatEndPoints.voiceCallEP,
+                endpoint: isVideo
+                    ? ChatEndPoints.videoCallEP
+                    : ChatEndPoints.voiceCallEP,
                 response: ResponseValue<MakeCallRemoteResponseModel>(
                   fromJson: (response) {
                     log(response.toString());
@@ -77,5 +79,29 @@ class CallsRemoteDataSource {
             response: ResponseValue<bool>(returnValueOnSuccess: true)),
         serverName: ServerName.chat);
     return RejectCall();
+  }
+
+  Future<MyCallsResponseModel> getMyCalls() {
+    PostClient<MyCallsResponseModel> mycalls = PostClient<MyCallsResponseModel>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<MyCallsResponseModel>(
+        endpoint: ChatEndPoints.myCallReg,
+        response: ResponseValue<MyCallsResponseModel>(
+            fromJson: (response) => MyCallsResponseModel.fromJson(response)),
+      ),
+    );
+    return mycalls();
+  }
+
+  Future<bool> deleteCallRegister(Map<String, dynamic> params) {
+    PostClient<bool> deleteChat = PostClient<bool>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<bool>(
+        endpoint: ChatEndPoints.deleteCallREg,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return deleteChat();
   }
 }

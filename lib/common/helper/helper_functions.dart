@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +11,12 @@ import 'package:store_redirect/store_redirect.dart';
 import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../features/app/my_text_widget.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:ui' as ui;
+
 class HelperFunctions {
   static changeAppStatus(ThemeMode theme) {
     final color = theme == ThemeMode.dark
@@ -101,7 +102,8 @@ class HelperFunctions {
   }
 
   static Future<List<Map<String, dynamic>>> getContactsFromDevice() async {
-    final PermissionStatus permissionStatus = await Permission.contacts.request();
+    final PermissionStatus permissionStatus =
+        await Permission.contacts.request();
     List<Contact> contacts = [];
 
     if (permissionStatus == PermissionStatus.granted) {
@@ -127,10 +129,7 @@ class HelperFunctions {
     return assets?[0];
   }
 
-  static Future<List<AssetEntity>?> myMultiAssetPicker(BuildContext context) async{
-    // AssetPickerTextDelegate textDelegate = LanguageService.languageCode != 'ar'
-    //     ? const EnglishAssetPickerTextDelegate()
-    //     : const ArabicAssetPickerTextDelegate();
+   static Future<List<AssetEntity>?> myMultiAssetPicker(BuildContext context) async{
     return AssetPicker.pickAssets(
       context,
 
@@ -161,6 +160,15 @@ class HelperFunctions {
     }
   }
 
+  static String getDatesInFormat(DateTime date) {
+    String formattedDate = DateFormat('MMMMd').format(date.toLocal());
+    return formattedDate;
+  }
+
+  static String gettimesInFormat(DateTime time) {
+    String formattedDate = DateFormat("jm").format(time.toLocal());
+    return formattedDate;
+  }
 
   static String replaceArabicNumber(String input) {
     const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -216,7 +224,8 @@ class HelperFunctions {
       barrierDismissible: false,
       builder: (BuildContext context) {
         String title = 'New Update Available';
-        String message = 'There is a newer version of app available please update it now.';
+        String message =
+            'There is a newer version of app available please update it now.';
         String btnLabel = 'Update Now';
         return WillPopScope(
             onWillPop: () => Future.value(true),
@@ -264,9 +273,12 @@ class HelperFunctions {
       },
     );
   }
-   static _getFileFromGoogleDrive()  {
-     urlLauncherBrowser('https://drive.google.com/file/d/1im1-7Bmx5Qi9cTsVIvGnZIvNY7vSKQLj/view?usp=drivesdk');
+
+  static _getFileFromGoogleDrive() {
+    urlLauncherBrowser(
+        'https://drive.google.com/file/d/1im1-7Bmx5Qi9cTsVIvGnZIvNY7vSKQLj/view?usp=drivesdk');
   }
+
   _openStoreUrl() {
     StoreRedirect.redirect(
       androidAppId: 'ae.clearance.app',

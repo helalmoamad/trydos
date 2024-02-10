@@ -240,70 +240,51 @@ class _SinglePageChatState extends State<SinglePageChat> {
                             name: widget.receiverName),
                     20.horizontalSpace,
 
-                    BlocListener<CallsBloc, CallsState>(
-                      listenWhen: (p, c) =>
-                          p.makeCallStatus != c.makeCallStatus &&
-                          c.makeCallStatus == MakeCallStatus.failure,
-                      listener: (context, state) {
-                        Navigator.pop(context);
-                        showMessage(
-                            '${widget.fullReceiverName} in another call',
-                            showInRelease: true);
-                      },
-                      child: BlocListener<CallsBloc, CallsState>(
-                        listenWhen: (p, c) =>
-                            p.makeCallStatus != c.makeCallStatus &&
-                            c.makeCallStatus == MakeCallStatus.loading,
-                        listener: (context, state) {
-                          callInProgressDialog(context);
-                        },
-                        child: Expanded(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (_) => ProfilePage(
-                                          receiverName: widget.receiverName,
-                                          receiverPhoto: widget.receiverPhoto,
-                                          fullReceiverName:
-                                              widget.fullReceiverName,
-                                          receiverPhone:
-                                              widget.receiverPhone)));
-                                },
-                                child: MyTextWidget(
-                                  widget.fullReceiverName,
-                                  style: textTheme.subtitle1?.mr
-                                      .copyWith(color: const Color(0xff5D5C5D)),
-                                ),
-                              ),
-                              if (int.tryParse(widget.chatId) != null)
-                                BlocBuilder<AppBloc, AppState>(
-                                  builder: (context, state) {
-                                    if (state.pusherActivityIds[
-                                            int.parse(widget.chatId)] !=
-                                        null) {
-                                      return MyTextWidget(
-                                        state.pusherActivityDescription[
-                                                int.parse(widget.chatId)]
-                                            .toString(),
-                                        overflow: TextOverflow.ellipsis,
-                                        style: textTheme.caption?.mr.copyWith(
-                                            color: const Color(0xff007CFF)),
-                                      );
-                                    } else {
-                                      return const SizedBox.shrink();
-                                    }
-                                  },
-                                ),
-                            ],
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) => ProfilePage(
+                                      receiverName: widget.receiverName,
+                                      receiverPhoto: widget.receiverPhoto,
+                                      fullReceiverName:
+                                          widget.fullReceiverName,
+                                      receiverPhone:
+                                          widget.receiverPhone)));
+                            },
+                            child: MyTextWidget(
+                              widget.fullReceiverName,
+                              style: textTheme.subtitle1?.mr
+                                  .copyWith(color: const Color(0xff5D5C5D)),
+                            ),
                           ),
-                        ),
+                          if (int.tryParse(widget.chatId) != null)
+                            BlocBuilder<AppBloc, AppState>(
+                              builder: (context, state) {
+                                if (state.pusherActivityIds[
+                                        int.parse(widget.chatId)] !=
+                                    null) {
+                                  return MyTextWidget(
+                                    state.pusherActivityDescription[
+                                            int.parse(widget.chatId)]
+                                        .toString(),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: textTheme.caption?.mr.copyWith(
+                                        color: const Color(0xff007CFF)),
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              },
+                            ),
+                        ],
                       ),
                     ),
-                    BlocConsumer<CallsBloc, CallsState>(
+                    BlocBuilder<CallsBloc, CallsState>(
                       builder: (context, state) => InkWell(
                         onTap: () async {
                           List<Map<String, dynamic>> info =
@@ -320,12 +301,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               GetIt.I<CallsBloc>().add(MakeCallEvent(
                                   receiverUserId:
                                       info[0]['currentReceiver'].toString(),
+                                  receiverCallName: widget.fullReceiverName,
                                   chatId: widget.chatId,
                                   isVideo: true,
                                   payload: info[1]));
                             } else {
                               GetIt.I<CallsBloc>().add(MakeCallEvent(
                                   isVideo: true,
+                                  receiverCallName: widget.fullReceiverName,
                                   chatId: widget.chatId,
                                   payload: info[0]));
                               //todo we have the id of the chat so we can move to the call immediately
@@ -343,24 +326,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           height: 25,
                         ),
                       ),
-                      listenWhen: (p, c) =>
-                          p.makeCallStatus != c.makeCallStatus &&
-                          c.makeCallStatus == MakeCallStatus.startCall,
-                      listener: (context, state) {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (_) => AgoraInAppWebView(
-                                  type: state.isVideoCall ? 'video' : 'voice',
-                                  isReceivingCall: false,
-                                  channelId: state.channelIdForCurrentCall!,
-                                  auth_token:
-                                      GetIt.I<PrefsRepository>().chatToken!,
-                                  uId: GetIt.I<PrefsRepository>()
-                                      .myChatId
-                                      .toString(),
-                                  action: 'sent',
-                                  messageId: state.messageId!,
-                                )));
-                      },
                     ),
                     30.horizontalSpace,
                     // todo CreateCallPage
@@ -380,6 +345,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                             GetIt.I<CallsBloc>().add(MakeCallEvent(
                                 receiverUserId:
                                     info[0]['currentReceiver'].toString(),
+                                receiverCallName: widget.fullReceiverName,
                                 chatId: widget.chatId,
                                 isVideo: false,
                                 payload: info[1]));
@@ -396,6 +362,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
                             GetIt.I<CallsBloc>().add(MakeCallEvent(
                                 isVideo: false,
+                                receiverCallName: widget.fullReceiverName,
                                 chatId: widget.chatId,
                                 payload: info[0]));
                             //todo we have the id of the chat so we can move to the call immediately

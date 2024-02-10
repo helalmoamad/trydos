@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -83,7 +84,15 @@ class ChatPageContentState extends State<ChatPageContent> {
                 state.getChatsStatus == GetChatsStatus.init) &&
             state.chats.isEmpty &&
             state.pinnedChats.isEmpty) {
-          return SliverToBoxAdapter(child: TrydosLoader());
+          return SliverToBoxAdapter(child: SizedBox(
+            height: 1.sh - 200 ,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TrydosLoader(),
+              ],
+            ),
+          ));
         }
         if(state.getChatsStatus == GetChatsStatus.failure){
           return Center(

@@ -14,8 +14,8 @@ import '../my_text_widget.dart';
 class GalleryAndCameraDialogWidget extends StatelessWidget {
   const GalleryAndCameraDialogWidget(
       {super.key,
-      required this.onChooseFileFromGalleryAction,
-      required this.onChooseFileFromCameraAction});
+        required this.onChooseFileFromGalleryAction,
+        required this.onChooseFileFromCameraAction});
 
   final void Function(AssetEntity? assetEntity) onChooseFileFromGalleryAction;
   final void Function(File? file) onChooseFileFromCameraAction;
@@ -44,21 +44,21 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
               child: MyTextWidget(LocaleKeys.camera.tr()),
             ),
             Builder(
-              builder: (context) {
-                return TextButton(
-                  onPressed: () async {
-                    AssetEntity? assetEntity;
-                    // necessary to open the picker
+                builder: (context) {
+                  return TextButton(
+                    onPressed: () async {
+                      AssetEntity? assetEntity;
+                      // necessary to open the picker
                       HelperFunctions.getAssetFromGallery(context);
                       assetEntity = await HelperFunctions.getAssetFromGallery(context);
-                    if (assetEntity != null) {
-                      onChooseFileFromGalleryAction.call(assetEntity);
-                    }
-                    Navigator.of(context).pop();
-                  },
-                  child: MyTextWidget(LocaleKeys.gallery.tr()),
-                );
-              }
+                      if (assetEntity != null) {
+                        onChooseFileFromGalleryAction.call(assetEntity);
+                      }
+                      Navigator.of(context).pop();
+                    },
+                    child: MyTextWidget(LocaleKeys.gallery.tr()),
+                  );
+                }
             ),
           ],
         )
