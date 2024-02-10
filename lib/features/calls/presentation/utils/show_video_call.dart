@@ -13,7 +13,7 @@
 //   callKeep.on(CallKeepPerformEndCallAction(), endAction);
 //   callKeep.on(CallKeepDidPerformSetMutedCallAction(), setMuted);
 //
-//   print('backgroundMessage: displayIncomingCall ($uuid)');
+//   debugPrint('backgroundMessage: displayIncomingCall ($uuid)');
 //
 //   bool hasPhoneAccount = await callKeep.hasPhoneAccount();
 //   if (!hasPhoneAccount) {
@@ -33,7 +33,7 @@
 //     FlutterCallkeep callKeep,
 //     ) async {
 //   var uuid = remoteMessage.payload()[MessageManager.CALLER_UUID] as String;
-//   print('backgroundMessage: closeIncomingCall ($uuid)');
+//   debugPrint('backgroundMessage: closeIncomingCall ($uuid)');
 //   bool hasPhoneAccount = await callKeep.hasPhoneAccount();
 //   if (!hasPhoneAccount) {
 //     return;

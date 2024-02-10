@@ -15,6 +15,7 @@ import 'package:tuple/tuple.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
 as productListingModel;
 import '../../../../../core/utils/theme_state.dart';
+import '../../../../app/my_text_widget.dart';
 import 'my_gallery3d_widget.dart';
 
 class ProductListing3DSlider extends StatefulWidget {
@@ -173,7 +174,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
         ? widget.slidingModeItem.item2
         : 0;
     FlutterError.onError = (error) {
-      print(error);
+      debugPrint(error.toString());
     };
     return Directionality(
         textDirection: TextDirection.ltr,
@@ -479,7 +480,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                             ValueListenableBuilder<int>(
                               valueListenable: currentColorIndex,
                               builder: (context, currentIndex, _) {
-                                return Text(
+                                return MyTextWidget(
                                   syncColorImageList![currentIndex]
                                       .colorName
                                       .toString(),
@@ -688,7 +689,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text('1',
+                                  MyTextWidget('1',
                                       style: textTheme.overline?.mq.copyWith(
                                         color: Color(0xff5d5d5d),
                                       )),
@@ -730,7 +731,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     width: 3,
                                   ),
                                   Flexible(
-                                    child: Text(
+                                    child: MyTextWidget(
                                         widget.productItem.name.toString(),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -754,7 +755,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                         children: [
                           Row(
                             children: [
-                              Text(
+                              MyTextWidget(
                                 '100',
                                 style: textTheme.caption?.lq.copyWith(
                                   color: Color(0xff3c3c3c),
@@ -765,7 +766,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                               SizedBox(
                                 width: 2,
                               ),
-                              Text(
+                              MyTextWidget(
                                 '90',
                                 style: textTheme.caption?.bq.copyWith(
                                   color: Color(0xff3c3c3c),
@@ -775,19 +776,18 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                               SizedBox(
                                 width: 2,
                               ),
-                              Text(
+                              MyTextWidget(
                                 'USD',
                                 style: textTheme.overline?.lq.copyWith(
                                   color: Color(0xff5D5D5D),
                                   height: 0,
                                 ),
-                                softWrap: false,
                               ),
                             ],
                           ),
                           Row(
                             children: [
-                              Text(
+                              MyTextWidget(
                                 'Buy',
                                 style: textTheme.overline?.lq.copyWith(
                                   color: Color(0xff414141),

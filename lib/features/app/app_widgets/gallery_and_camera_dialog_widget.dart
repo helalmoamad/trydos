@@ -9,6 +9,7 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../common/helper/camera_screen.dart';
 import '../../../common/helper/helper_functions.dart';
 import '../../../generated/locale_keys.g.dart';
+import '../my_text_widget.dart';
 
 class GalleryAndCameraDialogWidget extends StatelessWidget {
   const GalleryAndCameraDialogWidget(
@@ -22,8 +23,8 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-//    title: Text('choose'),
-      content:Text(LocaleKeys.choose_photo_or_video_from_gallery_or_camera.tr()),
+//    title: MyTextWidget('choose'),
+      content:MyTextWidget(LocaleKeys.choose_photo_or_video_from_gallery_or_camera.tr()),
       actions: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -40,7 +41,7 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                 onChooseFileFromCameraAction.call(selectedFile);
                 Navigator.of(context).pop();
               },
-              child: Text(LocaleKeys.camera.tr()),
+              child: MyTextWidget(LocaleKeys.camera.tr()),
             ),
             Builder(
               builder: (context) {
@@ -55,7 +56,7 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                     }
                     Navigator.of(context).pop();
                   },
-                  child: Text(LocaleKeys.gallery.tr()),
+                  child: MyTextWidget(LocaleKeys.gallery.tr()),
                 );
               }
             ),

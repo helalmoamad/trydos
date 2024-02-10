@@ -9,6 +9,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../app/my_text_widget.dart';
 
 class NameFormField extends StatefulWidget {
   NameFormField({
@@ -206,7 +207,7 @@ class _NameFormFieldState extends State<NameFormField> {
         ValueListenableBuilder<bool>(
           valueListenable: showHint,
           builder: (context , show , _) {
-            return show ? Text('Enter Your Name',style:  context.textTheme.bodyText1?.ra
+            return show ? MyTextWidget('Enter Your Name',style:  context.textTheme.bodyText1?.ra
                 .copyWith(color: Color(0xffC4C2C2)),) : const SizedBox.shrink();
           }
         )

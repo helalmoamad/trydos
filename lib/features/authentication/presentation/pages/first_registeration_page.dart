@@ -88,7 +88,7 @@ class _RegistrationPageState extends State<RegistrationPage>
           if(index < 2){
             FocusScope.of(context).unfocus();
           }else{
-            print('gggggggg');
+            debugPrint('gggggggg');
             focusNode.requestFocus();
           }
           return Scaffold(
@@ -224,7 +224,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                 VerifyOtp(
                                     isVisWhatsApp: isVisWhatsApp,
                                     navigateToAddName: () {
-                                      print('fromLogin:  $fromLogin');
+                                      debugPrint('fromLogin:  $fromLogin');
                                       if (fromLogin) {
                                         context.go(GRouter
                                             .config
@@ -260,7 +260,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                 )
                               ]),
                           onWillPop: () async {
-                            print('tttttttttttttttt');
+                            debugPrint('tttttttttttttttt');
                             if (PopScopeValue > 0) {
                               if(PopScopeValue == 2 && fromLogin){
                                 await pageController.animateToPage(PopScopeValue -2,

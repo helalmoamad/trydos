@@ -38,4 +38,6 @@ abstract class PrefsKey {
   static const error = r'__$__error__$__';
 
   static const isAuthorizedGetAssets = r'__$__isAuthorizedGetAssets__$__';
+
+  static const fcmToken = r'__$__fcmToken__$__';
 }

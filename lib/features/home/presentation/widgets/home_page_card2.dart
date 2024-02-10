@@ -14,6 +14,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 
+import '../../../app/my_text_widget.dart';
+
 class HomePageCard2 extends cupertino.StatefulWidget {
   HomePageCard2({super.key, this.withSlidingImages = false});
 
@@ -103,7 +105,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                         SizedBox(
                           height: 5,
                         ),
-                        Text(
+                        MyTextWidget(
                           'Mango Famous Turkish Brand Best Discounts',
                           style: context.textTheme.caption?.rq.copyWith(
                             color: const Color(0xff505050),
@@ -341,12 +343,12 @@ class ProductItemCircle extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                Text(
+                MyTextWidget(
                   'T-Shirt',
                   style: context.textTheme.caption?.rr.copyWith(
                       color: Color(0xff8E8E8E), letterSpacing: 0, height: 1.43),
                 ),
-                Text(
+                MyTextWidget(
                   '1100',
                   style: context.textTheme.caption?.rr.copyWith(
                       color: Color(0xff8E8E8E),
@@ -418,7 +420,7 @@ class ProductItemCircle extends StatelessWidget {
                 )
                     : const SizedBox.shrink(),
                 index == 8
-                    ? Text(
+                    ? MyTextWidget(
                   'More',
                   style: context.textTheme.overline?.rq
                       .copyWith(color: Colors.white),

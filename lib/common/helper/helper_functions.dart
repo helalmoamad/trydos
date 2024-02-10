@@ -12,6 +12,7 @@ import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import '../../features/app/my_text_widget.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:ui' as ui;
@@ -68,7 +69,7 @@ class HelperFunctions {
 
   static Locale getInitLocale() {
     final deviceLanguage = WidgetsBinding.instance.window.locale.languageCode;
-    print(deviceLanguage);
+    debugPrint(deviceLanguage);
     return mpaLanguageCodeToLocale[deviceLanguage] ?? defaultLocal;
   }
 
@@ -221,8 +222,8 @@ class HelperFunctions {
             onWillPop: () => Future.value(true),
             child: Platform.isIOS
                 ? CupertinoAlertDialog(
-                title: Text(title, textDirection: ui.TextDirection.ltr),
-                content: Text(message, textDirection: ui.TextDirection.ltr),
+                title: MyTextWidget(title, textDirection: ui.TextDirection.ltr),
+                content: MyTextWidget(message, textDirection: ui.TextDirection.ltr),
                 actions: <Widget>[
                   Row(
                     children: [
@@ -240,8 +241,8 @@ class HelperFunctions {
                   )
                 ])
                 : AlertDialog(
-              title: Text(title , textDirection: ui.TextDirection.ltr),
-              content: Text(message, textDirection: ui.TextDirection.ltr),
+              title: MyTextWidget(title , textDirection: ui.TextDirection.ltr),
+              content: MyTextWidget(message, textDirection: ui.TextDirection.ltr),
               actions: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

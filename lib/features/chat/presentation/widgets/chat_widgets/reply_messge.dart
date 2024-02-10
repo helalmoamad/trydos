@@ -108,7 +108,7 @@ class _ReplayMessageState extends State<ReplayMessage> {
         alignment: Alignment.bottomCenter,
           children: [
             Padding(
-              padding:  EdgeInsetsDirectional.only(end:  widget.isSent ? 25.0 : 0 , start:  widget.isSent ? 0.0 : 25),
+              padding:  EdgeInsets.only(right:  widget.isSent ? 25.0 : 0 , left:  widget.isSent ? 0.0 : 25),
               child: InkWell(
                 focusColor: Colors.transparent,
                 splashColor: Colors.transparent,

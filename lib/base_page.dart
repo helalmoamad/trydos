@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:convert' as convert;
-import 'dart:io';
-
+import 'package:eraser/eraser.dart';
 import 'package:adobe_xd/pinned.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -21,6 +20,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_pages.dart';
+import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart';
@@ -151,8 +151,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    print(state);
+    debugPrint(state.toString());
     if (state == AppLifecycleState.resumed) {
+      Eraser.clearAllAppNotifications();
       //Check call when open app from background
       if (prefsRepository.chatToken != null) {
         checkAndNavigationCallingPage(context);
@@ -179,9 +180,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 // [ Permission.systemAlertWindow,Permission.notification].request();
     if (homeBloc.state.startingSetting != null) {
       showUpgradeApp = false;
-      print('version gets successfully');
-      print('android: ${homeBloc.state.startingSetting?.androidMinVersion}');
-      print('ios: ${homeBloc.state.startingSetting?.iosMinVersion}');
+      debugPrint('version gets successfully');
+      debugPrint(
+          'android: ${homeBloc.state.startingSetting?.androidMinVersion}');
+      debugPrint('ios: ${homeBloc.state.startingSetting?.iosMinVersion}');
       if (applicationVersion <
               homeBloc.state.startingSetting!.androidMinVersion! ||
           applicationVersion < homeBloc.state.startingSetting!.iosMinVersion!) {
@@ -207,15 +209,24 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
       if (event.data['type'] == 'RefuseCallEvent') {
-        print('RefuseCallEvent RefuseCallEvent RefuseCallEvent');
+        debugPrint('RefuseCallEvent RefuseCallEvent RefuseCallEvent');
+        print('new call ${event.data['data']['message_id'].toString()}');
+        print('current call ${callsBloc.state.currentActiveCallId.toString()}');
+        // if (event.data['data']['message_id'].toString() !=
+        //         callsBloc.state.currentActiveCallId &&
+        //     callsBloc.state.currentActiveCallId != '-1') {
+        //   return;
+        // }
+        FlutterCallkitIncoming.endAllCalls();
         callsBloc.add(UserInteractWithCall(rejectIt: true));
-        callsBloc.add(ResponseRejectVideoCallEvent());
-        if (navigatorKey.currentState!.context.canPop()) {
+        //callsBloc.add(ResponseRejectVideoCallEvent());
+        if (navigatorKey.currentState!.context.canPop() &&
+            navigatorKey.currentState!.context.widget is! SinglePageChat) {
           navigatorKey.currentState!.context.pop();
         }
       } else if (event.data['type'] == 'VideoCallEvent') {
-          Map<String, dynamic> data = convert.jsonDecode(event.data['data']);
-          Message message = Message.fromJson(data['message']);
+        Map<String, dynamic> data = convert.jsonDecode(event.data['data']);
+        Message message = Message.fromJson(data['message']);
         chatBloc.add(ReceiveMessageEvent(
             message: message, increaseUnReadMessages: false));
         Navigator.of(context).push(MaterialPageRoute(
@@ -242,7 +253,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               uId: prefsRepository.myChatId!.toString()),
         ));
       } else if (event.data['type'] == 'AnswerCallEvent') {
-        print(
+        debugPrint(
             'GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false))');
         callsBloc.add(UserInteractWithCall(rejectIt: false));
         // debugPrint(event.data.toString());
@@ -295,11 +306,11 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
-      print('error $error');
+      debugPrint('error $error');
     };
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, chatState) {
-        print('CahtListeninggggggggggggggggggggg');
+        debugPrint('CahtListeninggggggggggggggggggggg');
         FirebasePresence.listenToAllChats(
             [...chatState.chats, ...chatState.pinnedChats]);
       },
@@ -311,9 +322,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
               c.getStartingSettingsStatus == GetStartingSettingsStatus.success,
           listener: (context, state) {
-            print('version gets successfully');
-            print('android: ${state.startingSetting?.androidMinVersion}');
-            print('ios: ${state.startingSetting?.iosMinVersion}');
+            debugPrint('version gets successfully');
+            debugPrint('android: ${state.startingSetting?.androidMinVersion}');
+            debugPrint('ios: ${state.startingSetting?.iosMinVersion}');
             if (applicationVersion <
                     state.startingSetting!.androidMinVersion! ||
                 applicationVersion < state.startingSetting!.iosMinVersion!) {
@@ -333,8 +344,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                 }),
             body:
                 BlocBuilder<ChatBloc, ChatState>(builder: (context, chatState) {
-              print(initialMessage);
-              print(chatState.chats.isNotEmpty);
+              debugPrint(initialMessage.toString());
+              debugPrint(chatState.chats.isNotEmpty.toString());
               if (initialMessage != null && chatState.chats.isNotEmpty) {
                 AppBloc appBloc = BlocProvider.of<AppBloc>(context);
                 appBloc.add(ChangeBasePage(2));
@@ -351,25 +362,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                     .firstWhere((element) =>
                         element.userId != GetIt.I<PrefsRepository>().myChatId)
                     .user;
-                String receiverName, fullReceiverName;
-                if (receiver == null) {
-                  receiverName = 'UK';
-                  fullReceiverName = 'Unknown User';
-                } else {
-                  receiverName = receiver.contactUser == null
-                      ? receiver.name == null
-                          ? 'UK'
-                          : HelperFunctions.getTheFirstTwoLettersOfName(
-                              receiver.name!)
-                      : receiver.contactUser!.name == null
-                          ? 'UK'
-                          : HelperFunctions.getTheFirstTwoLettersOfName(
-                              receiver.contactUser!.name!);
-                  fullReceiverName = receiver.contactUser?.name ??
-                      receiver.name ??
-                      receiver.mobilePhone ??
-                      'Unknown User';
-                }
+                String receiverName =
+                        HelperFunctions.getTheFirstTwoLettersOfName(
+                            chat.channelName ?? 'No Channel Name'),
+                    fullReceiverName = chat.channelName ?? 'No Channel Name';
                 ChannelMember me = chat.channelMembers!.firstWhere((element) =>
                     element.userId == GetIt.I<PrefsRepository>().myChatId);
                 User? sender = me.user;

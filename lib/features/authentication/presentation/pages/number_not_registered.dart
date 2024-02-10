@@ -17,6 +17,7 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
+import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
 class NumberNotRegistered extends StatefulWidget {
@@ -86,7 +87,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      MyTextWidget(
                                         'Sorry, This Number Is Not Registered With Us !',
                                         style: context.textTheme.bodyText2?.ra.copyWith(
                                             color: Color(0xff5D5C5D), height: 1.42),
@@ -102,7 +103,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                                 height: 10),
                                           ),
                                           5.horizontalSpace,
-                                          Text(
+                                          MyTextWidget(
                                             widget.phoneNumber,
                                             textAlign: TextAlign.start,
                                             style: context.textTheme.caption?.ra
@@ -117,7 +118,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
                                           15.horizontalSpace,
-                                          Text(
+                                          MyTextWidget(
                                             'Register & Create New Account With Us In A Few Simple\nSteps',
                                             style: context.textTheme.caption?.ra
                                                 .copyWith(
@@ -151,7 +152,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
+                                  MyTextWidget(
                                     'Create New Account & Continue',
                                     style: textTheme.bodyText1?.ra.copyWith(
                                       color: Color(0xff5D5C5D),
@@ -178,7 +179,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10.0),
-                              child: Text(
+                              child: MyTextWidget(
                                 'Cancel & Take A Look At The App',
                                 style: textTheme.bodyText2?.ra.copyWith(
                                   color: Color(0xff4d84ff),

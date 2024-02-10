@@ -24,6 +24,7 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/my_cached_network_image.dart';
+import '../../../app/my_text_widget.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_event.dart';
 import '../manager/chat_state.dart';
@@ -284,7 +285,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                 Flexible(
                                   child: Row(
                                     children: [
-                                      Text(
+                                      MyTextWidget(
                                         fullReceiverName,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -299,7 +300,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                         BlocConsumer<ChatBloc, ChatState>(
                                           listener: (context, state) {},
                                           builder: (context, state) {
-                                            return Text(
+                                            return MyTextWidget(
                                               !chatTime!.isUtc
                                                   ? HelperFunctions
                                                       .getDateInFormat(
@@ -420,7 +421,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                           10.horizontalSpace,
                                                         },
                                                         Flexible(
-                                                          child: Text(
+                                                          child: MyTextWidget(
                                                             messageType !=
                                                                     'TextMessage'
                                                                 ? (messageType ==
@@ -487,7 +488,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                               width: 15.w,
                                             ),
                                             10.horizontalSpace,
-                                            Text(
+                                            MyTextWidget(
                                               (widget.chat
                                                       .totalUnreadMessageCount!)
                                                   .toString(),
@@ -526,7 +527,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
-                                      Text(
+                                      MyTextWidget(
                                         widget.activityDescription!.substring(
                                             0,
                                             widget.activityDescription!.length -
@@ -660,7 +661,7 @@ class SlidableActionWidget extends StatelessWidget {
                 height: 25.h,
               ),
               8.verticalSpace,
-              Text(
+              MyTextWidget(
                 text,
                 style: context.textTheme.caption?.rr
                     .copyWith(color: foregroundColor),

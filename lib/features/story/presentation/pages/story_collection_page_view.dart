@@ -63,7 +63,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
       child: BlocBuilder<StoryBloc, StoryState>(
         buildWhen: (p, c) => false,
         builder: (context, state) {
-          animationControllers = List.generate(state.stories.length,
+          animationControllers = List.generate(state.storiesCollections.length,
               (index) => AnimationController(vsync: this));
           return Directionality(
               textDirection: TextDirection.ltr,
@@ -72,7 +72,8 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                   builder: (context, value, _) {
                     return CarouselSlider.builder(
                         detectingScrollingForEdges: (double dx) {
-                          if (currentPage == state.stories.length - 1) {
+                          if (currentPage ==
+                              state.storiesCollections.length - 1) {
                             denyScrollingAtEdgesNotifier.value = 2;
                           } else if (currentPage == 0) {
                             denyScrollingAtEdgesNotifier.value = 1;
@@ -80,12 +81,30 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                             denyScrollingAtEdgesNotifier.value = 0;
                           }
                         },
-                        onSlideChanged: (int? newPage){
-                          if((newPage! % state.stories.length) == state.stories.length -1 && currentPage == 0 && (carouselSliderController.doubleValueOfCurrentPage ?? (state.stories.length * 100000)) < (state.stories.length * 100000)){
+                        onSlideChanged: (int? newPage) {
+                          if ((newPage! % state.storiesCollections.length) ==
+                                  state.storiesCollections.length - 1 &&
+                              currentPage == 0 &&
+                              (carouselSliderController
+                                          .doubleValueOfCurrentPage ??
+                                      (state.storiesCollections.length *
+                                          100000)) <
+                                  (state.storiesCollections.length * 100000)) {
                             carouselSliderController.jumpToPage(index: 0);
-                          }
-                          else if((newPage % state.stories.length) == 0 && currentPage == state.stories.length -1 && (carouselSliderController.doubleValueOfCurrentPage ?? (state.stories.length * 100000)) > (state.stories.length * 100000) + state.stories.length - 1){
-                            carouselSliderController.jumpToPage(index: state.stories.length -1);
+                          } else if ((newPage %
+                                      state.storiesCollections.length) ==
+                                  0 &&
+                              currentPage ==
+                                  state.storiesCollections.length - 1 &&
+                              (carouselSliderController
+                                          .doubleValueOfCurrentPage ??
+                                      (state.storiesCollections.length *
+                                          100000)) >
+                                  (state.storiesCollections.length * 100000) +
+                                      state.storiesCollections.length -
+                                      1) {
+                            carouselSliderController.jumpToPage(
+                                index: state.storiesCollections.length - 1);
                           }
                         },
                         slideBuilder: (int index) {
@@ -96,75 +115,97 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                             carouselSliderCurrentPage =
                                 carouselSliderController.currentPage!;
                             if (carouselSliderCurrentPage <
-                                (state.stories.length * 10000)) {
+                                (state.storiesCollections.length * 10000)) {
                               currentPage = (carouselSliderCurrentPage +
-                                      state.stories.length) %
-                                  state.stories.length;
+                                      state.storiesCollections.length) %
+                                  state.storiesCollections.length;
                             } else {
                               currentPage = (carouselSliderCurrentPage -
-                                      (state.stories.length * 10000)) %
-                                  state.stories.length;
+                                      (state.storiesCollections.length *
+                                          10000)) %
+                                  state.storiesCollections.length;
                             }
                           }
-                          print('kkk ${carouselSliderController.doubleValueOfCurrentPage}');
+                          debugPrint(
+                              'kkk ${carouselSliderController.doubleValueOfCurrentPage}');
                           //ToDO case of 2 or 1 stories
-                            if (currentPage == 0 &&
-                                index == state.stories.length - 1 && (carouselSliderController.doubleValueOfCurrentPage ?? (state.stories.length * 100000)) < (state.stories.length * 100000)) {
-                              return Container(
-                                color: Colors.black,
-                              );
-                            }
-                            if (currentPage == (state.stories.length - 1) &&
-                                index == 0 && (carouselSliderController.doubleValueOfCurrentPage ?? (state.stories.length * 100000)) > (state.stories.length * 100000) + state.stories.length - 1) {
-                              return Container(
-                                color: Colors.black,
-                              );
-                            }
+                          if (currentPage == 0 &&
+                              index == state.storiesCollections.length - 1 &&
+                              (carouselSliderController
+                                          .doubleValueOfCurrentPage ??
+                                      (state.storiesCollections.length *
+                                          100000)) <
+                                  (state.storiesCollections.length * 100000)) {
+                            return Container(
+                              color: Colors.black,
+                            );
+                          }
+                          if (currentPage ==
+                                  (state.storiesCollections.length - 1) &&
+                              index == 0 &&
+                              (carouselSliderController
+                                          .doubleValueOfCurrentPage ??
+                                      (state.storiesCollections.length *
+                                          100000)) >
+                                  (state.storiesCollections.length * 100000) +
+                                      state.storiesCollections.length -
+                                      1) {
+                            return Container(
+                              color: Colors.black,
+                            );
+                          }
                           return ValueListenableBuilder<bool>(
                               valueListenable: startStoriesNotifier,
                               builder: (context, startStories, child) {
-                                return StoryCollection(index,
+                                return StoryCollection(
+                                    collectionIndex: index,
                                     animatedController:
                                         animationControllers[index],
                                     screenChanged:
                                         prevPageNumber != currentPage,
                                     onReachStoryAtEdge: (int collectionIndex,
                                         bool isReachTheLeftMost) {
-                                  GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                                      selected: collectionIndex,
-                                      initialStory: 0,
-                                      currentPage: collectionIndex));
-                                  if (!isReachTheLeftMost) {
-                                    if (collectionIndex ==
-                                        state.stories.length - 1) {
-                                      if(context.canPop()) {
-                                        Navigator.of(context).pop();
+                                      GetIt.I<StoryBloc>().add(
+                                          StorySelectedEvent(
+                                              collectionIndex: collectionIndex,
+                                              selectedStoryIndexInCollection: 0,
+                                              currentPage: collectionIndex));
+                                      if (!isReachTheLeftMost) {
+                                        if (collectionIndex ==
+                                            state.storiesCollections.length -
+                                                1) {
+                                          if (context.canPop()) {
+                                            Navigator.of(context).pop();
+                                          }
+                                          return;
+                                        }
+                                        GetIt.I<StoryBloc>().add(
+                                            StorySelectedEvent(
+                                                collectionIndex: collectionIndex + 1,
+                                                selectedStoryIndexInCollection: -1,
+                                                currentPage:
+                                                    collectionIndex + 1));
+                                        carouselSliderController.nextPage(
+                                            Duration(milliseconds: 200));
+                                        prevPageNumber = collectionIndex + 1;
+                                      } else {
+                                        if (collectionIndex == 0) {
+                                          if (context.canPop()) {
+                                            Navigator.of(context).pop();
+                                          }
+                                          return;
+                                        }
+                                        GetIt.I<StoryBloc>().add(
+                                            StorySelectedEvent(
+                                                collectionIndex: collectionIndex - 1,
+                                                selectedStoryIndexInCollection: -1,
+                                                currentPage:
+                                                    collectionIndex - 1));
+                                        carouselSliderController.previousPage(
+                                            Duration(milliseconds: 200));
+                                        prevPageNumber = collectionIndex - 1;
                                       }
-                                      return;
-                                    }
-                                    GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                                        selected: collectionIndex + 1,
-                                        initialStory: -1,
-                                        currentPage: collectionIndex + 1));
-                                    carouselSliderController
-                                        .nextPage(Duration(milliseconds: 200));
-                                    prevPageNumber = collectionIndex + 1;
-                                  } else {
-                                    if (collectionIndex == 0) {
-                                      if(context.canPop()) {
-                                        Navigator.of(context).pop();
-                                      }
-                                      return;
-                                    }
-                                    GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                                        selected: collectionIndex - 1,
-                                        initialStory: -1,
-                                        currentPage: collectionIndex - 1));
-                                    carouselSliderController.previousPage(
-                                        Duration(milliseconds: 200));
-                                    prevPageNumber = collectionIndex - 1;
-                                  }
-                                },
+                                    },
                                     stopAnimationAndVideo:
                                         stopAnimationAndVideo ||
                                             index != prevPageNumber ||
@@ -177,29 +218,29 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                         onSlideEnd: () {
                           stopAnimationAndVideo = false;
                           int currentPage;
-                          print(
+                          debugPrint(
                               'page: ${carouselSliderController.currentPage!}');
                           if (carouselSliderController.currentPage!
                                   .round()
                                   .toInt() <
-                              (state.stories.length * 10000)) {
+                              (state.storiesCollections.length * 10000)) {
                             currentPage = (carouselSliderController.currentPage!
                                         .round()
                                         .toInt() +
-                                    state.stories.length) %
-                                state.stories.length;
+                                    state.storiesCollections.length) %
+                                state.storiesCollections.length;
                           } else {
                             currentPage = (carouselSliderController.currentPage!
                                         .round()
                                         .toInt() -
-                                    (state.stories.length * 10000)) %
-                                state.stories.length;
+                                    (state.storiesCollections.length * 10000)) %
+                                state.storiesCollections.length;
                           }
                           if (currentPage != prevPageNumber) {
                             GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                                selected: currentPage,
+                                collectionIndex: currentPage,
                                 currentPage: currentPage,
-                                initialStory: -1));
+                                selectedStoryIndexInCollection: -1));
                             animationControllers[prevPageNumber].reset();
                             prevPageNumber = currentPage;
                           }
@@ -213,7 +254,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                 : ClampingScrollPhysics(),
                         slideTransform: CubeTransform(),
                         initialPage: widget.initialPage,
-                        itemCount: state.stories.length);
+                        itemCount: state.storiesCollections.length);
                   }));
         },
       ),
@@ -222,10 +263,11 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
 }
 
 class denyScrollingToRightScrollPhysics extends ScrollPhysics {
-  const denyScrollingToRightScrollPhysics( {ScrollPhysics? parent})
+  const denyScrollingToRightScrollPhysics({ScrollPhysics? parent})
       : super(parent: parent);
-    // final int currentIndex;
-    // final int maxIndex;
+
+  // final int currentIndex;
+  // final int maxIndex;
   @override
   denyScrollingToRightScrollPhysics applyTo(ScrollPhysics? ancestor) {
     return denyScrollingToRightScrollPhysics(parent: buildParent(ancestor));

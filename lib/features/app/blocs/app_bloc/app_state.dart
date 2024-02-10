@@ -14,7 +14,6 @@ class AppState {
       this.time,
       this.message,
       this.imageUrl}){
-    print('create app state');
   }
 
   final int currentIndex;

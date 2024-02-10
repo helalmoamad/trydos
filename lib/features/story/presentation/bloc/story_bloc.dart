@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -57,7 +58,7 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
       // transformer: throttleDroppable(throttleDuration)
     );
     on<LoadFailureEvent>(((event, emit) => emit(state.copyWith(
-            stories: state.stories.map((e) {
+        storiesCollections: state.storiesCollections.map((e) {
           if (e.id == event.collectionId) {
             return e.copyWith(
                 selectedStoriesStatusForCollection:
@@ -124,20 +125,20 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
       emit(state.copyWith(uploadStoryStatus: UploadStoryStatus.failure));
     }, (r) {
       if (GetIt.I<PrefsRepository>().myStoriesId ==
-          state.stories.first.stories![0].userId) {
-        List<Story> currentUserStories = List.of(state.stories.first.stories!);
+          state.storiesCollections.first.stories![0].userId) {
+        List<Story> currentUserStories = List.of(state.storiesCollections.first.stories!);
         currentUserStories.insert(currentUserStories.length, r.data!);
 //      //todo check if the use exist in the array and the story to it's stories
-        state.stories.first.stories = currentUserStories;
+        state.storiesCollections.first.stories = currentUserStories;
         emit(state.copyWith(
-            stories: state.stories,
+            storiesCollections: state.storiesCollections,
             uploadStoryStatus: UploadStoryStatus.success));
       } else {
-        print('object222');
-        state.stories.insert(0, Datum(stories: [r.data!]));
-        print('upload 22 ');
+        debugPrint('object222');
+        state.storiesCollections.insert(0, CollectionStoryModel(stories: [r.data!]));
+        debugPrint('upload 22 ');
         emit(state.copyWith(
-            stories: state.stories,
+            storiesCollections: state.storiesCollections,
             uploadStoryStatus: UploadStoryStatus.success));
       }
     });
@@ -146,48 +147,48 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
   _onStorySelectedEvent(
       StorySelectedEvent event, Emitter<StoryState> emit) async {
     //todo make the story seen when he press to show it
-    print('initialStory ${event.initialStory}');
-    print('selected ${event.selected}');
-    print('state.initialStory ${state.initialStory[event.selected]}');
+    debugPrint('currentStoryInEachCollection ${event.selectedStoryIndexInCollection}');
+    debugPrint('selected ${event.collectionIndex}');
+    debugPrint('state.currentStoryInEachCollection ${state.currentStoryInEachCollection[event.collectionIndex]}');
     Story story =  state
-        .stories[event.selected]
-        .stories![max(state.initialStory[event.selected]!, event.initialStory)];
+        .storiesCollections[event.collectionIndex]
+        .stories![max(state.currentStoryInEachCollection[event.collectionIndex]!, event.selectedStoryIndexInCollection)];
     // state
     //     .stories[event.selected]
-    //     .stories![max(state.initialStory[event.selected]!, event.initialStory)]
+    //     .stories![max(state.currentStoryInEachCollection[event.selected]!, event.currentStoryInEachCollection)]
     //     .isSeen = true;
     if(!(story.isSeen ?? false)) {
       add(IncreaseViewersEvent(
-          collectionId: state.stories[event.selected].toString(),
+          collectionId: state.storiesCollections[event.collectionIndex].toString(),
           storyId: story.id.toString()));
     }
-    Map<int, int?> initialStories = Map.of(state.initialStory);
-    initialStories[event.selected] = event.initialStory == -1
-        ? initialStories[event.selected]
-        : event.initialStory;
+    Map<int, int?> initialStories = Map.of(state.currentStoryInEachCollection);
+    initialStories[event.collectionIndex] = event.selectedStoryIndexInCollection == -1
+        ? initialStories[event.collectionIndex]
+        : event.selectedStoryIndexInCollection;
     //todo make  the state loading
     emit(state.copyWith(
       //selectedStoriesStatus: SelectedStoriesStatus.loading,
       currentPage:
           event.currentPage == -1 ? state.currentPage : event.currentPage,
-      selectedStory: event.selected,
-      initialStory: initialStories,
+      selectedCollection: event.collectionIndex,
+      currentStoryInEachCollection: initialStories,
     ));
 
-    var initialStory = state.stories[event.selected]
-        .stories![max(state.initialStory[event.selected]!, event.initialStory)];
-    if (initialStory.isPhoto == 1) {
+    var currentStoryInEachCollection = state.storiesCollections[event.collectionIndex]
+        .stories![max(state.currentStoryInEachCollection[event.collectionIndex]!, event.selectedStoryIndexInCollection)];
+    if (currentStoryInEachCollection.isPhoto == 1) {
 //todo debug
       //todo bring the real width and height for selected photo
       final response = await getWidthAndHeightUseCase(widthAndHeightParams(
-          url: initialStory.photoPath!,
-          collectionId: state.stories[event.selected].id!));
+          url: currentStoryInEachCollection.photoPath!,
+          collectionId: state.storiesCollections[event.collectionIndex].id!));
       response.fold((l) {
         if (isFailedTheFirstTime.contains('StorySelectedEvent')) {
           isFailedTheFirstTime.remove('StorySelectedEvent');
           emit(state.copyWith(
-              stories: state.stories.map((e) {
-            if (e.id == state.stories[event.selected].id) {
+              storiesCollections: state.storiesCollections.map((e) {
+            if (e.id == state.storiesCollections[event.collectionIndex].id) {
               return e.copyWith(
                   selectedStoriesStatusForCollection:
                       SelectedStoriesStatus.failure);
@@ -198,15 +199,15 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
           isFailedTheFirstTime.insert(
               isFailedTheFirstTime.length, 'StorySelectedEvent');
           GetIt.I<StoryBloc>().add(StorySelectedEvent(
-              selected: event.selected,
-              initialStory: event.initialStory,
+              collectionIndex: event.collectionIndex,
+              selectedStoryIndexInCollection: event.selectedStoryIndexInCollection,
               currentPage: event.currentPage));
         }
       }, (r) {
 //todo just make the state success with the width and height for the image and in the emitter above you changed the initial  story
         emit(state.copyWith(
-            stories: state.stories.map((e) {
-          if (e.id == state.stories[event.selected].id) {
+            storiesCollections: state.storiesCollections.map((e) {
+          if (e.id == state.storiesCollections[event.collectionIndex].id) {
             return e.copyWith(
                 selectedStoriesStatusForCollection:
                     SelectedStoriesStatus.success,
@@ -218,16 +219,16 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
     } else {
       //todo it's a video all what i will do is make it seen
       emit(state.copyWith(
-        stories: state.stories.map((e) {
-          if (e.id == state.stories[event.selected].id) {
+        storiesCollections: state.storiesCollections.map((e) {
+          if (e.id == state.storiesCollections[event.collectionIndex].id) {
             return e.copyWith(
               selectedStoriesStatusForCollection: SelectedStoriesStatus.success,
             );
           }
           return e;
         }).toList(),
-        initialStory: initialStories,
-        selectedStory: event.selected,
+        currentStoryInEachCollection: initialStories,
+        selectedCollection: event.collectionIndex,
       ));
     }
   }
@@ -253,15 +254,15 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
       }
     }, (r) {
       apisMustNotToRequest.add('GetStoryEvent');
-      Map<int, int> initialStory = {};
+      Map<int, int> currentStoryInEachCollection = {};
       int i = 0;
-      r.data?.data?.forEach((element) {
-        initialStory[i++] = 0;
+      r.data?.collections?.forEach((element) {
+        currentStoryInEachCollection[i++] = 0;
       });
       emit(state.copyWith(
           getStoriesStatus: GetStoriesStatus.success,
-          stories: r.data!.data,
-          initialStory: initialStory));
+          storiesCollections: r.data!.collections,
+          currentStoryInEachCollection: currentStoryInEachCollection));
     });
   }
 
@@ -305,15 +306,15 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
           photoPath: !isVideoFile ? event.filePath : null,
           fullVideoPath: isVideoFile ? event.filePath : null);
       if (GetIt.I<PrefsRepository>().myStoriesId ==
-          state.stories.first.stories![0].userId) {
-        List<Story> currentUserStories = List.of(state.stories.first.stories!);
+          state.storiesCollections.first.stories![0].userId) {
+        List<Story> currentUserStories = List.of(state.storiesCollections.first.stories!);
         currentUserStories.insert(currentUserStories.length, story);
-        state.stories.first.stories = currentUserStories;
+        state.storiesCollections.first.stories = currentUserStories;
       } else {
-        state.stories.insert(0, r!);
+        state.storiesCollections.insert(0, r!);
       }
       emit(state.copyWith(
-          stories: state.stories,
+          storiesCollections: state.storiesCollections,
           uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
     });
   }
@@ -334,7 +335,7 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
         IncreaseViewersParams(storyId: event.storyId));
     response.fold((l) => null, (r) {
       emit(state.copyWith(
-          stories: state.stories.map((e) {
+          storiesCollections: state.storiesCollections.map((e) {
         if (e.id.toString() == event.collectionId) {
           return e.copyWith(
               stories: e.stories?.map((e) {

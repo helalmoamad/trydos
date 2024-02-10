@@ -25,18 +25,15 @@ import 'package:trydos/trydos_application.dart';
 import 'package:uuid/uuid.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
-
 import 'features/chat/presentation/manager/chat_event.dart';
-import 'features/chat/presentation/utils/pusher_chat.dart';
-import 'features/chat/presentation/utils/pusher_chat_official_package.dart';
 
 showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
     {required bool isVideo}) async {
   CallKitParams callKitParams = CallKitParams(
     id: currentUuid,
-    nameCaller: data['user']['name'] ?? 'Un Known',
+    nameCaller: data["message"]['channel']["channel_name"] ?? 'Un Known',
     appName: 'Trydos',
-    avatar:
+    avatar: data["message"]['channel']["photo_path"] ??
         'https://trydos.s3.ap-south-1.amazonaws.com/images/5TPxSXKGAv3kLkbKIz5noTTmaZBwXNtSpJMoh7lE.jpg',
     handle: data['payload']['mobilePhone'],
     type: isVideo ? 1 : 0,
@@ -86,6 +83,12 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  if (!isHydratedStorageInitialized) {
+    HydratedBloc.storage = await HydratedStorage.build(
+      storageDirectory: await getApplicationDocumentsDirectory(),
+    );
+    isHydratedStorageInitialized = true;
+  }
   if (!isDependencyInitialized) {
     await configureDependencies();
     isDependencyInitialized = true;
@@ -117,13 +120,26 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         }
       });
     } else if (message.data['type'] == 'RefuseCallEvent') {
+      // if (message.data['data']['message_id'].toString() !=
+      //     GetIt.I<CallsBloc>().state.currentActiveCallId) {
+      //   return;
+      // }
+      FlutterCallkitIncoming.endAllCalls();
       GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: true));
     } else if (message.data['type'] == 'AnswerCallEvent') {
+      FlutterCallkitIncoming.endAllCalls();
       GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false));
     } else if (message.data['type'] == 'ChannelReceivedEvent') {
       Map<String, dynamic> data =
           convert.jsonDecode(message.data['data'].toString());
       GetIt.I<ChatBloc>().add(ReceiveMessageFromPusherEvent(
+          data['channel_id'].toString(),
+          data['auth_user_id'],
+          data['last_message_id']));
+    } else if (message.data['type'] == 'ChannelWatchedEvent') {
+      Map<String, dynamic> data =
+          convert.jsonDecode(message.data['data'].toString());
+      GetIt.I<ChatBloc>().add(WatchedMessageFromPusherEvent(
           data['channel_id'].toString(),
           data['auth_user_id'],
           data['last_message_id']));
@@ -136,6 +152,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 bool isDependencyInitialized = false;
+bool isHydratedStorageInitialized = false;
 Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 bool notificationClicked = false;
@@ -150,6 +167,7 @@ void main() async {
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: await getApplicationDocumentsDirectory(),
   );
+  isHydratedStorageInitialized = true;
   await Future.wait([
     EasyLocalization.ensureInitialized(),
     configureDependencies(),

@@ -11,6 +11,7 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
+import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
 class CreateAccountSection extends StatelessWidget {
@@ -80,7 +81,7 @@ class CreateAccountSection extends StatelessWidget {
           SizedBox(
             height: 10,
           ),
-          Text(
+          MyTextWidget(
             'Terms Of Services',
             style: context.textTheme.bodyText2?.ra.copyWith(
               color: const Color(0xff388CFF),
@@ -130,17 +131,13 @@ class CreateAccountSection extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20.0),
                         ),
                         child: Center(
-                          child: Text(
+                          child: MyTextWidget(
                             'Agree & Continue',
                             style: context.textTheme.bodyText1?.ra.copyWith(
                               color: const Color(0xff3c3c3c),
                               letterSpacing: 0.16,
                               height: 1.25,
                             ),
-                            textHeightBehavior: TextHeightBehavior(
-                                applyHeightToFirstAscent: false),
-                            textAlign: TextAlign.center,
-                            softWrap: false,
                           ),
                         ),
                       ),
@@ -164,17 +161,13 @@ class CreateAccountSection extends StatelessWidget {
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Text(
+              child: MyTextWidget(
                 'Later, Take A Look At The App',
                 style: context.textTheme.bodyText2?.ra.copyWith(
                   color: const Color(0xff4D84FF),
                   letterSpacing: 0.14,
                   height: 1.43,
                 ),
-                textHeightBehavior:
-                    TextHeightBehavior(applyHeightToFirstAscent: false),
-                textAlign: TextAlign.center,
-                softWrap: false,
               ),
             ),
           ),

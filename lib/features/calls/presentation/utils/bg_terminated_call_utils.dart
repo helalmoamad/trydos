@@ -11,28 +11,16 @@ import '../pages/in_app_view.dart';
 
 Future<void> checkAndNavigationCallingPage(BuildContext context , {bool fromTerminated = false ,  void Function()? whereToNavigationAfterCheck}) async {
   var currentCall = await getCurrentCall();
-  if(fromTerminated){
-    GetIt.I<PrefsRepository>().saveRequestsData(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        error: 'Called From Terminated!!! \n $currentCall'
-    );
-  }
   FlutterCallkitIncoming.endAllCalls();
   if (currentCall != null) {
-    print(currentCall['extra']['message_id']);
-    print(currentCall['extra']['channel_id']);
+    debugPrint(currentCall['extra']['message_id']);
+    debugPrint(currentCall['extra']['channel_id']);
     GetIt.I<CallsBloc>().add(AnswerVideoCallEvent(
         chatId: currentCall['extra']['channel_id'],
         messageId: currentCall['extra']['message_id']));
     Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
         AgoraInAppWebView(messageId: currentCall['extra']['message_id'],
-            action: 'sent',
+            action: currentCall['accepted'] ? 'sent' : 'receive',
             type: 'video',
             channelId: currentCall['extra']['channel_id'],
             auth_token: GetIt
@@ -58,7 +46,7 @@ Future<dynamic> getCurrentCall() async {
   var calls = await FlutterCallkitIncoming.activeCalls();
   if (calls is List) {
     if (calls.isNotEmpty) {
-      print('DATA: $calls');
+      debugPrint('DATA: $calls');
       return calls[0];
     } else {
       return null;

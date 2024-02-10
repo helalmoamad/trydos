@@ -11,6 +11,7 @@ import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
 import 'package:trydos/main.dart';
 
 import '../../../app/blocs/app_bloc/app_bloc.dart';
+import '../../../app/my_text_widget.dart';
 import '../../../home/presentation/widgets/sliver_list_seprated.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_state.dart';
@@ -76,7 +77,7 @@ class ChatPageContentState extends State<ChatPageContent> {
           p.deleteChatStatus != c.deleteChatStatus ||
           c.createAnewChat ||
           c.sendMessageStatus == SendMessageStatus.loading ||
-          c.receiveMessageStatus == ReceiveMessageStatus.success,
+          p.receiveMessageStatus != c.receiveMessageStatus,
       builder: (context, state) {
         if ((state.getChatsStatus == GetChatsStatus.loading ||
                 state.getChatsStatus == GetChatsStatus.init) &&
@@ -90,7 +91,7 @@ class ChatPageContentState extends State<ChatPageContent> {
                 onPressed: () {
                   GetIt.I<ChatBloc>().add(GetChatsEvent());
                 },
-                child: Text('Try Again')),
+                child: MyTextWidget('Try Again')),
           );
         }
         // todo (future update) here we can return try again if the status failure
@@ -99,7 +100,7 @@ class ChatPageContentState extends State<ChatPageContent> {
 
         // todo  (future update) remove this from here handle it in the back of in bloc
         chats.removeWhere((element) =>
-            int.tryParse(element.id.toString()) == null &&
+            int.tryParse(element.id.toString()) == null ||
             (element.messages?.isEmpty ?? true));
 
         initialChats = chats;

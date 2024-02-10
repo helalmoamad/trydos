@@ -24,14 +24,14 @@ class LoadFailureEvent extends StoryEvent
 }
 class StorySelectedEvent extends StoryEvent
 {
-  final int selected;
-  final int initialStory;
+  final int collectionIndex;
+  final int selectedStoryIndexInCollection;
   final int currentPage;
   const StorySelectedEvent({
-    required this.selected, required this.initialStory, required this.currentPage});
+    required this.collectionIndex, required this.selectedStoryIndexInCollection, required this.currentPage});
 
   @override
-  List<Object?> get props => [selected,initialStory,currentPage];
+  List<Object?> get props => [collectionIndex,selectedStoryIndexInCollection,currentPage];
 }
 
 class LoadingVideoEvent extends StoryEvent

@@ -83,13 +83,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
      if(!state.pusherActivityIds.containsKey(event.chatId)){
        return ;
      }
-     print('stop typing');
      Map<int , dynamic> pusherActivityIds=Map.of(state.pusherActivityIds);
      Map<int , String?> pusherActivityDescription=Map.of(state.pusherActivityDescription);
      pusherActivityDescription[event.chatId]=null;
-     print(pusherActivityIds);
      pusherActivityIds.remove(event.chatId);
-     print(pusherActivityIds);
     emit(state.copyWith(
       pusherActivityIds: pusherActivityIds,
       pusherActivityDescription: pusherActivityDescription,
