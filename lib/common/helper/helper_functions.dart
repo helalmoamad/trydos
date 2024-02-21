@@ -11,7 +11,7 @@ import 'package:store_redirect/store_redirect.dart';
 import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+//import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../features/app/my_text_widget.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -123,7 +123,7 @@ class HelperFunctions {
         .toList();
   }
 
-  static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
+  /*static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
 
     final List<AssetEntity>? assets = await myMultiAssetPicker(context);
     return assets?[0];
@@ -139,7 +139,7 @@ class HelperFunctions {
         themeColor: const Color(0xff137AC9),
       ),
     );
-  }
+  }*/
 
   static String getTheFirstTwoLettersOfName(String name) {
     return name.split(' ').length == 2
@@ -231,45 +231,49 @@ class HelperFunctions {
             onWillPop: () => Future.value(true),
             child: Platform.isIOS
                 ? CupertinoAlertDialog(
-                title: MyTextWidget(title, textDirection: ui.TextDirection.ltr),
-                content: MyTextWidget(message, textDirection: ui.TextDirection.ltr),
-                actions: <Widget>[
-                  Row(
-                    children: [
-                      AppElevatedButton(
-                        onPressed: ()=>_getFileFromGoogleDrive(),
-                        text: btnLabel,
-                      ),
-                      AppElevatedButton(
-                        onPressed: (){
-                          Navigator.pop(context);
-                        },
-                        text: 'Not Now',
+                    title: MyTextWidget(title,
+                        textDirection: ui.TextDirection.ltr),
+                    content: MyTextWidget(message,
+                        textDirection: ui.TextDirection.ltr),
+                    actions: <Widget>[
+                        Row(
+                          children: [
+                            AppElevatedButton(
+                              onPressed: () => _getFileFromGoogleDrive(),
+                              text: btnLabel,
+                            ),
+                            AppElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              text: 'Not Now',
+                            ),
+                          ],
+                        )
+                      ])
+                : AlertDialog(
+                    title: MyTextWidget(title,
+                        textDirection: ui.TextDirection.ltr),
+                    content: MyTextWidget(message,
+                        textDirection: ui.TextDirection.ltr),
+                    actions: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          AppElevatedButton(
+                            onPressed: () => _getFileFromGoogleDrive(),
+                            text: btnLabel,
+                          ),
+                          AppElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            text: 'Not Now',
+                          ),
+                        ],
                       ),
                     ],
-                  )
-                ])
-                : AlertDialog(
-              title: MyTextWidget(title , textDirection: ui.TextDirection.ltr),
-              content: MyTextWidget(message, textDirection: ui.TextDirection.ltr),
-              actions: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AppElevatedButton(
-                      onPressed: ()=>_getFileFromGoogleDrive(),
-                      text: btnLabel,
-                    ),
-                    AppElevatedButton(
-                      onPressed: (){
-                        Navigator.pop(context);
-                      },
-                      text: 'Not Now',
-                    ),
-                  ],
-                ),
-              ],
-            ));
+                  ));
       },
     );
   }

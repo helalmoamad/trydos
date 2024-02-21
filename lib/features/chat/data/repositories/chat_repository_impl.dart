@@ -13,6 +13,7 @@ import 'package:trydos/features/chat/data/models/upload_file_response_model.dart
 import 'package:trydos/features/chat/domain/repositories/chat_repository.dart';
 import '../../../../core/api/handling_exception.dart';
 import '../models/ImageDetail.dart';
+import '../models/media_count.dart';
 import '../models/my_chats_response_model.dart';
 
 @LazySingleton(as: ChatRepository)
@@ -107,5 +108,12 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getMessagesBetween(params));
+  }
+
+  @override
+  Future<Either<Failure, MediaCount>> getMediaCount(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getMediaCount(params));
   }
 }

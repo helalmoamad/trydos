@@ -49,8 +49,9 @@ class _CallsPageContentState extends State<CallsPageContent> {
       },
       builder: (context, state) {
         if (state.callRegister == null) {
-          return SliverToBoxAdapter(child: SizedBox(
-            height: 1.sh - 200 ,
+          return SliverToBoxAdapter(
+              child: SizedBox(
+            height: 1.sh - 200,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -61,7 +62,7 @@ class _CallsPageContentState extends State<CallsPageContent> {
         }
         return sliverListSeparated(
           itemBuilder: (_, index) => CallsCard(
-            isMissing: state.callRegister![index].durationInSeconds == null,
+            isMissing: state.callRegister![index].durationInSeconds == -1,
             createAt: state.callRegister![index].createdAt,
             isIncome: state.callRegister![index].senderUserId !=
                 GetIt.I<PrefsRepository>().myChatId,

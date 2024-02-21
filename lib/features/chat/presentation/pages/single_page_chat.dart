@@ -94,6 +94,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   Map<String, List<Message>> messagesByDate = {};
   bool rebuild = true;
   DateTime lastDate = DateTime.now();
+  DateTime? time;
   int countMessagesReceivedToMeNow = 0;
   late Chat chat;
   AudioPlayer _audioPlayer = AudioPlayer();
@@ -112,6 +113,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
     chatBloc = BlocProvider.of<ChatBloc>(context);
     autoScrollController = AutoScrollController();
     chatBloc.add(ReadAllMessagesEvent(widget.chatId.toString()));
+    chatBloc.add(GetMediaCountEvent(channelId: widget.chatId));
     autoScrollController.addListener(() {
       if (rebuild) {
         rebuildMessage.value = -1;
@@ -251,10 +253,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                   builder: (_) => ProfilePage(
                                       receiverName: widget.receiverName,
                                       receiverPhoto: widget.receiverPhoto,
-                                      fullReceiverName:
-                                          widget.fullReceiverName,
-                                      receiverPhone:
-                                          widget.receiverPhone)));
+                                      fullReceiverName: widget.fullReceiverName,
+                                      receiverPhone: widget.receiverPhone)));
                             },
                             child: MyTextWidget(
                               widget.fullReceiverName,
@@ -482,6 +482,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                           ],
                                                         ));
                                                   }
+
                                                   debugPrint(
                                                       'isForward : ${messages[index].isForward}');
                                                   debugPrint(
@@ -1003,55 +1004,71 @@ class _SinglePageChatState extends State<SinglePageChat> {
             message.receiverUserId != null);
     MessageStatus? messageStatus = message.messageStatus
         ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
+    time = messageStatus?.isWatched ?? false
+        ? messageStatus?.watchedAt
+        : messageStatus?.isReceived == 1
+            ? messageStatus?.receivedAt
+            : message.createdAt;
+
     if (message.parentMessageId != null && message.parentMessage != null) {
       Message parentMessage = message.parentMessage!;
       MessageStatus? parentMessageStatus = parentMessage.messageStatus
           ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
+
       if (parentMessage.senderUserId != message.senderUserId) {
         return ReplayMessage(
-            messageDate: message.createdAt!,
-            scrollToMessage: () => scrollToIndex(
-                messagesIndexes[parentMessage.id.toString()] ?? -1,
-                currentId: message.id!,
-                parentMessageId: message.parentMessageId!),
-            messageId: message.parentMessageId!,
-            answeredFilePath: message.mediaMessageContent?[0].filePath,
-            messageAnswer: message.messageContent?.content,
-            isFirstMessage: message.isFirstMessage,
-            replayedPhoto:
-                parentMessage.id == _prefsRepository.myChatId.toString()
-                    ? senderPhoto
-                    : receiverPhoto,
-            replayedName:
-                parentMessage.id == _prefsRepository.myChatId.toString()
-                    ? senderName
-                    : receiverName,
-            senderAnswerName: senderName,
-            senderAnswerPhoto: senderPhoto,
-            isISentFirstMessage:
-                parentMessage.senderUserId == _prefsRepository.myChatId,
-            isSent: isSentMessage,
-            parentSenderId: parentMessage.senderUserId!,
-            isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
-            isReplayedMessageReceived:
-                (parentMessageStatus?.isReceived ?? 0) == 1,
-            isAnswerMessageRead: messageStatus?.isWatched ?? false,
-            isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
-            answeredFile: message.file,
-            message: parentMessage.messageContent?.content == null
-                ? parentMessage.messageType!.name == 'ImageMessage'
-                    ? 'Photo'
-                    : parentMessage.messageType!.name == 'FileMessage'
-                        ? 'File'
-                        : parentMessage.messageType!.name == 'VideoMessage'
-                            ? 'Video'
-                            : 'Voice'
-                : parentMessage.messageContent!.content.toString(),
-            messageAnswerId: message.id!);
+          messageDate: message.createdAt!,
+          time: message.senderUserId != _prefsRepository.myChatId
+              ? message.createdAt!
+              : time!,
+          scrollToMessage: () => scrollToIndex(
+              messagesIndexes[parentMessage.id.toString()] ?? -1,
+              currentId: message.id!,
+              parentMessageId: message.parentMessageId!),
+          messageId: message.parentMessageId!,
+          answeredFilePath: message.mediaMessageContent?[0].filePath,
+          messageAnswer: message.messageContent?.content,
+          isFirstMessage: message.isFirstMessage,
+          replayedPhoto:
+              parentMessage.id == _prefsRepository.myChatId.toString()
+                  ? senderPhoto
+                  : receiverPhoto,
+          replayedName: parentMessage.id == _prefsRepository.myChatId.toString()
+              ? senderName
+              : receiverName,
+          senderAnswerName: senderName,
+          senderAnswerPhoto: senderPhoto,
+          isISentFirstMessage:
+              parentMessage.senderUserId == _prefsRepository.myChatId,
+          isSent: isSentMessage,
+          parentSenderId: parentMessage.senderUserId!,
+          isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
+          isReplayedMessageReceived:
+              (parentMessageStatus?.isReceived ?? 0) == 1,
+          isAnswerMessageRead: messageStatus?.isWatched ?? false,
+          isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
+          answeredFile: message.file,
+          message: parentMessage.messageContent?.content == null
+              ? parentMessage.messageType!.name == 'ImageMessage'
+                  ? 'Photo'
+                  : parentMessage.messageType!.name == 'FileMessage'
+                      ? 'File'
+                      : parentMessage.messageType!.name == 'VideoMessage'
+                          ? 'Video'
+                          : 'Voice'
+              : parentMessage.messageContent!.content.toString(),
+          messageAnswerId: message.id!,
+          receivedAt: messageStatus?.receivedAt,
+          createAt: message.createdAt,
+        );
       } else {
         return ReplayOnMeMessage(
-            messageDate: message.createdAt!,
+            time: message.senderUserId != _prefsRepository.myChatId
+                ? message.createdAt!
+                : time!,
             messageId: message.parentMessageId!,
+            receivedAt: messageStatus?.receivedAt,
+            createAt: message.createdAt,
             answeredFilePath: message.mediaMessageContent?[0].filePath,
             messageAnswer: message.messageContent?.content,
             answeredFile: message.file,
@@ -1094,6 +1111,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
       switch (message.messageType!.name) {
         case 'TextMessage':
           return TextMessage(
+            receivedAt: messageStatus?.receivedAt,
+            createAt: message.createdAt,
             message: message.messageContent!.content.toString(),
             messageId: message.id!,
             senderId: message.senderUserId!,
@@ -1109,17 +1128,23 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isFirstMessage:
                 message.isFirstMessage || message.isFirstMessageForThisDay,
-            time: message.createdAt!,
+            time: message.senderUserId != _prefsRepository.myChatId
+                ? message.createdAt!
+                : time!,
             isForwarded: message.isForward == 1,
           );
         case 'ImageMessage':
           return ImageMessage(
+            receivedAt: messageStatus?.receivedAt,
+            createAt: message.createdAt,
             isSent: isSentMessage,
             imageFile: message.file,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
             imageUrl: message.mediaMessageContent?[0].filePath,
-            time: message.createdAt!,
+            time: message.senderUserId != _prefsRepository.myChatId
+                ? message.createdAt!
+                : time!,
             userMessageName: message.receiverUserId != _prefsRepository.myChatId
                 ? senderName
                 : receiverName,
@@ -1136,13 +1161,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
           );
         case 'VideoMessage':
           return VideoMessage(
+            receivedAt: messageStatus?.receivedAt,
+            createAt: message.createdAt,
             key: ValueKey(message.id),
             isSent: isSentMessage,
             videoFile: message.file,
             videoUrl: message.mediaMessageContent?[0].filePath,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
-            time: message.createdAt!,
+            time: message.senderUserId != _prefsRepository.myChatId
+                ? message.createdAt!
+                : time!,
             userMessageName: message.receiverUserId != _prefsRepository.myChatId
                 ? senderName
                 : receiverName,
@@ -1159,6 +1188,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
           );
         case 'VoiceMessage':
           return VoiceMessage(
+            time: message.senderUserId != _prefsRepository.myChatId
+                ? message.createdAt!
+                : time!,
+            receivedAt: messageStatus?.receivedAt,
+            createAt: message.createdAt,
             isSent: isSentMessage,
             file: message.file,
             fileUrl: message.mediaMessageContent?[0].filePath,
@@ -1171,7 +1205,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 message.receiverUserId != _prefsRepository.myChatId
                     ? senderPhoto
                     : receiverPhoto,
-            time: message.createdAt!,
+            watchedAt: messageStatus?.watchedAt ?? DateTime.now(),
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isFirstMessage:
@@ -1182,6 +1216,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
           String fileName = message.file?.path.split('/').last ??
               message.mediaMessageContent![0].filePath!.split('/').last;
           return DocumentMessage(
+            receivedAt: messageStatus?.receivedAt,
+            createAt: message.createdAt,
             isSent: isSentMessage,
             documentFile: message.file,
             fileName: fileName,
@@ -1195,7 +1231,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 message.receiverUserId != _prefsRepository.myChatId
                     ? senderPhoto
                     : receiverPhoto,
-            time: message.createdAt!,
+            time: message.senderUserId != _prefsRepository.myChatId
+                ? message.createdAt!
+                : time!,
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isFirstMessage:

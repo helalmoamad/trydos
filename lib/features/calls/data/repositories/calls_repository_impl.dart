@@ -37,18 +37,20 @@ class CallsRepositoryImpl extends CallsRepository
   }
 
   @override
-  Future<Either<Failure, bool>> rejectCall(String messageId) {
+  Future<Either<Failure, bool>> rejectCall(Map<String, dynamic> params) {
     // TODO: implement answerCall
     return handlingExceptionRequest(
-        tryCall: () => dataSource.makeRejectCall(messageId));
+        tryCall: () => dataSource.makeRejectCall(params));
   }
 
   @override
   Future<Either<Failure, MyCallsResponseModel>> getmycalls() {
     return handlingExceptionRequest(tryCall: () => dataSource.getMyCalls());
   }
-   @override
-  Future<Either<Failure, bool>> deleteCallRegister(Map<String, dynamic> params) {
+
+  @override
+  Future<Either<Failure, bool>> deleteCallRegister(
+      Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.deleteCallRegister(params));
   }

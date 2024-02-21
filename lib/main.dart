@@ -45,7 +45,7 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
       subtitle: 'Missed call',
       callbackText: 'Call back',
     ),
-    duration: 30000,
+    duration: 60000,
     extra: <String, dynamic>{
       'channel_id': data["message"]["channel_id"].toString(),
       'message_id': data["message"]["id"].toString()
@@ -107,14 +107,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
             {
               HttpOverrides.global = MyHttpOverrides();
               GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
-                  messageId: data["message"]["id"].toString()));
+                  messageId: data["message"]["id"].toString(), duration: 0));
             }
             break;
           case Event.actionCallTimeout:
             {
-              HttpOverrides.global = MyHttpOverrides();
-              GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
-                  messageId: data["message"]["id"].toString()));
+              //  HttpOverrides.global = MyHttpOverrides();
+              //  GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
+              //  messageId: data["message"]["id"].toString()));
             }
             break;
         }
@@ -133,16 +133,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       Map<String, dynamic> data =
           convert.jsonDecode(message.data['data'].toString());
       GetIt.I<ChatBloc>().add(ReceiveMessageFromPusherEvent(
-          data['channel_id'].toString(),
-          data['auth_user_id'],
-          data['last_message_id']));
+        data['channel_id'].toString(),
+        data['auth_user_id'],
+        data['last_message_id'],
+        DateTime.parse(data['received_at']),
+      ));
     } else if (message.data['type'] == 'ChannelWatchedEvent') {
       Map<String, dynamic> data =
           convert.jsonDecode(message.data['data'].toString());
       GetIt.I<ChatBloc>().add(WatchedMessageFromPusherEvent(
           data['channel_id'].toString(),
           data['auth_user_id'],
-          data['last_message_id']));
+          data['last_message_id'],
+          DateTime.parse(data['watched_at'])));
     } else {
       LocalNotificationService().showNotificationWithPayload(message: message);
     }

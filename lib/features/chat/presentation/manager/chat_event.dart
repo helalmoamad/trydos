@@ -13,9 +13,8 @@ class LoadWidthAndHeightForImage extends ChatEvent {
   final int message_id;
   final int channel_id;
 
-  LoadWidthAndHeightForImage({
-    required this.channel_id,
-    required this.message_id, required this.file});
+  LoadWidthAndHeightForImage(
+      {required this.channel_id, required this.message_id, required this.file});
 
   @override
   // TODO: implement props
@@ -196,33 +195,48 @@ class ReceiveMessageEvent extends ChatEvent {
   final String? prevMessageId;
   final bool increaseUnReadMessages;
   const ReceiveMessageEvent(
-      {required this.message, this.prevMessageId , this.increaseUnReadMessages = true});
+      {required this.message,
+      this.prevMessageId,
+      this.increaseUnReadMessages = true});
 
   @override
   // TODO: implement props
-  List<Object?> get props => [message , prevMessageId  , increaseUnReadMessages];
+  List<Object?> get props => [message, prevMessageId, increaseUnReadMessages];
 }
 
 class ReceiveMessageFromPusherEvent extends ChatEvent {
   final String channelId;
   final int userId;
   final int lastMessageId;
+  final DateTime receivedAt;
 
   const ReceiveMessageFromPusherEvent(
-      this.channelId, this.userId, this.lastMessageId);
+      this.channelId, this.userId, this.lastMessageId, this.receivedAt);
 
   @override
   // TODO: implement props
   List<Object?> get props => [channelId, userId, lastMessageId];
 }
 
+class IncreaseFileImageVideoCounterEvent extends ChatEvent {
+  final String messageType;
+
+  const IncreaseFileImageVideoCounterEvent(this.messageType);
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [messageType];
+}
+
 class WatchedMessageFromPusherEvent extends ChatEvent {
+  final DateTime watchedAt;
+
   final String channelId;
   final int userId;
   final int lastMessageId;
 
   const WatchedMessageFromPusherEvent(
-      this.channelId, this.userId, this.lastMessageId);
+      this.channelId, this.userId, this.lastMessageId, this.watchedAt);
 
   @override
   // TODO: implement props
@@ -292,16 +306,34 @@ class GetAllMessagesBetweenEvent extends ChatEvent {
       [firstMessageId, secondMessageId, channelId, scrollToParentMessage];
 }
 
-class AddAMessageToAChannel extends ChatEvent{
+class AddAMessageToAChannel extends ChatEvent {
   final Message message;
   final String localChannelId;
 
-  const AddAMessageToAChannel(
-      {required this.message,
-        required this.localChannelId,
-      });
+  const AddAMessageToAChannel({
+    required this.message,
+    required this.localChannelId,
+  });
   @override
   // TODO: implement props
-  List<Object?> get props => [message , localChannelId];
+  List<Object?> get props => [message, localChannelId];
+}
 
+class GetMediaCountEvent extends ChatEvent {
+  final String channelId;
+
+  const GetMediaCountEvent({required this.channelId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [channelId];
+}
+
+class ChangeSlop extends ChatEvent {
+  final String messageId;
+
+  ChangeSlop({required this.messageId});
+  @override
+  // TODO: implement props
+  List<Object?> get props => throw UnimplementedError();
 }

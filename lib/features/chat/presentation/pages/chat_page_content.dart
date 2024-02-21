@@ -46,7 +46,7 @@ class ChatPageContentState extends State<ChatPageContent> {
       List<Chat> search = [];
       for (Chat chat in initialChats) {
         ChannelMember member = chat.channelMembers!.firstWhere(
-                (element) => element.userId != GetIt.I<PrefsRepository>().myChatId);
+            (element) => element.userId != GetIt.I<PrefsRepository>().myChatId);
         if ((chat.channelName ?? 'UnKnown User')
                 .toLowerCase()
                 .contains(text?.toLowerCase() ?? '') ||
@@ -84,8 +84,9 @@ class ChatPageContentState extends State<ChatPageContent> {
                 state.getChatsStatus == GetChatsStatus.init) &&
             state.chats.isEmpty &&
             state.pinnedChats.isEmpty) {
-          return SliverToBoxAdapter(child: SizedBox(
-            height: 1.sh - 200 ,
+          return SliverToBoxAdapter(
+              child: SizedBox(
+            height: 1.sh - 200,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -94,7 +95,7 @@ class ChatPageContentState extends State<ChatPageContent> {
             ),
           ));
         }
-        if(state.getChatsStatus == GetChatsStatus.failure){
+        if (state.getChatsStatus == GetChatsStatus.failure) {
           return Center(
             child: ElevatedButton(
                 onPressed: () {
@@ -143,6 +144,8 @@ class ChatPageContentState extends State<ChatPageContent> {
                               ? appState.pusherActivityDescription[
                                   int.parse(searchedChats[index].id.toString())]
                               : null,
+                          messageId:
+                              searchedChats[index].messages!.first.id ?? "",
                         );
                       },
                       separator: const SizedBox.shrink(),

@@ -28,16 +28,16 @@ class AnswerVideoCallEvent extends CallsEvent {
 
 class RejectVideoCallEvent extends CallsEvent {
   String messageId;
-
-  RejectVideoCallEvent({required this.messageId});
+  int duration;
+  RejectVideoCallEvent({required this.messageId, required this.duration});
 }
 
 class GetMyCallsEvent extends CallsEvent {}
+
 class DeleteCallRegEvent extends CallsEvent {
- String callId;
+  String callId;
 
- DeleteCallRegEvent({required this.callId});
-
+  DeleteCallRegEvent({required this.callId});
 }
 
 class ResponseRejectVideoCallEvent extends CallsEvent {}

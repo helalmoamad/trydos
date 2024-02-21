@@ -6,6 +6,8 @@ part 'chat_state.g.dart';
 
 enum SaveContactsStatus { init, loading, success, failure }
 
+enum GetMediaCountStatus { init, loading, success, failure }
+
 enum LoadImageWidthAndHeight { init, loading, success, failure }
 
 enum GetContactsStatus { init, loading, success, failure }
@@ -32,12 +34,17 @@ enum ChangeMessageStateFromPusherStatus { init, received, watched }
 class ChatState {
   final int width;
   final int height;
+  final bool isSlpoing;
+  final int imageCountInEachChat;
+  final int fileCountInEachChat;
+  final int videoCountInEachChat;
   final GetChatsStatus getChatsStatus;
   final SendMessageStatus sendMessageStatus;
   final ReceiveMessageStatus receiveMessageStatus;
   final LoadImageWidthAndHeight loadImageWidthAndHeight;
   final SaveContactsStatus saveContactsStatus;
   final GetContactsStatus getContactsStatus;
+  final GetMediaCountStatus getMediaCountStatus;
   final ResetReadMessagesStatus readMessagesStatus;
   final GetMessagesBetweenStatus getMessagesBetweenStatus;
   final NotifyThatIReceivedMessageStatus notifyThatIReceivedMessageStatus;
@@ -47,13 +54,15 @@ class ChatState {
   final List<Contact> contacts;
   List<Chat> chats;
   final List<Chat> pinnedChats;
-  final List<String> currentMessage;
+  late final List<String> currentMessage;
   final List<String> currentFailedMessage;
   final String channelId;
   final String? messageType;
+
   final String? messageContent;
   final String? firstMessageId;
   final String? secondMessageId;
+  final String? slopMessageId;
   final int unReadMessagesFromAllChats;
   final String currentChannelReceivedMessage;
   final bool scrollToParentMessage;
@@ -61,8 +70,14 @@ class ChatState {
   Map<String, List<Message>>? newSortedChatsByDate;
 
   ChatState({
-    this.width=0,
-    this.height=0,
+    this.getMediaCountStatus = GetMediaCountStatus.init,
+    this.width = 0,
+    this.slopMessageId = "",
+    this.isSlpoing = false,
+    this.height = 0,
+    this.imageCountInEachChat = 0,
+    this.fileCountInEachChat = 0,
+    this.videoCountInEachChat = 0,
     this.loadImageWidthAndHeight = LoadImageWidthAndHeight.init,
     this.newSortedChatsByDate = const {},
     this.getContactsStatus = GetContactsStatus.init,
@@ -97,6 +112,12 @@ class ChatState {
   ChatState copyWith({
     int? width,
     int? height,
+    String? slopMessageId,
+    bool? isSlpoing,
+    final int? imageCountInEachChat,
+    final GetMediaCountStatus? getMediaCountStatus,
+    final int? fileCountInEachChat,
+    final int? videoCountInEachChat,
     LoadImageWidthAndHeight? loadImageWidthAndHeight,
     Map<String, List<Message>>? newSortedChatsByDate,
     final GetChatsStatus? getChatsStatus,
@@ -128,8 +149,14 @@ class ChatState {
     final List<Chat>? pinnedChats,
   }) {
     return ChatState(
-      width: width??this.width,
-      height: height??this.height,
+      width: width ?? this.width,
+      slopMessageId: slopMessageId ?? this.slopMessageId,
+      isSlpoing: isSlpoing ?? this.isSlpoing,
+      height: height ?? this.height,
+      imageCountInEachChat: imageCountInEachChat ?? this.imageCountInEachChat,
+      getMediaCountStatus: getMediaCountStatus ?? this.getMediaCountStatus,
+      fileCountInEachChat: fileCountInEachChat ?? this.fileCountInEachChat,
+      videoCountInEachChat: videoCountInEachChat ?? this.videoCountInEachChat,
       loadImageWidthAndHeight:
           loadImageWidthAndHeight ?? this.loadImageWidthAndHeight,
       newSortedChatsByDate: newSortedChatsByDate ?? this.newSortedChatsByDate,
@@ -167,7 +194,9 @@ class ChatState {
           getMessagesBetweenStatus ?? this.getMessagesBetweenStatus,
     );
   }
-  factory ChatState.fromJson(Map<String,dynamic> data) => _$ChatStateFromJson(data);
 
-  Map<String,dynamic> toJson() => _$ChatStateToJson(this);
+  factory ChatState.fromJson(Map<String, dynamic> data) =>
+      _$ChatStateFromJson(data);
+
+  Map<String, dynamic> toJson() => _$ChatStateToJson(this);
 }

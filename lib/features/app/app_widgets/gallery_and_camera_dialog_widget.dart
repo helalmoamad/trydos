@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+//import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../common/helper/camera_screen.dart';
 import '../../../common/helper/helper_functions.dart';
 import '../../../generated/locale_keys.g.dart';
@@ -14,17 +14,18 @@ import '../my_text_widget.dart';
 class GalleryAndCameraDialogWidget extends StatelessWidget {
   const GalleryAndCameraDialogWidget(
       {super.key,
-        required this.onChooseFileFromGalleryAction,
-        required this.onChooseFileFromCameraAction});
+      // required this.onChooseFileFromGalleryAction,
+      required this.onChooseFileFromCameraAction});
 
-  final void Function(AssetEntity? assetEntity) onChooseFileFromGalleryAction;
+  // final void Function(AssetEntity? assetEntity) onChooseFileFromGalleryAction;
   final void Function(File? file) onChooseFileFromCameraAction;
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
 //    title: MyTextWidget('choose'),
-      content:MyTextWidget(LocaleKeys.choose_photo_or_video_from_gallery_or_camera.tr()),
+      content: MyTextWidget(
+          LocaleKeys.choose_photo_or_video_from_gallery_or_camera.tr()),
       actions: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -43,10 +44,10 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
               },
               child: MyTextWidget(LocaleKeys.camera.tr()),
             ),
-            Builder(
-                builder: (context) {
-                  return TextButton(
-                    onPressed: () async {
+            Builder(builder: (context) {
+              return TextButton(
+                onPressed: () async {
+                  /*
                       AssetEntity? assetEntity;
                       // necessary to open the picker
                       HelperFunctions.getAssetFromGallery(context);
@@ -55,11 +56,11 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                         onChooseFileFromGalleryAction.call(assetEntity);
                       }
                       Navigator.of(context).pop();
-                    },
-                    child: MyTextWidget(LocaleKeys.gallery.tr()),
-                  );
-                }
-            ),
+                    */
+                },
+                child: MyTextWidget(LocaleKeys.gallery.tr()),
+              );
+            }),
           ],
         )
       ],

@@ -84,7 +84,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   void dispose() {
     Vibration.cancel();
     timer?.cancel();
-    if(_audioPlayer.state == PlayerState.playing) {
+    if (_audioPlayer.state == PlayerState.playing) {
       _audioPlayer.dispose();
     }
     super.dispose();
@@ -103,7 +103,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     return BlocListener<CallsBloc, CallsState>(
       listener: (context, state) {
         timer?.cancel();
-        if(_audioPlayer.state == PlayerState.playing) {
+        if (_audioPlayer.state == PlayerState.playing) {
           _audioPlayer.dispose();
         }
       },
@@ -118,7 +118,6 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 //   // controller.dispose();
                 // },
                 onUpdateVisitedHistory: (controller, url, isReload) {
-
                   log('ring? ${url?.queryParameters.containsKey('ring')}');
                   if (_audioPlayer.state == PlayerState.playing &&
                       widget.isReceivingCall &&
@@ -130,12 +129,13 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     Timer.periodic(Duration(seconds: 7), (timer) {
                       controller.stopLoading();
                       controller.dispose();
-                      if (context.canPop() && context.widget is! SinglePageChat) {
+                      if (context.canPop() &&
+                          context.widget is! SinglePageChat) {
                         Navigator.of(context).pop();
                       }
                     });
                   }
-                  if (url.toString().contains('end') ) {
+                  if (url.toString().contains('end')) {
                     controller.stopLoading();
                     controller.dispose();
                     if (context.canPop() && context.widget is! SinglePageChat) {
@@ -160,13 +160,15 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 initialUrlRequest: URLRequest(url: WebUri(source.toString())),
                 onPermissionRequest: (controller, request) async {
                   final resources = <PermissionResourceType>[];
-                  if (request.resources.contains(PermissionResourceType.CAMERA)) {
+                  if (request.resources
+                      .contains(PermissionResourceType.CAMERA)) {
                     final cameraStatus = await Permission.camera.request();
                     if (!cameraStatus.isDenied) {
                       resources.add(PermissionResourceType.CAMERA);
                     }
                   }
-                  if (request.resources.contains(PermissionResourceType.MICROPHONE)) {
+                  if (request.resources
+                      .contains(PermissionResourceType.MICROPHONE)) {
                     final microphoneStatus =
                         await Permission.microphone.request();
                     if (!microphoneStatus.isDenied) {
@@ -174,11 +176,14 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     }
                   }
                   // only for iOS and macOS
-                  if (request.resources.contains(PermissionResourceType.CAMERA_AND_MICROPHONE)) {
+                  if (request.resources
+                      .contains(PermissionResourceType.CAMERA_AND_MICROPHONE)) {
                     final cameraStatus = await Permission.camera.request();
-                    final microphoneStatus = await Permission.microphone.request();
+                    final microphoneStatus =
+                        await Permission.microphone.request();
                     if (!cameraStatus.isDenied && !microphoneStatus.isDenied) {
-                      resources.add(PermissionResourceType.CAMERA_AND_MICROPHONE);
+                      resources
+                          .add(PermissionResourceType.CAMERA_AND_MICROPHONE);
                     }
                   }
 
@@ -201,23 +206,23 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     if (progress < 100)
                       return Center(child: CircularProgressIndicator());
                     if (timer == null && !widget.isReceivingCall) {
-                        timer = Timer.periodic(Duration(seconds: 14), (timer) {
-                          playWaitingCall();
-                        });
-                        Future.delayed(Duration(seconds: 7), (){
-                          timer?.cancel();
-                          if(_audioPlayer.state == PlayerState.playing){
-                            _audioPlayer.dispose();
-                          }
-                        });
-                    } else if (timer == null && widget.isReceivingCall) {
-                        startVibration();
-                        timer = Timer.periodic(Duration(seconds: 2), (timer) {
-                          playIncomingCall();
+                      timer = Timer.periodic(Duration(seconds: 14), (timer) {
+                        playWaitingCall();
                       });
-                      Future.delayed(Duration(seconds: 7), (){
+                      Future.delayed(Duration(seconds: 7), () {
                         timer?.cancel();
-                        if(_audioPlayer.state == PlayerState.playing){
+                        if (_audioPlayer.state == PlayerState.playing) {
+                          _audioPlayer.dispose();
+                        }
+                      });
+                    } else if (timer == null && widget.isReceivingCall) {
+                      startVibration();
+                      timer = Timer.periodic(Duration(seconds: 2), (timer) {
+                        playIncomingCall();
+                      });
+                      Future.delayed(Duration(seconds: 7), () {
+                        timer?.cancel();
+                        if (_audioPlayer.state == PlayerState.playing) {
                           _audioPlayer.dispose();
                         }
                       });

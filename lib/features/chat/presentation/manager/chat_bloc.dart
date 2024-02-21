@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -8,9 +9,11 @@ import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/chat/data/models/media_count.dart';
 import 'package:trydos/features/chat/domain/use_cases/change_chat_property_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/delete_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_contacts_usecase.dart';
+import 'package:trydos/features/chat/domain/use_cases/get_media_count_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_messages_between_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_messages_for_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_my_chats_usecase.dart';
@@ -53,15 +56,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
       this.changeChatPropertyUseCase,
       this.uploadFileUseCase,
       this.readAllMessagesUseCase,
-      this.receiveMessageUseCase)
+      this.receiveMessageUseCase,
+      this.getMediaCountUseCase)
       : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
     on<AddAMessageToAChannel>(_onAddAMessageToAChannel);
     on<SendMessageEvent>(_onSendMessageEvent);
+    on<IncreaseFileImageVideoCounterEvent>(
+        _onIncreaseFileImageVideoCounterEvent);
     on<ReadAllMessagesEvent>(_onReadAllMessagesEvent);
     on<NotifyThatIReceivedMessageEvent>(_onNotifyThatIReceivedMessageEvent);
     on<ReceiveMessageEvent>(_onReceiveMessageEvent);
     on<UploadFileEvent>(_onUploadFileEvent);
+    on<ChangeSlop>(_onChangeSlop);
     on<DeleteChatEvent>(_onDeleteChatEvent);
     on<ReceiveMessageFromPusherEvent>(_onReceiveMessageFromPusherEvent);
     on<WatchedMessageFromPusherEvent>(_onWatchedMessageFromPusherEvent);
@@ -75,9 +82,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
         transformer: throttleDroppable(throttleDuration));
     on<GetContactsEvent>(_onGetContactsEvent,
         transformer: throttleDroppable(throttleDuration));
+    on<GetMediaCountEvent>(_onGetMediaCountEvent,
+        transformer: throttleDroppable(throttleDuration));
   }
 
   final SendMessageUseCase sendMessageUseCase;
+  final GetMediaCountUseCase getMediaCountUseCase;
   final SaveContactsUseCase saveContactsUseCase;
   final GetContactsUseCase getContactsUseCase;
   final GetMyChatsUseCase getMyChatsUseCase;
@@ -211,9 +221,31 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
             currentFailedMessage: currentFailedMessage));
       },
       (r) {
-//        debugPrint('count  ${messages.length}');
         ids.remove(event.messageId);
         List<Chat> pinnedChats = state.pinnedChats.map((e) {
+          if (e.localId == event.channelId &&
+              int.tryParse(event.channelId) == null) {
+            return r.channel!.copyWith(
+                localId: event.channelId,
+                messages: e.messages?.map((e) {
+                  if (e.localId == event.messageId) {
+                    return r.copyWith(localId: e.localId);
+                  }
+                  return e;
+                }).toList());
+          } else if (e.id == event.channelId) {
+            List<Message> messages = List.of(e.messages ?? []);
+            int index = messages.indexWhere((element) =>
+                (element.id == event.messageId ||
+                    element.localId == event.messageId));
+            messages[index] =
+                r.copyWith(file: event.file, localId: event.messageId);
+
+            return e.copyWith(messages: messages);
+          }
+          return e;
+        }).toList();
+        List<Chat> chats = state.chats.map((e) {
           if (e.localId == event.channelId &&
               int.tryParse(event.channelId) == null) {
             return r.channel!.copyWith(
@@ -235,30 +267,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
           }
           return e;
         }).toList();
-        List<Chat> chats = state.chats.map((e) {
-          if (e.localId == event.channelId &&
-              int.tryParse(event.channelId) == null) {
-            return r.channel!.copyWith(
-                localId: event.channelId,
-                messages: e.messages?.map((e) {
-                  if (e.localId == event.messageId) {
-                    return r.copyWith(localId: e.localId);
-                  }
-                  return e;
-                }).toList());
-          } else if (e.id == event.channelId) {
-            List<Message> messages = List.of(e.messages ?? []);
-            int index = messages.indexWhere((element) =>
-                (element.id == event.messageId ||
-                    element.localId == event.messageId));
-            messages[index] = r.copyWith(file: event.file, localId: event.messageId);
-            return e.copyWith(messages: messages);
-          }
-          return e;
-        }).toList();
         emit(
           state.copyWith(
-              sendMessageStatus: SendMessageStatus.success,
               chats: chats,
               createAnewChat: false,
               pinnedChats: pinnedChats,
@@ -266,6 +276,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
                   groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
               currentMessage: ids),
         );
+
+        add(IncreaseFileImageVideoCounterEvent(r.messageType!.name!));
+        print(
+            "0000000000000000000000000000000000000000000000000000${state.fileCountInEachChat}");
       },
     );
   }
@@ -571,16 +585,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
     messages.insert(0, event.message);
     int index =
         messages.indexWhere((element) => element.id == event.prevMessageId);
-    chats[0]= chats[0].copyWith(
-      messages: messages
-    );
+    chats[0] = chats[0].copyWith(messages: messages);
     emit(state.copyWith(
       receiveMessageStatus: ReceiveMessageStatus.success,
       unReadMessagesFromAllChats: event.increaseUnReadMessages
-          ? (state.unReadMessagesFromAllChats + ((event.message.senderUserId! !=
-                  _prefsRepository.myChatId)
-              ? 1
-              : 0))
+          ? (state.unReadMessagesFromAllChats +
+              ((event.message.senderUserId! != _prefsRepository.myChatId)
+                  ? 1
+                  : 0))
           : state.unReadMessagesFromAllChats,
       newSortedChatsByDate: groupReceivedMessageOnDays(
           chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)]),
@@ -589,6 +601,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
       chats: fromPinned ? state.chats : chats,
       pinnedChats: !fromPinned ? state.pinnedChats : chats,
     ));
+    add(IncreaseFileImageVideoCounterEvent(event.message.messageType!.name!));
     if (event.prevMessageId != null) {
       add(NotifyThatIReceivedMessageEvent(channelId: event.message.channelId!));
     }
@@ -685,8 +698,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
         pinnedChats: !fromPinned ? state.pinnedChats : chats));
     final response =
         await deleteChatUseCase(DeleteChatParams(channelId: event.channelId));
-    response.fold(
-            (l) {
+    response.fold((l) {
       int index = chats.indexWhere((element) => element.id == uuid);
       chats.insert(index, removedChat);
       emit(state.copyWith(
@@ -696,19 +708,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
             ...chats,
             ...(fromPinned ? state.chats : state.pinnedChats)
           ]),
-          pinnedChats: !fromPinned ? state.pinnedChats : chats
-      ));
+          pinnedChats: !fromPinned ? state.pinnedChats : chats));
     }, (r) {
       emit((state.copyWith(
-        deleteChatStatus: DeleteChatStatus.success,
+          deleteChatStatus: DeleteChatStatus.success,
           chats: fromPinned ? state.chats : chats,
           newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
             ...chats,
             ...(fromPinned ? state.chats : state.pinnedChats)
           ]),
-          pinnedChats: !fromPinned ? state.pinnedChats : chats
-
-      )));
+          pinnedChats: !fromPinned ? state.pinnedChats : chats)));
     });
   }
 
@@ -866,15 +875,24 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
     emit(state.copyWith(
         changeMessageStateFromPusherStatus:
             ChangeMessageStateFromPusherStatus.init));
-    List<Chat> chats = getChatsAfterEditPropertyOfMessage(state.chats, 1, null,
-        event.channelId, event.lastMessageId, event.userId);
+    List<Chat> chats = getChatsAfterEditPropertyOfMessage(
+        state.chats,
+        1,
+        null,
+        event.channelId,
+        event.lastMessageId,
+        event.userId,
+        event.receivedAt,
+        null);
     List<Chat> pinnedChats = getChatsAfterEditPropertyOfMessage(
         state.pinnedChats,
         1,
         null,
         event.channelId,
         event.lastMessageId,
-        event.userId);
+        event.userId,
+        event.receivedAt,
+        null);
     emit(state.copyWith(
       chats: chats,
       newSortedChatsByDate:
@@ -890,15 +908,24 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
     emit(state.copyWith(
         changeMessageStateFromPusherStatus:
             ChangeMessageStateFromPusherStatus.init));
-    List<Chat> chats = getChatsAfterEditPropertyOfMessage(state.chats, null,
-        true, event.channelId, event.lastMessageId, event.userId);
+    List<Chat> chats = getChatsAfterEditPropertyOfMessage(
+        state.chats,
+        null,
+        true,
+        event.channelId,
+        event.lastMessageId,
+        event.userId,
+        null,
+        event.watchedAt);
     List<Chat> pinnedChats = getChatsAfterEditPropertyOfMessage(
         state.pinnedChats,
         null,
         true,
         event.channelId,
         event.lastMessageId,
-        event.userId);
+        event.userId,
+        null,
+        event.watchedAt);
     emit(state.copyWith(
       unReadMessagesFromAllChats: state.unReadMessagesFromAllChats - 1,
       chats: chats,
@@ -910,8 +937,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
     ));
   }
 
-  List<Chat> getChatsAfterEditPropertyOfMessage(List<Chat> chats, int? received,
-      bool? watched, String channelId, int lastMessageId, int userId) {
+  List<Chat> getChatsAfterEditPropertyOfMessage(
+      List<Chat> chats,
+      int? received,
+      bool? watched,
+      String channelId,
+      int lastMessageId,
+      int userId,
+      DateTime? receivedAt,
+      DateTime? watchedAt) {
     return chats
                 .firstWhere((element) => element.id == channelId,
                     orElse: () => Chat(id: "-1"))
@@ -927,8 +961,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
                     return m.copyWith(
                         messageStatus: m.messageStatus?.map((s) {
                       return s.copyWith(
-                          isWatched: watched ?? s.isWatched,
-                          isReceived: received ?? s.isReceived);
+                        isWatched: watched ?? s.isWatched,
+                        receivedAt: receivedAt,
+                        isReceived: received,
+                        watchedAt: watchedAt,
+                      );
                     }).toList());
                   }).toList());
             }
@@ -1105,6 +1142,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
     }
   }
 
+  _onIn(IncreaseFileImageVideoCounterEvent event, Emitter<ChatState> emit) {}
   @override
   ChatState? fromJson(Map<String, dynamic> json) {
     return ChatState.fromJson(json);
@@ -1115,29 +1153,68 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> with HydratedMixin {
     return state.toJson();
   }
 
-  FutureOr<void> _onAddAMessageToAChannel(AddAMessageToAChannel event, Emitter<ChatState> emit) {
+  FutureOr<void> _onAddAMessageToAChannel(
+      AddAMessageToAChannel event, Emitter<ChatState> emit) {
     bool fromPinned = false;
     List<Chat> chats;
-    int index = state.chats.indexWhere((element) => element.id.toString() == event.localChannelId);
-    if(index != -1){
+    int index = state.chats
+        .indexWhere((element) => element.id.toString() == event.localChannelId);
+    if (index != -1) {
       chats = List.of(state.chats);
-    }else{
-     fromPinned = true;
-     chats = List.of(state.pinnedChats);
-     index = state.pinnedChats.indexWhere((element) => element.id.toString() == event.localChannelId);
+    } else {
+      fromPinned = true;
+      chats = List.of(state.pinnedChats);
+      index = state.pinnedChats.indexWhere(
+          (element) => element.id.toString() == event.localChannelId);
     }
     chats[index] = event.message.channel!.copyWith(
-      totalUnreadMessageCount: 0,
-      localId: event.localChannelId,
-      messages: [event.message]
-    );
+        totalUnreadMessageCount: 0,
+        localId: event.localChannelId,
+        messages: [event.message]);
     emit(state.copyWith(
-        chats: fromPinned ? state.chats : chats,
-        createAnewChat: true,
-        getMessagesBetweenStatus: GetMessagesBetweenStatus.success,
-        newSortedChatsByDate:
-        groupReceivedMessageOnDays(chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)]),
-        pinnedChats: !fromPinned ? state.pinnedChats : chats,
+      chats: fromPinned ? state.chats : chats,
+      createAnewChat: true,
+      getMessagesBetweenStatus: GetMessagesBetweenStatus.success,
+      newSortedChatsByDate: groupReceivedMessageOnDays(
+          chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)]),
+      pinnedChats: !fromPinned ? state.pinnedChats : chats,
     ));
+  }
+
+  _onIncreaseFileImageVideoCounterEvent(
+      IncreaseFileImageVideoCounterEvent event, Emitter<ChatState> emit) {
+    if (event.messageType.contains("ImageMessage")) {
+      int counter = state.imageCountInEachChat + 1;
+      emit(state.copyWith(imageCountInEachChat: counter));
+    } else if (event.messageType.contains("FileMessage")) {
+      int counter = state.fileCountInEachChat + 1;
+
+      emit(state.copyWith(fileCountInEachChat: counter));
+    } else if (event.messageType.contains("VideoMessage")) {
+      int counter = state.videoCountInEachChat + 1;
+      emit(state.copyWith(videoCountInEachChat: counter));
+    }
+  }
+
+  _onGetMediaCountEvent(
+      GetMediaCountEvent event, Emitter<ChatState> emit) async {
+    emit(state.copyWith(getMediaCountStatus: GetMediaCountStatus.loading));
+    final response = await getMediaCountUseCase(
+        GetMediaCountParams(channelId: event.channelId));
+    response.fold(
+        (l) => emit(
+            state.copyWith(getMediaCountStatus: GetMediaCountStatus.failure)),
+        (r) => emit(state.copyWith(
+            getMediaCountStatus: GetMediaCountStatus.success,
+            fileCountInEachChat: r.data!.fileMessagesCount,
+            imageCountInEachChat: r.data!.imageMessagesCount,
+            videoCountInEachChat: r.data!.videoMessagesCount)));
+  }
+
+  _onChangeSlop(ChangeSlop event, Emitter<ChatState> emit) {
+    emit(state.copyWith(slopMessageId: event.messageId));
+    state.isSlpoing
+        ? emit(state.copyWith(isSlpoing: false))
+        : emit(state.copyWith(isSlpoing: true));
   }
 }

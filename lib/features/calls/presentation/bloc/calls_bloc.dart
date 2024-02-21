@@ -88,7 +88,8 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
 
   FutureOr<void> _onMakeCallEvent(
       MakeCallEvent event, Emitter<CallsState> emit) async {
-    emit(state.copyWith(makeCallStatus: MakeCallStatus.loading ,
+    emit(state.copyWith(
+        makeCallStatus: MakeCallStatus.loading,
         receiverCallName: event.receiverCallName,
         isVideoCall: event.isVideo));
     emit(state.copyWith(
@@ -99,14 +100,13 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
           payload: event.payload,
           receiverUserId: event.receiverUserId!));
       response.fold((l) {
-        emit(state.copyWith(
-            makeCallStatus: MakeCallStatus.failure
-        ));
+        emit(state.copyWith(makeCallStatus: MakeCallStatus.failure));
       }, (r) {
-        GetIt.I<ChatBloc>().add(AddAMessageToAChannel(message: r.data!.message!, localChannelId: event.chatId! ));
+        GetIt.I<ChatBloc>().add(AddAMessageToAChannel(
+            message: r.data!.message!, localChannelId: event.chatId!));
         emit(state.copyWith(
             makeCallStatus: MakeCallStatus.startCall,
-             isVideoCall: event.isVideo,
+            isVideoCall: event.isVideo,
             currentActiveCallId: r.data!.message!.id!.toString(),
             messageId: r.data!.message!.id!.toString(),
             channelIdForCurrentCall: r.data!.message!.channelId.toString(),
@@ -122,8 +122,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
           chatId: event.chatId!,
           isVideo: event.isVideo));
       response.fold((l) {
-        emit(state.copyWith(
-            makeCallStatus: MakeCallStatus.failure));
+        emit(state.copyWith(makeCallStatus: MakeCallStatus.failure));
       }, (r) {
         GetIt.I<ChatBloc>().add(ReceiveMessageEvent(
             message: r.data!.message!, increaseUnReadMessages: false));
@@ -173,7 +172,8 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   FutureOr<void> _onRejectVideoCallEvent(
       RejectVideoCallEvent event, Emitter<CallsState> emit) async {
     debugPrint("RejectVideoCallEvent");
-    final response = await rejectCallUseCase.call(event.messageId);
+    final response = await rejectCallUseCase.call(
+        MakeRejectParams(messageId: event.messageId, duration: event.duration));
     response.fold((l) => null, (r) {
       emit(
           state.copyWith(rejectVideoCallStatus: RejectVideoCallStatus.success));
@@ -189,7 +189,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   FutureOr<void> _onUserInteractWithCall(
       UserInteractWithCall event, Emitter<CallsState> emit) {
     emit(state.copyWith(
-      currentActiveCallId: null,
+        currentActiveCallId: null,
         stopRingToneReason: event.rejectIt
             ? StopRingToneReason.refuse
             : StopRingToneReason.accept));

@@ -565,7 +565,7 @@ class ContactUser {
   factory ContactUser.fromJson(Map<String, dynamic> json) => ContactUser(
         id: json["id"],
         userId: json["user_id"],
-        name: contactUserNameValues.map[json["name"]]!,
+        name: contactUserNameValues.map[json["name"]],
         mobilePhone: json["mobile_phone"],
         contactUserId: json["contact_user_id"],
       );
