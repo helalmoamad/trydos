@@ -29,7 +29,6 @@ class AnswerCall extends StatefulWidget {
   String callerName;
   String? callerPhoto;
 
-
   AnswerCall(
       {required this.callerPhoto,
       required this.callerName,
@@ -56,13 +55,10 @@ class _AnswerCallState extends State<AnswerCall> {
 
   @override
   void initState() {
-    if (GetIt.I<CallsBloc>().state.makeCallStatus == MakeCallStatus.endCall)
-      {
-        Navigator.of(context).pop();
-        debugPrint('poppp');
-      }
-
-    else{
+    if (GetIt.I<CallsBloc>().state.makeCallStatus == MakeCallStatus.endCall) {
+      Navigator.of(context).pop();
+      debugPrint('poppp');
+    } else {
       Vibration.vibrate(repeat: 0, pattern: [1000, 1000, 1000, 1000]);
       player.setReleaseMode(ReleaseMode.loop);
       player.play(AssetSource(
@@ -151,7 +147,7 @@ class _AnswerCallState extends State<AnswerCall> {
                               .request()
                               .then((value) {
                             GetIt.I<CallsBloc>().add(AnswerVideoCallEvent(
-                              chatId: widget.channelName,
+                                chatId: widget.channelName,
                                 messageId: widget.messageId));
                           });
                         },
@@ -162,8 +158,10 @@ class _AnswerCallState extends State<AnswerCall> {
                       )),
                   TextButton(
                       onPressed: () async {
-                        GetIt.I<CallsBloc>().add(
-                            RejectVideoCallEvent(messageId: widget.messageId));
+                        GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
+                          messageId: widget.messageId,
+                          duration: 0,
+                        ));
                         Navigator.of(context).pop();
                       },
                       child: Container(
@@ -183,21 +181,21 @@ class _AnswerCallState extends State<AnswerCall> {
         //     previous.createVideoCallStatus != current.createVideoCallStatus,
         listener: (context, state) {
           debugPrint("zczczxc");
-          if (state.makeCallStatus == MakeCallStatus.endCall)
-            {              debugPrint("adasd");
-              Navigator.of(context).pop();
-            }
+          if (state.makeCallStatus == MakeCallStatus.endCall) {
+            debugPrint("adasd");
+            Navigator.of(context).pop();
+          }
 
-         // else  if (state.rejectVideoCallStatus == RejectVideoCallStatus.success)
-         //    Navigator.pop(context);
-         //  else if (state.createVideoCallStatus == CreateVideoCallStatus.success) {
-         //    debugPrint("anmzxch");
-         //    Navigator.of(context).push(MaterialPageRoute(
-         //      builder: (context) =>
-         //          AgoraWebView(type: "video", channelId: widget.channelName, auth_token: state.agoraToken!, uId: GetIt.I<PrefsRepository>().myChatId!.toString(),),
-         //
-         //    ));
-         //  }
+          // else  if (state.rejectVideoCallStatus == RejectVideoCallStatus.success)
+          //    Navigator.pop(context);
+          //  else if (state.createVideoCallStatus == CreateVideoCallStatus.success) {
+          //    debugPrint("anmzxch");
+          //    Navigator.of(context).push(MaterialPageRoute(
+          //      builder: (context) =>
+          //          AgoraWebView(type: "video", channelId: widget.channelName, auth_token: state.agoraToken!, uId: GetIt.I<PrefsRepository>().myChatId!.toString(),),
+          //
+          //    ));
+          //  }
         },
       ),
     );

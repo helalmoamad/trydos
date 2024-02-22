@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
@@ -7,6 +7,8 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../common/constant/design/assets_provider.dart';
@@ -19,7 +21,13 @@ import '../../../app/my_text_widget.dart';
 import '../widgets/chat_widgets/no_image_widget.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key , required this.receiverName, required this.fullReceiverName, required this.receiverPhone,this.receiverPhoto}) : super(key: key);
+  const ProfilePage(
+      {Key? key,
+      required this.receiverName,
+      required this.fullReceiverName,
+      required this.receiverPhone,
+      this.receiverPhoto})
+      : super(key: key);
   final String receiverName;
   final String fullReceiverName;
   final String? receiverPhoto;
@@ -40,9 +48,9 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: const Color(0xffF8F8F8),
       body: SafeArea(
         child: Stack(
-          alignment: LanguageService
-              .languageCode ==
-              'ar' ? AlignmentDirectional.topEnd : AlignmentDirectional.topStart,
+          alignment: LanguageService.languageCode == 'ar'
+              ? AlignmentDirectional.topEnd
+              : AlignmentDirectional.topStart,
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -53,42 +61,40 @@ class _ProfilePageState extends State<ProfilePage> {
                     50.verticalSpace,
                     widget.receiverPhoto != null
                         ? Container(
-                      decoration: BoxDecoration(
-
-                        boxShadow:  [
-                          BoxShadow(
-                            color:
-                            Color.fromARGB(2, 0, 0, 0)
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color.fromARGB(2, 0, 0, 0)
 //                            colorScheme.black.withOpacity(0.16)
-                            ,
-                            offset: const Offset(0, 3),
-                            blurRadius: 10,
-                          ),
-                        ],
-                      ),
-                      child: MyCachedNetworkImage(
-                        imageUrl: ChatUrls.baseUrl + widget.receiverPhoto!,
-                        imageFit: BoxFit.cover,
-                        progressIndicatorBuilderWidget: TrydosLoader(),
-                        height: 150.h,
-                        width: 150.w,
-                      ),
-                    )
+                                  ,
+                                  offset: const Offset(0, 3),
+                                  blurRadius: 10,
+                                ),
+                              ],
+                            ),
+                            child: MyCachedNetworkImage(
+                              imageUrl:
+                                  ChatUrls.baseUrl + widget.receiverPhoto!,
+                              imageFit: BoxFit.cover,
+                              progressIndicatorBuilderWidget: TrydosLoader(),
+                              height: 150.h,
+                              width: 150.w,
+                            ),
+                          )
                         : NoImageWidget(
-                        height: 150.h,
-                        width: 150.w,
-                        textStyle: context.textTheme.subtitle1?.br
-                            .copyWith(
-                            color: const Color(0xff6638FF),
-                            letterSpacing: 0.18,
-                            height: 1.33),
-                        name: widget.receiverName),
+                            height: 150.h,
+                            width: 150.w,
+                            textStyle: context.textTheme.subtitle1?.br.copyWith(
+                                color: const Color(0xff6638FF),
+                                letterSpacing: 0.18,
+                                height: 1.33),
+                            name: widget.receiverName),
                     17.verticalSpace,
-                      MyTextWidget(
-                        widget.fullReceiverName,
-                        style: textTheme.headline5?.rr
-                            .copyWith(color: const Color(0xff5D5C5D)),
-                      ),
+                    MyTextWidget(
+                      widget.fullReceiverName,
+                      style: textTheme.headline5?.rr
+                          .copyWith(color: const Color(0xff5D5C5D)),
+                    ),
                     8.verticalSpace,
                     MyTextWidget(
                       widget.receiverPhone,
@@ -105,7 +111,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       InkWell(
-                        onTap: (){},
+                        onTap: () {},
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -125,7 +131,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       InkWell(
-                        onTap: (){},
+                        onTap: () {},
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -144,7 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       InkWell(
-                        onTap: (){},
+                        onTap: () {},
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -171,9 +177,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   height: 75.h,
                   width: 1.sw,
                   decoration: BoxDecoration(
-                    color: const Color(0xffF4F4F4),
-                    borderRadius: BorderRadius.circular(20)
-                  ),
+                      color: const Color(0xffF4F4F4),
+                      borderRadius: BorderRadius.circular(20)),
                   padding: HWEdgeInsets.fromLTRB(15, 15, 20, 15),
                   margin: HWEdgeInsets.symmetric(vertical: 10),
                   child: Row(
@@ -194,59 +199,74 @@ class _ProfilePageState extends State<ProfilePage> {
                                   .copyWith(color: const Color(0xff5D5C5D)),
                             ),
                             10.verticalSpace,
-                            Flexible(
-                              child: Row(
-                                children: [
-                                  Row(
+                            BlocBuilder<ChatBloc, ChatState>(
+                              builder: (context, state) {
+                                return Flexible(
+                                  child: Row(
                                     children: [
-                                      SvgPicture.asset(
-                                        AppAssets.imageGallerySvg,
-                                        width: 15.sp,
-                                        height: 15.sp,
+                                      Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            AppAssets.imageGallerySvg,
+                                            width: 15.sp,
+                                            height: 15.sp,
+                                          ),
+                                          5.horizontalSpace,
+                                          MyTextWidget(
+                                            state.imageCountInEachChat
+                                                .toString(),
+                                            style: textTheme.caption?.lr
+                                                .copyWith(
+                                                    color: const Color(
+                                                        0xff5D5C5D)),
+                                          ),
+                                        ],
                                       ),
-                                      5.horizontalSpace,
-                                      MyTextWidget(
-                                        '3122',
-                                        style: textTheme.caption?.lr
-                                            .copyWith(color: const Color(0xff5D5C5D)),
+                                      const Spacer(),
+                                      Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            AppAssets.videoGallerySvg,
+                                            width: 15.sp,
+                                            height: 15.sp,
+                                          ),
+                                          5.horizontalSpace,
+                                          MyTextWidget(
+                                            state.videoCountInEachChat
+                                                .toString(),
+                                            style: textTheme.caption?.lr
+                                                .copyWith(
+                                                    color: const Color(
+                                                        0xff5D5C5D)),
+                                          ),
+                                        ],
+                                      ),
+                                      const Spacer(),
+                                      Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            AppAssets.fileGallerySvg,
+                                            width: 15.sp,
+                                            height: 15.sp,
+                                          ),
+                                          5.horizontalSpace,
+                                          MyTextWidget(
+                                            state.fileCountInEachChat
+                                                .toString(),
+                                            style: textTheme.caption?.lr
+                                                .copyWith(
+                                                    color: const Color(
+                                                        0xff5D5C5D)),
+                                          ),
+                                        ],
+                                      ),
+                                      const Spacer(
+                                        flex: 4,
                                       ),
                                     ],
                                   ),
-                                  const Spacer(),
-                                  Row(
-                                    children: [
-                                      SvgPicture.asset(
-                                        AppAssets.videoGallerySvg,
-                                        width: 15.sp,
-                                        height: 15.sp,
-                                      ),
-                                      5.horizontalSpace,
-                                      MyTextWidget(
-                                        '18',
-                                        style: textTheme.caption?.lr
-                                            .copyWith(color: const Color(0xff5D5C5D)),
-                                      ),
-                                    ],
-                                  ),
-                                  const Spacer(),
-                                  Row(
-                                    children: [
-                                      SvgPicture.asset(
-                                        AppAssets.fileGallerySvg,
-                                        width: 15.sp,
-                                        height: 15.sp,
-                                      ),
-                                      5.horizontalSpace,
-                                      MyTextWidget(
-                                        '2',
-                                        style: textTheme.caption?.lr
-                                            .copyWith(color: const Color(0xff5D5C5D)),
-                                      ),
-                                    ],
-                                  ),
-                                  const Spacer(flex: 4,),
-                                ],
-                              ),
+                                );
+                              },
                             )
                           ],
                         ),
@@ -255,11 +275,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         alignment: Alignment.center,
                         transform: (Matrix4.identity()
                           ..scale(
-                              LanguageService
-                                  .languageCode ==
-                                  'ar'
-                                  ? -1.0
-                                  : 1.0,
+                              LanguageService.languageCode == 'ar' ? -1.0 : 1.0,
                               1.0,
                               1.0)),
                         child: SvgPicture.asset(
@@ -275,8 +291,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Container(
                   decoration: BoxDecoration(
                       color: const Color(0xffF4F4F4),
-                      borderRadius: BorderRadius.circular(20)
-                  ),
+                      borderRadius: BorderRadius.circular(20)),
                   padding: HWEdgeInsets.fromLTRB(15, 15, 20, 15),
                   margin: HWEdgeInsets.symmetric(vertical: 10),
                   child: Row(
@@ -287,23 +302,23 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: 25.sp,
                       ),
                       20.horizontalSpace,
-                      MyTextWidget('Save To Gallery',
+                      MyTextWidget(
+                        'Save To Gallery',
                         style: textTheme.bodyText1?.rr
-                            .copyWith(color: const Color(0xff5D5C5D)),),
+                            .copyWith(color: const Color(0xff5D5C5D)),
+                      ),
                       const Spacer(),
-                      MyTextWidget('Never',
+                      MyTextWidget(
+                        'Never',
                         style: textTheme.bodyText1?.lr
-                            .copyWith(color: const Color(0xff5D5C5D)),),
+                            .copyWith(color: const Color(0xff5D5C5D)),
+                      ),
                       36.horizontalSpace,
                       Transform(
                         alignment: Alignment.center,
                         transform: (Matrix4.identity()
                           ..scale(
-                              LanguageService
-                                  .languageCode ==
-                                  'ar'
-                                  ? -1.0
-                                  : 1.0,
+                              LanguageService.languageCode == 'ar' ? -1.0 : 1.0,
                               1.0,
                               1.0)),
                         child: SvgPicture.asset(
@@ -320,7 +335,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Padding(
               padding: EdgeInsetsDirectional.fromSTEB(20.w, 15.h, 20.w, 0),
               child: InkWell(
-                onTap: (){
+                onTap: () {
                   Navigator.pop(context);
                 },
                 child: SvgPicture.asset(

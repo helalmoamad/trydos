@@ -344,16 +344,23 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
         chatBloc.add(WatchedMessageFromPusherEvent(
-            data['channel_id'].toString(),
-            data['auth_user_id'],
-            data['last_message_id']));
+          data['channel_id'].toString(),
+          data['auth_user_id'],
+          data['last_message_id'],
+          DateTime.parse(data['watched_at']),
+        ));
+        log("0000000000000000000000000000000000000005555555555555555555555555 ${data}");
+        log("0000000000000000000000000000000000000005555555555555555555555555 ${data["watched_at"]}");
       } else if (event.data['type'] == 'ChannelReceivedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
         chatBloc.add(ReceiveMessageFromPusherEvent(
             data['channel_id'].toString(),
             data['auth_user_id'],
-            data['last_message_id']));
+            data['last_message_id'],
+            DateTime.parse(data['received_at'])));
+        log("0000000000000000000000000000000000000005555555555555555555555555 ${data["received_at"]}");
+        log("0000000000000000000000000000000000000005555555555555555555555555 ${data}");
       } else {
         log(event.data['message'].toString());
         Message message =

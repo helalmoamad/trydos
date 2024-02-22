@@ -16,6 +16,8 @@ extension ScopeApi on String {
 
   String channelsScope({bool current = false}) =>
       '$_api/${current ? _currentVersion : _previousVersion}/channels/$this';
+  String mediasScope({bool current = false}) =>
+      '$_api/${current ? _currentVersion : _previousVersion}/channels/$this';
 
   String channelMembersScope({bool current = false}) =>
       '$_api/${current ? _currentVersion : _previousVersion}/channel_members/$this';
@@ -50,6 +52,8 @@ abstract class ChatEndPoints {
 
   static String readAllMessagesEP(String channelId) =>
       '$channelId/watched'.channelsScope();
+  static String getMediaCount(String channelId) =>
+      '$channelId/media_counts'.mediasScope();
 
   static String receiveMessageEP(String channelId) =>
       '$channelId/received'.channelsScope();

@@ -20,7 +20,7 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:uuid/uuid.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+//import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/app_widgets/app_text_field.dart';
@@ -102,7 +102,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
           error: error.toString());
     };
     return BlocBuilder<AppBloc, AppState>(
-      buildWhen: (p, c) => p.thereIsReply != c.thereIsReply || p.messageId != c.messageId,
+      buildWhen: (p, c) =>
+          p.thereIsReply != c.thereIsReply || p.messageId != c.messageId,
       builder: (context, state) {
         debugPrint('imageUrl:  ${state.imageUrl}');
 
@@ -548,7 +549,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                   .inSeconds
                                                   .remainder(60));
 
-                                          return MyTextWidget('$minutes:$seconds',
+                                          return MyTextWidget(
+                                              '$minutes:$seconds',
                                               style: textTheme.subtitle1?.rr
                                                   .copyWith(
                                                 color: const Color(0xff404040),
@@ -680,6 +682,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         focusColor: Colors.transparent,
                                         splashColor: Colors.transparent,
                                         onTap: () async {
+                                          /*
                                           FirebasePresence.sendUserTransaction(
                                             channelId: widget.channelId,
                                             description: 'Sending file...',
@@ -740,6 +743,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               channelId: widget.channelId,
                                             );
                                           });
+                                      */
                                         },
                                         child: SvgPicture.asset(
                                           AppAssets.takePictureSvg,

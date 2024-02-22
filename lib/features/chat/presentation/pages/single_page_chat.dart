@@ -95,6 +95,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   Map<String, List<Message>> messagesByDate = {};
   bool rebuild = true;
   DateTime lastDate = DateTime.now();
+  DateTime? time;
   int countMessagesReceivedToMeNow = 0;
   late Chat chat;
   AudioPlayer _audioPlayer = AudioPlayer();
@@ -114,6 +115,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
     chatBloc = BlocProvider.of<ChatBloc>(context);
     autoScrollController = AutoScrollController();
     chatBloc.add(ReadAllMessagesEvent(widget.chatId.toString()));
+    chatBloc.add(GetMediaCountEvent(channelId: widget.chatId));
     autoScrollController.addListener(() {
       if (rebuild) {
         rebuildMessage.value = -1;
@@ -142,14 +144,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: details.toString());
-
     };
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _scrollToBottom();
     });
     return WillPopScope(
-      onWillPop: (){
-        chatBloc.add(ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: null));
+      onWillPop: () {
+        chatBloc
+            .add(ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: null));
         return Future.value(true);
       },
       child: Scaffold(
@@ -170,7 +172,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           builder: (context, clicked, _) {
                             return InkWell(
                               onTap: () {
-                                chatBloc.add(ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: null));
+                                chatBloc.add(ChangeGlobalUsedVariablesInBloc(
+                                    currentOpenedChatId: null));
                                 clickBackButton.value = true;
                                 Future.delayed(
                                   Duration(milliseconds: 100),
@@ -198,7 +201,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               ),
                             );
                           }),
-                      BlocBuilder<ChatBloc, ChatState>(builder: (context, state) {
+                      BlocBuilder<ChatBloc, ChatState>(
+                          builder: (context, state) {
                         if ((state.unReadMessagesFromAllChats -
                                 countMessagesReceivedToMeNow) >
                             0) {
@@ -242,10 +246,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           : NoImageWidget(
                               height: 40,
                               width: 40.w,
-                              textStyle: context.textTheme.subtitle1?.br.copyWith(
-                                  color: const Color(0xff6638FF),
-                                  letterSpacing: 0.18,
-                                  height: 1.33),
+                              textStyle: context.textTheme.subtitle1?.br
+                                  .copyWith(
+                                      color: const Color(0xff6638FF),
+                                      letterSpacing: 0.18,
+                                      height: 1.33),
                               name: widget.receiverName),
                       20.horizontalSpace,
 
@@ -262,8 +267,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         receiverPhoto: widget.receiverPhoto,
                                         fullReceiverName:
                                             widget.fullReceiverName,
-                                        receiverPhone:
-                                            widget.receiverPhone)));
+                                        receiverPhone: widget.receiverPhone)));
                               },
                               child: MyTextWidget(
                                 widget.fullReceiverName,
@@ -300,7 +304,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                 callerInfo(channelId: widget.chatId);
                             PermissionStatus microphone =
                                 await Permission.microphone.request();
-                            var status2 = await Permission.mediaLibrary.request();
+                            var status2 =
+                                await Permission.mediaLibrary.request();
                             PermissionStatus camera =
                                 await Permission.camera.request();
                             if (microphone.isGranted &&
@@ -342,10 +347,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         onTap: () async {
                           try {
                             List<Map<String, dynamic>> info =
-                            callerInfo(channelId: widget.chatId);
+                                callerInfo(channelId: widget.chatId);
                             PermissionStatus microphone =
-                            await Permission.microphone.request();
-                            var status2 = await Permission.mediaLibrary.request();
+                                await Permission.microphone.request();
+                            var status2 =
+                                await Permission.mediaLibrary.request();
                             if (microphone.isGranted && status2.isGranted) {
                               //todo we have the receiver id so the chat dose not exist
                               if (info[0].containsKey('currentReceiver')) {
@@ -354,7 +360,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
                                 GetIt.I<CallsBloc>().add(MakeCallEvent(
                                     receiverUserId:
-                                    info[0]['currentReceiver'].toString(),
+                                        info[0]['currentReceiver'].toString(),
                                     receiverCallName: widget.fullReceiverName,
                                     chatId: info[1]['channelId'],
                                     isVideo: false,
@@ -377,14 +383,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                     payload: info[0]));
                                 //todo we have the id of the chat so we can move to the call immediately
                               }
-                            } else if (microphone.isDenied || status2.isDenied) {
+                            } else if (microphone.isDenied ||
+                                status2.isDenied) {
                               showMessage('permission denied');
                               openAppSettings();
                             }
-                          }catch(e , st){
+                          } catch (e, st) {
                             print(e);
                             print(st);
-
                           }
                         },
                         child: SvgPicture.asset(
@@ -399,10 +405,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 )),
           ),
           body: BlocListener<ChatBloc, ChatState>(
-            listenWhen: (p, c) => (p.getMessagesBetweenStatus !=
-                    c.getMessagesBetweenStatus &&
-                c.getMessagesBetweenStatus == GetMessagesBetweenStatus.success &&
-                c.scrollToParentMessage),
+            listenWhen: (p, c) =>
+                (p.getMessagesBetweenStatus != c.getMessagesBetweenStatus &&
+                    c.getMessagesBetweenStatus ==
+                        GetMessagesBetweenStatus.success &&
+                    c.scrollToParentMessage),
             listener: (context, state) {
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 scrollToIndex(1);
@@ -419,10 +426,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                 ReceiveMessageStatus.success),
                     listener: (context, state) {
                       print('llllllllllllllllllllllllllllllll');
-                      if (state.sendMessageStatus == SendMessageStatus.loading ||
+                      if (state.sendMessageStatus ==
+                              SendMessageStatus.loading ||
                           state.receiveMessageStatus ==
                               ReceiveMessageStatus.success) {
-                        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((timeStamp) {
                           _scrollToBottom();
                         });
                       }
@@ -430,7 +439,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                       print(chat.localId);
                       print(state.currentChannelReceivedMessage);
                       if (state.receiveMessageStatus ==
-                              ReceiveMessageStatus.success && (widget.chatId == state.currentChannelReceivedMessage || chat.localId == state.currentChannelReceivedMessage)) {
+                              ReceiveMessageStatus.success &&
+                          (widget.chatId ==
+                                  state.currentChannelReceivedMessage ||
+                              chat.localId ==
+                                  state.currentChannelReceivedMessage)) {
                         chatBloc.add(ReadAllMessagesEvent(chat.id.toString()));
                       }
                     },
@@ -473,7 +486,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                   reverse: true,
                                                   controller:
                                                       autoScrollController,
-                                                  itemBuilder: (context, index) {
+                                                  itemBuilder:
+                                                      (context, index) {
                                                     List<Message> messages =
                                                         chatState
                                                             .newSortedChatsByDate![
@@ -490,7 +504,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                               autoScrollController,
                                                           child: Column(
                                                             mainAxisSize:
-                                                                MainAxisSize.min,
+                                                                MainAxisSize
+                                                                    .min,
                                                             children: [
                                                               10.verticalSpace,
                                                               MessagesDate(
@@ -506,30 +521,36 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                         'senderUserId : ${messages[index].senderUserId}');
                                                     debugPrint(
                                                         'myChatId : ${_prefsRepository.myChatId}');
-                                                    bool isSent = messages[index]
-                                                            .senderUserId ==
-                                                        _prefsRepository.myChatId;
+                                                    bool isSent =
+                                                        messages[index]
+                                                                .senderUserId ==
+                                                            _prefsRepository
+                                                                .myChatId;
                                                     String? messageId =
                                                         messages[index].id;
                                                     messagesIndexes[
-                                                        messages[index]
-                                                            .id
-                                                            .toString()] = index;
+                                                            messages[index]
+                                                                .id
+                                                                .toString()] =
+                                                        index;
                                                     return AutoScrollTag(
-                                                        key: ValueKey(messageId),
+                                                        key:
+                                                            ValueKey(messageId),
                                                         index: index,
                                                         controller:
                                                             autoScrollController,
                                                         child: Column(
                                                             mainAxisSize:
-                                                                MainAxisSize.min,
+                                                                MainAxisSize
+                                                                    .min,
                                                             children: [
                                                               messages[index]
                                                                       .isFirstMessage!
                                                                   ? 30.verticalSpace
                                                                   : 10.verticalSpace,
                                                               GestureDetector(
-                                                                onLongPress: () {
+                                                                onLongPress:
+                                                                    () {
                                                                   if ((chatState
                                                                               .sendMessageStatus ==
                                                                           SendMessageStatus
@@ -557,7 +578,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                   rebuildMessage
                                                                       .value = -1;
                                                                 },
-                                                                child: Container(
+                                                                child:
+                                                                    Container(
                                                                   color: currentScrolledIndex ==
                                                                           index
                                                                       ? Colors
@@ -570,8 +592,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                     message:
                                                                         messages[
                                                                             index],
-                                                                    senderName: widget
-                                                                        .senderName,
+                                                                    senderName:
+                                                                        widget
+                                                                            .senderName,
                                                                     receiverName:
                                                                         widget
                                                                             .receiverName,
@@ -604,7 +627,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                   .w
                                                                               : 20
                                                                                   .w,
-                                                                          top: 10,
+                                                                          top:
+                                                                              10,
                                                                           right: isSent
                                                                               ? 20.w
                                                                               : 40.w),
@@ -612,38 +636,30 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                           onPanDown: (details) {
                                                                             if ((details.localPosition.dx - (isSent ? 140 : 0)) <
                                                                                 40) {
-                                                                              currentFocusedIcon.value =
-                                                                                  -1;
+                                                                              currentFocusedIcon.value = -1;
                                                                             } else if ((details.localPosition.dx - (isSent ? 140 : 0)) >
                                                                                 210.w) {
-                                                                              currentFocusedIcon.value =
-                                                                                  5;
+                                                                              currentFocusedIcon.value = 5;
                                                                             } else {
-                                                                              currentFocusedIcon.value =
-                                                                                  (details.localPosition.dx - 40 - (isSent ? 140 : 0)) ~/ 30.w;
+                                                                              currentFocusedIcon.value = (details.localPosition.dx - 40 - (isSent ? 140 : 0)) ~/ 30.w;
                                                                             }
                                                                           },
                                                                           onPanEnd: (details) {
-                                                                            debugPrint(
-                                                                                'end');
+                                                                            debugPrint('end');
                                                                             rebuildMessage.value =
                                                                                 -1;
-                                                                            dealWithMessageOptions(
-                                                                                currentFocusedIcon.value,
+                                                                            dealWithMessageOptions(currentFocusedIcon.value,
                                                                                 messageId);
                                                                           },
                                                                           onPanUpdate: (details) {
                                                                             if ((details.localPosition.dx - (isSent ? 140 : 0)) <
                                                                                 40) {
-                                                                              currentFocusedIcon.value =
-                                                                                  -1;
+                                                                              currentFocusedIcon.value = -1;
                                                                             } else if ((details.localPosition.dx - (isSent ? 140 : 0)) >
                                                                                 210.w) {
-                                                                              currentFocusedIcon.value =
-                                                                                  5;
+                                                                              currentFocusedIcon.value = 5;
                                                                             } else {
-                                                                              currentFocusedIcon.value =
-                                                                                  (details.localPosition.dx - 40 - (isSent ? 140 : 0)) ~/ 30.w;
+                                                                              currentFocusedIcon.value = (details.localPosition.dx - 40 - (isSent ? 140 : 0)) ~/ 30.w;
                                                                             }
                                                                           },
                                                                           child: Directionality(
@@ -812,8 +828,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         ChannelMember member = chat.channelMembers!.firstWhere(
                             (element) =>
                                 element.userId != _prefsRepository.myChatId);
-                        String mimeStr = lookupMimeType(file.absolute.path) ?? '';
-                        bool isMediaFile = mimeStr.split('/')[0] != 'application';
+                        String mimeStr =
+                            lookupMimeType(file.absolute.path) ?? '';
+                        bool isMediaFile =
+                            mimeStr.split('/')[0] != 'application';
 
                         chatBloc.add(UploadFileEvent(
                             file: file,
@@ -1021,15 +1039,25 @@ class _SinglePageChatState extends State<SinglePageChat> {
             message.senderUserId != null) ||
         (message.receiverUserId != _prefsRepository.myChatId &&
             message.receiverUserId != null);
-    MessageStatus? messageStatus =  message.messageStatus
+    MessageStatus? messageStatus = message.messageStatus
         ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
+    time = messageStatus?.isWatched ?? false
+        ? messageStatus?.watchedAt
+        : messageStatus?.isReceived == 1
+            ? messageStatus?.receivedAt
+            : message.createdAt;
+
     if (message.parentMessageId != null && message.parentMessage != null) {
       Message parentMessage = message.parentMessage!;
       MessageStatus? parentMessageStatus = parentMessage.messageStatus
           ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
+
       if (parentMessage.senderUserId != message.senderUserId) {
         return ReplayMessage(
             messageDate: message.createdAt!,
+            time: message.senderUserId != _prefsRepository.myChatId
+                ? message.createdAt!
+                : time!,
             scrollToMessage: () => scrollToIndex(
                 messagesIndexes[parentMessage.id.toString()] ?? -1,
                 currentId: message.id!,
@@ -1038,14 +1066,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
             answeredFilePath: message.mediaMessageContent?[0].filePath,
             messageAnswer: message.messageContent?.content,
             isFirstMessage: message.isFirstMessage!,
-            replayedPhoto:
-                parentMessage.senderUserId == _prefsRepository.myChatId.toString()
-                    ? senderPhoto
-                    : receiverPhoto,
-            replayedName:
-                parentMessage.senderUserId == _prefsRepository.myChatId.toString()
-                    ? senderName
-                    : receiverName,
+            replayedPhoto: parentMessage.senderUserId ==
+                    _prefsRepository.myChatId.toString()
+                ? senderPhoto
+                : receiverPhoto,
+            replayedName: parentMessage.senderUserId ==
+                    _prefsRepository.myChatId.toString()
+                ? senderName
+                : receiverName,
             senderAnswerName: senderName,
             senderAnswerPhoto: senderPhoto,
             isISentFirstMessage:
@@ -1067,11 +1095,16 @@ class _SinglePageChatState extends State<SinglePageChat> {
                             ? 'Video'
                             : 'Voice'
                 : parentMessage.messageContent!.content.toString(),
+            receivedAt: messageStatus?.receivedAt,
             messageAnswerId: message.id!);
       } else {
         return ReplayOnMeMessage(
-            messageDate: message.createdAt!,
+            time: message.senderUserId != _prefsRepository.myChatId
+                ? message.createdAt!
+                : time!,
             messageId: message.parentMessageId!,
+            receivedAt: messageStatus?.receivedAt,
+            createAt: message.createdAt,
             answeredFilePath: message.mediaMessageContent?[0].filePath,
             messageAnswer: message.messageContent?.content,
             answeredFile: message.file,
@@ -1084,14 +1117,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isSent: isSentMessage,
             isFirstMessage: message.isFirstMessage!,
             parentSenderId: parentMessage.senderUserId!,
-            replayedPhoto:
-                parentMessage.senderUserId == _prefsRepository.myChatId.toString()
-                    ? senderPhoto
-                    : receiverPhoto,
-            replayedName:
-                parentMessage.senderUserId == _prefsRepository.myChatId.toString()
-                    ? senderName
-                    : receiverName,
+            replayedPhoto: parentMessage.senderUserId ==
+                    _prefsRepository.myChatId.toString()
+                ? senderPhoto
+                : receiverPhoto,
+            replayedName: parentMessage.senderUserId ==
+                    _prefsRepository.myChatId.toString()
+                ? senderName
+                : receiverName,
             senderAnswerName: senderName,
             senderAnswerPhoto: senderPhoto,
             isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
@@ -1114,39 +1147,39 @@ class _SinglePageChatState extends State<SinglePageChat> {
       switch (message.messageType!.name) {
         case 'TextMessage':
           return TextMessage(
+            receivedAt: messageStatus?.receivedAt,
+            createAt: message.createdAt,
             message: message.messageContent!.content.toString(),
             messageId: message.id!,
             senderId: message.senderUserId!,
             isSent: isSentMessage,
             isRead: messageStatus?.isWatched ?? false,
-            userMessageName: isSentMessage
-                ? senderName
-                : receiverName,
-            userMessagePhoto:
-            isSentMessage
-                    ? senderPhoto
-                    : receiverPhoto,
+            userMessageName: isSentMessage ? senderName : receiverName,
+            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isFirstMessage:
                 message.isFirstMessage! || message.isFirstMessageForThisDay!,
-            time: message.createdAt!,
+            time: message.senderUserId != _prefsRepository.myChatId
+                ? message.createdAt!
+                : time!,
             isForwarded: message.isForward == 1,
           );
         case 'ImageMessage':
           return ImageMessage(
+            receivedAt: messageStatus?.receivedAt,
+            createAt: message.createdAt,
             isSent: isSentMessage,
             imageFile: message.file,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
             imageUrl: message.mediaMessageContent?[0].filePath,
-            time: message.createdAt!,
-            userMessageName: isSentMessage
+            time: message.senderUserId != _prefsRepository.myChatId
+                ? message.createdAt!
+                : time!,
+            userMessageName: message.receiverUserId != _prefsRepository.myChatId
                 ? senderName
                 : receiverName,
-            userMessagePhoto:
-            isSentMessage
-                    ? senderPhoto
-                    : receiverPhoto,
+            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
             isFirstMessage:
                 message.isFirstMessage! || message.isFirstMessageForThisDay!,
             isRead: messageStatus?.isWatched ?? false,
@@ -1156,20 +1189,21 @@ class _SinglePageChatState extends State<SinglePageChat> {
           );
         case 'VideoMessage':
           return VideoMessage(
+            receivedAt: messageStatus?.receivedAt,
+            createAt: message.createdAt,
             key: ValueKey(message.id),
             isSent: isSentMessage,
             videoFile: message.file,
             videoUrl: message.mediaMessageContent?[0].filePath,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
-            time: message.createdAt!,
-            userMessageName: isSentMessage
+            time: message.senderUserId != _prefsRepository.myChatId
+                ? message.createdAt!
+                : time!,
+            userMessageName: message.receiverUserId != _prefsRepository.myChatId
                 ? senderName
                 : receiverName,
-            userMessagePhoto:
-            isSentMessage
-                    ? senderPhoto
-                    : receiverPhoto,
+            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
             isFirstMessage:
                 message.isFirstMessage! || message.isFirstMessageForThisDay!,
             isRead: messageStatus?.isWatched ?? false,
@@ -1179,19 +1213,19 @@ class _SinglePageChatState extends State<SinglePageChat> {
           );
         case 'VoiceMessage':
           return VoiceMessage(
+            time: message.senderUserId != _prefsRepository.myChatId
+                ? message.createdAt!
+                : time!,
+            receivedAt: messageStatus?.receivedAt,
+            createAt: message.createdAt,
             isSent: isSentMessage,
             file: message.file,
             fileUrl: message.mediaMessageContent?[0].filePath,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
-            userMessageName: isSentMessage
-                ? senderName
-                : receiverName,
-            userMessagePhoto:
-            isSentMessage
-                    ? senderPhoto
-                    : receiverPhoto,
-            time: message.createdAt!,
+            userMessageName: isSentMessage ? senderName : receiverName,
+            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
+            watchedAt: messageStatus?.watchedAt ?? DateTime.now(),
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isFirstMessage:
@@ -1202,20 +1236,19 @@ class _SinglePageChatState extends State<SinglePageChat> {
           String fileName = message.file?.path.split('/').last ??
               message.mediaMessageContent![0].filePath!.split('/').last;
           return DocumentMessage(
+            receivedAt: messageStatus?.receivedAt,
+            createAt: message.createdAt,
             isSent: isSentMessage,
             documentFile: message.file,
             fileName: fileName,
             documentFileUrl: message.mediaMessageContent?[0].filePath,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
-            userMessageName: isSentMessage
-                ? senderName
-                : receiverName,
-            userMessagePhoto:
-            isSentMessage
-                    ? senderPhoto
-                    : receiverPhoto,
-            time: message.createdAt!,
+            userMessageName: isSentMessage ? senderName : receiverName,
+            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
+            time: message.senderUserId != _prefsRepository.myChatId
+                ? message.createdAt!
+                : time!,
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isFirstMessage:
@@ -1228,13 +1261,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
             message: 'Video Call At',
             time: message.createdAt!,
             isSent: isSentMessage,
-            userMessageName: isSentMessage
-                ? senderName
-                : receiverName,
-            userMessagePhoto:
-            isSentMessage
-                    ? senderPhoto
-                    : receiverPhoto,
+            userMessageName: isSentMessage ? senderName : receiverName,
+            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
           );
         case 'VoiceCall':
           return CallMessage(
@@ -1242,13 +1270,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
             message: 'Voice Call At',
             isSent: isSentMessage,
             time: message.createdAt!,
-            userMessageName: isSentMessage
-                ? senderName
-                : receiverName,
-            userMessagePhoto:
-            isSentMessage
-                    ? senderPhoto
-                    : receiverPhoto,
+            userMessageName: isSentMessage ? senderName : receiverName,
+            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
           );
       }
     }

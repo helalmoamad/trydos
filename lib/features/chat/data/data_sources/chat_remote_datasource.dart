@@ -15,6 +15,7 @@ import '../../../../core/api/client_config.dart';
 import '../../../../core/api/methods/get.dart';
 import '../../../../core/api/methods/post.dart';
 import '../models/ImageDetail.dart';
+import '../models/media_count.dart';
 import '../models/my_chats_response_model.dart';
 
 @injectable
@@ -214,5 +215,17 @@ class ChatRemoteDataSource {
       // GetIt.I<StoryBloc>().add(LoadFailureEvent());
     }
     return completer.future;
+  }
+
+  Future<MediaCount> getMediaCount(Map<String, dynamic> params) {
+    GetClient<MediaCount> receiveMessage = GetClient<MediaCount>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<MediaCount>(
+        endpoint: ChatEndPoints.getMediaCount(params["id"]),
+        response: ResponseValue<MediaCount>(
+            fromJson: (response) => MediaCount.fromJson(response)),
+      ),
+    );
+    return receiveMessage();
   }
 }
