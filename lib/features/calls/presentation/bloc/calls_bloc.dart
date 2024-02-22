@@ -173,7 +173,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       RejectVideoCallEvent event, Emitter<CallsState> emit) async {
     debugPrint("RejectVideoCallEvent");
     final response = await rejectCallUseCase(
-        RejectCallParams(messageId: event.messageId, payload: event.payload));
+        RejectCallParams(messageId: event.messageId, payload: event.payload , duration: event.duration));
     response.fold((l) => null, (r) {
       emit(
           state.copyWith(rejectVideoCallStatus: RejectVideoCallStatus.success));

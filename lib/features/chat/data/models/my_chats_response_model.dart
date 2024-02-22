@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+
 import '../../../../core/data/model/pagination_model.dart';
 
 MyChatsResponseModel myChatsResponseModelFromJson(String str) =>
@@ -406,40 +408,74 @@ class MessageContent {
 }
 
 class MessageStatus {
+  final int? id;
   final int? userId;
+  final dynamic isSent;
   final int? isReceived;
   final bool? isWatched;
+  final DateTime? watchedAt;
+  final DateTime? receivedAt;
+  final DateTime? createdAt;
 
   MessageStatus({
+    this.id,
     this.userId,
+    this.isSent,
     this.isReceived,
     this.isWatched,
+    this.watchedAt,
+    this.receivedAt,
+    this.createdAt,
   });
 
   MessageStatus copyWith({
-    final int? userId,
-    final int? isReceived,
-    final bool? isWatched,
-  }) {
-    return MessageStatus(
-      userId: userId ?? this.userId,
-      isReceived: isReceived ?? this.isReceived,
-      isWatched: isWatched ?? this.isWatched,
-    );
-  }
+    int? id,
+    int? userId,
+    dynamic isSent,
+    int? isReceived,
+    bool? isWatched,
+    DateTime? watchedAt,
+    DateTime? receivedAt,
+    DateTime? createdAt,
+  }) =>
+      MessageStatus(
+        id: id ?? this.id,
+        userId: userId ?? this.userId,
+        isSent: isSent ?? this.isSent,
+        isReceived: isReceived ?? this.isReceived,
+        isWatched: isWatched ?? this.isWatched,
+        watchedAt: watchedAt ?? this.watchedAt,
+        receivedAt: receivedAt ?? this.receivedAt,
+        createdAt: createdAt ?? this.createdAt,
+      );
 
   factory MessageStatus.fromJson(Map<String, dynamic> json) =>
       MessageStatus(
+        id: json["id"],
         userId: json["user_id"],
+        isSent: json["is_sent"],
         isReceived: json["is_received"],
         isWatched: json["is_watched"],
+        watchedAt: json["watched_at"] == null
+            ? null
+            : DateTime.parse(json["watched_at"]),
+        receivedAt: json["received_at"] == null
+            ? null
+            : DateTime.parse(json["received_at"]),
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
       );
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
+        "id": id,
         "user_id": userId,
+        "is_sent": isSent,
         "is_received": isReceived,
         "is_watched": isWatched,
+        "watched_at": watchedAt?.toIso8601String(),
+        "received_at": receivedAt?.toIso8601String(),
+        "created_at": createdAt?.toIso8601String(),
       };
 }
 

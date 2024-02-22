@@ -58,7 +58,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
       // transformer: throttleDroppable(throttleDuration)
     );
     on<LoadFailureEvent>(((event, emit) => emit(state.copyWith(
-        storiesCollections: state.storiesCollections.map((e) {
+            storiesCollections: state.storiesCollections.map((e) {
           if (e.id == event.collectionId) {
             return e.copyWith(
                 selectedStoriesStatusForCollection:
@@ -126,7 +126,8 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
     }, (r) {
       if (GetIt.I<PrefsRepository>().myStoriesId ==
           state.storiesCollections.first.stories![0].userId) {
-        List<Story> currentUserStories = List.of(state.storiesCollections.first.stories!);
+        List<Story> currentUserStories =
+            List.of(state.storiesCollections.first.stories!);
         currentUserStories.insert(currentUserStories.length, r.data!);
 //      //todo check if the use exist in the array and the story to it's stories
         state.storiesCollections.first.stories = currentUserStories;
@@ -135,7 +136,8 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
             uploadStoryStatus: UploadStoryStatus.success));
       } else {
         debugPrint('object222');
-        state.storiesCollections.insert(0, CollectionStoryModel(stories: [r.data!]));
+        state.storiesCollections
+            .insert(0, CollectionStoryModel(stories: [r.data!]));
         debugPrint('upload 22 ');
         emit(state.copyWith(
             storiesCollections: state.storiesCollections,
@@ -147,25 +149,29 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
   _onStorySelectedEvent(
       StorySelectedEvent event, Emitter<StoryState> emit) async {
     //todo make the story seen when he press to show it
-    debugPrint('currentStoryInEachCollection ${event.selectedStoryIndexInCollection}');
+    debugPrint(
+        'currentStoryInEachCollection ${event.selectedStoryIndexInCollection}');
     debugPrint('selected ${event.collectionIndex}');
-    debugPrint('state.currentStoryInEachCollection ${state.currentStoryInEachCollection[event.collectionIndex]}');
-    Story story =  state
-        .storiesCollections[event.collectionIndex]
-        .stories![max(state.currentStoryInEachCollection[event.collectionIndex]!, event.selectedStoryIndexInCollection)];
+    debugPrint(
+        'state.currentStoryInEachCollection ${state.currentStoryInEachCollection[event.collectionIndex]}');
+    Story story = state.storiesCollections[event.collectionIndex].stories![max(
+        state.currentStoryInEachCollection[event.collectionIndex]!,
+        event.selectedStoryIndexInCollection)];
     // state
     //     .stories[event.selected]
     //     .stories![max(state.currentStoryInEachCollection[event.selected]!, event.currentStoryInEachCollection)]
     //     .isSeen = true;
-    if(!(story.isSeen ?? false)) {
+    if (!(story.isSeen ?? false)) {
       add(IncreaseViewersEvent(
-          collectionId: state.storiesCollections[event.collectionIndex].toString(),
+          collectionId:
+              state.storiesCollections[event.collectionIndex].toString(),
           storyId: story.id.toString()));
     }
     Map<int, int?> initialStories = Map.of(state.currentStoryInEachCollection);
-    initialStories[event.collectionIndex] = event.selectedStoryIndexInCollection == -1
-        ? initialStories[event.collectionIndex]
-        : event.selectedStoryIndexInCollection;
+    initialStories[event.collectionIndex] =
+        event.selectedStoryIndexInCollection == -1
+            ? initialStories[event.collectionIndex]
+            : event.selectedStoryIndexInCollection;
     //todo make  the state loading
     emit(state.copyWith(
       //selectedStoriesStatus: SelectedStoriesStatus.loading,
@@ -175,8 +181,10 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
       currentStoryInEachCollection: initialStories,
     ));
 
-    var currentStoryInEachCollection = state.storiesCollections[event.collectionIndex]
-        .stories![max(state.currentStoryInEachCollection[event.collectionIndex]!, event.selectedStoryIndexInCollection)];
+    var currentStoryInEachCollection =
+        state.storiesCollections[event.collectionIndex].stories![max(
+            state.currentStoryInEachCollection[event.collectionIndex]!,
+            event.selectedStoryIndexInCollection)];
     if (currentStoryInEachCollection.isPhoto == 1) {
 //todo debug
       //todo bring the real width and height for selected photo
@@ -200,7 +208,8 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
               isFailedTheFirstTime.length, 'StorySelectedEvent');
           GetIt.I<StoryBloc>().add(StorySelectedEvent(
               collectionIndex: event.collectionIndex,
-              selectedStoryIndexInCollection: event.selectedStoryIndexInCollection,
+              selectedStoryIndexInCollection:
+                  event.selectedStoryIndexInCollection,
               currentPage: event.currentPage));
         }
       }, (r) {
@@ -307,7 +316,8 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
           fullVideoPath: isVideoFile ? event.filePath : null);
       if (GetIt.I<PrefsRepository>().myStoriesId ==
           state.storiesCollections.first.stories![0].userId) {
-        List<Story> currentUserStories = List.of(state.storiesCollections.first.stories!);
+        List<Story> currentUserStories =
+            List.of(state.storiesCollections.first.stories!);
         currentUserStories.insert(currentUserStories.length, story);
         state.storiesCollections.first.stories = currentUserStories;
       } else {

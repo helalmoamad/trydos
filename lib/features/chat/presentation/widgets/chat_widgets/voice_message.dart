@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -19,15 +20,16 @@ import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../../app/my_text_widget.dart';
+import '../../manager/chat_event.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
+import 'text_message.dart';
 
 class VoiceMessage extends StatefulWidget {
   VoiceMessage(
       {Key? key,
       required this.isSent,
       required this.messageId,
-      required this.time,
       required this.isRead,
       required this.isReceived,
       required this.senderId,
@@ -36,7 +38,11 @@ class VoiceMessage extends StatefulWidget {
       this.file,
       this.fileUrl,
       this.isForwarded = false,
-      required this.isFirstMessage})
+      required this.isFirstMessage,
+      this.receivedAt,
+      this.createAt,
+      this.watchedAt,
+      required this.time})
       : super(key: key);
   final bool isSent;
   final bool isFirstMessage;
@@ -44,11 +50,15 @@ class VoiceMessage extends StatefulWidget {
   final String messageId;
   File? file;
   final String? fileUrl;
+  final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   final DateTime time;
   bool isRead;
   bool isReceived;
   final int senderId;
   final String? userMessagePhoto;
+  final DateTime? receivedAt;
+  final DateTime? createAt;
+  final DateTime? watchedAt;
   final String userMessageName;
 
   @override
@@ -57,12 +67,14 @@ class VoiceMessage extends StatefulWidget {
 
 class _VoiceMessageState extends State<VoiceMessage> {
   final AudioPlayer audioPlayer = AudioPlayer();
+
   ValueNotifier<bool> audioPlayingNotifier = ValueNotifier(false);
   ValueNotifier<bool> durationChangedNotifier = ValueNotifier(false);
   PlayerState audioPlayerState = PlayerState.stopped;
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
   late final Source audioSource;
+  bool timer = false;
 
 //  final ValueNotifier<int> _loadingFile =  ValueNotifier(0);
 
@@ -81,6 +93,11 @@ class _VoiceMessageState extends State<VoiceMessage> {
 
   @override
   void initState() {
+    Timer(Duration(seconds: 4), () {
+      setState(() {
+        timer = true;
+      });
+    });
     // audioPlayer.onDurationChanged.listen((Duration duration) {
     //   debugPrint(duration);
     //
@@ -144,22 +161,43 @@ class _VoiceMessageState extends State<VoiceMessage> {
           padding: HWEdgeInsets.only(
               right: widget.isSent ? 25.w : 0, left: widget.isSent ? 0 : 25.w),
           child: SwipeTo(
+            onLeftSwipe: () {
+              if (widget.senderId == widget._prefsRepository.myChatId) {
+                if ((state.sendMessageStatus == SendMessageStatus.loading &&
+                    state.currentMessage.contains(widget.messageId))) {
+                  return;
+                }
+                BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
+                    true,
+                    'voice',
+                    senderParentMessageId: widget.senderId,
+                    widget.isSent,
+                    messageId: widget.messageId,
+                    time: widget.createAt,
+                    message: 'Voice'));
+              } else {}
+            },
             animationDuration: const Duration(milliseconds: 150),
             offsetDx: 0.15,
             iconSize: 0,
             onRightSwipe: () {
-              if ((state.sendMessageStatus == SendMessageStatus.loading &&
-                  state.currentMessage.contains(widget.messageId))) {
-                return;
+              if (widget.senderId == widget._prefsRepository.myChatId) {
+                BlocProvider.of<ChatBloc>(context)
+                    .add(ChangeSlop(messageId: widget.messageId));
+              } else if (widget.senderId == widget._prefsRepository.myChatId) {
+                if ((state.sendMessageStatus == SendMessageStatus.loading &&
+                    state.currentMessage.contains(widget.messageId))) {
+                  return;
+                }
+                BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
+                    true,
+                    'voice',
+                    senderParentMessageId: widget.senderId,
+                    widget.isSent,
+                    messageId: widget.messageId,
+                    time: widget.createAt,
+                    message: 'Voice'));
               }
-              BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
-                  true,
-                  'voice',
-                  senderParentMessageId: widget.senderId,
-                  widget.isSent,
-                  messageId: widget.messageId,
-                  time: widget.time,
-                  message: 'Voice'));
             },
             child: Directionality(
               textDirection: TextDirection.ltr,
@@ -173,430 +211,473 @@ class _VoiceMessageState extends State<VoiceMessage> {
                         ? CrossAxisAlignment.start
                         : CrossAxisAlignment.end,
                     children: [
-                      Stack(
-                        alignment: widget.isSent
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        children: [
-                          Container(
-                            height: 70,
-                            width: 365.w,
-                            decoration: BoxDecoration(
-                                color: widget.isSent
-                                    ? const Color(0xffFFF9B4)
-                                    : const Color(0xffB4FED9),
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                      //todo change the commented opacity to fromARGB for better performance
-                                      color: Color.fromARGB(50, 0, 0, 0)
-//                                      context.colorScheme.black
-//                                          .withOpacity(0.05)
-                                      ,
-                                      offset: const Offset(0, 3),
-                                      blurRadius: 6)
-                                ]),
-                            child: Padding(
-                              padding: HWEdgeInsets.only(
-                                  left: widget.isSent ? 20.w : 27.w,
-                                  top: 8,
-                                  right: widget.isSent ? 27.w : 20.w),
-                              child: ValueListenableBuilder<bool>(
-                                  valueListenable: audioPlayingNotifier,
-                                  builder: (context, isPlaying, _) {
-                                    return Column(
-                                      children: [
-                                        SizedBox(
-                                            height: 41,
-                                            width: 318.w,
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              children: [
-                                                if (widget.isSent) ...{
-                                                  InkWell(
-                                                    onTap: audioToggle,
-                                                    child: SvgPicture.asset(
-                                                      isPlaying
-                                                          ? AppAssets.playSvg
-                                                          : AppAssets.pauseSvg,
-                                                      width: 20.sp,
-                                                      height: 20.sp,
+                      Transform.translate(
+                        offset: !(state.isSlpoing &&
+                                state.slopMessageId!
+                                    .contains(widget.messageId) &&
+                                (widget.isReceived || widget.isRead))
+                            ? Offset(0, 0)
+                            : widget.senderId ==
+                                    widget._prefsRepository.myChatId
+                                ? Offset(100.w, 0)
+                                : Offset(-100.w, 0),
+                        child: Stack(
+                          alignment: widget.isSent
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          children: [
+                            Container(
+                              height: 70,
+                              width: 365.w,
+                              decoration: BoxDecoration(
+                                  color: widget.isSent
+                                      ? const Color(0xffFFF9B4)
+                                      : const Color(0xffB4FED9),
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        //todo change the commented opacity to fromARGB for better performance
+                                        color: Color.fromARGB(50, 0, 0, 0)
+                                        //                                      context.colorScheme.black
+                                        //                                          .withOpacity(0.05)
+                                        ,
+                                        offset: const Offset(0, 3),
+                                        blurRadius: 6)
+                                  ]),
+                              child: Padding(
+                                padding: HWEdgeInsets.only(
+                                    left: widget.isSent ? 20.w : 27.w,
+                                    top: 8,
+                                    right: widget.isSent ? 27.w : 20.w),
+                                child: ValueListenableBuilder<bool>(
+                                    valueListenable: audioPlayingNotifier,
+                                    builder: (context, isPlaying, _) {
+                                      return Column(
+                                        children: [
+                                          SizedBox(
+                                              height: 41,
+                                              width: 318.w,
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  if (widget.isSent) ...{
+                                                    InkWell(
+                                                      onTap: audioToggle,
+                                                      child: SvgPicture.asset(
+                                                        isPlaying
+                                                            ? AppAssets.playSvg
+                                                            : AppAssets
+                                                                .pauseSvg,
+                                                        width: 20.sp,
+                                                        height: 20.sp,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  26.horizontalSpace,
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      duration == Duration.zero
-                                                          ? Padding(
-                                                              padding: HWEdgeInsets
-                                                                  .only(
-                                                                      top: 5.0),
-                                                              child:
-                                                                  TrydosLoader(
-                                                                size: 15.sp,
+                                                    26.horizontalSpace,
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        duration ==
+                                                                Duration.zero
+                                                            ? Padding(
+                                                                padding:
+                                                                    HWEdgeInsets
+                                                                        .only(
+                                                                            top:
+                                                                                5.0),
+                                                                child:
+                                                                    TrydosLoader(
+                                                                  size: 15.sp,
+                                                                ),
+                                                              )
+                                                            : Container(
+                                                                width: 47.w,
+                                                                height: 20,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              15.0),
+                                                                  border: Border.all(
+                                                                      width:
+                                                                          0.4,
+                                                                      color: const Color(
+                                                                          0xff388cff)),
+                                                                ),
+                                                                child: Center(
+                                                                  child: ValueListenableBuilder<
+                                                                          bool>(
+                                                                      valueListenable:
+                                                                          durationChangedNotifier,
+                                                                      builder: (context,
+                                                                          durationChanged,
+                                                                          _) {
+                                                                        return MyTextWidget(
+                                                                          (isPlaying)
+                                                                              ? HelperFunctions.getTimeInFormat(position)
+                                                                              : HelperFunctions.getTimeInFormat(duration),
+                                                                          style: context
+                                                                              .textTheme
+                                                                              .overline
+                                                                              ?.rt
+                                                                              .copyWith(color: const Color(0xff404040), height: 1.4),
+                                                                          textAlign:
+                                                                              TextAlign.center,
+                                                                        );
+                                                                      }),
+                                                                )),
+                                                        1.verticalSpace,
+                                                        SizedBox(
+                                                          height: 20,
+                                                          width: 220.w,
+                                                          child: Stack(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            children: [
+                                                              SvgPicture.string(
+                                                                '<svg viewBox="117.0 1976.5 220.0 1.0" ><path transform="translate(117.0, 1976.5)" d="M 0 0 L 220 0" fill="none" stroke="#707070" stroke-width="1" stroke-miterlimit="4" stroke-linecap="round" /></svg>',
+                                                                allowDrawingOutsideViewBox:
+                                                                    true,
+                                                                fit:
+                                                                    BoxFit.fill,
                                                               ),
-                                                            )
-                                                          : Container(
-                                                              width: 47.w,
-                                                              height: 20,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            15.0),
-                                                                border: Border.all(
-                                                                    width: 0.4,
-                                                                    color: const Color(
-                                                                        0xff388cff)),
-                                                              ),
-                                                              child: Center(
-                                                                child: ValueListenableBuilder<
-                                                                        bool>(
-                                                                    valueListenable:
-                                                                        durationChangedNotifier,
-                                                                    builder:
-                                                                        (context,
-                                                                            durationChanged,
-                                                                            _) {
-                                                                      return MyTextWidget(
-                                                                        (isPlaying)
-                                                                            ? HelperFunctions.getTimeInFormat(position)
-                                                                            : HelperFunctions.getTimeInFormat(duration),
-                                                                        style: context
-                                                                            .textTheme
-                                                                            .overline
-                                                                            ?.rt
-                                                                            .copyWith(
-                                                                                color: const Color(0xff404040),
-                                                                                height: 1.4),
-                                                                        textAlign:
-                                                                            TextAlign.center,
-                                                                      );
-                                                                    }),
-                                                              )),
-                                                      1.verticalSpace,
-                                                      SizedBox(
-                                                        height: 20,
-                                                        width: 220.w,
-                                                        child: Stack(
-                                                          alignment:
-                                                              Alignment.center,
-                                                          children: [
-                                                            SvgPicture.string(
-                                                              '<svg viewBox="117.0 1976.5 220.0 1.0" ><path transform="translate(117.0, 1976.5)" d="M 0 0 L 220 0" fill="none" stroke="#707070" stroke-width="1" stroke-miterlimit="4" stroke-linecap="round" /></svg>',
-                                                              allowDrawingOutsideViewBox:
-                                                                  true,
-                                                              fit: BoxFit.fill,
-                                                            ),
-                                                            const VoiceWaves(),
-                                                            // if (widget.file == null) ...{
-                                                            //   10.horizontalSpace,
-                                                            //   ValueListenableBuilder<int>(
-                                                            //       valueListenable: _loadingFile,
-                                                            //       builder: (context, status, _) {
-                                                            //         if (status == 0) {
-                                                            //           return InkWell(
-                                                            //             onTap: () async{
-                                                            //               _loadingFile.value = 1;
-                                                            //             },
-                                                            //             child: Icon(
-                                                            //                 Icons
-                                                            //                     .save_alt_outlined,
-                                                            //                 color: const Color(
-                                                            //                     0xff388CFF),
-                                                            //                 size: 20.sp),
-                                                            //           );
-                                                            //         } else if (status == 1) {
-                                                            //           FileSaving().downloadFileToLocalStorage(widget.fileUrl!,action: (File? file){
-                                                            //             _loadingFile.value=2;
-                                                            //             widget.file=file;
-                                                            //             getAudioDuration();
-                                                            //             setState(() {
-                                                            //
-                                                            //             });
-                                                            //           });
-                                                            //           return  CircularProgressIndicator(
-                                                            //             backgroundColor: Colors.grey.shade100,
-                                                            //             color:
-                                                            //             const  Color(0xff388CFF),
-                                                            //           );
-                                                            //         }else{
-                                                            //           return const SizedBox.shrink();
-                                                            //         }
-                                                            //       }),
-                                                            // }
-                                                          ],
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  16.horizontalSpace,
-                                                  SvgPicture.asset(
-                                                    AppAssets.voicePlayedSvg,
-                                                    width: 25.w,
-                                                    height: 28,
-                                                  )
-                                                } else ...{
-                                                  //todo these transform cost a lot of resources i make a trick to avoid use this transformer
-//                                                  Transform(
-//                                                      alignment:
-//                                                          Alignment.center,
-//                                                      transform: Matrix4
-//                                                          .diagonal3Values(
-//                                                              -1.0, 1.0, 2.0),
-//                                                      child: SvgPicture.asset(
-//                                                        AppAssets
-//                                                            .voicePlayedSvg,
-//                                                        width: 25.w,
-//                                                        height: 28,
-//                                                      )),
-                                                  SvgPicture.asset(
-                                                    AppAssets.voicePlayedSvg,
-                                                    width: 25.w,
-                                                    height: 28,
-                                                  ),
-                                                  15.horizontalSpace,
-                                                  InkWell(
-                                                    onTap: audioToggle,
-                                                    child: SvgPicture.asset(
-                                                      isPlaying
-                                                          ? AppAssets.playSvg
-                                                          : AppAssets.pauseSvg,
-                                                      width: 20.sp,
-                                                      height: 20.sp,
+                                                              const VoiceWaves(),
+                                                              // if (widget.file == null) ...{
+                                                              //   10.horizontalSpace,
+                                                              //   ValueListenableBuilder<int>(
+                                                              //       valueListenable: _loadingFile,
+                                                              //       builder: (context, status, _) {
+                                                              //         if (status == 0) {
+                                                              //           return InkWell(
+                                                              //             onTap: () async{
+                                                              //               _loadingFile.value = 1;
+                                                              //             },
+                                                              //             child: Icon(
+                                                              //                 Icons
+                                                              //                     .save_alt_outlined,
+                                                              //                 color: const Color(
+                                                              //                     0xff388CFF),
+                                                              //                 size: 20.sp),
+                                                              //           );
+                                                              //         } else if (status == 1) {
+                                                              //           FileSaving().downloadFileToLocalStorage(widget.fileUrl!,action: (File? file){
+                                                              //             _loadingFile.value=2;
+                                                              //             widget.file=file;
+                                                              //             getAudioDuration();
+                                                              //             setState(() {
+                                                              //
+                                                              //             });
+                                                              //           });
+                                                              //           return  CircularProgressIndicator(
+                                                              //             backgroundColor: Colors.grey.shade100,
+                                                              //             color:
+                                                              //             const  Color(0xff388CFF),
+                                                              //           );
+                                                              //         }else{
+                                                              //           return const SizedBox.shrink();
+                                                              //         }
+                                                              //       }),
+                                                              // }
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
                                                     ),
-                                                  ),
-                                                  26.horizontalSpace,
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      duration == Duration.zero
-                                                          ? Padding(
-                                                              padding: HWEdgeInsets
-                                                                  .only(
-                                                                      top: 5.0),
-                                                              child:
-                                                                  TrydosLoader(
-                                                                size: 15.sp,
+                                                    16.horizontalSpace,
+                                                    SvgPicture.asset(
+                                                      AppAssets.voicePlayedSvg,
+                                                      width: 25.w,
+                                                      height: 28,
+                                                    )
+                                                  } else ...{
+                                                    //todo these transform cost a lot of resources i make a trick to avoid use this transformer
+                                                    //                                                  Transform(
+                                                    //                                                      alignment:
+                                                    //                                                          Alignment.center,
+                                                    //                                                      transform: Matrix4
+                                                    //                                                          .diagonal3Values(
+                                                    //                                                              -1.0, 1.0, 2.0),
+                                                    //                                                      child: SvgPicture.asset(
+                                                    //                                                        AppAssets
+                                                    //                                                            .voicePlayedSvg,
+                                                    //                                                        width: 25.w,
+                                                    //                                                        height: 28,
+                                                    //                                                      )),
+                                                    SvgPicture.asset(
+                                                      AppAssets.voicePlayedSvg,
+                                                      width: 25.w,
+                                                      height: 28,
+                                                    ),
+                                                    15.horizontalSpace,
+                                                    InkWell(
+                                                      onTap: audioToggle,
+                                                      child: SvgPicture.asset(
+                                                        isPlaying
+                                                            ? AppAssets.playSvg
+                                                            : AppAssets
+                                                                .pauseSvg,
+                                                        width: 20.sp,
+                                                        height: 20.sp,
+                                                      ),
+                                                    ),
+                                                    26.horizontalSpace,
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        duration ==
+                                                                Duration.zero
+                                                            ? Padding(
+                                                                padding:
+                                                                    HWEdgeInsets
+                                                                        .only(
+                                                                            top:
+                                                                                5.0),
+                                                                child:
+                                                                    TrydosLoader(
+                                                                  size: 15.sp,
+                                                                ),
+                                                              )
+                                                            : Container(
+                                                                width: 47.w,
+                                                                height: 20,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              15.0),
+                                                                  border: Border.all(
+                                                                      width:
+                                                                          0.4,
+                                                                      color: const Color(
+                                                                          0xff388cff)),
+                                                                ),
+                                                                child: Center(
+                                                                  child: ValueListenableBuilder<
+                                                                          bool>(
+                                                                      valueListenable:
+                                                                          durationChangedNotifier,
+                                                                      builder: (context,
+                                                                          durationChanged,
+                                                                          _) {
+                                                                        return MyTextWidget(
+                                                                          (isPlaying)
+                                                                              ? HelperFunctions.getTimeInFormat(position)
+                                                                              : HelperFunctions.getTimeInFormat(duration),
+                                                                          style: context
+                                                                              .textTheme
+                                                                              .overline
+                                                                              ?.rt
+                                                                              .copyWith(color: const Color(0xff404040), height: 1.4),
+                                                                          textAlign:
+                                                                              TextAlign.center,
+                                                                        );
+                                                                      }),
+                                                                )),
+                                                        1.verticalSpace,
+                                                        SizedBox(
+                                                          height: 20,
+                                                          width: 220.w,
+                                                          child: Stack(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            children: [
+                                                              SvgPicture.string(
+                                                                '<svg viewBox="117.0 1976.5 220.0 1.0" ><path transform="translate(117.0, 1976.5)" d="M 0 0 L 220 0" fill="none" stroke="#707070" stroke-width="1" stroke-miterlimit="4" stroke-linecap="round" /></svg>',
+                                                                allowDrawingOutsideViewBox:
+                                                                    true,
+                                                                fit:
+                                                                    BoxFit.fill,
                                                               ),
-                                                            )
-                                                          : Container(
-                                                              width: 47.w,
-                                                              height: 20,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            15.0),
-                                                                border: Border.all(
-                                                                    width: 0.4,
-                                                                    color: const Color(
-                                                                        0xff388cff)),
-                                                              ),
-                                                              child: Center(
-                                                                child: ValueListenableBuilder<
-                                                                        bool>(
-                                                                    valueListenable:
-                                                                        durationChangedNotifier,
-                                                                    builder:
-                                                                        (context,
-                                                                            durationChanged,
-                                                                            _) {
-                                                                      return MyTextWidget(
-                                                                        (isPlaying)
-                                                                            ? HelperFunctions.getTimeInFormat(position)
-                                                                            : HelperFunctions.getTimeInFormat(duration),
-                                                                        style: context
-                                                                            .textTheme
-                                                                            .overline
-                                                                            ?.rt
-                                                                            .copyWith(
-                                                                                color: const Color(0xff404040),
-                                                                                height: 1.4),
-                                                                        textAlign:
-                                                                            TextAlign.center,
-                                                                      );
-                                                                    }),
-                                                              )),
-                                                      1.verticalSpace,
-                                                      SizedBox(
-                                                        height: 20,
-                                                        width: 220.w,
-                                                        child: Stack(
-                                                          alignment:
-                                                              Alignment.center,
-                                                          children: [
-                                                            SvgPicture.string(
-                                                              '<svg viewBox="117.0 1976.5 220.0 1.0" ><path transform="translate(117.0, 1976.5)" d="M 0 0 L 220 0" fill="none" stroke="#707070" stroke-width="1" stroke-miterlimit="4" stroke-linecap="round" /></svg>',
-                                                              allowDrawingOutsideViewBox:
-                                                                  true,
-                                                              fit: BoxFit.fill,
-                                                            ),
-                                                            const VoiceWaves(),
-                                                            // if (widget.file == null) ...{
-                                                            //   10.horizontalSpace,
-                                                            //   ValueListenableBuilder<int>(
-                                                            //       valueListenable: _loadingFile,
-                                                            //       builder: (context, status, _) {
-                                                            //         if (status == 0) {
-                                                            //           return InkWell(
-                                                            //             onTap: () async{
-                                                            //               _loadingFile.value = 1;
-                                                            //             },
-                                                            //             child: Icon(
-                                                            //                 Icons
-                                                            //                     .save_alt_outlined,
-                                                            //                 color: const Color(
-                                                            //                     0xff388CFF),
-                                                            //                 size: 20.sp),
-                                                            //           );
-                                                            //         } else if (status == 1) {
-                                                            //           FileSaving().downloadFileToLocalStorage(widget.fileUrl!,action: (File? file){
-                                                            //             _loadingFile.value=2;
-                                                            //             widget.file=file;
-                                                            //             getAudioDuration();
-                                                            //             setState(() {
-                                                            //
-                                                            //             });
-                                                            //           });
-                                                            //           return  CircularProgressIndicator(
-                                                            //             backgroundColor: Colors.grey.shade100,
-                                                            //             color:
-                                                            //             const  Color(0xff388CFF),
-                                                            //           );
-                                                            //         }else{
-                                                            //           return const SizedBox.shrink();
-                                                            //         }
-                                                            //       }),
-                                                            // }
-                                                          ],
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                }
-                                              ],
-                                            )),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 0),
-                                          child: Directionality(
-                                            textDirection: TextDirection.ltr,
-                                            child: Row(
-                                              mainAxisAlignment: widget.isSent
-                                                  ? MainAxisAlignment.start
-                                                  : MainAxisAlignment.end,
-                                              children: [
-                                                MyTextWidget(
-                                                  !widget.time.isUtc
-                                                      ? HelperFunctions
-                                                          .getDateInFormat(
-                                                              widget.time)
-                                                      : HelperFunctions
-                                                          .getZonedDateInFormat(
-                                                              widget.time),
-                                                  style: context
-                                                      .textTheme.overline?.rr
-                                                      .copyWith(
-                                                          color: const Color(
-                                                              0xff505050)),
-                                                ),
-                                                if (widget.isSent) ...{
-                                                  10.horizontalSpace,
-                                                  SvgPicture.asset(
-                                                    (state.currentMessage
-                                                            .contains(
-                                                                widget
-                                                                    .messageId))
-                                                        ? AppAssets.sandClockSvg
-                                                        : (state
-                                                                .currentFailedMessage
-                                                                .contains(widget
-                                                                    .messageId))
-                                                            ? AppAssets
-                                                                .MessageFailedSvg
-                                                            : widget.isRead
-                                                                ? AppAssets
-                                                                    .messageReadArrowSvg
+                                                              const VoiceWaves(),
+                                                              // if (widget.file == null) ...{
+                                                              //   10.horizontalSpace,
+                                                              //   ValueListenableBuilder<int>(
+                                                              //       valueListenable: _loadingFile,
+                                                              //       builder: (context, status, _) {
+                                                              //         if (status == 0) {
+                                                              //           return InkWell(
+                                                              //             onTap: () async{
+                                                              //               _loadingFile.value = 1;
+                                                              //             },
+                                                              //             child: Icon(
+                                                              //                 Icons
+                                                              //                     .save_alt_outlined,
+                                                              //                 color: const Color(
+                                                              //                     0xff388CFF),
+                                                              //                 size: 20.sp),
+                                                              //           );
+                                                              //         } else if (status == 1) {
+                                                              //           FileSaving().downloadFileToLocalStorage(widget.fileUrl!,action: (File? file){
+                                                              //             _loadingFile.value=2;
+                                                              //             widget.file=file;
+                                                              //             getAudioDuration();
+                                                              //             setState(() {
+                                                              //
+                                                              //             });
+                                                              //           });
+                                                              //           return  CircularProgressIndicator(
+                                                              //             backgroundColor: Colors.grey.shade100,
+                                                              //             color:
+                                                              //             const  Color(0xff388CFF),
+                                                              //           );
+                                                              //         }else{
+                                                              //           return const SizedBox.shrink();
+                                                              //         }
+                                                              //       }),
+                                                              // }
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  }
+                                                ],
+                                              )),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 0),
+                                            child: Directionality(
+                                              textDirection: TextDirection.ltr,
+                                              child: Row(
+                                                mainAxisAlignment: widget.isSent
+                                                    ? MainAxisAlignment.start
+                                                    : MainAxisAlignment.end,
+                                                children: [
+                                                  MyTextWidget(
+                                                    !(widget.isRead
+                                                                ? widget
+                                                                    .watchedAt
                                                                 : widget
                                                                         .isReceived
-                                                                    ? AppAssets
-                                                                        .messageDeliveredArrowSvg
-                                                                    : AppAssets
-                                                                        .messageSentArrowSvg,
-                                                    width: 10.sp,
-                                                    height: 10.sp,
-                                                  )
-                                                },
-                                                if (widget.isForwarded) ...{
-                                                  10.horizontalSpace,
-                                                  SvgPicture.asset(
-                                                    AppAssets.forwardedSvg,
-                                                    width: 10.sp,
-                                                    height: 10.sp,
-                                                  )
-                                                }
-                                              ],
+                                                                    ? widget
+                                                                        .receivedAt
+                                                                    : widget
+                                                                        .createAt)!
+                                                            .isUtc
+                                                        ? HelperFunctions
+                                                            .getDateInFormat(
+                                                                widget.time)
+                                                        : HelperFunctions
+                                                            .getZonedDateInFormat(
+                                                                widget.time),
+                                                    style: context
+                                                        .textTheme.overline?.rr
+                                                        .copyWith(
+                                                            color: const Color(
+                                                                0xff505050)),
+                                                  ),
+                                                  if (widget.isSent) ...{
+                                                    10.horizontalSpace,
+                                                    SvgPicture.asset(
+                                                      (state.currentFailedMessage
+                                                              .contains(widget
+                                                                  .messageId))
+                                                          ? AppAssets
+                                                              .MessageFailedSvg
+                                                          : widget.isRead
+                                                              ? AppAssets
+                                                                  .messageReadArrowSvg
+                                                              : widget
+                                                                      .isReceived
+                                                                  ? AppAssets
+                                                                      .messageDeliveredArrowSvg
+                                                                  : (state.currentMessage
+                                                                          .contains(
+                                                                              widget.messageId))
+                                                                      ? timer
+                                                                          ? (state.currentMessage.contains(widget.messageId))
+                                                                              ? AppAssets.sandClockSvg
+                                                                              : AppAssets.messageSentArrowSvg
+                                                                          : ""
+                                                                      : AppAssets.messageSentArrowSvg,
+                                                      width: 10.sp,
+                                                      height: 10.sp,
+                                                    )
+                                                  },
+                                                  if (widget.isForwarded) ...{
+                                                    10.horizontalSpace,
+                                                    SvgPicture.asset(
+                                                      AppAssets.forwardedSvg,
+                                                      width: 10.sp,
+                                                      height: 10.sp,
+                                                    )
+                                                  }
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        )
-                                      ],
-                                    );
-                                  }),
+                                          )
+                                        ],
+                                      );
+                                    }),
+                              ),
                             ),
-                          ),
-                          widget.isFirstMessage
-                              ? Transform.translate(
-                                  offset:
-                                      Offset(widget.isSent ? 20.w : -20.w, 0),
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Container(
-                                        width: 40.w,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xffEBFFF8),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+                            widget.isFirstMessage
+                                ? Transform.translate(
+                                    offset:
+                                        Offset(widget.isSent ? 20.w : -20.w, 0),
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        Container(
+                                          width: 40.w,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xffEBFFF8),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
                                         ),
-                                      ),
-                                      widget.userMessagePhoto != null
-                                          ? MyCachedNetworkImage(
-                                              imageUrl: ChatUrls.baseUrl +
-                                                  widget.userMessagePhoto!,
-                                              progressIndicatorBuilderWidget:
-                                                  TrydosLoader(),
-                                              imageFit: BoxFit.cover,
-                                              radius: 8,
-                                              width: 30.w,
-                                              height: 30,
-                                            )
-                                          : NoImageWidget(
-                                              width: 30.w,
-                                              height: 30,
-                                              textStyle: context
-                                                  .textTheme.caption?.br
-                                                  .copyWith(
-                                                      color: const Color(
-                                                          0xff6638FF),
-                                                      letterSpacing: 0.18,
-                                                      height: 1.33),
-                                              radius: 8,
-                                              name: widget.userMessageName)
-                                    ],
-                                  ),
-                                )
-                              : const SizedBox.shrink()
-                        ],
+                                        widget.userMessagePhoto != null
+                                            ? MyCachedNetworkImage(
+                                                imageUrl: ChatUrls.baseUrl +
+                                                    widget.userMessagePhoto!,
+                                                progressIndicatorBuilderWidget:
+                                                    TrydosLoader(),
+                                                imageFit: BoxFit.cover,
+                                                radius: 8,
+                                                width: 30.w,
+                                                height: 30,
+                                              )
+                                            : NoImageWidget(
+                                                width: 30.w,
+                                                height: 30,
+                                                textStyle: context
+                                                    .textTheme.caption?.br
+                                                    .copyWith(
+                                                        color: const Color(
+                                                            0xff6638FF),
+                                                        letterSpacing: 0.18,
+                                                        height: 1.33),
+                                                radius: 8,
+                                                name: widget.userMessageName)
+                                      ],
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
+                            state.isSlpoing &&
+                                    state.slopMessageId!
+                                        .contains(widget.messageId)
+                                ? Transform.translate(
+                                    offset: widget.senderId ==
+                                            widget._prefsRepository.myChatId
+                                        ? Offset(-380.w, 0)
+                                        : Offset(380.w, 0),
+                                    child: SendRecieveWatchTime(
+                                      isRead: widget.isRead,
+                                      isReceived: widget.isReceived,
+                                      receivedAt: widget.receivedAt,
+                                      createAT: widget.createAt!,
+                                    ),
+                                  )
+                                : SizedBox.shrink(),
+                          ],
+                        ),
                       ),
                       // 7.verticalSpace,
                       // Container(

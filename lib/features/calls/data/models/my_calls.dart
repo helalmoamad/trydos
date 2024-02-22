@@ -215,7 +215,6 @@ class Data {
       };
 }
 
-
 class Channel {
   final String? id;
   final String? channelName;
@@ -452,7 +451,6 @@ class MessageType {
       };
 }
 
-
 class SenderUser {
   final int? id;
   final String? name;
@@ -568,5 +566,3 @@ class ContactUser {
         "contact_user_id": contactUserId,
       };
 }
-
-

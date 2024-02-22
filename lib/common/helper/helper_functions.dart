@@ -13,6 +13,7 @@ import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+//import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../features/app/my_text_widget.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -127,7 +128,8 @@ class HelperFunctions {
         .toList();
   }
 
-  static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
+static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
+
     final List<AssetEntity>? assets = await myMultiAssetPicker(context);
     return assets?[0];
   }
