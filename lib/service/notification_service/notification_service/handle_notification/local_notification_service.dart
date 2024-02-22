@@ -11,7 +11,9 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
+import '../../../../base_page.dart';
 import '../../../../core/di/di_container.dart';
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../features/chat/presentation/manager/chat_event.dart';
 import '../../../../features/chat/data/models/my_chats_response_model.dart'
@@ -63,13 +65,6 @@ class LocalNotificationService {
     chat.Message myMessage = chat.Message.fromJson(convert.jsonDecode(message.data['message']));
     String prevMessageId = message.data['prev_message_id'];
     sendIReceivedTheMessage(myMessage.channelId!);
-    try {
-      GetIt.I<ChatBloc>().add(ReceiveMessageEvent(
-          message: myMessage, prevMessageId: prevMessageId));
-    }catch(e,st){
-      print(e);
-      print(st);
-    }
     String type = myMessage.messageType!.name.toString();
     await _localNotificationPlugin.show(
         0,
@@ -145,15 +140,9 @@ class LocalNotificationService {
 
   @pragma('vm:entry-point')
   static void _onSelectNotification(NotificationResponse notificationResponse) {
-    chat.Message myMessage = chat.Message.fromJson(
-        convert.jsonDecode(notificationResponse.payload!.split(',,')[0]));
+    chat.Message myMessage = chat.Message.fromJson(convert.jsonDecode(notificationResponse.payload!.split(',,')[0]));
     String prevMessageId = notificationResponse.payload!.split(',,')[1];
-    initialMessage = myMessage;
-    GetIt.I<ChatBloc>().add(
-        ReceiveMessageEvent(message: myMessage, prevMessageId: prevMessageId));
-    debugPrint(navigatorKey.currentState.toString());
-    navigatorKey.currentState!.context
-        .go(GRouter.config.applicationRoutes.kBasePage);
+    handleOpenChatPageFromNotificationInBackground(prevMessageId , message: myMessage);
   }
 
   _notificationDetails() {

@@ -72,10 +72,12 @@ class CallsRemoteDataSource {
     return videoCall();
   }
 
-  Future<bool> makeRejectCall(String messageId) {
+  Future<bool> makeRejectCall(Map<String, dynamic> params) {
+    print('payload ${params['payload']}');
     PostClient<bool> RejectCall = PostClient<bool>(
         requestPrams: RequestConfig<bool>(
-            endpoint: ChatEndPoints.refuseCall(messageId),
+            endpoint: ChatEndPoints.refuseCall(params['messageId']),
+            data: params['payload'],
             response: ResponseValue<bool>(returnValueOnSuccess: true)),
         serverName: ServerName.chat);
     return RejectCall();

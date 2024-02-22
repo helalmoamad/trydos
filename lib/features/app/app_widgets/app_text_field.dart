@@ -55,6 +55,7 @@ class AppTextField extends StatelessWidget {
     this.inputFormatters,
     this.autoFocus,
     this.contentPadding,
+    this.roundingCornersValue,
     this.filledColor,
     this.bordersColor,
   }) : super(key: key);
@@ -105,6 +106,7 @@ class AppTextField extends StatelessWidget {
   final EdgeInsetsGeometry? contentPadding;
   final Color? filledColor;
   final Color? bordersColor;
+  final double? roundingCornersValue;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -155,27 +157,27 @@ class AppTextField extends StatelessWidget {
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderSide: BorderSide(color: bordersColor ?? context.colorScheme.borderTextField,width: 0.4),
-          borderRadius: BorderRadius.circular(kbrBorderTextField),
+          borderRadius: BorderRadius.circular( roundingCornersValue ?? kbrBorderTextField),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: bordersColor ?? context.colorScheme.borderTextField,width: 0.4),
-          borderRadius: BorderRadius.circular(kbrBorderTextField),
+          borderRadius: BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: bordersColor ?? context.colorScheme.borderTextField,width: 0.4),
-          borderRadius: BorderRadius.circular(kbrBorderTextField),
+          borderRadius: BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
         ),
         disabledBorder:  OutlineInputBorder(
           borderSide: BorderSide(color: bordersColor ?? context.colorScheme.borderTextField,width: 0.4),
-          borderRadius: BorderRadius.circular(kbrBorderTextField),
+          borderRadius: BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
         ),
         errorBorder: OutlineInputBorder(
           borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
-          borderRadius: BorderRadius.circular(kbrBorderTextField),
+          borderRadius: BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
-          borderRadius: BorderRadius.circular(kbrBorderTextField),
+          borderRadius: BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
         ),
         filled: true,
         fillColor: filledColor ?? context.colorScheme.white,

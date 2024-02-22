@@ -1,11 +1,14 @@
 import 'package:adobe_xd/adobe_xd.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_page.dart';
@@ -272,11 +275,16 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               ),
               Expanded(
                 child: InkWell(
-                  onTap: () {
+                  onTap: () async{
                     if (prefsRepository.isVerifiedPhone != true) {
                       context.go(GRouter
                           .config.applicationRoutes.kRegistrationPagePath);
                     } else {
+                      NotificationSettings settings = await FirebaseMessaging.instance.getNotificationSettings();
+                      if (settings.authorizationStatus == AuthorizationStatus.denied) {
+                        showMessage('Please Enable Send Notification For This App');
+                        openAppSettings();
+                      }
                       appBloc.add(ChangeBasePage(2));
                     }
                   },

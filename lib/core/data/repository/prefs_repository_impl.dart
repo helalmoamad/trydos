@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import '../../../../common/constant/configuration/prefs_key.dart';
 import '../../../config/theme/app_theme.dart';
 import '../../domin/repositories/prefs_repository.dart';
@@ -245,7 +246,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> addFcmToken(String fcmToken) {
     List<String> tokens = getFcmTokens;
-    if(tokens.contains(fcmToken)) return Future.value(true);
+    if (tokens.contains(fcmToken)) return Future.value(true);
     tokens.add(fcmToken);
     return _preferences.setStringList(PrefsKey.fcmToken, tokens);
   }
@@ -253,6 +254,22 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   List<String> get getFcmTokens =>
       _preferences.getStringList(PrefsKey.fcmToken) ?? [];
+
+  @override
+  List<Message>? get getTheMessageFromBackground => _preferences
+      .getStringList('message')
+      ?.map((e) => Message.fromJson(convert.jsonDecode(e)))
+      .toList();
+
+  @override
+  Future<bool> removeMessageFromBackground() => _preferences.remove('message');
+
+  @override
+  Future<bool> setMessageFromBackground(String message) {
+    List<String> list = _preferences.getStringList('message') ?? [];
+    list.add(message);
+    return _preferences.setStringList('message', list);
+  }
 
 // @override
 // // TODO: implement localMessages

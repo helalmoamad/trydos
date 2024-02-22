@@ -55,6 +55,9 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                         onChooseFileFromGalleryAction.call(assetEntity);
                       }
                       Navigator.of(context).pop();
+                      if(Navigator.of(context).canPop()){
+                        Navigator.of(context).pop();
+                      }
                     },
                     child: MyTextWidget(LocaleKeys.gallery.tr()),
                   );

@@ -20,6 +20,8 @@ class MyCachedNetworkImage extends StatelessWidget {
         this.imageBuilder,
         this.imageColor,
         this.progressIndicatorBuilderWidget,
+        this.callWhenDisplayImage,
+        this.callWhenLoadingImage,
        this.radius=12,
        this.withImageShadow=false,
       required this.height, this.circleDimensions})
@@ -40,7 +42,8 @@ class MyCachedNetworkImage extends StatelessWidget {
   final ImageWidgetBuilder? imageBuilder;
   final double? circleDimensions;
   final Color? imageColor;
-
+  final void Function()? callWhenDisplayImage;
+  final void Function()? callWhenLoadingImage;
 
   final Widget? progressIndicatorBuilderWidget;
 
@@ -86,7 +89,9 @@ class MyCachedNetworkImage extends StatelessWidget {
                   color: imageColor,
                   height: height,
                   cacheManager: CustomCacheManager(),
+
                   progressIndicatorBuilder: (context, _, progress){
+                    callWhenLoadingImage?.call();
                     return progressIndicatorBuilderWidget ?? TrydosShimmerLoading(
                       width: width,
                       height: height,
@@ -96,6 +101,7 @@ class MyCachedNetworkImage extends StatelessWidget {
                     );
                   } ,
                   imageBuilder: imageBuilder ?? (ctx , image){
+                    callWhenDisplayImage?.call();
                     return
                       Container(
                       width: width,

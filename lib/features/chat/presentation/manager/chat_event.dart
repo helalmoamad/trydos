@@ -71,8 +71,8 @@ class ReadAllMessagesEvent extends ChatEvent {
 }
 
 class GetChatsEvent extends ChatEvent {
-  const GetChatsEvent();
-
+  const GetChatsEvent({this.chatToNavigateFromTerminated});
+  final Chat? chatToNavigateFromTerminated;
   @override
   // TODO: implement props
   List<Object?> get props => [];
@@ -303,5 +303,23 @@ class AddAMessageToAChannel extends ChatEvent{
   @override
   // TODO: implement props
   List<Object?> get props => [message , localChannelId];
+
+}
+
+class AddChannelToChannels extends ChatEvent{
+  final Message message;
+  const AddChannelToChannels({required this.message});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message];
+
+}
+
+class ChangeGlobalUsedVariablesInBloc extends ChatEvent{
+  final String? currentOpenedChatId;
+  const ChangeGlobalUsedVariablesInBloc({this.currentOpenedChatId});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [currentOpenedChatId];
 
 }

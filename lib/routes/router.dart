@@ -20,6 +20,7 @@ import '../features/calls/presentation/pages/answer_call.dart';
 import '../features/calls/presentation/pages/room_call_page.dart';
 import '../features/chat/presentation/pages/chat_pages.dart';
 import '../features/chat/presentation/pages/contacts_page.dart';
+import '../features/home/presentation/pages/product_details_page.dart';
 import '../features/story/presentation/pages/story_collection_page_view.dart';
 import '../main.dart';
 import 'error_screen.dart';

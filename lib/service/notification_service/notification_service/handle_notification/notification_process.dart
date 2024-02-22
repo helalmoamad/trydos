@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     as fln;
@@ -11,18 +10,15 @@ import 'package:get_it/get_it.dart';
 import 'package:trydos/main.dart';
 import '../../../../base_page.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../features/chat/data/models/my_chats_response_model.dart';
 import '../../../../features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../features/chat/presentation/manager/chat_event.dart';
-import '../../../../features/chat/presentation/pages/single_page_chat.dart';
 import '../../../../firebase_options.dart';
 import 'i_notification_factory.dart';
 import 'local_notification_service.dart';
 import 'notification_type.dart';
 import '../notification_utils/payload_model.dart';
 import 'notificaton_factory_impl.dart';
-import '../../../../features/chat/data/models/my_chats_response_model.dart'
-    as chat;
-import 'package:trydos/main.dart' as main;
 import 'dart:convert' as convert;
 
 class NotificationProcess {
@@ -37,10 +33,10 @@ class NotificationProcess {
   handleNotificationForLocal(String? payload) {
     if (payload != null) {
       final PayloadModel payloadModel =
-      PayloadModel.fromJson(jsonDecode(payload));
+          PayloadModel.fromJson(jsonDecode(payload));
       INotificationFactory factory = NotificationFactoryImpl();
       NotificationType notification =
-      factory.getNotificationType(NotificationTypeName.delivery);
+          factory.getNotificationType(NotificationTypeName.delivery);
       notification.executeNotification(payloadModel);
     }
   }
@@ -62,7 +58,7 @@ class NotificationProcess {
   Future<void> _setForegroundNotificationPresentationOptions() async {
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
-        alert: true, badge: true, sound: true);
+            alert: true, badge: true, sound: true);
   }
 
   requestPermission() async {
@@ -81,24 +77,12 @@ class NotificationProcess {
     );
   }
 
-  Future<void> setupInteractedMessage() async {
-    // if (initialMessage != null) {
-    //   LocalNotificationService().showNotificationWithPayload(message: initialMessage);
-    // }
-
-    // handleTappedNotificationOnTerminatedState();
+  setupInteractedMessage() {
+    handleTappedNotificationOnTerminatedState();
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
-
-        debugPrint('foreground message');
-        debugPrint('onMessageOpenedApp');
-        chat.Message myMessage = chat.Message.fromJson(convert.jsonDecode(event.data['message']));
-        main.initialMessage = myMessage;
-        navigatorKey.currentState!.pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const BasePage()),
-              (route) => false,
-        );
-
-
+      handleOpenChatPageFromNotificationInBackground(
+          event.data['prev_message_id'],
+          message: Message.fromJson(convert.jsonDecode(event.data['message'])));
     });
   }
 
@@ -106,23 +90,28 @@ class NotificationProcess {
     fln.NotificationAppLaunchDetails? details = await LocalNotificationService
         .localNotificationPlugin
         .getNotificationAppLaunchDetails();
+
     if (details != null) {
       if (details.didNotificationLaunchApp) {
-        handleNotificationForLocal(details.notificationResponse?.payload);
+        print('fuuuuuuuuuuuuuckkkkkkkkkkkkkkkkkkkkkkcccccccccccccckkkkkkkkkkkkkkkk');
+        Message myMessage = Message.fromJson(convert
+            .jsonDecode(details.notificationResponse!.payload!.split(',,')[0]));
+        print(myMessage.messageContent?.content);
+        GetIt.I<ChatBloc>().add(GetChatsEvent(chatToNavigateFromTerminated: myMessage.channel));
       }
     }
   }
 
   Future<void> init() async {
-      try {
-        await Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform);
-      } catch (e) {
-        debugPrint('firebase error $e');
-        rethrow;
-      }
-      await _setForegroundNotificationPresentationOptions();
-
-      await LocalNotificationService.initialize();
+    try {
+      await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform);
+    } catch (e) {
+      debugPrint('firebase error $e');
+      rethrow;
     }
+    await _setForegroundNotificationPresentationOptions();
+
+    await LocalNotificationService.initialize();
   }
+}
