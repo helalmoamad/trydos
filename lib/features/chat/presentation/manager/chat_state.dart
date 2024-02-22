@@ -30,6 +30,7 @@ enum DeleteChatStatus { init, loading, success, failure }
 
 enum ChangeMessageStateFromPusherStatus { init, received, watched }
 
+
 @JsonSerializable(explicitToJson: true)
 class ChatState {
   final int width;
@@ -52,6 +53,7 @@ class ChatState {
   final ChangeChatPropertyStatus changeChatPropertyStatus;
   final DeleteChatStatus deleteChatStatus;
   final List<Contact> contacts;
+  final String? currentOpenedChatId;
   List<Chat> chats;
   final List<Chat> pinnedChats;
   late final List<String> currentMessage;
@@ -66,6 +68,7 @@ class ChatState {
   final int unReadMessagesFromAllChats;
   final String currentChannelReceivedMessage;
   final bool scrollToParentMessage;
+  final Chat? chatToNavigateFromTerminated;
   final bool createAnewChat;
   Map<String, List<Message>>? newSortedChatsByDate;
 
@@ -80,6 +83,7 @@ class ChatState {
     this.videoCountInEachChat = 0,
     this.loadImageWidthAndHeight = LoadImageWidthAndHeight.init,
     this.newSortedChatsByDate = const {},
+    this.currentOpenedChatId,
     this.getContactsStatus = GetContactsStatus.init,
     this.changeMessageStateFromPusherStatus =
         ChangeMessageStateFromPusherStatus.init,
@@ -98,6 +102,7 @@ class ChatState {
     this.currentChannelReceivedMessage = '-1',
     this.messageType,
     this.firstMessageId,
+    this.chatToNavigateFromTerminated,
     this.scrollToParentMessage = false,
     this.createAnewChat = false,
     this.secondMessageId,
@@ -130,11 +135,13 @@ class ChatState {
     final DeleteChatStatus? deleteChatStatus,
     final List<Contact>? contacts,
     final String? channelId,
+    final String? currentOpenedChatId,
     final bool? scrollToParentMessage,
     final String? firstMessageId,
     final String? secondMessageId,
     final int? currentOpenedChannelId,
     final ResetReadMessagesStatus? readMessagesStatus,
+    final Chat? chatToNavigateFromTerminated,
     final NotifyThatIReceivedMessageStatus? notifyThatIReceivedMessageStatus,
     final ChangeMessageStateFromPusherStatus?
         changeMessageStateFromPusherStatus,
@@ -165,8 +172,10 @@ class ChatState {
       changeChatPropertyStatus:
           changeChatPropertyStatus ?? this.changeChatPropertyStatus,
       getContactsStatus: getContactsStatus ?? this.getContactsStatus,
+      chatToNavigateFromTerminated: chatToNavigateFromTerminated ?? this.chatToNavigateFromTerminated,
       contacts: contacts ?? this.contacts,
       chats: chats ?? this.chats,
+      currentOpenedChatId: currentOpenedChatId,
       createAnewChat: createAnewChat ?? this.createAnewChat,
       deleteChatStatus: deleteChatStatus ?? this.deleteChatStatus,
       currentFailedMessage: currentFailedMessage ?? this.currentFailedMessage,

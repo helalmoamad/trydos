@@ -117,7 +117,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
     //       ? 'UK'
     //       : HelperFunctions.getTheFirstTwoLettersOfName(sender.name!);
     // }
-    if (widget.thereActivity) {
+    if (widget.thereActivity && timer == null) {
       timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (typingIndicator.value == 5) {
           typingIndicator.value = 0;
@@ -148,6 +148,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                 //     ..pop()
                 //     ..pop();
                 // }
+                chatBloc.add(ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: widget.chat.id));
                 widget.onSendForwardMessage?.call(
                     widget.chat.channelMembers!
                         .firstWhere((element) =>
@@ -178,8 +179,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                     SlidableActionWidget(
                       text: 'Delete',
                       onTap: () {
-                        chatBloc
-                            .add(DeleteChatEvent(channelId: widget.chat.id!));
+                        chatBloc.add(DeleteChatEvent(channelId: widget.chat.id!));
                       },
                       backgroundColor: const Color(0xffFFE8E8),
                       foregroundColor: const Color(0xffFA6868),

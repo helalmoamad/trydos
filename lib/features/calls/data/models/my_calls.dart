@@ -78,7 +78,7 @@ class Data {
   final dynamic extraFields;
   final String? parentMessageId;
   final int? isForward;
-  final CallStatus? callStatus;
+  final String? callStatus;
   final DateTime? createdAt;
   final int? durationInSeconds;
   final dynamic messageContent;
@@ -121,7 +121,7 @@ class Data {
     dynamic extraFields,
     String? parentMessageId,
     int? isForward,
-    CallStatus? callStatus,
+    String? callStatus,
     DateTime? createdAt,
     int? durationInSeconds,
     dynamic messageContent,
@@ -164,7 +164,7 @@ class Data {
         extraFields: json["extra_fields"],
         parentMessageId: json["parent_message_id"],
         isForward: json["is_forward"],
-        callStatus: callStatusValues.map[json["call_status"]],
+        callStatus: json["call_status"],
         createdAt: json["created_at"] == null
             ? null
             : DateTime.parse(json["created_at"]),
@@ -198,7 +198,7 @@ class Data {
         "extra_fields": extraFields,
         "parent_message_id": parentMessageId,
         "is_forward": isForward,
-        "call_status": callStatusValues.reverse[callStatus],
+        "call_status": callStatus,
         "created_at": createdAt?.toIso8601String(),
         "duration_in_seconds": durationInSeconds,
         "message_content": messageContent,
@@ -214,10 +214,6 @@ class Data {
             : List<dynamic>.from(messageFiles!.map((x) => x)),
       };
 }
-
-enum CallStatus { REFUSE }
-
-final callStatusValues = EnumValues({"refuse": CallStatus.REFUSE});
 
 class Channel {
   final String? id;
@@ -449,23 +445,15 @@ class MessageType {
       );
 
   Map<String, dynamic> toJson() => {
-        "name": messageTypeNameValues.reverse[name],
+        "name": name,
         "event_name": eventName,
         "created_at": createdAt?.toIso8601String(),
       };
 }
 
-enum MessageTypeName { EMPTY, VIDEO_CALL, VOICE_CALL }
-
-final messageTypeNameValues = EnumValues({
-  "": MessageTypeName.EMPTY,
-  "VideoCall": MessageTypeName.VIDEO_CALL,
-  "VoiceCall": MessageTypeName.VOICE_CALL
-});
-
 class SenderUser {
   final int? id;
-  final ContactUserName? name;
+  final String? name;
   final String? username;
   final String? mobilePhone;
   final dynamic photoPath;
@@ -486,7 +474,7 @@ class SenderUser {
 
   SenderUser copyWith({
     int? id,
-    ContactUserName? name,
+    String? name,
     String? username,
     String? mobilePhone,
     dynamic photoPath,
@@ -507,7 +495,7 @@ class SenderUser {
 
   factory SenderUser.fromJson(Map<String, dynamic> json) => SenderUser(
         id: json["id"],
-        name: contactUserNameValues.map[json["name"]],
+        name: json["name"],
         username: json["username"],
         mobilePhone: json["mobile_phone"],
         photoPath: json["photo_path"],
@@ -522,7 +510,7 @@ class SenderUser {
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "name": contactUserNameValues.reverse[name],
+        "name": name,
         "username": username,
         "mobile_phone": mobilePhone,
         "photo_path": photoPath,
@@ -535,7 +523,7 @@ class SenderUser {
 class ContactUser {
   final int? id;
   final int? userId;
-  final ContactUserName? name;
+  final String? name;
   final String? mobilePhone;
   final int? contactUserId;
 
@@ -550,7 +538,7 @@ class ContactUser {
   ContactUser copyWith({
     int? id,
     int? userId,
-    ContactUserName? name,
+    String? name,
     String? mobilePhone,
     int? contactUserId,
   }) =>
@@ -565,7 +553,7 @@ class ContactUser {
   factory ContactUser.fromJson(Map<String, dynamic> json) => ContactUser(
         id: json["id"],
         userId: json["user_id"],
-        name: contactUserNameValues.map[json["name"]],
+        name: json["name"],
         mobilePhone: json["mobile_phone"],
         contactUserId: json["contact_user_id"],
       );
@@ -573,28 +561,8 @@ class ContactUser {
   Map<String, dynamic> toJson() => {
         "id": id,
         "user_id": userId,
-        "name": contactUserNameValues.reverse[name],
+        "name": name,
         "mobile_phone": mobilePhone,
         "contact_user_id": contactUserId,
       };
-}
-
-enum ContactUserName { MAHMOUD_FLUTTER, THE_963934330889, YASSER_OMRAN }
-
-final contactUserNameValues = EnumValues({
-  "Mahmoud Flutter": ContactUserName.MAHMOUD_FLUTTER,
-  "+963934330889": ContactUserName.THE_963934330889,
-  "Yasser Omran": ContactUserName.YASSER_OMRAN
-});
-
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
-  }
 }

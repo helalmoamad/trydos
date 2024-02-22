@@ -18,7 +18,6 @@ class LocalizationService extends StatelessWidget {
       fallbackLocale: HelperFunctions.getInitLocale(),
       supportedLocales: supportedLocal,
       child: child,
-
     );
   }
 }

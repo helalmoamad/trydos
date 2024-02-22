@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../features/chat/data/models/my_chats_response_model.dart';
+
 abstract class PrefsRepository {
   String? get chatToken;
   String? get marketToken;
@@ -12,6 +14,8 @@ abstract class PrefsRepository {
   int? get myStoriesId;
 
   String? get myMarketId;
+
+  List<Message>? get getTheMessageFromBackground;
 
   bool? get isVerifiedPhone;
 
@@ -50,6 +54,8 @@ abstract class PrefsRepository {
 
   Future<bool> setMyChatId(int id);
 
+  Future<bool> setMessageFromBackground(String message);
+
   Future<bool> setMyStoriesId(int id);
 
   Future<bool> setMyMarketId(String id);
@@ -75,6 +81,8 @@ abstract class PrefsRepository {
   // User? get user;
 
   Future<bool> clearUser();
+
+  Future<bool> removeMessageFromBackground();
 
   Future<bool> clearVerificationId();
 

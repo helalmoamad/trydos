@@ -7,11 +7,16 @@ import '../../data/models/make_call_response_model.dart';
 
 abstract class CallsRepository {
   Future<Either<Failure, bool>> rejectCall(Map<String, dynamic> params);
+
   Future<Either<Failure, MakeCallRemoteResponseModel>> makeCall(
       {required Map<String, dynamic> params});
+
   Future<Either<Failure, bool>> answerCall(String messageId);
+
   Future<Either<Failure, MyCallsResponseModel>> getmycalls();
+
   Future<Either<Failure, GetAgoraTokenResponseModel>> getAgoraToken(
       {required String ChatId});
+
   Future<Either<Failure, bool>> deleteCallRegister(Map<String, dynamic> params);
 }

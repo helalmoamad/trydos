@@ -33,7 +33,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 }
 
 @LazySingleton()
-class StoryBloc extends Bloc<StoryEvent, StoryState> with HydratedMixin {
+class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
   final GetStoryUseCase getStoryUseCase;
   final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
   final UploadStoryUseCase uploadStoryUseCase;

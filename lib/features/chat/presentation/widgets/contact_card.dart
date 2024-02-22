@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -13,6 +14,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../../routes/router.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
@@ -58,36 +60,17 @@ class ContactCard extends StatelessWidget {
                 if (contact.contactUserId == null) {
                   return;
                 }
-                Navigator.of(context).pop();
                 Chat? chat;
-                User? sender,receiver;
-                String id;
+                User? receiver;
                 List<Chat> chats=List.of(GetIt.I<ChatBloc>().state.chats);
                 debugPrint(chats.toString());
                 chats.addAll(GetIt.I<ChatBloc>().state.pinnedChats);
                 chat=chats.firstWhere((element) => element.channelMembers!.any((element) => element.userId==contact.contactUserId));
                 final preferences=GetIt.I<PrefsRepository>();
-                id=chat.id!;
-                sender=chat.channelMembers?.firstWhere((element) => element.userId==preferences.myChatId,orElse: ()=> ChannelMember()).user;
                 receiver=chat.channelMembers?.firstWhere((element) => element.userId!=preferences.myChatId,orElse: ()=> ChannelMember()).user;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => BlocBuilder<AppBloc, AppState>(
-                            builder: (context, state) {
-                              return SinglePageChat(
-                                chatId: id,
-                                receiverName: receiverName,
-                                fullReceiverName: fullReceiverName,
-                                receiverPhone: receiver?.mobilePhone ??
-                                    'No Number',
-                                senderName: HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!),
-                                receiverPhoto: receiver?.photoPath,
-                                senderPhoto: sender?.photoPath,
-                              );
-                            },
-                          )),
-                );
+                context.go(GRouter
+                    .config.applicationRoutes.kSinglePageChatPagePath +
+                    '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}');
               },
               child: Stack(
                 children: [

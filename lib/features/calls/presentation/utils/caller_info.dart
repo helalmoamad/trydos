@@ -13,14 +13,14 @@ List<Map<String, dynamic>> callerInfo({required String channelId}) {
         error: details.toString());
   };
   Chat currentChat = GetIt.I<ChatBloc>().state.chats.firstWhere(
-      (element) => element.id == channelId,
+      (element) => element.id == channelId || element.localId == channelId,
       orElse: () => GetIt.I<ChatBloc>()
           .state
           .pinnedChats
-          .firstWhere((element) => element.id == channelId));
+          .firstWhere((element) => element.id == channelId || element.localId == channelId,));
 
   ChannelMember currentReceiver = currentChat.channelMembers!.firstWhere(
-      (element) => element.user!.id != GetIt.I<PrefsRepository>().myChatId);
+      (element) => element.userId! != GetIt.I<PrefsRepository>().myChatId);
 
   debugPrint("myChatId${GetIt.I<PrefsRepository>().myChatId}");
   debugPrint("chatVideoEvent${currentChat.id}");
@@ -55,16 +55,16 @@ List<Map<String, dynamic>> callerInfo({required String channelId}) {
   //     : (currentCaller.user!.photoPath == null
   //         ? null
   //         : currentCaller.user!.photoPath);
-
   if (int.tryParse(currentChat.id!) == null) {
-    debugPrint('currentChatId${currentChat.id}');
 //todo the chat dose not exist yet cause we generate the id for it
     return [
       {"currentReceiver": currentReceiver.userId},
       {
         "callerName": callerName,
         "callerPhoto": callerPhoto,
-        "mobilePhone": GetIt.I<PrefsRepository>().myPhoneNumber
+        "channelId" : currentChat.id.toString(),
+        "mobilePhone": GetIt.I<PrefsRepository>().myPhoneNumber,
+        "Target" : 'Application'
       }
     ];
   }
@@ -73,7 +73,9 @@ List<Map<String, dynamic>> callerInfo({required String channelId}) {
     {
       "callerName": callerName,
       "callerPhoto": callerPhoto,
-      "mobilePhone": GetIt.I<PrefsRepository>().myPhoneNumber
+      "channelId" : currentChat.id.toString(),
+      "mobilePhone": GetIt.I<PrefsRepository>().myPhoneNumber,
+      "Target" : 'Application'
     }
   ];
 }

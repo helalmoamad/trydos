@@ -412,8 +412,11 @@ class _ImageMessageState extends State<ImageMessage> {
                                                     letterSpacing: 0.18,
                                                     height: 1.33),
                                             radius: 8,
-                                            name: widget.userMessageName)
+                                            name: widget.userMessageName),
                                   ],
+                                  //     );
+                                  //   return CircularProgressIndicator();
+                                  // },
                                 ),
                               )
                             : const SizedBox.shrink(),

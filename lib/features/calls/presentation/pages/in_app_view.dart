@@ -14,6 +14,7 @@ import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:vibration/vibration.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../chat/presentation/manager/chat_bloc.dart';
 
 class AgoraInAppWebView extends StatefulWidget {
   String type;
@@ -70,7 +71,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
       'message_id': widget.messageId,
       'type': widget.type,
       'action': widget.action,
-      'ch_id': widget.channelId
+      'ch_id': widget.channelId,
     }, host: baseUrl.host, scheme: baseUrl.scheme, path: '/call_direct');
     // controller1 = WebViewController()
     //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -117,6 +118,14 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 // onLoadStop: (controller, url) {
                 //   // controller.dispose();
                 // },
+                onReceivedHttpError: (controller, webResources, webErrors) {
+                  // showMessage('Can\'t lunch call , please try again' , showInRelease: true);
+                  // GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
+                  //     messageId: widget.messageId.toString()));
+                  // controller.stopLoading();
+                  // controller.dispose();
+                  // Navigator.pop(context);
+                },
                 onUpdateVisitedHistory: (controller, url, isReload) {
                   log('ring? ${url?.queryParameters.containsKey('ring')}');
                   if (_audioPlayer.state == PlayerState.playing &&
@@ -125,7 +134,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     timer?.cancel();
                     _audioPlayer.dispose();
                   }
-                  if (url.toString().contains('calllnProg')) {
+                  if (url.toString().contains('callInProg')) {
                     Timer.periodic(Duration(seconds: 7), (timer) {
                       controller.stopLoading();
                       controller.dispose();
@@ -133,6 +142,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                           context.widget is! SinglePageChat) {
                         Navigator.of(context).pop();
                       }
+                      // GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
+                      //     payload: {'Target': 'Application From callInProg'},
+                      //     messageId: widget.messageId.toString()));
                     });
                   }
                   if (url.toString().contains('end')) {
@@ -141,6 +153,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     if (context.canPop() && context.widget is! SinglePageChat) {
                       Navigator.of(context).pop();
                     }
+                    // GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
+                    //     payload: {'Target': 'Application  From end'},
+                    //     messageId: widget.messageId.toString()));
                   }
                   log('asdhtf${url.toString().contains('end')}');
                 },

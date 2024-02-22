@@ -44,6 +44,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       this.deleteCallRegUseCase)
       : super(CallsState()) {
     on<CallsEvent>((event, emit) {});
+    on<UpdateCurrentActiveCallIdEvent>(_onUpdateCurrentActiveCallIdEvent);
     on<InitResponseRejectVideoCallEvent>(_onInitResponseRejectVideoCallEvent);
     on<RejectVideoCallEvent>(_onRejectVideoCallEvent);
     on<AnswerVideoCallEvent>(_onAnswerVideoCallEvent);
@@ -112,7 +113,6 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
             channelIdForCurrentCall: r.data!.message!.channelId.toString(),
             agoraToken: r.data!.token));
       });
-
       debugPrint("the channel not exist");
     } else {
       debugPrint("the channel exist");
@@ -172,8 +172,8 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   FutureOr<void> _onRejectVideoCallEvent(
       RejectVideoCallEvent event, Emitter<CallsState> emit) async {
     debugPrint("RejectVideoCallEvent");
-    final response = await rejectCallUseCase.call(
-        MakeRejectParams(messageId: event.messageId, duration: event.duration));
+    final response = await rejectCallUseCase(
+        RejectCallParams(messageId: event.messageId, payload: event.payload , duration: event.duration));
     response.fold((l) => null, (r) {
       emit(
           state.copyWith(rejectVideoCallStatus: RejectVideoCallStatus.success));
@@ -222,7 +222,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       showMessage("لا يوجد اتصال بالانترنيت ");
     }, (r) {
       state.callRegister!.removeWhere(
-        (element) => element!.id == event.callId,
+        (element) => element.id == event.callId,
       );
       add(GetMyCallsEvent());
       emit((state.copyWith(
@@ -230,5 +230,10 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
         deleteCallRegStatus: DeleteCallRegStatus.success,
       )));
     });
+  }
+
+  FutureOr<void> _onUpdateCurrentActiveCallIdEvent(
+      UpdateCurrentActiveCallIdEvent event, Emitter<CallsState> emit) {
+    emit(state.copyWith(currentActiveCallId: event.id));
   }
 }

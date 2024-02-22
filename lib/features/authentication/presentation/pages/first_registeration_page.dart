@@ -53,8 +53,8 @@ class _RegistrationPageState extends State<RegistrationPage>
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFFFFF),
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
     ));
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "Registration Page");
     super.didChangeDependencies();

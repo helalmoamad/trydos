@@ -1,7 +1,8 @@
-import 'dart:developer';
 import 'dart:convert' as convert;
-import 'package:eraser/eraser.dart';
+import 'dart:developer';
 import 'package:adobe_xd/pinned.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -25,10 +26,7 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
-import 'package:vibration/vibration.dart';
 import 'features/authentication/presentation/pages/first_registeration_page.dart';
-import 'features/calls/presentation/pages/agora_webview.dart';
-import 'features/calls/presentation/pages/answer_call.dart';
 import 'features/calls/presentation/pages/in_app_view.dart';
 import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
 import 'features/chat/data/models/my_chats_response_model.dart';
@@ -36,8 +34,6 @@ import 'features/chat/presentation/manager/chat_bloc.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
 import 'features/chat/presentation/manager/chat_state.dart';
 import 'features/chat/presentation/utils/firebase_presence.dart';
-import 'features/chat/presentation/utils/pusher_chat.dart';
-import 'features/chat/presentation/utils/pusher_chat_official_package.dart';
 import 'features/home/presentation/manager/home_state.dart';
 
 Widget get logo {
@@ -135,6 +131,52 @@ class BasePage extends StatefulWidget {
   State<BasePage> createState() => _BasePageState();
 }
 
+handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
+    {required Message message}) async {
+  DealWithMessagesStoredFromBackground();
+  navigationToSinglePageChat(message.channel!);
+}
+
+navigationToSinglePageChat(Chat chat) {
+  GetIt.I<ChatBloc>().add(ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: chat.id));
+  AppBloc appBloc =
+      BlocProvider.of<AppBloc>(navigatorKey.currentState!.context);
+  appBloc.add(ChangeBasePage(2));
+  User? receiver = chat.channelMembers!
+      .firstWhere(
+          (element) => element.userId != GetIt.I<PrefsRepository>().myChatId)
+      .user;
+  String receiverName = HelperFunctions.getTheFirstTwoLettersOfName(
+          chat.channelName ?? 'No Channel Name'),
+      fullReceiverName = chat.channelName ?? 'No Channel Name';
+  ChannelMember me = chat.channelMembers!.firstWhere(
+      (element) => element.userId == GetIt.I<PrefsRepository>().myChatId);
+  User? sender = me.user;
+  String senderName = sender?.name == null
+      ? 'UK'
+      : HelperFunctions.getTheFirstTwoLettersOfName(sender!.name!);
+  //WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+  navigatorKey.currentState!.context.go(GRouter
+          .config.applicationRoutes.kSinglePageChatPagePath +
+      '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}');
+  //});
+}
+
+void DealWithMessagesStoredFromBackground() async {
+  await GetIt.I<SharedPreferences>().reload();
+  List<Message>? messages;
+  if ((messages = GetIt.I<PrefsRepository>().getTheMessageFromBackground) !=
+      null) {
+    for (int i = 0; i < (messages?.length ?? 0); i++) {
+      print(messages![i].messageContent?.content);
+      GetIt.I<ChatBloc>().add(AddChannelToChannels(message: messages[i]));
+      GetIt.I<ChatBloc>()
+          .add(ReceiveMessageEvent(message: messages[i], prevMessageId: null));
+    }
+    GetIt.I<PrefsRepository>().removeMessageFromBackground();
+  }
+}
+
 class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   late ChatBloc chatBloc;
   late HomeBloc homeBloc;
@@ -151,9 +193,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    debugPrint(state.toString());
     if (state == AppLifecycleState.resumed) {
-      Eraser.clearAllAppNotifications();
+      DealWithMessagesStoredFromBackground();
       //Check call when open app from background
       if (prefsRepository.chatToken != null) {
         checkAndNavigationCallingPage(context);
@@ -199,39 +240,55 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFFFFF),
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
     ));
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "Base Page");
     super.didChangeDependencies();
   }
-
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
       if (event.data['type'] == 'RefuseCallEvent') {
-        debugPrint('RefuseCallEvent RefuseCallEvent RefuseCallEvent');
-        print('new call ${event.data['data']['message_id'].toString()}');
-        print('current call ${callsBloc.state.currentActiveCallId.toString()}');
-        // if (event.data['data']['message_id'].toString() !=
-        //         callsBloc.state.currentActiveCallId &&
-        //     callsBloc.state.currentActiveCallId != '-1') {
-        //   return;
-        // }
+        log('fffffffffffffffffff');
+
+        log(event.data.toString());
+        Map<String, dynamic> data =
+            convert.jsonDecode(event.data['data'].toString());
+        GetIt.I<PrefsRepository>().saveRequestsData(
+            null, null, null, null, null, null, null,
+            error: 'RefuseCall for message ForeGround ${data['message_id']}');
+        if ((data['message_id'].toString() !=
+                callsBloc.state.currentActiveCallId) &&
+            callsBloc.state.currentActiveCallId != '-1') {
+          return;
+        }
         FlutterCallkitIncoming.endAllCalls();
         callsBloc.add(UserInteractWithCall(rejectIt: true));
-        //callsBloc.add(ResponseRejectVideoCallEvent());
         if (navigatorKey.currentState!.context.canPop() &&
             navigatorKey.currentState!.context.widget is! SinglePageChat) {
           navigatorKey.currentState!.context.pop();
         }
       } else if (event.data['type'] == 'VideoCallEvent') {
-        Map<String, dynamic> data = convert.jsonDecode(event.data['data']);
-        Message message = Message.fromJson(data['message']);
+        GetIt.I<PrefsRepository>().saveRequestsData(
+            null, null, null, null, null, null, null,
+            error: 'VideoCallEvent ForeGround Message');
+        Message? message;
+        try {
+          Map<String, dynamic> data = convert.jsonDecode(event.data['data']);
+          message = Message.fromJson(data['message']);
+          GetIt.I<CallsBloc>()
+              .add(UpdateCurrentActiveCallIdEvent(id: message.id.toString()));
+        } catch (e, st) {
+          GetIt.I<PrefsRepository>().saveRequestsData(
+              null, null, null, null, null, null, null,
+              error: 'VideoCallEvent Error ${e.toString()}');
+        }
+        chatBloc.add(AddChannelToChannels(message: message!));
         chatBloc.add(ReceiveMessageEvent(
             message: message, increaseUnReadMessages: false));
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => AgoraInAppWebView(
-              messageId: message.id.toString(),
+              messageId: message!.id.toString(),
               action: 'receive',
               type: 'video',
               channelId: message.channelId.toString(),
@@ -239,13 +296,26 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               uId: prefsRepository.myChatId!.toString()),
         ));
       } else if (event.data['type'] == 'VoiceCallEvent') {
-        Map<String, dynamic> data = convert.jsonDecode(event.data['data']);
-        Message message = Message.fromJson(data['message']);
+        GetIt.I<PrefsRepository>().saveRequestsData(
+            null, null, null, null, null, null, null,
+            error: 'VoiceCallEvent ForeGround Message');
+        Message? message;
+        try {
+          Map<String, dynamic> data = convert.jsonDecode(event.data['data']);
+          message = Message.fromJson(data['message']);
+          GetIt.I<CallsBloc>()
+              .add(UpdateCurrentActiveCallIdEvent(id: message.id.toString()));
+        } catch (e, st) {
+          GetIt.I<PrefsRepository>().saveRequestsData(
+              null, null, null, null, null, null, null,
+              error: 'VoiceCallEvent Error ${e.toString()}');
+        }
+        chatBloc.add(AddChannelToChannels(message: message!));
         chatBloc.add(ReceiveMessageEvent(
             message: message, increaseUnReadMessages: false));
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => AgoraInAppWebView(
-              messageId: message.id.toString(),
+              messageId: message!.id.toString(),
               action: 'receive',
               type: 'voice',
               channelId: message.channelId.toString(),
@@ -253,22 +323,23 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               uId: prefsRepository.myChatId!.toString()),
         ));
       } else if (event.data['type'] == 'AnswerCallEvent') {
+        Map<String, dynamic> data =
+        convert.jsonDecode(event.data['data'].toString());
+        GetIt.I<PrefsRepository>().saveRequestsData(
+            null, null, null, null, null, null, null,
+            error: 'AnswerCallEvent Message');
         debugPrint(
             'GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false))');
+        if (data['message_id'].toString() !=
+            GetIt.I<CallsBloc>().state.currentActiveCallId &&
+            GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
+          return;
+        }
+        if (GetIt.I<PrefsRepository>().myChatId.toString() == data['user']['id'].toString() && navigatorKey.currentState!.context.canPop() &&
+            navigatorKey.currentState!.context.widget is! SinglePageChat) {
+          navigatorKey.currentState!.context.pop();
+        }
         callsBloc.add(UserInteractWithCall(rejectIt: false));
-        // debugPrint(event.data.toString());
-        // debugPrint(
-        //     'AnswerCallEventChannelNmae${GetIt.I<CallsBloc>().state.channelName!}');
-        // debugPrint(
-        //     'AnswerCallEventAgoraToken${GetIt.I<CallsBloc>().state.agoraToken!}');
-        // Navigator.of(navigatorKey.currentState!.context).push(MaterialPageRoute(
-        //   builder: (context) => AgoraWebView(
-        //     type: 'video',
-        //     channelId: GetIt.I<CallsBloc>().state.channelName!,
-        //     token: GetIt.I<CallsBloc>().state.agoraToken!,
-        //     uId: GetIt.I<PrefsRepository>().myChatId!.toString(),
-        //   ),
-        // ));
       } else if (event.data['type'] == 'ChannelWatchedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
@@ -291,18 +362,16 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         log("0000000000000000000000000000000000000005555555555555555555555555 ${data["received_at"]}");
         log("0000000000000000000000000000000000000005555555555555555555555555 ${data}");
       } else {
+        log(event.data['message'].toString());
         Message message =
             Message.fromJson(convert.jsonDecode(event.data['message']));
         String prevMessageId = event.data['prev_message_id'];
+        chatBloc.add(AddChannelToChannels(message: message));
         chatBloc.add(ReceiveMessageEvent(
             message: message, prevMessageId: prevMessageId));
-        log('object ${event.data}');
-        log('object ${event.senderId}');
-        log('object ${event.notification?.title}');
-        log('object ${event.notification?.body}');
-        log('object ${event.notification?.bodyLocArgs}');
-        log('object ${event.data}');
-        //LocalNotificationService().showNotificationWithPayload(message: event);
+        if (BlocProvider.of<ChatBloc>(context).currentOpenedChatId != message.channelId) {
+          LocalNotificationService().showNotificationWithPayload(message: event);
+        }
       }
     });
   }
@@ -316,85 +385,55 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       debugPrint('error $error');
     };
     return BlocListener<ChatBloc, ChatState>(
-      listener: (context, chatState) {
-        debugPrint('CahtListeninggggggggggggggggggggg');
-        FirebasePresence.listenToAllChats(
-            [...chatState.chats, ...chatState.pinnedChats]);
-      },
-      listenWhen: (p, c) =>
-          p.getChatsStatus != c.getChatsStatus &&
-          c.getChatsStatus == GetChatsStatus.success,
-      child: BlocListener<HomeBloc, HomeState>(
-          listenWhen: (p, c) =>
-              p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
-              c.getStartingSettingsStatus == GetStartingSettingsStatus.success,
-          listener: (context, state) {
-            debugPrint('version gets successfully');
-            debugPrint('android: ${state.startingSetting?.androidMinVersion}');
-            debugPrint('ios: ${state.startingSetting?.iosMinVersion}');
-            if (applicationVersion <
-                    state.startingSetting!.androidMinVersion! ||
-                applicationVersion < state.startingSetting!.iosMinVersion!) {
-              HelperFunctions.showVersionDialog(context);
-            }
+        listener: (context, state) {
+          navigationToSinglePageChat(state.chatToNavigateFromTerminated!);
+        },
+        listenWhen: (p, c) =>
+            p.chatToNavigateFromTerminated != c.chatToNavigateFromTerminated,
+        child: BlocListener<ChatBloc, ChatState>(
+          listener: (context, chatState) {
+            FirebasePresence.listenToAllChats(
+                [...chatState.chats, ...chatState.pinnedChats]);
           },
-          child: Scaffold(
-            backgroundColor: colorScheme.background,
-            bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-                buildWhen: (p, c) => p.showBars != c.showBars,
-                builder: (context, state) {
-                  if (state.showBars == true) {
-                    return const AppBottomNavBar();
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                }),
-            body:
-                BlocBuilder<ChatBloc, ChatState>(builder: (context, chatState) {
-              debugPrint(initialMessage.toString());
-              debugPrint(chatState.chats.isNotEmpty.toString());
-              if (initialMessage != null && chatState.chats.isNotEmpty) {
-                AppBloc appBloc = BlocProvider.of<AppBloc>(context);
-                appBloc.add(ChangeBasePage(2));
-                chatBloc.add(ReadAllMessagesEvent(
-                    initialMessage!.channelId!.toString()));
-                List<Chat> chats = [];
-                chats.addAll(chatState.pinnedChats);
-                chats.addAll(chatState.chats);
-                Chat chat = chats.firstWhere(
-                    (element) => element.id == initialMessage!.channelId);
-                initialMessage = null;
-                // int chatIndex = chats.indexWhere((element) => element.id == initialMessage!.channelId);
-                User? receiver = chat.channelMembers!
-                    .firstWhere((element) =>
-                        element.userId != GetIt.I<PrefsRepository>().myChatId)
-                    .user;
-                String receiverName =
-                        HelperFunctions.getTheFirstTwoLettersOfName(
-                            chat.channelName ?? 'No Channel Name'),
-                    fullReceiverName = chat.channelName ?? 'No Channel Name';
-                ChannelMember me = chat.channelMembers!.firstWhere((element) =>
-                    element.userId == GetIt.I<PrefsRepository>().myChatId);
-                User? sender = me.user;
-                String senderName = sender?.name == null
-                    ? 'UK'
-                    : HelperFunctions.getTheFirstTwoLettersOfName(
-                        sender!.name!);
-                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  context.go(GRouter
-                          .config.applicationRoutes.kSinglePageChatPagePath +
-                      '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}');
-                });
-              }
-              return BlocBuilder<AppBloc, AppState>(
-                buildWhen: (oldState, newState) =>
-                    oldState.currentIndex != newState.currentIndex,
-                builder: (_, state) {
-                  return pages[state.currentIndex];
-                },
-              );
-            }),
-          )),
-    );
+          listenWhen: (p, c) =>
+              p.getChatsStatus != c.getChatsStatus &&
+              c.getChatsStatus == GetChatsStatus.success,
+          child: BlocListener<HomeBloc, HomeState>(
+              listenWhen: (p, c) =>
+                  p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
+                  c.getStartingSettingsStatus ==
+                      GetStartingSettingsStatus.success,
+              listener: (context, state) {
+                debugPrint('version gets successfully');
+                debugPrint(
+                    'android: ${state.startingSetting?.androidMinVersion}');
+                debugPrint('ios: ${state.startingSetting?.iosMinVersion}');
+                if (applicationVersion <
+                        state.startingSetting!.androidMinVersion! ||
+                    applicationVersion < state.startingSetting!.iosMinVersion!) {
+                  HelperFunctions.showVersionDialog(context);
+                }
+              },
+              child: Scaffold(
+                backgroundColor: colorScheme.background,
+                bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
+                    buildWhen: (p, c) => p.showBars != c.showBars,
+                    builder: (context, state) {
+                      if (state.showBars == true) {
+                        return const AppBottomNavBar();
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    }),
+                body: BlocBuilder<AppBloc, AppState>(
+                  buildWhen: (oldState, newState) =>
+                      oldState.currentIndex != newState.currentIndex,
+                  builder: (_, state) {
+                    return pages[state.currentIndex];
+                  },
+                ),
+              )),
+        ),
+      );
   }
 }

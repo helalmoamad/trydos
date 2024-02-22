@@ -9,6 +9,7 @@ class MakeCallEvent extends CallsEvent {
   String? chatId;
   String receiverCallName;
   final bool isVideo;
+
   MakeCallEvent(
       {this.chatId,
       required this.receiverCallName,
@@ -29,7 +30,10 @@ class AnswerVideoCallEvent extends CallsEvent {
 class RejectVideoCallEvent extends CallsEvent {
   String messageId;
   int duration;
-  RejectVideoCallEvent({required this.messageId, required this.duration});
+  final Map<String , dynamic>? payload;
+
+  RejectVideoCallEvent({required this.messageId , this.payload , required this.duration});
+
 }
 
 class GetMyCallsEvent extends CallsEvent {}
@@ -44,8 +48,13 @@ class ResponseRejectVideoCallEvent extends CallsEvent {}
 
 class InitResponseRejectVideoCallEvent extends CallsEvent {}
 
+class UpdateCurrentActiveCallIdEvent extends CallsEvent {
+  final String id;
+  UpdateCurrentActiveCallIdEvent({required this.id});
+}
+
 class UserInteractWithCall extends CallsEvent {
   final bool rejectIt;
 
-  UserInteractWithCall({required this.rejectIt});
+   UserInteractWithCall({required this.rejectIt});
 }
