@@ -21,7 +21,7 @@ Future<void> checkAndNavigationCallingPage(BuildContext context , {bool fromTerm
     Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
         AgoraInAppWebView(messageId: currentCall['extra']['message_id'],
             action: currentCall['accepted'] ? 'sent' : 'receive',
-            type: 'video',
+            type: currentCall['extra']['type'],
             channelId: currentCall['extra']['channel_id'],
             auth_token: GetIt
                 .I<PrefsRepository>()

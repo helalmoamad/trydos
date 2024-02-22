@@ -589,14 +589,15 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       focusColor: Colors.transparent,
                                       splashColor: Colors.transparent,
                                       onTap: () async {
-                                        final path =
-                                            await recorder.stopRecorder();
-                                        final audioFile = File(path!);
-                                        FirebasePresence.deleteUserTransaction(
-                                          channelId: widget.channelId,
-                                        );
-                                        widget.onSendFile(audioFile, 'voice');
-                                        recordingNotifier.value = false;
+                                          final path =
+                                          await recorder.stopRecorder();
+                                          final audioFile = File(path!);
+                                          FirebasePresence
+                                              .deleteUserTransaction(
+                                            channelId: widget.channelId,
+                                          );
+                                          widget.onSendFile(audioFile, 'voice');
+                                          recordingNotifier.value = false;
                                       },
                                       child: Padding(
                                         padding: HWEdgeInsets.all(10.0),

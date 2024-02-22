@@ -153,12 +153,14 @@ class _ImageMessageState extends State<ImageMessage> {
                                     valueListenable: _loadingImage,
                                     builder: (context, status, _) {
                                       FileSaving().downloadFileToLocalStorage(
-                                          widget.imageUrl!+'?width=${200.w}&height=400',
+                                          widget.imageUrl!+'?width=${300.w}&height=400',
                                           action: (File? file) {
                                         // _loadingImage.value = 2;
                                         if (file != null) {
                                           widget.imageFile = file;
-                                          setState(() {});
+                                          if(mounted) {
+                                            setState(() {});
+                                          }
                                         }
                                       });
                                       return CircularProgressIndicator(
@@ -184,7 +186,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                     child: Hero(
                                       tag: "hero${DateTime.now()}",
                                       child: Container(
-                                        width: 200.w
+                                        width: 300.w
                                         // (snapshot.data!.width.w < 200.w)
                                         //     ? snapshot.data!.width.toDouble()
                                         //     : 200.w
@@ -224,7 +226,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                     offset: const Offset(0, -3),
                                     child: Container(
                                       height: 40.h,
-                                      width: 200.w,
+                                      width: 300.w,
                                       // (snapshot.data!.width.w < 200.w)
                                       //     ? snapshot.data!.width.toDouble()
                                       //     : 200.w,

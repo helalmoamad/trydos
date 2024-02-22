@@ -36,7 +36,8 @@ class MyChatsResponseModel {
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "isSuccessful": isSuccessful,
         "hasContent": hasContent,
         "code": code,
@@ -57,17 +58,19 @@ class Data {
     required this.missedFcmToken,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-      chats: json["channels"] == null
-          ? []
-          : List<Chat>.from(json["channels"]!.map((x) => Chat.fromJson(x))),
-      pinnedChats: json["pinned_channels"] == null
-          ? []
-          : List<Chat>.from(
+  factory Data.fromJson(Map<String, dynamic> json) =>
+      Data(
+          chats: json["channels"] == null
+              ? []
+              : List<Chat>.from(json["channels"]!.map((x) => Chat.fromJson(x))),
+          pinnedChats: json["pinned_channels"] == null
+              ? []
+              : List<Chat>.from(
               json["pinned_channels"]!.map((x) => Chat.fromJson(x))),
-      missedFcmToken: json['missed_fcm_token']);
+          missedFcmToken: json['missed_fcm_token']);
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "channels": chats == null
             ? []
             : List<dynamic>.from(chats!.map((x) => x.toJson())),
@@ -89,7 +92,10 @@ class SenderInfo {
   factory SenderInfo.fromJson(Map<String, dynamic> json) =>
       SenderInfo(id: json['id'], name: json['name']);
 
-  Map<String, dynamic> toJson() => {};
+  Map<String, dynamic> toJson() => {
+    'id' : id,
+    'name' : name,
+  };
 }
 
 class Message {
@@ -109,10 +115,10 @@ class Message {
   final Chat? channel;
   final Message? parentMessage;
   final File? file;
-  bool isFirstMessageForThisDay;
-  bool isFirstMessage;
-  bool isDateMessage;
-  String dateValue;
+  bool? isFirstMessageForThisDay;
+  bool? isFirstMessage;
+  bool? isDateMessage;
+  String? dateValue;
 
   Message({
     this.isFirstMessageForThisDay = false,
@@ -171,7 +177,7 @@ class Message {
       isForward: isForward ?? this.isForward,
       messageContent: messageContent ?? this.messageContent,
       isFirstMessageForThisDay:
-          isFirstMessageForThisDay ?? this.isFirstMessageForThisDay,
+      isFirstMessageForThisDay ?? this.isFirstMessageForThisDay,
       isFirstMessage: isFirstMessage ?? this.isFirstMessage,
       messageStatus: messageStatus ?? this.messageStatus,
       mediaMessageContent: mediaMessageContent ?? this.mediaMessageContent,
@@ -180,45 +186,64 @@ class Message {
     );
   }
 
-  factory Message.fromJson(Map<String, dynamic> json) => Message(
-        id: json["id"].toString(),
-        senderUserId: json["sender_user_id"],
-        receiverUserId: json["receiver_user_id"],
-        channelId: json["channel_id"].toString(),
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        messageType: json["message_type"] == null
-            ? null
-            : MessageType.fromJson(json["message_type"]),
-        parentMessageId: json["parent_message_id"]?.toString(),
-        isForward: (json["is_forward"] is bool)
-            ? (json["is_forward"] ? 1 : 0)
-            : json["is_forward"],
-        mediaMessageContent: json["message_type"]["name"] == "TextMessage"
-            ? null
-            : json["message_content"] == null
-                ? []
-                : List<MediaMessageContent>.from(json["message_content"]!
-                    .map((x) => MediaMessageContent.fromJson(x))),
-        messageContent: json["message_type"]["name"] != "TextMessage"
-            ? null
-            : json["message_content"] == null
-                ? null
-                : MessageContent.fromJson(json["message_content"]),
-        messageStatus: json["message_status"] == null
-            ? []
-            : List<MessageStatus>.from(
-                json["message_status"]!.map((x) => MessageStatus.fromJson(x))),
-        channel:
-            json["channel"] == null ? null : Chat.fromJson(json["channel"]),
-        parentMessage: json["parent_message"] != null
-            ? Message.fromJson(json["parent_message"])
-            : null,
-      );
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(
+      id: json["id"].toString(),
+      localId: json["localId"].toString(),
+      localParentMessageId: json["localParentMessageId"].toString(),
+      dateValue: json["dateValue"],
+      isDateMessage: json["isDateMessage"] != null ? bool.parse(json["isDateMessage"]) : false,
+      isFirstMessage: json["isFirstMessage"] != null ? bool.parse(json["isFirstMessage"]) : false,
+      isFirstMessageForThisDay: json["isFirstMessageForThisDay"] != null ? bool.parse(json["isFirstMessageForThisDay"]) : false,
+      senderUserId: json["sender_user_id"],
+      receiverUserId: json["receiver_user_id"],
+      channelId: json["channel_id"].toString(),
+      createdAt: json["created_at"] == null
+          ? null
+          : DateTime.parse(json["created_at"]),
+      messageType: json["message_type"] == null
+          ? null
+          : MessageType.fromJson(json["message_type"]),
+      parentMessageId: json["parent_message_id"]?.toString(),
+      isForward: (json["is_forward"] is bool)
+          ? (json["is_forward"] ? 1 : 0)
+          : json["is_forward"],
+      mediaMessageContent: json["message_type"] == null
+          ? null
+          : json["message_type"]["name"] == "TextMessage"
+          ? null
+          : json["message_content"] == null
+          ? []
+          : List<MediaMessageContent>.from(json["message_content"]!
+          .map((x) => MediaMessageContent.fromJson(x))),
+      messageContent: json["message_type"] == null
+          ? null
+          : json["message_type"]["name"] != "TextMessage"
+          ? null
+          : json["message_content"] == null
+          ? null
+          : MessageContent.fromJson(json["message_content"]),
+      messageStatus: json["message_status"] == null
+          ? []
+          : List<MessageStatus>.from(
+          json["message_status"]!.map((x) => MessageStatus.fromJson(x))),
+      channel:
+      json["channel"] == null ? null : Chat.fromJson(json["channel"]),
+      parentMessage: json["parent_message"] != null
+          ? Message.fromJson(json["parent_message"])
+          : null,
+    );
+  }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "id": id,
+        "localId": localId,
+        "localParentMessageId": localParentMessageId,
+        "isFirstMessageForThisDay" : isFirstMessageForThisDay.toString(),
+        "dateValue" : dateValue,
+        "isFirstMessage" : isFirstMessage.toString(),
+        "isDateMessage" : isDateMessage.toString(),
         "sender_user_id": senderUserId,
         "receiver_user_id": receiverUserId,
         "channel_id": channelId,
@@ -226,7 +251,12 @@ class Message {
         "message_type": messageType?.toJson(),
         "parent_message_id": parentMessageId,
         "is_forward": isForward,
-        "message_content": messageContent?.toJson(),
+        "message_content" : messageType == null
+            ? null
+            : messageType!.name == "TextMessage"
+            ? messageContent?.toJson()
+            : mediaMessageContent == null
+            ? [] : List<Map<String,dynamic>>.from(mediaMessageContent!.map((x) => x.toJson())),
         "message_status": messageStatus == null
             ? []
             : List<dynamic>.from(messageStatus!.map((x) => x.toJson())),
@@ -275,7 +305,7 @@ class Chat {
         photoPath: photoPath ?? this.photoPath,
         channelName: channelName ?? this.channelName,
         totalUnreadMessageCount:
-            totalUnreadMessageCount ?? this.totalUnreadMessageCount,
+        totalUnreadMessageCount ?? this.totalUnreadMessageCount,
         channelMembers: channelMembers ?? this.channelMembers,
         messages: messages ?? this.messages,
         paginationStatus: paginationStatus ?? this.paginationStatus,
@@ -288,7 +318,8 @@ class Chat {
 
   bool get isSuccess => paginationStatus == PaginationStatus.success;
 
-  factory Chat.fromJson(Map<String, dynamic> json) => Chat(
+  factory Chat.fromJson(Map<String, dynamic> json) =>
+      Chat(
         id: json["id"].toString(),
         photoPath: json["photo_path"],
         channelName: json["channel_name"],
@@ -296,15 +327,17 @@ class Chat {
         channelMembers: json["channel_members"] == null
             ? []
             : List<ChannelMember>.from(
-                json["channel_members"]!.map((x) => ChannelMember.fromJson(x))),
+            json["channel_members"]!.map((x) => ChannelMember.fromJson(x))),
         messages: json["messages"] == null
             ? []
             : List<Message>.from(
-                json["messages"]!.map((x) => Message.fromJson(x))),
+            json["messages"]!.map((x) => Message.fromJson(x))),
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "id": id,
+        "channel_name": channelName,
         "photo_path": photoPath,
         "total_unread_message_count": totalUnreadMessageCount,
         "channel_members": channelMembers == null
@@ -340,7 +373,8 @@ class MediaMessageContent {
         caption: json["caption"],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "id": id,
         "file_path": filePath,
         "file_name": fileName,
@@ -358,12 +392,14 @@ class MessageContent {
     this.content,
   });
 
-  factory MessageContent.fromJson(Map<String, dynamic> json) => MessageContent(
+  factory MessageContent.fromJson(Map<String, dynamic> json) =>
+      MessageContent(
         messageId: json["message_id"],
         content: json["content"],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "message_id": messageId,
         "content": content,
       };
@@ -392,13 +428,15 @@ class MessageStatus {
     );
   }
 
-  factory MessageStatus.fromJson(Map<String, dynamic> json) => MessageStatus(
+  factory MessageStatus.fromJson(Map<String, dynamic> json) =>
+      MessageStatus(
         userId: json["user_id"],
         isReceived: json["is_received"],
         isWatched: json["is_watched"],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "user_id": userId,
         "is_received": isReceived,
         "is_watched": isWatched,
@@ -412,11 +450,13 @@ class MessageType {
     this.name,
   });
 
-  factory MessageType.fromJson(Map<String, dynamic> json) => MessageType(
+  factory MessageType.fromJson(Map<String, dynamic> json) =>
+      MessageType(
         name: json["name"],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "name": name,
       };
 }
@@ -455,7 +495,8 @@ class ChannelMember {
         user: user ?? this.user,
       );
 
-  factory ChannelMember.fromJson(Map<String, dynamic> json) => ChannelMember(
+  factory ChannelMember.fromJson(Map<String, dynamic> json) =>
+      ChannelMember(
         channelId: json["channel_id"].toString(),
         userId: json["user_id"],
         pin: json["pin"],
@@ -464,7 +505,8 @@ class ChannelMember {
         user: json["user"] == null ? null : User.fromJson(json["user"]),
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "channel_id": channelId,
         "user_id": userId,
         "pin": pin,
@@ -487,14 +529,16 @@ class User {
     this.name,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
+  factory User.fromJson(Map<String, dynamic> json) =>
+      User(
         id: json["id"],
         mobilePhone: json["mobile_phone"],
         photoPath: json["photo_path"],
         name: json["name"],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "id": id,
         "mobile_phone": mobilePhone,
         "photo_path": photoPath,

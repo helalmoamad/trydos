@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:store_redirect/store_redirect.dart';
 import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
@@ -112,7 +113,10 @@ class HelperFunctions {
     List<Contact> myContacts = [];
     for (Contact contact in contacts) {
       if (contact.phones?.isNotEmpty ?? false) {
-        myContacts.add(contact);
+        contact.phones?.forEach((element) {
+          myContacts.add(
+              Contact(phones: [element], displayName: contact.displayName));
+        });
       }
     }
     return myContacts
@@ -124,15 +128,14 @@ class HelperFunctions {
   }
 
   static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
-
     final List<AssetEntity>? assets = await myMultiAssetPicker(context);
     return assets?[0];
   }
 
-   static Future<List<AssetEntity>?> myMultiAssetPicker(BuildContext context) async{
+  static Future<List<AssetEntity>?> myMultiAssetPicker(
+      BuildContext context) async {
     return AssetPicker.pickAssets(
       context,
-
       pickerConfig: AssetPickerConfig(
         maxAssets: 1,
         specialPickerType: SpecialPickerType.noPreview,
@@ -231,45 +234,49 @@ class HelperFunctions {
             onWillPop: () => Future.value(true),
             child: Platform.isIOS
                 ? CupertinoAlertDialog(
-                title: MyTextWidget(title, textDirection: ui.TextDirection.ltr),
-                content: MyTextWidget(message, textDirection: ui.TextDirection.ltr),
-                actions: <Widget>[
-                  Row(
-                    children: [
-                      AppElevatedButton(
-                        onPressed: ()=>_getFileFromGoogleDrive(),
-                        text: btnLabel,
-                      ),
-                      AppElevatedButton(
-                        onPressed: (){
-                          Navigator.pop(context);
-                        },
-                        text: 'Not Now',
+                    title: MyTextWidget(title,
+                        textDirection: ui.TextDirection.ltr),
+                    content: MyTextWidget(message,
+                        textDirection: ui.TextDirection.ltr),
+                    actions: <Widget>[
+                        Row(
+                          children: [
+                            AppElevatedButton(
+                              onPressed: () => _getFileFromGoogleDrive(),
+                              text: btnLabel,
+                            ),
+                            AppElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              text: 'Not Now',
+                            ),
+                          ],
+                        )
+                      ])
+                : AlertDialog(
+                    title: MyTextWidget(title,
+                        textDirection: ui.TextDirection.ltr),
+                    content: MyTextWidget(message,
+                        textDirection: ui.TextDirection.ltr),
+                    actions: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          AppElevatedButton(
+                            onPressed: () => _getFileFromGoogleDrive(),
+                            text: btnLabel,
+                          ),
+                          AppElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            text: 'Not Now',
+                          ),
+                        ],
                       ),
                     ],
-                  )
-                ])
-                : AlertDialog(
-              title: MyTextWidget(title , textDirection: ui.TextDirection.ltr),
-              content: MyTextWidget(message, textDirection: ui.TextDirection.ltr),
-              actions: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AppElevatedButton(
-                      onPressed: ()=>_getFileFromGoogleDrive(),
-                      text: btnLabel,
-                    ),
-                    AppElevatedButton(
-                      onPressed: (){
-                        Navigator.pop(context);
-                      },
-                      text: 'Not Now',
-                    ),
-                  ],
-                ),
-              ],
-            ));
+                  ));
       },
     );
   }
@@ -284,5 +291,25 @@ class HelperFunctions {
       androidAppId: 'ae.clearance.app',
       iOSAppId: '1637100307',
     );
+  }
+
+  static slidingNavigation(BuildContext context, Widget page) {
+    Navigator.of(context).push(new PageRouteBuilder(
+        opaque: false,
+        transitionDuration: const Duration(milliseconds: 300),
+        pageBuilder: (BuildContext context, _, __) {
+          return DragToPop(
+              xValueToStartPoping: 70,
+              child: page);
+        },
+        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+          return new SlideTransition(
+            child: child,
+            position: new Tween<Offset>(
+              begin: const Offset(1, 0), // navigation from right
+              end: Offset.zero,
+            ).animate(animation),
+          );
+        }));
   }
 }

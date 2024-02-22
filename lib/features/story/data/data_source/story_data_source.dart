@@ -85,7 +85,7 @@ class StoriesDataSource {
         endpoint: StoriesEndPoints.addStoryToOurServerEP,
         data: params,
         response: ResponseValue<CollectionStoryModel?>(
-          fromJson: (response) => CollectionStoryModel?.fromJson(response['data'])
+          fromJson: (response) => response['data'] != null ? CollectionStoryModel.fromJson(response['data']) : null
         )
       ),
       serverName: ServerName.stories,

@@ -5,15 +5,25 @@ import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/calls/domain/repositories/calls_repository.dart';
 
 @injectable
-class RejectCallUseCase extends UseCase<bool, String> {
+class RejectCallUseCase extends UseCase<bool, RejectCallParams> {
   final CallsRepository repository;
 
   RejectCallUseCase(this.repository);
 
   @override
-  Future<Either<Failure, bool>> call(String messageId) {
-    return repository.rejectCall(messageId);
+  Future<Either<Failure, bool>> call(RejectCallParams params) {
+    return repository.rejectCall(params.map);
   }
+}
+
+class RejectCallParams {
+  final String messageId;
+  final Map<String,dynamic>? payload;
+  const RejectCallParams({required this.messageId , this.payload});
+  Map<String,dynamic> get map=>{
+    'messageId':messageId,
+    'payload' : {'payload' : payload}
+  };
 }
 
 

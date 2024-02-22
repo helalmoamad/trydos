@@ -209,9 +209,8 @@ class FirebasePresence {
     String friendId = [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
         .firstWhere((element) => element.id == channelId)
         .channelMembers!
-        .firstWhere((element) => element.user!.id != myChatId)
-        .user!
-        .id
+        .firstWhere((element) => element.userId != myChatId)
+        .userId
         .toString();
     final typingRef =
     onUserTransactionRef(friendId: friendId);

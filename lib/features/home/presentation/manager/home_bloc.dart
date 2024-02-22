@@ -38,7 +38,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 }
 
 @LazySingleton()
-class HomeBloc extends Bloc<HomeEvent, HomeState> with HydratedMixin{
+class HomeBloc extends HydratedBloc<HomeEvent, HomeState>{
   HomeBloc(this.getHomeSectionsUseCase, this.getMainCategoriesUseCase,
       this.getStartingSettingsUseCase, this.getProductsWithoutFiltersUseCase)
       : super(HomeState()) {
@@ -237,7 +237,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> with HydratedMixin{
   HomeState? fromJson(Map<String, dynamic> json) {
     return HomeState.fromJson(json);
   }
-
   @override
   Map<String, dynamic>? toJson(HomeState state) {
       return state.toJson();

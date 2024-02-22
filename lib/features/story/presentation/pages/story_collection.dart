@@ -24,7 +24,7 @@ import 'dart:ui';
 class StoryCollection extends StatefulWidget {
   final int collectionIndex;
   final AnimationController animatedController;
-   bool stopAnimationAndVideo;
+  bool stopAnimationAndVideo;
   final bool screenChanged;
   final void Function(int collectionIndex, bool isReachTheLeftMost)
       onReachStoryAtEdge;
@@ -32,7 +32,7 @@ class StoryCollection extends StatefulWidget {
   @override
   State<StoryCollection> createState() => _StoryCollectionState();
 
-    StoryCollection(
+  StoryCollection(
       {Key? key,
       required this.collectionIndex,
       required this.animatedController,
@@ -52,10 +52,12 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
   @override
   void initState() {
     debugPrint('initState ${widget.collectionIndex}');
-    GetIt.I<StoryBloc>().add(StorySelectedEvent(collectionIndex: widget.collectionIndex, selectedStoryIndexInCollection: -1,currentPage: -1));
+    GetIt.I<StoryBloc>().add(StorySelectedEvent(
+        collectionIndex: widget.collectionIndex,
+        selectedStoryIndexInCollection: -1,
+        currentPage: -1));
     super.initState();
   }
-
 
   @override
   void dispose() {
@@ -86,20 +88,27 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 //        List<Story> collectionOfSelectedStory =
 //            state.stories[widget.collectionIndex].stories!;
 //        var currentStoryInEachCollection = collectionOfSelectedStory[currentInitialIndex];
-          pageController = PageController(initialPage: state.currentStoryInEachCollection[widget.collectionIndex]!);
+          pageController = PageController(
+              initialPage:
+                  state.currentStoryInEachCollection[widget.collectionIndex]!);
           widget.animatedController.addStatusListener((status) {
             if (status == AnimationStatus.completed) {
               widget.animatedController.stop();
               widget.animatedController.reset();
 
-              if ((state.currentStoryInEachCollection[widget.collectionIndex]! + 1) >=
-                  state.storiesCollections[widget.collectionIndex].stories!.length) {
+              if ((state.currentStoryInEachCollection[widget.collectionIndex]! +
+                      1) >=
+                  state.storiesCollections[widget.collectionIndex].stories!
+                      .length) {
                 widget.onReachStoryAtEdge.call(widget.collectionIndex, false);
               } else {
                 GetIt.I<StoryBloc>().add(StorySelectedEvent(
                     collectionIndex: widget.collectionIndex,
                     currentPage: -1,
-                    selectedStoryIndexInCollection: state.currentStoryInEachCollection[widget.collectionIndex]! + 1));
+                    selectedStoryIndexInCollection:
+                        state.currentStoryInEachCollection[
+                                widget.collectionIndex]! +
+                            1));
               }
             }
           });
@@ -136,55 +145,85 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                     if (dx > screenWidth * 1 / 2) {
                       widget.animatedController.stop();
                       widget.animatedController.reset();
-                      if ((state.currentStoryInEachCollection[widget.collectionIndex]! + 1) >=
-                          state.storiesCollections[widget.collectionIndex].stories!.length) {
+                      if ((state.currentStoryInEachCollection[
+                                  widget.collectionIndex]! +
+                              1) >=
+                          state.storiesCollections[widget.collectionIndex]
+                              .stories!.length) {
                         GetIt.I<StoryBloc>().add(StorySelectedEvent(
-                            collectionIndex: widget.collectionIndex, selectedStoryIndexInCollection: 0,currentPage: -1,));
+                          collectionIndex: widget.collectionIndex,
+                          selectedStoryIndexInCollection: 0,
+                          currentPage: -1,
+                        ));
                         Navigator.of(context).pop();
                       } else {
                         GetIt.I<StoryBloc>().add(StorySelectedEvent(
                             collectionIndex: widget.collectionIndex,
                             currentPage: -1,
-                            selectedStoryIndexInCollection: state.currentStoryInEachCollection[widget.collectionIndex]! + 1));
+                            selectedStoryIndexInCollection:
+                                state.currentStoryInEachCollection[
+                                        widget.collectionIndex]! +
+                                    1));
                       }
                     } else if (dx < screenWidth * 1 / 2) {
                       widget.animatedController.stop();
                       widget.animatedController.reset();
-                      if ((state.currentStoryInEachCollection[widget.collectionIndex]! - 1) > 0) {
+                      if ((state.currentStoryInEachCollection[
+                                  widget.collectionIndex]! -
+                              1) >
+                          0) {
                         context.read<StoryBloc>().add(StorySelectedEvent(
-                            selectedStoryIndexInCollection: state.currentStoryInEachCollection[widget.collectionIndex]! - 1,
+                            selectedStoryIndexInCollection:
+                                state.currentStoryInEachCollection[
+                                        widget.collectionIndex]! -
+                                    1,
                             currentPage: -1,
                             collectionIndex: widget.collectionIndex));
                       } else {
                         context.read<StoryBloc>().add(StorySelectedEvent(
                             currentPage: -1,
-                            selectedStoryIndexInCollection: 0, collectionIndex: widget.collectionIndex));
+                            selectedStoryIndexInCollection: 0,
+                            collectionIndex: widget.collectionIndex));
                       }
                     }
                   } else {
                     if (dx > screenWidth * 1 / 2) {
                       widget.animatedController.stop();
                       widget.animatedController.reset();
-                      if ((state.currentStoryInEachCollection[widget.collectionIndex]! + 1) >=
-                          state.storiesCollections[widget.collectionIndex].stories!.length) {
-                        widget.onReachStoryAtEdge.call(widget.collectionIndex, false);
+                      if ((state.currentStoryInEachCollection[
+                                  widget.collectionIndex]! +
+                              1) >=
+                          state.storiesCollections[widget.collectionIndex]
+                              .stories!.length) {
+                        widget.onReachStoryAtEdge
+                            .call(widget.collectionIndex, false);
                       } else {
                         GetIt.I<StoryBloc>().add(StorySelectedEvent(
                             collectionIndex: widget.collectionIndex,
                             currentPage: -1,
-                            selectedStoryIndexInCollection: state.currentStoryInEachCollection[widget.collectionIndex]! + 1));
+                            selectedStoryIndexInCollection:
+                                state.currentStoryInEachCollection[
+                                        widget.collectionIndex]! +
+                                    1));
                       }
                     } else if (dx < screenWidth * 1 / 2) {
                       widget.animatedController.stop();
 
                       widget.animatedController.reset();
-                      if ((state.currentStoryInEachCollection[widget.collectionIndex]! - 1) > 0) {
+                      if ((state.currentStoryInEachCollection[
+                                  widget.collectionIndex]! -
+                              1) >
+                          0) {
                         context.read<StoryBloc>().add(StorySelectedEvent(
                             currentPage: -1,
-                            selectedStoryIndexInCollection: state.currentStoryInEachCollection[widget.collectionIndex]! - 1,
+                            selectedStoryIndexInCollection:
+                                state.currentStoryInEachCollection[
+                                        widget.collectionIndex]! -
+                                    1,
                             collectionIndex: widget.collectionIndex));
                       } else {
-                        widget.onReachStoryAtEdge.call(widget.collectionIndex, true);
+                        widget.onReachStoryAtEdge
+                            .call(widget.collectionIndex, true);
                       }
                     }
                   }
@@ -202,13 +241,18 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             onPressed: () {
                               GetIt.I<StoryBloc>().add(StorySelectedEvent(
                                   currentPage: -1,
-                                  selectedStoryIndexInCollection: state.currentStoryInEachCollection[widget.collectionIndex]!,
+                                  selectedStoryIndexInCollection:
+                                      state.currentStoryInEachCollection[
+                                          widget.collectionIndex]!,
                                   collectionIndex: widget.collectionIndex));
                             },
                             child: MyTextWidget('Try Again')),
                       );
-                    else if (state.storiesCollections[widget.collectionIndex]
-                            .stories![state.currentStoryInEachCollection[widget.collectionIndex]!].isPhoto ==
+                    else if (state
+                            .storiesCollections[widget.collectionIndex]
+                            .stories![state.currentStoryInEachCollection[
+                                widget.collectionIndex]!]
+                            .isPhoto ==
                         1) {
                       if (state.storiesCollections[widget.collectionIndex]
                               .selectedStoriesStatusForCollection ==
@@ -226,7 +270,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           SelectedStoriesStatus.success) {
                         widget.animatedController.stop();
                         widget.animatedController.duration =
-                            const Duration(seconds: 4);
+                        const Duration(seconds: 4);
                         if (widget.stopAnimationAndVideo) {
                           widget.animatedController.stop();
                         } else {
@@ -235,11 +279,24 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                         return MyCachedNetworkImage(
                           imageUrl: state
                               .storiesCollections[widget.collectionIndex]
-                              .stories![state.currentStoryInEachCollection[widget.collectionIndex]!]
+                              .stories![state.currentStoryInEachCollection[
+                                  widget.collectionIndex]!]
                               .photoPath!,
-                          width: state.storiesCollections[widget.collectionIndex].imageDetail!.width
+                          callWhenDisplayImage: () {
+                            widget.animatedController.forward();
+                          },
+                          callWhenLoadingImage: (){
+                            widget.animatedController.stop();
+                          },
+                          width: state
+                              .storiesCollections[widget.collectionIndex]
+                              .imageDetail!
+                              .width
                               .toDouble(),
-                          height: state.storiesCollections[widget.collectionIndex].imageDetail!.height
+                          height: state
+                              .storiesCollections[widget.collectionIndex]
+                              .imageDetail!
+                              .height
                               .toDouble(),
                           imageFit: BoxFit.contain,
                         );
@@ -250,7 +307,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                         _videoController = VideoPlayerController.networkUrl(
                             Uri.parse(state
                                 .storiesCollections[widget.collectionIndex]
-                                .stories![state.currentStoryInEachCollection[widget.collectionIndex]!]
+                                .stories![state.currentStoryInEachCollection[
+                                    widget.collectionIndex]!]
                                 .fullVideoPath!));
                         init = _videoController!.initialize().then((_) {
                           widget.animatedController.duration =
@@ -270,14 +328,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             }
                           });
                         }, onError: (e) {
-                          GetIt.I<StoryBloc>()
-                              .add(LoadFailureEvent(collectionId: widget.collectionIndex));
+                          GetIt.I<StoryBloc>().add(LoadFailureEvent(
+                              collectionId: widget.collectionIndex));
                         });
                       }
-                      if(widget.collectionIndex != state.currentPage){
+                      if (widget.collectionIndex != state.currentPage) {
                         _videoController?.pause();
                         widget.animatedController.stop();
-                      }else {
+                      } else {
                         if (widget.stopAnimationAndVideo) {
                           _videoController?.pause();
                           widget.animatedController.stop();
@@ -318,12 +376,13 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                 child: Center(
                                   child: ElevatedButton(
                                       onPressed: () {
-                                        GetIt.I<StoryBloc>().add(
-                                            StorySelectedEvent(
-                                                selectedStoryIndexInCollection: state
-                                                    .currentStoryInEachCollection[widget.collectionIndex]!,
-                                                currentPage: -1,
-                                                collectionIndex: widget.collectionIndex));
+                                        GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                                            selectedStoryIndexInCollection:
+                                                state.currentStoryInEachCollection[
+                                                    widget.collectionIndex]!,
+                                            currentPage: -1,
+                                            collectionIndex:
+                                                widget.collectionIndex));
                                       },
                                       child: MyTextWidget('try')),
                                 ),
@@ -338,7 +397,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                       );
                     }
                   },
-                  itemCount: state.storiesCollections[widget.collectionIndex].stories!.length,
+                  itemCount: state.storiesCollections[widget.collectionIndex]
+                      .stories!.length,
                 ),
               ),
               Positioned(
@@ -348,12 +408,15 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                   child:
                       Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
                     Row(
-                      children: state.storiesCollections[widget.collectionIndex].stories!
+                      children: state
+                          .storiesCollections[widget.collectionIndex].stories!
                           .map((e) => AnimatedBar(
                               animController: widget.animatedController,
                               collectionIndex: widget.collectionIndex,
-                              position:
-                                  state.storiesCollections[widget.collectionIndex].stories!.indexOf(e)))
+                              position: state
+                                  .storiesCollections[widget.collectionIndex]
+                                  .stories!
+                                  .indexOf(e)))
                           .toList(),
                     ),
                     Align(
@@ -382,25 +445,37 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                           color: const Color(0xff6638FF),
                                           letterSpacing: 0.18,
                                           height: 1.33),
-                                  name: state.storiesCollections[widget.collectionIndex].name == null
+                                  name: state
+                                              .storiesCollections[
+                                                  widget.collectionIndex]
+                                              .name ==
+                                          null
                                       ? 'UK'
-                                      : HelperFunctions
-                                          .getTheFirstTwoLettersOfName(
-                                              state.storiesCollections[widget.collectionIndex].name!))
+                                      : HelperFunctions.getTheFirstTwoLettersOfName(state
+                                          .storiesCollections[
+                                              widget.collectionIndex]
+                                          .name!))
                               : MyCachedNetworkImage(
                                   width: 40,
                                   height: 40,
                                   imageFit: BoxFit.cover,
-                                  imageUrl: state.storiesCollections[widget.collectionIndex].photoPath),
+                                  imageUrl: state
+                                      .storiesCollections[widget.collectionIndex]
+                                      .photoPath),
                         ),
                         Padding(
                           padding: EdgeInsetsDirectional.only(start: 10),
                           child: MyTextWidget(
                               style: textTheme.headline6?.rr
                                   .copyWith(color: Colors.white),
-                              state.storiesCollections[widget.collectionIndex].name == null
+                              state.storiesCollections[widget.collectionIndex]
+                                          .name ==
+                                      null
                                   ? 'UK'
-                                  : state.storiesCollections[widget.collectionIndex].name!),
+                                  : state
+                                      .storiesCollections[
+                                          widget.collectionIndex]
+                                      .name!),
                         )
                       ]),
                     ),
@@ -412,8 +487,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     );
   }
 }
-
-
 
 class HeroAnimationAsset {
   static Tween<Rect?> customTweenRect(Rect? begin, Rect? end) =>

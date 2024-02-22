@@ -67,7 +67,6 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
       messageType: json['messageType'] as String?,
       firstMessageId: json['firstMessageId'] as String?,
       scrollToParentMessage: json['scrollToParentMessage'] as bool? ?? false,
-      createAnewChat: json['createAnewChat'] as bool? ?? false,
       secondMessageId: json['secondMessageId'] as String?,
       messageContent: json['messageContent'] as String?,
       contacts: (json['contacts'] as List<dynamic>?)
@@ -132,7 +131,6 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'unReadMessagesFromAllChats': instance.unReadMessagesFromAllChats,
       'currentChannelReceivedMessage': instance.currentChannelReceivedMessage,
       'scrollToParentMessage': instance.scrollToParentMessage,
-      'createAnewChat': instance.createAnewChat,
       'newSortedChatsByDate': instance.newSortedChatsByDate
           ?.map((k, e) => MapEntry(k, e.map((e) => e.toJson()).toList())),
     };

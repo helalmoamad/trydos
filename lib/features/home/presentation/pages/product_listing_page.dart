@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
@@ -131,18 +133,23 @@ class _ProductListingPageState extends State<ProductListingPage> {
                               state.getProductListingWithoutFiltersModel!.data!
                                       .products?.length ??
                                   0,
-                              (index) => ProductItem(
-                                    slidingModeItem: slidingMode,
-                                    productItem: state
-                                        .getProductListingWithoutFiltersModel!
-                                        .data!
-                                        .products![index],
-                                    itemIndex: index,
-                                    setThisEnabled: (int index, int slideMode) {
-                                      setThisEnabledNotifier.value =
-                                          Tuple2(index, slideMode);
-                                    },
-                                  )),
+                              (index) => InkWell(
+                                onTap: (){
+                                  HelperFunctions.slidingNavigation(context, ProductDetailsPage());
+                                },
+                                child: ProductItem(
+                                      slidingModeItem: slidingMode,
+                                      productItem: state
+                                          .getProductListingWithoutFiltersModel!
+                                          .data!
+                                          .products![index],
+                                      itemIndex: index,
+                                      setThisEnabled: (int index, int slideMode) {
+                                        setThisEnabledNotifier.value =
+                                            Tuple2(index, slideMode);
+                                      },
+                                    ),
+                              )),
                         );
                       });
                 },
