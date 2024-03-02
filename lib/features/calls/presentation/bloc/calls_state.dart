@@ -17,15 +17,17 @@ enum OpenRemoteVideoAndAudioStatus { init, loading, success, failure }
 enum RejectVideoCallStatus { init, loading, success, failure }
 
 enum StopRingToneReason { init, refuse, accept }
-enum DeleteCallRegStatus { init, loading, success, failure }
+
+enum DeleteMessageStatus { init, loading, success, failure }
+
 enum GetMyCallsStatus { init, loading, success, failure }
 
 @immutable
 class CallsState {
   final String? messageId;
-  final List<calls.Data>? callRegister;
+  final List<CallReg>? callRegister;
   final int? sessionId;
-  final DeleteCallRegStatus deleteCallRegStatus;
+  final DeleteMessageStatus deleteMessageStatus;
   final GetMyCallsStatus getMyCallsStatus;
   final RejectVideoCallStatus rejectVideoCallStatus;
   final String? agoraToken;
@@ -45,9 +47,9 @@ class CallsState {
       this.agoraToken = null,
       this.channelIdForCurrentCall = null,
       this.callRegister,
-        this.receiverCallName,
+      this.receiverCallName,
       this.getMyCallsStatus = GetMyCallsStatus.init,
-      this.deleteCallRegStatus = DeleteCallRegStatus.init,
+      this.deleteMessageStatus = DeleteMessageStatus.init,
       this.isVideoCall = false,
       this.stopRingToneReason = StopRingToneReason.init,
       this.channelMembers = const [],
@@ -59,24 +61,24 @@ class CallsState {
   CallsState copyWith(
       {String? messageId,
       int? sessionId,
-      List<calls.Data>? callRegister,
+      List<CallReg>? callRegister,
       GetMyCallsStatus? getMyCallsStatus,
       RejectVideoCallStatus? rejectVideoCallStatus,
-        final String? currentActiveCallId,
+      final String? currentActiveCallId,
       StopRingToneReason? stopRingToneReason,
       String? agoraToken,
       String? receiverCallName,
       String? channelIdForCurrentCall,
       List<int>? channelMembers,
-      DeleteCallRegStatus? deleteCallRegStatus,
+      DeleteMessageStatus? deleteMessageStatus,
       bool? isVideoCall,
       OpenLocalVideoAndAudioStatus? openVideoAndAudioStatus,
       OpenRemoteVideoAndAudioStatus? openRemoteVideoAndAudioStatus,
       MakeCallStatus? makeCallStatus}) {
     return CallsState(
         messageId: messageId ?? this.messageId,
-        receiverCallName : receiverCallName ?? this.receiverCallName,
-        deleteCallRegStatus: deleteCallRegStatus ?? this.deleteCallRegStatus,
+        receiverCallName: receiverCallName ?? this.receiverCallName,
+        deleteMessageStatus: deleteMessageStatus ?? this.deleteMessageStatus,
         callRegister: callRegister ?? this.callRegister,
         getMyCallsStatus: getMyCallsStatus ?? this.getMyCallsStatus,
         sessionId: sessionId ?? this.sessionId,

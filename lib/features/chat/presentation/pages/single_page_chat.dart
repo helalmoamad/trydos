@@ -31,6 +31,7 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_mes
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_me_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/video_message.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
@@ -95,7 +96,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   Map<String, List<Message>> messagesByDate = {};
   bool rebuild = true;
   DateTime lastDate = DateTime.now();
-  DateTime? time;
+  late CallsBloc callsBloc;
   int countMessagesReceivedToMeNow = 0;
   late Chat chat;
   AudioPlayer _audioPlayer = AudioPlayer();
@@ -112,6 +113,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   @override
   void initState() {
     Eraser.clearAllAppNotifications();
+    callsBloc = BlocProvider.of<CallsBloc>(context);
     chatBloc = BlocProvider.of<ChatBloc>(context);
     autoScrollController = AutoScrollController();
     chatBloc.add(ReadAllMessagesEvent(widget.chatId.toString()));
@@ -421,11 +423,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   child: BlocConsumer<ChatBloc, ChatState>(
                     listenWhen: (p, c) =>
                         p.sendMessageStatus != c.sendMessageStatus ||
+                        p.resendMessageStatus != c.resendMessageStatus ||
                         (p.receiveMessageStatus != c.receiveMessageStatus &&
                             c.receiveMessageStatus ==
                                 ReceiveMessageStatus.success),
                     listener: (context, state) {
-                      print('llllllllllllllllllllllllllllllll');
                       if (state.sendMessageStatus ==
                               SendMessageStatus.loading ||
                           state.receiveMessageStatus ==
@@ -551,6 +553,41 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                               GestureDetector(
                                                                 onLongPress:
                                                                     () {
+                                                                  if (messages[
+                                                                              index]
+                                                                          .authMessageStatus!
+                                                                          .isDeleted ==
+                                                                      1) {
+                                                                    /*    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder: (context) => AlertDialog(
+                                                                          title:
+                                                                              Text(" حذف هذه الرسالة  "),
+                                                                          actions: [
+                                                                            MaterialButton(
+                                                                              onPressed: () {
+                                                                                callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
+                                                                                Navigator.of(context).pop();
+                                                                                rebuildMessage.value = -1;
+                                                                              },
+                                                                              child: Text("نعم"),
+                                                                            ),
+                                                                            SizedBox(
+                                                                              width: 20.w,
+                                                                            ),
+                                                                            MaterialButton(
+                                                                                child: Text("إغلاق"),
+                                                                                onPressed: () {
+                                                                                  Navigator.of(context).pop();
+                                                                                  rebuildMessage.value = -1;
+                                                                                })
+                                                                          ]),
+                                                                    );
+                                                                    */
+                                                                    return;
+                                                                  }
+
                                                                   if ((chatState
                                                                               .sendMessageStatus ==
                                                                           SendMessageStatus
@@ -771,7 +808,39 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                 focusedIndex: focusedIndex,
                                                                                               ),
                                                                                               MessageActionWidget(
-                                                                                                onTap: () {},
+                                                                                                onTap: () {
+                                                                                                  showDialog(
+                                                                                                    context: context,
+                                                                                                    builder: (context) => AlertDialog(title: Text(" حذف هذه الرسالة  "), actions: [
+                                                                                                      MaterialButton(
+                                                                                                        onPressed: () {
+                                                                                                          callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
+                                                                                                          Navigator.of(context).pop();
+                                                                                                          rebuildMessage.value = -1;
+                                                                                                        },
+                                                                                                        child: Text(chatState.currentFailedMessage.contains(messages[index].id!) ? "نعم" : "لدي فقط"),
+                                                                                                      ),
+                                                                                                      SizedBox(
+                                                                                                        width: 20.w,
+                                                                                                      ),
+                                                                                                      chatState.currentFailedMessage.contains(messages[index].id!)
+                                                                                                          ? MaterialButton(
+                                                                                                              child: Text("إغلاق"),
+                                                                                                              onPressed: () {
+                                                                                                                Navigator.of(context).pop();
+                                                                                                                rebuildMessage.value = -1;
+                                                                                                              })
+                                                                                                          : MaterialButton(
+                                                                                                              onPressed: () {
+                                                                                                                callsBloc.add(DeleteMessageEvent(deleteFromId: _prefsRepository.myChatId!, type: "message", deleteFromBoth: 1, messageId: messages[index].id!, channelId: widget.chatId));
+                                                                                                                Navigator.of(context).pop();
+                                                                                                                rebuildMessage.value = -1;
+                                                                                                              },
+                                                                                                              child: Text("لدى الجميع"),
+                                                                                                            )
+                                                                                                    ]),
+                                                                                                  );
+                                                                                                },
                                                                                                 iconUrl: AppAssets.removeIconSvg,
                                                                                                 myIndex: 3,
                                                                                                 focusedIndex: focusedIndex,
@@ -1017,6 +1086,52 @@ class _SinglePageChatState extends State<SinglePageChat> {
     String? senderPhoto,
     String? receiverPhoto,
   }) {
+    bool isSentMessage = (message.senderUserId == _prefsRepository.myChatId &&
+            message.senderUserId != null) ||
+        (message.receiverUserId != _prefsRepository.myChatId &&
+            message.receiverUserId != null);
+    if (message.authMessageStatus?.isDeleted == 1 &&
+        message.authMessageStatus?.deleteForAll == true) {
+      return Row(
+        mainAxisAlignment:
+            isSentMessage ? MainAxisAlignment.start : MainAxisAlignment.end,
+        children: [
+          Container(
+            margin: EdgeInsets.only(left: 10.w, right: 10.w),
+            decoration: BoxDecoration(
+                color: Color.fromARGB(255, 252, 243, 243),
+                border: Border(),
+                borderRadius: BorderRadius.circular(20.w)),
+            width: 200.w,
+            height: 32.h,
+            child: Row(
+              children: [
+                Spacer(),
+                Text(
+                  message.deletedByUserId == _prefsRepository.myChatId
+                      ? "لقد قمت  بحذف هذه الرسالة"
+                      : "تم حذف هذه الرسالة",
+                  textAlign: TextAlign.center,
+                ),
+                Spacer(),
+                Text(
+                  !message.createdAt!.isUtc
+                      ? HelperFunctions.getDateInFormat(message.createdAt!)
+                      : HelperFunctions.getZonedDateInFormat(
+                          message.createdAt!),
+                  textAlign: TextAlign.center,
+                ),
+                Spacer()
+              ],
+            ),
+          ),
+        ],
+      );
+    } else if (message.authMessageStatus?.isDeleted == 1 &&
+        message.authMessageStatus?.deleteForAll != true) {
+      return SizedBox.shrink();
+    }
+    int index;
     debugPrint("id${message.id.toString()}");
     debugPrint("localId${message.localId.toString()}");
     FlutterError.onError = (details) {
@@ -1035,77 +1150,76 @@ class _SinglePageChatState extends State<SinglePageChat> {
       }
     }
     print('data ${message.messageContent?.content}');
-    bool isSentMessage = (message.senderUserId == _prefsRepository.myChatId &&
-            message.senderUserId != null) ||
-        (message.receiverUserId != _prefsRepository.myChatId &&
-            message.receiverUserId != null);
-    MessageStatus? messageStatus = message.messageStatus
-        ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
-    time = messageStatus?.isWatched ?? false
-        ? messageStatus?.watchedAt
-        : messageStatus?.isReceived == 1
-            ? messageStatus?.receivedAt
-            : message.createdAt;
+
+    index = message.messageStatus
+            ?.indexWhere((e) => e.userId != _prefsRepository.myChatId) ??
+        -1;
+    MessageStatus? messageStatus =
+        index == -1 ? null : message.messageStatus![index];
 
     if (message.parentMessageId != null && message.parentMessage != null) {
       Message parentMessage = message.parentMessage!;
-      MessageStatus? parentMessageStatus = parentMessage.messageStatus
-          ?.firstWhere((e) => e.userId != _prefsRepository.myChatId);
+
+      index = parentMessage.messageStatus
+              ?.indexWhere((e) => e.userId != _prefsRepository.myChatId) ??
+          -1;
+      MessageStatus? parentMessageStatus =
+          index == -1 ? null : parentMessage.messageStatus![index];
 
       if (parentMessage.senderUserId != message.senderUserId) {
         return ReplayMessage(
-            messageDate: message.createdAt!,
-            time: message.senderUserId != _prefsRepository.myChatId
-                ? message.createdAt!
-                : time!,
-            scrollToMessage: () => scrollToIndex(
-                messagesIndexes[parentMessage.id.toString()] ?? -1,
-                currentId: message.id!,
-                parentMessageId: message.parentMessageId!),
-            messageId: message.parentMessageId!,
-            answeredFilePath: message.mediaMessageContent?[0].filePath,
-            messageAnswer: message.messageContent?.content,
-            isFirstMessage: message.isFirstMessage!,
-            replayedPhoto: parentMessage.senderUserId ==
-                    _prefsRepository.myChatId.toString()
-                ? senderPhoto
-                : receiverPhoto,
-            replayedName: parentMessage.senderUserId ==
-                    _prefsRepository.myChatId.toString()
-                ? senderName
-                : receiverName,
-            senderAnswerName: senderName,
-            senderAnswerPhoto: senderPhoto,
-            isISentFirstMessage:
-                parentMessage.senderUserId == _prefsRepository.myChatId,
-            isSent: isSentMessage,
-            parentSenderId: parentMessage.senderUserId!,
-            isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
-            isReplayedMessageReceived:
-                (parentMessageStatus?.isReceived ?? 0) == 1,
-            isAnswerMessageRead: messageStatus?.isWatched ?? false,
-            isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
-            answeredFile: message.file,
-            message: parentMessage.messageContent?.content == null
-                ? parentMessage.messageType!.name == 'ImageMessage'
-                    ? 'Photo'
-                    : parentMessage.messageType!.name == 'FileMessage'
-                        ? 'File'
-                        : parentMessage.messageType!.name == 'VideoMessage'
-                            ? 'Video'
-                            : 'Voice'
-                : parentMessage.messageContent!.content.toString(),
-            receivedAt: messageStatus?.receivedAt,
-            messageAnswerId: message.id!);
+          watchedAt: messageStatus?.watchedAt,
+          messageDate: message.createdAt!,
+          scrollToMessage: () => scrollToIndex(
+              messagesIndexes[parentMessage.id.toString()] ?? -1,
+              currentId: message.id!,
+              parentMessageId: message.parentMessageId!),
+          messageId: message.parentMessageId!,
+          answeredFilePath: message.mediaMessageContent?[0].filePath,
+          messageAnswer: message.messageContent?.content,
+          isFirstMessage: message.isFirstMessage!,
+          replayedPhoto:
+              parentMessage.senderUserId == _prefsRepository.myChatId.toString()
+                  ? senderPhoto
+                  : receiverPhoto,
+          replayedName:
+              parentMessage.senderUserId == _prefsRepository.myChatId.toString()
+                  ? senderName
+                  : receiverName,
+          senderAnswerName: senderName,
+          senderAnswerPhoto: senderPhoto,
+          isISentFirstMessage:
+              parentMessage.senderUserId == _prefsRepository.myChatId,
+          isSent: isSentMessage,
+          parentSenderId: parentMessage.senderUserId!,
+          isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
+          isReplayedMessageReceived:
+              (parentMessageStatus?.isReceived ?? 0) == 1,
+          isAnswerMessageRead: messageStatus?.isWatched ?? false,
+          isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
+          answeredFile: message.file,
+          message: parentMessage.messageContent?.content == null
+              ? parentMessage.messageType!.name == 'ImageMessage'
+                  ? 'Photo'
+                  : parentMessage.messageType!.name == 'FileMessage'
+                      ? 'File'
+                      : parentMessage.messageType!.name == 'VideoMessage'
+                          ? 'Video'
+                          : 'Voice'
+              : parentMessage.messageContent!.content.toString(),
+          receivedAt: messageStatus?.receivedAt,
+          messageAnswerId: message.id!,
+          channalId: message.channelId!,
+        );
       } else {
         return ReplayOnMeMessage(
-            time: message.senderUserId != _prefsRepository.myChatId
-                ? message.createdAt!
-                : time!,
             messageId: message.parentMessageId!,
             receivedAt: messageStatus?.receivedAt,
             createAt: message.createdAt,
-            answeredFilePath: message.mediaMessageContent?[0].filePath,
+            watchedaAt: messageStatus?.watchedAt,
+            answeredFilePath: message.mediaMessageContent.isNullOrEmpty
+                ? null
+                : message.mediaMessageContent![0].filePath,
             messageAnswer: message.messageContent?.content,
             answeredFile: message.file,
             scrollToMessage: () => scrollToIndex(
@@ -1133,39 +1247,39 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isAnswerMessageRead: messageStatus?.isWatched ?? false,
             isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
             message: parentMessage.messageContent?.content == null
-                ? parentMessage.messageType!.name == 'ImageMessage'
+                ? parentMessage.messageType?.name == 'ImageMessage'
                     ? 'Photo'
-                    : parentMessage.messageType!.name == 'FileMessage'
+                    : parentMessage.messageType?.name == 'FileMessage'
                         ? 'File'
-                        : parentMessage.messageType!.name == 'VideoMessage'
+                        : parentMessage.messageType?.name == 'VideoMessage'
                             ? 'Video'
                             : 'Voice'
                 : parentMessage.messageContent!.content.toString(),
-            messageAnswerId: message.id!);
+            messageAnswerId: message.id!,
+            channalId: message.channelId!);
       }
     } else {
-      switch (message.messageType!.name) {
+      switch (message.messageType?.name) {
         case 'TextMessage':
           return TextMessage(
-            receivedAt: messageStatus?.receivedAt,
-            createAt: message.createdAt,
-            message: message.messageContent!.content.toString(),
-            messageId: message.id!,
-            senderId: message.senderUserId!,
-            isSent: isSentMessage,
-            isRead: messageStatus?.isWatched ?? false,
-            userMessageName: isSentMessage ? senderName : receiverName,
-            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
-            isReceived: (messageStatus?.isReceived ?? 0) == 1,
-            isFirstMessage:
-                message.isFirstMessage! || message.isFirstMessageForThisDay!,
-            time: message.senderUserId != _prefsRepository.myChatId
-                ? message.createdAt!
-                : time!,
-            isForwarded: message.isForward == 1,
-          );
+              receivedAt: messageStatus?.receivedAt,
+              createAt: message.createdAt,
+              message: message.messageContent!.content.toString(),
+              messageId: message.id!,
+              senderId: message.senderUserId!,
+              isSent: isSentMessage,
+              isRead: messageStatus?.isWatched ?? false,
+              userMessageName: isSentMessage ? senderName : receiverName,
+              userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
+              isReceived: (messageStatus?.isReceived ?? 0) == 1,
+              isFirstMessage:
+                  message.isFirstMessage! || message.isFirstMessageForThisDay!,
+              watchedAt: messageStatus?.watchedAt,
+              isForwarded: message.isForward == 1,
+              channalId: message.channelId!);
         case 'ImageMessage':
           return ImageMessage(
+            channelId: message.channelId!,
             receivedAt: messageStatus?.receivedAt,
             createAt: message.createdAt,
             isSent: isSentMessage,
@@ -1173,12 +1287,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
             imageUrl: message.mediaMessageContent?[0].filePath,
-            time: message.senderUserId != _prefsRepository.myChatId
-                ? message.createdAt!
-                : time!,
             userMessageName: message.receiverUserId != _prefsRepository.myChatId
                 ? senderName
                 : receiverName,
+            watchedAt: messageStatus?.watchedAt,
             userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
             isFirstMessage:
                 message.isFirstMessage! || message.isFirstMessageForThisDay!,
@@ -1189,6 +1301,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
           );
         case 'VideoMessage':
           return VideoMessage(
+            channelId: message.channelId!,
             receivedAt: messageStatus?.receivedAt,
             createAt: message.createdAt,
             key: ValueKey(message.id),
@@ -1197,9 +1310,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
             videoUrl: message.mediaMessageContent?[0].filePath,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
-            time: message.senderUserId != _prefsRepository.myChatId
-                ? message.createdAt!
-                : time!,
             userMessageName: message.receiverUserId != _prefsRepository.myChatId
                 ? senderName
                 : receiverName,
@@ -1210,45 +1320,45 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isLocalMessage: true,
             isForwarded: message.isForward == 1,
+            watchedAt: messageStatus?.watchedAt,
           );
         case 'VoiceMessage':
           return VoiceMessage(
-            time: message.senderUserId != _prefsRepository.myChatId
-                ? message.createdAt!
-                : time!,
             receivedAt: messageStatus?.receivedAt,
             createAt: message.createdAt,
             isSent: isSentMessage,
             file: message.file,
-            fileUrl: message.mediaMessageContent?[0].filePath,
+            fileUrl: !message.mediaMessageContent.isNullOrEmpty
+                ? message.mediaMessageContent![0].filePath
+                : null,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
             userMessageName: isSentMessage ? senderName : receiverName,
             userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
-            watchedAt: messageStatus?.watchedAt ?? DateTime.now(),
+            watchedAt: messageStatus?.watchedAt,
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isFirstMessage:
                 message.isFirstMessage! || message.isFirstMessageForThisDay!,
             isForwarded: message.isForward == 1,
+            channelId: message.channelId!,
           );
         case 'FileMessage':
           String fileName = message.file?.path.split('/').last ??
               message.mediaMessageContent![0].filePath!.split('/').last;
           return DocumentMessage(
+            channelId: message.channelId!,
             receivedAt: messageStatus?.receivedAt,
             createAt: message.createdAt,
             isSent: isSentMessage,
             documentFile: message.file,
             fileName: fileName,
+            watchedAt: messageStatus?.watchedAt,
             documentFileUrl: message.mediaMessageContent?[0].filePath,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
             userMessageName: isSentMessage ? senderName : receiverName,
             userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
-            time: message.senderUserId != _prefsRepository.myChatId
-                ? message.createdAt!
-                : time!,
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isFirstMessage:

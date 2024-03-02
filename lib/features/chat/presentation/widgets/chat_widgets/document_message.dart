@@ -31,7 +31,6 @@ class DocumentMessage extends StatefulWidget {
       this.isForwarded = false,
       this.isLocalMessage = true,
       required this.isSent,
-      required this.time,
       required this.isRead,
       required this.senderId,
       required this.fileName,
@@ -43,34 +42,40 @@ class DocumentMessage extends StatefulWidget {
       required this.isReceived,
       required this.isFirstMessage,
       this.receivedAt,
-      this.createAt})
+      this.createAt,
+      this.watchedAt,
+      required this.channelId})
       : super(key: key);
   final bool isSent;
   final bool isFirstMessage;
   final DateTime? receivedAt;
   final DateTime? createAt;
   final bool isForwarded;
+  final DateTime? watchedAt;
   final String messageId;
   File? documentFile;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   final bool isLocalMessage;
   final String? documentFileUrl;
-  final DateTime time;
+
   bool isRead;
   bool isReceived;
   final int senderId;
   final String? userMessagePhoto;
   final String userMessageName;
   final String fileName;
+  final String channelId;
 
   @override
   State<DocumentMessage> createState() => _DocumentMessageState();
 }
 
 class _DocumentMessageState extends State<DocumentMessage> {
+  late ChatBloc chatBloc;
   bool timer = false;
   @override
   void initState() {
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
       setState(() {
         timer = true;
@@ -272,13 +277,13 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                       child: Row(
                                         children: [
                                           MyTextWidget(
-                                            !widget.time.isUtc
+                                            !widget.createAt!.isUtc
                                                 ? HelperFunctions
                                                     .getDateInFormat(
-                                                        widget.time)
+                                                        widget.createAt!)
                                                 : HelperFunctions
                                                     .getZonedDateInFormat(
-                                                        widget.time),
+                                                        widget.createAt!),
                                             style: context
                                                 .textTheme.overline?.rr
                                                 .copyWith(
@@ -287,34 +292,61 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                           ),
                                           if (widget.isSent) ...{
                                             10.horizontalSpace,
-                                            SvgPicture.asset(
-                                              (state.currentFailedMessage
-                                                      .contains(
-                                                          widget.messageId))
-                                                  ? AppAssets.MessageFailedSvg
-                                                  : widget.isRead
-                                                      ? AppAssets
-                                                          .messageReadArrowSvg
-                                                      : widget.isReceived
-                                                          ? AppAssets
-                                                              .messageDeliveredArrowSvg
-                                                          : (state.currentMessage
-                                                                  .contains(widget
-                                                                      .messageId))
-                                                              ? timer
-                                                                  ? (state.currentMessage.contains(
-                                                                          widget
-                                                                              .messageId))
-                                                                      ? AppAssets
-                                                                          .sandClockSvg
-                                                                      : AppAssets
-                                                                          .messageSentArrowSvg
-                                                                  : ""
-                                                              : AppAssets
-                                                                  .messageSentArrowSvg,
-                                              width: 10.sp,
-                                              height: 10.sp,
-                                            )
+                                            (state.currentFailedMessage
+                                                    .contains(widget.messageId))
+                                                ? Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      InkWell(
+                                                          onTap: () {
+                                                            chatBloc.add(ResendMessageEvent(
+                                                                messageType:
+                                                                    "file",
+                                                                channelId: widget
+                                                                    .channelId,
+                                                                messageId: widget
+                                                                    .messageId));
+                                                          },
+                                                          child: Icon(
+                                                            Icons.refresh,
+                                                            size: 27.w,
+                                                          )),
+                                                      Container(
+                                                        margin: EdgeInsets.only(
+                                                            left: 5.w),
+                                                        child: SvgPicture.asset(
+                                                          AppAssets
+                                                              .MessageFailedSvg,
+                                                          width: 10.sp,
+                                                          height: 10.sp,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
+                                                : SvgPicture.asset(
+                                                    widget.isRead
+                                                        ? AppAssets
+                                                            .messageReadArrowSvg
+                                                        : widget.isReceived
+                                                            ? AppAssets
+                                                                .messageDeliveredArrowSvg
+                                                            : (state.currentMessage
+                                                                    .contains(widget
+                                                                        .messageId))
+                                                                ? timer
+                                                                    ? (state.currentMessage.contains(widget
+                                                                            .messageId))
+                                                                        ? AppAssets
+                                                                            .sandClockSvg
+                                                                        : AppAssets
+                                                                            .messageSentArrowSvg
+                                                                    : ""
+                                                                : AppAssets
+                                                                    .messageSentArrowSvg,
+                                                    width: 10.sp,
+                                                    height: 10.sp,
+                                                  )
                                           },
                                           if (widget.isForwarded) ...{
                                             10.horizontalSpace,
@@ -408,7 +440,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                   isRead: widget.isRead,
                                   isReceived: widget.isReceived,
                                   receivedAt: widget.receivedAt,
-                                  createAT: widget.createAt!,
+                                  watchedAt: widget.watchedAt,
                                 ),
                               )
                             : SizedBox.shrink(),

@@ -30,6 +30,7 @@ enum DeleteChatStatus { init, loading, success, failure }
 
 enum ChangeMessageStateFromPusherStatus { init, received, watched }
 
+enum ResendMessageStatus { init, loading, success, failure }
 
 @JsonSerializable(explicitToJson: true)
 class ChatState {
@@ -54,10 +55,12 @@ class ChatState {
   final DeleteChatStatus deleteChatStatus;
   final List<Contact> contacts;
   final String? currentOpenedChatId;
+  final ResendMessageStatus resendMessageStatus;
   List<Chat> chats;
   final List<Chat> pinnedChats;
   late final List<String> currentMessage;
   final List<String> currentFailedMessage;
+  final List<String> currentFailedMediaMessage;
   final String channelId;
   final String? messageType;
 
@@ -73,7 +76,9 @@ class ChatState {
   Map<String, List<Message>>? newSortedChatsByDate;
 
   ChatState({
+    this.currentFailedMediaMessage = const [],
     this.getMediaCountStatus = GetMediaCountStatus.init,
+    this.resendMessageStatus = ResendMessageStatus.init,
     this.width = 0,
     this.slopMessageId = "",
     this.isSlpoing = false,
@@ -126,6 +131,7 @@ class ChatState {
     LoadImageWidthAndHeight? loadImageWidthAndHeight,
     Map<String, List<Message>>? newSortedChatsByDate,
     final GetChatsStatus? getChatsStatus,
+    final ResendMessageStatus? resendMessageStatus,
     final SendMessageStatus? sendMessageStatus,
     final ReceiveMessageStatus? receiveMessageStatus,
     final ChangeChatPropertyStatus? changeChatPropertyStatus,
@@ -150,6 +156,7 @@ class ChatState {
     final bool? createAnewChat,
     final List<String>? currentMessage,
     final List<String>? currentFailedMessage,
+    final List<String>? currentFailedMediaMessage,
     final int? unReadMessagesFromAllChats,
     final String? messageType,
     final String? messageContent,
@@ -160,6 +167,7 @@ class ChatState {
       slopMessageId: slopMessageId ?? this.slopMessageId,
       isSlpoing: isSlpoing ?? this.isSlpoing,
       height: height ?? this.height,
+      resendMessageStatus: resendMessageStatus ?? this.resendMessageStatus,
       imageCountInEachChat: imageCountInEachChat ?? this.imageCountInEachChat,
       getMediaCountStatus: getMediaCountStatus ?? this.getMediaCountStatus,
       fileCountInEachChat: fileCountInEachChat ?? this.fileCountInEachChat,
@@ -172,13 +180,16 @@ class ChatState {
       changeChatPropertyStatus:
           changeChatPropertyStatus ?? this.changeChatPropertyStatus,
       getContactsStatus: getContactsStatus ?? this.getContactsStatus,
-      chatToNavigateFromTerminated: chatToNavigateFromTerminated ?? this.chatToNavigateFromTerminated,
+      chatToNavigateFromTerminated:
+          chatToNavigateFromTerminated ?? this.chatToNavigateFromTerminated,
       contacts: contacts ?? this.contacts,
       chats: chats ?? this.chats,
       currentOpenedChatId: currentOpenedChatId,
       createAnewChat: createAnewChat ?? this.createAnewChat,
       deleteChatStatus: deleteChatStatus ?? this.deleteChatStatus,
       currentFailedMessage: currentFailedMessage ?? this.currentFailedMessage,
+      currentFailedMediaMessage:
+          currentFailedMediaMessage ?? this.currentFailedMediaMessage,
       changeMessageStateFromPusherStatus: changeMessageStateFromPusherStatus ??
           this.changeMessageStateFromPusherStatus,
       scrollToParentMessage:

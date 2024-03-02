@@ -26,24 +26,24 @@ import 'no_image_widget.dart';
 import 'text_message.dart';
 
 class VoiceMessage extends StatefulWidget {
-  VoiceMessage(
-      {Key? key,
-      required this.isSent,
-      required this.messageId,
-      required this.isRead,
-      required this.isReceived,
-      required this.senderId,
-      this.userMessagePhoto,
-      required this.userMessageName,
-      this.file,
-      this.fileUrl,
-      this.isForwarded = false,
-      required this.isFirstMessage,
-      this.receivedAt,
-      this.createAt,
-      this.watchedAt,
-      required this.time})
-      : super(key: key);
+  VoiceMessage({
+    Key? key,
+    required this.isSent,
+    required this.messageId,
+    required this.isRead,
+    required this.isReceived,
+    required this.senderId,
+    this.userMessagePhoto,
+    required this.userMessageName,
+    this.file,
+    this.fileUrl,
+    this.isForwarded = false,
+    required this.isFirstMessage,
+    this.receivedAt,
+    this.createAt,
+    this.watchedAt,
+    required this.channelId,
+  }) : super(key: key);
   final bool isSent;
   final bool isFirstMessage;
   final bool isForwarded;
@@ -51,9 +51,10 @@ class VoiceMessage extends StatefulWidget {
   File? file;
   final String? fileUrl;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
-  final DateTime time;
+
   bool isRead;
   bool isReceived;
+  final String channelId;
   final int senderId;
   final String? userMessagePhoto;
   final DateTime? receivedAt;
@@ -67,7 +68,7 @@ class VoiceMessage extends StatefulWidget {
 
 class _VoiceMessageState extends State<VoiceMessage> {
   final AudioPlayer audioPlayer = AudioPlayer();
-
+  late ChatBloc chatBloc;
   ValueNotifier<bool> audioPlayingNotifier = ValueNotifier(false);
   ValueNotifier<bool> durationChangedNotifier = ValueNotifier(false);
   PlayerState audioPlayerState = PlayerState.stopped;
@@ -93,6 +94,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
 
   @override
   void initState() {
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
       setState(() {
         timer = true;
@@ -550,22 +552,15 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                     : MainAxisAlignment.end,
                                                 children: [
                                                   MyTextWidget(
-                                                    !(widget.isRead
-                                                                ? widget
-                                                                    .watchedAt
-                                                                : widget
-                                                                        .isReceived
-                                                                    ? widget
-                                                                        .receivedAt
-                                                                    : widget
-                                                                        .createAt)!
-                                                            .isUtc
+                                                    widget.createAt!.isUtc
                                                         ? HelperFunctions
                                                             .getDateInFormat(
-                                                                widget.time)
+                                                                widget
+                                                                    .createAt!)
                                                         : HelperFunctions
                                                             .getZonedDateInFormat(
-                                                                widget.time),
+                                                                widget
+                                                                    .createAt!),
                                                     style: context
                                                         .textTheme.overline?.rr
                                                         .copyWith(
@@ -574,31 +569,71 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                   ),
                                                   if (widget.isSent) ...{
                                                     10.horizontalSpace,
-                                                    SvgPicture.asset(
-                                                      (state.currentFailedMessage
-                                                              .contains(widget
-                                                                  .messageId))
-                                                          ? AppAssets
-                                                              .MessageFailedSvg
-                                                          : widget.isRead
-                                                              ? AppAssets
-                                                                  .messageReadArrowSvg
-                                                              : widget
-                                                                      .isReceived
-                                                                  ? AppAssets
-                                                                      .messageDeliveredArrowSvg
-                                                                  : (state.currentMessage
-                                                                          .contains(
-                                                                              widget.messageId))
-                                                                      ? timer
-                                                                          ? (state.currentMessage.contains(widget.messageId))
-                                                                              ? AppAssets.sandClockSvg
-                                                                              : AppAssets.messageSentArrowSvg
-                                                                          : ""
-                                                                      : AppAssets.messageSentArrowSvg,
-                                                      width: 10.sp,
-                                                      height: 10.sp,
-                                                    )
+                                                    (state.currentFailedMessage
+                                                            .contains(widget
+                                                                .messageId))
+                                                        ? Container(
+                                                            width: 40.w,
+                                                            height: 20.w,
+                                                            child: Row(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
+                                                                InkWell(
+                                                                    onTap: () {
+                                                                      chatBloc.add(ResendMessageEvent(
+                                                                          messageType:
+                                                                              "voice",
+                                                                          channelId: widget
+                                                                              .channelId,
+                                                                          messageId:
+                                                                              widget.messageId));
+                                                                    },
+                                                                    child: Icon(
+                                                                      Icons
+                                                                          .refresh,
+                                                                      size:
+                                                                          25.w,
+                                                                    )),
+                                                                Container(
+                                                                  margin: EdgeInsets
+                                                                      .only(
+                                                                          left:
+                                                                              5.w),
+                                                                  child:
+                                                                      SvgPicture
+                                                                          .asset(
+                                                                    AppAssets
+                                                                        .MessageFailedSvg,
+                                                                    width:
+                                                                        10.sp,
+                                                                    height:
+                                                                        10.sp,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          )
+                                                        : SvgPicture.asset(
+                                                            widget.isRead
+                                                                ? AppAssets
+                                                                    .messageReadArrowSvg
+                                                                : widget
+                                                                        .isReceived
+                                                                    ? AppAssets
+                                                                        .messageDeliveredArrowSvg
+                                                                    : (state.currentMessage
+                                                                            .contains(widget.messageId))
+                                                                        ? timer
+                                                                            ? (state.currentMessage.contains(widget.messageId))
+                                                                                ? AppAssets.sandClockSvg
+                                                                                : AppAssets.messageSentArrowSvg
+                                                                            : ""
+                                                                        : AppAssets.messageSentArrowSvg,
+                                                            width: 10.sp,
+                                                            height: 10.sp,
+                                                          )
                                                   },
                                                   if (widget.isForwarded) ...{
                                                     10.horizontalSpace,
@@ -672,7 +707,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                       isRead: widget.isRead,
                                       isReceived: widget.isReceived,
                                       receivedAt: widget.receivedAt,
-                                      createAT: widget.createAt!,
+                                      watchedAt: widget.watchedAt,
                                     ),
                                   )
                                 : SizedBox.shrink(),

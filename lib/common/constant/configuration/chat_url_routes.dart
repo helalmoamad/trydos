@@ -48,7 +48,7 @@ abstract class ChatEndPoints {
   ///
   static final getMyChatsEP = 'my_channels'.channelsScope(current: true);
   static final deleteChatEP = 'destroy'.channelsScope();
-  static final deleteCallREg = 'destroy'.messagesScope();
+  static final deleteMessage = 'destroy'.messagesScope();
 
   static String readAllMessagesEP(String channelId) =>
       '$channelId/watched'.channelsScope();

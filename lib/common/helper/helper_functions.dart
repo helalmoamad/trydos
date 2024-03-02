@@ -12,8 +12,8 @@ import 'package:store_redirect/store_redirect.dart';
 import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
-//import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../features/app/my_text_widget.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -299,9 +299,7 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
         opaque: false,
         transitionDuration: const Duration(milliseconds: 300),
         pageBuilder: (BuildContext context, _, __) {
-          return DragToPop(
-              xValueToStartPoping: 70,
-              child: page);
+          return DragToPop(xValueToStartPoping: 70, child: page);
         },
         transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
           return new SlideTransition(

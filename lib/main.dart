@@ -184,6 +184,25 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           data['auth_user_id'],
           data['last_message_id'],
           DateTime.parse(data['watched_at'])));
+    } else if (message.data['type'] == 'UpdatingMessageEvent') {
+      try {
+        Map<String, dynamic> data =
+            convert.jsonDecode(message.data["data"].toString());
+        GetIt.I<CallsBloc>().add(DeleteMessageEvent(
+            channelId: data['message']["channel_id"],
+            messageId: data['message']["id"],
+            deleteFromBoth: data['message']["auth_message_status"]
+                    ["delete_for_all"]
+                ? 1
+                : 0,
+            type: data['message']["message_type"]["name"] == "TextMessage"
+                ? "message"
+                : "call",
+            deleteFromId: data['message']["deleted_by_user_id"] ?? 0));
+      } catch (e, st) {
+        debugPrint(e.toString());
+        debugPrint(st.toString());
+      }
     } else {
       GetIt.I<PrefsRepository>()
           .setMessageFromBackground(message.data['message']);
