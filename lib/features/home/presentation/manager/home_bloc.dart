@@ -176,7 +176,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState>{
     }
     add(GetStartingSettingsEvent());
     if (prefsRepository.chatToken != null) {
-      GetIt.I<ChatBloc>().add(GetChatsEvent());
+      GetIt.I<ChatBloc>().add(GetChatsEvent(
+        limit: 10
+      ));
     }
   }
 
@@ -239,6 +241,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState>{
   }
   @override
   Map<String, dynamic>? toJson(HomeState state) {
-      return state.toJson();
+      return state.copyWith(
+        getMainCategoriesStatus: GetMainCategoriesStatus.init,
+        getProductsWithoutFiltersStatus: GetProductsWithoutFiltersStatus.init,
+        getStartingSettingsStatus: GetStartingSettingsStatus.init,
+      ).toJson();
   }
 }

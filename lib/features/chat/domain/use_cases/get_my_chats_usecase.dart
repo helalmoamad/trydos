@@ -12,15 +12,27 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 import '../../data/models/my_chats_response_model.dart';
 @injectable
-class GetMyChatsUseCase extends UseCase<MyChatsResponseModel , NoParams>{
+class GetMyChatsUseCase extends UseCase<MyChatsResponseModel , GetMyChatsParams>{
   final ChatRepository repository;
 
   GetMyChatsUseCase(this.repository);
 
   @override
-  Future<Either<Failure, MyChatsResponseModel>> call(NoParams params) {
-    return repository.getChats();
+  Future<Either<Failure, MyChatsResponseModel>> call(GetMyChatsParams params) {
+    return repository.getChats(params.map);
   }
 
 }
 
+class GetMyChatsParams{
+  final DateTime? timeStamp;
+  final int? limit;
+  final int? messagesLimit;
+  const GetMyChatsParams({this.timeStamp , this.limit , this.messagesLimit});
+
+  Map<String , dynamic> get map => {
+   'limit' : limit.toString(),
+   'messages_limit' : messagesLimit.toString(),
+   'timestamp' : timeStamp.toString(),
+  };
+}

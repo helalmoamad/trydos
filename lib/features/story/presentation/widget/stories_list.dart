@@ -15,6 +15,8 @@ import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection_page_view.dart';
 import 'package:trydos/features/story/presentation/widget/story_item_widget.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+
 //import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
@@ -104,58 +106,57 @@ class _StoriesListState extends State<StoriesList> {
                                                     ),
                                                     onTap: () async {
                                                       disableResizing();
-                                                      // if (GetIt.I<PrefsRepository>()
-                                                      //         .isVerifiedPhone ==
-                                                      //     false) {
-                                                      //   context.go(GRouter
-                                                      //       .config
-                                                      //       .applicationRoutes
-                                                      //       .kRegistrationPage);
-                                                      // } else {
-//
-                                                      /* showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext
-                                                context) {
-                                                  return GalleryAndCameraDialogWidget(
-                                                      onChooseFileFromCameraAction:
-                                                          (File?
-                                                      file) async {
-                                                        if (file !=
-                                                            null) {
-                                                          GetIt.I<StoryBloc>().add(
-                                                              UploadStoryCloudinaryEvent(
-                                                                  file));
+                                                      if (GetIt.I<PrefsRepository>()
+                                                              .isVerifiedPhone ==
+                                                          false) {
+                                                        context.go(GRouter
+                                                            .config
+                                                            .applicationRoutes
+                                                            .kRegistrationPage);
+                                                      } else {
+                                                        showDialog(
+                                                            context: context,
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return GalleryAndCameraDialogWidget(
+                                                                  onChooseFileFromCameraAction:
+                                                                      (File?
+                                                                          file) async {
+                                                                if (file !=
+                                                                    null) {
+                                                                  GetIt.I<StoryBloc>().add(
+                                                                      UploadStoryCloudinaryEvent(
+                                                                          file));
 
-                                                          // final cloudinary =
-                                                          //     CloudinaryPublic(
-                                                          //         'djooohujg',
-                                                          //         'v4h8xqns',
-                                                          //         cache:false);
-                                                          // CloudinaryResponse
-                                                          //     response =
-                                                          //     await cloudinary
-                                                          //         .uploadFile(
-                                                          //
-                                                          //
-                                                          //   CloudinaryFile.fromFile(
-                                                        }
-                                                      }, /*nChooseFileFromGalleryAction:
-                                                      (AssetEntity?
-                                                  assetEntity) async {
-                                                    if (assetEntity !=
-                                                        null) {
-                                                      File file =
-                                                      (await assetEntity
-                                                          .originFile)!;
-                                                      GetIt.I<StoryBloc>().add(
-                                                          UploadStoryCloudinaryEvent(
-                                                              file));
-                                                    }
-                                                  }*/);
-                                                });*/
-                                                      //  }
+                                                                  // final cloudinary =
+                                                                  //     CloudinaryPublic(
+                                                                  //         'djooohujg',
+                                                                  //         'v4h8xqns',
+                                                                  //         cache:false);
+                                                                  // CloudinaryResponse
+                                                                  //     response =
+                                                                  //     await cloudinary
+                                                                  //         .uploadFile(
+                                                                  //
+                                                                  //
+                                                                  //   CloudinaryFile.fromFile(
+                                                                }
+                                                              }, onChooseFileFromGalleryAction:
+                                                                      (AssetEntity?
+                                                                          assetEntity) async {
+                                                                if (assetEntity !=
+                                                                    null) {
+                                                                  File file =
+                                                                      (await assetEntity
+                                                                          .originFile)!;
+                                                                  GetIt.I<StoryBloc>().add(
+                                                                      UploadStoryCloudinaryEvent(
+                                                                          file));
+                                                                }
+                                                              });
+                                                            });
+                                                      }
                                                     },
                                                   ),
                                                 ),

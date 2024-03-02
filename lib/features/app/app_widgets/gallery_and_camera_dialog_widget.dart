@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../common/helper/camera_screen.dart';
 import '../../../common/helper/helper_functions.dart';
@@ -33,8 +34,7 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                 cameras = await availableCameras();
                 File? selectedFile = await Navigator.push<File>(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => CameraScreen(cameras)),
+                  MaterialPageRoute(builder: (context) => CameraScreen(cameras)),
                 );
                 onChooseFileFromCameraAction.call(selectedFile);
                 Navigator.of(context).pop();
@@ -50,7 +50,14 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                   assetEntity =
                       await HelperFunctions.getAssetFromGallery(context);
                   if (assetEntity != null) {
-                    onChooseFileFromGalleryAction.call(assetEntity);
+                    if (assetEntity.type == AssetType.video &&
+                        assetEntity.duration > 59) {
+                      showMessage(
+                          'Video length must not be longer than 59 seconds',
+                          showInRelease: true);
+                    }else {
+                      onChooseFileFromGalleryAction.call(assetEntity);
+                    }
                   }
                   Navigator.of(context).pop();
                   if (Navigator.of(context).canPop()) {

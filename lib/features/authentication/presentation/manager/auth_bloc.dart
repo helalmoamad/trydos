@@ -164,7 +164,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
         add(StoreFcmTokenEvent(userId: id!, fcmToken: event.fcmToken));
         apisMustNotToRequest.remove('GetChatsEvent');
-        GetIt.I<ChatBloc>().add(GetChatsEvent());
+        GetIt.I<ChatBloc>().add(GetChatsEvent(
+          limit: 10
+        ));
       },
     );
   }

@@ -70,8 +70,11 @@ class ReadAllMessagesEvent extends ChatEvent {
 }
 
 class GetChatsEvent extends ChatEvent {
-  const GetChatsEvent({this.chatToNavigateFromTerminated});
   final Chat? chatToNavigateFromTerminated;
+  final DateTime? timeStamp;
+  final int? limit;
+  final int? messagesLimit;
+  const GetChatsEvent({this.chatToNavigateFromTerminated , this.timeStamp , this.limit , this.messagesLimit});
   @override
   // TODO: implement props
   List<Object?> get props => [];

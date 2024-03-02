@@ -140,7 +140,6 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
       context,
       pickerConfig: AssetPickerConfig(
         maxAssets: 1,
-        specialPickerType: SpecialPickerType.noPreview,
         themeColor: const Color(0xff137AC9),
       ),
     );
