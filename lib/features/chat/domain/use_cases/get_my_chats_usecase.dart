@@ -34,5 +34,5 @@ class GetMyChatsParams{
    'limit' : limit.toString(),
    'messages_limit' : messagesLimit.toString(),
    'timestamp' : timeStamp.toString(),
-  };
+  }..removeWhere((key, value) => value == null);
 }
