@@ -11,6 +11,7 @@ import 'package:mime/mime.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/chat/data/models/media_count.dart';
 import 'package:trydos/features/chat/domain/use_cases/change_chat_property_usecase.dart';
@@ -109,6 +110,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   final GetMessagesBetweenUseCase getMessagesBetweenUseCase;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   String? currentOpenedChatId;
+  bool requestGetChats = true;
 
   FutureOr<void> _onSendMessageEvent(
       SendMessageEvent event, Emitter<ChatState> emit) async {
@@ -331,36 +333,46 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onGetChatsEvent(
       GetChatsEvent event, Emitter<ChatState> emit) async {
-    if (apisMustNotToRequest.contains('GetChatsEvent')) {
-      return;
-    }
+    // if(state.getChatsStatus == GetChatsStatus.loading || !requestGetChats){
+    //   return;
+    // }
     emit(state.copyWith(getChatsStatus: GetChatsStatus.loading));
-    final response = await getMyChatsUseCase(NoParams());
+    final response = await getMyChatsUseCase(GetMyChatsParams(
+        limit: event.limit,
+        messagesLimit: event.messagesLimit,
+        timeStamp: state.chats.isNotEmpty
+            ? state.chats[state.chats.length - 1].updatedAt
+            : state.pinnedChats.isNotEmpty
+                ? state.chats[state.chats.length - 1].updatedAt
+                : null));
     response.fold(
       (l) {
         if (!isFailedTheFirstTime.contains('GetChatsEvent')) {
-          add(GetChatsEvent());
+          add(GetChatsEvent(limit: 10));
           isFailedTheFirstTime.add('GetChatsEvent');
         }
 
         emit(state.copyWith(getChatsStatus: GetChatsStatus.failure));
       },
       (r) {
-        apisMustNotToRequest.add('GetChatsEvent');
-        if (r.data!.missedFcmToken) {
-          GetIt.I<AuthBloc>().add(StoreFcmTokenEvent(
-              userId: _prefsRepository.myChatId!,
-              fcmToken: NotificationProcess.myFcmToken!));
-        }
-        isFailedTheFirstTime.remove('GetChatsEvent');
-        int unReadMessagesFromAllChats = 0;
-        r.data!.chats!.forEach((element) {
-          unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
-        });
-        r.data!.pinnedChats!.forEach((element) {
-          unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
-        });
         try {
+          requestGetChats = r.data!.chats.isNullOrEmpty;
+          if (r.data!.missedFcmToken) {
+            GetIt.I<AuthBloc>().add(StoreFcmTokenEvent(
+                userId: _prefsRepository.myChatId!,
+                fcmToken: NotificationProcess.myFcmToken!));
+          }
+          isFailedTheFirstTime.remove('GetChatsEvent');
+          int unReadMessagesFromAllChats = 0;
+          for (Chat chat in [...r.data!.chats!, ...r.data!.pinnedChats!]) {
+            print('fffff ${chat.channelName}   ${chat.messages?.length}');
+          }
+          r.data!.chats!.forEach((element) {
+            unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
+          });
+          r.data!.pinnedChats!.forEach((element) {
+            unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
+          });
           List<Chat> newChats = List.of(state.chats.isEmpty
               ? r.data!.chats!
               : MergeOldMessageWithNew(
@@ -1181,6 +1193,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   }
 
   _onIn(IncreaseFileImageVideoCounterEvent event, Emitter<ChatState> emit) {}
+
   @override
   ChatState? fromJson(Map<String, dynamic> json) {
     return ChatState.fromJson(json);
@@ -1188,7 +1201,23 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   @override
   Map<String, dynamic>? toJson(ChatState state) {
-    return state.toJson();
+    return state
+        .copyWith(
+            receiveMessageStatus: ReceiveMessageStatus.init,
+            readMessagesStatus: ResetReadMessagesStatus.init,
+            changeChatPropertyStatus: ChangeChatPropertyStatus.init,
+            changeMessageStateFromPusherStatus:
+                ChangeMessageStateFromPusherStatus.init,
+            deleteChatStatus: DeleteChatStatus.init,
+            getChatsStatus: GetChatsStatus.init,
+            getContactsStatus: GetContactsStatus.init,
+            getMediaCountStatus: GetMediaCountStatus.init,
+            getMessagesBetweenStatus: GetMessagesBetweenStatus.init,
+            notifyThatIReceivedMessageStatus:
+                NotifyThatIReceivedMessageStatus.init,
+            saveContactsStatus: SaveContactsStatus.init,
+            sendMessageStatus: SendMessageStatus.init)
+        .toJson();
   }
 
   FutureOr<void> _onAddAMessageToAChannel(

@@ -1,3 +1,4 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -76,8 +77,8 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 
   @override
   void initState() {
+    scrollController.addListener(_getChatsPaginationListener);
     callsBloc = BlocProvider.of<CallsBloc>(context);
-
     callsBloc.add(GetMyCallsEvent());
     chatPages.insert(
       0,
@@ -92,6 +93,12 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
     super.initState();
   }
 
+  void _getChatsPaginationListener(){
+    if ((scrollController.offset >=
+        scrollController.position.maxScrollExtent - 100) && BlocProvider.of<AppBloc>(context).state.tabIndexInChat == 0) {
+      chatBloc.add(GetChatsEvent(limit: 10));
+    }
+  }
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (details) {

@@ -13,7 +13,7 @@ import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-//import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../features/app/my_text_widget.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -128,7 +128,7 @@ class HelperFunctions {
         .toList();
   }
 
-/*static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
+static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
 
     final List<AssetEntity>? assets = await myMultiAssetPicker(context);
     return assets?[0];
@@ -140,11 +140,10 @@ class HelperFunctions {
       context,
       pickerConfig: AssetPickerConfig(
         maxAssets: 1,
-        specialPickerType: SpecialPickerType.noPreview,
         themeColor: const Color(0xff137AC9),
       ),
     );
-  }*/
+  }
 
   static String getTheFirstTwoLettersOfName(String name) {
     return name.split(' ').length == 2

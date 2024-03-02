@@ -123,8 +123,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
         rebuildMessage.value = -1;
       }
       if ((autoScrollController.offset >=
-          autoScrollController.position.maxScrollExtent - 400)) {
-        _loadMoreMessages();
+          autoScrollController.position.maxScrollExtent - 100)) {
+        chatBloc.add(GetChatsEvent(limit : 10));
       }
     });
     super.initState();

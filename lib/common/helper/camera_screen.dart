@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:trydos/common/helper/show_message.dart';
 
 import '../../features/app/my_text_widget.dart';
 
@@ -76,7 +77,13 @@ class _CameraScreenState extends State<CameraScreen>
     animatedController = AnimationController(vsync: this);
     animatedController.stop();
     animatedController.reset();
-    animatedController.duration = const Duration(seconds: 60);
+    animatedController.duration = const Duration(seconds: 10);
+    animatedController.addListener(() {
+      if(animatedController.status == AnimationStatus.completed){
+        _isRecordingInProgress = false;
+        onRecordVideoFinished(lengthMoreThan60: true);
+      }
+    });
     onNewCameraSelected(widget.cameras[0]);
     super.initState();
   }
@@ -312,14 +319,7 @@ class _CameraScreenState extends State<CameraScreen>
                                     },
                                     onLongPressUp: () async {
                                       if (_isRecordingInProgress) {
-                                        animatedController.stop();
-                                        _timer.cancel();
-                                        // _resetTimer();
-                                        XFile? rawVideo =
-                                            await stopVideoRecording();
-                                        File videoFile = File(rawVideo!.path);
-
-                                        Navigator.pop(context, videoFile);
+                                        onRecordVideoFinished();
                                       }
                                     },
                                     child: Stack(
@@ -603,6 +603,20 @@ class _CameraScreenState extends State<CameraScreen>
       await controller!.resumeVideoRecording();
     } on CameraException catch (e) {
       debugPrint('Error resuming video recording: $e');
+    }
+  }
+
+  void onRecordVideoFinished({bool lengthMoreThan60 = false}) async{
+    animatedController.stop();
+    _timer.cancel();
+    // _resetTimer();
+    XFile? rawVideo = await stopVideoRecording();
+    File videoFile = File(rawVideo!.path);
+    Navigator.pop(context, !lengthMoreThan60 ? videoFile : null);
+    if(lengthMoreThan60){
+      showMessage(
+          'Video length must not be longer than 59 seconds',
+          showInRelease: true);
     }
   }
 }

@@ -161,12 +161,6 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
     //     .stories[event.selected]
     //     .stories![max(state.currentStoryInEachCollection[event.selected]!, event.currentStoryInEachCollection)]
     //     .isSeen = true;
-    if (!(story.isSeen ?? false)) {
-      add(IncreaseViewersEvent(
-          collectionId:
-              state.storiesCollections[event.collectionIndex].toString(),
-          storyId: story.id.toString()));
-    }
     Map<int, int?> initialStories = Map.of(state.currentStoryInEachCollection);
     initialStories[event.collectionIndex] =
         event.selectedStoryIndexInCollection == -1
@@ -336,7 +330,12 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
 
   @override
   Map<String, dynamic>? toJson(StoryState state) {
-    return state.toJson();
+    return state.copyWith(
+      getStoriesStatus: GetStoriesStatus.init,
+      selectedVideoStatus: SelectedVideoStatus.init,
+      uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.init,
+      uploadStoryStatus: UploadStoryStatus.init
+    ).toJson();
   }
 
   FutureOr<void> _IncreaseViewersEvent(

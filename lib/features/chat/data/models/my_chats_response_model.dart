@@ -293,6 +293,7 @@ class Chat {
   final List<ChannelMember>? channelMembers;
   final List<Message>? messages;
   final PaginationStatus paginationStatus;
+  final DateTime? updatedAt;
   final bool hasReachedMax;
 
   Chat({
@@ -303,6 +304,7 @@ class Chat {
     this.totalUnreadMessageCount,
     this.channelMembers,
     this.messages,
+    this.updatedAt,
     this.paginationStatus = PaginationStatus.initial,
     this.hasReachedMax = false,
   });
@@ -315,6 +317,7 @@ class Chat {
     final PaginationStatus? paginationStatus,
     final bool? hasReachedMax,
     int? totalUnreadMessageCount,
+    final DateTime? updatedAt,
     List<ChannelMember>? channelMembers,
     List<Message>? messages,
   }) =>
@@ -326,6 +329,7 @@ class Chat {
         totalUnreadMessageCount:
             totalUnreadMessageCount ?? this.totalUnreadMessageCount,
         channelMembers: channelMembers ?? this.channelMembers,
+        updatedAt: updatedAt ?? this.updatedAt,
         messages: messages ?? this.messages,
         paginationStatus: paginationStatus ?? this.paginationStatus,
         hasReachedMax: hasReachedMax ?? this.hasReachedMax,
@@ -342,6 +346,7 @@ class Chat {
         photoPath: json["photo_path"],
         channelName: json["channel_name"],
         totalUnreadMessageCount: json["total_unread_message_count"],
+          updatedAt : DateTime.tryParse(json['updated_at'].toString()),
         channelMembers: json["channel_members"] == null
             ? []
             : List<ChannelMember>.from(
@@ -357,6 +362,7 @@ class Chat {
         "channel_name": channelName,
         "photo_path": photoPath,
         "total_unread_message_count": totalUnreadMessageCount,
+        'updated_at' : updatedAt?.toIso8601String(),
         "channel_members": channelMembers == null
             ? []
             : List<dynamic>.from(channelMembers!.map((x) => x.toJson())),

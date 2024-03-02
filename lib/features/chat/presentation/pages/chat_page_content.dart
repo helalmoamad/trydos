@@ -5,6 +5,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
@@ -99,22 +100,26 @@ class ChatPageContentState extends State<ChatPageContent> {
           ));
         }
         if (state.getChatsStatus == GetChatsStatus.failure) {
-          return Center(
-            child: ElevatedButton(
-                onPressed: () {
-                  GetIt.I<ChatBloc>().add(GetChatsEvent());
-                },
-                child: MyTextWidget('Try Again')),
+          return SliverToBoxAdapter(
+            child: Center(
+              child: ElevatedButton(
+                  onPressed: () {
+                    GetIt.I<ChatBloc>().add(GetChatsEvent(
+                      limit: 10
+                    ));
+                  },
+                  child: MyTextWidget('Try Again')),
+            ),
           );
         }
         // todo (future update) here we can return try again if the status failure
         List<Chat> chats = List.of(state.pinnedChats);
-        chats.addAll(state.chats);
-
+          chats.addAll(state.chats);
         // todo  (future update) remove this from here handle it in the back of in bloc
+
         chats.removeWhere((element) =>
-            int.tryParse(element.id.toString()) == null &&
-            (element.messages?.isEmpty ?? true));
+            // int.tryParse(element.id.toString()) == null &&
+            (element.messages.isNullOrEmpty));
 
         initialChats = chats;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

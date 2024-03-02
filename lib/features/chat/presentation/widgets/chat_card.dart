@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -76,6 +77,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
+      print(error);
     };
     chatTime = null;
     if (!(widget.chat.messages?.isEmpty ?? true)) {
@@ -225,6 +227,10 @@ class _ChatCardState extends ThemeState<ChatCard> {
                     SlidableActionWidget(
                       text: me.pin == 0 ? 'Pin' : 'UnPin',
                       onTap: () {
+                        if(chatBloc.state.pinnedChats.length == 3 && me.pin == 0){
+                          showMessage('You can have at most 3 pinned chats!' , showInRelease: true);
+                          return;
+                        }
                         chatBloc.add(ChangeChatPropertyEvent(
                             channelId: widget.chat.id!,
                             pin: 1 - (me.pin ?? 0)));

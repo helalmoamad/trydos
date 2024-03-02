@@ -54,8 +54,8 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, MyChatsResponseModel>> getChats() {
-    return handlingExceptionRequest(tryCall: dataSource.getChats);
+  Future<Either<Failure, MyChatsResponseModel>> getChats(Map<String, dynamic> params) {
+    return handlingExceptionRequest(tryCall: () => dataSource.getChats(params));
   }
 
   @override
