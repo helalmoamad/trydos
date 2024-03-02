@@ -72,24 +72,33 @@ class _CallsPageContentState extends ThemeState<CallsPageContent> {
                       ? TrydosLoader()
                       : const SizedBox.shrink())),
           sliverListSeparated(
-            itemBuilder: (_, index) => CallsCard(
-              isMissing: state.callRegister![index].durationInSeconds == -1,
-              createAt: state.callRegister![index].createdAt,
-              isIncome: state.callRegister![index].senderUserId !=
-                  GetIt.I<PrefsRepository>().myChatId,
-              index: index,
-              fullReceiverName:
-                  state.callRegister![index].channel!.channelName.toString(),
-              photoPath: state.callRegister![index].channel!.photoPath ?? "",
-              chatId: state.callRegister![index].channelId.toString(),
-              duration: state.callRegister![index].durationInSeconds == null
-                  ? 0
-                  : state.callRegister![index].durationInSeconds!,
-              messageType: "",
-              callRegId: state.callRegister![index].id!,
-              isVoice:
-                  state.callRegister![index].messageType!.name == "VoiceCall",
-            ),
+            itemBuilder: (_, index) {
+              if (state.callRegister![index].authMessageStatus!.isDeleted ==
+                  1) {
+                return SizedBox.shrink();
+              } else {
+                return CallsCard(
+                  isMissing: state.callRegister![index].durationInSeconds == -1,
+                  createAt: state.callRegister![index].createdAt,
+                  isIncome: state.callRegister![index].senderUserId !=
+                      GetIt.I<PrefsRepository>().myChatId,
+                  index: index,
+                  fullReceiverName: state
+                      .callRegister![index].channel!.channelName
+                      .toString(),
+                  photoPath:
+                      state.callRegister![index].channel!.photoPath ?? "",
+                  chatId: state.callRegister![index].channelId.toString(),
+                  duration: state.callRegister![index].durationInSeconds == null
+                      ? 0
+                      : state.callRegister![index].durationInSeconds!,
+                  messageType: "",
+                  callRegId: state.callRegister![index].id!,
+                  isVoice: state.callRegister![index].messageType!.name ==
+                      "VoiceCall",
+                );
+              }
+            },
             separator: const SizedBox.shrink(),
             childCount: state.callRegister!.length,
           )

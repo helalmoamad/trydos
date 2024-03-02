@@ -15,7 +15,8 @@ Map<String, List<Message>> groupReceivedMessageOnDays(
   //todo map for store all chats after we group every messages chat depending on it's day sent
   Map<String, Map<String, List<Message>>> newSortedChatsByDate = {};
   chats.forEach((chat) {
-    chat.messages?.removeWhere((element) => element.localId == null && int.tryParse(element.id.toString()) == null);
+    chat.messages?.removeWhere((element) =>
+        element.localId == null && int.tryParse(element.id.toString()) == null);
     //todo here bring all the days that have messages send on it and put the date as key in the messages in this day as value
     Map<String, List<Message>> newMessagesByDate = {};
     for (int i = chat.messages!.length - 1; i >= 0; i--) {
@@ -55,5 +56,6 @@ Map<String, List<Message>> groupReceivedMessageOnDays(
       result[channelId]!.addAll(value[date]!);
     });
   });
+  result.removeWhere((key, value) => value.isNullOrEmpty);
   return result;
 }

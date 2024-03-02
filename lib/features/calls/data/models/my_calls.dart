@@ -16,7 +16,7 @@ class MyCallsResponseModel {
   final int? code;
   final dynamic message;
   final dynamic detailedError;
-  final List<Data>? data;
+  final List<CallReg>? data;
 
   MyCallsResponseModel({
     this.isSuccessful,
@@ -33,7 +33,7 @@ class MyCallsResponseModel {
     int? code,
     dynamic message,
     dynamic detailedError,
-    List<Data>? data,
+    List<CallReg>? data,
   }) =>
       MyCallsResponseModel(
         isSuccessful: isSuccessful ?? this.isSuccessful,
@@ -53,7 +53,7 @@ class MyCallsResponseModel {
         detailedError: json["detailed_error"],
         data: json["data"] == null
             ? []
-            : List<Data>.from(json["data"]!.map((x) => Data.fromJson(x))),
+            : List<CallReg>.from(json["data"]!.map((x) => CallReg.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -68,7 +68,7 @@ class MyCallsResponseModel {
       };
 }
 
-class Data {
+class CallReg {
   final String? id;
   final int? senderUserId;
   final dynamic senderMobilePhone;
@@ -80,19 +80,22 @@ class Data {
   final int? isForward;
   final String? callStatus;
   final DateTime? createdAt;
+  final int? deletedByUserId;
   final int? durationInSeconds;
   final dynamic messageContent;
   final MessageType? messageType;
   final SenderUser? senderUser;
   final Channel? channel;
   final dynamic parentMessage;
-  final List<MessageStatus>? messageStatus;
+  final MessagesStatus? authMessageStatus;
+  final List<MessagesStatus>? messagesStatus;
   final List<dynamic>? messageFiles;
 
-  Data({
+  CallReg({
     this.id,
     this.senderUserId,
     this.senderMobilePhone,
+    this.authMessageStatus,
     this.receiverUserId,
     this.channelId,
     this.messageDescription,
@@ -102,16 +105,17 @@ class Data {
     this.callStatus,
     this.createdAt,
     this.durationInSeconds,
+    this.deletedByUserId,
     this.messageContent,
     this.messageType,
     this.senderUser,
     this.channel,
     this.parentMessage,
-    this.messageStatus,
+    this.messagesStatus,
     this.messageFiles,
   });
 
-  Data copyWith({
+  CallReg copyWith({
     String? id,
     int? senderUserId,
     dynamic senderMobilePhone,
@@ -122,17 +126,19 @@ class Data {
     String? parentMessageId,
     int? isForward,
     String? callStatus,
+    int? deletedByUserId,
     DateTime? createdAt,
     int? durationInSeconds,
+    MessagesStatus? authMessageStatus,
     dynamic messageContent,
     MessageType? messageType,
     SenderUser? senderUser,
     Channel? channel,
     dynamic parentMessage,
-    List<MessageStatus>? messageStatus,
+    List<MessagesStatus>? messageStatus,
     List<dynamic>? messageFiles,
   }) =>
-      Data(
+      CallReg(
         id: id ?? this.id,
         senderUserId: senderUserId ?? this.senderUserId,
         senderMobilePhone: senderMobilePhone ?? this.senderMobilePhone,
@@ -141,6 +147,7 @@ class Data {
         messageDescription: messageDescription ?? this.messageDescription,
         extraFields: extraFields ?? this.extraFields,
         parentMessageId: parentMessageId ?? this.parentMessageId,
+        deletedByUserId: deletedByUserId ?? this.deletedByUserId,
         isForward: isForward ?? this.isForward,
         callStatus: callStatus ?? this.callStatus,
         createdAt: createdAt ?? this.createdAt,
@@ -149,17 +156,19 @@ class Data {
         messageType: messageType ?? this.messageType,
         senderUser: senderUser ?? this.senderUser,
         channel: channel ?? this.channel,
+        authMessageStatus: authMessageStatus ?? this.authMessageStatus,
         parentMessage: parentMessage ?? this.parentMessage,
-        messageStatus: messageStatus ?? this.messageStatus,
+        messagesStatus: messageStatus ?? this.messagesStatus,
         messageFiles: messageFiles ?? this.messageFiles,
       );
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory CallReg.fromJson(Map<String, dynamic> json) => CallReg(
         id: json["id"],
         senderUserId: json["sender_user_id"],
         senderMobilePhone: json["sender_mobile_phone"],
         receiverUserId: json["receiver_user_id"],
         channelId: json["channel_id"],
+        deletedByUserId: json["deleted_by_user_id"],
         messageDescription: json["message_description"],
         extraFields: json["extra_fields"],
         parentMessageId: json["parent_message_id"],
@@ -179,10 +188,13 @@ class Data {
         channel:
             json["channel"] == null ? null : Channel.fromJson(json["channel"]),
         parentMessage: json["parent_message"],
-        messageStatus: json["message_status"] == null
+        authMessageStatus: json["auth_message_status"] == null
+            ? null
+            : MessagesStatus.fromJson(json["auth_message_status"]),
+        messagesStatus: json["message_status"] == null
             ? []
-            : List<MessageStatus>.from(
-                json["message_status"]!.map((x) => MessageStatus.fromJson(x))),
+            : List<MessagesStatus>.from(
+                json["message_status"]!.map((x) => MessagesStatus.fromJson(x))),
         messageFiles: json["message_files"] == null
             ? []
             : List<dynamic>.from(json["message_files"]!.map((x) => x)),
@@ -194,11 +206,13 @@ class Data {
         "sender_mobile_phone": senderMobilePhone,
         "receiver_user_id": receiverUserId,
         "channel_id": channelId,
+        "deleted_by_user_id": deletedByUserId,
         "message_description": messageDescription,
         "extra_fields": extraFields,
         "parent_message_id": parentMessageId,
         "is_forward": isForward,
         "call_status": callStatus,
+        "auth_message_status": authMessageStatus?.toJson(),
         "created_at": createdAt?.toIso8601String(),
         "duration_in_seconds": durationInSeconds,
         "message_content": messageContent,
@@ -206,9 +220,9 @@ class Data {
         "sender_user": senderUser?.toJson(),
         "channel": channel?.toJson(),
         "parent_message": parentMessage,
-        "message_status": messageStatus == null
+        "message_status": messagesStatus == null
             ? []
-            : List<dynamic>.from(messageStatus!.map((x) => x.toJson())),
+            : List<dynamic>.from(messagesStatus!.map((x) => x.toJson())),
         "message_files": messageFiles == null
             ? []
             : List<dynamic>.from(messageFiles!.map((x) => x)),
@@ -343,7 +357,7 @@ class ChannelMember {
       };
 }
 
-class MessageStatus {
+class MessagesStatus {
   final int? id;
   final int? userId;
   final dynamic isSent;
@@ -352,8 +366,11 @@ class MessageStatus {
   final DateTime? watchedAt;
   final DateTime? receivedAt;
   final DateTime? createdAt;
+  final int? isDeleted;
+  final bool? deleteForAll;
+  final DateTime? messageDeletedAt;
 
-  MessageStatus({
+  MessagesStatus({
     this.id,
     this.userId,
     this.isSent,
@@ -362,21 +379,30 @@ class MessageStatus {
     this.watchedAt,
     this.receivedAt,
     this.createdAt,
+    this.isDeleted,
+    this.deleteForAll,
+    this.messageDeletedAt,
   });
 
-  MessageStatus copyWith({
+  MessagesStatus copyWith({
     int? id,
     int? userId,
     dynamic isSent,
     int? isReceived,
     bool? isWatched,
     DateTime? watchedAt,
+    int? isDeleted,
+    bool? deleteForAll,
+    DateTime? messageDeletedAt,
     DateTime? receivedAt,
     DateTime? createdAt,
   }) =>
-      MessageStatus(
+      MessagesStatus(
         id: id ?? this.id,
         userId: userId ?? this.userId,
+        isDeleted: isDeleted ?? this.isDeleted,
+        deleteForAll: deleteForAll ?? this.deleteForAll,
+        messageDeletedAt: messageDeletedAt ?? this.messageDeletedAt,
         isSent: isSent ?? this.isSent,
         isReceived: isReceived ?? this.isReceived,
         isWatched: isWatched ?? this.isWatched,
@@ -385,8 +411,13 @@ class MessageStatus {
         createdAt: createdAt ?? this.createdAt,
       );
 
-  factory MessageStatus.fromJson(Map<String, dynamic> json) => MessageStatus(
+  factory MessagesStatus.fromJson(Map<String, dynamic> json) => MessagesStatus(
         id: json["id"],
+        isDeleted: json["is_deleted"],
+        deleteForAll: json["delete_for_all"],
+        messageDeletedAt: json["message_deleted_at"] == null
+            ? null
+            : DateTime.parse(json["message_deleted_at"]),
         userId: json["user_id"],
         isSent: json["is_sent"],
         isReceived: json["is_received"],
@@ -406,6 +437,9 @@ class MessageStatus {
         "id": id,
         "user_id": userId,
         "is_sent": isSent,
+        "is_deleted": isDeleted,
+        "delete_for_all": deleteForAll,
+        "message_deleted_at": messageDeletedAt?.toIso8601String(),
         "is_received": isReceived,
         "is_watched": isWatched,
         "watched_at": watchedAt?.toIso8601String(),

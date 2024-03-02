@@ -26,7 +26,7 @@ import '../../features/authentication/domain/repositories/auth_repository.dart'
 import '../../features/authentication/domain/use_cases/create_user_usecase.dart'
     as _i17;
 import '../../features/authentication/domain/use_cases/delete_fcm_usecase.dart'
-    as _i20;
+    as _i19;
 import '../../features/authentication/domain/use_cases/get_customer_info_usecase.dart'
     as _i23;
 import '../../features/authentication/domain/use_cases/get_user_country_usecase.dart'
@@ -59,7 +59,7 @@ import '../../features/calls/data/repositories/calls_repository_impl.dart'
     as _i10;
 import '../../features/calls/domain/repositories/calls_repository.dart' as _i9;
 import '../../features/calls/domain/useCase/answer_call_usecase.dart' as _i62;
-import '../../features/calls/domain/useCase/delete_Call_reg.dart' as _i18;
+import '../../features/calls/domain/useCase/delete_Message.dart' as _i20;
 import '../../features/calls/domain/useCase/get_agora_token_use_case.dart'
     as _i21;
 import '../../features/calls/domain/useCase/get_my_calls.dart' as _i27;
@@ -73,7 +73,7 @@ import '../../features/chat/data/repositories/chat_repository_impl.dart'
 import '../../features/chat/domain/repositories/chat_repository.dart' as _i12;
 import '../../features/chat/domain/use_cases/change_chat_property_usecase.dart'
     as _i65;
-import '../../features/chat/domain/use_cases/delete_chat_usecase.dart' as _i19;
+import '../../features/chat/domain/use_cases/delete_chat_usecase.dart' as _i18;
 import '../../features/chat/domain/use_cases/get_contacts_usecase.dart' as _i22;
 import '../../features/chat/domain/use_cases/get_image_width_and_height_usecase.dart'
     as _i30;
@@ -157,12 +157,12 @@ Future<_i1.GetIt> $initGetIt(
       () => _i16.CommonUseRepositoryImpl(gh<_i14.CommonUseRemoteDataSource>()));
   gh.factory<_i17.CreateUserUseCase>(
       () => _i17.CreateUserUseCase(gh<_i12.ChatRepository>()));
-  gh.factory<_i18.DeleteCallRegUseCase>(
-      () => _i18.DeleteCallRegUseCase(gh<_i9.CallsRepository>()));
-  gh.factory<_i19.DeleteChatUseCase>(
-      () => _i19.DeleteChatUseCase(gh<_i12.ChatRepository>()));
-  gh.factory<_i20.DeleteFcmUseCase>(
-      () => _i20.DeleteFcmUseCase(gh<_i5.AuthRepository>()));
+  gh.factory<_i18.DeleteChatUseCase>(
+      () => _i18.DeleteChatUseCase(gh<_i12.ChatRepository>()));
+  gh.factory<_i19.DeleteFcmUseCase>(
+      () => _i19.DeleteFcmUseCase(gh<_i5.AuthRepository>()));
+  gh.factory<_i20.DeleteMessageUseCase>(
+      () => _i20.DeleteMessageUseCase(gh<_i9.CallsRepository>()));
   gh.factory<_i21.GetAgoraTokenUseCase>(
       () => _i21.GetAgoraTokenUseCase(gh<_i9.CallsRepository>()));
   gh.factory<_i22.GetContactsUseCase>(
@@ -264,7 +264,7 @@ Future<_i1.GetIt> $initGetIt(
         gh<_i27.GetMyCallsUseCase>(),
         gh<_i62.AnswerCallUseCase>(),
         gh<_i21.GetAgoraTokenUseCase>(),
-        gh<_i18.DeleteCallRegUseCase>(),
+        gh<_i20.DeleteMessageUseCase>(),
       ));
   gh.factory<_i65.ChangeChatPropertyUseCase>(
       () => _i65.ChangeChatPropertyUseCase(gh<_i12.ChatRepository>()));
@@ -276,7 +276,7 @@ Future<_i1.GetIt> $initGetIt(
         gh<_i25.GetMessagesBetweenUseCase>(),
         gh<_i55.UploadFileCloudinaryUseCase>(),
         gh<_i26.GetMessagesForChatUseCase>(),
-        gh<_i19.DeleteChatUseCase>(),
+        gh<_i18.DeleteChatUseCase>(),
         gh<_i65.ChangeChatPropertyUseCase>(),
         gh<_i56.UploadFileUseCase>(),
         gh<_i41.ReadAllMessagesUseCase>(),

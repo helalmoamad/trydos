@@ -138,7 +138,8 @@ handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
 }
 
 navigationToSinglePageChat(Chat chat) {
-  GetIt.I<ChatBloc>().add(ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: chat.id));
+  GetIt.I<ChatBloc>()
+      .add(ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: chat.id));
   AppBloc appBloc =
       BlocProvider.of<AppBloc>(navigatorKey.currentState!.context);
   appBloc.add(ChangeBasePage(2));
@@ -246,6 +247,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "Base Page");
     super.didChangeDependencies();
   }
+
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
       if (event.data['type'] == 'RefuseCallEvent') {
@@ -324,22 +326,36 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         ));
       } else if (event.data['type'] == 'AnswerCallEvent') {
         Map<String, dynamic> data =
-        convert.jsonDecode(event.data['data'].toString());
+            convert.jsonDecode(event.data['data'].toString());
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'AnswerCallEvent Message');
         debugPrint(
             'GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false))');
         if (data['message_id'].toString() !=
-            GetIt.I<CallsBloc>().state.currentActiveCallId &&
+                GetIt.I<CallsBloc>().state.currentActiveCallId &&
             GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
           return;
         }
-        if (GetIt.I<PrefsRepository>().myChatId.toString() == data['user']['id'].toString() && navigatorKey.currentState!.context.canPop() &&
+        if (GetIt.I<PrefsRepository>().myChatId.toString() ==
+                data['user']['id'].toString() &&
+            navigatorKey.currentState!.context.canPop() &&
             navigatorKey.currentState!.context.widget is! SinglePageChat) {
           navigatorKey.currentState!.context.pop();
         }
         callsBloc.add(UserInteractWithCall(rejectIt: false));
+      } else if (event.data['type'] == 'UpdatingMessageEvent') {
+        Map<String, dynamic> data =
+            convert.jsonDecode(event.data["data"]['message'].toString());
+        GetIt.I<CallsBloc>().add(DeleteMessageEvent(
+            channelId: data["channel_id"],
+            messageId: data["id"],
+            deleteFromBoth:
+                data["auth_message_status"]["delete_for_all"] ? 1 : 0,
+            type: data["message_type"]["name"] == "TextMessage"
+                ? "message"
+                : "call",
+            deleteFromId: data["deleted_by_user_id"] ?? 0));
       } else if (event.data['type'] == 'ChannelWatchedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
@@ -369,8 +385,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         chatBloc.add(AddChannelToChannels(message: message));
         chatBloc.add(ReceiveMessageEvent(
             message: message, prevMessageId: prevMessageId));
-        if (BlocProvider.of<ChatBloc>(context).currentOpenedChatId != message.channelId) {
-          LocalNotificationService().showNotificationWithPayload(message: event);
+        if (BlocProvider.of<ChatBloc>(context).currentOpenedChatId !=
+            message.channelId) {
+          LocalNotificationService()
+              .showNotificationWithPayload(message: event);
         }
       }
     });
@@ -385,55 +403,55 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       debugPrint('error $error');
     };
     return BlocListener<ChatBloc, ChatState>(
-        listener: (context, state) {
-          navigationToSinglePageChat(state.chatToNavigateFromTerminated!);
+      listener: (context, state) {
+        navigationToSinglePageChat(state.chatToNavigateFromTerminated!);
+      },
+      listenWhen: (p, c) =>
+          p.chatToNavigateFromTerminated != c.chatToNavigateFromTerminated,
+      child: BlocListener<ChatBloc, ChatState>(
+        listener: (context, chatState) {
+          FirebasePresence.listenToAllChats(
+              [...chatState.chats, ...chatState.pinnedChats]);
         },
         listenWhen: (p, c) =>
-            p.chatToNavigateFromTerminated != c.chatToNavigateFromTerminated,
-        child: BlocListener<ChatBloc, ChatState>(
-          listener: (context, chatState) {
-            FirebasePresence.listenToAllChats(
-                [...chatState.chats, ...chatState.pinnedChats]);
-          },
-          listenWhen: (p, c) =>
-              p.getChatsStatus != c.getChatsStatus &&
-              c.getChatsStatus == GetChatsStatus.success,
-          child: BlocListener<HomeBloc, HomeState>(
-              listenWhen: (p, c) =>
-                  p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
-                  c.getStartingSettingsStatus ==
-                      GetStartingSettingsStatus.success,
-              listener: (context, state) {
-                debugPrint('version gets successfully');
-                debugPrint(
-                    'android: ${state.startingSetting?.androidMinVersion}');
-                debugPrint('ios: ${state.startingSetting?.iosMinVersion}');
-                if (applicationVersion <
-                        state.startingSetting!.androidMinVersion! ||
-                    applicationVersion < state.startingSetting!.iosMinVersion!) {
-                  HelperFunctions.showVersionDialog(context);
-                }
-              },
-              child: Scaffold(
-                backgroundColor: colorScheme.background,
-                bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-                    buildWhen: (p, c) => p.showBars != c.showBars,
-                    builder: (context, state) {
-                      if (state.showBars == true) {
-                        return const AppBottomNavBar();
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    }),
-                body: BlocBuilder<AppBloc, AppState>(
-                  buildWhen: (oldState, newState) =>
-                      oldState.currentIndex != newState.currentIndex,
-                  builder: (_, state) {
-                    return pages[state.currentIndex];
-                  },
-                ),
-              )),
-        ),
-      );
+            p.getChatsStatus != c.getChatsStatus &&
+            c.getChatsStatus == GetChatsStatus.success,
+        child: BlocListener<HomeBloc, HomeState>(
+            listenWhen: (p, c) =>
+                p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
+                c.getStartingSettingsStatus ==
+                    GetStartingSettingsStatus.success,
+            listener: (context, state) {
+              debugPrint('version gets successfully');
+              debugPrint(
+                  'android: ${state.startingSetting?.androidMinVersion}');
+              debugPrint('ios: ${state.startingSetting?.iosMinVersion}');
+              if (applicationVersion <
+                      state.startingSetting!.androidMinVersion! ||
+                  applicationVersion < state.startingSetting!.iosMinVersion!) {
+                HelperFunctions.showVersionDialog(context);
+              }
+            },
+            child: Scaffold(
+              backgroundColor: colorScheme.background,
+              bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
+                  buildWhen: (p, c) => p.showBars != c.showBars,
+                  builder: (context, state) {
+                    if (state.showBars == true) {
+                      return const AppBottomNavBar();
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  }),
+              body: BlocBuilder<AppBloc, AppState>(
+                buildWhen: (oldState, newState) =>
+                    oldState.currentIndex != newState.currentIndex,
+                builder: (_, state) {
+                  return pages[state.currentIndex];
+                },
+              ),
+            )),
+      ),
+    );
   }
 }

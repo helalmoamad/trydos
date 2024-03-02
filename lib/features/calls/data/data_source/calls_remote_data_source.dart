@@ -94,15 +94,15 @@ class CallsRemoteDataSource {
     return mycalls();
   }
 
-  Future<bool> deleteCallRegister(Map<String, dynamic> params) {
-    PostClient<bool> deleteChat = PostClient<bool>(
+  Future<bool> deleteMessage(Map<String, dynamic> params) {
+    PostClient<bool> deleteMessage = PostClient<bool>(
       serverName: ServerName.chat,
       requestPrams: RequestConfig<bool>(
-        endpoint: ChatEndPoints.deleteCallREg,
+        endpoint: ChatEndPoints.deleteMessage,
         data: params,
         response: ResponseValue<bool>(returnValueOnSuccess: true),
       ),
     );
-    return deleteChat();
+    return deleteMessage();
   }
 }

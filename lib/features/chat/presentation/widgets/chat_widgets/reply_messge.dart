@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/text_message.dart';
 
@@ -12,32 +13,33 @@ import '../../manager/chat_state.dart';
 import 'image_message.dart';
 
 class ReplayMessage extends StatefulWidget {
-  ReplayMessage(
-      {Key? key,
-      required this.message,
-      required this.messageId,
-      required this.messageAnswerId,
-      this.messageAnswer,
-      required this.isSent,
-      required this.parentSenderId,
-      required this.isReplayedMessageRead,
-      required this.isReplayedMessageReceived,
-      required this.isAnswerMessageRead,
-      required this.isAnswerMessageReceived,
-      required this.senderAnswerName,
-      required this.replayedName,
-      this.replayedPhoto,
-      this.senderAnswerPhoto,
-      this.answeredFile,
-      this.answeredFilePath,
-      required this.isISentFirstMessage,
-      required this.scrollToMessage,
-      required this.messageDate,
-      required this.isFirstMessage,
-      this.receivedAt,
-      this.createAt,
-      required this.time})
-      : super(key: key);
+  ReplayMessage({
+    Key? key,
+    required this.message,
+    required this.messageId,
+    required this.messageAnswerId,
+    this.messageAnswer,
+    required this.isSent,
+    required this.parentSenderId,
+    required this.isReplayedMessageRead,
+    required this.isReplayedMessageReceived,
+    required this.isAnswerMessageRead,
+    required this.isAnswerMessageReceived,
+    required this.senderAnswerName,
+    required this.replayedName,
+    this.replayedPhoto,
+    this.senderAnswerPhoto,
+    this.answeredFile,
+    this.answeredFilePath,
+    required this.isISentFirstMessage,
+    required this.scrollToMessage,
+    required this.messageDate,
+    required this.isFirstMessage,
+    this.receivedAt,
+    this.createAt,
+    this.watchedAt,
+    required this.channalId,
+  }) : super(key: key);
   final String message;
   final String messageId;
   final String? messageAnswer;
@@ -45,9 +47,10 @@ class ReplayMessage extends StatefulWidget {
   final bool isSent;
   final DateTime? receivedAt;
   final DateTime? createAt;
-  final DateTime time;
+  final DateTime? watchedAt;
   final bool isISentFirstMessage;
   final bool isFirstMessage;
+  final String channalId;
   final DateTime messageDate;
   final File? answeredFile;
   final String? answeredFilePath;
@@ -143,9 +146,10 @@ class _ReplayMessageState extends State<ReplayMessage> {
                     senderId: widget.parentSenderId,
                     isRead: widget.isReplayedMessageRead,
                     isFirstMessage: true,
-                    time: widget.time,
+                    watchedAt: widget.watchedAt,
                     receivedAt: widget.receivedAt,
                     createAt: widget.createAt!,
+                    channalId: widget.channalId,
                   ),
                 ),
               ),
@@ -154,8 +158,9 @@ class _ReplayMessageState extends State<ReplayMessage> {
                 child: (widget.answeredFile != null ||
                         widget.answeredFilePath != null)
                     ? ImageMessage(
+                        channelId: widget.channalId,
+                        watchedAt: widget.watchedAt,
                         isSent: widget.isSent,
-                        time: widget.time,
                         isRead: widget.isAnswerMessageRead,
                         messageId: widget.messageId,
                         isReceived: widget.isAnswerMessageReceived,
@@ -180,9 +185,10 @@ class _ReplayMessageState extends State<ReplayMessage> {
                         senderId: GetIt.I<PrefsRepository>().myChatId!,
                         isRead: widget.isAnswerMessageRead,
                         isFirstMessage: true,
-                        time: widget.time,
+                        watchedAt: widget.watchedAt,
                         receivedAt: widget.receivedAt,
                         createAt: widget.createAt!,
+                        channalId: widget.channalId,
                       ),
               )
             ],

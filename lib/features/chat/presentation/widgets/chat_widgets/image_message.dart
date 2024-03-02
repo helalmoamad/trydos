@@ -33,7 +33,6 @@ class ImageMessage extends StatefulWidget {
       this.isForwarded = false,
       this.isLocalMessage = true,
       required this.isSent,
-      required this.time,
       required this.isRead,
       required this.senderId,
       this.userMessagePhoto,
@@ -45,7 +44,9 @@ class ImageMessage extends StatefulWidget {
       required this.isReceived,
       required this.isFirstMessage,
       this.receivedAt,
-      this.createAt})
+      this.createAt,
+      this.watchedAt,
+      required this.channelId})
       : super(key: key);
   final bool isSent;
   final bool isFirstMessage;
@@ -58,7 +59,9 @@ class ImageMessage extends StatefulWidget {
   final String? imageUrl;
   final DateTime? receivedAt;
   final DateTime? createAt;
-  final DateTime time;
+  final String channelId;
+  final DateTime? watchedAt;
+
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   bool isRead;
   bool isReceived;
@@ -74,10 +77,12 @@ class _ImageMessageState extends State<ImageMessage> {
   int? width;
   bool timer = false;
   int? height;
+  late ChatBloc chatBloc;
   final ValueNotifier<int> _loadingImage = ValueNotifier(0);
 
   @override
   void initState() {
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
       setState(() {
         timer = true;
@@ -292,12 +297,12 @@ class _ImageMessageState extends State<ImageMessage> {
                                           CrossAxisAlignment.end,
                                       children: [
                                         MyTextWidget(
-                                          !widget.time.isUtc
+                                          !widget.createAt!.isUtc
                                               ? HelperFunctions.getDateInFormat(
-                                                  widget.time)
+                                                  widget.createAt!)
                                               : HelperFunctions
                                                   .getZonedDateInFormat(
-                                                      widget.time),
+                                                      widget.createAt!),
                                           style: context.textTheme.overline?.rr
                                               .copyWith(
                                                   color: context
@@ -305,33 +310,62 @@ class _ImageMessageState extends State<ImageMessage> {
                                         ),
                                         if (widget.isSent) ...{
                                           10.horizontalSpace,
-                                          SvgPicture.asset(
-                                            (state.currentFailedMessage
-                                                    .contains(widget.messageId))
-                                                ? AppAssets.MessageFailedSvg
-                                                : widget.isRead
-                                                    ? AppAssets
-                                                        .messageReadArrowSvg
-                                                    : widget.isReceived
-                                                        ? AppAssets
-                                                            .messageDeliveredArrowSvg
-                                                        : (state.currentMessage
-                                                                .contains(widget
-                                                                    .messageId))
-                                                            ? timer
-                                                                ? (state.currentMessage
-                                                                        .contains(widget
-                                                                            .messageId))
-                                                                    ? AppAssets
-                                                                        .sandClockSvg
-                                                                    : AppAssets
-                                                                        .messageSentArrowSvg
-                                                                : ""
-                                                            : AppAssets
-                                                                .messageSentArrowSvg,
-                                            width: 10.sp,
-                                            height: 10.sp,
-                                          )
+                                          (state.currentFailedMessage
+                                                  .contains(widget.messageId))
+                                              ? Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    InkWell(
+                                                        onTap: () {
+                                                          chatBloc.add(ResendMessageEvent(
+                                                              messageType:
+                                                                  "image",
+                                                              channelId: widget
+                                                                  .channelId,
+                                                              messageId: widget
+                                                                  .messageId));
+                                                        },
+                                                        child: Icon(
+                                                          Icons.refresh,
+                                                          size: 27.w,
+                                                        )),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          left: 5.w),
+                                                      child: SvgPicture.asset(
+                                                        AppAssets
+                                                            .MessageFailedSvg,
+                                                        width: 10.sp,
+                                                        height: 10.sp,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              : SvgPicture.asset(
+                                                  widget.isRead
+                                                      ? AppAssets
+                                                          .messageReadArrowSvg
+                                                      : widget.isReceived
+                                                          ? AppAssets
+                                                              .messageDeliveredArrowSvg
+                                                          : (state.currentMessage
+                                                                  .contains(widget
+                                                                      .messageId))
+                                                              ? timer
+                                                                  ? (state.currentMessage.contains(
+                                                                          widget
+                                                                              .messageId))
+                                                                      ? AppAssets
+                                                                          .sandClockSvg
+                                                                      : AppAssets
+                                                                          .messageSentArrowSvg
+                                                                  : ""
+                                                              : AppAssets
+                                                                  .messageSentArrowSvg,
+                                                  width: 10.sp,
+                                                  height: 10.sp,
+                                                )
                                         },
                                         if (widget.isForwarded) ...{
                                           10.horizontalSpace,
@@ -431,7 +465,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                   isRead: widget.isRead,
                                   isReceived: widget.isReceived,
                                   receivedAt: widget.receivedAt,
-                                  createAT: widget.createAt!,
+                                  watchedAt: widget.watchedAt,
                                 ),
                               )
                             : SizedBox.shrink(),

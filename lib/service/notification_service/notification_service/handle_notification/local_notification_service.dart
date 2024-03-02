@@ -23,7 +23,6 @@ import 'dart:convert' as convert;
 @pragma('vm:entry-point')
 class LocalNotificationService {
   static final _localNotificationPlugin = FlutterLocalNotificationsPlugin();
-
   final String _androidChannelId = r'$_$_1_$_$';
   final String _androidChannelName = "Notification";
 
@@ -62,7 +61,8 @@ class LocalNotificationService {
   @pragma('vm:entry-point')
   Future<void> showNotificationWithPayload(
       {required RemoteMessage message}) async {
-    chat.Message myMessage = chat.Message.fromJson(convert.jsonDecode(message.data['message']));
+    chat.Message myMessage =
+        chat.Message.fromJson(convert.jsonDecode(message.data['message']));
     String prevMessageId = message.data['prev_message_id'];
     sendIReceivedTheMessage(myMessage.channelId!);
     String type = myMessage.messageType!.name.toString();
@@ -140,9 +140,11 @@ class LocalNotificationService {
 
   @pragma('vm:entry-point')
   static void _onSelectNotification(NotificationResponse notificationResponse) {
-    chat.Message myMessage = chat.Message.fromJson(convert.jsonDecode(notificationResponse.payload!.split(',,')[0]));
+    chat.Message myMessage = chat.Message.fromJson(
+        convert.jsonDecode(notificationResponse.payload!.split(',,')[0]));
     String prevMessageId = notificationResponse.payload!.split(',,')[1];
-    handleOpenChatPageFromNotificationInBackground(prevMessageId , message: myMessage);
+    handleOpenChatPageFromNotificationInBackground(prevMessageId,
+        message: myMessage);
   }
 
   _notificationDetails() {

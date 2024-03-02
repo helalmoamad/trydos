@@ -11,7 +11,6 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/widgets/contact_card.dart';
-
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
@@ -139,8 +138,8 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
               ),
             ),
             BlocConsumer<ChatBloc, ChatState>(
-              buildWhen: (p,c)=> p.getContactsStatus != c.getContactsStatus,
-              listenWhen: (p,c)=> p.getContactsStatus != c.getContactsStatus,
+              buildWhen: (p, c) => p.getContactsStatus != c.getContactsStatus,
+              listenWhen: (p, c) => p.getContactsStatus != c.getContactsStatus,
               listener: (context, state) {
                 searchContacts.value = state.contacts;
               },

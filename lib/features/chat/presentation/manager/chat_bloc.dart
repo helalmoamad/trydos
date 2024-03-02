@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:mime/mime.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
@@ -64,6 +66,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
     on<ChangeGlobalUsedVariablesInBloc>(_onChangeGlobalUsedVariablesInBloc);
+    on<ResendMessageEvent>(_onResendMessageEvent);
     on<AddAMessageToAChannel>(_onAddAMessageToAChannel);
     on<AddChannelToChannels>(_onAddChannelToChannels);
     on<SendMessageEvent>(_onSendMessageEvent);
@@ -74,6 +77,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<ReceiveMessageEvent>(_onReceiveMessageEvent);
     on<UploadFileEvent>(_onUploadFileEvent);
     on<ChangeSlop>(_onChangeSlop);
+    on<DeleteMessagesEvent>(_onDeleteMessageEvent);
     on<DeleteChatEvent>(_onDeleteChatEvent);
     on<ReceiveMessageFromPusherEvent>(_onReceiveMessageFromPusherEvent);
     on<WatchedMessageFromPusherEvent>(_onWatchedMessageFromPusherEvent);
@@ -111,6 +115,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   FutureOr<void> _onSendMessageEvent(
       SendMessageEvent event, Emitter<ChatState> emit) async {
     //todo waiting messages and not sent yet
+
     List<String> ids = List.of(state.currentMessage);
     List<Message> messages;
     bool fromPinned = false;
@@ -250,8 +255,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             int index = messages.indexWhere((element) =>
                 (element.id == event.messageId ||
                     element.localId == event.messageId));
-            messages[index] =
-                r.copyWith(file: event.file, localId: event.messageId);
+            messages[index] = r.copyWith(
+              file: event.file,
+              localId: event.messageId,
+            );
 
             return e.copyWith(messages: messages);
           }
@@ -470,6 +477,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onUploadFileEvent(
       UploadFileEvent event, Emitter<ChatState> emit) async {
+    print(
+        ".............................................................................");
     List<String> ids = List.of(state.currentMessage);
     ids.add(event.messageId);
     List<Message> messages;
@@ -550,11 +559,15 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     }
     response.fold((l) {
       List<String> currentFailedMessage = List.of(state.currentFailedMessage);
+      List<String> currentFailedMediaMessage =
+          List.of(state.currentFailedMediaMessage);
       ids.remove(event.messageId);
       currentFailedMessage.add(event.messageId);
+      currentFailedMediaMessage.add(event.messageId);
       emit(state.copyWith(
           sendMessageStatus: SendMessageStatus.failure,
-          currentFailedMessage: currentFailedMessage));
+          currentFailedMessage: currentFailedMessage,
+          currentFailedMediaMessage: currentFailedMediaMessage));
     }, (r) {
       _prefsRepository.setAFilePathExist(
           event.useCloudinaryToUpload ? r.secureUrl! : r.data!.filePath!);
@@ -1343,5 +1356,154 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     state.isSlpoing
         ? emit(state.copyWith(isSlpoing: false))
         : emit(state.copyWith(isSlpoing: true));
+  }
+
+  _onResendMessageEvent(ResendMessageEvent event, Emitter<ChatState> emit) {
+    emit(state.copyWith(resendMessageStatus: ResendMessageStatus.init));
+    List<Message> messages;
+    Message message;
+    bool fromPinned = false;
+    bool faildToUploadeToClodinary = false;
+    Chat chat;
+    if (state.chats.any(
+      (e) => e.id == event.channelId,
+    )) {
+      chat = state.chats.firstWhere((element) => element.id == event.channelId);
+      messages = chat.messages ?? [];
+    } else {
+      fromPinned = true;
+      chat = state.pinnedChats
+          .firstWhere((element) => element.id == event.channelId);
+      messages = chat.messages ?? [];
+    }
+    emit(state.copyWith(resendMessageStatus: ResendMessageStatus.loading));
+    List<String> failedMessagesId = List.of(state.currentFailedMessage);
+    List<String> failedMediaMessagesId =
+        List.of(state.currentFailedMediaMessage);
+    failedMessagesId.remove(event.messageId);
+    faildToUploadeToClodinary = failedMediaMessagesId.contains(event.messageId);
+    if (faildToUploadeToClodinary) {
+      failedMediaMessagesId.remove(event.messageId);
+    }
+    message = messages.firstWhere((element) => element.id == event.messageId);
+
+    messages.removeWhere((element) => element.id == event.messageId);
+    chat = chat.copyWith(messages: messages);
+    List<Chat> chats = fromPinned
+        ? state.chats
+        : state.chats.map((e) {
+            if (e.id == chat.id) return chat;
+            return e;
+          }).toList();
+    List<Chat> pinnedChats = !fromPinned
+        ? state.pinnedChats
+        : state.pinnedChats.map((e) {
+            if (e.id == chat.id) return chat;
+            return e;
+          }).toList();
+    emit(state.copyWith(
+      currentFailedMediaMessage: failedMediaMessagesId,
+      currentFailedMessage: failedMessagesId,
+      channelId: event.channelId,
+      newSortedChatsByDate:
+          groupReceivedMessageOnDays(chats: [...pinnedChats, ...chats]),
+      chats: chats,
+      pinnedChats: pinnedChats,
+    ));
+    String id = const Uuid().v4();
+
+    if (faildToUploadeToClodinary) {
+      String mimeStr = lookupMimeType(message.file!.absolute.path) ?? '';
+      bool isMediaFile = mimeStr.split('/')[0] != 'application';
+
+      add(UploadFileEvent(
+          messageType: message.messageType!.name,
+          isForward: message.isForward == 1,
+          receiverUserId: message.receiverUserId,
+          file: message.file!,
+          filePath: event.messageType == 'image'
+              ? 'images/test'
+              : event.messageType == 'file'
+                  ? 'files/test'
+                  : event.messageType == 'video'
+                      ? 'videos/test'
+                      : 'voices/test',
+          fileName: message.file!.path,
+          messageId: id,
+          parentMessageContent: message.parentMessageId != null
+              ? message.parentMessage!.messageContent!.content
+              : null,
+          parentMessageId:
+              message.parentMessageId != null ? message.parentMessageId : null,
+          senderParentMessageId: message.parentMessageId != null
+              ? message.parentMessage!.senderUserId
+              : null,
+          channelId: event.channelId,
+          useCloudinaryToUpload: isMediaFile));
+      emit(state.copyWith(resendMessageStatus: ResendMessageStatus.success));
+    } else {
+      add(SendMessageEvent(
+          parentMessageContent: message.parentMessageId != null
+              ? message.parentMessage!.messageContent!.content
+              : null,
+          parentMessageId:
+              message.parentMessageId != null ? message.parentMessageId : null,
+          senderParentMessageId: message.parentMessageId != null
+              ? message.parentMessage!.senderUserId
+              : null,
+          messageId: id,
+          content: message.messageContent!.content!,
+          createNewChat: false,
+          isForward: message.isForward == 1,
+          messageType: message.messageType!.name,
+          receiverUserId: message.receiverUserId,
+          channelId: event.channelId));
+    }
+  }
+
+  _onDeleteMessageEvent(DeleteMessagesEvent event, Emitter<ChatState> emit) {
+    bool fromPinned = false;
+
+    Chat chat;
+
+    if (state.chats.any((element) => element.id == event.channelId)) {
+      chat = state.chats.firstWhere((element) => element.id == event.channelId);
+    } else {
+      fromPinned = true;
+      chat = state.pinnedChats
+          .firstWhere((element) => element.id == event.channelId);
+    }
+
+    int index =
+        chat.messages!.indexWhere((element) => element.id == event.messageId);
+    chat.messages![index] = chat.messages![index].copyWith(
+        deletedByUserId: event.deletedByUserId,
+        authMessageStatus: MessageStatus(
+            isDeleted: state.currentFailedMessage.contains(event.messageId)
+                ? 1
+                : event.isDelete,
+            deleteForAll: event.deleteForAll));
+    emit(state.copyWith(
+      chats: !fromPinned
+          ? state.chats.map((e) {
+              if (e.id == event.channelId) {
+                return chat;
+              }
+              return e;
+            }).toList()
+          : state.chats,
+      newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
+        ...state.chats,
+        ...(fromPinned ? state.chats : state.pinnedChats)
+      ]),
+      pinnedChats: fromPinned
+          ? state.pinnedChats.map((e) {
+              if (e.id == event.channelId) {
+                return chat;
+              }
+              return e;
+            }).toList()
+          : state.pinnedChats,
+    ));
   }
 }
