@@ -118,8 +118,6 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
     final secondaryElevatedTheme = ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         shape: defaultElevatedTheme.style?.shape?.resolve({}),
-        primary: colorScheme.borderTextField,
-        onPrimary: colorScheme.grey700,
         surfaceTintColor: colorScheme.primary,
         elevation: 0.0,
         shadowColor: colorScheme.white.withOpacity(0.1),
@@ -129,8 +127,7 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
     final loadingElevatedTheme = ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         shape: defaultElevatedTheme.style?.shape?.resolve({}),
-        primary: colorScheme.surfaceVariant,
-        onPrimary: colorScheme.outline,
+
       ),
     );
 
