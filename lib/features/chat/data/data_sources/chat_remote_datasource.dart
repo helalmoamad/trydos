@@ -55,12 +55,13 @@ class ChatRemoteDataSource {
     return receiveMessage();
   }
 
-  Future<MyChatsResponseModel> getChats() {
+  Future<MyChatsResponseModel> getChats(Map<String, dynamic> params) {
     PostClient<MyChatsResponseModel> getChats =
         PostClient<MyChatsResponseModel>(
       serverName: ServerName.chat,
       requestPrams: RequestConfig<MyChatsResponseModel>(
         endpoint: ChatEndPoints.getMyChatsEP,
+        queryParameters: params,
         response: ResponseValue<MyChatsResponseModel>(fromJson: (response) {
           return MyChatsResponseModel.fromJson(response);
 //return MyChatsResponseModel();

@@ -20,6 +20,7 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:uuid/uuid.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 //import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -682,7 +683,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         focusColor: Colors.transparent,
                                         splashColor: Colors.transparent,
                                         onTap: () async {
-                                          /*
+
                                           FirebasePresence.sendUserTransaction(
                                             channelId: widget.channelId,
                                             description: 'Sending file...',
@@ -743,7 +744,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               channelId: widget.channelId,
                                             );
                                           });
-                                      */
                                         },
                                         child: SvgPicture.asset(
                                           AppAssets.takePictureSvg,

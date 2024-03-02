@@ -815,7 +815,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                 ? Positioned(
                 bottom: 70,
                 child: AnimatedScale(
-                  scale: slideModeIndex == 0 ? 0.5 : 1,
+                  scale: slideModeIndex == 0 ? 0.57 : 1,
                   alignment: Alignment.bottomCenter,
                   duration: Duration(milliseconds: 100),
                   child: GestureDetector(

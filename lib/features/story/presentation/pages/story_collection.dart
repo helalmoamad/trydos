@@ -283,7 +283,22 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   widget.collectionIndex]!]
                               .photoPath!,
                           callWhenDisplayImage: () {
-                            widget.animatedController.forward();
+                            Story story = state
+                                .storiesCollections[widget.collectionIndex]
+                                .stories![state.currentStoryInEachCollection[
+                            widget.collectionIndex]!];
+                            if(!(story.isSeen ?? false)) {
+                              GetIt.I<StoryBloc>().add(IncreaseViewersEvent(
+                                  collectionId:
+                                  state.storiesCollections[widget
+                                      .collectionIndex].toString(),
+                                  storyId: story.id.toString()));
+                            }
+                            if (widget.stopAnimationAndVideo) {
+                              widget.animatedController.stop();
+                            } else {
+                              widget.animatedController.forward();
+                            }
                           },
                           callWhenLoadingImage: (){
                             widget.animatedController.stop();
@@ -353,6 +368,17 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.done) {
+                            Story story = state
+                                .storiesCollections[widget.collectionIndex]
+                                .stories![state.currentStoryInEachCollection[
+                            widget.collectionIndex]!];
+                            if(!(story.isSeen ?? false)) {
+                              GetIt.I<StoryBloc>().add(IncreaseViewersEvent(
+                                  collectionId:
+                                  state.storiesCollections[widget
+                                      .collectionIndex].toString(),
+                                  storyId: story.id.toString()));
+                            }
                             return FittedBox(
                               fit: BoxFit.contain,
                               child: SizedBox(
