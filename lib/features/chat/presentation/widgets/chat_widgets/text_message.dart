@@ -15,6 +15,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/authentication/presentation/widgets/phone_form_fields.dart';
+import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
@@ -39,7 +40,6 @@ class TextMessage extends StatefulWidget {
     this.disableMessageAlignment = false,
     required this.message,
     required this.isRead,
-    required this.time,
     required this.messageId,
     required this.isSent,
     required this.senderId,
@@ -48,23 +48,27 @@ class TextMessage extends StatefulWidget {
     this.isreplay = false,
     this.receivedAt,
     this.createAt,
+    this.watchedAt,
+    required this.channalId,
   }) : super(key: key);
   final String message;
   final String messageId;
   final bool isSent;
   final bool isFirstMessage;
   final bool isForwarded;
+  final String channalId;
   bool isreplay;
   final Color? sendColor;
   final Color? receivedColor;
   final bool withShadow;
   final bool withImageShadow;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
-  final DateTime time;
+
   bool isRead;
   final bool disableMessageAlignment;
   final DateTime? receivedAt;
   final DateTime? createAt;
+  final DateTime? watchedAt;
   final int senderId;
   bool isReceived;
   final String? userMessagePhoto;
@@ -77,8 +81,10 @@ class _TextMessageState extends ThemeState<TextMessage> {
   double height = -1;
   final key = GlobalKey();
   bool timer = false;
+  late ChatBloc chatBloc;
   @override
   void initState() {
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
       setState(() {
         timer = true;
@@ -257,13 +263,13 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                         child: Row(
                                           children: [
                                             MyTextWidget(
-                                              !widget.time.isUtc
+                                              !widget.createAt!.isUtc
                                                   ? HelperFunctions
                                                       .getDateInFormat(
-                                                          widget.time)
+                                                          widget.createAt!)
                                                   : HelperFunctions
                                                       .getZonedDateInFormat(
-                                                          widget.time),
+                                                          widget.createAt!),
                                               style: textTheme.overline?.rr
                                                   .copyWith(
                                                       color:
@@ -275,18 +281,46 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                             ),
                                             if (widget.isSent) ...{
                                               10.horizontalSpace,
-                                              Opacity(
-                                                  opacity:
-                                                      !widget.withImageShadow
+                                              (state.currentFailedMessage
+                                                      .contains(
+                                                          widget.messageId))
+                                                  ? Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        InkWell(
+                                                            onTap: () {
+                                                              chatBloc.add(ResendMessageEvent(
+                                                                  channelId: widget
+                                                                      .channalId,
+                                                                  messageId: widget
+                                                                      .messageId));
+                                                            },
+                                                            child: Icon(
+                                                              Icons.refresh,
+                                                              size: 27.w,
+                                                            )),
+                                                        Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 5.w),
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            AppAssets
+                                                                .MessageFailedSvg,
+                                                            width: 10.sp,
+                                                            height: 10.sp,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  : Opacity(
+                                                      opacity: !widget
+                                                              .withImageShadow
                                                           ? 0.4
                                                           : 1,
-                                                  child: SvgPicture.asset(
-                                                    (state.currentFailedMessage
-                                                            .contains(widget
-                                                                .messageId))
-                                                        ? AppAssets
-                                                            .MessageFailedSvg
-                                                        : widget.isRead
+                                                      child: SvgPicture.asset(
+                                                        widget.isRead
                                                             ? AppAssets
                                                                 .messageReadArrowSvg
                                                             : widget.isReceived
@@ -305,9 +339,9 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                                         : ""
                                                                     : AppAssets
                                                                         .messageSentArrowSvg,
-                                                    width: 10.sp,
-                                                    height: 10.sp,
-                                                  ))
+                                                        width: 10.sp,
+                                                        height: 10.sp,
+                                                      ))
                                             },
                                             if (widget.isForwarded) ...{
                                               10.horizontalSpace,
@@ -409,7 +443,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                       isRead: widget.isRead,
                                       isReceived: widget.isReceived,
                                       receivedAt: widget.receivedAt,
-                                      createAT: widget.createAt!,
+                                      watchedAt: widget.watchedAt,
                                     ),
                                   )
                                 : SizedBox.shrink(),
@@ -432,14 +466,14 @@ class SendRecieveWatchTime extends StatelessWidget {
   final bool isRead;
   final bool isReceived;
   final DateTime? receivedAt;
-  final DateTime createAT;
+  final DateTime? watchedAt;
 
   const SendRecieveWatchTime(
       {super.key,
       required this.isRead,
       required this.isReceived,
       this.receivedAt,
-      required this.createAT});
+      required this.watchedAt});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -456,10 +490,10 @@ class SendRecieveWatchTime extends StatelessWidget {
                             width: 24,
                             height: 14,
                             child: Text(
-                              !createAT.isUtc
-                                  ? HelperFunctions.getDateInFormat(createAT)
+                              !receivedAt!.isUtc
+                                  ? HelperFunctions.getDateInFormat(receivedAt!)
                                   : HelperFunctions.getZonedDateInFormat(
-                                      createAT),
+                                      receivedAt!),
                               style: TextStyle(
                                   fontSize: 10.sp,
                                   fontWeight: FontWeight.normal,
@@ -469,24 +503,24 @@ class SendRecieveWatchTime extends StatelessWidget {
                         Container(
                             width: 10,
                             height: 10,
-                            child:
-                                SvgPicture.asset(AppAssets.messageSentArrowSvg))
+                            child: SvgPicture.asset(
+                                AppAssets.messageDeliveredArrowSvg))
                       ],
                     )
                   : SizedBox.shrink(),
               Padding(padding: EdgeInsets.symmetric(vertical: 0.17)),
-              isRead && isReceived
+              isRead
                   ? Row(
                       children: [
                         Container(
                             width: 24,
                             height: 14,
                             child: Text(
-                                !receivedAt!.isUtc
+                                !watchedAt!.isUtc
                                     ? HelperFunctions.getDateInFormat(
-                                        receivedAt!)
+                                        watchedAt!)
                                     : HelperFunctions.getZonedDateInFormat(
-                                        receivedAt!),
+                                        watchedAt!),
                                 style: TextStyle(
                                     fontSize: 10.sp,
                                     fontWeight: FontWeight.normal,
@@ -495,8 +529,8 @@ class SendRecieveWatchTime extends StatelessWidget {
                         Container(
                             width: 10,
                             height: 10,
-                            child: SvgPicture.asset(
-                                AppAssets.messageDeliveredArrowSvg))
+                            child:
+                                SvgPicture.asset(AppAssets.messageReadArrowSvg))
                       ],
                     )
                   : SizedBox.shrink()

@@ -7,9 +7,17 @@ part of 'chat_state.dart';
 // **************************************************************************
 
 ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
+      currentFailedMediaMessage:
+          (json['currentFailedMediaMessage'] as List<dynamic>?)
+                  ?.map((e) => e as String)
+                  .toList() ??
+              const [],
       getMediaCountStatus: $enumDecodeNullable(
               _$GetMediaCountStatusEnumMap, json['getMediaCountStatus']) ??
           GetMediaCountStatus.init,
+      resendMessageStatus: $enumDecodeNullable(
+              _$ResendMessageStatusEnumMap, json['resendMessageStatus']) ??
+          ResendMessageStatus.init,
       width: json['width'] as int? ?? 0,
       slopMessageId: json['slopMessageId'] as String? ?? "",
       isSlpoing: json['isSlpoing'] as bool? ?? false,
@@ -30,6 +38,7 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
                         .toList()),
               ) ??
               const {},
+      currentOpenedChatId: json['currentOpenedChatId'] as String?,
       getContactsStatus: $enumDecodeNullable(
               _$GetContactsStatusEnumMap, json['getContactsStatus']) ??
           GetContactsStatus.init,
@@ -74,6 +83,10 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
           json['currentChannelReceivedMessage'] as String? ?? '-1',
       messageType: json['messageType'] as String?,
       firstMessageId: json['firstMessageId'] as String?,
+      chatToNavigateFromTerminated: json['chatToNavigateFromTerminated'] == null
+          ? null
+          : Chat.fromJson(
+              json['chatToNavigateFromTerminated'] as Map<String, dynamic>),
       scrollToParentMessage: json['scrollToParentMessage'] as bool? ?? false,
       createAnewChat: json['createAnewChat'] as bool? ?? false,
       secondMessageId: json['secondMessageId'] as String?,
@@ -134,10 +147,14 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
           _$ChangeChatPropertyStatusEnumMap[instance.changeChatPropertyStatus]!,
       'deleteChatStatus': _$DeleteChatStatusEnumMap[instance.deleteChatStatus]!,
       'contacts': instance.contacts.map((e) => e.toJson()).toList(),
+      'currentOpenedChatId': instance.currentOpenedChatId,
+      'resendMessageStatus':
+          _$ResendMessageStatusEnumMap[instance.resendMessageStatus]!,
       'chats': instance.chats.map((e) => e.toJson()).toList(),
       'pinnedChats': instance.pinnedChats.map((e) => e.toJson()).toList(),
       'currentMessage': instance.currentMessage,
       'currentFailedMessage': instance.currentFailedMessage,
+      'currentFailedMediaMessage': instance.currentFailedMediaMessage,
       'channelId': instance.channelId,
       'messageType': instance.messageType,
       'messageContent': instance.messageContent,
@@ -147,6 +164,8 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'unReadMessagesFromAllChats': instance.unReadMessagesFromAllChats,
       'currentChannelReceivedMessage': instance.currentChannelReceivedMessage,
       'scrollToParentMessage': instance.scrollToParentMessage,
+      'chatToNavigateFromTerminated':
+          instance.chatToNavigateFromTerminated?.toJson(),
       'createAnewChat': instance.createAnewChat,
       'newSortedChatsByDate': instance.newSortedChatsByDate
           ?.map((k, e) => MapEntry(k, e.map((e) => e.toJson()).toList())),
@@ -157,6 +176,13 @@ const _$GetMediaCountStatusEnumMap = {
   GetMediaCountStatus.loading: 'loading',
   GetMediaCountStatus.success: 'success',
   GetMediaCountStatus.failure: 'failure',
+};
+
+const _$ResendMessageStatusEnumMap = {
+  ResendMessageStatus.init: 'init',
+  ResendMessageStatus.loading: 'loading',
+  ResendMessageStatus.success: 'success',
+  ResendMessageStatus.failure: 'failure',
 };
 
 const _$LoadImageWidthAndHeightEnumMap = {

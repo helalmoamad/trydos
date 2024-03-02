@@ -59,6 +59,7 @@ class CallsCard extends StatefulWidget {
 
 class _CallsCardState extends ThemeState<CallsCard> {
   late CallsBloc callsBloc;
+  final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   ValueNotifier<int> typingIndicator = ValueNotifier(0);
 
   @override
@@ -100,7 +101,50 @@ class _CallsCardState extends ThemeState<CallsCard> {
                 foregroundColor: const Color(0xffFA6868),
                 iconUrl: AppAssets.binSvg,
                 onTap: () {
-                  callsBloc.add(DeleteCallRegEvent(callId: widget.callRegId));
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                        title: Text(" حذف هذه الرسالة  "),
+                        actions: [
+                          MaterialButton(
+                            onPressed: () {
+                              callsBloc.add(DeleteMessageEvent(
+                                  deleteFromId: _prefsRepository.myChatId!,
+                                  type: "call",
+                                  deleteFromBoth: 0,
+                                  messageId: widget.callRegId));
+                              callsBloc.add(DeleteMessageEvent(
+                                  deleteFromId: _prefsRepository.myChatId!,
+                                  type: "message",
+                                  deleteFromBoth: 0,
+                                  channelId: widget.chatId,
+                                  messageId: widget.callRegId));
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("لدي فقط"),
+                          ),
+                          SizedBox(
+                            width: 20.w,
+                          ),
+                          MaterialButton(
+                            onPressed: () {
+                              callsBloc.add(DeleteMessageEvent(
+                                  type: "call",
+                                  deleteFromBoth: 1,
+                                  messageId: widget.callRegId,
+                                  deleteFromId: _prefsRepository.myChatId!));
+                              callsBloc.add(DeleteMessageEvent(
+                                  deleteFromId: _prefsRepository.myChatId!,
+                                  type: "message",
+                                  deleteFromBoth: 1,
+                                  channelId: widget.chatId,
+                                  messageId: widget.callRegId));
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("لدى الجميع"),
+                          )
+                        ]),
+                  );
                 },
               )
             ]),

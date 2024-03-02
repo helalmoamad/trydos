@@ -49,8 +49,8 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFFFFF),
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
     ));
     super.didChangeDependencies();
   }

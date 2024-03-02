@@ -6,18 +6,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
-import 'package:trydos/features/calls/domain/useCase/delete_Call_reg.dart';
+
+import 'package:trydos/features/calls/domain/useCase/delete_Message.dart';
 import 'package:trydos/features/calls/domain/useCase/get_my_calls.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/main.dart';
-import '../../data/models/my_calls.dart' as calls;
+import '../../data/models/my_calls.dart';
 import 'package:injectable/injectable.dart';
-import 'package:meta/meta.dart';
+
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/calls/domain/useCase/get_agora_token_use_case.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import '../../../chat/data/models/my_chats_response_model.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../../domain/useCase/answer_call_usecase.dart';
+import '../../domain/useCase/delete_Message.dart';
 import '../../domain/useCase/reject_call_usecase.dart';
 import '../../domain/useCase/make_call_usecase.dart';
 
@@ -32,7 +35,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   final RejectCallUseCase rejectCallUseCase;
 
   final GetAgoraTokenUseCase getAgoraTokenUseCase;
-  final DeleteCallRegUseCase deleteCallRegUseCase;
+  final DeleteMessageUseCase deleteMessageUseCase;
   final GetMyCallsUseCase getMyCallsUseCase;
 
   CallsBloc(
@@ -41,15 +44,16 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       this.getMyCallsUseCase,
       this.answerCallUseCase,
       this.getAgoraTokenUseCase,
-      this.deleteCallRegUseCase)
+      this.deleteMessageUseCase)
       : super(CallsState()) {
     on<CallsEvent>((event, emit) {});
+    on<UpdateCurrentActiveCallIdEvent>(_onUpdateCurrentActiveCallIdEvent);
     on<InitResponseRejectVideoCallEvent>(_onInitResponseRejectVideoCallEvent);
     on<RejectVideoCallEvent>(_onRejectVideoCallEvent);
     on<AnswerVideoCallEvent>(_onAnswerVideoCallEvent);
     on<EndVideoCallEvent>(_onEndVideoCallEvent);
     on<MakeCallEvent>(_onMakeCallEvent);
-    on<DeleteCallRegEvent>(_onDeleteCallRegEvent);
+    on<DeleteMessageEvent>(_onDeleteMessageEvent);
     on<GetMyCallsEvent>(_onGetMyCalls,
         transformer: throttleDroppable(throttleDuration));
     on<UserInteractWithCall>(_onUserInteractWithCall);
@@ -112,7 +116,6 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
             channelIdForCurrentCall: r.data!.message!.channelId.toString(),
             agoraToken: r.data!.token));
       });
-
       debugPrint("the channel not exist");
     } else {
       debugPrint("the channel exist");
@@ -172,8 +175,10 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   FutureOr<void> _onRejectVideoCallEvent(
       RejectVideoCallEvent event, Emitter<CallsState> emit) async {
     debugPrint("RejectVideoCallEvent");
-    final response = await rejectCallUseCase.call(
-        MakeRejectParams(messageId: event.messageId, duration: event.duration));
+    final response = await rejectCallUseCase(RejectCallParams(
+        messageId: event.messageId,
+        payload: event.payload,
+        duration: event.duration));
     response.fold((l) => null, (r) {
       emit(
           state.copyWith(rejectVideoCallStatus: RejectVideoCallStatus.success));
@@ -195,40 +200,61 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
             : StopRingToneReason.accept));
   }
 
-  FutureOr<void> _onDeleteCallRegEvent(
-      DeleteCallRegEvent event, Emitter<CallsState> emit) async {
-    /*bool fromPinned = false;
-    List<Chat> chats;
-    if (state.chats.any((element) => element.id == event.channelId)) {
-      chats = List.of(state.chats);
+  FutureOr<void> _onDeleteMessageEvent(
+      DeleteMessageEvent event, Emitter<CallsState> emit) async {
+    emit(state.copyWith(deleteMessageStatus: DeleteMessageStatus.init));
+    if (event.type == "message") {
+      GetIt.I<ChatBloc>.call().add(DeleteMessagesEvent(
+          messageId: event.messageId,
+          channelId: event.channelId!,
+          deleteForAll: event.deleteFromBoth == 1,
+          isDelete: 1,
+          deletedByUserId: event.deleteFromId));
     } else {
-      fromPinned = true;
-      chats = List.of(state.pinnedChats);
+      List<CallReg> callReg = state.callRegister!.map((e) {
+        if (e.id == event.messageId) {
+          return e.copyWith(
+              authMessageStatus: MessagesStatus(
+                  isDeleted: 1, deleteForAll: event.deleteFromBoth == 1));
+        }
+        return e;
+      }).toList();
+      emit(state.copyWith(callRegister: callReg));
     }
-    String uuid = const Uuid().v4();
-    int index = chats.indexWhere((element) => element.id == event.channelId);
-    chats[index] = chats[index].copyWith(id: uuid, localId: uuid, messages: []);
-    emit(state.copyWith(
-        chats: fromPinned ? state.chats : chats,
-        deleteChatStatus: DeleteChatStatus.loading,
-        newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
-          ...chats,
-          ...(fromPinned ? state.chats : state.pinnedChats)
-        ]),
-        pinnedChats: !fromPinned ? state.pinnedChats : chats));*/
-    final response = await deleteCallRegUseCase(
-        DeleteCallRegParams.DeleteCallRegParams(callId: event.callId));
+
+    final response = await deleteMessageUseCase(DeleteMessageParams(
+        messageId: event.messageId, deleteFromAll: event.deleteFromBoth));
     response.fold((l) {
-      showMessage("لا يوجد اتصال بالانترنيت ");
+      if (event.type == "message") {
+        GetIt.I<ChatBloc>().add(DeleteMessagesEvent(
+            messageId: event.messageId,
+            channelId: event.channelId!,
+            deleteForAll: event.deleteFromBoth == 0,
+            isDelete: 0,
+            deletedByUserId: event.deleteFromId));
+      } else {
+        List<CallReg> callReg = state.callRegister!.map((e) {
+          if (e.id == event.messageId) {
+            return e.copyWith(
+                authMessageStatus:
+                    MessagesStatus(isDeleted: 0, deleteForAll: false));
+          }
+          return e;
+        }).toList();
+        emit(state.copyWith(callRegister: callReg));
+        emit((state.copyWith(
+          deleteMessageStatus: DeleteMessageStatus.failure,
+        )));
+      }
     }, (r) {
-      state.callRegister!.removeWhere(
-        (element) => element!.id == event.callId,
-      );
-      add(GetMyCallsEvent());
       emit((state.copyWith(
-        callRegister: state.callRegister,
-        deleteCallRegStatus: DeleteCallRegStatus.success,
+        deleteMessageStatus: DeleteMessageStatus.success,
       )));
     });
+  }
+
+  FutureOr<void> _onUpdateCurrentActiveCallIdEvent(
+      UpdateCurrentActiveCallIdEvent event, Emitter<CallsState> emit) {
+    emit(state.copyWith(currentActiveCallId: event.id));
   }
 }

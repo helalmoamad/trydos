@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -11,22 +12,24 @@ import 'package:flutter_callkit_incoming/entities/ios_params.dart';
 import 'package:flutter_callkit_incoming/entities/notification_params.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:get_it/get_it.dart';
+import 'package:eraser/eraser.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:trydos/core/di/di_container.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
-import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/notification_process.dart';
 import 'package:trydos/trydos_application.dart';
 import 'package:uuid/uuid.dart';
+import 'common/helper/helper_functions.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
 import 'features/chat/presentation/manager/chat_event.dart';
 
+@pragma('vm:entry-point')
 showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
     {required bool isVideo}) async {
   CallKitParams callKitParams = CallKitParams(
@@ -48,7 +51,8 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
     duration: 60000,
     extra: <String, dynamic>{
       'channel_id': data["message"]["channel_id"].toString(),
-      'message_id': data["message"]["id"].toString()
+      'message_id': data["message"]["id"].toString(),
+      'type': isVideo ? 'video' : 'voice'
     },
     headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
     android: const AndroidParams(
@@ -81,6 +85,8 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
   await FlutterCallkitIncoming.showCallkitIncoming(callKitParams);
 }
 
+bool declineCallBecauseOfNotificationButton = false;
+
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (!isHydratedStorageInitialized) {
@@ -99,15 +105,29 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       String currentUuid = const Uuid().v4();
       Map<String, dynamic> data =
           convert.jsonDecode(message.data['data'].toString());
-      showCallKitIncoming(data, currentUuid,
-          isVideo: message.data['type'] == 'VideoCallEvent');
+      if (DateTime.now()
+              .difference(HelperFunctions.getZonedDate(
+                  DateTime.parse(data['message']['created_at'])))
+              .inMinutes >=
+          1) {
+        return;
+      }
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: '${message.data['type']} background  ${data['message_id']}');
+      GetIt.I<CallsBloc>().add(
+          UpdateCurrentActiveCallIdEvent(id: data["message"]["id"].toString()));
       FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
         switch (event!.event) {
           case Event.actionCallDecline:
             {
               HttpOverrides.global = MyHttpOverrides();
-              GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
-                  messageId: data["message"]["id"].toString(), duration: 0));
+              if (!declineCallBecauseOfNotificationButton) {
+                GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
+                    duration: 0,
+                    payload: {'Target': 'Application  From terminated'},
+                    messageId: data["message"]["id"].toString()));
+              }
             }
             break;
           case Event.actionCallTimeout:
@@ -118,15 +138,33 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
             }
             break;
         }
+        declineCallBecauseOfNotificationButton = false;
       });
+      showCallKitIncoming(data, currentUuid,
+          isVideo: message.data['type'] == 'VideoCallEvent');
     } else if (message.data['type'] == 'RefuseCallEvent') {
-      // if (message.data['data']['message_id'].toString() !=
-      //     GetIt.I<CallsBloc>().state.currentActiveCallId) {
-      //   return;
-      // }
+      declineCallBecauseOfNotificationButton = true;
+      Map<String, dynamic> data =
+          convert.jsonDecode(message.data['data'].toString());
+      if (data['message_id'].toString() !=
+              GetIt.I<CallsBloc>().state.currentActiveCallId &&
+          GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
+        return;
+      }
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: 'RefuseCall for message backGround ${data['message_id']}');
       FlutterCallkitIncoming.endAllCalls();
       GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: true));
     } else if (message.data['type'] == 'AnswerCallEvent') {
+      declineCallBecauseOfNotificationButton = true;
+      Map<String, dynamic> data =
+          convert.jsonDecode(message.data['data'].toString());
+      if (data['message_id'].toString() !=
+              GetIt.I<CallsBloc>().state.currentActiveCallId &&
+          GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
+        return;
+      }
       FlutterCallkitIncoming.endAllCalls();
       GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false));
     } else if (message.data['type'] == 'ChannelReceivedEvent') {
@@ -146,11 +184,33 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           data['auth_user_id'],
           data['last_message_id'],
           DateTime.parse(data['watched_at'])));
+    } else if (message.data['type'] == 'UpdatingMessageEvent') {
+      try {
+        Map<String, dynamic> data =
+            convert.jsonDecode(message.data["data"].toString());
+        GetIt.I<CallsBloc>().add(DeleteMessageEvent(
+            channelId: data['message']["channel_id"],
+            messageId: data['message']["id"],
+            deleteFromBoth: data['message']["auth_message_status"]
+                    ["delete_for_all"]
+                ? 1
+                : 0,
+            type: data['message']["message_type"]["name"] == "TextMessage"
+                ? "message"
+                : "call",
+            deleteFromId: data['message']["deleted_by_user_id"] ?? 0));
+      } catch (e, st) {
+        debugPrint(e.toString());
+        debugPrint(st.toString());
+      }
     } else {
+      GetIt.I<PrefsRepository>()
+          .setMessageFromBackground(message.data['message']);
       LocalNotificationService().showNotificationWithPayload(message: message);
     }
-  } catch (e) {
+  } catch (e, st) {
     debugPrint(e.toString());
+    debugPrint(st.toString());
   }
 }
 
@@ -159,7 +219,6 @@ bool isHydratedStorageInitialized = false;
 Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 bool notificationClicked = false;
-Message? initialMessage;
 //todo this list will store on it the api's that we try to load it and returned a failure for the first time so we check if it's not  in this list we try to reload it
 List<String> isFailedTheFirstTime = [];
 List<String> apisMustNotToRequest = [];
@@ -175,22 +234,16 @@ void main() async {
     EasyLocalization.ensureInitialized(),
     configureDependencies(),
     NotificationProcess().init(),
-    NotificationProcess().setupInteractedMessage(),
   ]);
-  if (GetIt.I<PrefsRepository>().chatToken != null) {
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  }
+  Eraser.clearAllAppNotifications();
+  GetIt.I<PrefsRepository>().removeMessageFromBackground();
+  NotificationProcess().setupInteractedMessage();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
   NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   HttpOverrides.global = MyHttpOverrides();
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
-  RemoteMessage? openedMessage =
-      await FirebaseMessaging.instance.getInitialMessage();
-  if (initialMessage != null) {
-    initialMessage =
-        Message.fromJson(convert.jsonDecode(openedMessage!.data['message']));
-  }
   await SentryFlutter.init(
     (options) {
       options.dsn =

@@ -147,9 +147,14 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                 if ((state.getContactsStatus == GetContactsStatus.loading ||
                         state.getContactsStatus == GetContactsStatus.init) &&
                     state.contacts.isNullOrEmpty) {
-                  return SliverToBoxAdapter(
-                      child: Center(
-                    child: TrydosLoader(),
+                  return SliverToBoxAdapter(child: SizedBox(
+                    height: 1.sh - 200 ,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TrydosLoader(),
+                      ],
+                    ),
                   ));
                 }
                 if (state.getContactsStatus == GetContactsStatus.failure) {
@@ -161,18 +166,26 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                         child: MyTextWidget('Try Again')),
                   );
                 }
-                return ValueListenableBuilder<List<Contact>>(
-                    valueListenable: searchContacts,
-                    builder: (context, searchedContacts, _) {
-                      return sliverListSeparated(
-                        itemBuilder: (_, index) {
-                          return ContactCard(
-                              index: index, contact: searchedContacts[index]);
-                        },
-                        separator: const SizedBox.shrink(),
-                        childCount: searchedContacts.length,
-                      );
-                    });
+                return SliverMainAxisGroup(
+                  slivers: [
+                    SliverToBoxAdapter(child: Container(
+                        width: 1.sw,
+                        color: colorScheme.white,
+                        child: state.getContactsStatus != GetContactsStatus.success ? TrydosLoader() : const SizedBox.shrink())),
+                    ValueListenableBuilder<List<Contact>>(
+                        valueListenable: searchContacts,
+                        builder: (context, searchedContacts, _) {
+                          return sliverListSeparated(
+                            itemBuilder: (_, index) {
+                              return ContactCard(
+                                  index: index, contact: searchedContacts[index]);
+                            },
+                            separator: const SizedBox.shrink(),
+                            childCount: searchedContacts.length,
+                          );
+                        }),
+                  ],
+                );
               },
             ),
             SliverToBoxAdapter(

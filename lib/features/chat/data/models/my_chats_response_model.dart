@@ -91,7 +91,10 @@ class SenderInfo {
   factory SenderInfo.fromJson(Map<String, dynamic> json) =>
       SenderInfo(id: json['id'], name: json['name']);
 
-  Map<String, dynamic> toJson() => {};
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+      };
 }
 
 class Message {
@@ -101,6 +104,7 @@ class Message {
   final int? senderUserId;
   final int? receiverUserId;
   final String? channelId;
+  final MessageStatus? authMessageStatus;
   final DateTime? createdAt;
   final MessageType? messageType;
   final String? parentMessageId;
@@ -110,17 +114,20 @@ class Message {
   final List<MessageStatus>? messageStatus;
   final Chat? channel;
   final Message? parentMessage;
+  final int? deletedByUserId;
   final File? file;
-  bool isFirstMessageForThisDay;
-  bool isFirstMessage;
-  bool isDateMessage;
-  String dateValue;
+  bool? isFirstMessageForThisDay;
+  bool? isFirstMessage;
+  bool? isDateMessage;
+  String? dateValue;
 
   Message({
     this.isFirstMessageForThisDay = false,
     this.isDateMessage = false,
     this.dateValue = '',
     this.isFirstMessage = false,
+    this.authMessageStatus,
+    this.deletedByUserId,
     this.id,
     this.senderUserId,
     this.localParentMessageId,
@@ -146,12 +153,14 @@ class Message {
     final String? localId,
     final String? localParentMessageId,
     final int? senderUserId,
+    final MessageStatus? authMessageStatus,
     final int? receiverUserId,
     final String? channelId,
     final DateTime? createdAt,
     final MessageType? messageType,
     final String? parentMessageId,
     final int? isForward,
+    int? deletedByUserId,
     final MessageContent? messageContent,
     final List<MediaMessageContent>? mediaMessageContent,
     final List<MessageStatus>? messageStatus,
@@ -167,8 +176,10 @@ class Message {
       receiverUserId: receiverUserId ?? this.receiverUserId,
       channelId: channelId ?? this.channelId,
       createdAt: createdAt ?? this.createdAt,
+      authMessageStatus: authMessageStatus ?? this.authMessageStatus,
       messageType: messageType ?? this.messageType,
       file: file ?? this.file,
+      deletedByUserId: deletedByUserId ?? this.deletedByUserId,
       parentMessageId: parentMessageId ?? this.parentMessageId,
       isForward: isForward ?? this.isForward,
       messageContent: messageContent ?? this.messageContent,
@@ -182,53 +193,89 @@ class Message {
     );
   }
 
-  factory Message.fromJson(Map<String, dynamic> json) => Message(
-        id: json["id"].toString(),
-        senderUserId: json["sender_user_id"],
-        receiverUserId: json["receiver_user_id"],
-        channelId: json["channel_id"].toString(),
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        messageType: json["message_type"] == null
-            ? null
-            : MessageType.fromJson(json["message_type"]),
-        parentMessageId: json["parent_message_id"]?.toString(),
-        isForward: (json["is_forward"] is bool)
-            ? (json["is_forward"] ? 1 : 0)
-            : json["is_forward"],
-        mediaMessageContent: json["message_type"]["name"] == "TextMessage"
-            ? null
-            : json["message_content"] == null
-                ? []
-                : List<MediaMessageContent>.from(json["message_content"]!
-                    .map((x) => MediaMessageContent.fromJson(x))),
-        messageContent: json["message_type"]["name"] != "TextMessage"
-            ? null
-            : json["message_content"] == null
-                ? null
-                : MessageContent.fromJson(json["message_content"]),
-        messageStatus: json["message_status"] == null
-            ? []
-            : List<MessageStatus>.from(
-                json["message_status"]!.map((x) => MessageStatus.fromJson(x))),
-        channel:
-            json["channel"] == null ? null : Chat.fromJson(json["channel"]),
-        parentMessage: json["parent_message"] != null
-            ? Message.fromJson(json["parent_message"])
-            : null,
-      );
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(
+      id: json["id"].toString(),
+      localId: json["localId"].toString(),
+      localParentMessageId: json["localParentMessageId"].toString(),
+      dateValue: json["dateValue"],
+      isDateMessage: json["isDateMessage"] != null
+          ? bool.parse(json["isDateMessage"])
+          : false,
+      isFirstMessage: json["isFirstMessage"] != null
+          ? bool.parse(json["isFirstMessage"])
+          : false,
+      isFirstMessageForThisDay: json["isFirstMessageForThisDay"] != null
+          ? bool.parse(json["isFirstMessageForThisDay"])
+          : false,
+      senderUserId: json["sender_user_id"],
+      receiverUserId: json["receiver_user_id"],
+      deletedByUserId: json["deleted_by_user_id"],
+      channelId: json["channel_id"].toString(),
+      authMessageStatus: json["auth_message_status"] == null
+          ? null
+          : MessageStatus.fromJson(json["auth_message_status"]),
+      createdAt: json["created_at"] == null
+          ? null
+          : DateTime.parse(json["created_at"]),
+      messageType: json["message_type"] == null
+          ? null
+          : MessageType.fromJson(json["message_type"]),
+      parentMessageId: json["parent_message_id"]?.toString(),
+      isForward: (json["is_forward"] is bool)
+          ? (json["is_forward"] ? 1 : 0)
+          : json["is_forward"],
+      mediaMessageContent: json["message_type"] == null
+          ? null
+          : json["message_type"]["name"] == "TextMessage"
+              ? null
+              : json["message_content"] == null
+                  ? []
+                  : List<MediaMessageContent>.from(json["message_content"]!
+                      .map((x) => MediaMessageContent.fromJson(x))),
+      messageContent: json["message_type"] == null
+          ? null
+          : json["message_type"]["name"] != "TextMessage"
+              ? null
+              : json["message_content"] == null
+                  ? null
+                  : MessageContent.fromJson(json["message_content"]),
+      messageStatus: json["message_status"] == null
+          ? []
+          : List<MessageStatus>.from(
+              json["message_status"]!.map((x) => MessageStatus.fromJson(x))),
+      channel: json["channel"] == null ? null : Chat.fromJson(json["channel"]),
+      parentMessage: json["parent_message"] != null
+          ? Message.fromJson(json["parent_message"])
+          : null,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "id": id,
+        "localId": localId,
+        "localParentMessageId": localParentMessageId,
+        "isFirstMessageForThisDay": isFirstMessageForThisDay.toString(),
+        "dateValue": dateValue,
+        "isFirstMessage": isFirstMessage.toString(),
+        "isDateMessage": isDateMessage.toString(),
         "sender_user_id": senderUserId,
         "receiver_user_id": receiverUserId,
         "channel_id": channelId,
+        "deleted_by_user_id": deletedByUserId,
+        "auth_message_status": authMessageStatus?.toJson(),
         "created_at": createdAt?.toIso8601String(),
         "message_type": messageType?.toJson(),
         "parent_message_id": parentMessageId,
         "is_forward": isForward,
-        "message_content": messageContent?.toJson(),
+        "message_content": messageType == null
+            ? null
+            : messageType!.name == "TextMessage"
+                ? messageContent?.toJson()
+                : mediaMessageContent == null
+                    ? []
+                    : List<Map<String, dynamic>>.from(
+                        mediaMessageContent!.map((x) => x.toJson())),
         "message_status": messageStatus == null
             ? []
             : List<dynamic>.from(messageStatus!.map((x) => x.toJson())),
@@ -307,6 +354,7 @@ class Chat {
 
   Map<String, dynamic> toJson() => {
         "id": id,
+        "channel_name": channelName,
         "photo_path": photoPath,
         "total_unread_message_count": totalUnreadMessageCount,
         "channel_members": channelMembers == null
@@ -378,6 +426,10 @@ class MessageStatus {
   final int? isReceived;
   final bool? isWatched;
   final DateTime? watchedAt;
+  final int? isDeleted;
+  final bool? deleteForAll;
+  final DateTime? messageDeletedAt;
+
   final DateTime? receivedAt;
   final DateTime? createdAt;
 
@@ -390,6 +442,9 @@ class MessageStatus {
     this.watchedAt,
     this.receivedAt,
     this.createdAt,
+    this.isDeleted,
+    this.deleteForAll,
+    this.messageDeletedAt,
   });
 
   MessageStatus copyWith({
@@ -398,6 +453,9 @@ class MessageStatus {
     dynamic isSent,
     int? isReceived,
     bool? isWatched,
+    int? isDeleted,
+    bool? deleteForAll,
+    DateTime? messageDeletedAt,
     DateTime? watchedAt,
     DateTime? receivedAt,
     DateTime? createdAt,
@@ -405,6 +463,9 @@ class MessageStatus {
       MessageStatus(
         id: id ?? this.id,
         userId: userId ?? this.userId,
+        isDeleted: isDeleted ?? this.isDeleted,
+        deleteForAll: deleteForAll ?? this.deleteForAll,
+        messageDeletedAt: messageDeletedAt ?? this.messageDeletedAt,
         isSent: isSent ?? this.isSent,
         isReceived: isReceived ?? this.isReceived,
         isWatched: isWatched ?? this.isWatched,
@@ -416,6 +477,11 @@ class MessageStatus {
   factory MessageStatus.fromJson(Map<String, dynamic> json) => MessageStatus(
         id: json["id"],
         userId: json["user_id"],
+        isDeleted: json["is_deleted"],
+        deleteForAll: json["delete_for_all"],
+        messageDeletedAt: json["message_deleted_at"] == null
+            ? null
+            : DateTime.parse(json["message_deleted_at"]),
         isSent: json["is_sent"],
         isReceived: json["is_received"],
         isWatched: json["is_watched"],
@@ -436,6 +502,9 @@ class MessageStatus {
         "is_sent": isSent,
         "is_received": isReceived,
         "is_watched": isWatched,
+        "is_deleted": isDeleted,
+        "delete_for_all": deleteForAll,
+        "message_deleted_at": messageDeletedAt?.toIso8601String(),
         "watched_at": watchedAt?.toIso8601String(),
         "received_at": receivedAt?.toIso8601String(),
         "created_at": createdAt?.toIso8601String(),

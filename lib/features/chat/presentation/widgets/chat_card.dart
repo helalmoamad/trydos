@@ -79,7 +79,11 @@ class _ChatCardState extends ThemeState<ChatCard> {
     };
     chatTime = null;
     if (!(widget.chat.messages?.isEmpty ?? true)) {
-      chatTime = widget.chat.messages!.first.createdAt!;
+      chatTime = widget.chat.messages!
+          .firstWhere((element) =>
+              element.authMessageStatus!.isDeleted == 0 ||
+              element.authMessageStatus!.deleteForAll!)
+          .createdAt!;
     }
     User? receiver = widget.chat.channelMembers
         ?.firstWhere((element) => element.userId != _prefsRepository.myChatId)
@@ -117,7 +121,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
     //       ? 'UK'
     //       : HelperFunctions.getTheFirstTwoLettersOfName(sender.name!);
     // }
-    if (widget.thereActivity) {
+    if (widget.thereActivity && timer == null) {
       timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (typingIndicator.value == 5) {
           typingIndicator.value = 0;
@@ -148,6 +152,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                 //     ..pop()
                 //     ..pop();
                 // }
+                chatBloc.add(ChangeGlobalUsedVariablesInBloc(
+                    currentOpenedChatId: widget.chat.id));
                 widget.onSendForwardMessage?.call(
                     widget.chat.channelMembers!
                         .firstWhere((element) =>
@@ -357,11 +363,44 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                       BlocBuilder<ChatBloc, ChatState>(
                                         builder: (context, state) {
                                           String messageType = '';
+                                          bool isDeleteForAll = false;
+                                          bool deleteFromMyId = false;
                                           if (!widget
                                               .chat.messages.isNullOrEmpty) {
                                             messageType = (widget.chat.messages!
-                                                    .first.messageType?.name)
+                                                    .firstWhere((element) =>
+                                                        element.authMessageStatus!
+                                                                .isDeleted ==
+                                                            0 ||
+                                                        element
+                                                            .authMessageStatus!
+                                                            .deleteForAll!)
+                                                    .messageType
+                                                    ?.name)
                                                 .toString();
+                                            deleteFromMyId = (widget
+                                                    .chat.messages!
+                                                    .firstWhere((element) =>
+                                                        element.authMessageStatus!
+                                                                .isDeleted ==
+                                                            0 ||
+                                                        element
+                                                            .authMessageStatus!
+                                                            .deleteForAll!)
+                                                    .deletedByUserId ==
+                                                _prefsRepository.myChatId!);
+                                            isDeleteForAll = (widget
+                                                    .chat.messages!
+                                                    .firstWhere((element) =>
+                                                        element.authMessageStatus!
+                                                                .isDeleted ==
+                                                            0 ||
+                                                        element
+                                                            .authMessageStatus!
+                                                            .deleteForAll!)
+                                                    .authMessageStatus!
+                                                    .deleteForAll ??
+                                                false);
                                           }
                                           return Flexible(
                                             fit: FlexFit.loose,
@@ -411,9 +450,13 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                     ]
                                                                         .firstWhere((element) =>
                                                                             element.id ==
-                                                                            widget.chat.id)
+                                                                            widget
+                                                                                .chat.id)
                                                                         .messages!
-                                                                        .first;
+                                                                        .firstWhere((element) =>
+                                                                            element.authMessageStatus!.isDeleted ==
+                                                                                0 ||
+                                                                            element.authMessageStatus!.deleteForAll!);
                                                                     MessageStatus?
                                                                         status;
                                                                     if (int.tryParse(lastMessage
@@ -426,24 +469,27 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                               element.userId !=
                                                                               _prefsRepository.myChatId);
                                                                     }
-                                                                    return SvgPicture
-                                                                        .asset(
-                                                                      (state.currentMessage.contains(lastMessage
-                                                                              .id))
-                                                                          ? AppAssets
-                                                                              .sandClockSvg
-                                                                          : (state.currentFailedMessage.contains(lastMessage.id))
-                                                                              ? AppAssets.MessageFailedSvg
-                                                                              : status!.isWatched ?? false
-                                                                                  ? AppAssets.messageReadArrowSvg
-                                                                                  : status.isReceived == 1
-                                                                                      ? AppAssets.messageDeliveredArrowSvg
-                                                                                      : AppAssets.messageSentArrowSvg,
-                                                                      width:
-                                                                          10.sp,
-                                                                      height:
-                                                                          10.sp,
-                                                                    );
+                                                                    return lastMessage
+                                                                            .authMessageStatus!
+                                                                            .deleteForAll!
+                                                                        ? SizedBox
+                                                                            .shrink()
+                                                                        : SvgPicture
+                                                                            .asset(
+                                                                            (state.currentMessage.contains(lastMessage.id))
+                                                                                ? AppAssets.sandClockSvg
+                                                                                : (state.currentFailedMessage.contains(lastMessage.id))
+                                                                                    ? AppAssets.MessageFailedSvg
+                                                                                    : status!.isWatched ?? false
+                                                                                        ? AppAssets.messageReadArrowSvg
+                                                                                        : status.isReceived == 1
+                                                                                            ? AppAssets.messageDeliveredArrowSvg
+                                                                                            : AppAssets.messageSentArrowSvg,
+                                                                            width:
+                                                                                10.sp,
+                                                                            height:
+                                                                                10.sp,
+                                                                          );
                                                                   } else
                                                                     return SizedBox
                                                                         .shrink();
@@ -454,81 +500,85 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                     .only(
                                                                         left:
                                                                             5)),
-                                                            if ((widget
-                                                                        .chat
+                                                            if ((widget.chat
                                                                         .messages
-                                                                        ?.first
+                                                                        ?.firstWhere((element) =>
+                                                                            element.authMessageStatus!.isDeleted == 0 ||
+                                                                            element
+                                                                                .authMessageStatus!.deleteForAll!)
                                                                         .mediaMessageContent
                                                                         ?.isNotEmpty ??
                                                                     false) ||
-                                                                (widget
-                                                                        .chat
+                                                                (widget.chat
                                                                         .messages
-                                                                        ?.first
+                                                                        ?.firstWhere((element) =>
+                                                                            element.authMessageStatus!.isDeleted ==
+                                                                                0 ||
+                                                                            element
+                                                                                .authMessageStatus!.deleteForAll!)
                                                                         .file !=
                                                                     null) ||
                                                                 messageType
                                                                     .contains(
                                                                         'Call')) ...{
-                                                              SvgPicture.asset(
-                                                                messageType ==
-                                                                        'ImageMessage'
-                                                                    ? AppAssets
-                                                                        .lastMessageImageSvg
-                                                                    : messageType ==
-                                                                            'VideoMessage'
-                                                                        ? AppAssets
-                                                                            .lastMessageVideoSvg
-                                                                        : messageType ==
-                                                                                'FileMessage'
-                                                                            ? AppAssets.documentSvg
-                                                                            : messageType == 'VoiceCall'
-                                                                                ? AppAssets.missedCallInChatSvg
-                                                                                : messageType == 'VideoCall'
-                                                                                    ? AppAssets.missedVideoCallInChatSvg
-                                                                                    : AppAssets.lastMessageAudioSvg,
-                                                                width: 20.w,
-                                                                height: 20.h,
-                                                                color: messageType
-                                                                        .contains(
-                                                                            'Call')
-                                                                    ? colorScheme
-                                                                        .grey200
-                                                                        .withOpacity(
-                                                                            0.6)
-                                                                    : null,
-                                                              ),
-                                                              10.horizontalSpace,
+                                                              isDeleteForAll
+                                                                  ? SizedBox
+                                                                      .shrink()
+                                                                  : SvgPicture
+                                                                      .asset(
+                                                                      messageType ==
+                                                                              'ImageMessage'
+                                                                          ? AppAssets
+                                                                              .lastMessageImageSvg
+                                                                          : messageType == 'VideoMessage'
+                                                                              ? AppAssets.lastMessageVideoSvg
+                                                                              : messageType == 'FileMessage'
+                                                                                  ? AppAssets.documentSvg
+                                                                                  : messageType == 'VoiceCall'
+                                                                                      ? AppAssets.missedCallInChatSvg
+                                                                                      : messageType == 'VideoCall'
+                                                                                          ? AppAssets.missedVideoCallInChatSvg
+                                                                                          : AppAssets.lastMessageAudioSvg,
+                                                                      width:
+                                                                          20.w,
+                                                                      height:
+                                                                          20.h,
+                                                                      color: messageType.contains(
+                                                                              'Call')
+                                                                          ? colorScheme
+                                                                              .grey200
+                                                                              .withOpacity(0.6)
+                                                                          : null,
+                                                                    ),
+                                                              !isDeleteForAll
+                                                                  ? 10
+                                                                      .horizontalSpace
+                                                                  : SizedBox
+                                                                      .shrink(),
                                                             },
                                                             Flexible(
-                                                              flex: 1,
+                                                              flex: 2,
                                                               child:
                                                                   MyTextWidget(
-                                                                messageType !=
-                                                                        'TextMessage'
-                                                                    ? (messageType ==
-                                                                            'ImageMessage'
-                                                                        ? 'Photo'
-                                                                        : messageType ==
-                                                                                'VideoMessage'
-                                                                            ? 'Video'
-                                                                            : messageType ==
-                                                                                    'FileMessage'
-                                                                                ? 'File'
-                                                                                : messageType ==
-                                                                                        'VoiceCall'
-                                                                                    ? 'Voice Call'
-                                                                                    : messageType ==
-                                                                                            'VideoCall'
-                                                                                        ? 'Video Call'
-                                                                                        : 'Voice')
-                                                                    : widget
-                                                                        .chat
-                                                                        .messages!
-                                                                        .first
-                                                                        .messageContent!
-                                                                        .content
-                                                                        .toString(),
+                                                                isDeleteForAll
+                                                                    ? deleteFromMyId
+                                                                        ? " لقد قمت بحذف هذه الرسالة"
+                                                                        : "تم حذف هذه الرسالة"
+                                                                    : messageType !=
+                                                                            'TextMessage'
+                                                                        ? (messageType ==
+                                                                                'ImageMessage'
+                                                                            ? 'Photo'
+                                                                            : messageType == 'VideoMessage'
+                                                                                ? 'Video'
+                                                                                : messageType == 'FileMessage'
+                                                                                    ? 'File'
+                                                                                    : messageType == 'VoiceCall'
+                                                                                        ? 'Voice Call'
+                                                                                        : messageType == 'VideoCall'
+                                                                                            ? 'Video Call'
+                                                                                            : 'Voice')
+                                                                        : widget.chat.messages!.firstWhere((element) => element.authMessageStatus!.isDeleted == 0).messageContent!.content.toString(),
                                                                 maxLines: widget
                                                                         .thereActivity
                                                                     ? 1

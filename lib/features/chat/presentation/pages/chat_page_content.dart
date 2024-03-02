@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
@@ -67,6 +69,7 @@ class ChatPageContentState extends State<ChatPageContent> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
+      print(error);
     };
     //todo  9/21  change it to BlocBuilder
     return BlocBuilder<ChatBloc, ChatState>(
@@ -110,7 +113,7 @@ class ChatPageContentState extends State<ChatPageContent> {
 
         // todo  (future update) remove this from here handle it in the back of in bloc
         chats.removeWhere((element) =>
-            int.tryParse(element.id.toString()) == null ||
+            int.tryParse(element.id.toString()) == null &&
             (element.messages?.isEmpty ?? true));
 
         initialChats = chats;
@@ -124,34 +127,48 @@ class ChatPageContentState extends State<ChatPageContent> {
             buildWhen: (p, c) =>
                 p.pusherActivityIds.length != c.pusherActivityIds.length,
             builder: (context, appState) {
-              return ValueListenableBuilder<List<Chat>>(
-                  valueListenable: searchChats,
-                  builder: (context, searchedChats, _) {
-                    return sliverListSeparated(
-                      itemBuilder: (_, index) {
-                        bool thereActivity = int.tryParse(
-                                    searchedChats[index].id.toString()) !=
-                                null
-                            ? appState.pusherActivityIds.containsKey(
-                                int.parse(searchedChats[index].id.toString()))
-                            : false;
-                        return ChatCard(
-                          onSendForwardMessage: widget.onSendForwardMessage,
-                          chat: searchedChats[index],
-                          thereActivity: thereActivity,
-                          index: index,
-                          activityDescription: thereActivity
-                              ? appState.pusherActivityDescription[
-                                  int.parse(searchedChats[index].id.toString())]
-                              : null,
-                          messageId:
-                              searchedChats[index].messages!.first.id ?? "",
-                        );
-                      },
-                      separator: const SizedBox.shrink(),
-                      childCount: searchedChats.length,
-                    );
-                  });
+              return SliverMainAxisGroup(
+                slivers: [
+                  SliverToBoxAdapter(
+                      child: Container(
+                          width: 1.sw,
+                          color: colorScheme.white,
+                          child: state.getChatsStatus != GetChatsStatus.success
+                              ? TrydosLoader()
+                              : const SizedBox.shrink())),
+                  ValueListenableBuilder<List<Chat>>(
+                      valueListenable: searchChats,
+                      builder: (context, searchedChats, _) {
+                        return sliverListSeparated(
+                            separator: const SizedBox.shrink(),
+                            childCount: searchedChats.length,
+                            itemBuilder: (_, index) {
+                              bool thereActivity = int.tryParse(
+                                          searchedChats[index].id.toString()) !=
+                                      null
+                                  ? appState.pusherActivityIds.containsKey(
+                                      int.parse(
+                                          searchedChats[index].id.toString()))
+                                  : false;
+                              return ChatCard(
+                                onSendForwardMessage:
+                                    widget.onSendForwardMessage,
+                                chat: searchedChats[index],
+                                thereActivity: thereActivity,
+                                index: index,
+                                activityDescription: thereActivity
+                                    ? appState.pusherActivityDescription[
+                                        int.parse(
+                                            searchedChats[index].id.toString())]
+                                    : null,
+                                messageId:
+                                    searchedChats[index].messages!.first.id ??
+                                        "",
+                              );
+                            });
+                      })
+                ],
+              );
             },
           ),
         );

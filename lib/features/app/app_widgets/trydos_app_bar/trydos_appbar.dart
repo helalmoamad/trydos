@@ -23,13 +23,13 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            boxShadow: [
+            boxShadow: appBarParams.withShadow ? [
               BoxShadow(
                 color: context.colorScheme.black.withOpacity(0.1),
                 offset: Offset(0,0),
                 blurRadius: 6
               )
-            ]
+            ] : null
           ),
           child: AppBar(
             //title: title(context),
@@ -93,9 +93,9 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
     child: Padding(
       padding: HWEdgeInsets.symmetric(vertical: 15),
       child: SvgPicture.asset(
-        AppAssets.backFromCallSvg,
+        AppAssets.backIconArrowSvg,
         width: 8.w,
-        color: const Color(0xff388CFF),
+        color: appBarParams.backIconColor ?? const Color(0xff388CFF),
       ),
     ),
   )

@@ -32,8 +32,8 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffE0FFEE),
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
     ));
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "Login Successfully Page");
     Future.delayed(

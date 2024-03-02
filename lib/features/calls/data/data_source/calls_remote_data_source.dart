@@ -72,14 +72,14 @@ class CallsRemoteDataSource {
     return videoCall();
   }
 
-  Future<bool> makeRejectCall(Map<String, dynamic> params) {
-    PostClient<bool> RejectCall = PostClient<bool>(
+  Future<bool> rejectCall(Map<String, dynamic> params) {
+    PostClient<bool> rejectCall = PostClient<bool>(
         requestPrams: RequestConfig<bool>(
             endpoint: ChatEndPoints.refuseCall(params['messageId']),
-            data: params['data'],
+            data: params['payload'],
             response: ResponseValue<bool>(returnValueOnSuccess: true)),
         serverName: ServerName.chat);
-    return RejectCall();
+    return rejectCall();
   }
 
   Future<MyCallsResponseModel> getMyCalls() {
@@ -94,15 +94,15 @@ class CallsRemoteDataSource {
     return mycalls();
   }
 
-  Future<bool> deleteCallRegister(Map<String, dynamic> params) {
-    PostClient<bool> deleteChat = PostClient<bool>(
+  Future<bool> deleteMessage(Map<String, dynamic> params) {
+    PostClient<bool> deleteMessage = PostClient<bool>(
       serverName: ServerName.chat,
       requestPrams: RequestConfig<bool>(
-        endpoint: ChatEndPoints.deleteCallREg,
+        endpoint: ChatEndPoints.deleteMessage,
         data: params,
         response: ResponseValue<bool>(returnValueOnSuccess: true),
       ),
     );
-    return deleteChat();
+    return deleteMessage();
   }
 }

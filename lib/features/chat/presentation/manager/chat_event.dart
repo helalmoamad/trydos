@@ -70,8 +70,8 @@ class ReadAllMessagesEvent extends ChatEvent {
 }
 
 class GetChatsEvent extends ChatEvent {
-  const GetChatsEvent();
-
+  const GetChatsEvent({this.chatToNavigateFromTerminated});
+  final Chat? chatToNavigateFromTerminated;
   @override
   // TODO: implement props
   List<Object?> get props => [];
@@ -336,4 +336,48 @@ class ChangeSlop extends ChatEvent {
   @override
   // TODO: implement props
   List<Object?> get props => throw UnimplementedError();
+}
+
+class AddChannelToChannels extends ChatEvent {
+  final Message message;
+  const AddChannelToChannels({required this.message});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message];
+}
+
+class ChangeGlobalUsedVariablesInBloc extends ChatEvent {
+  final String? currentOpenedChatId;
+  const ChangeGlobalUsedVariablesInBloc({this.currentOpenedChatId});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [currentOpenedChatId];
+}
+
+class ResendMessageEvent extends ChatEvent {
+  final String messageId;
+  final String channelId;
+  final String? messageType;
+  ResendMessageEvent(
+      {required this.messageId, required this.channelId, this.messageType});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [messageId, channelId];
+}
+
+class DeleteMessagesEvent extends ChatEvent {
+  final String messageId;
+  final String channelId;
+  final bool deleteForAll;
+  final int isDelete;
+  final int deletedByUserId;
+  DeleteMessagesEvent(
+      {required this.messageId,
+      required this.deletedByUserId,
+      required this.channelId,
+      required this.deleteForAll,
+      required this.isDelete});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [messageId, channelId, deleteForAll];
 }

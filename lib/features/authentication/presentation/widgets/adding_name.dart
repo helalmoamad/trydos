@@ -35,8 +35,8 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffF4FFF4),
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
     ));
     super.didChangeDependencies();
   }
@@ -161,7 +161,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                                   )
                                 : InkWell(
                                     onTap: () {
-                                      if (widget.fromLogin) {
+                                      if (!widget.fromLogin) {
                                         BlocProvider.of<AuthBloc>(context)
                                             .add(VerifyOtpSignUpEvent(
                                           name: form.controllers[0].text,

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/text_message.dart';
 
@@ -28,20 +29,22 @@ class ReplayOnMeMessage extends StatefulWidget {
     required this.isReplayedMessageReceived,
     required this.isAnswerMessageRead,
     required this.isAnswerMessageReceived,
-    required this.time,
     required this.scrollToMessage,
     required this.isFirstMessage,
     this.receivedAt,
     this.createAt,
+    this.watchedaAt,
+    required this.channalId,
   }) : super(key: key);
   final String message;
+  final String channalId;
   final String messageId;
   final String? messageAnswer;
   final String messageAnswerId;
   final bool isISentFirstMessage;
   final bool isSent;
   final bool isFirstMessage;
-  final DateTime time;
+  final DateTime? watchedaAt;
   final File? answeredFile;
   final String? answeredFilePath;
   final DateTime? receivedAt;
@@ -107,10 +110,11 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                 disableMessageAlignment: false,
                 isSent: widget.isISentFirstMessage,
                 isRead: widget.isReplayedMessageRead,
-                time: widget.time,
+                watchedAt: widget.watchedaAt,
                 isFirstMessage: true,
                 receivedAt: widget.receivedAt,
                 createAt: widget.createAt!,
+                channalId: widget.channalId,
               ),
             ),
             Transform.translate(
@@ -118,8 +122,8 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                 child: (widget.answeredFile != null ||
                         widget.answeredFilePath != null)
                     ? ImageMessage(
+                        channelId: widget.channalId,
                         isSent: widget.isSent,
-                        time: widget.time,
                         messageId: widget.messageId,
                         isRead: widget.isAnswerMessageRead,
                         senderId: GetIt.I<PrefsRepository>().myChatId!,
@@ -132,6 +136,7 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                         imageUrl: widget.answeredFilePath,
                         receivedAt: widget.receivedAt,
                         createAt: widget.createAt!,
+                        watchedAt: widget.watchedaAt,
                       )
                     : TextMessage(
                         message: widget.messageAnswer!,
@@ -144,10 +149,11 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                         userMessageName: widget.senderAnswerName,
                         userMessagePhoto: widget.senderAnswerPhoto,
                         isSent: widget.isSent,
-                        time: widget.time,
+                        watchedAt: widget.watchedaAt,
                         isFirstMessage: true,
                         receivedAt: widget.receivedAt,
                         createAt: widget.createAt!,
+                        channalId: widget.channalId,
                       )),
           ],
         ),

@@ -36,8 +36,8 @@ class _TrydosApplicationState extends State<TrydosApplication> with WidgetsBindi
     void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: colorScheme.white,
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
     ));
     super.didChangeDependencies();
   }
