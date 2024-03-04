@@ -123,8 +123,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
         rebuildMessage.value = -1;
       }
       if ((autoScrollController.offset >=
-          autoScrollController.position.maxScrollExtent - 100)) {
-        chatBloc.add(GetChatsEvent(limit : 10));
+          autoScrollController.position.maxScrollExtent - 400)) {
+        _loadMoreMessages();
       }
     });
     super.initState();
@@ -1092,44 +1092,44 @@ class _SinglePageChatState extends State<SinglePageChat> {
             message.receiverUserId != null);
     if (message.authMessageStatus?.isDeleted == 1 &&
         message.authMessageStatus?.deleteForAll == true) {
-      return Row(
-        mainAxisAlignment:
-            isSentMessage ? MainAxisAlignment.start : MainAxisAlignment.end,
-        children: [
-          Container(
-            margin: EdgeInsets.only(left: 10.w, right: 10.w),
-            decoration: BoxDecoration(
-                color: Color.fromARGB(255, 252, 243, 243),
-                border: Border(),
-                borderRadius: BorderRadius.circular(20.w)),
-            width: 200.w,
-            height: 32.h,
-            child: Row(
-              children: [
-                Spacer(),
-                Text(
-                  message.deletedByUserId == _prefsRepository.myChatId
-                      ? "لقد قمت  بحذف هذه الرسالة"
-                      : "تم حذف هذه الرسالة",
-                  textAlign: TextAlign.center,
-                ),
-                Spacer(),
-                Text(
-                  !message.createdAt!.isUtc
-                      ? HelperFunctions.getDateInFormat(message.createdAt!)
-                      : HelperFunctions.getZonedDateInFormat(
-                          message.createdAt!),
-                  textAlign: TextAlign.center,
-                ),
-                Spacer()
-              ],
+      return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Row(
+          mainAxisAlignment:
+              !isSentMessage ? MainAxisAlignment.start : MainAxisAlignment.end,
+          children: [
+            Container(
+              margin: EdgeInsets.only(left: 10.w, right: 10.w),
+              decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 252, 243, 243),
+                  border: Border(),
+                  borderRadius: BorderRadius.circular(20.w)),
+              width: 200.w,
+              height: 32.h,
+              child: Row(
+                children: [
+                  Spacer(),
+                  Text(
+                    message.deletedByUserId == _prefsRepository.myChatId
+                        ? "لقد قمت  بحذف هذه الرسالة"
+                        : "تم حذف هذه الرسالة",
+                    textAlign: TextAlign.center,
+                  ),
+                  Spacer(),
+                  Text(
+                    !message.createdAt!.isUtc
+                        ? HelperFunctions.getDateInFormat(message.createdAt!)
+                        : HelperFunctions.getZonedDateInFormat(
+                            message.createdAt!),
+                    textAlign: TextAlign.center,
+                  ),
+                  Spacer()
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
-    } else if (message.authMessageStatus?.isDeleted == 1 &&
-        message.authMessageStatus?.deleteForAll != true) {
-      return SizedBox.shrink();
     }
     int index;
     debugPrint("id${message.id.toString()}");
@@ -1169,7 +1169,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
       if (parentMessage.senderUserId != message.senderUserId) {
         return ReplayMessage(
           watchedAt: messageStatus?.watchedAt,
-          messageDate: message.createdAt!,
+          messageDate: parentMessage.createdAt!,
+          createAt: message.createdAt,
           scrollToMessage: () => scrollToIndex(
               messagesIndexes[parentMessage.id.toString()] ?? -1,
               currentId: message.id!,
@@ -1215,6 +1216,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         return ReplayOnMeMessage(
             messageId: message.parentMessageId!,
             receivedAt: messageStatus?.receivedAt,
+            messageDate: parentMessage.createdAt!,
             createAt: message.createdAt,
             watchedaAt: messageStatus?.watchedAt,
             answeredFilePath: message.mediaMessageContent.isNullOrEmpty

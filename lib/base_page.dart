@@ -346,16 +346,16 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         callsBloc.add(UserInteractWithCall(rejectIt: false));
       } else if (event.data['type'] == 'UpdatingMessageEvent') {
         Map<String, dynamic> data =
-            convert.jsonDecode(event.data["data"]['message'].toString());
-        GetIt.I<CallsBloc>().add(DeleteMessageEvent(
-            channelId: data["channel_id"],
-            messageId: data["id"],
+            convert.jsonDecode(event.data["data"].toString());
+        GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
+            channelId: data['message']["channel_id"],
+            messageId: data['message']["id"],
             deleteFromBoth:
-                data["auth_message_status"]["delete_for_all"] ? 1 : 0,
-            type: data["message_type"]["name"] == "TextMessage"
+                data['message']["auth_message_status"]["delete_for_all"] ? 1 : 0,
+            type: !data['message']["message_type"]["name"].toString().contains('Call')
                 ? "message"
                 : "call",
-            deleteFromId: data["deleted_by_user_id"] ?? 0));
+            deleteFromId: data['message']["deleted_by_user_id"] ?? 0));
       } else if (event.data['type'] == 'ChannelWatchedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
@@ -365,8 +365,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           data['last_message_id'],
           DateTime.parse(data['watched_at']),
         ));
-        log("0000000000000000000000000000000000000005555555555555555555555555 ${data}");
-        log("0000000000000000000000000000000000000005555555555555555555555555 ${data["watched_at"]}");
       } else if (event.data['type'] == 'ChannelReceivedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
@@ -375,8 +373,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             data['auth_user_id'],
             data['last_message_id'],
             DateTime.parse(data['received_at'])));
-        log("0000000000000000000000000000000000000005555555555555555555555555 ${data["received_at"]}");
-        log("0000000000000000000000000000000000000005555555555555555555555555 ${data}");
       } else {
         log(event.data['message'].toString());
         Message message =

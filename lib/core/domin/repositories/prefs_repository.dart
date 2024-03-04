@@ -65,6 +65,7 @@ abstract class PrefsRepository {
   Future<bool> setTheme(ThemeMode themeMode);
 
   Future<bool> setAFilePathExist(String filePath);
+  Future<bool> removeAFilePathExist(String filePath);
 
   List<String> getExistenceFiles();
 

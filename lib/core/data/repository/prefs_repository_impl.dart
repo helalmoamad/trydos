@@ -205,6 +205,11 @@ class PrefsRepositoryImpl extends PrefsRepository {
     files.add(filePath);
     return _preferences.setStringList(PrefsKey.existenceFiles, files);
   }
+  Future<bool> removeAFilePathExist(String filePath) {
+    List<String> files = getExistenceFiles();
+    files.removeWhere((element)=> element.startsWith(filePath));
+    return _preferences.setStringList(PrefsKey.existenceFiles, files);
+  }
 
   @override
   // TODO: implement deviceIp
@@ -218,7 +223,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
   String? getTheLocalPathForFile(String filePath) {
     List<String> files = getExistenceFiles();
     String path = files.firstWhere((element) => element.startsWith(filePath));
-    debugPrint('pathhhh: $path');
     return path.split(' ').length > 1 ? path.split(' ')[1] : null;
   }
 

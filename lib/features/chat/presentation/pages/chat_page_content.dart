@@ -138,7 +138,7 @@ class ChatPageContentState extends State<ChatPageContent> {
                       child: Container(
                           width: 1.sw,
                           color: colorScheme.white,
-                          child: state.getChatsStatus != GetChatsStatus.success
+                          child: state.getChatsStatus != GetChatsStatus.success && state.firstRequestForGetChats
                               ? TrydosLoader()
                               : const SizedBox.shrink())),
                   ValueListenableBuilder<List<Chat>>(
@@ -171,7 +171,14 @@ class ChatPageContentState extends State<ChatPageContent> {
                                         "",
                               );
                             });
-                      })
+                      }),
+                  SliverToBoxAdapter(
+                      child: Container(
+                          width: 1.sw,
+                          color: colorScheme.white,
+                          child: state.getChatsStatus != GetChatsStatus.success && !state.firstRequestForGetChats
+                              ? TrydosLoader()
+                              : const SizedBox.shrink())),
                 ],
               );
             },
