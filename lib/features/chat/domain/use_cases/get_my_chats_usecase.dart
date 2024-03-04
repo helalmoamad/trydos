@@ -33,6 +33,6 @@ class GetMyChatsParams{
   Map<String , dynamic> get map => {
    'limit' : limit.toString(),
    'messages_limit' : messagesLimit.toString(),
-   'timestamp' : timeStamp.toString(),
-  }..removeWhere((key, value) => value == null);
+   'timestamp' : timeStamp?.toIso8601String(),
+  }..removeWhere((key, value) => value == 'null' || value == null);
 }

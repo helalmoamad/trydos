@@ -33,6 +33,7 @@ class ReplayOnMeMessage extends StatefulWidget {
     required this.isFirstMessage,
     this.receivedAt,
     this.createAt,
+    this.messageDate,
     this.watchedaAt,
     required this.channalId,
   }) : super(key: key);
@@ -49,6 +50,7 @@ class ReplayOnMeMessage extends StatefulWidget {
   final String? answeredFilePath;
   final DateTime? receivedAt;
   final DateTime? createAt;
+  final DateTime? messageDate;
   final bool isReplayedMessageRead;
   final bool isAnswerMessageRead;
   final bool isAnswerMessageReceived;
@@ -113,7 +115,7 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                 watchedAt: widget.watchedaAt,
                 isFirstMessage: true,
                 receivedAt: widget.receivedAt,
-                createAt: widget.createAt!,
+                createAt: widget.messageDate!,
                 channalId: widget.channalId,
               ),
             ),

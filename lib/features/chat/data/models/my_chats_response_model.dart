@@ -225,7 +225,7 @@ class Message {
       isForward: (json["is_forward"] is bool)
           ? (json["is_forward"] ? 1 : 0)
           : json["is_forward"],
-      mediaMessageContent: json["message_type"] == null
+      mediaMessageContent: json['auth_message_status']!= null && json['auth_message_status']['is_deleted'] == 1 ? null : json["message_type"] == null
           ? null
           : json["message_type"]["name"] == "TextMessage"
               ? null
@@ -233,7 +233,7 @@ class Message {
                   ? []
                   : List<MediaMessageContent>.from(json["message_content"]!
                       .map((x) => MediaMessageContent.fromJson(x))),
-      messageContent: json["message_type"] == null
+      messageContent: json['auth_message_status']!= null && json['auth_message_status']['is_deleted'] == 1 ? null : json["message_type"] == null
           ? null
           : json["message_type"]["name"] != "TextMessage"
               ? null
