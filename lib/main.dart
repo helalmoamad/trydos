@@ -188,14 +188,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       try {
         Map<String, dynamic> data =
             convert.jsonDecode(message.data["data"].toString());
-        GetIt.I<CallsBloc>().add(DeleteMessageEvent(
+        GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
             channelId: data['message']["channel_id"],
             messageId: data['message']["id"],
             deleteFromBoth: data['message']["auth_message_status"]
                     ["delete_for_all"]
                 ? 1
                 : 0,
-            type: data['message']["message_type"]["name"] == "TextMessage"
+            type: !data['message']["message_type"]["name"].toString().contains('Call')
                 ? "message"
                 : "call",
             deleteFromId: data['message']["deleted_by_user_id"] ?? 0));

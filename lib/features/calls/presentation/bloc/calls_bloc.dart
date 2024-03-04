@@ -54,6 +54,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     on<EndVideoCallEvent>(_onEndVideoCallEvent);
     on<MakeCallEvent>(_onMakeCallEvent);
     on<DeleteMessageEvent>(_onDeleteMessageEvent);
+    on<DeleteMessageNotificationReceivedInCallsEvent>(_onDeleteMessageNotificationReceivedInCallsEvent);
     on<GetMyCallsEvent>(_onGetMyCalls,
         transformer: throttleDroppable(throttleDuration));
     on<UserInteractWithCall>(_onUserInteractWithCall);
@@ -204,7 +205,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       DeleteMessageEvent event, Emitter<CallsState> emit) async {
     emit(state.copyWith(deleteMessageStatus: DeleteMessageStatus.init));
     if (event.type == "message") {
-      GetIt.I<ChatBloc>.call().add(DeleteMessagesEvent(
+      GetIt.I<ChatBloc>().add(DeleteMessageNotificationReceivedInChatsEvent(
           messageId: event.messageId,
           channelId: event.channelId!,
           deleteForAll: event.deleteFromBoth == 1,
@@ -226,7 +227,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
         messageId: event.messageId, deleteFromAll: event.deleteFromBoth));
     response.fold((l) {
       if (event.type == "message") {
-        GetIt.I<ChatBloc>().add(DeleteMessagesEvent(
+        GetIt.I<ChatBloc>().add(DeleteMessageNotificationReceivedInChatsEvent(
             messageId: event.messageId,
             channelId: event.channelId!,
             deleteForAll: event.deleteFromBoth == 0,
@@ -251,6 +252,31 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
         deleteMessageStatus: DeleteMessageStatus.success,
       )));
     });
+  }
+
+
+  FutureOr<void> _onDeleteMessageNotificationReceivedInCallsEvent(
+      DeleteMessageNotificationReceivedInCallsEvent event, Emitter<CallsState> emit) async {
+    emit(state.copyWith(deleteMessageStatus: DeleteMessageStatus.init));
+    if (event.type == "message") {
+      GetIt.I<ChatBloc>().add(DeleteMessageNotificationReceivedInChatsEvent(
+          messageId: event.messageId,
+          channelId: event.channelId!,
+          deleteForAll: event.deleteFromBoth == 1,
+          isDelete: 1,
+          deletedByUserId: event.deleteFromId));
+    } else {
+      List<CallReg> callReg = state.callRegister!.map((e) {
+        if (e.id == event.messageId) {
+          return e.copyWith(
+              authMessageStatus: MessagesStatus(
+                  isDeleted: 1, deleteForAll: event.deleteFromBoth == 1));
+        }
+        return e;
+      }).toList();
+      emit(state.copyWith(callRegister: callReg , deleteMessageStatus: DeleteMessageStatus.success,));
+    }
+
   }
 
   FutureOr<void> _onUpdateCurrentActiveCallIdEvent(

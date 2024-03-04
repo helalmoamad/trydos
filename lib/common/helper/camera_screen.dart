@@ -58,12 +58,14 @@ class _CameraScreenState extends State<CameraScreen>
 
   @override
   void dispose() {
-    _timer.cancel();
-    setState(() {
-      controller!.setFlashMode(
-        FlashMode.off,
-      );
-    });
+    _timer?.cancel();
+    // if(mounted) {
+    //   setState(() {
+    //     controller!.setFlashMode(
+    //       FlashMode.off,
+    //     );
+    //   });
+    // }
     controller?.dispose();
 
     super.dispose();
@@ -77,7 +79,7 @@ class _CameraScreenState extends State<CameraScreen>
     animatedController = AnimationController(vsync: this);
     animatedController.stop();
     animatedController.reset();
-    animatedController.duration = const Duration(seconds: 10);
+    animatedController.duration = const Duration(seconds: 60);
     animatedController.addListener(() {
       if(animatedController.status == AnimationStatus.completed){
         _isRecordingInProgress = false;
@@ -89,7 +91,7 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
 //todo timer for recording video
-  late Timer _timer;
+   Timer? _timer;
   int _seconds = 0;
   bool _isVideoCameraSelected = false;
   bool _isRecordingInProgress = false;
@@ -608,7 +610,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   void onRecordVideoFinished({bool lengthMoreThan60 = false}) async{
     animatedController.stop();
-    _timer.cancel();
+    _timer?.cancel();
     // _resetTimer();
     XFile? rawVideo = await stopVideoRecording();
     File videoFile = File(rawVideo!.path);

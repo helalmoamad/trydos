@@ -31,10 +31,17 @@ Map<String, List<Message>> groupReceivedMessageOnDays(
             .add(chat.messages![i].copyWith(isFirstMessageForThisDay: true));
       } else
         newMessagesByDate[zonedDate]!.add(chat.messages![i]);
+      if(chat.messages![i].authMessageStatus?.isDeleted == 1 &&
+          chat.messages![i].authMessageStatus?.deleteForAll != true){
+        if(newMessagesByDate[zonedDate]!.isNotEmpty) {
+          newMessagesByDate[zonedDate]!.removeLast();
+        }
+      }
     }
 
     //todo for in the dates that appear in the chat to just determine the first message appear in the dat
     for (String sendDate in newMessagesByDate.keys) {
+      if(newMessagesByDate[sendDate]!.isEmpty) continue;
       newMessagesByDate[sendDate]![0] =
           newMessagesByDate[sendDate]![0].copyWith(isFirstMessage: true);
       for (int i = 1; i < newMessagesByDate[sendDate]!.length; i++) {
@@ -52,8 +59,10 @@ Map<String, List<Message>> groupReceivedMessageOnDays(
   newSortedChatsByDate.forEach((channelId, value) {
     result[channelId] = [];
     value.keys.forEach((date) {
-      result[channelId]!.add(Message(isDateMessage: true, dateValue: date));
-      result[channelId]!.addAll(value[date]!);
+      if(!value[date].isNullOrEmpty) {
+        result[channelId]!.add(Message(isDateMessage: true, dateValue: date));
+        result[channelId]!.addAll(value[date]!);
+      }
     });
   });
   result.removeWhere((key, value) => value.isNullOrEmpty);
