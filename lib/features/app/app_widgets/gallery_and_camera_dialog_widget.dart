@@ -44,12 +44,9 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
             Builder(builder: (context) {
               return TextButton(
                 onPressed: () async {
-
                   AssetEntity? assetEntity;
-                  // necessary to open the picker
-                  HelperFunctions.getAssetFromGallery(context);
-                  assetEntity =
-                      await HelperFunctions.getAssetFromGallery(context);
+                    assetEntity =
+                    await HelperFunctions.getAssetFromGallery(context);
                   if (assetEntity != null) {
                     if (assetEntity.type == AssetType.video &&
                         assetEntity.duration > 59) {
