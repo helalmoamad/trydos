@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,6 +25,7 @@ import 'package:trydos/features/calls/presentation/pages/in_app_view.dart';
 import 'package:trydos/features/calls/presentation/utils/caller_info.dart';
 import 'package:trydos/features/calls/presentation/widgets/no_image_widget.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 class CallsCard extends StatefulWidget {
   const CallsCard({
@@ -96,7 +98,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
             extentRatio: 0.25,
             children: [
               SlidableActionWidget(
-                text: 'Delete',
+                text: LocaleKeys.delete.tr(),
                 backgroundColor: const Color(0xffFFE8E8),
                 foregroundColor: const Color(0xffFA6868),
                 iconUrl: AppAssets.binSvg,
@@ -104,7 +106,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                        title: Text(" حذف هذه الرسالة  "),
+                        title: Text(LocaleKeys.delete_message.tr()),
                         actions: [
                           MaterialButton(
                             onPressed: () {
@@ -121,7 +123,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                   messageId: widget.callRegId));
                               Navigator.of(context).pop();
                             },
-                            child: Text("لدي فقط"),
+                            child: Text(LocaleKeys.only_me.tr()),
                           ),
                           SizedBox(
                             width: 20.w,
@@ -141,7 +143,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                   messageId: widget.callRegId));
                               Navigator.of(context).pop();
                             },
-                            child: Text("لدى الجميع"),
+                            child: Text(LocaleKeys.everyone.tr()),
                           )
                         ]),
                   );
@@ -185,7 +187,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                   //todo we have the id of the chat so we can move to the call immediately
                 }
               } else if (microphone.isDenied || status2.isDenied) {
-                showMessage('permission denied');
+                showMessage(LocaleKeys.permission_denied.tr());
                 openAppSettings();
               }
               ;
@@ -224,7 +226,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                   //todo we have the id of the chat so we can move to the call immediately
                 }
               } else if (microphone.isDenied || status2.isDenied) {
-                showMessage('permission denied');
+                showMessage(LocaleKeys.permission_denied.tr());
                 openAppSettings();
               }
             }
@@ -318,10 +320,10 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                 10.horizontalSpace,
                                 Text(
                                   widget.isMissing
-                                      ? 'Missed Call'
+                                      ? LocaleKeys.missed_call.tr()
                                       : widget.isIncome
-                                          ? 'Income'
-                                          : 'Outgoing',
+                                          ? LocaleKeys.income.tr()
+                                          : LocaleKeys.Outcome.tr(),
                                   maxLines: 1,
                                   style: textTheme.bodyText2?.lr.copyWith(
                                       color: Color(widget.isMissing
@@ -446,9 +448,9 @@ String formatDate(DateTime dateStr) {
   Duration difference = now.difference(dateStr);
 
   if (difference.inDays == 0) {
-    return 'اليوم';
+    return LocaleKeys.today.tr();
   } else if (difference.inDays == 1) {
-    return 'أمس';
+    return LocaleKeys.yesterday.tr();
   } else {
     return HelperFunctions.getDatesInFormat(dateStr);
   }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:dio/dio.dart';
@@ -37,6 +38,7 @@ import '../../data/models/my_contacts_response_model.dart';
 import 'chat_event.dart';
 import 'chat_state.dart';
 import 'helper_function_for_chat_bloc/group_received_message_on_days.dart';
+import 'helper_function_for_chat_bloc/merge_chats_from_pagination.dart';
 import 'helper_function_for_chat_bloc/merge_the_old_chat_with_new.dart';
 
 const throttleDuration = Duration(milliseconds: 1000);
@@ -77,7 +79,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<ReceiveMessageEvent>(_onReceiveMessageEvent);
     on<UploadFileEvent>(_onUploadFileEvent);
     on<ChangeSlop>(_onChangeSlop);
-    on<DeleteMessagesEvent>(_onDeleteMessageEvent);
+    on<DeleteMessageNotificationReceivedInChatsEvent>(
+        _onDeleteMessageNotificationReceivedInChatsEvent);
     on<DeleteChatEvent>(_onDeleteChatEvent);
     on<ReceiveMessageFromPusherEvent>(_onReceiveMessageFromPusherEvent);
     on<WatchedMessageFromPusherEvent>(_onWatchedMessageFromPusherEvent);
@@ -174,6 +177,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               isForward: (event.isForward ?? false) ? 1 : 0,
               parentMessageId: parentMessageId,
               localParentMessageId: event.parentMessageId,
+              authMessageStatus:
+                  MessageStatus(isDeleted: 0, deleteForAll: false),
               mediaMessageContent: event.messageType != 'TextMessage'
                   ? [
                       MediaMessageContent(
@@ -333,18 +338,20 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onGetChatsEvent(
       GetChatsEvent event, Emitter<ChatState> emit) async {
-    // if(state.getChatsStatus == GetChatsStatus.loading || !requestGetChats){
-    //   return;
-    // }
+    if (state.getChatsStatus == GetChatsStatus.loading || !requestGetChats) {
+      return;
+    }
     emit(state.copyWith(getChatsStatus: GetChatsStatus.loading));
     final response = await getMyChatsUseCase(GetMyChatsParams(
         limit: event.limit,
         messagesLimit: event.messagesLimit,
-        timeStamp: state.chats.isNotEmpty
-            ? state.chats[state.chats.length - 1].updatedAt
-            : state.pinnedChats.isNotEmpty
+        timeStamp: state.firstRequestForGetChats
+            ? null
+            : state.chats.isNotEmpty
                 ? state.chats[state.chats.length - 1].updatedAt
-                : null));
+                : state.pinnedChats.isNotEmpty
+                    ? state.chats[state.chats.length - 1].updatedAt
+                    : null));
     response.fold(
       (l) {
         if (!isFailedTheFirstTime.contains('GetChatsEvent')) {
@@ -356,7 +363,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       },
       (r) {
         try {
-          requestGetChats = r.data!.chats.isNullOrEmpty;
+          requestGetChats = !r.data!.chats.isNullOrEmpty;
           if (r.data!.missedFcmToken) {
             GetIt.I<AuthBloc>().add(StoreFcmTokenEvent(
                 userId: _prefsRepository.myChatId!,
@@ -364,28 +371,31 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           }
           isFailedTheFirstTime.remove('GetChatsEvent');
           int unReadMessagesFromAllChats = 0;
-          for (Chat chat in [...r.data!.chats!, ...r.data!.pinnedChats!]) {
-            print('fffff ${chat.channelName}   ${chat.messages?.length}');
-          }
           r.data!.chats!.forEach((element) {
             unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
           });
           r.data!.pinnedChats!.forEach((element) {
             unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
           });
-          List<Chat> newChats = List.of(state.chats.isEmpty
-              ? r.data!.chats!
-              : MergeOldMessageWithNew(
-                  newChats: r.data!.chats!, previousChats: state.chats));
-          List<Chat> newPinnedChats = List.of(state.pinnedChats.isEmpty
-              ? r.data!.pinnedChats!
-              : MergeOldMessageWithNew(
-                  newChats: r.data!.pinnedChats!,
-                  previousChats: state.pinnedChats));
-
+          // List<Chat> newChats = List.of(state.chats.isEmpty
+          //     ? r.data!.chats!
+          //     : MergeOldMessageWithNew(
+          //         newChats: r.data!.chats!, previousChats: state.chats));
+          // List<Chat> newPinnedChats = List.of(state.pinnedChats.isEmpty
+          //     ? r.data!.pinnedChats!
+          //     : MergeOldMessageWithNew(
+          //         newChats: r.data!.pinnedChats!,
+          //         previousChats: state.pinnedChats));
+          List<Chat> newChats = mergeChatsFromPagination(
+              newChats: List.of(r.data!.chats!),
+              previousChats: List.of(state.chats));
+          List<Chat> newPinnedChats = mergeChatsFromPagination(
+              newChats: List.of(r.data!.pinnedChats!),
+              previousChats: List.of(state.pinnedChats));
           emit(
             state.copyWith(
                 getChatsStatus: GetChatsStatus.success,
+                firstRequestForGetChats: false,
                 chatToNavigateFromTerminated:
                     event.chatToNavigateFromTerminated,
                 chats: newChats,
@@ -520,6 +530,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             messageType: MessageType(name: event.messageType),
             isForward: (event.isForward ?? false) ? 1 : 0,
             parentMessageId: parentMessageId,
+            authMessageStatus: MessageStatus(isDeleted: 0, deleteForAll: false),
             parentMessage: parentMessageId != null
                 ? Message(
                     file: event.file,
@@ -570,7 +581,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           currentFailedMediaMessage: currentFailedMediaMessage));
     }, (r) {
       _prefsRepository.setAFilePathExist(
-          event.useCloudinaryToUpload ? r.secureUrl! : r.data!.filePath!);
+          event.useCloudinaryToUpload ? r.secureUrl! : r.data!.filePath!,
+          event.channelId);
       add(SendMessageEvent(
           messageId: event.messageId,
           extraFields: event.extraFields,
@@ -760,6 +772,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           ]),
           pinnedChats: !fromPinned ? state.pinnedChats : chats));
     }, (r) {
+      _prefsRepository.removeAllFilePathExistInCaht(event.channelId);
       emit((state.copyWith(
           deleteChatStatus: DeleteChatStatus.success,
           chats: fromPinned ? state.chats : chats,
@@ -1205,6 +1218,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         .copyWith(
             receiveMessageStatus: ReceiveMessageStatus.init,
             readMessagesStatus: ResetReadMessagesStatus.init,
+            firstRequestForGetChats: true,
             changeChatPropertyStatus: ChangeChatPropertyStatus.init,
             changeMessageStateFromPusherStatus:
                 ChangeMessageStateFromPusherStatus.init,
@@ -1461,7 +1475,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     }
   }
 
-  _onDeleteMessageEvent(DeleteMessagesEvent event, Emitter<ChatState> emit) {
+  _onDeleteMessageNotificationReceivedInChatsEvent(
+      DeleteMessageNotificationReceivedInChatsEvent event,
+      Emitter<ChatState> emit) {
     bool fromPinned = false;
 
     Chat chat;
@@ -1473,9 +1489,25 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       chat = state.pinnedChats
           .firstWhere((element) => element.id == event.channelId);
     }
+    bool isAFileMessageRemoved = false;
+    bool isAimageMessageRemoved = false;
+    bool isAdocumentMessageRemoved = false;
+
+    bool isAvideoMessageRemoved = false;
 
     int index =
         chat.messages!.indexWhere((element) => element.id == event.messageId);
+    isAimageMessageRemoved =
+        chat.messages![index].messageType!.name == 'ImageMessage';
+    isAdocumentMessageRemoved =
+        chat.messages![index].messageType!.name == 'FileMessage';
+
+    isAvideoMessageRemoved =
+        chat.messages![index].messageType!.name == 'VideoMessage';
+
+    isAFileMessageRemoved =
+        !chat.messages![index].messageType!.name!.contains('Call') &&
+            chat.messages![index].messageType!.name != 'TextMessage';
     chat.messages![index] = chat.messages![index].copyWith(
         deletedByUserId: event.deletedByUserId,
         authMessageStatus: MessageStatus(
@@ -1483,27 +1515,41 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                 ? 1
                 : event.isDelete,
             deleteForAll: event.deleteForAll));
+    List<Chat> chats = !fromPinned
+        ? state.chats.map((e) {
+            if (e.id == event.channelId) {
+              return chat;
+            }
+            return e;
+          }).toList()
+        : state.chats;
+    List<Chat> pinnedChats = fromPinned
+        ? state.pinnedChats.map((e) {
+            if (e.id == event.channelId) {
+              return chat;
+            }
+            return e;
+          }).toList()
+        : state.pinnedChats;
+    if (isAFileMessageRemoved) {
+      _prefsRepository.removeAFilePathExist(
+          chat.messages![index].mediaMessageContent![0].filePath!,
+          event.channelId);
+    }
     emit(state.copyWith(
-      chats: !fromPinned
-          ? state.chats.map((e) {
-              if (e.id == event.channelId) {
-                return chat;
-              }
-              return e;
-            }).toList()
-          : state.chats,
-      newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
-        ...state.chats,
-        ...(fromPinned ? state.chats : state.pinnedChats)
-      ]),
-      pinnedChats: fromPinned
-          ? state.pinnedChats.map((e) {
-              if (e.id == event.channelId) {
-                return chat;
-              }
-              return e;
-            }).toList()
-          : state.pinnedChats,
+      videoCountInEachChat: isAvideoMessageRemoved
+          ? state.videoCountInEachChat - 1
+          : state.videoCountInEachChat,
+      imageCountInEachChat: isAimageMessageRemoved
+          ? state.imageCountInEachChat - 1
+          : state.imageCountInEachChat,
+      fileCountInEachChat: isAdocumentMessageRemoved
+          ? state.fileCountInEachChat - 1
+          : state.fileCountInEachChat,
+      chats: chats,
+      newSortedChatsByDate:
+          groupReceivedMessageOnDays(chats: [...pinnedChats, ...chats]),
+      pinnedChats: pinnedChats,
     ));
   }
 }

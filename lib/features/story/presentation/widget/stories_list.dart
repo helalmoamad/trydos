@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart' as dartz;
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection_page_view.dart';
 import 'package:trydos/features/story/presentation/widget/story_item_widget.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 //import 'package:wechat_assets_picker/wechat_assets_picker.dart';
@@ -95,7 +97,8 @@ class _StoriesListState extends State<StoriesList> {
                                                     child: Container(
                                                       child: Center(
                                                           child: MyTextWidget(
-                                                              'uplaod')),
+                                                              LocaleKeys.upload
+                                                                  .tr())),
                                                       decoration: BoxDecoration(
                                                         borderRadius:
                                                             BorderRadius
@@ -396,7 +399,7 @@ class _StoriesListState extends State<StoriesList> {
                               onPressed: () {
                                 GetIt.I<StoryBloc>().add(GetStoryEvent());
                               },
-                              child: MyTextWidget('Try Again')),
+                              child: MyTextWidget(LocaleKeys.try_again.tr())),
                         );
                       case GetStoriesStatus.loading:
                         return SizedBox(
@@ -420,7 +423,6 @@ class _StoriesListState extends State<StoriesList> {
                         );
                     }
                   }();
-                  return Container();
                 }),
       );
     });

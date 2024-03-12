@@ -368,18 +368,19 @@ class ResendMessageEvent extends ChatEvent {
   List<Object?> get props => [messageId, channelId];
 }
 
-class DeleteMessagesEvent extends ChatEvent {
+
+class DeleteMessageNotificationReceivedInChatsEvent extends ChatEvent {
   final String messageId;
   final String channelId;
   final bool deleteForAll;
   final int isDelete;
   final int deletedByUserId;
-  DeleteMessagesEvent(
+  DeleteMessageNotificationReceivedInChatsEvent(
       {required this.messageId,
-      required this.deletedByUserId,
-      required this.channelId,
-      required this.deleteForAll,
-      required this.isDelete});
+        required this.deletedByUserId,
+        required this.channelId,
+        required this.deleteForAll,
+        required this.isDelete});
   @override
   // TODO: implement props
   List<Object?> get props => [messageId, channelId, deleteForAll];

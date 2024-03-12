@@ -168,41 +168,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       FlutterCallkitIncoming.endAllCalls();
       GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false));
     } else if (message.data['type'] == 'ChannelReceivedEvent') {
-      Map<String, dynamic> data =
-          convert.jsonDecode(message.data['data'].toString());
-      GetIt.I<ChatBloc>().add(ReceiveMessageFromPusherEvent(
-        data['channel_id'].toString(),
-        data['auth_user_id'],
-        data['last_message_id'],
-        DateTime.parse(data['received_at']),
-      ));
+      GetIt.I<PrefsRepository>()
+          .setMessageReceivedStatusFromBackground(message.data['data']);
     } else if (message.data['type'] == 'ChannelWatchedEvent') {
-      Map<String, dynamic> data =
-          convert.jsonDecode(message.data['data'].toString());
-      GetIt.I<ChatBloc>().add(WatchedMessageFromPusherEvent(
-          data['channel_id'].toString(),
-          data['auth_user_id'],
-          data['last_message_id'],
-          DateTime.parse(data['watched_at'])));
+      GetIt.I<PrefsRepository>()
+          .setMessageWatchStatusFromBackground(message.data['data']);
     } else if (message.data['type'] == 'UpdatingMessageEvent') {
-      try {
-        Map<String, dynamic> data =
-            convert.jsonDecode(message.data["data"].toString());
-        GetIt.I<CallsBloc>().add(DeleteMessageEvent(
-            channelId: data['message']["channel_id"],
-            messageId: data['message']["id"],
-            deleteFromBoth: data['message']["auth_message_status"]
-                    ["delete_for_all"]
-                ? 1
-                : 0,
-            type: data['message']["message_type"]["name"] == "TextMessage"
-                ? "message"
-                : "call",
-            deleteFromId: data['message']["deleted_by_user_id"] ?? 0));
-      } catch (e, st) {
-        debugPrint(e.toString());
-        debugPrint(st.toString());
-      }
+      GetIt.I<PrefsRepository>()
+          .setRemovedMessageFromBackground(message.data['data']);
     } else {
       GetIt.I<PrefsRepository>()
           .setMessageFromBackground(message.data['message']);

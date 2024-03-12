@@ -31,6 +31,7 @@
         android:name="${applicationName}"
         android:exported="true"
         android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true"
            tools:targetApi="m">
            <service
                android:name="com.google.firebase.messaging.FirebaseMessagingService"

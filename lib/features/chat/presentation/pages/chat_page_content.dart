@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,6 +13,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/main.dart';
 
 import '../../../app/blocs/app_bloc/app_bloc.dart';
@@ -50,10 +52,10 @@ class ChatPageContentState extends State<ChatPageContent> {
       for (Chat chat in initialChats) {
         ChannelMember member = chat.channelMembers!.firstWhere(
             (element) => element.userId != GetIt.I<PrefsRepository>().myChatId);
-        if ((chat.channelName ?? 'UnKnown User')
+        if ((chat.channelName ?? LocaleKeys.unknown_user.tr())
                 .toLowerCase()
                 .contains(text?.toLowerCase() ?? '') ||
-            (member.user?.mobilePhone ?? 'No Number')
+            (member.user?.mobilePhone ?? LocaleKeys.no_num.tr())
                 .toLowerCase()
                 .contains(text?.toLowerCase() ?? '')) {
           search.add(chat);
@@ -104,17 +106,15 @@ class ChatPageContentState extends State<ChatPageContent> {
             child: Center(
               child: ElevatedButton(
                   onPressed: () {
-                    GetIt.I<ChatBloc>().add(GetChatsEvent(
-                      limit: 10
-                    ));
+                    GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
                   },
-                  child: MyTextWidget('Try Again')),
+                  child: MyTextWidget(LocaleKeys.try_again.tr())),
             ),
           );
         }
         // todo (future update) here we can return try again if the status failure
         List<Chat> chats = List.of(state.pinnedChats);
-          chats.addAll(state.chats);
+        chats.addAll(state.chats);
         // todo  (future update) remove this from here handle it in the back of in bloc
 
         chats.removeWhere((element) =>
@@ -138,9 +138,11 @@ class ChatPageContentState extends State<ChatPageContent> {
                       child: Container(
                           width: 1.sw,
                           color: colorScheme.white,
-                          child: state.getChatsStatus != GetChatsStatus.success
-                              ? TrydosLoader()
-                              : const SizedBox.shrink())),
+                          child:
+                              state.getChatsStatus != GetChatsStatus.success &&
+                                      state.firstRequestForGetChats
+                                  ? TrydosLoader()
+                                  : const SizedBox.shrink())),
                   ValueListenableBuilder<List<Chat>>(
                       valueListenable: searchChats,
                       builder: (context, searchedChats, _) {
@@ -171,7 +173,16 @@ class ChatPageContentState extends State<ChatPageContent> {
                                         "",
                               );
                             });
-                      })
+                      }),
+                  SliverToBoxAdapter(
+                      child: Container(
+                          width: 1.sw,
+                          color: colorScheme.white,
+                          child:
+                              state.getChatsStatus != GetChatsStatus.success &&
+                                      !state.firstRequestForGetChats
+                                  ? TrydosLoader()
+                                  : const SizedBox.shrink())),
                 ],
               );
             },

@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../config/theme/typography.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:flutter/material.dart';
@@ -246,7 +248,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                           widget.collectionIndex]!,
                                   collectionIndex: widget.collectionIndex));
                             },
-                            child: MyTextWidget('Try Again')),
+                            child: MyTextWidget(LocaleKeys.try_again.tr())),
                       );
                     else if (state
                             .storiesCollections[widget.collectionIndex]
@@ -270,7 +272,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           SelectedStoriesStatus.success) {
                         widget.animatedController.stop();
                         widget.animatedController.duration =
-                        const Duration(seconds: 4);
+                            const Duration(seconds: 4);
                         if (widget.stopAnimationAndVideo) {
                           widget.animatedController.stop();
                         } else {
@@ -284,14 +286,15 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               .photoPath!,
                           callWhenDisplayImage: () {
                             Story story = state
-                                .storiesCollections[widget.collectionIndex]
-                                .stories![state.currentStoryInEachCollection[
-                            widget.collectionIndex]!];
-                            if(!(story.isSeen ?? false)) {
+                                    .storiesCollections[widget.collectionIndex]
+                                    .stories![
+                                state.currentStoryInEachCollection[
+                                    widget.collectionIndex]!];
+                            if (!(story.isSeen ?? false)) {
                               GetIt.I<StoryBloc>().add(IncreaseViewersEvent(
-                                  collectionId:
-                                  state.storiesCollections[widget
-                                      .collectionIndex].toString(),
+                                  collectionId: state.storiesCollections[
+                                          widget.collectionIndex]
+                                      .toString(),
                                   storyId: story.id.toString()));
                             }
                             if (widget.stopAnimationAndVideo) {
@@ -300,7 +303,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               widget.animatedController.forward();
                             }
                           },
-                          callWhenLoadingImage: (){
+                          callWhenLoadingImage: () {
                             widget.animatedController.stop();
                           },
                           width: state
@@ -369,14 +372,15 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           if (snapshot.connectionState ==
                               ConnectionState.done) {
                             Story story = state
-                                .storiesCollections[widget.collectionIndex]
-                                .stories![state.currentStoryInEachCollection[
-                            widget.collectionIndex]!];
-                            if(!(story.isSeen ?? false)) {
+                                    .storiesCollections[widget.collectionIndex]
+                                    .stories![
+                                state.currentStoryInEachCollection[
+                                    widget.collectionIndex]!];
+                            if (!(story.isSeen ?? false)) {
                               GetIt.I<StoryBloc>().add(IncreaseViewersEvent(
-                                  collectionId:
-                                  state.storiesCollections[widget
-                                      .collectionIndex].toString(),
+                                  collectionId: state.storiesCollections[
+                                          widget.collectionIndex]
+                                      .toString(),
                                   storyId: story.id.toString()));
                             }
                             return FittedBox(
@@ -410,7 +414,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                             collectionIndex:
                                                 widget.collectionIndex));
                                       },
-                                      child: MyTextWidget('try')),
+                                      child:
+                                          MyTextWidget(LocaleKeys.trye.tr())),
                                 ),
                               ),
                             );
@@ -476,7 +481,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                                   widget.collectionIndex]
                                               .name ==
                                           null
-                                      ? 'UK'
+                                      ? LocaleKeys.uk.tr()
                                       : HelperFunctions.getTheFirstTwoLettersOfName(state
                                           .storiesCollections[
                                               widget.collectionIndex]
@@ -497,7 +502,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               state.storiesCollections[widget.collectionIndex]
                                           .name ==
                                       null
-                                  ? 'UK'
+                                  ? LocaleKeys.uk.tr()
                                   : state
                                       .storiesCollections[
                                           widget.collectionIndex]

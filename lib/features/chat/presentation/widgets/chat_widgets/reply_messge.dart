@@ -148,7 +148,7 @@ class _ReplayMessageState extends State<ReplayMessage> {
                     isFirstMessage: true,
                     watchedAt: widget.watchedAt,
                     receivedAt: widget.receivedAt,
-                    createAt: widget.createAt!,
+                    createAt: widget.messageDate,
                     channalId: widget.channalId,
                   ),
                 ),

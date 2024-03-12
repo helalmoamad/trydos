@@ -233,51 +233,52 @@ class PhoneNumberFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    String result  = getFormattedText(oldValue.text, newValue.text);
-      return newValue.copyWith(
-          text: result,
-          selection: TextSelection.collapsed(
-              offset: result.length));
-    }
+    String result = getFormattedText(oldValue.text, newValue.text);
+    return newValue.copyWith(
+        text: result,
+        selection: TextSelection.collapsed(offset: result.length));
+  }
 
   String getFormattedText(String oldText, String newText) {
-    if(newText.length < oldText.length){
-        if(oldText[oldText.length-1]==' '){
-          return newText.substring(0,newText.length-1);
-        }
-        return newText;
+    if (newText.length < oldText.length) {
+      if (oldText[oldText.length - 1] == ' ') {
+        return newText.substring(0, newText.length - 1);
+      }
+      return newText;
     }
     newText = newText.replaceAll(' ', '');
     oldText = oldText.replaceAll(' ', '');
-    if (!validationRegex.hasMatch(newText)){
+    if (!validationRegex.hasMatch(newText)) {
       return oldText;
     }
     Country country = countries.firstWhere(
-            (element) => '+${newText.toLowerCase()}'
+        (element) => '+${newText.toLowerCase()}'
             .startsWith(element.dialCode.toLowerCase()),
-        orElse:()=> countries.firstWhere(
-                (element) => '+${oldText.toLowerCase()}'
+        orElse: () => countries.firstWhere(
+            (element) => '+${oldText.toLowerCase()}'
                 .startsWith(element.dialCode.toLowerCase()),
-        orElse: () => Country(
-            name: '',
-            flag: '',
-            code: '',
-            dialCode: '',
-            minLength: 100,
-            maxLength: 100)));
-    String needEdit=newText;
-    if(newText.length > (country.dialCode.length + country.maxLength-1) && country.name != ''){
-      needEdit =  oldText;
+            orElse: () => Country(
+                name: '',
+                flag: '',
+                code: '',
+                dialCode: '',
+                minLength: 100,
+                maxLength: 100)));
+    String needEdit = newText;
+    if (newText.length > (country.dialCode.length + country.maxLength - 1) &&
+        country.name != '') {
+      needEdit = oldText;
     }
-    if((oldText.length+1) == country.dialCode.length && newText[newText.length-1]=='0'){
-      needEdit =  oldText;
+    if ((oldText.length + 1) == country.dialCode.length &&
+        newText[newText.length - 1] == '0') {
+      needEdit = oldText;
     }
     debugPrint(needEdit);
-      String result = needEdit.substring(0 , country.dialCode.length-1) + ' ';
-    for(int i=country.dialCode.length-1; i < needEdit.length ; i++){
-      result+=needEdit[i];
-      if((i-country.dialCode.length+2)%3==0){
-        result+=' ';
+    String result = needEdit.substring(0, country.dialCode.length - 1) + ' ';
+    for (int i = country.dialCode.length - 1; i < needEdit.length; i++) {
+      result += needEdit[i];
+      if ((i - country.dialCode.length + 2) % 3 == 0) {
+        result += ' ';
       }
     }
     return result;

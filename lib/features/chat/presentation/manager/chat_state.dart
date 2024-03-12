@@ -74,6 +74,7 @@ class ChatState {
   final Chat? chatToNavigateFromTerminated;
   final bool createAnewChat;
   Map<String, List<Message>>? newSortedChatsByDate;
+  final bool firstRequestForGetChats;
 
   ChatState({
     this.currentFailedMediaMessage = const [],
@@ -82,6 +83,7 @@ class ChatState {
     this.width = 0,
     this.slopMessageId = "",
     this.isSlpoing = false,
+    this.firstRequestForGetChats = true,
     this.height = 0,
     this.imageCountInEachChat = 0,
     this.fileCountInEachChat = 0,
@@ -131,6 +133,7 @@ class ChatState {
     LoadImageWidthAndHeight? loadImageWidthAndHeight,
     Map<String, List<Message>>? newSortedChatsByDate,
     final GetChatsStatus? getChatsStatus,
+    final bool? firstRequestForGetChats,
     final ResendMessageStatus? resendMessageStatus,
     final SendMessageStatus? sendMessageStatus,
     final ReceiveMessageStatus? receiveMessageStatus,
@@ -166,6 +169,7 @@ class ChatState {
       width: width ?? this.width,
       slopMessageId: slopMessageId ?? this.slopMessageId,
       isSlpoing: isSlpoing ?? this.isSlpoing,
+      firstRequestForGetChats: firstRequestForGetChats ?? this.firstRequestForGetChats,
       height: height ?? this.height,
       resendMessageStatus: resendMessageStatus ?? this.resendMessageStatus,
       imageCountInEachChat: imageCountInEachChat ?? this.imageCountInEachChat,

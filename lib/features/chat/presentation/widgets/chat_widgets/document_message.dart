@@ -75,6 +75,13 @@ class _DocumentMessageState extends State<DocumentMessage> {
   bool timer = false;
   @override
   void initState() {
+    if (widget.isSent) {
+      FileSaving().downloadFileToLocalStorage(
+        widget.documentFileUrl ?? widget.documentFile!.path,
+        widget.channelId,
+      );
+    }
+
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
       setState(() {
@@ -252,6 +259,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                                       .downloadFileToLocalStorage(
                                                           widget
                                                               .documentFileUrl!,
+                                                          widget.channelId,
                                                           action: (File? file) {
                                                     _loadingFile.value = 2;
                                                     widget.documentFile = file;

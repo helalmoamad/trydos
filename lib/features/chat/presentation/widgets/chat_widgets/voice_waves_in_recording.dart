@@ -1,4 +1,3 @@
-
 import 'package:audio_wave/audio_wave.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,7 +10,7 @@ class VoiceWavesInRecording extends StatefulWidget {
 }
 
 class _VoiceWavesInRecordingState extends State<VoiceWavesInRecording> {
-  final Color color=const Color(0xff388CFF);
+  final Color color = const Color(0xff388CFF);
   @override
   Widget build(BuildContext context) {
     return AudioWave(

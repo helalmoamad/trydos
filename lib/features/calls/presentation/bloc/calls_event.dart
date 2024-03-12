@@ -55,6 +55,20 @@ class DeleteMessageEvent extends CallsEvent {
       this.channelId});
 }
 
+class DeleteMessageNotificationReceivedInCallsEvent extends CallsEvent {
+  String messageId;
+  int deleteFromBoth;
+  String type;
+  int deleteFromId;
+  String? channelId;
+  DeleteMessageNotificationReceivedInCallsEvent(
+      {required this.messageId,
+        required this.deleteFromBoth,
+        required this.deleteFromId,
+        required this.type,
+        this.channelId});
+}
+
 class ResponseRejectVideoCallEvent extends CallsEvent {}
 
 class InitResponseRejectVideoCallEvent extends CallsEvent {}

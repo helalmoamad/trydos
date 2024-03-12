@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '../../../features/chat/data/models/my_chats_response_model.dart';
 
@@ -16,6 +17,9 @@ abstract class PrefsRepository {
   String? get myMarketId;
 
   List<Message>? get getTheMessageFromBackground;
+  List<Map>? get getTheRemovedMessageFromBackground;
+  List<Map>? get getTheMessageWatchStatusFromBackground;
+  List<Map>? get getTheMessageRecievedStatusFromBackground;
 
   bool? get isVerifiedPhone;
 
@@ -55,6 +59,9 @@ abstract class PrefsRepository {
   Future<bool> setMyChatId(int id);
 
   Future<bool> setMessageFromBackground(String message);
+  Future<bool> setRemovedMessageFromBackground(String removedMessage);
+  Future<bool> setMessageWatchStatusFromBackground(String MessageStatus);
+  Future<bool> setMessageReceivedStatusFromBackground(String MessageStatus);
 
   Future<bool> setMyStoriesId(int id);
 
@@ -64,13 +71,15 @@ abstract class PrefsRepository {
 
   Future<bool> setTheme(ThemeMode themeMode);
 
-  Future<bool> setAFilePathExist(String filePath);
+  Future<bool> setAFilePathExist(String filePath, String chatId);
+  Future<bool> removeAFilePathExist(String filePath, String chatId);
+  Future<bool> removeAllFilePathExistInCaht(String chatId);
 
   List<String> getExistenceFiles();
+  List<String>? getTheLocalPathForChannal(String chatId);
+  bool isAFilePathExist(String filePath, String chatId);
 
-  bool isAFilePathExist(String filePath);
-
-  String? getTheLocalPathForFile(String filePath);
+  String? getTheLocalPathForFile(String filePath, String chatId);
 
   Future<bool> addFcmToken(String fcmToken);
 
@@ -83,6 +92,9 @@ abstract class PrefsRepository {
   Future<bool> clearUser();
 
   Future<bool> removeMessageFromBackground();
+  Future<bool> removeRemovedMessageFromBackground();
+  Future<bool> removeMessageWatchStatusFromBackground();
+  Future<bool> removeMessageRecievedStatusFromBackground();
 
   Future<bool> clearVerificationId();
 
@@ -98,12 +110,12 @@ abstract class PrefsRepository {
       String? request,
       Map<String, dynamic>? query,
       Map<String, dynamic>? body,
-      {String? error , String? responseTime});
+      {String? error,
+      String? responseTime});
 
   void clearAllRequests();
 
   void removeRequestFromCache(Map<String, dynamic> request);
 
   List<Map<String, dynamic>> getRequestsData();
-
 }
