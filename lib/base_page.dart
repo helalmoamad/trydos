@@ -178,6 +178,19 @@ void DealWithMessagesStoredFromBackground() async {
   }
 }
 
+void DealWithChatsToEditStoredFromBackground() async {
+  await GetIt.I<SharedPreferences>().reload();
+  List<Chat>? chats;
+  if ((chats = GetIt.I<PrefsRepository>().getTheChatsToEditFromBackground) !=
+      null) {
+    for (int i = 0; i < (chats?.length ?? 0); i++) {
+      GetIt.I<ChatBloc>().add(UpdateChannelObjectFromNotificationEvent(chat: chats![i]));
+
+    }
+    GetIt.I<PrefsRepository>().removeChatToEditFromBackground();
+  }
+}
+
 class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   late ChatBloc chatBloc;
   late HomeBloc homeBloc;
@@ -251,9 +264,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
       if (event.data['type'] == 'RefuseCallEvent') {
-        log('fffffffffffffffffff');
-
-        log(event.data.toString());
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
         GetIt.I<PrefsRepository>().saveRequestsData(
@@ -350,12 +360,20 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
             channelId: data['message']["channel_id"],
             messageId: data['message']["id"],
-            deleteFromBoth:
-                data['message']["auth_message_status"]["delete_for_all"] ? 1 : 0,
-            type: !data['message']["message_type"]["name"].toString().contains('Call')
+            deleteFromBoth: data['message']["auth_message_status"]
+                    ["delete_for_all"]
+                ? 1
+                : 0,
+            type: !data['message']["message_type"]["name"]
+                    .toString()
+                    .contains('Call')
                 ? "message"
                 : "call",
             deleteFromId: data['message']["deleted_by_user_id"] ?? 0));
+      } else if (event.data['type'] == 'ChannelUpdatedEvent') {
+        Map<String, dynamic> data =
+            convert.jsonDecode(event.data["data"].toString());
+        GetIt.I<ChatBloc>().add(UpdateChannelObjectFromNotificationEvent(chat: Chat.fromJson(data['channel'])));
       } else if (event.data['type'] == 'ChannelWatchedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
@@ -382,7 +400,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         chatBloc.add(ReceiveMessageEvent(
             message: message, prevMessageId: prevMessageId));
         if (BlocProvider.of<ChatBloc>(context).currentOpenedChatId !=
-            message.channelId) {
+                message.channelId &&
+            message.channel!.channelMembers!
+                    .firstWhere(
+                        (element) => element.userId == prefsRepository.myChatId)
+                    .mute !=
+                1 &&
+            message.senderUserId != prefsRepository.myChatId) {
           LocalNotificationService()
               .showNotificationWithPayload(message: event);
         }

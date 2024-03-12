@@ -17,6 +17,8 @@ abstract class PrefsRepository {
 
   List<Message>? get getTheMessageFromBackground;
 
+  List<Chat>? get getTheChatsToEditFromBackground;
+
   bool? get isVerifiedPhone;
 
   String? get myChatName;
@@ -56,6 +58,8 @@ abstract class PrefsRepository {
 
   Future<bool> setMessageFromBackground(String message);
 
+  Future<bool> setChatToEditFromBackground(String chat);
+
   Future<bool> setMyStoriesId(int id);
 
   Future<bool> setMyMarketId(String id);
@@ -84,6 +88,8 @@ abstract class PrefsRepository {
   Future<bool> clearUser();
 
   Future<bool> removeMessageFromBackground();
+
+  Future<bool> removeChatToEditFromBackground();
 
   Future<bool> clearVerificationId();
 

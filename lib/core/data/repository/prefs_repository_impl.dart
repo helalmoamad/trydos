@@ -275,6 +275,22 @@ class PrefsRepositoryImpl extends PrefsRepository {
     return _preferences.setStringList('message', list);
   }
 
+  @override
+  List<Chat>? get getTheChatsToEditFromBackground => _preferences
+      .getStringList('chat')
+      ?.map((e) => Chat.fromJson(convert.jsonDecode(e)))
+      .toList();
+
+  @override
+  Future<bool> removeChatToEditFromBackground() => _preferences.remove('chat');
+
+  @override
+  Future<bool> setChatToEditFromBackground(String chat) {
+    List<String> list = _preferences.getStringList('chat') ?? [];
+    list.add(chat);
+    return _preferences.setStringList('chat', list);
+  }
+
 // @override
 // // TODO: implement localMessages
 // List<Map<String,dynamic>> get localMessages {

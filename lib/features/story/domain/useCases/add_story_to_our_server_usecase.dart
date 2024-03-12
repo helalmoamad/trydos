@@ -7,14 +7,14 @@ import '../../data/models/get_stories_model.dart' ;
 import '../repository/story_repository.dart';
 
 @injectable
-class AddStoryToOurServerUseCase extends UseCase<CollectionStoryModel?,AddStoryToOurServerParams>
+class AddStoryToOurServerUseCase extends UseCase<Either<int , CollectionStoryModel>,AddStoryToOurServerParams>
 {
   final StoryRepository repository;
 
   AddStoryToOurServerUseCase(this.repository);
 
   @override
-  Future<Either<Failure, CollectionStoryModel?>> call(AddStoryToOurServerParams params) {
+  Future<Either<Failure, Either<int , CollectionStoryModel>>> call(AddStoryToOurServerParams params) {
     return repository.addStoryToOurServer(params.map);
   }
 

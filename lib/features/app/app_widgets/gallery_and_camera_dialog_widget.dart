@@ -58,10 +58,6 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                     }
                   }
                   Navigator.of(context).pop();
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
-
                 },
                 child: MyTextWidget(LocaleKeys.gallery.tr()),
               );

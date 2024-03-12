@@ -991,6 +991,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   }
 
   void forwardMessageMethod(Message message) {
+    String id = const Uuid().v4();
     context.push(
       GRouter.config.applicationRoutes.kChatPage +
           '?hideCallsAndStories=true&description=Forward To...',
@@ -1002,7 +1003,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
               isForward: true,
               parentMessageId: null,
               content: message.messageContent!.content,
-              messageId: message.id!,
+              messageId: id,
               senderParentMessageId: null,
               parentMessageContent: null,
               receiverUserId: receiverId));
@@ -1019,7 +1020,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
               isForward: true,
               senderParentMessageId: null,
               parentMessageId: null,
-              messageId: message.id!,
+              messageId: id,
               parentMessageContent: null,
               receiverUserId: receiverId));
         }
@@ -1140,6 +1141,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
     String? filePath = message.mediaMessageContent.isNullOrEmpty
         ? null
         : message.mediaMessageContent?[0].filePath;
+    print('ppppppppp $filePath');
     if (message.file == null &&
         filePath != null &&
         _prefsRepository.isAFilePathExist(filePath)) {
@@ -1149,7 +1151,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
         message = message.copyWith(file: file);
       }
     }
-    print('data ${message.messageContent?.content}');
 
     index = message.messageStatus
             ?.indexWhere((e) => e.userId != _prefsRepository.myChatId) ??

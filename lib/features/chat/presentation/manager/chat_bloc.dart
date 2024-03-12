@@ -66,6 +66,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       this.getMediaCountUseCase)
       : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
+    on<UpdateChannelObjectFromNotificationEvent>(
+        _onUpdateChannelObjectFromNotificationEvent);
     on<ChangeGlobalUsedVariablesInBloc>(_onChangeGlobalUsedVariablesInBloc);
     on<ResendMessageEvent>(_onResendMessageEvent);
     on<AddAMessageToAChannel>(_onAddAMessageToAChannel);
@@ -486,8 +488,6 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onUploadFileEvent(
       UploadFileEvent event, Emitter<ChatState> emit) async {
-    print(
-        ".............................................................................");
     List<String> ids = List.of(state.currentMessage);
     ids.add(event.messageId);
     List<Message> messages;
@@ -579,8 +579,18 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           currentFailedMessage: currentFailedMessage,
           currentFailedMediaMessage: currentFailedMediaMessage));
     }, (r) {
-      _prefsRepository.setAFilePathExist(
-          event.useCloudinaryToUpload ? r.secureUrl! : r.data!.filePath!);
+      try {
+        print('qqqqqqq ${_prefsRepository.getExistenceFiles().length}');
+        _prefsRepository.setAFilePathExist(
+            (event.useCloudinaryToUpload ? r.secureUrl! : r.data!.filePath!) +
+                ' ' +
+                event.file.path);
+        print('qqqqqqq222222 ${_prefsRepository.getExistenceFiles().length}');
+
+      }catch(e,st){
+        print(e);
+        print(st);
+      }
       add(SendMessageEvent(
           messageId: event.messageId,
           extraFields: event.extraFields,
@@ -1525,5 +1535,22 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           groupReceivedMessageOnDays(chats: [...pinnedChats, ...chats]),
       pinnedChats: pinnedChats,
     ));
+  }
+
+  FutureOr<void> _onUpdateChannelObjectFromNotificationEvent(
+      UpdateChannelObjectFromNotificationEvent event, Emitter<ChatState> emit) {
+    emit(state.copyWith(
+        chats: state.chats.map((element) {
+          if (element.id == event.chat.id) {
+            return event.chat;
+          }
+          return element;
+        }).toList(),
+        pinnedChats: state.pinnedChats.map((element) {
+          if (element.id == event.chat.id) {
+            return event.chat;
+          }
+          return element;
+        }).toList()));
   }
 }

@@ -349,6 +349,14 @@ class AddChannelToChannels extends ChatEvent {
   List<Object?> get props => [message];
 }
 
+class UpdateChannelObjectFromNotificationEvent extends ChatEvent {
+  final Chat chat;
+  const UpdateChannelObjectFromNotificationEvent({required this.chat});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [chat];
+}
+
 class ChangeGlobalUsedVariablesInBloc extends ChatEvent {
   final String? currentOpenedChatId;
   const ChangeGlobalUsedVariablesInBloc({this.currentOpenedChatId});

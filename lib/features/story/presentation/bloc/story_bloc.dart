@@ -19,6 +19,7 @@ import 'package:trydos/features/story/domain/useCases/increase_viewers_usecase.d
 import 'package:trydos/features/story/domain/useCases/upload_story_usecase.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/main.dart';
+import 'package:tuple/tuple.dart' as tuple;
 import '../../data/models/get_stories_model.dart';
 import '../../domain/useCases/add_story_to_our_server_usecase.dart';
 
@@ -33,7 +34,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 }
 
 @LazySingleton()
-class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
+class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
   final GetStoryUseCase getStoryUseCase;
   final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
   final UploadStoryUseCase uploadStoryUseCase;
@@ -154,17 +155,12 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
     debugPrint('selected ${event.collectionIndex}');
     debugPrint(
         'state.currentStoryInEachCollection ${state.currentStoryInEachCollection[event.collectionIndex]}');
-    Story story = state.storiesCollections[event.collectionIndex].stories![max(
-        state.currentStoryInEachCollection[event.collectionIndex]!,
-        event.selectedStoryIndexInCollection)];
-    // state
-    //     .stories[event.selected]
-    //     .stories![max(state.currentStoryInEachCollection[event.selected]!, event.currentStoryInEachCollection)]
-    //     .isSeen = true;
-    Map<int, int?> initialStories = Map.of(state.currentStoryInEachCollection);
-    initialStories[event.collectionIndex] =
+
+    Map<int, int?> currentStoryInEachCollection =
+        Map.of(state.currentStoryInEachCollection);
+    currentStoryInEachCollection[event.collectionIndex] =
         event.selectedStoryIndexInCollection == -1
-            ? initialStories[event.collectionIndex]
+            ? currentStoryInEachCollection[event.collectionIndex]
             : event.selectedStoryIndexInCollection;
     //todo make  the state loading
     emit(state.copyWith(
@@ -172,18 +168,18 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
       currentPage:
           event.currentPage == -1 ? state.currentPage : event.currentPage,
       selectedCollection: event.collectionIndex,
-      currentStoryInEachCollection: initialStories,
+      currentStoryInEachCollection: currentStoryInEachCollection,
     ));
 
-    var currentStoryInEachCollection =
+    var currentStoryInSelectedCollection =
         state.storiesCollections[event.collectionIndex].stories![max(
             state.currentStoryInEachCollection[event.collectionIndex]!,
             event.selectedStoryIndexInCollection)];
-    if (currentStoryInEachCollection.isPhoto == 1) {
+    if (currentStoryInSelectedCollection.isPhoto == 1) {
 //todo debug
       //todo bring the real width and height for selected photo
       final response = await getWidthAndHeightUseCase(widthAndHeightParams(
-          url: currentStoryInEachCollection.photoPath!,
+          url: currentStoryInSelectedCollection.photoPath!,
           collectionId: state.storiesCollections[event.collectionIndex].id!));
       response.fold((l) {
         if (isFailedTheFirstTime.contains('StorySelectedEvent')) {
@@ -230,7 +226,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
           }
           return e;
         }).toList(),
-        currentStoryInEachCollection: initialStories,
+        currentStoryInEachCollection: currentStoryInEachCollection,
         selectedCollection: event.collectionIndex,
       ));
     }
@@ -308,17 +304,36 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
           isPhoto: !isVideoFile ? 1 : 0,
           photoPath: !isVideoFile ? event.filePath : null,
           fullVideoPath: isVideoFile ? event.filePath : null);
-      if (GetIt.I<PrefsRepository>().myStoriesId ==
-          state.storiesCollections.first.stories![0].userId) {
+      r.fold((id) {
         List<Story> currentUserStories =
-            List.of(state.storiesCollections.first.stories!);
-        currentUserStories.insert(currentUserStories.length, story);
+        List.of(state.storiesCollections.first.stories!);
+        currentUserStories.insert(currentUserStories.length, story.copyWith(
+          id: id
+        ));
         state.storiesCollections.first.stories = currentUserStories;
-      } else {
-        state.storiesCollections.insert(0, r!);
+      }, (collection) {
+        state.storiesCollections.insert(0, collection);
+      });
+      // if (GetIt.I<PrefsRepository>().myStoriesId ==
+      //     state.storiesCollections.first.stories![0].userId) {
+      //   List<Story> currentUserStories =
+      //       List.of(state.storiesCollections.first.stories!);
+      //   currentUserStories.insert(currentUserStories.length, story);
+      //   state.storiesCollections.first.stories = currentUserStories;
+      // } else {
+      //   state.storiesCollections.insert(0, r!);
+      // }
+      Map<int, int?> currentStoryInEachCollection =
+          Map.of(state.currentStoryInEachCollection);
+      if (state.storiesCollections.first
+              .stories![currentStoryInEachCollection[0]!].isSeen ??
+          false) {
+        currentStoryInEachCollection[0] =
+            state.storiesCollections.first.stories!.length - 1;
       }
       emit(state.copyWith(
           storiesCollections: state.storiesCollections,
+          currentStoryInEachCollection: currentStoryInEachCollection,
           uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
     });
   }
@@ -331,30 +346,50 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState>  {
   @override
   Map<String, dynamic>? toJson(StoryState state) {
     return state.copyWith(
-      getStoriesStatus: GetStoriesStatus.init,
-      selectedVideoStatus: SelectedVideoStatus.init,
-      uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.init,
-      uploadStoryStatus: UploadStoryStatus.init
-    ).toJson();
+        getStoriesStatus: GetStoriesStatus.init,
+        selectedVideoStatus: SelectedVideoStatus.init,
+        uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.init,
+        uploadStoryStatus: UploadStoryStatus.init,
+        currentStoryToMakeItViewedInEachCollection: []).toJson();
   }
 
   FutureOr<void> _IncreaseViewersEvent(
       IncreaseViewersEvent event, Emitter<StoryState> emit) async {
+    if (state.currentStoryToMakeItViewedInEachCollection
+        .contains(tuple.Tuple2(event.collectionId, event.storyId))) return;
+    List<tuple.Tuple2<String, String>>
+        currentStoryToMakeItViewedInEachCollection =
+        List.of(state.currentStoryToMakeItViewedInEachCollection);
+    currentStoryToMakeItViewedInEachCollection
+        .add(tuple.Tuple2(event.collectionId, event.storyId));
+    emit(state.copyWith(
+      currentStoryToMakeItViewedInEachCollection:
+          currentStoryToMakeItViewedInEachCollection,
+    ));
     final response = await increaseViewersUseCase(
         IncreaseViewersParams(storyId: event.storyId));
-    response.fold((l) => null, (r) {
+    response.fold((l) {
+      currentStoryToMakeItViewedInEachCollection
+          .remove(tuple.Tuple2(event.collectionId, event.storyId));
       emit(state.copyWith(
+        currentStoryToMakeItViewedInEachCollection:
+            currentStoryToMakeItViewedInEachCollection,
+      ));
+    }, (r) {
+      emit(state.copyWith(
+          currentStoryToMakeItViewedInEachCollection:
+              currentStoryToMakeItViewedInEachCollection,
           storiesCollections: state.storiesCollections.map((e) {
-        if (e.id.toString() == event.collectionId) {
-          return e.copyWith(
-              stories: e.stories?.map((e) {
-            if (e.id.toString() == event.storyId)
-              return e.copyWith(isSeen: true);
+            if (e.id.toString() == event.collectionId) {
+              return e.copyWith(
+                  stories: e.stories?.map((e) {
+                if (e.id.toString() == event.storyId)
+                  return e.copyWith(isSeen: true);
+                return e;
+              }).toList());
+            }
             return e;
-          }).toList());
-        }
-        return e;
-      }).toList()));
+          }).toList()));
     });
   }
 }
