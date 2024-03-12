@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,6 +20,7 @@ import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_card.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/my_text_widget.dart';
@@ -41,6 +45,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
+
     scrollController.addListener(() {
       if (scrollController.position.pixels <= 80) {
         debugPrint(scrollController.position.pixels.toString());
@@ -58,6 +63,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    Locale currentLocale = Localizations.localeOf(context);
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
@@ -90,116 +96,116 @@ class _HomePageState extends State<HomePage> {
           _previousOffset = currentOffset;
           return true;
         },
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              CustomScrollView(
-                controller: scrollController,
-                physics: const ClampingScrollPhysics(),
-                scrollBehavior: const CupertinoScrollBehavior(),
-                slivers: [
-                  SliverToBoxAdapter(child: 50.verticalSpace),
-                  SliverToBoxAdapter(
-                    child: 40.verticalSpace,
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            CustomScrollView(
+              controller: scrollController,
+              physics: const ClampingScrollPhysics(),
+              scrollBehavior: const CupertinoScrollBehavior(),
+              slivers: [
+                SliverToBoxAdapter(child: 50.verticalSpace),
+                SliverToBoxAdapter(
+                  child: 40.verticalSpace,
+                ),
+                SliverToBoxAdapter(
+                  child: Stack(
+                    children: [
+                      StoriesList(),
+                      Positioned(
+                          top: 0,
+                          right: currentLocale.languageCode == "ar" ? 30 : null,
+                          left: currentLocale.languageCode == "ar" ? null : 30,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SvgPicture.asset(
+                                AppAssets.storyFilmSvg,
+                                width: 20,
+                                height: 20,
+                              ),
+                              SizedBox(
+                                width: 7,
+                              ),
+                              MyTextWidget(
+                                LocaleKeys.story.tr(),
+                                style: context.textTheme.bodyText2?.rr.copyWith(
+                                    height: 0.86, color: Color(0xff3C3C3C)),
+                              )
+                            ],
+                          ))
+                    ],
                   ),
-                  SliverToBoxAdapter(
-                    child: Stack(
-                      children: [
-                        StoriesList(),
-                        Positioned(
-                            top: 0,
-                            left: 30,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SvgPicture.asset(
-                                  AppAssets.storyFilmSvg,
-                                  width: 20,
-                                  height: 20,
-                                ),
-                                SizedBox(
-                                  width: 7,
-                                ),
-                                MyTextWidget(
-                                  'Story',
-                                  style: context.textTheme.bodyText2?.rr
-                                      .copyWith(
-                                          height: 0.86,
-                                          color: Color(0xff3C3C3C)),
-                                )
-                              ],
-                            ))
-                      ],
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: 5.verticalSpace,
-                  ),
-                  BlocBuilder<AppBloc, AppState>(
-                    builder: (context, appState) {
-                      return BlocBuilder<HomeBloc, HomeState>(
-                        builder: (context, homeState) {
-                          String? currentSlug = homeState
-                              .mainCategoriesResponseModel
-                              ?.data
-                              ?.mainCategories?[appState.tabIndex]
-                              .slug;
-                          return sliverListSeparated(
-                            itemBuilder: (_, index) => Padding(
-                                padding:
-                                    HWEdgeInsets.symmetric(horizontal: 15.w),
-                                child: currentSlug == null ||(
-                                    (homeState
-                                                .getHomeSectionsPaginationObject[
-                                                    currentSlug]
-                                                ?.paginationStatus ==
-                                            PaginationStatus.loading ||  homeState
-                                        .getHomeSectionsPaginationObject[
-                                    currentSlug]
-                                        ?.paginationStatus ==
-                                        PaginationStatus.initial)&& (homeState
-                                            .getHomeSectionsPaginationObject[
-                                        currentSlug]
-                                            ?.items.length ?? 0) == 0)
-                                    ? TrydosShimmerLoading(
-                                        width: 1.sw,
-                                        logoTextWidth: 70.w,
-                                        height: 235,
-                                        logoTextHeight: 20)
-                                    : index == 2
-                                        ? quickOfferCard()
-                                        : HomePageCard2(
-                                            withSlidingImages: index == 1,
-                                          )
-                                //HomePageCard(showWhite: index % 2 == 0),
-                                ),
-                            separator: SizedBox(
-                              height: 20,
-                            ),
-                            childCount: 8,
-                          );
-                        },
-                      );
-                    },
-                  ),
-                  SliverToBoxAdapter(
-                    child: 20.verticalSpace,
-                  ),
-                ],
-              ),
-              BlocBuilder<AppBloc, AppState>(
-                  buildWhen: (p, c) => p.showBars != c.showBars,
-                  builder: (context, state) {
-                    if (state.showBars == true) {
-                      return const TabsBar();
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  })
-            ],
-          ),
+                ),
+                SliverToBoxAdapter(
+                  child: 5.verticalSpace,
+                ),
+                BlocBuilder<AppBloc, AppState>(
+                  builder: (context, appState) {
+                    return BlocBuilder<HomeBloc, HomeState>(
+                      builder: (context, homeState) {
+                        String? currentSlug = homeState
+                            .mainCategoriesResponseModel
+                            ?.data
+                            ?.mainCategories?[appState.tabIndex]
+                            .slug;
+                        return sliverListSeparated(
+                          itemBuilder: (_, index) => Padding(
+                              padding: HWEdgeInsets.symmetric(horizontal: 15.w),
+                              child: currentSlug == null ||
+                                      ((homeState
+                                                      .getHomeSectionsPaginationObject[
+                                                          currentSlug]
+                                                      ?.paginationStatus ==
+                                                  PaginationStatus.loading ||
+                                              homeState
+                                                      .getHomeSectionsPaginationObject[
+                                                          currentSlug]
+                                                      ?.paginationStatus ==
+                                                  PaginationStatus.initial) &&
+                                          (homeState
+                                                      .getHomeSectionsPaginationObject[
+                                                          currentSlug]
+                                                      ?.items
+                                                      .length ??
+                                                  0) ==
+                                              0)
+                                  ? TrydosShimmerLoading(
+                                      width: 1.sw,
+                                      logoTextWidth: 70.w,
+                                      height: 235,
+                                      logoTextHeight: 20)
+                                  : index == 2
+                                      ? quickOfferCard()
+                                      : HomePageCard2(
+                                          withSlidingImages: index == 1,
+                                        )
+                              //HomePageCard(showWhite: index % 2 == 0),
+                              ),
+                          separator: SizedBox(
+                            height: 20,
+                          ),
+                          childCount: 8,
+                        );
+                      },
+                    );
+                  },
+                ),
+                SliverToBoxAdapter(
+                  child: 20.verticalSpace,
+                ),
+              ],
+            ),
+            BlocBuilder<AppBloc, AppState>(
+                buildWhen: (p, c) => p.showBars != c.showBars,
+                builder: (context, state) {
+                  if (state.showBars == true) {
+                    return const TabsBar();
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                })
+          ],
         ),
       ),
     ));

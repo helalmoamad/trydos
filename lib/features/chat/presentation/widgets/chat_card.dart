@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,6 +20,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/no_image_widget.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -91,8 +93,9 @@ class _ChatCardState extends ThemeState<ChatCard> {
         ?.firstWhere((element) => element.userId != _prefsRepository.myChatId)
         .user;
     String receiverName = HelperFunctions.getTheFirstTwoLettersOfName(
-            widget.chat.channelName ?? 'No Channel Name'),
-        fullReceiverName = widget.chat.channelName ?? 'No Channel Name';
+            widget.chat.channelName ?? LocaleKeys.no_channal_name.tr()),
+        fullReceiverName =
+            widget.chat.channelName ?? LocaleKeys.no_channal_name.tr();
     // if (receiver == null) {
     //   receiverName = 'UK';
     //   fullReceiverName = 'Unknown User';
@@ -111,7 +114,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
     //       'Unknown User';
     // }
     String senderName = HelperFunctions.getTheFirstTwoLettersOfName(
-        _prefsRepository.myChatName ?? 'No Channel Name');
+        _prefsRepository.myChatName ?? LocaleKeys.no_channal_name.tr());
     ChannelMember me = widget.chat.channelMembers!
         .firstWhere((element) => element.userId == _prefsRepository.myChatId);
     // User? sender = me.user;
@@ -173,7 +176,9 @@ class _ChatCardState extends ThemeState<ChatCard> {
                   motion: const ScrollMotion(),
                   children: [
                     SlidableActionWidget(
-                      text: me.archived == 0 ? 'Archive' : 'UnArchive',
+                      text: me.archived == 0
+                          ? LocaleKeys.archive.tr()
+                          : LocaleKeys.un_archive.tr(),
                       onTap: () {
                         chatBloc.add(ChangeChatPropertyEvent(
                             channelId: widget.chat.id!,
@@ -184,7 +189,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       iconUrl: AppAssets.archiveSvg,
                     ),
                     SlidableActionWidget(
-                      text: 'Delete',
+                      text: LocaleKeys.delete.tr(),
                       onTap: () {
                         chatBloc
                             .add(DeleteChatEvent(channelId: widget.chat.id!));
@@ -194,7 +199,9 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       iconUrl: AppAssets.binSvg,
                     ),
                     SlidableActionWidget(
-                      text: me.mute == 0 ? 'Mute' : 'UnMute',
+                      text: me.mute == 0
+                          ? LocaleKeys.mute.tr()
+                          : LocaleKeys.un_mute.tr(),
                       onTap: () {
                         chatBloc.add(ChangeChatPropertyEvent(
                             channelId: widget.chat.id!,
@@ -215,7 +222,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                   motion: const ScrollMotion(),
                   children: [
                     SlidableActionWidget(
-                      text: 'Read',
+                      text: LocaleKeys.read.tr(),
                       onTap: () {
                         chatBloc.add(
                             ReadAllMessagesEvent(widget.chat.id!.toString()));
@@ -225,10 +232,15 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       iconUrl: AppAssets.unreadSvg,
                     ),
                     SlidableActionWidget(
-                      text: me.pin == 0 ? 'Pin' : 'UnPin',
+                      text: me.pin == 0
+                          ? LocaleKeys.pin.tr()
+                          : LocaleKeys.un_pin.tr(),
                       onTap: () {
-                        if(chatBloc.state.pinnedChats.length == 3 && me.pin == 0){
-                          showMessage('You can have at most 3 pinned chats!' , showInRelease: true);
+                        if (chatBloc.state.pinnedChats.length == 3 &&
+                            me.pin == 0) {
+                          showMessage(
+                              LocaleKeys.you_can_have_at_most_3_pinned.tr(),
+                              showInRelease: true);
                           return;
                         }
                         chatBloc.add(ChangeChatPropertyEvent(
@@ -486,9 +498,9 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                                 ? AppAssets.sandClockSvg
                                                                                 : (state.currentFailedMessage.contains(lastMessage.id))
                                                                                     ? AppAssets.MessageFailedSvg
-                                                                                    : status!.isWatched ?? false
+                                                                                    : status?.isWatched ?? false
                                                                                         ? AppAssets.messageReadArrowSvg
-                                                                                        : status.isReceived == 1
+                                                                                        : status?.isReceived == 1
                                                                                             ? AppAssets.messageDeliveredArrowSvg
                                                                                             : AppAssets.messageSentArrowSvg,
                                                                             width:
@@ -568,22 +580,26 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                   MyTextWidget(
                                                                 isDeleteForAll
                                                                     ? deleteFromMyId
-                                                                        ? " لقد قمت بحذف هذه الرسالة"
-                                                                        : "تم حذف هذه الرسالة"
+                                                                        ? LocaleKeys
+                                                                            .you_have_deleted_this_message
+                                                                            .tr()
+                                                                        : LocaleKeys
+                                                                            .this_message_has_been_deleted
+                                                                            .tr()
                                                                     : messageType !=
                                                                             'TextMessage'
                                                                         ? (messageType ==
                                                                                 'ImageMessage'
-                                                                            ? 'Photo'
+                                                                            ? LocaleKeys.photo.tr()
                                                                             : messageType == 'VideoMessage'
-                                                                                ? 'Video'
+                                                                                ? LocaleKeys.vvideo.tr()
                                                                                 : messageType == 'FileMessage'
-                                                                                    ? 'File'
+                                                                                    ? LocaleKeys.file.tr()
                                                                                     : messageType == 'VoiceCall'
-                                                                                        ? 'Voice Call'
+                                                                                        ? LocaleKeys.voice_call.tr()
                                                                                         : messageType == 'VideoCall'
-                                                                                            ? 'Video Call'
-                                                                                            : 'Voice')
+                                                                                            ? LocaleKeys.video_call.tr()
+                                                                                            : LocaleKeys.voice.tr())
                                                                         : widget.chat.messages!.firstWhere((element) => element.authMessageStatus!.isDeleted == 0).messageContent!.content.toString(),
                                                                 maxLines: widget
                                                                         .thereActivity

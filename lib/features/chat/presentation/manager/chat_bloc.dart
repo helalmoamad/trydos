@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:dio/dio.dart';
@@ -580,7 +581,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           currentFailedMediaMessage: currentFailedMediaMessage));
     }, (r) {
       _prefsRepository.setAFilePathExist(
-          event.useCloudinaryToUpload ? r.secureUrl! : r.data!.filePath!);
+          event.useCloudinaryToUpload ? r.secureUrl! : r.data!.filePath!,
+          event.channelId);
       add(SendMessageEvent(
           messageId: event.messageId,
           extraFields: event.extraFields,
@@ -770,6 +772,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           ]),
           pinnedChats: !fromPinned ? state.pinnedChats : chats));
     }, (r) {
+      _prefsRepository.removeAllFilePathExistInCaht(event.channelId);
       emit((state.copyWith(
           deleteChatStatus: DeleteChatStatus.success,
           chats: fromPinned ? state.chats : chats,
@@ -1487,8 +1490,21 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           .firstWhere((element) => element.id == event.channelId);
     }
     bool isAFileMessageRemoved = false;
+    bool isAimageMessageRemoved = false;
+    bool isAdocumentMessageRemoved = false;
+
+    bool isAvideoMessageRemoved = false;
+
     int index =
         chat.messages!.indexWhere((element) => element.id == event.messageId);
+    isAimageMessageRemoved =
+        chat.messages![index].messageType!.name == 'ImageMessage';
+    isAdocumentMessageRemoved =
+        chat.messages![index].messageType!.name == 'FileMessage';
+
+    isAvideoMessageRemoved =
+        chat.messages![index].messageType!.name == 'VideoMessage';
+
     isAFileMessageRemoved =
         !chat.messages![index].messageType!.name!.contains('Call') &&
             chat.messages![index].messageType!.name != 'TextMessage';
@@ -1517,9 +1533,19 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         : state.pinnedChats;
     if (isAFileMessageRemoved) {
       _prefsRepository.removeAFilePathExist(
-          chat.messages![index].mediaMessageContent![0].filePath!);
+          chat.messages![index].mediaMessageContent![0].filePath!,
+          event.channelId);
     }
     emit(state.copyWith(
+      videoCountInEachChat: isAvideoMessageRemoved
+          ? state.videoCountInEachChat - 1
+          : state.videoCountInEachChat,
+      imageCountInEachChat: isAimageMessageRemoved
+          ? state.imageCountInEachChat - 1
+          : state.imageCountInEachChat,
+      fileCountInEachChat: isAdocumentMessageRemoved
+          ? state.fileCountInEachChat - 1
+          : state.fileCountInEachChat,
       chats: chats,
       newSortedChatsByDate:
           groupReceivedMessageOnDays(chats: [...pinnedChats, ...chats]),

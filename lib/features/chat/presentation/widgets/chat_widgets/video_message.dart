@@ -13,6 +13,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/vedio_player.dart';
 import '../../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
+import '../../../../../common/helper/file_saving.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../core/utils/responsive_padding.dart';
@@ -76,6 +77,12 @@ class _VideoMessageState extends State<VideoMessage> {
   late ChatBloc chatBloc;
   @override
   void initState() {
+    if (widget.isSent) {
+      FileSaving().downloadFileToLocalStorage(
+        widget.videoUrl ?? widget.videoFile!.path,
+        widget.channelId,
+      );
+    }
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
       setState(() {
@@ -170,7 +177,7 @@ class _VideoMessageState extends State<VideoMessage> {
                             (widget.isReceived || widget.isRead))
                         ? Offset(0, 0)
                         : widget.senderId == widget._prefsRepository.myChatId
-                            ? Offset(50.w, 0)
+                            ? Offset(150.w, 0)
                             : Offset(-50.w, 0),
                     child: Stack(
                       alignment: widget.isSent
@@ -192,6 +199,7 @@ class _VideoMessageState extends State<VideoMessage> {
                                   ),
                                 ),
                                 child: MYVideoPlayer(
+                                    chatId: widget.channelId,
                                     videoUrl: widget.videoUrl,
                                     videoFile: widget.videoFile)),
                             Transform.translate(
@@ -372,7 +380,7 @@ class _VideoMessageState extends State<VideoMessage> {
                             ? Transform.translate(
                                 offset: widget.senderId ==
                                         widget._prefsRepository.myChatId
-                                    ? Offset(-120.w, 0)
+                                    ? Offset(-350.w, 0)
                                     : Offset(110.w, 0),
                                 child: SendRecieveWatchTime(
                                   isRead: widget.isRead,

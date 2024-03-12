@@ -192,7 +192,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
       _preferences.getStringList(PrefsKey.existenceFiles) ?? [];
 
   @override
-  bool isAFilePathExist(String filePath) {
+  bool isAFilePathExist(String filePath, String chatId) {
+    filePath = convert.jsonEncode({chatId: filePath});
     List<String> files = getExistenceFiles();
     String path = files.firstWhere((element) => element.startsWith(filePath),
         orElse: () => '');
@@ -200,14 +201,24 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  Future<bool> setAFilePathExist(String filePath) {
+  Future<bool> setAFilePathExist(String filePath, String chatId) {
     List<String> files = getExistenceFiles();
-    files.add(filePath);
+    if (!isAFilePathExist(filePath, chatId)) {
+      filePath = convert.jsonEncode({chatId: filePath});
+      files.add(filePath);
+    }
+
     return _preferences.setStringList(PrefsKey.existenceFiles, files);
   }
-  Future<bool> removeAFilePathExist(String filePath) {
+
+  Future<bool> removeAFilePathExist(String filePath, String chatId) {
     List<String> files = getExistenceFiles();
-    files.removeWhere((element)=> element.startsWith(filePath));
+    print(
+        "000000000000000000000000000000000000000000000000000000000000011111111000000000000000000${files.any((element) => element.contains(filePath))}");
+
+    files.removeWhere((element) => element.contains(filePath));
+    print(
+        "0000000000000000000000000000000000000000000000000000000000000000000000000000000${files.any((element) => element.contains(filePath))}");
     return _preferences.setStringList(PrefsKey.existenceFiles, files);
   }
 
@@ -220,10 +231,33 @@ class PrefsRepositoryImpl extends PrefsRepository {
       _preferences.setString('countryName', countryName!);
 
   @override
-  String? getTheLocalPathForFile(String filePath) {
+  String? getTheLocalPathForFile(String filePath, String chatId) {
+    filePath = convert.jsonEncode({chatId: filePath});
     List<String> files = getExistenceFiles();
+
     String path = files.firstWhere((element) => element.startsWith(filePath));
-    return path.split(' ').length > 1 ? path.split(' ')[1] : null;
+
+    Map paths = convert.jsonDecode(path);
+    return paths[chatId].toString().split(' ').length > 1
+        ? paths[chatId].split(' ')[1]
+        : null;
+  }
+
+  @override
+  List<String>? getTheLocalPathForChannal(String chatId) {
+    List<String> files = getExistenceFiles();
+
+    List<String> paths = [];
+    files.forEach((element) {
+      Map fiePath = convert.jsonDecode(element);
+
+      if (fiePath.keys.contains(chatId)) {
+        if (fiePath[chatId].toString().split(' ').length > 1) {
+          paths.add(fiePath[chatId]);
+        }
+      }
+    });
+    return paths.reversed.toList();
   }
 
   @override
@@ -267,12 +301,71 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> removeMessageFromBackground() => _preferences.remove('message');
+  @override
+  Future<bool> removeMessageWatchStatusFromBackground() =>
+      _preferences.remove('messageWatchStatus');
+  @override
+  Future<bool> removeMessageRecievedStatusFromBackground() =>
+      _preferences.remove('messageReceivedStatus');
+
+  @override
+  Future<bool> removeRemovedMessageFromBackground() =>
+      _preferences.remove('removedMessage');
 
   @override
   Future<bool> setMessageFromBackground(String message) {
     List<String> list = _preferences.getStringList('message') ?? [];
     list.add(message);
     return _preferences.setStringList('message', list);
+  }
+
+  @override
+  // TODO: implement getTheRemovedMessageFromBackground
+  List<Map>? get getTheRemovedMessageFromBackground => _preferences
+      .getStringList('removedMessage')
+      ?.map((e) => (convert.jsonDecode(e)) as Map)
+      .toList();
+  @override
+  // TODO: implement getTheRemovedMessageFromBackground
+  List<Map>? get getTheMessageWatchStatusFromBackground => _preferences
+      .getStringList('messageWatchStatus')
+      ?.map((e) => (convert.jsonDecode(e)) as Map)
+      .toList();
+  @override
+  // TODO: implement getTheRemovedMessageFromBackground
+  List<Map>? get getTheMessageRecievedStatusFromBackground => _preferences
+      .getStringList('messageReceivedStatus')
+      ?.map((e) => (convert.jsonDecode(e)) as Map)
+      .toList();
+
+  @override
+  Future<bool> setRemovedMessageFromBackground(String data) {
+    List<String> list = _preferences.getStringList('removedMessage') ?? [];
+    list.add(data);
+    return _preferences.setStringList('removedMessage', list);
+  }
+
+  @override
+  Future<bool> setMessageWatchStatusFromBackground(String data) {
+    List<String> list = _preferences.getStringList('messageWatchStatus') ?? [];
+    list.add(data);
+    return _preferences.setStringList('messageWatchStatus', list);
+  }
+
+  @override
+  Future<bool> setMessageReceivedStatusFromBackground(String data) {
+    List<String> list =
+        _preferences.getStringList('messageReceivedStatus') ?? [];
+    list.add(data);
+    return _preferences.setStringList('messageReceivedStatus', list);
+  }
+
+  @override
+  Future<bool> removeAllFilePathExistInCaht(String chatId) {
+    List<String> files = getExistenceFiles();
+    files.removeWhere((element) => element.contains(chatId));
+
+    return _preferences.setStringList(PrefsKey.existenceFiles, files);
   }
 
 // @override

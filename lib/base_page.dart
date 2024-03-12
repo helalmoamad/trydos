@@ -134,6 +134,9 @@ class BasePage extends StatefulWidget {
 handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
     {required Message message}) async {
   DealWithMessagesStoredFromBackground();
+  DealWithRemovedMessageStroredFromBackground();
+  DealWithMessageReceivedStatusStroredFromBackground();
+  DealWithMessageWatchStatusStroredFromBackground();
   navigationToSinglePageChat(message.channel!);
 }
 
@@ -178,6 +181,69 @@ void DealWithMessagesStoredFromBackground() async {
   }
 }
 
+void DealWithRemovedMessageStroredFromBackground() async {
+  await GetIt.I<SharedPreferences>().reload();
+
+  List<Map>? removedMessages;
+  if ((removedMessages =
+          GetIt.I<PrefsRepository>().getTheRemovedMessageFromBackground) !=
+      null) {
+    for (int i = 0; i < (removedMessages?.length ?? 0); i++) {
+      GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
+          channelId: removedMessages![i]['message']["channel_id"],
+          messageId: removedMessages[i]['message']["id"],
+          deleteFromBoth: removedMessages[i]['message']["auth_message_status"]
+                  ["delete_for_all"]
+              ? 1
+              : 0,
+          type: !removedMessages[i]['message']["message_type"]["name"]
+                  .toString()
+                  .contains('Call')
+              ? "message"
+              : "call",
+          deleteFromId:
+              removedMessages[i]['message']["deleted_by_user_id"] ?? 0));
+    }
+    GetIt.I<PrefsRepository>().removeRemovedMessageFromBackground();
+  }
+}
+
+void DealWithMessageWatchStatusStroredFromBackground() async {
+  await GetIt.I<SharedPreferences>().reload();
+
+  List<Map>? messagesStatus;
+  if ((messagesStatus =
+          GetIt.I<PrefsRepository>().getTheMessageWatchStatusFromBackground) !=
+      null) {
+    for (int i = 0; i < (messagesStatus?.length ?? 0); i++) {
+      GetIt.I<ChatBloc>().add(WatchedMessageFromPusherEvent(
+          messagesStatus![i]['channel_id'].toString(),
+          messagesStatus[i]['auth_user_id'],
+          messagesStatus[i]['last_message_id'],
+          DateTime.parse(messagesStatus[i]['watched_at'])));
+    }
+    GetIt.I<PrefsRepository>().removeMessageWatchStatusFromBackground();
+  }
+}
+
+void DealWithMessageReceivedStatusStroredFromBackground() async {
+  await GetIt.I<SharedPreferences>().reload();
+
+  List<Map>? messagesStatus;
+  if ((messagesStatus = GetIt.I<PrefsRepository>()
+          .getTheMessageRecievedStatusFromBackground) !=
+      null) {
+    for (int i = 0; i < (messagesStatus?.length ?? 0); i++) {
+      GetIt.I<ChatBloc>().add(ReceiveMessageFromPusherEvent(
+          messagesStatus![i]['channel_id'].toString(),
+          messagesStatus[i]['auth_user_id'],
+          messagesStatus[i]['last_message_id'],
+          DateTime.parse(messagesStatus[i]['received_at'])));
+    }
+    GetIt.I<PrefsRepository>().removeMessageRecievedStatusFromBackground();
+  }
+}
+
 class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   late ChatBloc chatBloc;
   late HomeBloc homeBloc;
@@ -195,7 +261,11 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
+      DealWithRemovedMessageStroredFromBackground();
       DealWithMessagesStoredFromBackground();
+      DealWithMessageReceivedStatusStroredFromBackground();
+      DealWithMessageWatchStatusStroredFromBackground();
+
       //Check call when open app from background
       if (prefsRepository.chatToken != null) {
         checkAndNavigationCallingPage(context);
@@ -350,9 +420,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
             channelId: data['message']["channel_id"],
             messageId: data['message']["id"],
-            deleteFromBoth:
-                data['message']["auth_message_status"]["delete_for_all"] ? 1 : 0,
-            type: !data['message']["message_type"]["name"].toString().contains('Call')
+            deleteFromBoth: data['message']["auth_message_status"]
+                    ["delete_for_all"]
+                ? 1
+                : 0,
+            type: !data['message']["message_type"]["name"]
+                    .toString()
+                    .contains('Call')
                 ? "message"
                 : "call",
             deleteFromId: data['message']["deleted_by_user_id"] ?? 0));

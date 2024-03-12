@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/widgets/contact_card.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
@@ -77,7 +79,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                   ),
                   10.horizontalSpace,
                   MyTextWidget(
-                    'Contacts List',
+                    LocaleKeys.contacts_list.tr(),
                     style: textTheme.subtitle1?.rr
                         .copyWith(color: const Color(0xff388CFF)),
                   ),
@@ -102,7 +104,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                   controller: form.controllers[0],
                   filledColor: colorScheme.grey50,
                   bordersColor: colorScheme.grey50,
-                  hintText: 'Search, Chat, Contact, Start New Chat',
+                  hintText: LocaleKeys.search_chat_contact_startNewChat.tr(),
                   hintTextStyle: textTheme.subtitle2?.lr
                       .copyWith(color: const Color(0xffD3D3D3)),
                   onChange: (String? text) {
@@ -147,8 +149,9 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                 if ((state.getContactsStatus == GetContactsStatus.loading ||
                         state.getContactsStatus == GetContactsStatus.init) &&
                     state.contacts.isNullOrEmpty) {
-                  return SliverToBoxAdapter(child: SizedBox(
-                    height: 1.sh - 200 ,
+                  return SliverToBoxAdapter(
+                      child: SizedBox(
+                    height: 1.sh - 200,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -163,22 +166,27 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                         onPressed: () {
                           chatBloc.add(GetContactsEvent());
                         },
-                        child: MyTextWidget('Try Again')),
+                        child: MyTextWidget(LocaleKeys.try_again.tr())),
                   );
                 }
                 return SliverMainAxisGroup(
                   slivers: [
-                    SliverToBoxAdapter(child: Container(
-                        width: 1.sw,
-                        color: colorScheme.white,
-                        child: state.getContactsStatus != GetContactsStatus.success ? TrydosLoader() : const SizedBox.shrink())),
+                    SliverToBoxAdapter(
+                        child: Container(
+                            width: 1.sw,
+                            color: colorScheme.white,
+                            child: state.getContactsStatus !=
+                                    GetContactsStatus.success
+                                ? TrydosLoader()
+                                : const SizedBox.shrink())),
                     ValueListenableBuilder<List<Contact>>(
                         valueListenable: searchContacts,
                         builder: (context, searchedContacts, _) {
                           return sliverListSeparated(
                             itemBuilder: (_, index) {
                               return ContactCard(
-                                  index: index, contact: searchedContacts[index]);
+                                  index: index,
+                                  contact: searchedContacts[index]);
                             },
                             separator: const SizedBox.shrink(),
                             childCount: searchedContacts.length,

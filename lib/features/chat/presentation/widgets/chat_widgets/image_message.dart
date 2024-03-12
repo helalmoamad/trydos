@@ -82,6 +82,13 @@ class _ImageMessageState extends State<ImageMessage> {
 
   @override
   void initState() {
+    if (widget.isSent) {
+      FileSaving().downloadFileToLocalStorage(
+        widget.imageUrl ??
+            widget.imageFile!.path + '?width=${200.w}&height=400',
+        widget.channelId,
+      );
+    }
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
       setState(() {
@@ -204,6 +211,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                         FileSaving().downloadFileToLocalStorage(
                                             widget.imageUrl! +
                                                 '?width=${200.w}&height=400',
+                                            widget.channelId,
                                             action: (File? file) {
                                           // _loadingImage.value = 2;
                                           if (file != null) {
@@ -459,7 +467,7 @@ class _ImageMessageState extends State<ImageMessage> {
                             ? Transform.translate(
                                 offset: widget.senderId ==
                                         widget._prefsRepository.myChatId
-                                    ? Offset(-120.w, 0)
+                                    ? Offset(-220.w, 0)
                                     : Offset(110.w, 0),
                                 child: SendRecieveWatchTime(
                                   isRead: widget.isRead,

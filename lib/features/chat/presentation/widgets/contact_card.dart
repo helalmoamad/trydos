@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,6 +15,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../../generated/locale_keys.g.dart';
 import '../../../../routes/router.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
@@ -39,7 +41,7 @@ class ContactCard extends StatelessWidget {
     };
     final String receiverName, fullReceiverName;
     if (contact.name == null) {
-      receiverName = 'UK';
+      receiverName = LocaleKeys.uk.tr();
       fullReceiverName = contact.mobilePhone ?? 'UnKnown User';
     } else {
       receiverName = HelperFunctions.getTheFirstTwoLettersOfName(contact.name!);
@@ -62,14 +64,19 @@ class ContactCard extends StatelessWidget {
                 }
                 Chat? chat;
                 User? receiver;
-                List<Chat> chats=List.of(GetIt.I<ChatBloc>().state.chats);
+                List<Chat> chats = List.of(GetIt.I<ChatBloc>().state.chats);
                 debugPrint(chats.toString());
                 chats.addAll(GetIt.I<ChatBloc>().state.pinnedChats);
-                chat=chats.firstWhere((element) => element.channelMembers!.any((element) => element.userId==contact.contactUserId));
-                final preferences=GetIt.I<PrefsRepository>();
-                receiver=chat.channelMembers?.firstWhere((element) => element.userId!=preferences.myChatId,orElse: ()=> ChannelMember()).user;
+                chat = chats.firstWhere((element) => element.channelMembers!
+                    .any((element) => element.userId == contact.contactUserId));
+                final preferences = GetIt.I<PrefsRepository>();
+                receiver = chat.channelMembers
+                    ?.firstWhere(
+                        (element) => element.userId != preferences.myChatId,
+                        orElse: () => ChannelMember())
+                    .user;
                 context.go(GRouter
-                    .config.applicationRoutes.kSinglePageChatPagePath +
+                        .config.applicationRoutes.kSinglePageChatPagePath +
                     '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}');
               },
               child: Stack(
@@ -126,14 +133,13 @@ class ContactCard extends StatelessWidget {
                                     const Spacer(),
                                     if (contact.contactUserId == null) ...{
                                       MyTextWidget(
-                                        'Invite',
+                                        LocaleKeys.invite.tr(),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: context.textTheme.subtitle1?.rr
                                             .copyWith(
                                                 height: 1.33,
-                                                color:
-                                                    const Color(0xff388cff)),
+                                                color: const Color(0xff388cff)),
                                       ),
                                       25.horizontalSpace,
                                     }

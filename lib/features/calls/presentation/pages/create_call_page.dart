@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,6 +14,7 @@ import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/calls/presentation/pages/room_call_page.dart';
 import 'package:trydos/features/calls/presentation/widgets/call_status_widget.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/routes/router_config.dart';
 
 import '../../../../service/language_service.dart';
@@ -41,7 +43,8 @@ class CreateCallPage extends StatefulWidget {
 class _CreateCallPageState extends ThemeState<CreateCallPage> {
   @override
   void initState() {
-    if (GetIt.I<CallsBloc>().state.makeCallStatus == MakeCallStatus.endCall) Navigator.of(context).pop();
+    if (GetIt.I<CallsBloc>().state.makeCallStatus == MakeCallStatus.endCall)
+      Navigator.of(context).pop();
 
     // TODO: implement initState
     super.initState();
@@ -121,14 +124,13 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                     .copyWith(color: const Color(0xffD3D3D3)),
                               ),
                               80.verticalSpace,
-                              state.makeCallStatus ==
-                                  MakeCallStatus.cancel
+                              state.makeCallStatus == MakeCallStatus.cancel
                                   ? CallStatusWidget(
-                                      text: 'Did Not Answer',
+                                      text: LocaleKeys.did_no_answer.tr(),
                                       iconUrl: 'assets/svg/end_call.svg',
                                       textColor: Color(0xFFFF0000))
                                   : CallStatusWidget(
-                                      text: 'Calling ...',
+                                      text: LocaleKeys.calling.tr(),
                                       iconUrl: AppAssets.callingSvg,
                                       textColor: colorScheme.grey200,
                                     ),
@@ -161,7 +163,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                 ),
                                 10.verticalSpace,
                                 MyTextWidget(
-                                  'End Call',
+                                  LocaleKeys.end_call.tr(),
                                   style: textTheme.bodyText2?.lr
                                       .copyWith(color: const Color(0xffFF5F61)),
                                 ),

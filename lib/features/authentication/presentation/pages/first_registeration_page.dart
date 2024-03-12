@@ -56,7 +56,8 @@ class _RegistrationPageState extends State<RegistrationPage>
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
     ));
-    FirebaseAnalytics.instance.setCurrentScreen(screenName: "Registration Page");
+    FirebaseAnalytics.instance
+        .setCurrentScreen(screenName: "Registration Page");
     super.didChangeDependencies();
   }
 
@@ -85,15 +86,14 @@ class _RegistrationPageState extends State<RegistrationPage>
             }),
         valueListenable: pageContent,
         builder: (ctx, index, child) {
-          if(index < 2){
+          if (index < 2) {
             FocusScope.of(context).unfocus();
-          }else{
-            debugPrint('gggggggg');
+          } else {
             focusNode.requestFocus();
           }
           return Scaffold(
             backgroundColor:
-            index != 6 ? context.colorScheme.background : Color(0xffF4FFF4),
+                index != 6 ? context.colorScheme.background : Color(0xffF4FFF4),
             body: Stack(
               alignment: Alignment.bottomCenter,
               children: [
@@ -150,10 +150,10 @@ class _RegistrationPageState extends State<RegistrationPage>
                           child: PageView(
                               physics: NeverScrollableScrollPhysics(),
                               onPageChanged: (value) => setState(() {
-                                PopScopeValue = value;
-                              }),
+                                    PopScopeValue = value;
+                                  }),
                               controller: pageController,
-                              children:  [
+                              children: [
                                 WelcomeSection(
                                   goToLoginSection: () {
                                     fromLogin = true;
@@ -227,9 +227,9 @@ class _RegistrationPageState extends State<RegistrationPage>
                                       debugPrint('fromLogin:  $fromLogin');
                                       if (fromLogin) {
                                         context.go(GRouter
-                                            .config
-                                            .applicationRoutes
-                                            .kLoginSuccessfullyPage +
+                                                .config
+                                                .applicationRoutes
+                                                .kLoginSuccessfullyPage +
                                             '?phoneNumber=$phoneNumber');
                                         return;
                                       }
@@ -262,13 +262,15 @@ class _RegistrationPageState extends State<RegistrationPage>
                           onWillPop: () async {
                             debugPrint('tttttttttttttttt');
                             if (PopScopeValue > 0) {
-                              if(PopScopeValue == 2 && fromLogin){
-                                await pageController.animateToPage(PopScopeValue -2,
+                              if (PopScopeValue == 2 && fromLogin) {
+                                await pageController.animateToPage(
+                                    PopScopeValue - 2,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.easeInOut);
                                 return false;
                               }
-                              await pageController.animateToPage(PopScopeValue-1,
+                              await pageController.animateToPage(
+                                  PopScopeValue - 1,
                                   duration: Duration(milliseconds: 500),
                                   curve: Curves.easeInOut);
                               return false;
@@ -284,4 +286,3 @@ class _RegistrationPageState extends State<RegistrationPage>
         });
   }
 }
-

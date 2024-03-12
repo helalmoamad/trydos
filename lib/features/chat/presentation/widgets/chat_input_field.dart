@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,6 +25,7 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 //import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../generated/locale_keys.g.dart';
 import '../../../app/app_widgets/app_text_field.dart';
 import '../../../app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
@@ -259,7 +261,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           ),
                                     10.horizontalSpace,
                                     MyTextWidget(
-                                      'Photo',
+                                      LocaleKeys.photo.tr(),
                                       style: textTheme.caption?.lr.copyWith(
                                           color: colorScheme.grey200,
                                           height: 1.66),
@@ -477,7 +479,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             ),
                                             10.horizontalSpace,
                                             MyTextWidget(
-                                              'Voice',
+                                              LocaleKeys.voice.tr(),
                                               style: textTheme.caption?.lr
                                                   .copyWith(
                                                       color:
@@ -579,7 +581,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             (await recorder.stopRecorder())!;
                                         recorder.deleteRecord(fileName: path);
                                       },
-                                      child: MyTextWidget('Cancel',
+                                      child: MyTextWidget(
+                                          LocaleKeys.cansel.tr(),
                                           style: textTheme.bodyText2?.rr
                                               .copyWith(
                                                   letterSpacing: 0.14,
@@ -592,15 +595,14 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       focusColor: Colors.transparent,
                                       splashColor: Colors.transparent,
                                       onTap: () async {
-                                          final path =
-                                          await recorder.stopRecorder();
-                                          final audioFile = File(path!);
-                                          FirebasePresence
-                                              .deleteUserTransaction(
-                                            channelId: widget.channelId,
-                                          );
-                                          widget.onSendFile(audioFile, 'voice');
-                                          recordingNotifier.value = false;
+                                        final path =
+                                            await recorder.stopRecorder();
+                                        final audioFile = File(path!);
+                                        FirebasePresence.deleteUserTransaction(
+                                          channelId: widget.channelId,
+                                        );
+                                        widget.onSendFile(audioFile, 'voice');
+                                        recordingNotifier.value = false;
                                       },
                                       child: Padding(
                                         padding: HWEdgeInsets.all(10.0),
@@ -623,7 +625,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       onTap: () async {
                                         FirebasePresence.sendUserTransaction(
                                           channelId: widget.channelId,
-                                          description: 'Sending file...',
+                                          description:
+                                              LocaleKeys.sending_file.tr(),
                                         );
                                         File? file = await HelperFunctions
                                             .pickDocumentFile();
@@ -653,7 +656,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               FirebasePresence
                                                   .sendUserTransaction(
                                                 channelId: widget.channelId,
-                                                description: 'Typing...',
+                                                description:
+                                                    LocaleKeys.typing.tr(),
                                               );
                                               // pusherChatService
                                               //     .sendActivityEvent(
@@ -683,16 +687,16 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         focusColor: Colors.transparent,
                                         splashColor: Colors.transparent,
                                         onTap: () async {
-
                                           FirebasePresence.sendUserTransaction(
                                             channelId: widget.channelId,
-                                            description: 'Sending file...',
+                                            description:
+                                                LocaleKeys.sending_file.tr(),
                                           );
                                           showDialog(
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return GalleryAndCameraDialogWidget(
-                                                     onChooseFileFromGalleryAction:
+                                                    onChooseFileFromGalleryAction:
                                                         (AssetEntity?
                                                             assetEntity) async {
                                                   if (assetEntity != null) {
@@ -716,8 +720,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                           .call(file, 'video');
                                                     }
                                                   }
-                                                },
-                                                    onChooseFileFromCameraAction:
+                                                }, onChooseFileFromCameraAction:
                                                         (File? file) {
                                                   if (file != null) {
                                                     String mimeStr =
@@ -766,7 +769,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           }
                                           FirebasePresence.sendUserTransaction(
                                             channelId: widget.channelId,
-                                            description: 'Recording...',
+                                            description:
+                                                LocaleKeys.recording.tr(),
                                           );
                                           await recorder.startRecorder(
                                             toFile:
