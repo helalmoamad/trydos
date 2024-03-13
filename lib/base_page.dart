@@ -134,9 +134,11 @@ class BasePage extends StatefulWidget {
 handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
     {required Message message}) async {
   DealWithMessagesStoredFromBackground();
-  DealWithRemovedMessageStroredFromBackground();
-  DealWithMessageReceivedStatusStroredFromBackground();
-  DealWithMessageWatchStatusStroredFromBackground();
+  DealWithChatsToDeleteFromBackground();
+  DealWithChatsToEditStoredFromBackground();
+  DealWithRemovedMessageStoredFromBackground();
+  DealWithMessageReceivedStatusStoredFromBackground();
+  DealWithMessageWatchStatusStoredFromBackground();
   navigationToSinglePageChat(message.channel!);
 }
 
@@ -181,7 +183,33 @@ void DealWithMessagesStoredFromBackground() async {
   }
 }
 
-void DealWithRemovedMessageStroredFromBackground() async {
+void DealWithChatsToDeleteFromBackground() async {
+  await GetIt.I<SharedPreferences>().reload();
+  List<String>? ids;
+  if ((ids = GetIt.I<PrefsRepository>().getTheChatsIdsToRemoveFromBackground) !=
+      null) {
+    for (int i = 0; i < (ids?.length ?? 0); i++) {
+      GetIt.I<ChatBloc>().add(DeleteChatFromNotificationEvent(channelId: ids![i]));
+    }
+    GetIt.I<PrefsRepository>().removeChatsFromBackground();
+  }
+}
+
+void DealWithChatsToEditStoredFromBackground() async {
+  await GetIt.I<SharedPreferences>().reload();
+  List<Chat>? chats;
+  if ((chats = GetIt
+      .I<PrefsRepository>()
+      .getTheChatsToEditFromBackground) !=
+      null) {
+    for (int i = 0; i < (chats?.length ?? 0); i++) {
+      GetIt.I<ChatBloc>().add(
+          UpdateChannelObjectFromNotificationEvent(chat: chats![i]));
+    }
+    GetIt.I<PrefsRepository>().removeChatToEditFromBackground();
+  }
+}
+void DealWithRemovedMessageStoredFromBackground() async {
   await GetIt.I<SharedPreferences>().reload();
 
   List<Map>? removedMessages;
@@ -208,7 +236,7 @@ void DealWithRemovedMessageStroredFromBackground() async {
   }
 }
 
-void DealWithMessageWatchStatusStroredFromBackground() async {
+void DealWithMessageWatchStatusStoredFromBackground() async {
   await GetIt.I<SharedPreferences>().reload();
 
   List<Map>? messagesStatus;
@@ -226,12 +254,12 @@ void DealWithMessageWatchStatusStroredFromBackground() async {
   }
 }
 
-void DealWithMessageReceivedStatusStroredFromBackground() async {
+void DealWithMessageReceivedStatusStoredFromBackground() async {
   await GetIt.I<SharedPreferences>().reload();
 
   List<Map>? messagesStatus;
   if ((messagesStatus = GetIt.I<PrefsRepository>()
-          .getTheMessageRecievedStatusFromBackground) !=
+          .getTheMessageReceivedStatusFromBackground) !=
       null) {
     for (int i = 0; i < (messagesStatus?.length ?? 0); i++) {
       GetIt.I<ChatBloc>().add(ReceiveMessageFromPusherEvent(
@@ -240,7 +268,7 @@ void DealWithMessageReceivedStatusStroredFromBackground() async {
           messagesStatus[i]['last_message_id'],
           DateTime.parse(messagesStatus[i]['received_at'])));
     }
-    GetIt.I<PrefsRepository>().removeMessageRecievedStatusFromBackground();
+    GetIt.I<PrefsRepository>().removeMessageReceivedStatusFromBackground();
   }
 }
 
@@ -261,10 +289,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
-      DealWithRemovedMessageStroredFromBackground();
       DealWithMessagesStoredFromBackground();
-      DealWithMessageReceivedStatusStroredFromBackground();
-      DealWithMessageWatchStatusStroredFromBackground();
+      DealWithChatsToDeleteFromBackground();
+      DealWithChatsToEditStoredFromBackground();
+      DealWithRemovedMessageStoredFromBackground();
+      DealWithMessageReceivedStatusStoredFromBackground();
+      DealWithMessageWatchStatusStoredFromBackground();
 
       //Check call when open app from background
       if (prefsRepository.chatToken != null) {
@@ -321,9 +351,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
       if (event.data['type'] == 'RefuseCallEvent') {
-        log('fffffffffffffffffff');
-
-        log(event.data.toString());
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
         GetIt.I<PrefsRepository>().saveRequestsData(
@@ -414,7 +441,11 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           navigatorKey.currentState!.context.pop();
         }
         callsBloc.add(UserInteractWithCall(rejectIt: false));
-      } else if (event.data['type'] == 'UpdatingMessageEvent') {
+      } else if(event.data['type'] == 'ChannelDeletedEvent'){
+        Map<String, dynamic> data =
+        convert.jsonDecode(event.data["data"].toString());
+        GetIt.I<ChatBloc>().add(DeleteChatFromNotificationEvent(channelId: data['channelId']));
+      }else if (event.data['type'] == 'UpdatingMessageEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data["data"].toString());
         GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
@@ -430,6 +461,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                 ? "message"
                 : "call",
             deleteFromId: data['message']["deleted_by_user_id"] ?? 0));
+      } else if (event.data['type'] == 'ChannelUpdatedEvent') {
+        Map<String, dynamic> data =
+            convert.jsonDecode(event.data["data"].toString());
+        GetIt.I<ChatBloc>().add(UpdateChannelObjectFromNotificationEvent(chat: Chat.fromJson(data['channel'])));
       } else if (event.data['type'] == 'ChannelWatchedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
@@ -456,7 +491,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         chatBloc.add(ReceiveMessageEvent(
             message: message, prevMessageId: prevMessageId));
         if (BlocProvider.of<ChatBloc>(context).currentOpenedChatId !=
-            message.channelId) {
+                message.channelId &&
+            message.channel!.channelMembers!
+                    .firstWhere(
+                        (element) => element.userId == prefsRepository.myChatId)
+                    .mute !=
+                1 &&
+            message.senderUserId != prefsRepository.myChatId) {
           LocalNotificationService()
               .showNotificationWithPayload(message: event);
         }

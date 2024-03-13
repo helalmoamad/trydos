@@ -27,6 +27,7 @@ import 'package:uuid/uuid.dart';
 import 'common/helper/helper_functions.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
+import 'features/chat/data/models/my_chats_response_model.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
 
 @pragma('vm:entry-point')
@@ -176,10 +177,28 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     } else if (message.data['type'] == 'UpdatingMessageEvent') {
       GetIt.I<PrefsRepository>()
           .setRemovedMessageFromBackground(message.data['data']);
+    } else if (message.data['type'] == 'ChannelUpdatedEvent') {
+      Map<String, dynamic> data = convert.jsonDecode(message.data["data"].toString());
+      GetIt.I<PrefsRepository>().setMessageFromBackground(convert.jsonEncode(data['channel']));
+    } else if(message.data['type'] == 'ChannelDeletedEvent'){
+      Map<String, dynamic> data =
+      convert.jsonDecode(message.data["data"].toString());
+      GetIt.I<PrefsRepository>().setRemovedChatFromBackground(data['channel_id']);
     } else {
-      GetIt.I<PrefsRepository>()
-          .setMessageFromBackground(message.data['message']);
-      LocalNotificationService().showNotificationWithPayload(message: message);
+      if(message.data['message'] == null ) return;
+      Message myMessage =
+      Message.fromJson(convert.jsonDecode(message.data['message']));
+      if(myMessage.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
+        GetIt.I<ChatBloc>().add(
+            NotifyThatIReceivedMessageEvent(channelId: myMessage.channelId!));
+      }
+      GetIt.I<PrefsRepository>().setMessageFromBackground(message.data['message']);
+      if(myMessage.channel!.channelMembers!.firstWhere((element) => element
+          .userId == GetIt.I<PrefsRepository>().myChatId).mute != 1 &&
+          myMessage.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
+        LocalNotificationService().showNotificationWithPayload(
+            message: message);
+      }
     }
   } catch (e, st) {
     debugPrint(e.toString());

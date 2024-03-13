@@ -43,7 +43,7 @@ class StoryRepositoryImpl extends StoryRepository
   }
 
   @override
-  Future<Either<Failure, CollectionStoryModel?>> addStoryToOurServer(Map<String, dynamic> params) {
+  Future<Either<Failure, Either<int , CollectionStoryModel>>> addStoryToOurServer(Map<String, dynamic> params) {
     return handlingExceptionRequest(tryCall:()=> storyDataSource.addStoryToOurServer(params) );
 
   }
