@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,6 +7,7 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
@@ -113,9 +115,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     return Center(
                       child: ElevatedButton(
                           onPressed: () {
-                           homeBloc.add(GetProductsWithoutFiltersEvent(category: 'رجالي_36'));
+                            homeBloc.add(GetProductsWithoutFiltersEvent(
+                                category: 'رجالي_36'));
                           },
-                          child: MyTextWidget('Try Again')),
+                          child: MyTextWidget(LocaleKeys.try_again.tr())),
                     );
                   }
                   return ValueListenableBuilder<Tuple2<int, int>>(
@@ -134,22 +137,24 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       .products?.length ??
                                   0,
                               (index) => InkWell(
-                                onTap: (){
-                                  HelperFunctions.slidingNavigation(context, ProductDetailsPage());
-                                },
-                                child: ProductItem(
+                                    onTap: () {
+                                      HelperFunctions.slidingNavigation(
+                                          context, ProductDetailsPage());
+                                    },
+                                    child: ProductItem(
                                       slidingModeItem: slidingMode,
                                       productItem: state
                                           .getProductListingWithoutFiltersModel!
                                           .data!
                                           .products![index],
                                       itemIndex: index,
-                                      setThisEnabled: (int index, int slideMode) {
+                                      setThisEnabled:
+                                          (int index, int slideMode) {
                                         setThisEnabledNotifier.value =
                                             Tuple2(index, slideMode);
                                       },
                                     ),
-                              )),
+                                  )),
                         );
                       });
                 },

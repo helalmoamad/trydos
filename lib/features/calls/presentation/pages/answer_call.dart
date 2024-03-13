@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,6 +12,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/calls/presentation/pages/room_call_page.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:vibration/vibration.dart';
 import '../../../../common/constant/configuration/chat_url_routes.dart';
@@ -126,7 +128,7 @@ class _AnswerCallState extends State<AnswerCall> {
                   ),
                   80.verticalSpace,
                   CallStatusWidget(
-                    text: 'Calling ...',
+                    text: LocaleKeys.calling.tr(),
                     iconUrl: AppAssets.callingSvg,
                     textColor: colorScheme.grey200,
                   ),
@@ -152,7 +154,7 @@ class _AnswerCallState extends State<AnswerCall> {
                           });
                         },
                         child: MyTextWidget(
-                          'answer',
+                          LocaleKeys.answer.tr(),
                           style: TextStyle(color: Colors.green),
                         ),
                       )),
@@ -169,7 +171,7 @@ class _AnswerCallState extends State<AnswerCall> {
                           height: 100.h,
                           child: Center(
                               child: MyTextWidget(
-                            'Reject',
+                            LocaleKeys.reject.tr(),
                             style: TextStyle(color: Colors.red),
                           ))))
                 ],

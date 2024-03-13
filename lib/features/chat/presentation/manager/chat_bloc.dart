@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:dio/dio.dart';
@@ -66,8 +67,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       this.getMediaCountUseCase)
       : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
-    on<UpdateChannelObjectFromNotificationEvent>(
-        _onUpdateChannelObjectFromNotificationEvent);
+    on<UpdateChannelObjectFromNotificationEvent>(_onUpdateChannelObjectFromNotificationEvent);
+    on<DeleteChatFromNotificationEvent>(_onDeleteChatFromNotificationEvent);
     on<ChangeGlobalUsedVariablesInBloc>(_onChangeGlobalUsedVariablesInBloc);
     on<ResendMessageEvent>(_onResendMessageEvent);
     on<AddAMessageToAChannel>(_onAddAMessageToAChannel);
@@ -292,6 +293,12 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           }
           return e;
         }).toList();
+        if(event.file != null){
+          _prefsRepository.setAFilePathExist(
+              event.mediaContent![0]['file_path'] + ' ' +
+                  event.file!.path,
+              r.channel!.id!);
+        }
         emit(
           state.copyWith(
               chats: chats,
@@ -579,18 +586,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           currentFailedMessage: currentFailedMessage,
           currentFailedMediaMessage: currentFailedMediaMessage));
     }, (r) {
-      try {
-        print('qqqqqqq ${_prefsRepository.getExistenceFiles().length}');
-        _prefsRepository.setAFilePathExist(
-            (event.useCloudinaryToUpload ? r.secureUrl! : r.data!.filePath!) +
-                ' ' +
-                event.file.path);
-        print('qqqqqqq222222 ${_prefsRepository.getExistenceFiles().length}');
 
-      }catch(e,st){
-        print(e);
-        print(st);
-      }
       add(SendMessageEvent(
           messageId: event.messageId,
           extraFields: event.extraFields,
@@ -668,9 +664,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       pinnedChats: !fromPinned ? state.pinnedChats : chats,
     ));
     add(IncreaseFileImageVideoCounterEvent(event.message.messageType!.name!));
-    if (event.prevMessageId != null) {
-      add(NotifyThatIReceivedMessageEvent(channelId: event.message.channelId!));
-    }
+
     if (index == -1 && event.prevMessageId != null) {
       add(GetAllMessagesBetweenEvent(
           firstMessageId: event.prevMessageId!,
@@ -780,6 +774,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           ]),
           pinnedChats: !fromPinned ? state.pinnedChats : chats));
     }, (r) {
+      _prefsRepository.removeAllFilePathExistInChat(event.channelId);
       emit((state.copyWith(
           deleteChatStatus: DeleteChatStatus.success,
           chats: fromPinned ? state.chats : chats,
@@ -1497,8 +1492,21 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           .firstWhere((element) => element.id == event.channelId);
     }
     bool isAFileMessageRemoved = false;
+    bool isAimageMessageRemoved = false;
+    bool isAdocumentMessageRemoved = false;
+
+    bool isAvideoMessageRemoved = false;
+
     int index =
         chat.messages!.indexWhere((element) => element.id == event.messageId);
+    isAimageMessageRemoved =
+        chat.messages![index].messageType!.name == 'ImageMessage';
+    isAdocumentMessageRemoved =
+        chat.messages![index].messageType!.name == 'FileMessage';
+
+    isAvideoMessageRemoved =
+        chat.messages![index].messageType!.name == 'VideoMessage';
+
     isAFileMessageRemoved =
         !chat.messages![index].messageType!.name!.contains('Call') &&
             chat.messages![index].messageType!.name != 'TextMessage';
@@ -1527,9 +1535,19 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         : state.pinnedChats;
     if (isAFileMessageRemoved) {
       _prefsRepository.removeAFilePathExist(
-          chat.messages![index].mediaMessageContent![0].filePath!);
+          chat.messages![index].mediaMessageContent![0].filePath!,
+          event.channelId);
     }
     emit(state.copyWith(
+      videoCountInEachChat: isAvideoMessageRemoved
+          ? state.videoCountInEachChat - 1
+          : state.videoCountInEachChat,
+      imageCountInEachChat: isAimageMessageRemoved
+          ? state.imageCountInEachChat - 1
+          : state.imageCountInEachChat,
+      fileCountInEachChat: isAdocumentMessageRemoved
+          ? state.fileCountInEachChat - 1
+          : state.fileCountInEachChat,
       chats: chats,
       newSortedChatsByDate:
           groupReceivedMessageOnDays(chats: [...pinnedChats, ...chats]),
@@ -1552,5 +1570,29 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           }
           return element;
         }).toList()));
+  }
+
+  FutureOr<void> _onDeleteChatFromNotificationEvent(DeleteChatFromNotificationEvent event, Emitter<ChatState> emit) {
+
+    bool fromPinned = false;
+    List<Chat> chats;
+    if (state.chats.any((element) => element.id == event.channelId)) {
+      chats = List.of(state.chats);
+    } else {
+      fromPinned = true;
+      chats = List.of(state.pinnedChats);
+    }
+    String uuid = const Uuid().v4();
+    int index = chats.indexWhere((element) => element.id == event.channelId);
+    chats[index] = chats[index].copyWith(id: uuid, localId: uuid, messages: []);
+    emit(state.copyWith(
+        chats: fromPinned ? state.chats : chats,
+        deleteChatStatus: DeleteChatStatus.loading,
+        newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
+          ...chats,
+          ...(fromPinned ? state.chats : state.pinnedChats)
+        ]),
+        pinnedChats: !fromPinned ? state.pinnedChats : chats));
+
   }
 }

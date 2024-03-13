@@ -131,14 +131,14 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                       animation: fadingController,
                       builder: (context, child) {
                         return SizedBox(
-                            height: 60 ,
+                            height: 60,
                             width: 50.w,
                             child: DottedBorder(
                               borderPadding: EdgeInsets.zero,
                               padding: EdgeInsets.zero,
                               borderType: BorderType.RRect,
                               strokeCap: StrokeCap.round,
-                              strokeWidth: 1- fadingController.value ,
+                              strokeWidth: 1 - fadingController.value,
                               dashPattern: [3, 3],
                               radius: Radius.circular(15.0),
                               color: withBorder

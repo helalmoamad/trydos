@@ -393,3 +393,12 @@ class DeleteMessageNotificationReceivedInChatsEvent extends ChatEvent {
   // TODO: implement props
   List<Object?> get props => [messageId, channelId, deleteForAll];
 }
+class DeleteChatFromNotificationEvent extends ChatEvent {
+  final String channelId;
+  DeleteChatFromNotificationEvent({
+        required this.channelId,
+});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [channelId];
+}

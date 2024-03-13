@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/authentication/presentation/widgets/adding_name.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/routes/router.dart';
 
 import '../../../../base_page.dart';
@@ -21,11 +23,9 @@ import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
 class NumberNotRegistered extends StatefulWidget {
-  const NumberNotRegistered(
-      {required this.phoneNumber, Key? key})
+  const NumberNotRegistered({required this.phoneNumber, Key? key})
       : super(key: key);
   final String phoneNumber;
-
 
   @override
   State<NumberNotRegistered> createState() => _NumberNotRegisteredState();
@@ -39,31 +39,32 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
     ));
-    FirebaseAnalytics.instance.setCurrentScreen(screenName: "Number Not Registered Page");
+    FirebaseAnalytics.instance
+        .setCurrentScreen(screenName: "Number Not Registered Page");
 
     super.didChangeDependencies();
   }
+
   final ValueNotifier<int> pageContent = ValueNotifier(0);
   final PageController pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
-      valueListenable: pageContent,
-      builder: (context , index , _) {
-        return Scaffold(
-          backgroundColor: index == 0 ? const Color(0xffFFF9F0) : const Color(0xffF4FFF4),
-          body: Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              Positioned(top: 50, left: 40, right: 40, child: logo),
-              PageView(
-                physics: NeverScrollableScrollPhysics(),
-                controller: pageController,
-                children: [
-                  Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Column(
+        valueListenable: pageContent,
+        builder: (context, index, _) {
+          return Scaffold(
+            backgroundColor:
+                index == 0 ? const Color(0xffFFF9F0) : const Color(0xffF4FFF4),
+            body: Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                Positioned(top: 50, left: 40, right: 40, child: logo),
+                PageView(
+                  physics: NeverScrollableScrollPhysics(),
+                  controller: pageController,
+                  children: [
+                    Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -85,18 +86,25 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                   10.horizontalSpace,
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       MyTextWidget(
-                                        'Sorry, This Number Is Not Registered With Us !',
-                                        style: context.textTheme.bodyText2?.ra.copyWith(
-                                            color: Color(0xff5D5C5D), height: 1.42),
+                                        LocaleKeys
+                                            .sorry_this_number_is_not_registered_with_us
+                                            .tr(),
+                                        style: context.textTheme.bodyText2?.ra
+                                            .copyWith(
+                                                color: Color(0xff5D5C5D),
+                                                height: 1.42),
                                       ),
                                       Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         children: [
                                           Padding(
-                                            padding: HWEdgeInsets.only(top: 3.0),
+                                            padding:
+                                                HWEdgeInsets.only(top: 3.0),
                                             child: SvgPicture.asset(
                                                 AppAssets.phoneCallSvg,
                                                 width: 10,
@@ -108,22 +116,25 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                             textAlign: TextAlign.start,
                                             style: context.textTheme.caption?.ra
                                                 .copyWith(
-                                                color: Color(0xff8D8D8D),
-                                                height: 1.25),
+                                                    color: Color(0xff8D8D8D),
+                                                    height: 1.25),
                                           ),
                                         ],
                                       ),
                                       10.verticalSpace,
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: [
                                           15.horizontalSpace,
                                           MyTextWidget(
-                                            'Register & Create New Account With Us In A Few Simple\nSteps',
+                                            LocaleKeys
+                                                .register_create_new_account
+                                                .tr(),
                                             style: context.textTheme.caption?.ra
                                                 .copyWith(
-                                                color: Color(0xffC4C2C2),
-                                                height: 1.25),
+                                                    color: Color(0xffC4C2C2),
+                                                    height: 1.25),
                                           )
                                         ],
                                       ),
@@ -136,7 +147,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                           Spacer(),
                           InkWell(
                             onTap: () {
-                              pageContent.value=1;
+                              pageContent.value = 1;
                               pageController.animateToPage(1,
                                   duration: Duration(milliseconds: 500),
                                   curve: Curves.easeInOut);
@@ -153,7 +164,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   MyTextWidget(
-                                    'Create New Account & Continue',
+                                    LocaleKeys.create_new_account_continue.tr(),
                                     style: textTheme.bodyText1?.ra.copyWith(
                                       color: Color(0xff5D5C5D),
                                       letterSpacing: 0.16,
@@ -168,19 +179,24 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                           InkWell(
                             focusColor: Colors.transparent,
                             splashColor: Colors.transparent,
-                            onTap: ()async{
-                              if(GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
-                                String? deviceId = await HelperFunctions
-                                    .getDeviceId();
+                            onTap: () async {
+                              if (GetIt.I<PrefsRepository>().isVerifiedPhone !=
+                                  false) {
+                                String? deviceId =
+                                    await HelperFunctions.getDeviceId();
                                 BlocProvider.of<AuthBloc>(context).add(
                                     RegisterGuestEvent(deviceId: deviceId!));
                               }
-                              context.go(GRouter.config.applicationRoutes.kBasePage);
+                              context.go(
+                                  GRouter.config.applicationRoutes.kBasePage);
                             },
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 10.0),
                               child: MyTextWidget(
-                                'Cancel & Take A Look At The App',
+                                LocaleKeys.cancel.tr() +
+                                    "&" +
+                                    LocaleKeys.later_take_look.tr(),
                                 style: textTheme.bodyText2?.ra.copyWith(
                                   color: Color(0xff4d84ff),
                                   letterSpacing: 0.14,
@@ -190,16 +206,18 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 44,),
+                          SizedBox(
+                            height: 44,
+                          ),
                         ]),
-                  ),
-                  AddingName(fromLogin: true,)
-                ],
-              ),
-            ],
-          ),
-        );
-      }
-    );
+                    AddingName(
+                      fromLogin: true,
+                    )
+                  ],
+                ),
+              ],
+            ),
+          );
+        });
   }
 }

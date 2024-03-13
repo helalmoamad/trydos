@@ -1,4 +1,5 @@
 import 'package:adobe_xd/adobe_xd.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ import 'package:trydos/features/authentication/presentation/pages/login_page.dar
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/theme_state.dart';
 import '../../../routes/router.dart';
@@ -261,7 +263,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                             ),
                       10.verticalSpace,
                       MyTextWidget(
-                        'Cart',
+                        LocaleKeys.cart.tr(),
                         maxLines: 1,
                         style: textTheme.overline?.lr.copyWith(
                             color: state.currentIndex != 1
@@ -275,14 +277,19 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               ),
               Expanded(
                 child: InkWell(
-                  onTap: () async{
+                  onTap: () async {
                     if (prefsRepository.isVerifiedPhone != true) {
                       context.go(GRouter
                           .config.applicationRoutes.kRegistrationPagePath);
                     } else {
-                      NotificationSettings settings = await FirebaseMessaging.instance.getNotificationSettings();
-                      if (settings.authorizationStatus == AuthorizationStatus.denied) {
-                        showMessage('Please Enable Send Notification For This App');
+                      NotificationSettings settings = await FirebaseMessaging
+                          .instance
+                          .getNotificationSettings();
+                      if (settings.authorizationStatus ==
+                          AuthorizationStatus.denied) {
+                        showMessage(LocaleKeys
+                            .please_enable_send_notification_for_this_app
+                            .tr());
                         openAppSettings();
                       }
                       appBloc.add(ChangeBasePage(2));
@@ -302,7 +309,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                             ),
                       10.verticalSpace,
                       MyTextWidget(
-                        'Chat',
+                        LocaleKeys.chat.tr(),
                         maxLines: 1,
                         style: textTheme.overline?.lr.copyWith(
                             letterSpacing: 0.28,
@@ -453,7 +460,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                             ),
                       10.verticalSpace,
                       MyTextWidget(
-                        'Me',
+                        LocaleKeys.me.tr(),
                         maxLines: 1,
                         style: textTheme.overline?.lr.copyWith(
                             letterSpacing: 0.28,

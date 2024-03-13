@@ -134,6 +134,11 @@ class BasePage extends StatefulWidget {
 handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
     {required Message message}) async {
   DealWithMessagesStoredFromBackground();
+  DealWithChatsToDeleteFromBackground();
+  DealWithChatsToEditStoredFromBackground();
+  DealWithRemovedMessageStoredFromBackground();
+  DealWithMessageReceivedStatusStoredFromBackground();
+  DealWithMessageWatchStatusStoredFromBackground();
   navigationToSinglePageChat(message.channel!);
 }
 
@@ -178,16 +183,92 @@ void DealWithMessagesStoredFromBackground() async {
   }
 }
 
+void DealWithChatsToDeleteFromBackground() async {
+  await GetIt.I<SharedPreferences>().reload();
+  List<String>? ids;
+  if ((ids = GetIt.I<PrefsRepository>().getTheChatsIdsToRemoveFromBackground) !=
+      null) {
+    for (int i = 0; i < (ids?.length ?? 0); i++) {
+      GetIt.I<ChatBloc>().add(DeleteChatFromNotificationEvent(channelId: ids![i]));
+    }
+    GetIt.I<PrefsRepository>().removeChatsFromBackground();
+  }
+}
+
 void DealWithChatsToEditStoredFromBackground() async {
   await GetIt.I<SharedPreferences>().reload();
   List<Chat>? chats;
-  if ((chats = GetIt.I<PrefsRepository>().getTheChatsToEditFromBackground) !=
+  if ((chats = GetIt
+      .I<PrefsRepository>()
+      .getTheChatsToEditFromBackground) !=
       null) {
     for (int i = 0; i < (chats?.length ?? 0); i++) {
-      GetIt.I<ChatBloc>().add(UpdateChannelObjectFromNotificationEvent(chat: chats![i]));
-
+      GetIt.I<ChatBloc>().add(
+          UpdateChannelObjectFromNotificationEvent(chat: chats![i]));
     }
     GetIt.I<PrefsRepository>().removeChatToEditFromBackground();
+  }
+}
+void DealWithRemovedMessageStoredFromBackground() async {
+  await GetIt.I<SharedPreferences>().reload();
+
+  List<Map>? removedMessages;
+  if ((removedMessages =
+          GetIt.I<PrefsRepository>().getTheRemovedMessageFromBackground) !=
+      null) {
+    for (int i = 0; i < (removedMessages?.length ?? 0); i++) {
+      GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
+          channelId: removedMessages![i]['message']["channel_id"],
+          messageId: removedMessages[i]['message']["id"],
+          deleteFromBoth: removedMessages[i]['message']["auth_message_status"]
+                  ["delete_for_all"]
+              ? 1
+              : 0,
+          type: !removedMessages[i]['message']["message_type"]["name"]
+                  .toString()
+                  .contains('Call')
+              ? "message"
+              : "call",
+          deleteFromId:
+              removedMessages[i]['message']["deleted_by_user_id"] ?? 0));
+    }
+    GetIt.I<PrefsRepository>().removeRemovedMessageFromBackground();
+  }
+}
+
+void DealWithMessageWatchStatusStoredFromBackground() async {
+  await GetIt.I<SharedPreferences>().reload();
+
+  List<Map>? messagesStatus;
+  if ((messagesStatus =
+          GetIt.I<PrefsRepository>().getTheMessageWatchStatusFromBackground) !=
+      null) {
+    for (int i = 0; i < (messagesStatus?.length ?? 0); i++) {
+      GetIt.I<ChatBloc>().add(WatchedMessageFromPusherEvent(
+          messagesStatus![i]['channel_id'].toString(),
+          messagesStatus[i]['auth_user_id'],
+          messagesStatus[i]['last_message_id'],
+          DateTime.parse(messagesStatus[i]['watched_at'])));
+    }
+    GetIt.I<PrefsRepository>().removeMessageWatchStatusFromBackground();
+  }
+}
+
+void DealWithMessageReceivedStatusStoredFromBackground() async {
+  await GetIt.I<SharedPreferences>().reload();
+
+  List<Map>? messagesStatus;
+  if ((messagesStatus = GetIt.I<PrefsRepository>()
+          .getTheMessageReceivedStatusFromBackground) !=
+      null) {
+    for (int i = 0; i < (messagesStatus?.length ?? 0); i++) {
+      GetIt.I<ChatBloc>().add(ReceiveMessageFromPusherEvent(
+          messagesStatus![i]['channel_id'].toString(),
+          messagesStatus[i]['auth_user_id'],
+          messagesStatus[i]['last_message_id'],
+          DateTime.parse(messagesStatus[i]['received_at'])));
+    }
+    GetIt.I<PrefsRepository>().removeMessageReceivedStatusFromBackground();
   }
 }
 
@@ -209,6 +290,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
       DealWithMessagesStoredFromBackground();
+      DealWithChatsToDeleteFromBackground();
+      DealWithChatsToEditStoredFromBackground();
+      DealWithRemovedMessageStoredFromBackground();
+      DealWithMessageReceivedStatusStoredFromBackground();
+      DealWithMessageWatchStatusStoredFromBackground();
+
       //Check call when open app from background
       if (prefsRepository.chatToken != null) {
         checkAndNavigationCallingPage(context);
@@ -354,7 +441,11 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           navigatorKey.currentState!.context.pop();
         }
         callsBloc.add(UserInteractWithCall(rejectIt: false));
-      } else if (event.data['type'] == 'UpdatingMessageEvent') {
+      } else if(event.data['type'] == 'ChannelDeletedEvent'){
+        Map<String, dynamic> data =
+        convert.jsonDecode(event.data["data"].toString());
+        GetIt.I<ChatBloc>().add(DeleteChatFromNotificationEvent(channelId: data['channelId']));
+      }else if (event.data['type'] == 'UpdatingMessageEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data["data"].toString());
         GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
