@@ -67,6 +67,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       this.getMediaCountUseCase)
       : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
+    on<UpdateChannelObjectFromNotificationEvent>(_onUpdateChannelObjectFromNotificationEvent);
+    on<DeleteChatFromNotificationEvent>(_onDeleteChatFromNotificationEvent);
     on<ChangeGlobalUsedVariablesInBloc>(_onChangeGlobalUsedVariablesInBloc);
     on<ResendMessageEvent>(_onResendMessageEvent);
     on<AddAMessageToAChannel>(_onAddAMessageToAChannel);
@@ -291,6 +293,12 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           }
           return e;
         }).toList();
+        if(event.file != null){
+          _prefsRepository.setAFilePathExist(
+              event.mediaContent![0]['file_path'] + ' ' +
+                  event.file!.path,
+              r.channel!.id!);
+        }
         emit(
           state.copyWith(
               chats: chats,
@@ -487,8 +495,6 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onUploadFileEvent(
       UploadFileEvent event, Emitter<ChatState> emit) async {
-    print(
-        ".............................................................................");
     List<String> ids = List.of(state.currentMessage);
     ids.add(event.messageId);
     List<Message> messages;
@@ -580,9 +586,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           currentFailedMessage: currentFailedMessage,
           currentFailedMediaMessage: currentFailedMediaMessage));
     }, (r) {
-      _prefsRepository.setAFilePathExist(
-          event.useCloudinaryToUpload ? r.secureUrl! : r.data!.filePath!,
-          event.channelId);
+
       add(SendMessageEvent(
           messageId: event.messageId,
           extraFields: event.extraFields,
@@ -660,9 +664,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       pinnedChats: !fromPinned ? state.pinnedChats : chats,
     ));
     add(IncreaseFileImageVideoCounterEvent(event.message.messageType!.name!));
-    if (event.prevMessageId != null) {
-      add(NotifyThatIReceivedMessageEvent(channelId: event.message.channelId!));
-    }
+
     if (index == -1 && event.prevMessageId != null) {
       add(GetAllMessagesBetweenEvent(
           firstMessageId: event.prevMessageId!,
@@ -772,7 +774,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           ]),
           pinnedChats: !fromPinned ? state.pinnedChats : chats));
     }, (r) {
-      _prefsRepository.removeAllFilePathExistInCaht(event.channelId);
+      _prefsRepository.removeAllFilePathExistInChat(event.channelId);
       emit((state.copyWith(
           deleteChatStatus: DeleteChatStatus.success,
           chats: fromPinned ? state.chats : chats,
@@ -1551,5 +1553,46 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           groupReceivedMessageOnDays(chats: [...pinnedChats, ...chats]),
       pinnedChats: pinnedChats,
     ));
+  }
+
+  FutureOr<void> _onUpdateChannelObjectFromNotificationEvent(
+      UpdateChannelObjectFromNotificationEvent event, Emitter<ChatState> emit) {
+    emit(state.copyWith(
+        chats: state.chats.map((element) {
+          if (element.id == event.chat.id) {
+            return event.chat;
+          }
+          return element;
+        }).toList(),
+        pinnedChats: state.pinnedChats.map((element) {
+          if (element.id == event.chat.id) {
+            return event.chat;
+          }
+          return element;
+        }).toList()));
+  }
+
+  FutureOr<void> _onDeleteChatFromNotificationEvent(DeleteChatFromNotificationEvent event, Emitter<ChatState> emit) {
+
+    bool fromPinned = false;
+    List<Chat> chats;
+    if (state.chats.any((element) => element.id == event.channelId)) {
+      chats = List.of(state.chats);
+    } else {
+      fromPinned = true;
+      chats = List.of(state.pinnedChats);
+    }
+    String uuid = const Uuid().v4();
+    int index = chats.indexWhere((element) => element.id == event.channelId);
+    chats[index] = chats[index].copyWith(id: uuid, localId: uuid, messages: []);
+    emit(state.copyWith(
+        chats: fromPinned ? state.chats : chats,
+        deleteChatStatus: DeleteChatStatus.loading,
+        newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
+          ...chats,
+          ...(fromPinned ? state.chats : state.pinnedChats)
+        ]),
+        pinnedChats: !fromPinned ? state.pinnedChats : chats));
+
   }
 }

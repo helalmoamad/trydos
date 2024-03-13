@@ -17,9 +17,12 @@ abstract class PrefsRepository {
   String? get myMarketId;
 
   List<Message>? get getTheMessageFromBackground;
+  List<String>? get getTheChatsIdsToRemoveFromBackground;
   List<Map>? get getTheRemovedMessageFromBackground;
   List<Map>? get getTheMessageWatchStatusFromBackground;
-  List<Map>? get getTheMessageRecievedStatusFromBackground;
+  List<Map>? get getTheMessageReceivedStatusFromBackground;
+
+  List<Chat>? get getTheChatsToEditFromBackground;
 
   bool? get isVerifiedPhone;
 
@@ -60,8 +63,11 @@ abstract class PrefsRepository {
 
   Future<bool> setMessageFromBackground(String message);
   Future<bool> setRemovedMessageFromBackground(String removedMessage);
+  Future<bool> setRemovedChatFromBackground(String removedChatId);
   Future<bool> setMessageWatchStatusFromBackground(String MessageStatus);
   Future<bool> setMessageReceivedStatusFromBackground(String MessageStatus);
+
+  Future<bool> setChatToEditFromBackground(String chat);
 
   Future<bool> setMyStoriesId(int id);
 
@@ -73,10 +79,10 @@ abstract class PrefsRepository {
 
   Future<bool> setAFilePathExist(String filePath, String chatId);
   Future<bool> removeAFilePathExist(String filePath, String chatId);
-  Future<bool> removeAllFilePathExistInCaht(String chatId);
+  Future<bool> removeAllFilePathExistInChat(String chatId);
 
   List<String> getExistenceFiles();
-  List<String>? getTheLocalPathForChannal(String chatId);
+  List<String>? getTheLocalPathForChannel(String chatId);
   bool isAFilePathExist(String filePath, String chatId);
 
   String? getTheLocalPathForFile(String filePath, String chatId);
@@ -92,9 +98,12 @@ abstract class PrefsRepository {
   Future<bool> clearUser();
 
   Future<bool> removeMessageFromBackground();
+  Future<bool> removeChatsFromBackground();
   Future<bool> removeRemovedMessageFromBackground();
   Future<bool> removeMessageWatchStatusFromBackground();
-  Future<bool> removeMessageRecievedStatusFromBackground();
+  Future<bool> removeMessageReceivedStatusFromBackground();
+
+  Future<bool> removeChatToEditFromBackground();
 
   Future<bool> clearVerificationId();
 

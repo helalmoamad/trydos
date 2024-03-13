@@ -54,7 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
   List<String>? images = [];
   @override
   void initState() {
-    images = _prefsRepository.getTheLocalPathForChannal(widget.chatId) ?? [];
+    images = _prefsRepository.getTheLocalPathForChannel(widget.chatId) ?? [];
     super.initState();
   }
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
@@ -79,13 +80,16 @@ class StoriesDataSource {
     return uploadStory();
   }
 
-  Future<CollectionStoryModel?> addStoryToOurServer(Map<String, dynamic> params) {
-    PostClient<CollectionStoryModel?> addStoryToOurServer = PostClient<CollectionStoryModel?>(
-      requestPrams: RequestConfig<CollectionStoryModel?>(
+  Future<Either<int , CollectionStoryModel>> addStoryToOurServer(Map<String, dynamic> params) {
+    PostClient<Either<int , CollectionStoryModel>> addStoryToOurServer = PostClient<Either<int , CollectionStoryModel>>(
+      requestPrams: RequestConfig<Either<int , CollectionStoryModel>>(
         endpoint: StoriesEndPoints.addStoryToOurServerEP,
         data: params,
-        response: ResponseValue<CollectionStoryModel?>(
-          fromJson: (response) => response['data'] != null ? CollectionStoryModel.fromJson(response['data']) : null
+        response: ResponseValue<Either<int , CollectionStoryModel>>(
+          fromJson: (response) {
+            if(response['data']['id'] != null) return Left(response['data']['id']);
+            return Right(CollectionStoryModel.fromJson(response['data']));
+          }
         )
       ),
       serverName: ServerName.stories,

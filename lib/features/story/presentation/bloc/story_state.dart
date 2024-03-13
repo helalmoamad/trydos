@@ -1,7 +1,10 @@
+import 'package:dartz/dartz.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../data/models/get_stories_model.dart';
 import '../../data/models/image_detail.dart';
+import 'package:tuple/tuple.dart' as tuple;
+
 part 'story_state.g.dart';
 
 enum GetStoriesStatus { init, loading, success, failure }
@@ -19,6 +22,7 @@ class StoryState {
   int currentPage;
   int? selectedCollection;
   Map<int , int?> currentStoryInEachCollection;
+  List<tuple.Tuple2<String , String>> currentStoryToMakeItViewedInEachCollection;
 
 
   StoryState(
@@ -29,6 +33,7 @@ class StoryState {
         this.selectedVideoStatus=SelectedVideoStatus.init,
         this.getStoriesStatus = GetStoriesStatus.init,
       this.storiesCollections = const [],
+      this.currentStoryToMakeItViewedInEachCollection = const [],
         this.currentPage = 0,
       this.currentStoryInEachCollection=const {},
       this.selectedCollection});
@@ -39,6 +44,7 @@ class StoryState {
 
         UploadStoryStatus? uploadStoryStatus,
         SelectedVideoStatus? selectedVideoStatus,
+        List<tuple.Tuple2<String , String>>? currentStoryToMakeItViewedInEachCollection,
         GetStoriesStatus? getStoriesStatus,
       List<CollectionStoryModel>? storiesCollections,
       Map<int ,int?>? currentStoryInEachCollection,
@@ -48,6 +54,7 @@ class StoryState {
       }) {
     return StoryState(
       uploadStoryCloudinaryStatus: uploadStoryCloudinaryStatus??this.uploadStoryCloudinaryStatus,
+        currentStoryToMakeItViewedInEachCollection: currentStoryToMakeItViewedInEachCollection ??this.currentStoryToMakeItViewedInEachCollection,
       uploadStoryStatus: uploadStoryStatus??this.uploadStoryStatus,
       selectedVideoStatus: selectedVideoStatus??this.selectedVideoStatus,
         getStoriesStatus: getStoriesStatus ?? this.getStoriesStatus,
