@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import '../../../enums/status_code_type.dart';
+import '../../domin/repositories/prefs_repository.dart';
 import '../api.dart';
 import '../client_config.dart';
 import 'detect_server.dart';
@@ -52,7 +54,18 @@ class PutClient<T> extends BaseApi<T> {
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       );
+
       stopWatch.stop();
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          response.requestOptions.path,
+          response.data is! FormData ? response.data : {'data': 'formData'},
+          response.requestOptions.headers,
+          response.statusCode,
+          response.requestOptions.method,
+          response.requestOptions.queryParameters,
+          response.data is! FormData ? response.data : {'data': 'formData'},
+          responseTime: stopWatch.elapsed.toString()
+      );
       prettyPrinterI(stopWatch.elapsed.toString());
       if (response.statusCode == StatusCode.operationSucceeded.code) {
         if (_fromJson == null) {

@@ -18,6 +18,8 @@ import 'package:trydos/features/authentication/domain/use_cases/verify_otp_signi
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
+import '../../../../common/constant/countries.dart';
+import '../../../../common/helper/show_message.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../main.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
@@ -151,15 +153,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final id = r.data!.id;
         final token = r.data!.accessToken;
         final name = r.data!.name;
+        final photo = r.data!.photoPath;
         final checkToken = token?.isNotEmpty ?? false;
 
         if (checkToken) {
           _prefsRepository.setChatToken(token!);
           _prefsRepository.setMyChatId(id!);
           _prefsRepository.setMyChatName(name ?? 'No Name');
+          _prefsRepository.setMyChatPhoto(photo);
         }
         add(StoreFcmTokenEvent(userId: id!, fcmToken: event.fcmToken));
-        GetIt.I<ChatBloc>().add(GetChatsEvent());
+        apisMustNotToRequest.remove('GetChatsEvent');
+        GetIt.I<ChatBloc>().add(GetChatsEvent(
+          limit: 10
+        ));
       },
     );
   }
@@ -247,7 +254,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setStoriesToken(token!);
           _prefsRepository.setMyStoriesId(id!);
         }
-
+        apisMustNotToRequest.remove('GetStoryEvent');
         GetIt.I<StoryBloc>().add(GetStoryEvent());
       },
     );
@@ -266,21 +273,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
           signInErrorMessage: l.message));
     }, (r) {
-      _prefsRepository.setMarketToken(r.data!.token!);
-      _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
-      _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
-      add(LoginToChatEvent(
-          fcmToken: NotificationProcess.myFcmToken!,
-          mobilePhone: r.data!.user!.phone,
-          name: r.data!.user!.name,
+      try {
+        _prefsRepository.setMarketToken(r.data!.token!);
+        _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
+        _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
+        add(LoginToChatEvent(
+            fcmToken: NotificationProcess.myFcmToken!,
+            mobilePhone: r.data!.user!.phone,
+            name: r.data!.user!.name,
+            originalUserId: r.data!.user!.id!.toString(),
+            otpIdToken: r.data!.idToken!));
+        add(LoginToStoriesEvent(
           originalUserId: r.data!.user!.id!.toString(),
-          otpIdToken: r.data!.idToken!));
-      add(LoginToStoriesEvent(
-        originalUserId: r.data!.user!.id!.toString(),
-        otpIdToken: r.data!.idToken!,
-        name: r.data!.user!.name,
-        phone: r.data!.user!.phone,
-      ));
+          otpIdToken: r.data!.idToken!,
+          name: r.data!.user!.name,
+          phone: r.data!.user!.phone,
+        ));
+      }catch(error){
+        showMessage(error.toString());
+
+      }
       debugPrint(
           'login _prefsRepository.chatToken${_prefsRepository.chatToken}');
       debugPrint(
@@ -412,7 +424,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     }, (r) {
       isFailedTheFirstTime.remove('GetUserCountryEvent');
-      _prefsRepository.setCountryName(r.country.toString());
+
+      _prefsRepository.setCountryName(countries.firstWhere((element) => element.code == r.countryCode).name);
     });
   }
 }

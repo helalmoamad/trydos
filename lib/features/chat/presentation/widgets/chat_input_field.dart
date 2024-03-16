@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,15 +22,18 @@ import 'package:trydos/core/utils/theme_state.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+//import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../generated/locale_keys.g.dart';
 import '../../../app/app_widgets/app_text_field.dart';
 import '../../../app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
 import '../../../app/my_cached_network_image.dart';
-import '../utils/pusher_chat.dart';
+import '../../../app/my_text_widget.dart';
+import '../utils/firebase_presence.dart';
 import 'chat_widgets/no_image_widget.dart';
 import 'chat_widgets/voice_waves_in_recording.dart';
 
@@ -40,14 +44,12 @@ class ChatInputField extends StatefulWidget {
     required this.onSendFile,
     required this.channelId,
     required this.senderName,
-    required this.channelPusherName,
     required this.senderUserImage,
   }) : super(key: key);
   final void Function(String message) onSendMessage;
   final void Function(File file, String type) onSendFile;
   final String channelId;
   final String? senderUserImage;
-  final String channelPusherName;
   final String senderName;
 
   @override
@@ -63,7 +65,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
     const Duration(microseconds: 1),
     () {},
   );
-  PusherChatService pusherChatService =GetIt.I<PusherChatService>();
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -71,20 +73,21 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
         thereTextNotifier.value = form.controllers[0].text.isNotEmpty;
       });
     });
-    initializeRecorder();
+    //initializeRecorder();
     super.initState();
   }
 
   bool recorderReady = false;
 
-  void initializeRecorder() async {
+  Future<bool> initializeRecorder() async {
     final status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {
-      return;
+      return false;
     }
     await recorder.openRecorder();
+    await recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
     recorderReady = true;
-    recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
+    return true;
   }
 
   @override
@@ -102,9 +105,10 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
           error: error.toString());
     };
     return BlocBuilder<AppBloc, AppState>(
-      buildWhen: (p,c)=> p.thereIsReply != c.thereIsReply,
+      buildWhen: (p, c) =>
+          p.thereIsReply != c.thereIsReply || p.messageId != c.messageId,
       builder: (context, state) {
-        print('imageUrl:  ${state.imageUrl}');
+        debugPrint('imageUrl:  ${state.imageUrl}');
 
         return Stack(
           alignment: Alignment.bottomCenter,
@@ -159,7 +163,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                 ),
                                 20.horizontalSpace,
                                 Expanded(
-                                  child: Text(
+                                  child: MyTextWidget(
                                     state.message.toString(),
                                     style: textTheme.caption?.lr.copyWith(
                                         color: colorScheme.grey200,
@@ -174,7 +178,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         imageUrl: ChatUrls.baseUrl +
                                             widget.senderUserImage!,
                                         imageFit: BoxFit.cover,
-                                    progressIndicatorBuilderWidget: TrydosLoader(),
+                                        progressIndicatorBuilderWidget:
+                                            TrydosLoader(),
                                         radius: 8,
                                         width: 30.sp,
                                         height: 30.sp)
@@ -223,7 +228,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         ? MyCachedNetworkImage(
                                             height: 40.sp,
                                             width: 40.sp,
-                                      progressIndicatorBuilderWidget: TrydosLoader(),
+                                            progressIndicatorBuilderWidget:
+                                                TrydosLoader(),
                                             imageFit: BoxFit.cover,
                                             imageUrl: state.imageUrl!,
                                           )
@@ -240,7 +246,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                   BorderRadius.circular(12.0),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Color.fromARGB(1,0,0,0)
+                                                  color:
+                                                      Color.fromARGB(1, 0, 0, 0)
 //                                                  context
 //                                                      .colorScheme.black
 //                                                      .withOpacity(0.05)
@@ -253,8 +260,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             ),
                                           ),
                                     10.horizontalSpace,
-                                    Text(
-                                      'Photo',
+                                    MyTextWidget(
+                                      LocaleKeys.photo.tr(),
                                       style: textTheme.caption?.lr.copyWith(
                                           color: colorScheme.grey200,
                                           height: 1.66),
@@ -267,7 +274,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             imageUrl: ChatUrls.baseUrl +
                                                 widget.senderUserImage!,
                                             imageFit: BoxFit.cover,
-                                        progressIndicatorBuilderWidget: TrydosLoader(),
+                                            progressIndicatorBuilderWidget:
+                                                TrydosLoader(),
                                             radius: 8,
                                             width: 30.sp,
                                             height: 30.sp)
@@ -323,7 +331,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         10.horizontalSpace,
                                         SizedBox(
                                           width: 200.w,
-                                          child: Text(
+                                          child: MyTextWidget(
                                             state.message.toString(),
                                             style: textTheme.caption?.lr
                                                 .copyWith(
@@ -339,7 +347,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 imageUrl: ChatUrls.baseUrl +
                                                     widget.senderUserImage!,
                                                 imageFit: BoxFit.cover,
-                                            progressIndicatorBuilderWidget: TrydosLoader(),
+                                                progressIndicatorBuilderWidget:
+                                                    TrydosLoader(),
                                                 radius: 8,
                                                 width: 30.sp,
                                                 height: 30.sp)
@@ -396,7 +405,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             10.horizontalSpace,
                                             SizedBox(
                                               width: 200.w,
-                                              child: Text(
+                                              child: MyTextWidget(
                                                 state.message.toString(),
                                                 style: textTheme.caption?.lr
                                                     .copyWith(
@@ -413,8 +422,9 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                     imageUrl: ChatUrls.baseUrl +
                                                         widget.senderUserImage!,
                                                     imageFit: BoxFit.cover,
-                                                withImageShadow: true,
-                                                progressIndicatorBuilderWidget: TrydosLoader(),
+                                                    withImageShadow: true,
+                                                    progressIndicatorBuilderWidget:
+                                                        TrydosLoader(),
                                                     radius: 8,
                                                     width: 30.sp,
                                                     height: 30.sp)
@@ -468,8 +478,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               height: 40.sp,
                                             ),
                                             10.horizontalSpace,
-                                            Text(
-                                              'Voice',
+                                            MyTextWidget(
+                                              LocaleKeys.voice.tr(),
                                               style: textTheme.caption?.lr
                                                   .copyWith(
                                                       color:
@@ -481,10 +491,12 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             const Spacer(),
                                             widget.senderUserImage != null
                                                 ? MyCachedNetworkImage(
-                                                    imageUrl: ChatUrls.baseUrl + widget.senderUserImage!,
+                                                    imageUrl: ChatUrls.baseUrl +
+                                                        widget.senderUserImage!,
                                                     imageFit: BoxFit.cover,
                                                     radius: 8,
-                                                    progressIndicatorBuilderWidget: TrydosLoader(),
+                                                    progressIndicatorBuilderWidget:
+                                                        TrydosLoader(),
                                                     width: 30.sp,
                                                     height: 30.sp)
                                                 : NoImageWidget(
@@ -540,7 +552,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                   .inSeconds
                                                   .remainder(60));
 
-                                          return Text('$minutes:$seconds',
+                                          return MyTextWidget(
+                                              '$minutes:$seconds',
                                               style: textTheme.subtitle1?.rr
                                                   .copyWith(
                                                 color: const Color(0xff404040),
@@ -556,19 +569,20 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       splashColor: Colors.transparent,
                                       onTap: () async {
                                         if (!recorderReady) {
-                                          initializeRecorder();
-                                          return;
+                                          final bool isInitialized =
+                                              await initializeRecorder();
+                                          if (!isInitialized) return;
                                         }
                                         recordingNotifier.value = false;
-                                        pusherChatService.sendActivityEvent(
-                                            widget.channelId,
-                                            widget.channelPusherName,
-                                            null);
+                                        FirebasePresence.deleteUserTransaction(
+                                          channelId: widget.channelId,
+                                        );
                                         final String path =
                                             (await recorder.stopRecorder())!;
                                         recorder.deleteRecord(fileName: path);
                                       },
-                                      child: Text('Cancel',
+                                      child: MyTextWidget(
+                                          LocaleKeys.cansel.tr(),
                                           style: textTheme.bodyText2?.rr
                                               .copyWith(
                                                   letterSpacing: 0.14,
@@ -581,12 +595,12 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       focusColor: Colors.transparent,
                                       splashColor: Colors.transparent,
                                       onTap: () async {
-                                        final path = await recorder.stopRecorder();
+                                        final path =
+                                            await recorder.stopRecorder();
                                         final audioFile = File(path!);
-                                        pusherChatService.sendActivityEvent(
-                                            widget.channelId,
-                                            widget.channelPusherName,
-                                            null);
+                                        FirebasePresence.deleteUserTransaction(
+                                          channelId: widget.channelId,
+                                        );
                                         widget.onSendFile(audioFile, 'voice');
                                         recordingNotifier.value = false;
                                       },
@@ -609,17 +623,17 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       focusColor: Colors.transparent,
                                       splashColor: Colors.transparent,
                                       onTap: () async {
-                                        pusherChatService.sendActivityEvent(
-                                            widget.channelId,
-                                            widget.channelPusherName,
-                                            'Sending file...');
+                                        FirebasePresence.sendUserTransaction(
+                                          channelId: widget.channelId,
+                                          description:
+                                              LocaleKeys.sending_file.tr(),
+                                        );
                                         File? file = await HelperFunctions
                                             .pickDocumentFile();
+                                        FirebasePresence.deleteUserTransaction(
+                                          channelId: widget.channelId,
+                                        );
                                         if (file != null) {
-                                          pusherChatService.sendActivityEvent(
-                                              widget.channelId,
-                                              widget.channelPusherName,
-                                              null);
                                           widget.onSendFile(file, 'file');
                                         }
                                       },
@@ -639,19 +653,25 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           onChange: (text) {
                                             _typingTimer.cancel();
                                             try {
-                                              pusherChatService.sendActivityEvent(
-                                                  widget.channelId,
-                                                  widget.channelPusherName,
-                                                   'Typing...');
+                                              FirebasePresence
+                                                  .sendUserTransaction(
+                                                channelId: widget.channelId,
+                                                description:
+                                                    LocaleKeys.typing.tr(),
+                                              );
+                                              // pusherChatService
+                                              //     .sendActivityEvent(
+                                              //         widget.channelId,
+                                              //         'Typing...');
                                             } catch (e) {
-                                              print(e);
+                                              debugPrint(e.toString());
                                             }
                                             _typingTimer = Timer(
                                                 const Duration(seconds: 1), () {
-                                              pusherChatService.sendActivityEvent(
-                                                  widget.channelId,
-                                                  widget.channelPusherName,
-                                                  null);
+                                              FirebasePresence
+                                                  .deleteUserTransaction(
+                                                channelId: widget.channelId,
+                                              );
                                             });
                                           },
                                           contentPadding:
@@ -667,54 +687,66 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         focusColor: Colors.transparent,
                                         splashColor: Colors.transparent,
                                         onTap: () async {
-                                          pusherChatService.sendActivityEvent(
-                                              widget.channelId,
-                                              widget.channelPusherName,
-                                              'Sending file...');
+                                          FirebasePresence.sendUserTransaction(
+                                            channelId: widget.channelId,
+                                            description:
+                                                LocaleKeys.sending_file.tr(),
+                                          );
                                           showDialog(
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return GalleryAndCameraDialogWidget(
                                                     onChooseFileFromGalleryAction:
                                                         (AssetEntity?
-                                                    assetEntity) async {
-                                                      if (assetEntity != null) {
-                                                        File file = (await assetEntity.originFile)!;
-                                                        String mimeStr = lookupMimeType(file.absolute.path) ??'';
-                                                        var fileType = mimeStr.split('/');
-                                                        log(fileType.toString());
-                                                        if (fileType[0] == 'image') {
-                                                          widget.onSendFile.call(file, 'image');
-                                                        }else{
-                                                          widget.onSendFile
-                                                              .call(file, 'video');
-                                                        }
-                                                        pusherChatService.sendActivityEvent(
-                                                            widget.channelId,
-                                                            widget.channelPusherName,
-                                                            null
-                                                        );
-                                                      }
-                                                    }, onChooseFileFromCameraAction:
-                                                    (File? file) {
-                                                  if (file != null) {
-                                                    String mimeStr = lookupMimeType(file.absolute.path) ??'';
-                                                    var fileType = mimeStr.split('/');
+                                                            assetEntity) async {
+                                                  if (assetEntity != null) {
+                                                    File file =
+                                                        (await assetEntity
+                                                            .originFile)!;
+                                                    String mimeStr =
+                                                        lookupMimeType(file
+                                                                .absolute
+                                                                .path) ??
+                                                            '';
+                                                    var fileType =
+                                                        mimeStr.split('/');
                                                     log(fileType.toString());
-                                                    if (fileType[0] == 'image') {
-                                                      widget.onSendFile.call(file, 'image');
-                                                    }else{
+                                                    if (fileType[0] ==
+                                                        'image') {
+                                                      widget.onSendFile
+                                                          .call(file, 'image');
+                                                    } else {
                                                       widget.onSendFile
                                                           .call(file, 'video');
                                                     }
-                                                    pusherChatService.sendActivityEvent(
-                                                        widget.channelId,
-                                                        widget.channelPusherName,
-                                                        null
-                                                    );
+                                                  }
+                                                }, onChooseFileFromCameraAction:
+                                                        (File? file) {
+                                                  if (file != null) {
+                                                    String mimeStr =
+                                                        lookupMimeType(file
+                                                                .absolute
+                                                                .path) ??
+                                                            '';
+                                                    var fileType =
+                                                        mimeStr.split('/');
+                                                    log(fileType.toString());
+                                                    if (fileType[0] ==
+                                                        'image') {
+                                                      widget.onSendFile
+                                                          .call(file, 'image');
+                                                    } else {
+                                                      widget.onSendFile
+                                                          .call(file, 'video');
+                                                    }
                                                   }
                                                 });
-                                              });
+                                              }).then((value) {
+                                            FirebasePresence
+                                                .deleteUserTransaction(
+                                              channelId: widget.channelId,
+                                            );
+                                          });
                                         },
                                         child: SvgPicture.asset(
                                           AppAssets.takePictureSvg,
@@ -728,21 +760,23 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         splashColor: Colors.transparent,
                                         onTap: () async {
                                           if (!recorderReady) {
-                                            initializeRecorder();
-                                            return;
+                                            bool isInitialized =
+                                                await initializeRecorder();
+                                            if (!isInitialized) return;
                                           }
                                           if (recorder.isRecording) {
                                             return;
                                           }
-                                          recordingNotifier.value = true;
-                                          pusherChatService.sendActivityEvent(
-                                              widget.channelId,
-                                              widget.channelPusherName,
-                                              'Recording...');
+                                          FirebasePresence.sendUserTransaction(
+                                            channelId: widget.channelId,
+                                            description:
+                                                LocaleKeys.recording.tr(),
+                                          );
                                           await recorder.startRecorder(
                                             toFile:
                                                 'audio${const Uuid().v4()}.aac',
                                           );
+                                          recordingNotifier.value = true;
                                         },
                                         child: SvgPicture.asset(
                                           AppAssets.recordVoiceSvg,

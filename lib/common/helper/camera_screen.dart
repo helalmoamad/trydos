@@ -4,6 +4,9 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:trydos/common/helper/show_message.dart';
+
+import '../../features/app/my_text_widget.dart';
 
 class CameraScreen extends StatefulWidget {
   List<CameraDescription> cameras;
@@ -55,12 +58,14 @@ class _CameraScreenState extends State<CameraScreen>
 
   @override
   void dispose() {
-    _timer.cancel();
-    setState(() {
-      controller!.setFlashMode(
-        FlashMode.off,
-      );
-    });
+    _timer?.cancel();
+    // if(mounted) {
+    //   setState(() {
+    //     controller!.setFlashMode(
+    //       FlashMode.off,
+    //     );
+    //   });
+    // }
     controller?.dispose();
 
     super.dispose();
@@ -75,12 +80,18 @@ class _CameraScreenState extends State<CameraScreen>
     animatedController.stop();
     animatedController.reset();
     animatedController.duration = const Duration(seconds: 60);
+    animatedController.addListener(() {
+      if(animatedController.status == AnimationStatus.completed){
+        _isRecordingInProgress = false;
+        onRecordVideoFinished(lengthMoreThan60: true);
+      }
+    });
     onNewCameraSelected(widget.cameras[0]);
     super.initState();
   }
 
 //todo timer for recording video
-  late Timer _timer;
+   Timer? _timer;
   int _seconds = 0;
   bool _isVideoCameraSelected = false;
   bool _isRecordingInProgress = false;
@@ -149,7 +160,7 @@ class _CameraScreenState extends State<CameraScreen>
           .getMaxExposureOffset()
           .then((value) => _maxAvailableExposureOffset = value);
     } on CameraException catch (e) {
-      print('Error initializing camera: $e');
+      debugPrint('Error initializing camera: $e');
     }
 
     // Update the Boolean
@@ -181,7 +192,7 @@ class _CameraScreenState extends State<CameraScreen>
                             child: Padding(
                               padding:
                                   const EdgeInsetsDirectional.only(top: 55.0),
-                              child: Text(
+                              child: MyTextWidget(
                                 '0 : $_seconds',
                                 style: TextStyle(
                                     color: Colors.white,
@@ -203,7 +214,7 @@ class _CameraScreenState extends State<CameraScreen>
                           for (ResolutionPreset preset in resolutionPresets)
                             DropdownMenuItem(
                               value: preset,
-                              child: Text(
+                              child: MyTextWidget(
                                 preset.toString().split('.')[1].toUpperCase(),
                                 style: const TextStyle(color: Colors.white),
                               ),
@@ -216,7 +227,7 @@ class _CameraScreenState extends State<CameraScreen>
                           });
                           onNewCameraSelected(controller!.description);
                         },
-                        hint: Text("Select item"),
+                        hint: MyTextWidget("Select item"),
                       ),
                     ),
 
@@ -252,7 +263,7 @@ class _CameraScreenState extends State<CameraScreen>
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text(
+                                  child: MyTextWidget(
                                     _currentZoomLevel.toStringAsFixed(1) + 'x',
                                     style: TextStyle(color: Colors.white),
                                   ),
@@ -310,14 +321,7 @@ class _CameraScreenState extends State<CameraScreen>
                                     },
                                     onLongPressUp: () async {
                                       if (_isRecordingInProgress) {
-                                        animatedController.stop();
-                                        _timer.cancel();
-                                        // _resetTimer();
-                                        XFile? rawVideo =
-                                            await stopVideoRecording();
-                                        File videoFile = File(rawVideo!.path);
-
-                                        Navigator.pop(context, videoFile);
+                                        onRecordVideoFinished();
                                       }
                                     },
                                     child: Stack(
@@ -423,7 +427,7 @@ class _CameraScreenState extends State<CameraScreen>
                         width: 90,
                         height: 40,
                         child: Center(
-                          child: Text('IMAGE',
+                          child: MyTextWidget('IMAGE',
                               style: TextStyle(
                                   color: _isVideoCameraSelected
                                       ? Colors.grey
@@ -453,7 +457,7 @@ class _CameraScreenState extends State<CameraScreen>
                           width: 60,
                           height: 40,
                           child: Center(
-                            child: Text(
+                            child: MyTextWidget(
                               'VIDEO',
                               style: TextStyle(
                                   color: _isVideoCameraSelected
@@ -540,7 +544,7 @@ class _CameraScreenState extends State<CameraScreen>
       XFile file = await cameraController.takePicture();
       return file;
     } on CameraException catch (e) {
-      print('Error occured while taking picture: $e');
+      debugPrint('Error occured while taking picture: $e');
       return null;
     }
   }
@@ -555,12 +559,11 @@ class _CameraScreenState extends State<CameraScreen>
       await cameraController!.startVideoRecording();
       setState(() {
         _isRecordingInProgress = true;
-        print(_isRecordingInProgress);
       });
 
       _startTimer();
     } on CameraException catch (e) {
-      print('Error starting to record video: $e');
+      debugPrint('Error starting to record video: $e');
     }
   }
 
@@ -573,11 +576,10 @@ class _CameraScreenState extends State<CameraScreen>
       XFile file = await controller!.stopVideoRecording();
       setState(() {
         _isRecordingInProgress = false;
-        print(_isRecordingInProgress);
       });
       return file;
     } on CameraException catch (e) {
-      print('Error stopping video recording: $e');
+      debugPrint('Error stopping video recording: $e');
       return null;
     }
   }
@@ -590,7 +592,7 @@ class _CameraScreenState extends State<CameraScreen>
     try {
       await controller!.pauseVideoRecording();
     } on CameraException catch (e) {
-      print('Error pausing video recording: $e');
+      debugPrint('Error pausing video recording: $e');
     }
   }
 
@@ -602,7 +604,21 @@ class _CameraScreenState extends State<CameraScreen>
     try {
       await controller!.resumeVideoRecording();
     } on CameraException catch (e) {
-      print('Error resuming video recording: $e');
+      debugPrint('Error resuming video recording: $e');
+    }
+  }
+
+  void onRecordVideoFinished({bool lengthMoreThan60 = false}) async{
+    animatedController.stop();
+    _timer?.cancel();
+    // _resetTimer();
+    XFile? rawVideo = await stopVideoRecording();
+    File videoFile = File(rawVideo!.path);
+    Navigator.pop(context, !lengthMoreThan60 ? videoFile : null);
+    if(lengthMoreThan60){
+      showMessage(
+          'Video length must not be longer than 59 seconds',
+          showInRelease: true);
     }
   }
 }

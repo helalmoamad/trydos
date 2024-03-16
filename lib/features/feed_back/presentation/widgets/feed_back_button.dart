@@ -49,7 +49,7 @@
 //               child: Row(
 //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
 //                 children: [
-//                   Text(
+//                   MyTextWidget(
 //                     '',
 //                     style:textTheme.subtitle2?.rr.copyWith(
 //                       color: colorScheme.tertiary

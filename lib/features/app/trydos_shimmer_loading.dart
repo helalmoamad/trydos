@@ -6,10 +6,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 
 class TrydosShimmerLoading extends StatefulWidget {
-  const TrydosShimmerLoading({super.key , required this.width, required this.logoTextWidth , required this.height, required this.logoTextHeight});
+  const TrydosShimmerLoading({super.key , required this.width, required this.logoTextWidth , required this.height, required this.logoTextHeight, this.circleDimensions});
   
   final double width , logoTextWidth;
   final double height , logoTextHeight;
+  final double? circleDimensions;
 
   @override
   State<TrydosShimmerLoading> createState() => _TrydosShimmerLoadingState();
@@ -53,8 +54,8 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading> with Single
                 ScaleTransition(
                   scale: Tween<double>(begin: 1 , end: 1.25).animate(controller),
                   child: SizedBox(
-                    width: 18,
-                    height: 18,
+                    width: widget.circleDimensions ?? 18,
+                    height: widget.circleDimensions ?? 18,
                     child: SvgPicture.string(
                       '<svg viewBox="0.0 0.0 17.9 17.9" ><defs><linearGradient id="gradient" x1="0.5" y1="0.542607" x2="0.5" y2="0.0"><stop offset="0.0" stop-color="#f53c3c" /><stop offset="1.0" stop-color="#ff9696" /></linearGradient></defs><path transform="translate(0.0, 0.0)" d="M 8.928571701049805 0 C 3.997458934783936 0 0 3.997458934783936 0 8.928571701049805 C 0 13.85968399047852 3.997458934783936 17.85714340209961 8.928571701049805 17.85714340209961 C 13.85968399047852 17.85714340209961 17.85714340209961 13.85968399047852 17.85714340209961 8.928571701049805 C 17.85714340209961 3.997458934783936 13.85968399047852 0 8.928571701049805 0 Z" fill="url(#gradient)" stroke="none" stroke-width="1" stroke-miterlimit="4" stroke-linecap="butt" /></svg>',
                       allowDrawingOutsideViewBox: true,
@@ -98,7 +99,7 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading> with Single
                 )
               ],
             ),
-            SizedBox(height: 16,),
+            SizedBox(height: widget.height/10,),
             SvgPicture.asset(AppAssets.trydosTextSvg , width: widget.logoTextWidth ,height: widget.logoTextHeight,)
           ],
         ),

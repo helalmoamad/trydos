@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/story_bloc.dart';
+import '../bloc/story_state.dart';
 
 class AnimatedBar extends StatelessWidget {
   final AnimationController animController;
@@ -28,11 +29,11 @@ class AnimatedBar extends StatelessWidget {
                   children: <Widget>[
                     _buildContainer(
                       double.infinity,
-                      position < state.initialStory[collectionIndex]!
+                      position < state.currentStoryInEachCollection[collectionIndex]!
                           ? Colors.white
                           : Colors.white.withOpacity(0.5),
                     ),
-                    position == state.initialStory[collectionIndex]
+                    position == state.currentStoryInEachCollection[collectionIndex]
                         ? AnimatedBuilder(
                       animation: animController,
                       builder: (context, child) {

@@ -88,7 +88,6 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
 
   void _updateStatus(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
-      print('hello');
       animationController.reset();
       resetPins();
     }
@@ -131,16 +130,15 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                   child: AnimatedBuilder(
                       animation: fadingController,
                       builder: (context, child) {
-                        print(fadingController.value);
                         return SizedBox(
-                            height: 60 ,
+                            height: 60,
                             width: 50.w,
                             child: DottedBorder(
                               borderPadding: EdgeInsets.zero,
                               padding: EdgeInsets.zero,
                               borderType: BorderType.RRect,
                               strokeCap: StrokeCap.round,
-                              strokeWidth: 1- fadingController.value ,
+                              strokeWidth: 1 - fadingController.value,
                               dashPattern: [3, 3],
                               radius: Radius.circular(15.0),
                               color: withBorder
@@ -162,9 +160,9 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                                     }
                                   },
                                   onChanged: (String? text) {
-                                    print(widget.index);
-                                    print(text);
-                                    print(text?.length);
+                                    debugPrint(widget.index.toString());
+                                    debugPrint(text);
+                                    debugPrint(text?.length.toString());
                                     widget.onChange.call();
                                     if (widget.index == 0 &&
                                         (text?.length ?? 0) == 6) {

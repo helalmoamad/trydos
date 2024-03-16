@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -13,9 +15,12 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../../generated/locale_keys.g.dart';
+import '../../../../routes/router.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
+import '../../../app/my_text_widget.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../pages/single_page_chat.dart';
 import 'chat_widgets/no_image_widget.dart';
@@ -32,10 +37,11 @@ class ContactCard extends StatelessWidget {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
+      debugPrint(error.toString());
     };
     final String receiverName, fullReceiverName;
     if (contact.name == null) {
-      receiverName = 'UK';
+      receiverName = LocaleKeys.uk.tr();
       fullReceiverName = contact.mobilePhone ?? 'UnKnown User';
     } else {
       receiverName = HelperFunctions.getTheFirstTwoLettersOfName(contact.name!);
@@ -56,40 +62,22 @@ class ContactCard extends StatelessWidget {
                 if (contact.contactUserId == null) {
                   return;
                 }
-                Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => BlocBuilder<AppBloc, AppState>(
-                            builder: (context, state) {
-                              return BlocBuilder<ChatBloc, ChatState>(
-                                buildWhen: (p,c)=> p.getChatsStatus != c.getChatsStatus,
-                                builder: (context, chatState) {
-                                  Chat? chat;
-                                  User? sender,receiver;
-                                  String? id;
-                                  List<Chat> chats=List.of(chatState.chats);
-                                  chats.addAll(chatState.pinnedChats);
-                                  chat=chats.firstWhere((element) => element.channelMembers!.any((element) => element.userId==contact.contactUserId));
-                                      final preferences=GetIt.I<PrefsRepository>();
-                                      id=chat.id!;
-                                      sender=chat.channelMembers?.firstWhere((element) => element.userId==preferences.myChatId,orElse: ()=> ChannelMember()).user;
-                                      receiver=chat.channelMembers?.firstWhere((element) => element.userId!=preferences.myChatId,orElse: ()=> ChannelMember()).user;
-                                  return SinglePageChat(
-                                    chatId: id,
-                                    receiverName: receiverName,
-                                    fullReceiverName: fullReceiverName,
-                                    receiverPhone: receiver?.mobilePhone ??
-                                        'No Number',
-                                    senderName: HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!),
-                                    receiverPhoto: sender?.photoPath,
-                                    senderPhoto: receiver?.photoPath,
-                                  );
-                                },
-                              );
-                            },
-                          )),
-                );
+                Chat? chat;
+                User? receiver;
+                List<Chat> chats = List.of(GetIt.I<ChatBloc>().state.chats);
+                debugPrint(chats.toString());
+                chats.addAll(GetIt.I<ChatBloc>().state.pinnedChats);
+                chat = chats.firstWhere((element) => element.channelMembers!
+                    .any((element) => element.userId == contact.contactUserId));
+                final preferences = GetIt.I<PrefsRepository>();
+                receiver = chat.channelMembers
+                    ?.firstWhere(
+                        (element) => element.userId != preferences.myChatId,
+                        orElse: () => ChannelMember())
+                    .user;
+                context.go(GRouter
+                        .config.applicationRoutes.kSinglePageChatPagePath +
+                    '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}');
               },
               child: Stack(
                 children: [
@@ -133,7 +121,7 @@ class ContactCard extends StatelessWidget {
                                 Flexible(
                                     child: Row(
                                   children: [
-                                    Text(
+                                    MyTextWidget(
                                       fullReceiverName,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -144,15 +132,14 @@ class ContactCard extends StatelessWidget {
                                     ),
                                     const Spacer(),
                                     if (contact.contactUserId == null) ...{
-                                      Text(
-                                        'Invite',
+                                      MyTextWidget(
+                                        LocaleKeys.invite.tr(),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: context.textTheme.subtitle1?.rr
                                             .copyWith(
                                                 height: 1.33,
-                                                color:
-                                                    const Color(0xff388cff)),
+                                                color: const Color(0xff388cff)),
                                       ),
                                       25.horizontalSpace,
                                     }

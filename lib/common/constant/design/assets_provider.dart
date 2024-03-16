@@ -52,6 +52,9 @@ abstract class AppAssets {
   static String get emptySvg=>'empty'.svg;
   static String get colorIndicatorSvg=>'color_indicator'.svg;
   static String get textSvg=>'text'.svg;
+  static String get freeShippingSvg=>'free_shipping'.svg;
+  static String get freeReturnSvg=>'free_return'.svg;
+  static String get arrivalOfShippingSvg=>'arrival_of_shipping'.svg;
 
   static String get singleChatSvg=>'single_chat'.svg;
   static String get chatNotificationSvg=>'chat_notification'.svg;
@@ -74,6 +77,7 @@ abstract class AppAssets {
   static String get singleChatFilledActiveSvg=>'single_chat_filled_active'.svg;
   static String get archiveSvg=>'archive'.svg;
   static String get binSvg=>'bin'.svg;
+  static String get minusMarkSvg=>'minus_mark'.svg;
   static String get pinSvg=>'pin'.svg;
   static String get unreadSvg=>'unread'.svg;
   static String get muteSvg=>'mute'.svg;
@@ -85,6 +89,7 @@ abstract class AppAssets {
   static String get ringingSvg=>'ringing'.svg;
   static String get inCallSvg=>'inCall'.svg;
   static String get backFromCallSvg=>'back_from_call'.svg;
+  static String get backIconArrowSvg=>'back_icon_arrow'.svg;
   static String get endCallSvg=>'end_call'.svg;
 
   static String get callMutedSvg=>'call_muted'.svg;
@@ -98,6 +103,7 @@ abstract class AppAssets {
   static String get voiceReceivedSvg=>'voice_received'.svg;
   static String get voicePlayedSvg=>'voice_played'.svg;
   static String get missedCallInChatSvg=>'missed_call_in_chat'.svg;
+  static String get missedVideoCallInChatSvg=>'missing_video_call_in_chat'.svg;
   static String get forwardedSvg=>'forwarded'.svg;
   static String get addStickersSvg=>'add_stickers'.svg;
   static String get replyOnMessageSvg=>'reply_on_message'.svg;
@@ -149,6 +155,12 @@ abstract class AppAssets {
   static String get quickOfferSvg=>'quick_offer'.svg;
   static String get trydosTextSvg=>'trydos_text'.svg;
   static String get backArrowArabic=>'back_arrow_arabic'.svg;
+  static String get bagSvg=>'bag'.svg;
+  static String get plusMarkSvg=>'plus_mark'.svg;
+  static String get chatMarkSvg=>'chat_mark'.svg;
+  static String get chatMarkActiveSvg=>'chat_mark_active'.svg;
+  static String get shareSvg=>'share'.svg;
+  static String get moreOptionSvg=>'more_option'.svg;
   static String getFlagPath(String name) => name.flagSvg;
 
   ///endregion
@@ -169,11 +181,6 @@ abstract class AppAssets {
 
   static String get profileJpg=>'profile'.jpg;
   static String get backgroundJpg=>'background'.jpg;
-  static String get chatProfileJpg=>'chat_profile_image'.jpg;
-  static String get chatProfile2Jpg=>'chat_profile2'.jpg;
-  static String get chatImageJpg=>'chat_image'.jpg;
-  static String get storyImageJpg=>'story_image'.jpg;
-  static String get storyImageMinJpg=>'story_image_min'.jpg;
   static String get halloweenJpg=>'Halloween'.jpg;
 
 

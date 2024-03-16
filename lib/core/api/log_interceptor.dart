@@ -20,6 +20,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (kDebugMode) {
       log(_prefsRepository.chatToken.toString());
+      log('story ${_prefsRepository.storiesToken.toString()}');
       prettyPrinterI(
         "***|| INFO Request ${options.path} ||***"
         "\n HTTP Method: ${options.method}"
@@ -61,8 +62,6 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n Data: ${response.data}",
       );
     }
-    _prefsRepository.saveRequestsData(response.requestOptions.path, response.data is! FormData ? response.data : {'data' : 'formData'}, response.requestOptions.headers, response.statusCode, response.requestOptions.method, response.requestOptions.queryParameters, response.data is! FormData ? response.data : {'data' : 'formData'});
-
     handler.next(response);
   }
 
@@ -78,7 +77,9 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n stackTrace: ${err.stackTrace}",
       );
     }
-    _prefsRepository.saveRequestsData(err.requestOptions.path, err.response?.data ?? {}, err.response?.headers.map ?? {}, err.response?.statusCode, err.requestOptions.method, err.requestOptions.queryParameters, err.response?.data ?? {});
+    _prefsRepository.saveRequestsData(err.requestOptions.path, err.response?.data ?? {
+      'error' : err.error.toString()
+    }, err.response?.headers.map ?? {}, err.response?.statusCode, err.requestOptions.method, err.requestOptions.queryParameters, err.response?.data ?? {});
 
     // GetIt.I<Dio>().post('${ChatUrls.baseUrl}/${ChatEndPoints.createBugEP}', data: {
     //   "user_id": _prefsRepository.myChatId,

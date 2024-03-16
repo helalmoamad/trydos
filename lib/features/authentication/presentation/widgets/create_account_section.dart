@@ -1,4 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,10 +8,12 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
+import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
 class CreateAccountSection extends StatelessWidget {
@@ -26,163 +29,158 @@ class CreateAccountSection extends StatelessWidget {
           null, null, null, null, null, null, null,
           error: error.toString());
     };
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: 'To ',
-                  style: context.textTheme.bodyText2?.la.copyWith(
-                    color: const Color(0xff5d5c5d),
-                    letterSpacing: 0.14,
-                    height: 1.43,
-                  ),
-                ),
-                TextSpan(
-                  text: 'Create new account',
-                  style: context.textTheme.bodyText2?.lr.copyWith(
-                    color: const Color(0xff5d5c5d),
-                    letterSpacing: 0.14,
-                    height: 1.43,
-                  ),
-                ),
-                TextSpan(
-                  text: ' Tap “Agree & Continue” To Accept\n',
-                  style: context.textTheme.bodyText2?.la.copyWith(
-                    color: const Color(0xff5d5c5d),
-                    letterSpacing: 0.14,
-                    height: 1.43,
-                  ),
-                ),
-                TextSpan(
-                  text: 'trydos',
-                  style: context.textTheme.bodyText2?.la.copyWith(
-                    color: const Color(0xff5d5c5d),
-                    letterSpacing: 0.14,
-                    height: 1.43,
-                  ),
-                ),
-              ],
-            ),
-            textHeightBehavior:
-                TextHeightBehavior(applyHeightToFirstAscent: false),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: 23,
-          ),
-          SvgPicture.asset(AppAssets.termsSvg),
-          SizedBox(
-            height: 10,
-          ),
-          Text(
-            'Terms Of Services',
-            style: context.textTheme.bodyText2?.ra.copyWith(
-              color: const Color(0xff388CFF),
-              height: 1.42,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: 78,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: InkWell(
-              highlightColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              onTap: () {
-                clickButton.value = 0;
-                Future.delayed(
-                  Duration(milliseconds: 100),
-                  () {
-                    clickButton.value = -1;
-                    moveToNextStep.call();
-                  },
-                );
-              },
-              child: ValueListenableBuilder<int>(
-                  valueListenable: clickButton,
-                  builder: (context, index, _) {
-                    return DottedBorder(
-                      borderPadding: EdgeInsets.zero,
-                      padding: EdgeInsets.zero,
-                      borderType: BorderType.RRect,
-                      strokeCap: StrokeCap.round,
-                      strokeWidth: 0.5,
-                      dashPattern: [3, 3],
-                      radius: Radius.circular(20.0),
-                      color: index == 0
-                          ? const Color(0xff388cff)
-                          : const Color(0xfffafafa),
-                      child: Container(
-                        width: 1.sw,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: index == 0
-                              ? Colors.white
-                              : const Color(0xfffafafa),
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Agree & Continue',
-                            style: context.textTheme.bodyText1?.ra.copyWith(
-                              color: const Color(0xff3c3c3c),
-                              letterSpacing: 0.16,
-                              height: 1.25,
-                            ),
-                            textHeightBehavior: TextHeightBehavior(
-                                applyHeightToFirstAscent: false),
-                            textAlign: TextAlign.center,
-                            softWrap: false,
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-            ),
-          ),
-          SizedBox(
-            height: 19,
-          ),
-          InkWell(
-            highlightColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            onTap: () async {
-              if (GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
-                String? deviceId = await HelperFunctions.getDeviceId();
-                BlocProvider.of<AuthBloc>(context)
-                    .add(RegisterGuestEvent(deviceId: deviceId!));
-              }
-              context.go(GRouter.config.applicationRoutes.kBasePage);
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Text(
-                'Later, Take A Look At The App',
-                style: context.textTheme.bodyText2?.ra.copyWith(
-                  color: const Color(0xff4D84FF),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: LocaleKeys.to.tr(),
+                style: context.textTheme.bodyText2?.la.copyWith(
+                  color: const Color(0xff5d5c5d),
                   letterSpacing: 0.14,
                   height: 1.43,
                 ),
-                textHeightBehavior:
-                    TextHeightBehavior(applyHeightToFirstAscent: false),
-                textAlign: TextAlign.center,
-                softWrap: false,
+              ),
+              TextSpan(
+                text: LocaleKeys.create_new_account.tr(),
+                style: context.textTheme.bodyText2?.lr.copyWith(
+                  color: const Color(0xff5d5c5d),
+                  letterSpacing: 0.14,
+                  height: 1.43,
+                ),
+              ),
+              TextSpan(
+                text: " " +
+                    LocaleKeys.tap.tr() +
+                    " "
+                        "“" +
+                    LocaleKeys.agree_continue.tr() +
+                    "”" +
+                    " " +
+                    LocaleKeys.to_accept_trydos.tr(),
+                style: context.textTheme.bodyText2?.la.copyWith(
+                  color: const Color(0xff5d5c5d),
+                  letterSpacing: 0.14,
+                  height: 1.43,
+                ),
+              ),
+              TextSpan(
+                text: "\n" + LocaleKeys.trydos.tr(),
+                style: context.textTheme.bodyText2?.la.copyWith(
+                  color: const Color(0xff5d5c5d),
+                  letterSpacing: 0.14,
+                  height: 1.2,
+                ),
+              ),
+            ],
+          ),
+          textHeightBehavior:
+              TextHeightBehavior(applyHeightToFirstAscent: false),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(
+          height: 23,
+        ),
+        SvgPicture.asset(AppAssets.termsSvg),
+        SizedBox(
+          height: 10,
+        ),
+        MyTextWidget(
+          LocaleKeys.trems_of_services.tr(),
+          style: context.textTheme.bodyText2?.ra.copyWith(
+            color: const Color(0xff388CFF),
+            height: 1.42,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(
+          height: 78,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: InkWell(
+            highlightColor: Colors.transparent,
+            splashColor: Colors.transparent,
+            onTap: () {
+              clickButton.value = 0;
+              Future.delayed(
+                Duration(milliseconds: 100),
+                () {
+                  clickButton.value = -1;
+                  moveToNextStep.call();
+                },
+              );
+            },
+            child: ValueListenableBuilder<int>(
+                valueListenable: clickButton,
+                builder: (context, index, _) {
+                  return DottedBorder(
+                    borderPadding: EdgeInsets.zero,
+                    padding: EdgeInsets.zero,
+                    borderType: BorderType.RRect,
+                    strokeCap: StrokeCap.round,
+                    strokeWidth: 0.5,
+                    dashPattern: [3, 3],
+                    radius: Radius.circular(20.0),
+                    color: index == 0
+                        ? const Color(0xff388cff)
+                        : const Color(0xfffafafa),
+                    child: Container(
+                      width: 1.sw,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color:
+                            index == 0 ? Colors.white : const Color(0xfffafafa),
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: Center(
+                        child: MyTextWidget(
+                          LocaleKeys.agree_continue.tr(),
+                          style: context.textTheme.bodyText1?.ra.copyWith(
+                            color: const Color(0xff3c3c3c),
+                            letterSpacing: 0.16,
+                            height: 1.25,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+          ),
+        ),
+        SizedBox(
+          height: 19,
+        ),
+        InkWell(
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          onTap: () async {
+            if (GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
+              String? deviceId = await HelperFunctions.getDeviceId();
+              BlocProvider.of<AuthBloc>(context)
+                  .add(RegisterGuestEvent(deviceId: deviceId!));
+            }
+            context.go(GRouter.config.applicationRoutes.kBasePage);
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: MyTextWidget(
+              LocaleKeys.later_take_look.tr(),
+              style: context.textTheme.bodyText2?.ra.copyWith(
+                color: const Color(0xff4D84FF),
+                letterSpacing: 0.14,
+                height: 1.43,
               ),
             ),
           ),
-          SizedBox(
-            height: 45,
-          ),
-        ],
-      ),
+        ),
+        SizedBox(
+          height: 45,
+        ),
+      ],
     );
   }
 }

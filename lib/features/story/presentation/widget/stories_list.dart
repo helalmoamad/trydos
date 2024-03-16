@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart' as dartz;
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,8 +9,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
-import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/story/helper_functions/check_showing_stories.dart';
@@ -17,12 +16,16 @@ import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection_page_view.dart';
 import 'package:trydos/features/story/presentation/widget/story_item_widget.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
-import '../../../../common/constant/design/assets_provider.dart';
+
+//import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
+import '../../../app/my_text_widget.dart';
 import '../../../app/trydos_shimmer_loading.dart';
 import '../../data/models/get_stories_model.dart';
+import '../bloc/story_state.dart';
 
 class StoriesList extends StatefulWidget {
   StoriesList({super.key});
@@ -93,8 +96,9 @@ class _StoriesListState extends State<StoriesList> {
                                                         Colors.transparent,
                                                     child: Container(
                                                       child: Center(
-                                                          child:
-                                                              Text('uplaod')),
+                                                          child: MyTextWidget(
+                                                              LocaleKeys.upload
+                                                                  .tr())),
                                                       decoration: BoxDecoration(
                                                         borderRadius:
                                                             BorderRadius
@@ -113,7 +117,6 @@ class _StoriesListState extends State<StoriesList> {
                                                             .applicationRoutes
                                                             .kRegistrationPage);
                                                       } else {
-//
                                                         showDialog(
                                                             context: context,
                                                             builder:
@@ -172,10 +175,10 @@ class _StoriesListState extends State<StoriesList> {
                                     Story initialStory;
                                     if (GetIt.I<PrefsRepository>()
                                             .myStoriesId ==
-                                        state.stories[index].stories![0]
-                                            .userId) {
+                                        state.storiesCollections[index]
+                                            .stories![0].userId) {
                                       indexOfInitialStory = state
-                                          .stories[index].stories!
+                                          .storiesCollections[index].stories!
                                           .lastIndexWhere((element) =>
                                               element.isSeen == false);
                                       indexOfInitialStory =
@@ -184,9 +187,11 @@ class _StoriesListState extends State<StoriesList> {
                                               : indexOfInitialStory;
                                     } else {
                                       indexOfInitialStory = firstWhereNotShowed(
-                                          state.stories[index].stories!);
+                                          state.storiesCollections[index]
+                                              .stories!);
                                     }
-                                    initialStory = state.stories[index]
+                                    initialStory = state
+                                        .storiesCollections[index]
                                         .stories![indexOfInitialStory];
 
                                     return AnimatedPadding(
@@ -197,171 +202,183 @@ class _StoriesListState extends State<StoriesList> {
                                               ? 30
                                               : 0),
                                       child: GestureDetector(
-                                        onLongPressStart: (details) {
-                                          bool isFirstPress =
-                                              resizeStories.value.value1 == -1;
-                                          resizeStories.value =
-                                              resizeStories.value.copyWith(
-                                                  value1: (details
-                                                              .globalPosition
-                                                              .dx +
-                                                          listViewController
-                                                              .offset -
-                                                          115) ~/
-                                                      115);
-                                          if (details.localPosition.dx <=
-                                                  (40 +
-                                                      resizeStories
-                                                              .value.value1 *
-                                                          115 +
-                                                      (resizeStories.value
-                                                                  .value1 ==
-                                                              resizeStories
-                                                                  .value.value2
-                                                          ? 45
-                                                          : 0)) &&
-                                              details.localPosition.dy <=
-                                                  (40 +
-                                                      (isFirstPress ? 20 : 0) +
-                                                      (resizeStories.value
-                                                                  .value1 ==
-                                                              resizeStories
-                                                                  .value.value2
-                                                          ? 45
-                                                          : 0))) {
+                                          onLongPressStart: (details) {
+                                            bool isFirstPress =
+                                                resizeStories.value.value1 ==
+                                                    -1;
                                             resizeStories.value =
                                                 resizeStories.value.copyWith(
-                                                    value2: resizeStories
-                                                        .value.value1);
-                                          } else {
-                                            resizeStories.value = resizeStories
-                                                .value
-                                                .copyWith(value2: -1);
-                                          }
-                                        },
-                                        onLongPressUp: () {
-                                          resizeStories.value =
+                                                    value1: (details
+                                                                .globalPosition
+                                                                .dx +
+                                                            listViewController
+                                                                .offset -
+                                                            115) ~/
+                                                        115);
+                                            if (details.localPosition.dx <=
+                                                    (40 +
+                                                        resizeStories
+                                                                .value.value1 *
+                                                            115 +
+                                                        (resizeStories.value
+                                                                    .value1 ==
+                                                                resizeStories
+                                                                    .value
+                                                                    .value2
+                                                            ? 45
+                                                            : 0)) &&
+                                                details.localPosition.dy <=
+                                                    (40 +
+                                                        (isFirstPress
+                                                            ? 20
+                                                            : 0) +
+                                                        (resizeStories.value
+                                                                    .value1 ==
+                                                                resizeStories
+                                                                    .value
+                                                                    .value2
+                                                            ? 45
+                                                            : 0))) {
                                               resizeStories.value =
                                                   resizeStories.value.copyWith(
-                                                      value2: -1, value1: -1);
-                                        },
-                                        onLongPressMoveUpdate: (details) {
-                                          resizeStories.value =
-                                              resizeStories.value.copyWith(
-                                                  value1: (details
-                                                              .globalPosition
-                                                              .dx +
-                                                          listViewController
-                                                              .offset -
-                                                          115) ~/
-                                                      115);
-                                          if (details.localPosition.dx <=
-                                                  (40 +
-                                                      resizeStories
-                                                              .value.value1 *
-                                                          115 +
-                                                      (resizeStories.value
-                                                                  .value1 ==
-                                                              resizeStories
-                                                                  .value.value2
-                                                          ? 50
-                                                          : 0)) &&
-                                              details.localPosition.dy <=
-                                                  (40 +
-                                                      (resizeStories.value
-                                                                  .value1 ==
-                                                              resizeStories
-                                                                  .value.value2
-                                                          ? 50
-                                                          : 0))) {
+                                                      value2: resizeStories
+                                                          .value.value1);
+                                            } else {
+                                              resizeStories.value =
+                                                  resizeStories.value
+                                                      .copyWith(value2: -1);
+                                            }
+                                          },
+                                          onLongPressUp: () {
+                                            resizeStories.value = resizeStories
+                                                    .value =
+                                                resizeStories.value.copyWith(
+                                                    value2: -1, value1: -1);
+                                          },
+                                          onLongPressMoveUpdate: (details) {
                                             resizeStories.value =
                                                 resizeStories.value.copyWith(
-                                                    value2: resizeStories
-                                                        .value.value1);
-                                          } else {
-                                            resizeStories.value = resizeStories
-                                                .value
-                                                .copyWith(value2: -1);
-                                          }
-                                        },
-                                        child: (initialStory.isPhoto == 1)
-                                            ? Builder(
-                                              builder: (ctx) {
-                                                return StoryItemWidget(
-                                                    index: index,
-                                                    onTapOnStoryAction: () async {
-                                                      GetIt.I<StoryBloc>().add(
-                                                          StorySelectedEvent(
-                                                              selected: index,
-                                                              currentPage: index,
-                                                              initialStory:
-                                                                  indexOfInitialStory));
-                                                      // Navigator.of(ctx).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
-                                                      //             initialPage:
-                                                      //             index)));
-                                                      pushOverscrollRoute(
-                                                          context: ctx,
-                                                          child:
-                                                          StoryCollectionPageView(
-                                                              initialPage:
-                                                              index),
-                                                          fullscreenDialog: true);
-                                                      disableResizing();
-                                                    },
-                                                    onTapOnUserImage: () {
-                                                      resizeStories.value =
-                                                          resizeStories.value
-                                                              .copyWith(
-                                                                  value2: index,
-                                                                  value1: index);
-                                                    },
-                                                    resize: index == focused.value1,
-                                                    resizeUserImage:
-                                                        index == focused.value2,
-                                                    firstPhotoNotShowed:
-                                                        initialStory.photoPath,
-                                                  );
-                                              }
-                                            )
-                                            : Builder(
-                                              builder: (ctx) {
-                                                return StoryItemWidget(
-                                                    index: index,
-                                                    onTapOnStoryAction: () async {
-                                                      disableResizing();
-                                                      GetIt.I<StoryBloc>().add(
-                                                          StorySelectedEvent(
-                                                              selected: index,
-                                                              currentPage: index,
-                                                              initialStory:
-                                                                  indexOfInitialStory));
-                                                      pushOverscrollRoute(
-                                                          context: ctx,
-                                                          child:
-                                                          StoryCollectionPageView(
-                                                              initialPage:
-                                                              index),
-                                                          fullscreenDialog: true);
-                                                      // Navigator.push(context, MaterialPageRoute(builder: (_)=> StoryCollection(index ,   key: UniqueKey()),));
-                                                    },
-                                                    onTapOnUserImage: () {
-                                                      resizeStories.value =
-                                                          resizeStories.value
-                                                              .copyWith(
-                                                                  value2: index,
-                                                                  value1: index);
-                                                    },
-                                                    resize: index == focused.value1,
-                                                    resizeUserImage:
-                                                        index == focused.value2,
-                                                    firstPhotoNotShowed:
-                                                        initialStory.fullVideoPath!
-                                                            .replaceAll(
-                                                                'mp4', 'png'),
-                                                  );
-                                              }
-                                            ),
-                                      ),
+                                                    value1: (details
+                                                                .globalPosition
+                                                                .dx +
+                                                            listViewController
+                                                                .offset -
+                                                            115) ~/
+                                                        115);
+                                            if (details.localPosition.dx <=
+                                                    (40 +
+                                                        resizeStories
+                                                                .value.value1 *
+                                                            115 +
+                                                        (resizeStories.value
+                                                                    .value1 ==
+                                                                resizeStories
+                                                                    .value
+                                                                    .value2
+                                                            ? 50
+                                                            : 0)) &&
+                                                details.localPosition.dy <=
+                                                    (40 +
+                                                        (resizeStories.value
+                                                                    .value1 ==
+                                                                resizeStories
+                                                                    .value
+                                                                    .value2
+                                                            ? 50
+                                                            : 0))) {
+                                              resizeStories.value =
+                                                  resizeStories.value.copyWith(
+                                                      value2: resizeStories
+                                                          .value.value1);
+                                            } else {
+                                              resizeStories.value =
+                                                  resizeStories.value
+                                                      .copyWith(value2: -1);
+                                            }
+                                          },
+                                          child: (initialStory.isPhoto == 1)
+                                              ? StoryItemWidget(
+                                                  index: index,
+                                                  onTapOnStoryAction: () async {
+                                                    GetIt.I<StoryBloc>().add(
+                                                        StorySelectedEvent(
+                                                            collectionIndex:
+                                                                index,
+                                                            currentPage: index,
+                                                            selectedStoryIndexInCollection:
+                                                                indexOfInitialStory));
+                                                    // Navigator.of(context).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
+                                                    //             initialPage:
+                                                    //             index)));
+                                                    pushOverscrollRoute(
+                                                        context: context,
+                                                        child:
+                                                            StoryCollectionPageView(
+                                                                initialPage:
+                                                                    index),
+                                                        dragToPopDirection:
+                                                            DragToPopDirection
+                                                                .toBottom,
+                                                        fullscreenDialog: true);
+                                                    disableResizing();
+                                                  },
+                                                  onTapOnUserImage: () {
+                                                    resizeStories.value =
+                                                        resizeStories.value
+                                                            .copyWith(
+                                                                value2: index,
+                                                                value1: index);
+                                                  },
+                                                  resize:
+                                                      index == focused.value1,
+                                                  resizeUserImage:
+                                                      index == focused.value2,
+                                                  firstPhotoNotShowed:
+                                                      initialStory.photoPath,
+                                                )
+                                              : StoryItemWidget(
+                                                  index: index,
+                                                  onTapOnStoryAction: () async {
+                                                    disableResizing();
+                                                    GetIt.I<StoryBloc>().add(
+                                                        StorySelectedEvent(
+                                                            collectionIndex:
+                                                                index,
+                                                            currentPage: index,
+                                                            selectedStoryIndexInCollection:
+                                                                indexOfInitialStory));
+                                                    // Navigator.of(context).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
+                                                    //     initialPage:
+                                                    //     index)));
+                                                    pushOverscrollRoute(
+                                                        context: context,
+                                                        child:
+                                                            StoryCollectionPageView(
+                                                                initialPage:
+                                                                    index),
+                                                        dragToPopDirection:
+                                                            DragToPopDirection
+                                                                .toBottom,
+                                                        fullscreenDialog: true);
+                                                    // Navigator.push(context, MaterialPageRoute(builder: (_)=> StoryCollection(index ,   key: UniqueKey()),));
+                                                  },
+                                                  onTapOnUserImage: () {
+                                                    resizeStories.value =
+                                                        resizeStories.value
+                                                            .copyWith(
+                                                                value2: index,
+                                                                value1: index);
+                                                  },
+                                                  resize:
+                                                      index == focused.value1,
+                                                  resizeUserImage:
+                                                      index == focused.value2,
+                                                  firstPhotoNotShowed:
+                                                      initialStory
+                                                          .fullVideoPath!
+                                                          .replaceAll(
+                                                              'mp4', 'png'),
+                                                )),
                                     );
                                   }
                                 },
@@ -372,7 +389,8 @@ class _StoriesListState extends State<StoriesList> {
                                 separatorBuilder: (context, index) => SizedBox(
                                       width: 15,
                                     ),
-                                itemCount: state.stories.length + 1));
+                                itemCount:
+                                    state.storiesCollections.length + 1));
                       case GetStoriesStatus.init:
                         return Container();
                       case GetStoriesStatus.failure:
@@ -381,17 +399,17 @@ class _StoriesListState extends State<StoriesList> {
                               onPressed: () {
                                 GetIt.I<StoryBloc>().add(GetStoryEvent());
                               },
-                              child: Text('Try Again')),
+                              child: MyTextWidget(LocaleKeys.try_again.tr())),
                         );
                       case GetStoriesStatus.loading:
-                        return Container(
+                        return SizedBox(
                           width: double.infinity,
-                          height: 170,
+                          height: 220,
                           child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) => Padding(
                                   padding: EdgeInsetsDirectional.only(
-                                      start: 20, top: 35),
+                                      start: 10, top: 35, bottom: 30),
                                   child: TrydosShimmerLoading(
                                     width: 100,
                                     height: 150,
@@ -405,7 +423,6 @@ class _StoriesListState extends State<StoriesList> {
                         );
                     }
                   }();
-                  return Container();
                 }),
       );
     });

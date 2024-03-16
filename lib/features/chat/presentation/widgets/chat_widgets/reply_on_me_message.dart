@@ -3,13 +3,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/text_message.dart';
 
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 
 class ReplayOnMeMessage extends StatefulWidget {
-  const ReplayOnMeMessage({Key? key,
+  const ReplayOnMeMessage({
+    Key? key,
     required this.message,
     required this.messageId,
     required this.messageAnswerId,
@@ -17,7 +19,7 @@ class ReplayOnMeMessage extends StatefulWidget {
     required this.replayedName,
     this.replayedPhoto,
     this.senderAnswerPhoto,
-     this.messageAnswer,
+    this.messageAnswer,
     this.answeredFile,
     this.answeredFilePath,
     required this.isSent,
@@ -27,20 +29,28 @@ class ReplayOnMeMessage extends StatefulWidget {
     required this.isReplayedMessageReceived,
     required this.isAnswerMessageRead,
     required this.isAnswerMessageReceived,
-    required this.messageDate,
     required this.scrollToMessage,
-    required this.isFirstMessage})
-      : super(key: key);
+    required this.isFirstMessage,
+    this.receivedAt,
+    this.createAt,
+    this.messageDate,
+    this.watchedaAt,
+    required this.channalId,
+  }) : super(key: key);
   final String message;
+  final String channalId;
   final String messageId;
   final String? messageAnswer;
   final String messageAnswerId;
   final bool isISentFirstMessage;
   final bool isSent;
   final bool isFirstMessage;
-  final DateTime messageDate;
+  final DateTime? watchedaAt;
   final File? answeredFile;
   final String? answeredFilePath;
+  final DateTime? receivedAt;
+  final DateTime? createAt;
+  final DateTime? messageDate;
   final bool isReplayedMessageRead;
   final bool isAnswerMessageRead;
   final bool isAnswerMessageReceived;
@@ -63,8 +73,8 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final RenderObject? renderBox =key.currentContext?.findRenderObject();
-      if(renderBox != null) {
+      final RenderObject? renderBox = key.currentContext?.findRenderObject();
+      if (renderBox != null) {
         height = (renderBox as RenderBox).size.height;
       }
     });
@@ -86,55 +96,72 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
             InkWell(
               onTap: widget.scrollToMessage,
               child: TextMessage(
-                  key: key,
-                  sendColor: widget.isISentFirstMessage ? const Color(0xffF1FDE3) : const Color(0xffD5F6E6),
-                  message: widget.message,
-                  withShadow: false,
-                  senderId: widget.parentSenderId,
-                  withImageShadow: false,
-                  isReceived: widget.isReplayedMessageRead,
-                  userMessageName: widget.replayedName,
-                  userMessagePhoto: widget.replayedPhoto,
-                  messageId: widget.messageId,
-                  disableMessageAlignment: false,
-                  isSent: widget.isISentFirstMessage,
-                  isRead: widget.isReplayedMessageRead,
-                  time: widget.messageDate,
-                  isFirstMessage: true),
+                isreplay: true,
+                key: key,
+                sendColor: widget.isISentFirstMessage
+                    ? const Color(0xffF1FDE3)
+                    : const Color(0xffD5F6E6),
+                message: widget.message,
+                withShadow: false,
+                senderId: widget.parentSenderId,
+                withImageShadow: false,
+                isReceived: widget.isReplayedMessageRead,
+                userMessageName: widget.replayedName,
+                userMessagePhoto: widget.replayedPhoto,
+                messageId: widget.messageId,
+                disableMessageAlignment: false,
+                isSent: widget.isISentFirstMessage,
+                isRead: widget.isReplayedMessageRead,
+                watchedAt: widget.watchedaAt,
+                isFirstMessage: true,
+                receivedAt: widget.receivedAt,
+                createAt: widget.messageDate!,
+                channalId: widget.channalId,
+              ),
             ),
             Transform.translate(
                 offset: const Offset(0, 25),
-                child: (widget.answeredFile != null || widget.answeredFilePath != null ) ?
-                ImageMessage(
-                    isSent: widget.isSent,
-                  time: DateTime.now(),
-                  messageId: widget.messageId,
-                    isRead: widget.isAnswerMessageRead,
-                  senderId: GetIt.I<PrefsRepository>().myChatId!,
-                  isFirstMessage: widget.isFirstMessage,
-                    isReceived: widget.isAnswerMessageReceived,
-                    userMessageName: widget.senderAnswerName,
-                    userMessagePhoto: widget.senderAnswerPhoto,
-                    isLocalMessage: widget.answeredFilePath==null,
-                  imageFile: widget.answeredFile,
-                  imageUrl: widget.answeredFilePath
-                  ) :
-                TextMessage(
-                    message: widget.messageAnswer!,
-                    withImageShadow: true,
-                    senderId: GetIt.I<PrefsRepository>().myChatId!,
-                    isRead: widget.isAnswerMessageRead,
-                    disableMessageAlignment: false,
-                    isReceived: widget.isAnswerMessageReceived,
-                    messageId: widget.messageAnswerId,
-                    userMessageName: widget.senderAnswerName,
-                    userMessagePhoto: widget.senderAnswerPhoto,
-                    isSent: widget.isSent,
-                    time: widget.messageDate,
-                    isFirstMessage: true)),
+                child: (widget.answeredFile != null ||
+                        widget.answeredFilePath != null)
+                    ? ImageMessage(
+                        channelId: widget.channalId,
+                        isSent: widget.isSent,
+                        messageId: widget.messageId,
+                        isRead: widget.isAnswerMessageRead,
+                        senderId: GetIt.I<PrefsRepository>().myChatId!,
+                        isFirstMessage: widget.isFirstMessage,
+                        isReceived: widget.isAnswerMessageReceived,
+                        userMessageName: widget.senderAnswerName,
+                        userMessagePhoto: widget.senderAnswerPhoto,
+                        isLocalMessage: widget.answeredFilePath == null,
+                        imageFile: widget.answeredFile,
+                        imageUrl: widget.answeredFilePath,
+                        receivedAt: widget.receivedAt,
+                        createAt: widget.createAt!,
+                        watchedAt: widget.watchedaAt,
+                      )
+                    : TextMessage(
+                        message: widget.messageAnswer!,
+                        withImageShadow: true,
+                        senderId: GetIt.I<PrefsRepository>().myChatId!,
+                        isRead: widget.isAnswerMessageRead,
+                        disableMessageAlignment: false,
+                        isReceived: widget.isAnswerMessageReceived,
+                        messageId: widget.messageAnswerId,
+                        userMessageName: widget.senderAnswerName,
+                        userMessagePhoto: widget.senderAnswerPhoto,
+                        isSent: widget.isSent,
+                        watchedAt: widget.watchedaAt,
+                        isFirstMessage: true,
+                        receivedAt: widget.receivedAt,
+                        createAt: widget.createAt!,
+                        channalId: widget.channalId,
+                      )),
           ],
         ),
-        const SizedBox(height: 25,),
+        const SizedBox(
+          height: 25,
+        ),
       ],
     );
   }

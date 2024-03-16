@@ -1,9 +1,15 @@
 abstract class PrefsKey {
+  static const userMarketId = r'__$__userMarketId__$__';
+
   static const userChatId = r'__$__userChatId__$__';
 
   static const userStoriesId = r'__$__userStoriesId__$__';
 
   static const chatName = r'__$__chatName__$__';
+
+  static const chatPhoto = r'__$__chatPhoto__$__';
+
+  static const marketName = r'__$__marketName__$__';
 
   static const chatToken = r'__$__chatToken__$__';
 
@@ -30,4 +36,8 @@ abstract class PrefsKey {
   static const messages = r'__$__messages__$__';
 
   static const error = r'__$__error__$__';
+
+  static const isAuthorizedGetAssets = r'__$__isAuthorizedGetAssets__$__';
+
+  static const fcmToken = r'__$__fcmToken__$__';
 }

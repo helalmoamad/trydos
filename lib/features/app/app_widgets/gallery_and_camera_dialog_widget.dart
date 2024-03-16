@@ -2,15 +2,17 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../common/helper/camera_screen.dart';
 import '../../../common/helper/helper_functions.dart';
 import '../../../generated/locale_keys.g.dart';
+import '../my_text_widget.dart';
 
 class GalleryAndCameraDialogWidget extends StatelessWidget {
   const GalleryAndCameraDialogWidget(
       {super.key,
-      required this.onChooseFileFromGalleryAction,
+         required this.onChooseFileFromGalleryAction,
       required this.onChooseFileFromCameraAction});
 
   final void Function(AssetEntity? assetEntity) onChooseFileFromGalleryAction;
@@ -19,8 +21,9 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-//    title: Text('choose'),
-      content:Text(LocaleKeys.choose_photo_or_video_from_gallery_or_camera.tr()),
+//    title: MyTextWidget('choose'),
+      content: MyTextWidget(
+          LocaleKeys.choose_photo_or_video_from_gallery_or_camera.tr()),
       actions: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -31,27 +34,34 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                 cameras = await availableCameras();
                 File? selectedFile = await Navigator.push<File>(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => CameraScreen(cameras)),
+                  MaterialPageRoute(builder: (context) => CameraScreen(cameras)),
                 );
-                print('file path ${selectedFile?.path}');
                 onChooseFileFromCameraAction.call(selectedFile);
                 Navigator.of(context).pop();
               },
-              child: Text(LocaleKeys.camera.tr()),
+              child: MyTextWidget(LocaleKeys.camera.tr()),
             ),
-            TextButton(
-              onPressed: () async {
-                AssetEntity? assetEntity =
-                    await HelperFunctions.getAssetFromCamera(context);
-                if (assetEntity != null) {
-                  File? file = (await assetEntity.originFile);
-                  onChooseFileFromCameraAction.call(file);
-                }
-                Navigator.of(context).pop();
-              },
-              child: Text(LocaleKeys.gallery.tr()),
-            ),
+            Builder(builder: (context) {
+              return TextButton(
+                onPressed: () async {
+                  AssetEntity? assetEntity;
+                    assetEntity =
+                    await HelperFunctions.getAssetFromGallery(context);
+                  if (assetEntity != null) {
+                    if (assetEntity.type == AssetType.video &&
+                        assetEntity.duration > 59) {
+                      showMessage(
+                          'Video length must not be longer than 59 seconds',
+                          showInRelease: true);
+                    }else {
+                      onChooseFileFromGalleryAction.call(assetEntity);
+                    }
+                  }
+                  Navigator.of(context).pop();
+                },
+                child: MyTextWidget(LocaleKeys.gallery.tr()),
+              );
+            })
           ],
         )
       ],

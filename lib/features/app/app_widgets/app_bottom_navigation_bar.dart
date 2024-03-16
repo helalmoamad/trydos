@@ -1,17 +1,22 @@
 import 'package:adobe_xd/adobe_xd.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/theme_state.dart';
 import '../../../routes/router.dart';
@@ -21,6 +26,7 @@ import '../../chat/presentation/manager/chat_event.dart';
 import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
 import '../blocs/app_bloc/app_state.dart';
+import '../my_text_widget.dart';
 
 class AppBottomNavBar extends StatefulWidget {
   const AppBottomNavBar({Key? key}) : super(key: key);
@@ -256,8 +262,8 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                               height: 30.h,
                             ),
                       10.verticalSpace,
-                      Text(
-                        'Cart',
+                      MyTextWidget(
+                        LocaleKeys.cart.tr(),
                         maxLines: 1,
                         style: textTheme.overline?.lr.copyWith(
                             color: state.currentIndex != 1
@@ -271,11 +277,21 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               ),
               Expanded(
                 child: InkWell(
-                  onTap: () {
+                  onTap: () async {
                     if (prefsRepository.isVerifiedPhone != true) {
                       context.go(GRouter
                           .config.applicationRoutes.kRegistrationPagePath);
                     } else {
+                      NotificationSettings settings = await FirebaseMessaging
+                          .instance
+                          .getNotificationSettings();
+                      if (settings.authorizationStatus ==
+                          AuthorizationStatus.denied) {
+                        showMessage(LocaleKeys
+                            .please_enable_send_notification_for_this_app
+                            .tr());
+                        openAppSettings();
+                      }
                       appBloc.add(ChangeBasePage(2));
                     }
                   },
@@ -292,8 +308,8 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                               height: 30.h,
                             ),
                       10.verticalSpace,
-                      Text(
-                        'Chat',
+                      MyTextWidget(
+                        LocaleKeys.chat.tr(),
                         maxLines: 1,
                         style: textTheme.overline?.lr.copyWith(
                             letterSpacing: 0.28,
@@ -312,7 +328,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: Text('Dev tools'),
+                            content: MyTextWidget('Dev tools'),
                             actions: [
                               Column(
                                 mainAxisAlignment:
@@ -323,10 +339,11 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (_) =>
-                                                  FeedBackScreen(showRequests: true,)));
+                                              builder: (_) => FeedBackScreen(
+                                                    showRequests: true,
+                                                  )));
                                     },
-                                    child: Text('requests'),
+                                    child: MyTextWidget('requests'),
                                   ),
                                   TextButton(
                                     onPressed: () {
@@ -336,7 +353,18 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                               builder: (_) =>
                                                   SharedPreferencePage()));
                                     },
-                                    child: Text('shared preferences'),
+                                    child: MyTextWidget('shared preferences'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) => FeedBackScreen(
+                                                    showRequests: false,
+                                                  )));
+                                    },
+                                    child: MyTextWidget('flutter errors'),
                                   ),
                                   TextButton(
                                     onPressed: () {
@@ -344,18 +372,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (_) =>
-                                                  FeedBackScreen(showRequests: false,)));
+                                                  FilesExistPage()));
                                     },
-                                    child: Text('flutter errors'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) => FilesExistPage()));
-                                    },
-                                    child: Text('files exists'),
+                                    child: MyTextWidget('files exists'),
                                   ),
                                 ],
                               )
@@ -440,8 +459,8 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                               ),
                             ),
                       10.verticalSpace,
-                      Text(
-                        'Me',
+                      MyTextWidget(
+                        LocaleKeys.me.tr(),
                         maxLines: 1,
                         style: textTheme.overline?.lr.copyWith(
                             letterSpacing: 0.28,

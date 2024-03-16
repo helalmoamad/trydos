@@ -3,11 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/api.dart';
-import 'package:trydos/features/story/data/models/get_stories_model.dart';
 import 'package:trydos/features/story/data/models/upload_story_cloudinary_response.dart';
 import 'package:trydos/features/story/data/models/upload_story_response_model.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
-
+import '../../data/models/get_stories_model.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/repository/story_repository.dart';
 import '../data_source/story_data_source.dart';
@@ -44,12 +43,14 @@ class StoryRepositoryImpl extends StoryRepository
   }
 
   @override
-  Future<Either<Failure, bool>> addStoryToOurServer(Map<String, dynamic> params) {
+  Future<Either<Failure, Either<int , CollectionStoryModel>>> addStoryToOurServer(Map<String, dynamic> params) {
     return handlingExceptionRequest(tryCall:()=> storyDataSource.addStoryToOurServer(params) );
 
   }
 
-
-
+  @override
+  Future<Either<Failure, bool>> increaseViewers(Map<String, dynamic> params) {
+    return handlingExceptionRequest(tryCall:()=> storyDataSource.increaseViewers(params) );
+  }
 
 }

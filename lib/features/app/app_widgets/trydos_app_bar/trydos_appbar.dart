@@ -6,6 +6,7 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../my_text_widget.dart';
 import 'app_bar_params.dart';
 
 class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -22,13 +23,13 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            boxShadow: [
+            boxShadow: appBarParams.withShadow ? [
               BoxShadow(
                 color: context.colorScheme.black.withOpacity(0.1),
                 offset: Offset(0,0),
                 blurRadius: 6
               )
-            ]
+            ] : null
           ),
           child: AppBar(
             //title: title(context),
@@ -72,7 +73,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
             appBarParams.child!,
           },
           if (appBarParams.title != null)
-            Text(
+            MyTextWidget(
                appBarParams.title!,
               style: appBarParams.tittleStyle ??
                   Theme.of(context).textTheme.headline3?.copyWith(
@@ -92,9 +93,9 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
     child: Padding(
       padding: HWEdgeInsets.symmetric(vertical: 15),
       child: SvgPicture.asset(
-        AppAssets.backFromCallSvg,
+        AppAssets.backIconArrowSvg,
         width: 8.w,
-        color: const Color(0xff388CFF),
+        color: appBarParams.backIconColor ?? const Color(0xff388CFF),
       ),
     ),
   )

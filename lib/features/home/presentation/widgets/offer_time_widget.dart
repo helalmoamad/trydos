@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/typography.dart';
 
 import '../../../../core/utils/theme_state.dart';
+import '../../../app/my_text_widget.dart';
 
 class OfferTimeWidget extends StatefulWidget {
   const OfferTimeWidget({super.key});
@@ -33,7 +34,7 @@ class _OfferTimeWidgetState extends ThemeState<OfferTimeWidget> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text('-',
+        MyTextWidget('-',
             style: textTheme.bodyText1?.mr.copyWith(
               letterSpacing: 0.4,
               height: 1.31,
@@ -54,7 +55,7 @@ class _OfferTimeWidgetState extends ThemeState<OfferTimeWidget> {
               child: Center(
                   child: CountdownTimer(
                 widgetBuilder: (_, remainingTime) {
-                  return Text(
+                  return MyTextWidget(
                       '${remainingTime?.hours == null ? '00' : remainingTime!.hours! < 10 ? '0${remainingTime.hours}' : remainingTime.hours}',
                       style: textTheme.bodyText2?.mr.copyWith(
                         letterSpacing: 0.35,
@@ -70,7 +71,7 @@ class _OfferTimeWidgetState extends ThemeState<OfferTimeWidget> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 2.0),
-              child: Text(
+              child: MyTextWidget(
                 ':',
                 style: textTheme.bodyText1?.mr.copyWith(
                   letterSpacing: 0.4,
@@ -89,7 +90,7 @@ class _OfferTimeWidgetState extends ThemeState<OfferTimeWidget> {
               child: Center(
                 child: CountdownTimer(
                   widgetBuilder: (_, remainingTime) {
-                    return Text(
+                    return MyTextWidget(
                         '${remainingTime?.min == null ? '00' : remainingTime!.min! < 10 ? '0${remainingTime.min}' : remainingTime.min}',
                         style: textTheme.bodyText2?.mr.copyWith(
                           letterSpacing: 0.35,
@@ -106,7 +107,7 @@ class _OfferTimeWidgetState extends ThemeState<OfferTimeWidget> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 2.0),
-              child: Text(
+              child: MyTextWidget(
                 ':',
                 style: textTheme.bodyText1?.mr.copyWith(
                   letterSpacing: 0.4,
@@ -125,7 +126,7 @@ class _OfferTimeWidgetState extends ThemeState<OfferTimeWidget> {
               child: Center(
                 child: CountdownTimer(
                   widgetBuilder: (_, remainingTime) {
-                    return Text(
+                    return MyTextWidget(
                         '${remainingTime?.sec == null ? '00' : remainingTime!.sec! < 10 ? '0${remainingTime.sec}' : remainingTime.sec}',
                         style: textTheme.bodyText2?.mr.copyWith(
                           letterSpacing: 0.35,

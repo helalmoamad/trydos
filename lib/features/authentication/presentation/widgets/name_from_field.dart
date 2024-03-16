@@ -1,14 +1,17 @@
 import 'dart:async';
 
 import 'package:dotted_border/dotted_border.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../app/my_text_widget.dart';
 
 class NameFormField extends StatefulWidget {
   NameFormField({
@@ -108,32 +111,35 @@ class NameFormField extends StatefulWidget {
   final EdgeInsetsGeometry? contentPadding;
   final Color? filledColor;
   final Color? bordersColor;
-  bool ready=false;
+  bool ready = false;
 
   @override
   State<NameFormField> createState() => _NameFormFieldState();
 }
 
 class _NameFormFieldState extends State<NameFormField> {
-
   final ValueNotifier<bool> showHint = ValueNotifier(true);
 
   @override
   void initState() {
     widget.controller!.addListener(() {
-      showHint.value=widget.controller!.text.isEmpty;
+      showHint.value = widget.controller!.text.isEmpty;
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.center,
       children: [
-        Container(height: 60,decoration: BoxDecoration(
+        Container(
+          height: 60,
+          decoration: BoxDecoration(
             color: context.colorScheme.white,
-          borderRadius: BorderRadius.circular(20.0),
-        ),),
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+        ),
         SizedBox(
           height: 60,
           child: DottedBorder(
@@ -144,7 +150,9 @@ class _NameFormFieldState extends State<NameFormField> {
             strokeWidth: 0.5,
             dashPattern: [3, 3],
             radius: Radius.circular(20.0),
-            color: widget.ready ? const Color(0xff388CFF) : const Color(0xff5D5C5D),
+            color: widget.ready
+                ? const Color(0xff388CFF)
+                : const Color(0xff5D5C5D),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: TextFormField(
@@ -161,7 +169,6 @@ class _NameFormFieldState extends State<NameFormField> {
                 enabled: widget.enabled,
                 keyboardType: TextInputType.name,
                 textInputAction: widget.textInputAction,
-                textDirection: TextDirection.ltr,
                 scrollPadding: widget.scrollPadding,
                 expands: widget.expands,
                 maxLengthEnforcement: widget.maxLengthEnforcement,
@@ -184,14 +191,15 @@ class _NameFormFieldState extends State<NameFormField> {
                 toolbarOptions: widget.toolbarOptions,
                 style: context.textTheme.bodyText1?.ra.copyWith(
                   color: const Color(0xff5D5C5D),
-                  letterSpacing: 0.16 ,
+                  letterSpacing: 0.16,
                   height: 1.25,
                   decoration: TextDecoration.none,
                 ),
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   focusedBorder: InputBorder.none,
-                  contentPadding: HWEdgeInsets.only(top: 10 , left: 20 , bottom: 0),
+                  contentPadding:
+                      HWEdgeInsets.only(top: 10, left: 20, bottom: 0),
                   prefixIcon: widget.prefixIcon,
                   suffixIcon: Padding(
                     padding: HWEdgeInsets.only(bottom: 20),
@@ -204,12 +212,16 @@ class _NameFormFieldState extends State<NameFormField> {
           ),
         ),
         ValueListenableBuilder<bool>(
-          valueListenable: showHint,
-          builder: (context , show , _) {
-            return show ? Text('Enter Your Name',style:  context.textTheme.bodyText1?.ra
-                .copyWith(color: Color(0xffC4C2C2)),) : const SizedBox.shrink();
-          }
-        )
+            valueListenable: showHint,
+            builder: (context, show, _) {
+              return show
+                  ? MyTextWidget(
+                      LocaleKeys.enter_your_name.tr(),
+                      style: context.textTheme.bodyText1?.ra
+                          .copyWith(color: Color(0xffC4C2C2)),
+                    )
+                  : const SizedBox.shrink();
+            })
       ],
     );
   }

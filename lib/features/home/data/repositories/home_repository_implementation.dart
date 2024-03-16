@@ -6,6 +6,7 @@ import 'package:trydos/features/authentication/data/models/login_to_stories_resp
 import 'package:trydos/features/authentication/data/models/send_otp_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_guest_phone_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 
@@ -35,6 +36,12 @@ return handlingExceptionRequest(tryCall: dataSource.getStartingSettings);
   @override
   Future<Either<Failure, HomeSectionResponseModel>> getHomeSections(Map<String, dynamic> params) {
     return handlingExceptionRequest(tryCall: ()=>dataSource.getHomeSections(params));
+
+  }
+
+  @override
+  Future<Either<Failure, GetProductListingWithoutFiltersModel>> getProductsWithoutFilters(Map<String, dynamic> params) {
+    return handlingExceptionRequest(tryCall: ()=>dataSource.getProductsWithoutFilters(params));
 
   }
 

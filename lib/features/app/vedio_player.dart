@@ -10,11 +10,15 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:video_player/video_player.dart';
 
+import 'my_text_widget.dart';
+
 class MYVideoPlayer extends StatefulWidget {
-  const MYVideoPlayer({Key? key, this.videoUrl, this.videoFile})
+  const MYVideoPlayer(
+      {Key? key, this.videoUrl, this.videoFile, required this.chatId})
       : super(key: key);
   final String? videoUrl;
   final File? videoFile;
+  final String chatId;
 
   @override
   State<MYVideoPlayer> createState() => _MYVideoPlayerState();
@@ -34,10 +38,11 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
   void initState() {
     if (widget.videoUrl != null) {
       imageUrl = widget.videoUrl!
-          .replaceFirst(widget.videoUrl!.split('.').last, 'JPG') + '?w=300&h=300';
+              .replaceFirst(widget.videoUrl!.split('.').last, 'JPG') +
+          '?w=300&h=300';
     }
     if (widget.videoFile != null) {
-      print('yes from memory');
+      debugPrint('yes from memory');
       _controller = VideoPlayerController.file(widget.videoFile!);
       initializeController();
     }
@@ -84,136 +89,137 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
     // the data it provides to limit the aspect ratio of the video.
     return imageUrl != null && _controller == null
         ? SizedBox(
-      width: 300,
-      height: 300,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          CachedNetworkImage(
-            imageUrl: imageUrl!,
             width: 300,
             height: 300,
-          ),
-          ValueListenableBuilder<bool>(
-              valueListenable: isDownloading,
-              builder: (context, downloading, _) {
-                return !downloading
-                    ? InkWell(
-                  onTap: () {
-                    isDownloading.value = true;
-                    FileSaving().downloadFileUsingDio(
-                        widget.videoUrl!, cancelToken,
-                            (progress) {
-                          downloadingProgress.value = progress;
-                        }, action: (File file) {
-                      _controller =
-                          VideoPlayerController.file(file);
-                      initializeController();
-                    });
-                  },
-                  child: Icon(Icons.play_arrow,
-                      size: 50, color: Colors.grey.shade300),
-                )
-                    : ValueListenableBuilder<double>(
-                    valueListenable: downloadingProgress,
-                    builder: (context, progress, _) {
-                      print('progress: $progress');
-                      return InkWell(
-                        onTap: () {
-                          isDownloading.value = false;
-                          cancelToken.cancel();
-                        },
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            CircularProgressIndicator(
-                              value: progress/100,
-                              strokeWidth: 5,
-                              backgroundColor: Colors.grey,
-                              color: Color(0xff388CFF),
-                            ),
-                            Text(
-                              'X',
-                              style: context
-                                  .textTheme.headline6?.ba
-                                  .copyWith(
-                                color: Colors.grey,
-                              ),
-                            )
-                          ],
-                        ),
-                      );
-                    });
-              }),
-        ],
-      ),
-    ) : FutureBuilder(
-        future: initializeVideo,
-        builder: (context, snapShot) {
-          if (snapShot.connectionState == ConnectionState.done) {
-            return GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => {
-                setState(() {
-                  _controller!.value.isPlaying
-                      ? _controller!.pause()
-                      : _controller!.play();
-                }),
-              },
-              child: SizedBox(
-                height: 400.h,
-                width: 300,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    AspectRatio(
-                      aspectRatio: _controller!.value.aspectRatio,
-                      // Use the VideoPlayer widget to display the video.
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12.0),
-                          child: VideoPlayer(_controller!)),
-                    ),
-                    _controller!.value.isPlaying
-                        ? Container()
-                        : Icon(Icons.play_arrow,
-                            size: 50, color: Colors.grey.shade300),
-                    buildSpeed(),
-                    Positioned(
-                      left: 8,
-                      bottom: 38,
-                      child: Text(getPosition(),
-                          style: context.textTheme.bodyText2?.rr
-                              .copyWith(color: Colors.white)),
-                    ),
-                    Positioned(
-                      bottom: 15,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        margin: const EdgeInsets.all(8),
-                        height: 16,
-                        child: VideoProgressIndicator(
-                          _controller!,
-                          allowScrubbing: true,
-                          colors: VideoProgressColors(
-                              bufferedColor: Colors.white,
-                              playedColor: const Color(0xff388CFF),
-                              backgroundColor: Colors.white.withOpacity(0.3)),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            );
-          }
-          return
-            SizedBox(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                CachedNetworkImage(
+                  imageUrl: imageUrl!,
                   width: 300,
                   height: 300,
-                  child: Center(child: TrydosLoader()),
+                ),
+                ValueListenableBuilder<bool>(
+                    valueListenable: isDownloading,
+                    builder: (context, downloading, _) {
+                      return !downloading
+                          ? InkWell(
+                              onTap: () {
+                                isDownloading.value = true;
+                                FileSaving().downloadFileUsingDio(
+                                    widget.videoUrl!,
+                                    cancelToken,
+                                    widget.chatId, (progress) {
+                                  downloadingProgress.value = progress;
+                                }, action: (File file) {
+                                  _controller =
+                                      VideoPlayerController.file(file);
+                                  initializeController();
+                                });
+                              },
+                              child: Icon(Icons.play_arrow,
+                                  size: 50, color: Colors.grey.shade300),
+                            )
+                          : ValueListenableBuilder<double>(
+                              valueListenable: downloadingProgress,
+                              builder: (context, progress, _) {
+                                debugPrint('progress: $progress');
+                                return InkWell(
+                                  onTap: () {
+                                    isDownloading.value = false;
+                                    cancelToken.cancel();
+                                  },
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      CircularProgressIndicator(
+                                        value: progress / 100,
+                                        strokeWidth: 5,
+                                        backgroundColor: Colors.grey,
+                                        color: Color(0xff388CFF),
+                                      ),
+                                      MyTextWidget(
+                                        'X',
+                                        style: context.textTheme.headline6?.ba
+                                            .copyWith(
+                                          color: Colors.grey,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              });
+                    }),
+              ],
+            ),
+          )
+        : FutureBuilder(
+            future: initializeVideo,
+            builder: (context, snapShot) {
+              if (snapShot.connectionState == ConnectionState.done) {
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => {
+                    setState(() {
+                      _controller!.value.isPlaying
+                          ? _controller!.pause()
+                          : _controller!.play();
+                    }),
+                  },
+                  child: SizedBox(
+                    height: 400.h,
+                    width: 300,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        AspectRatio(
+                          aspectRatio: _controller!.value.aspectRatio,
+                          // Use the VideoPlayer widget to display the video.
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12.0),
+                              child: VideoPlayer(_controller!)),
+                        ),
+                        _controller!.value.isPlaying
+                            ? Container()
+                            : Icon(Icons.play_arrow,
+                                size: 50, color: Colors.grey.shade300),
+                        buildSpeed(),
+                        Positioned(
+                          left: 8,
+                          bottom: 38,
+                          child: MyTextWidget(getPosition(),
+                              style: context.textTheme.bodyText2?.rr
+                                  .copyWith(color: Colors.white)),
+                        ),
+                        Positioned(
+                          bottom: 15,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            margin: const EdgeInsets.all(8),
+                            height: 16,
+                            child: VideoProgressIndicator(
+                              _controller!,
+                              allowScrubbing: true,
+                              colors: VideoProgressColors(
+                                  bufferedColor: Colors.white,
+                                  playedColor: const Color(0xff388CFF),
+                                  backgroundColor:
+                                      Colors.white.withOpacity(0.3)),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
                 );
-        });
+              }
+              return SizedBox(
+                width: 300,
+                height: 300,
+                child: Center(child: TrydosLoader()),
+              );
+            });
   }
 
   Widget buildSpeed() {
@@ -228,7 +234,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
         itemBuilder: (context) => allSpeeds
             .map<PopupMenuEntry<double>>((speed) => PopupMenuItem(
                   value: speed,
-                  child: Text(
+                  child: MyTextWidget(
                     '${speed}x',
                     style: const TextStyle(
                       color: Color(0xff388CFF),
@@ -242,7 +248,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
             borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          child: Text(
+          child: MyTextWidget(
             '${_controller!.value.playbackSpeed}x',
             style: const TextStyle(
               color: Color(0xff388CFF),

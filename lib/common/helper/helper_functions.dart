@@ -1,15 +1,23 @@
 import 'dart:io';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:overscroll_pop/overscroll_pop.dart';
+import 'package:store_redirect/store_redirect.dart';
 import 'package:trydos/common/constant/countries.dart';
+import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import '../../features/app/my_text_widget.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'dart:ui' as ui;
 
 class HelperFunctions {
   static changeAppStatus(ThemeMode theme) {
@@ -64,7 +72,7 @@ class HelperFunctions {
 
   static Locale getInitLocale() {
     final deviceLanguage = WidgetsBinding.instance.window.locale.languageCode;
-    print(deviceLanguage);
+    debugPrint(deviceLanguage);
     return mpaLanguageCodeToLocale[deviceLanguage] ?? defaultLocal;
   }
 
@@ -99,13 +107,17 @@ class HelperFunctions {
     final PermissionStatus permissionStatus =
         await Permission.contacts.request();
     List<Contact> contacts = [];
+
     if (permissionStatus == PermissionStatus.granted) {
       contacts = await ContactsService.getContacts(withThumbnails: false);
     }
     List<Contact> myContacts = [];
     for (Contact contact in contacts) {
       if (contact.phones?.isNotEmpty ?? false) {
-        myContacts.add(contact);
+        contact.phones?.forEach((element) {
+          myContacts.add(
+              Contact(phones: [element], displayName: contact.displayName));
+        });
       }
     }
     return myContacts
@@ -116,36 +128,19 @@ class HelperFunctions {
         .toList();
   }
 
-  static Future<AssetEntity?> getAssetFromCamera(BuildContext context) async {
+static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
+
     final List<AssetEntity>? assets = await myMultiAssetPicker(context);
     return assets?[0];
   }
 
-  static Future<List<AssetEntity>?> myMultiAssetPicker(BuildContext context) {
-    AssetPickerTextDelegate textDelegate = LanguageService.languageCode != 'ar'
-        ? const EnglishAssetPickerTextDelegate()
-        : const ArabicAssetPickerTextDelegate();
+  static Future<List<AssetEntity>?> myMultiAssetPicker(
+      BuildContext context) async {
     return AssetPicker.pickAssets(
       context,
       pickerConfig: AssetPickerConfig(
         maxAssets: 1,
-        textDelegate: textDelegate,
         themeColor: const Color(0xff137AC9),
-        specialItemPosition: SpecialItemPosition.prepend,
-        specialItemBuilder: (
-            BuildContext context,
-            AssetPathEntity? path,
-            int length,
-            ) {
-          if (path?.isAll != true) {
-            return null;
-          }
-          return Semantics(
-            label: textDelegate.sActionUseCameraHint,
-            button: true,
-            onTapHint: textDelegate.sActionUseCameraHint,
-          );
-        },
       ),
     );
   }
@@ -169,6 +164,15 @@ class HelperFunctions {
     }
   }
 
+  static String getDatesInFormat(DateTime date) {
+    String formattedDate = DateFormat('MMMMd').format(date.toLocal());
+    return formattedDate;
+  }
+
+  static String gettimesInFormat(DateTime time) {
+    String formattedDate = DateFormat("jm").format(time.toLocal());
+    return formattedDate;
+  }
 
   static String replaceArabicNumber(String input) {
     const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -216,5 +220,95 @@ class HelperFunctions {
       return androidInfo.id.toString() + '_' + androidInfo.model.toString();
     }
     return 'other_os';
+  }
+
+  static showVersionDialog(context) async {
+    await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        String title = 'New Update Available';
+        String message =
+            'There is a newer version of app available please update it now.';
+        String btnLabel = 'Update Now';
+        return WillPopScope(
+            onWillPop: () => Future.value(true),
+            child: Platform.isIOS
+                ? CupertinoAlertDialog(
+                    title: MyTextWidget(title,
+                        textDirection: ui.TextDirection.ltr),
+                    content: MyTextWidget(message,
+                        textDirection: ui.TextDirection.ltr),
+                    actions: <Widget>[
+                        Row(
+                          children: [
+                            AppElevatedButton(
+                              onPressed: () => _getFileFromGoogleDrive(),
+                              text: btnLabel,
+                            ),
+                            AppElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              text: 'Not Now',
+                            ),
+                          ],
+                        )
+                      ])
+                : AlertDialog(
+                    title: MyTextWidget(title,
+                        textDirection: ui.TextDirection.ltr),
+                    content: MyTextWidget(message,
+                        textDirection: ui.TextDirection.ltr),
+                    actions: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          AppElevatedButton(
+                            onPressed: () => _getFileFromGoogleDrive(),
+                            text: btnLabel,
+                          ),
+                          AppElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            text: 'Not Now',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ));
+      },
+    );
+  }
+
+  static _getFileFromGoogleDrive() {
+    urlLauncherBrowser(
+        'https://drive.google.com/file/d/1im1-7Bmx5Qi9cTsVIvGnZIvNY7vSKQLj/view?usp=drivesdk');
+  }
+
+  _openStoreUrl() {
+    StoreRedirect.redirect(
+      androidAppId: 'ae.clearance.app',
+      iOSAppId: '1637100307',
+    );
+  }
+
+  static slidingNavigation(BuildContext context, Widget page) {
+    Navigator.of(context).push(new PageRouteBuilder(
+        opaque: false,
+        transitionDuration: const Duration(milliseconds: 300),
+        pageBuilder: (BuildContext context, _, __) {
+          return DragToPop(xValueToStartPoping: 70, child: page);
+        },
+        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+          return new SlideTransition(
+            child: child,
+            position: new Tween<Offset>(
+              begin: const Offset(1, 0), // navigation from right
+              end: Offset.zero,
+            ).animate(animation),
+          );
+        }));
   }
 }

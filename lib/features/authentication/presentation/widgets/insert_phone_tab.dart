@@ -1,4 +1,5 @@
 import 'package:country_flags/country_flags.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,12 +9,14 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/features/authentication/presentation/widgets/phone_form_fields.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../common/constant/countries.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../app/my_text_widget.dart';
 
 class InsertPhoneTab extends StatefulWidget {
   const InsertPhoneTab(
@@ -43,225 +46,223 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
     super.initState();
   }
 
-
   @override
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFFFFF),
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
     ));
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    print('yes rebuilt');
+    debugPrint('yes rebuilt');
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
     };
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Padding(
-            padding: HWEdgeInsets.symmetric(horizontal: 40.0),
-            child: Column(children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SvgPicture.asset(
-                      widget.fromLogin
-                          ? AppAssets.enterSvg
-                          : AppAssets.phoneCallOutlinedSvg,
-                      width: 15,
-                      height: 15),
-                  10.horizontalSpace,
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Enter Your Phone Number ' +
-                            (widget.fromLogin
-                                ? 'To Login'
-                                : 'Registered With Us'),
-                        style: context.textTheme.caption?.ra
-                            .copyWith(color: Color(0xff5D5C5D), height: 1.42),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Padding(
+          padding: HWEdgeInsets.symmetric(horizontal: 40.0),
+          child: Column(children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SvgPicture.asset(
+                    widget.fromLogin
+                        ? AppAssets.enterSvg
+                        : AppAssets.phoneCallOutlinedSvg,
+                    width: 15,
+                    height: 15),
+                10.horizontalSpace,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    MyTextWidget(
+                      LocaleKeys.enter_your_number.tr() +
+                          " " +
+                          (widget.fromLogin
+                              ? LocaleKeys.to_login.tr()
+                              : LocaleKeys.registered_with_us.tr()),
+                      style: context.textTheme.caption?.ra
+                          .copyWith(color: Color(0xff5D5C5D), height: 1.42),
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: HWEdgeInsets.only(top: 3.0),
+                          child: SvgPicture.asset(AppAssets.registerInfoSvg,
+                              width: 10, height: 10),
+                        ),
+                        5.horizontalSpace,
+                        MyTextWidget(
+                          LocaleKeys.enter_your_phonenumber_registered_with_us
+                              .tr(),
+                          textAlign: TextAlign.start,
+                          style: context.textTheme.caption?.ra
+                              .copyWith(color: Color(0xffC4C2C2), height: 1.25),
+                        )
+                      ],
+                    ),
+                    if (widget.fromLogin) ...{
+                      SizedBox(
+                        height: 3,
                       ),
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: HWEdgeInsets.only(top: 3.0),
-                            child: SvgPicture.asset(AppAssets.registerInfoSvg,
-                                width: 10, height: 10),
-                          ),
+                          SvgPicture.asset(AppAssets.phoneOtpSvg,
+                              width: 10, height: 10),
                           5.horizontalSpace,
-                          Text(
-                            'Enter Your Phone Number Registered With Us',
-                            textAlign: TextAlign.start,
+                          MyTextWidget(
+                            LocaleKeys.we_will_send_code.tr(),
                             style: context.textTheme.caption?.ra.copyWith(
                                 color: Color(0xffC4C2C2), height: 1.25),
                           )
                         ],
                       ),
-                      if (widget.fromLogin) ...{
-                        SizedBox(
-                          height: 3,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SvgPicture.asset(AppAssets.phoneOtpSvg,
+                    } else ...{
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: HWEdgeInsets.only(top: 3.0),
+                            child: SvgPicture.asset(AppAssets.privacySvg,
                                 width: 10, height: 10),
-                            5.horizontalSpace,
-                            Text(
-                              'We Will Send A Verification Code To The Number',
-                              style: context.textTheme.caption?.ra.copyWith(
-                                  color: Color(0xffC4C2C2), height: 1.25),
-                            )
-                          ],
-                        ),
-                      } else ...{
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: HWEdgeInsets.only(top: 3.0),
-                              child: SvgPicture.asset(AppAssets.privacySvg,
-                                  width: 10, height: 10),
-                            ),
-                            5.horizontalSpace,
-                            Text(
-                              'Your Privacy Is Completely Safe, We Not Share Your\nInformation With Anyone',
-                              textAlign: TextAlign.start,
-                              style: context.textTheme.caption?.ra.copyWith(
-                                  color: Color(0xffC4C2C2), height: 1.25.h),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: 3.h,
-                        )
+                          ),
+                          5.horizontalSpace,
+                          MyTextWidget(
+                            LocaleKeys.your_Privacy.tr(),
+                            textAlign: TextAlign.start,
+                            style: context.textTheme.caption?.ra.copyWith(
+                                color: Color(0xffC4C2C2), height: 1.25.h),
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 3.h,
+                      )
+                    }
+                  ],
+                )
+              ],
+            ),
+          ]),
+        ),
+        SizedBox(height: 29.h),
+        Padding(
+            padding: HWEdgeInsets.symmetric(horizontal: 20.0),
+            child: ValueListenableBuilder<bool>(
+                valueListenable: displaySubmit,
+                builder: (context, display, _) {
+                  return PhoneFormField(
+                    focusNode: widget.focusNode,
+                    onChange: (String? text) {
+                      Country newCountry = countries.firstWhere(
+                          (element) => '+${text?.toLowerCase()}'
+                              .startsWith(element.dialCode.toLowerCase()),
+                          orElse: () => Country(
+                              name: '',
+                              flag: '',
+                              code: '',
+                              dialCode: '',
+                              minLength: 0,
+                              maxLength: 0));
+                      if (text?.isNotEmpty ?? false) {
+                        displaySubmit.value =
+                            text!.replaceAll(' ', '').length >=
+                                    (newCountry.minLength +
+                                        newCountry.dialCode.length -
+                                        1) &&
+                                text.replaceAll(' ', '').length <=
+                                    (newCountry.maxLength +
+                                        newCountry.dialCode.length -
+                                        1);
                       }
-                    ],
-                  )
-                ],
-              ),
-            ]),
-          ),
-          SizedBox(height: 29.h),
-          Padding(
-              padding: HWEdgeInsets.symmetric(horizontal: 20.0),
-              child: ValueListenableBuilder<bool>(
-                  valueListenable: displaySubmit,
-                  builder: (context, display, _) {
-                    return PhoneFormField(
-                      focusNode: widget.focusNode,
-                      onChange: (String? text) {
-                        Country newCountry = countries.firstWhere(
-                            (element) => '+${text?.toLowerCase()}'
-                                .startsWith(element.dialCode.toLowerCase()),
-                            orElse: () => Country(
-                                name: '',
-                                flag: '',
-                                code: '',
-                                dialCode: '',
-                                minLength: 0,
-                                maxLength: 0));
-                        if (text?.isNotEmpty ?? false) {
-                          displaySubmit.value =
-                              text!.replaceAll(' ', '').length >=
-                                      (newCountry.minLength +
-                                          newCountry.dialCode.length -
-                                          1) &&
-                                  text.replaceAll(' ', '').length <=
-                                      (newCountry.maxLength +
-                                          newCountry.dialCode.length -
-                                          1);
-                        }
-                        countryChanged.value = newCountry;
-                        debugPrint(
-                            'form.controllers[0].text${form.controllers[0].text}');
-                        return form.controllers[0].text.isNotEmpty
-                            ? form.controllers[0].text[
-                                    form.controllers[0].text.length - 1] ==
-                                ' '
-                            : false;
-                      },
-                      maxLength: maxLength - 1,
-                      prefixIcon: Padding(
-                        padding: HWEdgeInsets.only(left: 20.0, top: 15),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SvgPicture.asset(AppAssets.phoneCallSvg),
-                            10.horizontalSpace,
-                            ValueListenableBuilder<Country>(
-                                valueListenable: countryChanged,
-                                builder: (context, country, _) {
-                                  if (country.code == '')
-                                    return SizedBox(
-                                      width: 22.w,
-                                      height: 15.h,
-                                    );
-                                  else
-                                    return CountryFlag.fromCountryCode(
-                                      country.code,
-                                      height: 15.h,
-                                      width: 22.w,
-                                      borderRadius: 4.r,
-                                    );
-                                }),
-                            10.horizontalSpace,
-                            Text(
-                              '+',
-                              style: context.textTheme.subtitle1?.rr
-                                  .copyWith(color: Color(0xff8E8E8E)),
+                      countryChanged.value = newCountry;
+                      debugPrint(
+                          'form.controllers[0].text${form.controllers[0].text}');
+                      return form.controllers[0].text.isNotEmpty
+                          ? form.controllers[0]
+                                  .text[form.controllers[0].text.length - 1] ==
+                              ' '
+                          : false;
+                    },
+                    maxLength: maxLength - 1,
+                    prefixIcon: Padding(
+                      padding: HWEdgeInsets.only(left: 20.0, top: 15),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SvgPicture.asset(AppAssets.phoneCallSvg),
+                          10.horizontalSpace,
+                          ValueListenableBuilder<Country>(
+                              valueListenable: countryChanged,
+                              builder: (context, country, _) {
+                                if (country.code == '')
+                                  return SizedBox(
+                                    width: 22.w,
+                                    height: 15.h,
+                                  );
+                                else
+                                  return CountryFlag.fromCountryCode(
+                                    country.code,
+                                    height: 15.h,
+                                    width: 22.w,
+                                    borderRadius: 4.r,
+                                  );
+                              }),
+                          10.horizontalSpace,
+                          MyTextWidget(
+                            '+',
+                            style: context.textTheme.subtitle1?.rr
+                                .copyWith(color: Color(0xff8E8E8E)),
+                          ),
+                          4.horizontalSpace
+                        ],
+                      ),
+                    ),
+                    ready: display,
+                    suffixIcon: Padding(
+                      padding: HWEdgeInsets.only(right: 20.0, top: 22),
+                      child: !display
+                          ? SizedBox(
+                              width: 22.w,
+                              height: 15.h,
+                            )
+                          : InkWell(
+                              onTap: () {
+                                widget.moveToNextStep
+                                    .call('${form.controllers[0].text}');
+                              },
+                              child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SvgPicture.asset(
+                                      AppAssets.submitArrowSvg,
+                                      width: 10.w,
+                                      height: 20.h,
+                                    ),
+                                  ]),
                             ),
-                            4.horizontalSpace
-                          ],
-                        ),
-                      ),
-                      ready: display,
-                      suffixIcon: Padding(
-                        padding: HWEdgeInsets.only(right: 20.0, top: 22),
-                        child: !display
-                            ? SizedBox(
-                                width: 22.w,
-                                height: 15.h,
-                              )
-                            : InkWell(
-                                onTap: () {
-                                  widget.moveToNextStep
-                                      .call('${form.controllers[0].text}');
-                                },
-                                child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SvgPicture.asset(
-                                        AppAssets.submitArrowSvg,
-                                        width: 10.w,
-                                        height: 20.h,
-                                      ),
-                                    ]),
-                              ),
-                      ),
-                      hintText: 'Phone Number',
-                      controller: form.controllers[0],
-                    );
-                  })),
-          SizedBox(
-            height: 20,
-          ),
-        ],
-      ),
+                    ),
+                    hintText: LocaleKeys.phone_numbber.tr(),
+                    controller: form.controllers[0],
+                  );
+                })),
+        SizedBox(
+          height: 20,
+        ),
+      ],
     );
   }
 

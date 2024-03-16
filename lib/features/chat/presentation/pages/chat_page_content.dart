@@ -1,16 +1,26 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/main.dart';
 
 import '../../../app/blocs/app_bloc/app_bloc.dart';
+import '../../../app/my_text_widget.dart';
 import '../../../home/presentation/widgets/sliver_list_seprated.dart';
 import '../manager/chat_bloc.dart';
+import '../manager/chat_state.dart';
 
 class ChatPageContent extends StatefulWidget {
   const ChatPageContent({Key? key, this.onSendForwardMessage})
@@ -42,10 +52,10 @@ class ChatPageContentState extends State<ChatPageContent> {
       for (Chat chat in initialChats) {
         ChannelMember member = chat.channelMembers!.firstWhere(
             (element) => element.userId != GetIt.I<PrefsRepository>().myChatId);
-        if ((member.user?.name ?? 'UnKnown User')
+        if ((chat.channelName ?? LocaleKeys.unknown_user.tr())
                 .toLowerCase()
                 .contains(text?.toLowerCase() ?? '') ||
-            (member.user?.mobilePhone ?? 'No Number')
+            (member.user?.mobilePhone ?? LocaleKeys.no_num.tr())
                 .toLowerCase()
                 .contains(text?.toLowerCase() ?? '')) {
           search.add(chat);
@@ -62,6 +72,7 @@ class ChatPageContentState extends State<ChatPageContent> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
+      print(error);
     };
     //todo  9/21  change it to BlocBuilder
     return BlocBuilder<ChatBloc, ChatState>(
@@ -73,24 +84,43 @@ class ChatPageContentState extends State<ChatPageContent> {
           p.deleteChatStatus != c.deleteChatStatus ||
           c.createAnewChat ||
           c.sendMessageStatus == SendMessageStatus.loading ||
-          c.receiveMessageStatus == ReceiveMessageStatus.success,
+          p.receiveMessageStatus != c.receiveMessageStatus,
       builder: (context, state) {
         if ((state.getChatsStatus == GetChatsStatus.loading ||
                 state.getChatsStatus == GetChatsStatus.init) &&
             state.chats.isEmpty &&
             state.pinnedChats.isEmpty) {
-          return SliverToBoxAdapter(child: TrydosLoader());
+          return SliverToBoxAdapter(
+              child: SizedBox(
+            height: 1.sh - 200,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TrydosLoader(),
+              ],
+            ),
+          ));
+        }
+        if (state.getChatsStatus == GetChatsStatus.failure) {
+          return SliverToBoxAdapter(
+            child: Center(
+              child: ElevatedButton(
+                  onPressed: () {
+                    GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
+                  },
+                  child: MyTextWidget(LocaleKeys.try_again.tr())),
+            ),
+          );
         }
         // todo (future update) here we can return try again if the status failure
-
-        List<Chat> chats = [];
-        chats.addAll(state.pinnedChats);
+        List<Chat> chats = List.of(state.pinnedChats);
         chats.addAll(state.chats);
-
         // todo  (future update) remove this from here handle it in the back of in bloc
+
         chats.removeWhere((element) =>
-            int.tryParse(element.id.toString()) == null &&
-            (element.messages?.isEmpty ?? true));
+            // int.tryParse(element.id.toString()) == null &&
+            (element.messages.isNullOrEmpty));
+
         initialChats = chats;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           searchChats.value = chats;
@@ -102,32 +132,59 @@ class ChatPageContentState extends State<ChatPageContent> {
             buildWhen: (p, c) =>
                 p.pusherActivityIds.length != c.pusherActivityIds.length,
             builder: (context, appState) {
-              return ValueListenableBuilder<List<Chat>>(
-                  valueListenable: searchChats,
-                  builder: (context, searchedChats, _) {
-                    return sliverListSeparated(
-                      itemBuilder: (_, index) {
-                        bool thereActivity = int.tryParse(
-                                    searchedChats[index].id.toString()) !=
-                                null
-                            ? appState.pusherActivityIds.containsKey(
-                                int.parse(searchedChats[index].id.toString()))
-                            : false;
-                        return ChatCard(
-                          onSendForwardMessage: widget.onSendForwardMessage,
-                          chat: searchedChats[index],
-                          thereActivity: thereActivity,
-                          index: index,
-                          activityDescription: thereActivity
-                              ? appState.pusherActivityDescription[
-                                  int.parse(searchedChats[index].id.toString())]
-                              : null,
-                        );
-                      },
-                      separator: const SizedBox.shrink(),
-                      childCount: searchedChats.length,
-                    );
-                  });
+              return SliverMainAxisGroup(
+                slivers: [
+                  SliverToBoxAdapter(
+                      child: Container(
+                          width: 1.sw,
+                          color: colorScheme.white,
+                          child:
+                              state.getChatsStatus != GetChatsStatus.success &&
+                                      state.firstRequestForGetChats
+                                  ? TrydosLoader()
+                                  : const SizedBox.shrink())),
+                  ValueListenableBuilder<List<Chat>>(
+                      valueListenable: searchChats,
+                      builder: (context, searchedChats, _) {
+                        return sliverListSeparated(
+                            separator: const SizedBox.shrink(),
+                            childCount: searchedChats.length,
+                            itemBuilder: (_, index) {
+                              bool thereActivity = int.tryParse(
+                                          searchedChats[index].id.toString()) !=
+                                      null
+                                  ? appState.pusherActivityIds.containsKey(
+                                      int.parse(
+                                          searchedChats[index].id.toString()))
+                                  : false;
+                              return ChatCard(
+                                onSendForwardMessage:
+                                    widget.onSendForwardMessage,
+                                chat: searchedChats[index],
+                                thereActivity: thereActivity,
+                                index: index,
+                                activityDescription: thereActivity
+                                    ? appState.pusherActivityDescription[
+                                        int.parse(
+                                            searchedChats[index].id.toString())]
+                                    : null,
+                                messageId:
+                                    searchedChats[index].messages!.first.id ??
+                                        "",
+                              );
+                            });
+                      }),
+                  SliverToBoxAdapter(
+                      child: Container(
+                          width: 1.sw,
+                          color: colorScheme.white,
+                          child:
+                              state.getChatsStatus != GetChatsStatus.success &&
+                                      !state.firstRequestForGetChats
+                                  ? TrydosLoader()
+                                  : const SizedBox.shrink())),
+                ],
+              );
             },
           ),
         );

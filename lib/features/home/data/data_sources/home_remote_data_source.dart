@@ -2,6 +2,7 @@
 
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/methods/get.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
@@ -25,6 +26,20 @@ class HomeRemoteDatasource {
       ),
     );
     return getStartingSettings();
+  }
+  Future<GetProductListingWithoutFiltersModel> getProductsWithoutFilters(Map<String, dynamic> params) {
+    GetClient<GetProductListingWithoutFiltersModel> getProductsWithoutFilters = GetClient<
+        GetProductListingWithoutFiltersModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetProductListingWithoutFiltersModel>(
+        endpoint: MarketEndPoints.getProductListingWithoutFiltersEP,
+        queryParameters: params,
+        response: ResponseValue<GetProductListingWithoutFiltersModel>(
+            fromJson: (response) => GetProductListingWithoutFiltersModel.fromJson(response)
+        ),
+      ),
+    );
+    return getProductsWithoutFilters();
   }
   Future<MainCategoriesResponseModel> getMainCategories() {
     GetClient<MainCategoriesResponseModel> getMainCategories = GetClient<

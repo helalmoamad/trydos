@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
@@ -9,10 +10,9 @@ import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/post.dart';
 import '../../../../core/api/methods/get.dart';
 import '../../presentation/bloc/story_bloc.dart';
-import '../models/get_stories_model.dart';
 import '../models/image_detail.dart';
 import '../models/upload_story_response_model.dart';
-
+import '../../data/models/get_stories_model.dart';
 @injectable
 class StoriesDataSource {
   Completer<ImageDetail> completer = Completer<ImageDetail>();
@@ -80,11 +80,27 @@ class StoriesDataSource {
     return uploadStory();
   }
 
-  Future<bool> addStoryToOurServer(Map<String, dynamic> params) {
-    PostClient<bool> addStoryToOurServer = PostClient<bool>(
-      requestPrams: RequestConfig<bool>(
+  Future<Either<int , CollectionStoryModel>> addStoryToOurServer(Map<String, dynamic> params) {
+    PostClient<Either<int , CollectionStoryModel>> addStoryToOurServer = PostClient<Either<int , CollectionStoryModel>>(
+      requestPrams: RequestConfig<Either<int , CollectionStoryModel>>(
         endpoint: StoriesEndPoints.addStoryToOurServerEP,
         data: params,
+        response: ResponseValue<Either<int , CollectionStoryModel>>(
+          fromJson: (response) {
+            if(response['data']['id'] != null) return Left(response['data']['id']);
+            return Right(CollectionStoryModel.fromJson(response['data']));
+          }
+        )
+      ),
+      serverName: ServerName.stories,
+    );
+    // uploadStory.call();
+    return addStoryToOurServer();
+  }
+  Future<bool> increaseViewers(Map<String, dynamic> params) {
+    GetClient<bool> addStoryToOurServer = GetClient<bool>(
+      requestPrams: RequestConfig<bool>(
+        endpoint: StoriesEndPoints.increaseViewersEP(params['storyId']),
         response: ResponseValue<bool>(returnValueOnSuccess: true),
       ),
       serverName: ServerName.stories,

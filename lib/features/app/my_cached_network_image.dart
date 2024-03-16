@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -16,10 +18,13 @@ class MyCachedNetworkImage extends StatelessWidget {
         this.logoTextHeight,
       required this.imageFit,
         this.imageBuilder,
+        this.imageColor,
         this.progressIndicatorBuilderWidget,
+        this.callWhenDisplayImage,
+        this.callWhenLoadingImage,
        this.radius=12,
        this.withImageShadow=false,
-      required this.height})
+      required this.height, this.circleDimensions})
       : super(key: key);
 
   final ValueNotifier<int> rebuildImage = ValueNotifier(0);
@@ -35,7 +40,10 @@ class MyCachedNetworkImage extends StatelessWidget {
   final double radius;
   final bool withImageShadow;
   final ImageWidgetBuilder? imageBuilder;
-
+  final double? circleDimensions;
+  final Color? imageColor;
+  final void Function()? callWhenDisplayImage;
+  final void Function()? callWhenLoadingImage;
 
   final Widget? progressIndicatorBuilderWidget;
 
@@ -49,13 +57,14 @@ class MyCachedNetworkImage extends StatelessWidget {
           rebuildImage.value++;
         });
       },
-      child: Icon(Icons.refresh, color: const Color(0xffff5f61), size: 30.sp),
+      child: Icon(Icons.refresh, color: const Color(0xffff5f61), size: min(25 ,height)),
     ));
   }
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
+      key: UniqueKey(),
         valueListenable: rebuildImage,
         builder: (context, count, _) {
           return Container(
@@ -77,17 +86,22 @@ class MyCachedNetworkImage extends StatelessWidget {
                   imageUrl: imageUrl,
                   fit: imageFit,
                   width: width,
+                  color: imageColor,
                   height: height,
                   cacheManager: CustomCacheManager(),
+
                   progressIndicatorBuilder: (context, _, progress){
+                    callWhenLoadingImage?.call();
                     return progressIndicatorBuilderWidget ?? TrydosShimmerLoading(
                       width: width,
                       height: height,
-                      logoTextHeight: 14,
-                      logoTextWidth: 48.w,
+                      logoTextHeight: logoTextHeight  ?? 14,
+                      logoTextWidth: logoTextWidth ?? 48.w,
+                      circleDimensions: circleDimensions,
                     );
                   } ,
                   imageBuilder: imageBuilder ?? (ctx , image){
+                    callWhenDisplayImage?.call();
                     return
                       Container(
                       width: width,

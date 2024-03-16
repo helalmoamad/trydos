@@ -7,6 +7,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/app_elvated_button.dart';
+import '../../../app/my_text_widget.dart';
 import '../widgets/request_and_response_card.dart';
 import '../widgets/search_app_bar.dart';
 class FeedBackScreen extends StatelessWidget {
@@ -97,7 +98,7 @@ class FeedBackScreen extends StatelessWidget {
                                       decoration: BoxDecoration(
                                           color: context.colorScheme.tertiary, shape: BoxShape.circle),
                                       child: Center(
-                                        child: Text('X',
+                                        child: MyTextWidget('X',
                                             style: context.textTheme.bodyText2!.rr.copyWith(
                                               color: context.colorScheme.white
                                             )),

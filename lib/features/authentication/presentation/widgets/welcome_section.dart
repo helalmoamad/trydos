@@ -1,4 +1,6 @@
 import 'package:dotted_border/dotted_border.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,12 +8,13 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-
-import '../../../../base_page.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'dart:ui' as ui;
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
+import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 class WelcomeSection extends StatelessWidget {
   WelcomeSection({required this.goToCreateAccount , required this.goToLoginSection ,Key? key}) : super(key: key);
@@ -19,7 +22,7 @@ class WelcomeSection extends StatelessWidget {
   final void Function() goToLoginSection;
 
   final ValueNotifier<int> clickButton = ValueNotifier(-1);
-
+  final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -28,18 +31,16 @@ class WelcomeSection extends StatelessWidget {
           error: error.toString());
     };
     return Directionality(
-      textDirection: TextDirection.ltr,
+      textDirection: ui.TextDirection.ltr,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
             padding: HWEdgeInsets.symmetric(horizontal: 30.0),
-            child: Text(
-              'To Take Advantage Of All The Advantages Of The Application,\nPlease Join Us In Quick And Easy Steps And For Just One Time',
-              textAlign: TextAlign.start,
-              textHeightBehavior:
-              TextHeightBehavior(applyHeightToFirstAscent: false),
+            child: MyTextWidget(
+              LocaleKeys.welcome_page_description.tr(),
+              textAlign: TextAlign.center,
               style: context.textTheme.bodyText2?.la.copyWith(
                 color: Color(0xff5D5C5D),
                 letterSpacing: 0.14,
@@ -48,8 +49,8 @@ class WelcomeSection extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20,),
-          Text(
-            'Why We Know You ?',
+          MyTextWidget(
+            LocaleKeys.why_we_know_you_label.tr(),
             textAlign: TextAlign.center,
             style: context.textTheme.bodyText2?.la.copyWith(
               color: Color(0xffF85555),
@@ -61,7 +62,7 @@ class WelcomeSection extends StatelessWidget {
           InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: () {
+            onTap: () async{
               clickButton.value = 0;
               Future.delayed(
                   Duration(milliseconds: 100),
@@ -70,6 +71,13 @@ class WelcomeSection extends StatelessWidget {
                     goToLoginSection.call();
                   }
               );
+              await FirebaseAnalytics.instance.logEvent(
+                  name: 'button_clicked',
+                  parameters:{
+                    'userID': prefsRepository.myMarketId.toString(),
+                    'user_name':prefsRepository.myMarketName.toString(),
+                    'clicked_button_name': 'i have already account',
+                  });
             },
             child: ValueListenableBuilder<int>(
                 valueListenable: clickButton,
@@ -97,15 +105,13 @@ class WelcomeSection extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20.0),
                         ),
                         child: Center(
-                          child: Text(
-                            'I Have Already Account',
+                          child: MyTextWidget(
+                            LocaleKeys.i_have_account.tr(),
                             style: context.textTheme.bodyText1?.ra.copyWith(
                               color: Color(0xff5D5C5D),
                               letterSpacing: 0.16,
                               height: 1.25,
                             ),
-                            textHeightBehavior: TextHeightBehavior(
-                                applyHeightToFirstAscent: false),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -118,17 +124,23 @@ class WelcomeSection extends StatelessWidget {
           InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: () {
+            onTap: () async{
               clickButton.value = 1;
               Future.delayed(Duration(milliseconds: 100), () {
                 clickButton.value = -1;
                 goToCreateAccount.call();
               });
+              await FirebaseAnalytics.instance.logEvent(
+                  name: 'button_clicked',
+                  parameters:{
+                    'userID': prefsRepository.myMarketId.toString(),
+                    'user_name':prefsRepository.myMarketName.toString(),
+                    'clicked_button_name': 'create new account',
+                  });
             },
             child: ValueListenableBuilder<int>(
                 valueListenable: clickButton,
                 builder: (context, index, _) {
-                  print(index);
                   return Padding(
                     padding:  EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                     child: DottedBorder(
@@ -152,15 +164,13 @@ class WelcomeSection extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20.0),
                         ),
                         child: Center(
-                          child: Text(
-                            'Create New Account',
+                          child: MyTextWidget(
+                            LocaleKeys.create_new_account.tr(),
                             style: context.textTheme.bodyText1?.ra.copyWith(
                               color: Color(0xff5D5C5D),
                               letterSpacing: 0.16,
                               height: 1.25,
                             ),
-                            textHeightBehavior: TextHeightBehavior(
-                                applyHeightToFirstAscent: false),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -173,22 +183,27 @@ class WelcomeSection extends StatelessWidget {
           InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: ()async{
-              if(GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
+            onTap: () async{
+              if(prefsRepository.isVerifiedPhone != false) {
                 String? deviceId = await HelperFunctions
                     .getDeviceId();
                 BlocProvider.of<AuthBloc>(context).add(
                     RegisterGuestEvent(deviceId: deviceId!));
               }
+              await FirebaseAnalytics.instance.logEvent(
+                  name: 'button_clicked',
+                  parameters:{
+                    'userID': prefsRepository.myMarketId.toString(),
+                    'user_name':prefsRepository.myMarketName.toString(),
+                    'clicked_button_name': 'Later, Take Look',
+                  });
               context.go(GRouter.config.applicationRoutes.kBasePage);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Text(
-                'Later, Take A Look At The App',
+              child: MyTextWidget(
+                LocaleKeys.later_take_look.tr(),
                 textAlign: TextAlign.center,
-                textHeightBehavior:
-                TextHeightBehavior(applyHeightToFirstAscent: false),
                 style: context.textTheme.bodyText2?.ra.copyWith(
                   color: Color(0xff4d84ff),
                   letterSpacing: 0.14,
