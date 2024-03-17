@@ -67,7 +67,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       this.getMediaCountUseCase)
       : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
-    on<UpdateChannelObjectFromNotificationEvent>(_onUpdateChannelObjectFromNotificationEvent);
+    on<UpdateChannelObjectFromNotificationEvent>(
+        _onUpdateChannelObjectFromNotificationEvent);
     on<DeleteChatFromNotificationEvent>(_onDeleteChatFromNotificationEvent);
     on<ChangeGlobalUsedVariablesInBloc>(_onChangeGlobalUsedVariablesInBloc);
     on<ResendMessageEvent>(_onResendMessageEvent);
@@ -293,10 +294,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           }
           return e;
         }).toList();
-        if(event.file != null){
+        if (event.file != null) {
           _prefsRepository.setAFilePathExist(
-              event.mediaContent![0]['file_path'] + ' ' +
-                  event.file!.path,
+              event.mediaContent![0]['file_path'] + ' ' + event.file!.path,
               r.channel!.id!);
         }
         emit(
@@ -586,7 +586,6 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           currentFailedMessage: currentFailedMessage,
           currentFailedMediaMessage: currentFailedMediaMessage));
     }, (r) {
-
       add(SendMessageEvent(
           messageId: event.messageId,
           extraFields: event.extraFields,
@@ -1362,9 +1361,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             state.copyWith(getMediaCountStatus: GetMediaCountStatus.failure)),
         (r) => emit(state.copyWith(
             getMediaCountStatus: GetMediaCountStatus.success,
-            fileCountInEachChat: r.data!.fileMessagesCount,
-            imageCountInEachChat: r.data!.imageMessagesCount,
-            videoCountInEachChat: r.data!.videoMessagesCount)));
+            fileCountInEachChat: r.data?.fileMessagesCount ?? 0,
+            imageCountInEachChat: r.data?.imageMessagesCount ?? 0,
+            videoCountInEachChat: r.data?.videoMessagesCount ?? 0)));
   }
 
   _onChangeSlop(ChangeSlop event, Emitter<ChatState> emit) {
@@ -1572,8 +1571,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         }).toList()));
   }
 
-  FutureOr<void> _onDeleteChatFromNotificationEvent(DeleteChatFromNotificationEvent event, Emitter<ChatState> emit) {
-
+  FutureOr<void> _onDeleteChatFromNotificationEvent(
+      DeleteChatFromNotificationEvent event, Emitter<ChatState> emit) {
     bool fromPinned = false;
     List<Chat> chats;
     if (state.chats.any((element) => element.id == event.channelId)) {
@@ -1593,6 +1592,5 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           ...(fromPinned ? state.chats : state.pinnedChats)
         ]),
         pinnedChats: !fromPinned ? state.pinnedChats : chats));
-
   }
 }

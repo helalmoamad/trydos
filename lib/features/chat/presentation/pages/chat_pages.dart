@@ -270,11 +270,17 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                                           state.unReadMessagesFromAllChats);
                                 },
                               ),
-                              ChatTabItem(
-                                  iconUrl: AppAssets.callsOutlinedActiveSvg,
-                                  activeIconUrl: AppAssets.callsSvg,
-                                  index: 1,
-                                  notificationCount: 9),
+                              BlocBuilder<CallsBloc, CallsState>(
+                                buildWhen: (p, c) =>
+                                    p.missedCallCount != c.missedCallCount,
+                                builder: (context, state) {
+                                  return ChatTabItem(
+                                      iconUrl: AppAssets.callsOutlinedActiveSvg,
+                                      activeIconUrl: AppAssets.callsSvg,
+                                      index: 1,
+                                      notificationCount: state.missedCallCount);
+                                },
+                              ),
                               ChatTabItem(
                                   iconUrl: AppAssets.storyOutlinedSvg,
                                   activeIconUrl: AppAssets.storyFilledSvg,

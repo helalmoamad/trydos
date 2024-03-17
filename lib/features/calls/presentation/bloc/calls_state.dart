@@ -38,11 +38,13 @@ class CallsState {
   final OpenLocalVideoAndAudioStatus openLocalVideoAndAudioStatus;
   final StopRingToneReason stopRingToneReason;
   final bool isVideoCall;
+  final int missedCallCount;
   final String? currentActiveCallId;
   final String? receiverCallName;
   CallsState(
       {this.messageId,
       this.sessionId = 23,
+      this.missedCallCount = 0,
       this.rejectVideoCallStatus = RejectVideoCallStatus.init,
       this.agoraToken = null,
       this.channelIdForCurrentCall = null,
@@ -71,12 +73,14 @@ class CallsState {
       String? channelIdForCurrentCall,
       List<int>? channelMembers,
       DeleteMessageStatus? deleteMessageStatus,
+      final int? missedCallCount,
       bool? isVideoCall,
       OpenLocalVideoAndAudioStatus? openVideoAndAudioStatus,
       OpenRemoteVideoAndAudioStatus? openRemoteVideoAndAudioStatus,
       MakeCallStatus? makeCallStatus}) {
     return CallsState(
         messageId: messageId ?? this.messageId,
+        missedCallCount: missedCallCount ?? this.missedCallCount,
         receiverCallName: receiverCallName ?? this.receiverCallName,
         deleteMessageStatus: deleteMessageStatus ?? this.deleteMessageStatus,
         callRegister: callRegister ?? this.callRegister,

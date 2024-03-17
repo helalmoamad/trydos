@@ -193,9 +193,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   bool isAFilePathExist(String filePath, String chatId) {
-    filePath = convert.jsonEncode({chatId: filePath});
     List<String> files = getExistenceFiles();
-    String path = files.firstWhere((element) => element.startsWith(filePath),
+    String path = files.firstWhere(
+        (element) => element.contains(filePath.split(" ")[0]),
         orElse: () => '');
     return path != '';
   }
@@ -213,12 +213,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   Future<bool> removeAFilePathExist(String filePath, String chatId) {
     List<String> files = getExistenceFiles();
-    print(
-        "000000000000000000000000000000000000000000000000000000000000011111111000000000000000000${files.any((element) => element.contains(filePath))}");
 
     files.removeWhere((element) => element.contains(filePath));
-    print(
-        "0000000000000000000000000000000000000000000000000000000000000000000000000000000${files.any((element) => element.contains(filePath))}");
     return _preferences.setStringList(PrefsKey.existenceFiles, files);
   }
 
@@ -232,10 +228,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   String? getTheLocalPathForFile(String filePath, String chatId) {
-    filePath = convert.jsonEncode({chatId: filePath});
     List<String> files = getExistenceFiles();
 
-    String path = files.firstWhere((element) => element.startsWith(filePath));
+    String path = files.firstWhere((element) => element.contains(filePath));
 
     Map paths = convert.jsonDecode(path);
     return paths[chatId].toString().split(' ').length > 1
@@ -334,6 +329,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
     list.add(chat);
     return _preferences.setStringList('chat', list);
   }
+
   List<Map>? get getTheRemovedMessageFromBackground => _preferences
       .getStringList('removedMessage')
       ?.map((e) => (convert.jsonDecode(e)) as Map)
@@ -382,12 +378,12 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  List<String>? get getTheChatsIdsToRemoveFromBackground => _preferences
-      .getStringList('removedChats');
-
+  List<String>? get getTheChatsIdsToRemoveFromBackground =>
+      _preferences.getStringList('removedChats');
 
   @override
-  Future<bool> removeChatsFromBackground() => _preferences.remove('removedChats');
+  Future<bool> removeChatsFromBackground() =>
+      _preferences.remove('removedChats');
 
   @override
   Future<bool> setRemovedChatFromBackground(String removedChatId) {

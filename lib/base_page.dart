@@ -189,7 +189,8 @@ void DealWithChatsToDeleteFromBackground() async {
   if ((ids = GetIt.I<PrefsRepository>().getTheChatsIdsToRemoveFromBackground) !=
       null) {
     for (int i = 0; i < (ids?.length ?? 0); i++) {
-      GetIt.I<ChatBloc>().add(DeleteChatFromNotificationEvent(channelId: ids![i]));
+      GetIt.I<ChatBloc>()
+          .add(DeleteChatFromNotificationEvent(channelId: ids![i]));
     }
     GetIt.I<PrefsRepository>().removeChatsFromBackground();
   }
@@ -198,17 +199,16 @@ void DealWithChatsToDeleteFromBackground() async {
 void DealWithChatsToEditStoredFromBackground() async {
   await GetIt.I<SharedPreferences>().reload();
   List<Chat>? chats;
-  if ((chats = GetIt
-      .I<PrefsRepository>()
-      .getTheChatsToEditFromBackground) !=
+  if ((chats = GetIt.I<PrefsRepository>().getTheChatsToEditFromBackground) !=
       null) {
     for (int i = 0; i < (chats?.length ?? 0); i++) {
-      GetIt.I<ChatBloc>().add(
-          UpdateChannelObjectFromNotificationEvent(chat: chats![i]));
+      GetIt.I<ChatBloc>()
+          .add(UpdateChannelObjectFromNotificationEvent(chat: chats![i]));
     }
     GetIt.I<PrefsRepository>().removeChatToEditFromBackground();
   }
 }
+
 void DealWithRemovedMessageStoredFromBackground() async {
   await GetIt.I<SharedPreferences>().reload();
 
@@ -351,11 +351,23 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
       if (event.data['type'] == 'RefuseCallEvent') {
+        print(
+            "121111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
+
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'RefuseCall for message ForeGround ${data['message_id']}');
+        print('${data['duration_in_seconds']}' +
+            "1211111100000001111111111111111111111111111111111111111111111111111111111111111111111111111111");
+
+        if (data['duration_in_seconds']!.toString().contains("-1")) {
+          print('${data['duration_in_seconds']}' +
+              "121111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
+
+          GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
+        }
         if ((data['message_id'].toString() !=
                 callsBloc.state.currentActiveCallId) &&
             callsBloc.state.currentActiveCallId != '-1') {
@@ -441,11 +453,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           navigatorKey.currentState!.context.pop();
         }
         callsBloc.add(UserInteractWithCall(rejectIt: false));
-      } else if(event.data['type'] == 'ChannelDeletedEvent'){
+      } else if (event.data['type'] == 'ChannelDeletedEvent') {
         Map<String, dynamic> data =
-        convert.jsonDecode(event.data["data"].toString());
-        GetIt.I<ChatBloc>().add(DeleteChatFromNotificationEvent(channelId: data['channelId']));
-      }else if (event.data['type'] == 'UpdatingMessageEvent') {
+            convert.jsonDecode(event.data["data"].toString());
+        GetIt.I<ChatBloc>()
+            .add(DeleteChatFromNotificationEvent(channelId: data['channelId']));
+      } else if (event.data['type'] == 'UpdatingMessageEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data["data"].toString());
         GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
@@ -464,7 +477,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       } else if (event.data['type'] == 'ChannelUpdatedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data["data"].toString());
-        GetIt.I<ChatBloc>().add(UpdateChannelObjectFromNotificationEvent(chat: Chat.fromJson(data['channel'])));
+        GetIt.I<ChatBloc>().add(UpdateChannelObjectFromNotificationEvent(
+            chat: Chat.fromJson(data['channel'])));
       } else if (event.data['type'] == 'ChannelWatchedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
