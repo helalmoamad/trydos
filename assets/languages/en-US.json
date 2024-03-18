@@ -130,5 +130,7 @@
   "did_no_answer": "Did Not Answer",
   "reject": "Reject",
   "answer": "Answer",
-  "calling": "Calling ..."
+  "calling": "Calling ...",
+  "my_stories": "My Stories",
+  "click_to_add_story": "Click to add a new story"
 }

@@ -24,6 +24,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/chat/presentation/pages/calls_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
+import 'package:trydos/features/chat/presentation/pages/stories_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/story_page_content.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/helper/show_message.dart';
@@ -61,7 +62,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 
   List<Widget> chatPages = [
     const CallsPageContent(),
-    const CallsPageContent(),
+    const StoriesForChatPageContent(),
   ];
 
   void saveUserContacts() async {
