@@ -24,7 +24,7 @@ class _CallsPageContentState extends ThemeState<CallsPageContent> {
 
   void initState() {
     callsBloc = BlocProvider.of<CallsBloc>(context);
-
+    callsBloc.add(ResetMissedCallEvent());
     callsBloc.add(GetMyCallsEvent());
     /* calls.Data data = calls.Data();
     data.copyWith(
@@ -47,11 +47,11 @@ class _CallsPageContentState extends ThemeState<CallsPageContent> {
 
     return BlocBuilder<CallsBloc, CallsState>(
       buildWhen: (previous, current) {
-        return previous.callRegister != current.callRegister &&
-            current.getMyCallsStatus == GetMyCallsStatus.success;
+        return previous.callRegister != current.callRegister;
       },
       builder: (context, state) {
-        if (state.callRegister == null) {
+        if (state.callRegister == null ||
+            state.getMyCallsStatus != GetMyCallsStatus.success) {
           return SliverToBoxAdapter(
               child: SizedBox(
             height: 1.sh - 200,
@@ -78,7 +78,10 @@ class _CallsPageContentState extends ThemeState<CallsPageContent> {
                 return SizedBox.shrink();
               } else {
                 return CallsCard(
-                  isMissing: state.callRegister![index].durationInSeconds == -1,
+                  isMissing:
+                      state.callRegister![index].durationInSeconds == -1 &&
+                          state.callRegister![index].senderUserId !=
+                              GetIt.I<PrefsRepository>().myChatId,
                   createAt: state.callRegister![index].createdAt,
                   isIncome: state.callRegister![index].senderUserId !=
                       GetIt.I<PrefsRepository>().myChatId,

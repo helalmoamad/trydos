@@ -1277,9 +1277,15 @@ class _SinglePageChatState extends State<SinglePageChat> {
             message.receiverUserId != null);
     if (message.authMessageStatus?.isDeleted == 1 &&
         message.authMessageStatus?.deleteForAll == true) {
+      Locale lan = Localizations.localeOf(context);
       return Row(
-        mainAxisAlignment:
-            !isSentMessage ? MainAxisAlignment.start : MainAxisAlignment.end,
+        mainAxisAlignment: !isSentMessage
+            ? (lan.languageCode == "en"
+                ? MainAxisAlignment.start
+                : MainAxisAlignment.end)
+            : (lan.languageCode == "en"
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start),
         children: [
           Container(
             margin: EdgeInsets.only(left: 10.w, right: 10.w),

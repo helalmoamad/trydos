@@ -69,6 +69,7 @@ class ChatState {
   final String? secondMessageId;
   final String? slopMessageId;
   final int unReadMessagesFromAllChats;
+
   final String currentChannelReceivedMessage;
   final bool scrollToParentMessage;
   final Chat? chatToNavigateFromTerminated;
@@ -169,7 +170,8 @@ class ChatState {
       width: width ?? this.width,
       slopMessageId: slopMessageId ?? this.slopMessageId,
       isSlpoing: isSlpoing ?? this.isSlpoing,
-      firstRequestForGetChats: firstRequestForGetChats ?? this.firstRequestForGetChats,
+      firstRequestForGetChats:
+          firstRequestForGetChats ?? this.firstRequestForGetChats,
       height: height ?? this.height,
       resendMessageStatus: resendMessageStatus ?? this.resendMessageStatus,
       imageCountInEachChat: imageCountInEachChat ?? this.imageCountInEachChat,

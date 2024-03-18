@@ -371,20 +371,23 @@ class _CallsCardState extends ThemeState<CallsCard> {
                               ),
                             ],
                           ),
-                          Row(
-                            children: [
-                              Text(
-                                widget.duration != 0 ? "المدة : " : "",
-                                style: TextStyle(color: Color(0xff8E8D92)),
-                              ),
-                              Text(
-                                fromSecond(widget.duration),
-                                maxLines: 1,
-                                style: textTheme.bodySmall?.rr
-                                    .copyWith(color: const Color(0xff8E8D92)),
-                              ),
-                            ],
-                          ),
+                          widget.duration > 0
+                              ? Row(
+                                  children: [
+                                    Text(
+                                      "المدة : ",
+                                      style:
+                                          TextStyle(color: Color(0xff8E8D92)),
+                                    ),
+                                    Text(
+                                      fromSecond(widget.duration),
+                                      maxLines: 1,
+                                      style: textTheme.bodySmall?.rr.copyWith(
+                                          color: const Color(0xff8E8D92)),
+                                    ),
+                                  ],
+                                )
+                              : SizedBox.shrink(),
                         ],
                       ),
                     ],

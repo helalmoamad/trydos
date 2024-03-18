@@ -48,13 +48,17 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       : super(CallsState()) {
     on<CallsEvent>((event, emit) {});
     on<UpdateCurrentActiveCallIdEvent>(_onUpdateCurrentActiveCallIdEvent);
+    on<IcreaseMissedCallEvent>(_onIcreaseMissedCallEvent);
+
+    on<ResetMissedCallEvent>(_onResetMissedCallEvent);
     on<InitResponseRejectVideoCallEvent>(_onInitResponseRejectVideoCallEvent);
     on<RejectVideoCallEvent>(_onRejectVideoCallEvent);
     on<AnswerVideoCallEvent>(_onAnswerVideoCallEvent);
     on<EndVideoCallEvent>(_onEndVideoCallEvent);
     on<MakeCallEvent>(_onMakeCallEvent);
     on<DeleteMessageEvent>(_onDeleteMessageEvent);
-    on<DeleteMessageNotificationReceivedInCallsEvent>(_onDeleteMessageNotificationReceivedInCallsEvent);
+    on<DeleteMessageNotificationReceivedInCallsEvent>(
+        _onDeleteMessageNotificationReceivedInCallsEvent);
     on<GetMyCallsEvent>(_onGetMyCalls,
         transformer: throttleDroppable(throttleDuration));
     on<UserInteractWithCall>(_onUserInteractWithCall);
@@ -147,6 +151,20 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   FutureOr<void> _onEndVideoCallEvent(
       EndVideoCallEvent event, Emitter<CallsState> emit) async {
     emit(state.copyWith(makeCallStatus: MakeCallStatus.endCall));
+    add(GetMyCallsEvent());
+  }
+
+  FutureOr<void> _onIcreaseMissedCallEvent(
+      IcreaseMissedCallEvent event, Emitter<CallsState> emit) async {
+    int count = state.missedCallCount + 1;
+
+    emit(state.copyWith(missedCallCount: count));
+    add(GetMyCallsEvent());
+  }
+
+  FutureOr<void> _onResetMissedCallEvent(
+      ResetMissedCallEvent event, Emitter<CallsState> emit) async {
+    emit(state.copyWith(missedCallCount: 0));
     add(GetMyCallsEvent());
   }
 
@@ -254,9 +272,9 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     });
   }
 
-
   FutureOr<void> _onDeleteMessageNotificationReceivedInCallsEvent(
-      DeleteMessageNotificationReceivedInCallsEvent event, Emitter<CallsState> emit) async {
+      DeleteMessageNotificationReceivedInCallsEvent event,
+      Emitter<CallsState> emit) async {
     emit(state.copyWith(deleteMessageStatus: DeleteMessageStatus.init));
     if (event.type == "message") {
       GetIt.I<ChatBloc>().add(DeleteMessageNotificationReceivedInChatsEvent(
@@ -274,9 +292,11 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
         }
         return e;
       }).toList();
-      emit(state.copyWith(callRegister: callReg , deleteMessageStatus: DeleteMessageStatus.success,));
+      emit(state.copyWith(
+        callRegister: callReg,
+        deleteMessageStatus: DeleteMessageStatus.success,
+      ));
     }
-
   }
 
   FutureOr<void> _onUpdateCurrentActiveCallIdEvent(

@@ -70,7 +70,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       form.controllers[0].addListener(() {
-        thereTextNotifier.value = form.controllers[0].text.isNotEmpty;
+        thereTextNotifier.value = form.controllers[0].text.isNotEmpty &&
+            form.controllers[0].text.replaceAll(" ", "").length > 0;
       });
     });
     //initializeRecorder();
