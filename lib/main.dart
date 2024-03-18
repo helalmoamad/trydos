@@ -144,9 +144,16 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       showCallKitIncoming(data, currentUuid,
           isVideo: message.data['type'] == 'VideoCallEvent');
     } else if (message.data['type'] == 'RefuseCallEvent') {
+      print(
+          "12111111111111111111111111155555555555555555555555555555555111111111111111111111111111111111111111111111111111111111111");
+
       declineCallBecauseOfNotificationButton = true;
       Map<String, dynamic> data =
           convert.jsonDecode(message.data['data'].toString());
+
+      if (data['duration_in_seconds']!.toString().contains("-1")) {
+        GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
+      }
       if (data['message_id'].toString() !=
               GetIt.I<CallsBloc>().state.currentActiveCallId &&
           GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
@@ -178,26 +185,34 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       GetIt.I<PrefsRepository>()
           .setRemovedMessageFromBackground(message.data['data']);
     } else if (message.data['type'] == 'ChannelUpdatedEvent') {
-      Map<String, dynamic> data = convert.jsonDecode(message.data["data"].toString());
-      GetIt.I<PrefsRepository>().setMessageFromBackground(convert.jsonEncode(data['channel']));
-    } else if(message.data['type'] == 'ChannelDeletedEvent'){
       Map<String, dynamic> data =
-      convert.jsonDecode(message.data["data"].toString());
-      GetIt.I<PrefsRepository>().setRemovedChatFromBackground(data['channel_id']);
+          convert.jsonDecode(message.data["data"].toString());
+      GetIt.I<PrefsRepository>()
+          .setMessageFromBackground(convert.jsonEncode(data['channel']));
+    } else if (message.data['type'] == 'ChannelDeletedEvent') {
+      Map<String, dynamic> data =
+          convert.jsonDecode(message.data["data"].toString());
+      GetIt.I<PrefsRepository>()
+          .setRemovedChatFromBackground(data['channel_id']);
     } else {
-      if(message.data['message'] == null ) return;
+      if (message.data['message'] == null) return;
+
       Message myMessage =
-      Message.fromJson(convert.jsonDecode(message.data['message']));
-      if(myMessage.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
+          Message.fromJson(convert.jsonDecode(message.data['message']));
+      if (myMessage.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
         GetIt.I<ChatBloc>().add(
             NotifyThatIReceivedMessageEvent(channelId: myMessage.channelId!));
       }
-      GetIt.I<PrefsRepository>().setMessageFromBackground(message.data['message']);
-      if(myMessage.channel!.channelMembers!.firstWhere((element) => element
-          .userId == GetIt.I<PrefsRepository>().myChatId).mute != 1 &&
+      GetIt.I<PrefsRepository>()
+          .setMessageFromBackground(message.data['message']);
+      if (myMessage.channel!.channelMembers!
+                  .firstWhere((element) =>
+                      element.userId == GetIt.I<PrefsRepository>().myChatId)
+                  .mute !=
+              1 &&
           myMessage.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
-        LocalNotificationService().showNotificationWithPayload(
-            message: message);
+        LocalNotificationService()
+            .showNotificationWithPayload(message: message);
       }
     }
   } catch (e, st) {
