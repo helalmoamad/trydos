@@ -1,10 +1,8 @@
-import 'dart:async';
-
+import 'dart:ui' as ui;
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -155,57 +153,60 @@ class _NameFormFieldState extends State<NameFormField> {
                 : const Color(0xff5D5C5D),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: TextFormField(
-                controller: widget.controller,
-                onTap: widget.onTap,
-                onChanged: widget.onChange,
-                onFieldSubmitted: widget.onFieldSubmitted,
-                onEditingComplete: widget.onEditingComplete,
-                onSaved: widget.onSaved,
-                validator: widget.validator,
-                maxLines: widget.maxLines,
-                minLines: widget.minLines,
-                maxLength: widget.maxLength,
-                enabled: widget.enabled,
-                keyboardType: TextInputType.name,
-                textInputAction: widget.textInputAction,
-                scrollPadding: widget.scrollPadding,
-                expands: widget.expands,
-                maxLengthEnforcement: widget.maxLengthEnforcement,
-                focusNode: FocusNode()..requestFocus(),
-                obscureText: widget.obscure,
-                obscuringCharacter: widget.obscuringCharacter,
-                autovalidateMode: widget.autoValidateMode,
-                readOnly: widget.readOnly,
-                scrollPhysics: widget.scrollPhysics,
-                scrollController: widget.scrollController,
-                autocorrect: false,
-                autofocus: widget.autoFocus ?? false,
-                cursorColor: Color(0xff5D5C5D),
-                initialValue: widget.initialValue,
-                keyboardAppearance: widget.keyboardAppearance,
-                textAlignVertical: TextAlignVertical.center,
-                textCapitalization: widget.textCapitalization,
-                textAlign: TextAlign.start,
-                cursorHeight: 0,
-                toolbarOptions: widget.toolbarOptions,
-                style: context.textTheme.bodyText1?.ra.copyWith(
-                  color: const Color(0xff5D5C5D),
-                  letterSpacing: 0.16,
-                  height: 1.25,
-                  decoration: TextDecoration.none,
-                ),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  contentPadding:
-                      HWEdgeInsets.only(top: 10, left: 20, bottom: 0),
-                  prefixIcon: widget.prefixIcon,
-                  suffixIcon: Padding(
-                    padding: HWEdgeInsets.only(bottom: 20),
-                    child: widget.suffixIcon,
+              child: Directionality(
+                textDirection: ui.TextDirection.ltr,
+                child: TextFormField(
+                  controller: widget.controller,
+                  onTap: widget.onTap,
+                  onChanged: widget.onChange,
+                  onFieldSubmitted: widget.onFieldSubmitted,
+                  onEditingComplete: widget.onEditingComplete,
+                  onSaved: widget.onSaved,
+                  validator: widget.validator,
+                  maxLines: widget.maxLines,
+                  minLines: widget.minLines,
+                  maxLength: widget.maxLength,
+                  enabled: widget.enabled,
+                  keyboardType: TextInputType.name,
+                  textInputAction: widget.textInputAction,
+                  scrollPadding: widget.scrollPadding,
+                  expands: widget.expands,
+                  maxLengthEnforcement: widget.maxLengthEnforcement,
+                  focusNode: FocusNode()..requestFocus(),
+                  obscureText: widget.obscure,
+                  obscuringCharacter: widget.obscuringCharacter,
+                  autovalidateMode: widget.autoValidateMode,
+                  readOnly: widget.readOnly,
+                  scrollPhysics: widget.scrollPhysics,
+                  scrollController: widget.scrollController,
+                  autocorrect: false,
+                  autofocus: widget.autoFocus ?? false,
+                  cursorColor: Color(0xff5D5C5D),
+                  initialValue: widget.initialValue,
+                  keyboardAppearance: widget.keyboardAppearance,
+                  textAlignVertical: TextAlignVertical.center,
+                  textCapitalization: widget.textCapitalization,
+                  textAlign: TextAlign.start,
+                  cursorHeight: 0,
+                  toolbarOptions: widget.toolbarOptions,
+                  style: context.textTheme.bodyText1?.ra.copyWith(
+                    color: const Color(0xff5D5C5D),
+                    letterSpacing: 0.16,
+                    height: 1.25,
+                    decoration: TextDecoration.none,
                   ),
-                  counterText: '',
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding:
+                        HWEdgeInsets.only(top: 10, left: 20, bottom: 0),
+                    prefixIcon: widget.prefixIcon,
+                    suffixIcon: Padding(
+                      padding: HWEdgeInsets.only(bottom: 20),
+                      child: widget.suffixIcon,
+                    ),
+                    counterText: '',
+                  ),
                 ),
               ),
             ),

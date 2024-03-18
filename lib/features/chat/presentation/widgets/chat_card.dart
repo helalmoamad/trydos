@@ -115,6 +115,12 @@ class _ChatCardState extends ThemeState<ChatCard> {
     // }
     String senderName = HelperFunctions.getTheFirstTwoLettersOfName(
         _prefsRepository.myChatName ?? LocaleKeys.no_channal_name.tr());
+    print('meesges ${widget.chat.messages?.length}');
+    print('meesges ${widget.chat.channelMembers?.length}');
+    print('meesges ${widget.chat.channelName}');
+    print('_prefsRepository.myChatId ${_prefsRepository.myChatId}');
+    print('_prefsRepository.myChatId ${widget.chat.channelMembers![0].userId}');
+    print('_prefsRepository.myChatId ${widget.chat.channelMembers![1].userId}');
     ChannelMember me = widget.chat.channelMembers!
         .firstWhere((element) => element.userId == _prefsRepository.myChatId);
     // User? sender = me.user;
