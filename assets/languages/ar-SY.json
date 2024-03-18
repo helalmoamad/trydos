@@ -130,5 +130,7 @@
   "did_no_answer": "لم يتم الرد",
   "reject": "رفض",
   "answer": "رد",
-  "calling": "جاري الاتصال..."
+  "calling": "جاري الاتصال...",
+  "my_stories": "حالتي",
+  "click_to_add_story": "انقر لإضافة حالة جديدة"
 }

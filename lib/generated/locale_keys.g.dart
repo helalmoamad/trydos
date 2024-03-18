@@ -133,5 +133,7 @@ abstract class  LocaleKeys {
   static const reject = 'reject';
   static const answer = 'answer';
   static const calling = 'calling';
+  static const my_stories = 'my_stories';
+  static const click_to_add_story = 'click_to_add_story';
 
 }

@@ -22,7 +22,7 @@ import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
-
+import 'dart:ui' as ui;
 class VerifyOtp extends StatefulWidget {
   VerifyOtp(
       {Key? key,
@@ -358,170 +358,173 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                           return ValueListenableBuilder<int>(
                               valueListenable: checkOtp,
                               builder: (context, codeStatus, _) {
-                                return Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    PinItem(
-                                        borderColor: codeStatus == 1
-                                            ? Color(0xff35CE3F)
-                                            : codeStatus == 2
-                                                ? Color(0xffFF5F61)
-                                                : isExpired
-                                                    ? Color(0xffFFBC26)
-                                                    : Color(0xff4D84FF),
-                                        isExpired: isExpired,
-                                        contentColor: codeStatus == 1
-                                            ? Color(0xffF4FFF4)
-                                            : codeStatus == 2
-                                                ? Color(0xffFDF5F5)
-                                                : Color(0xffFAFAFA),
-                                        controller: form.controllers[0],
-                                        wrongCode: codeStatus == 2,
-                                        index: 0,
-                                        pasteOtpCode: pasteOtpCode,
-                                        onChange: () {
-                                          checkOtp.value = 0;
-                                        },
-                                        autoFocus: true),
-                                    PinItem(
-                                        borderColor: codeStatus == 1
-                                            ? Color(0xff35CE3F)
-                                            : codeStatus == 2
-                                                ? Color(0xffFF5F61)
-                                                : isExpired
-                                                    ? Color(0xffFFBC26)
-                                                    : Color(0xff4D84FF),
-                                        contentColor: codeStatus == 1
-                                            ? Color(0xffF4FFF4)
-                                            : codeStatus == 2
-                                                ? Color(0xffFDF5F5)
-                                                : Color(0xffFAFAFA),
-                                        isExpired: isExpired,
-                                        controller: form.controllers[1],
-                                        wrongCode: codeStatus == 2,
-                                        index: 1,
-                                        onChange: () {
-                                          checkOtp.value = 0;
-                                        },
-                                        autoFocus: false),
-                                    PinItem(
-                                        borderColor: codeStatus == 1
-                                            ? Color(0xff35CE3F)
-                                            : codeStatus == 2
-                                                ? Color(0xffFF5F61)
-                                                : isExpired
-                                                    ? Color(0xffFFBC26)
-                                                    : Color(0xff4D84FF),
-                                        isExpired: isExpired,
-                                        contentColor: codeStatus == 1
-                                            ? Color(0xffF4FFF4)
-                                            : codeStatus == 2
-                                                ? Color(0xffFDF5F5)
-                                                : Color(0xffFAFAFA),
-                                        index: 2,
-                                        wrongCode: codeStatus == 2,
-                                        onChange: () {
-                                          checkOtp.value = 0;
-                                        },
-                                        controller: form.controllers[2],
-                                        autoFocus: false),
-                                    PinItem(
-                                        borderColor: codeStatus == 1
-                                            ? Color(0xff35CE3F)
-                                            : codeStatus == 2
-                                                ? Color(0xffFF5F61)
-                                                : isExpired
-                                                    ? Color(0xffFFBC26)
-                                                    : Color(0xff4D84FF),
-                                        isExpired: isExpired,
-                                        contentColor: codeStatus == 1
-                                            ? Color(0xffF4FFF4)
-                                            : codeStatus == 2
-                                                ? Color(0xffFDF5F5)
-                                                : Color(0xffFAFAFA),
-                                        index: 3,
-                                        wrongCode: codeStatus == 2,
-                                        onChange: () {
-                                          checkOtp.value = 0;
-                                        },
-                                        controller: form.controllers[3],
-                                        autoFocus: false),
-                                    PinItem(
-                                        borderColor: codeStatus == 1
-                                            ? Color(0xff35CE3F)
-                                            : codeStatus == 2
-                                                ? Color(0xffFF5F61)
-                                                : isExpired
-                                                    ? Color(0xffFFBC26)
-                                                    : Color(0xff4D84FF),
-                                        contentColor: codeStatus == 1
-                                            ? Color(0xffF4FFF4)
-                                            : codeStatus == 2
-                                                ? Color(0xffFDF5F5)
-                                                : Color(0xffFAFAFA),
-                                        isExpired: isExpired,
-                                        index: 4,
-                                        wrongCode: codeStatus == 2,
-                                        onChange: () {
-                                          checkOtp.value = 0;
-                                        },
-                                        controller: form.controllers[4],
-                                        autoFocus: false),
-                                    PinItem(
-                                        borderColor: codeStatus == 1
-                                            ? Color(0xff35CE3F)
-                                            : codeStatus == 2
-                                                ? Color(0xffFF5F61)
-                                                : isExpired
-                                                    ? Color(0xffFFBC26)
-                                                    : Color(0xff4D84FF),
-                                        isExpired: isExpired,
-                                        contentColor: codeStatus == 1
-                                            ? Color(0xffF4FFF4)
-                                            : codeStatus == 2
-                                                ? Color(0xffFDF5F5)
-                                                : Color(0xffFAFAFA),
-                                        index: 5,
-                                        wrongCode: codeStatus == 2,
-                                        onChange: () {
-                                          checkOtp.value = 0;
-                                        },
-                                        checkOtp: () {
-                                          if (prefsRepository.verificationId !=
-                                              null) {
-                                            String insertedCode =
-                                                form.controllers[0].text +
-                                                    form.controllers[1].text +
-                                                    form.controllers[2].text +
-                                                    form.controllers[3].text +
-                                                    form.controllers[4].text +
-                                                    form.controllers[5].text;
-                                            if (widget.fromLogin) {
-                                              authBloc.add(VerifyOtpSignInEvent(
-                                                  verificationId:
-                                                      prefsRepository
-                                                          .verificationId!,
-                                                  otp: insertedCode,
-                                                  phone: widget.phoneNumber));
+                                return Directionality(
+                                  textDirection: ui.TextDirection.ltr,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      PinItem(
+                                          borderColor: codeStatus == 1
+                                              ? Color(0xff35CE3F)
+                                              : codeStatus == 2
+                                                  ? Color(0xffFF5F61)
+                                                  : isExpired
+                                                      ? Color(0xffFFBC26)
+                                                      : Color(0xff4D84FF),
+                                          isExpired: isExpired,
+                                          contentColor: codeStatus == 1
+                                              ? Color(0xffF4FFF4)
+                                              : codeStatus == 2
+                                                  ? Color(0xffFDF5F5)
+                                                  : Color(0xffFAFAFA),
+                                          controller: form.controllers[0],
+                                          wrongCode: codeStatus == 2,
+                                          index: 0,
+                                          pasteOtpCode: pasteOtpCode,
+                                          onChange: () {
+                                            checkOtp.value = 0;
+                                          },
+                                          autoFocus: true),
+                                      PinItem(
+                                          borderColor: codeStatus == 1
+                                              ? Color(0xff35CE3F)
+                                              : codeStatus == 2
+                                                  ? Color(0xffFF5F61)
+                                                  : isExpired
+                                                      ? Color(0xffFFBC26)
+                                                      : Color(0xff4D84FF),
+                                          contentColor: codeStatus == 1
+                                              ? Color(0xffF4FFF4)
+                                              : codeStatus == 2
+                                                  ? Color(0xffFDF5F5)
+                                                  : Color(0xffFAFAFA),
+                                          isExpired: isExpired,
+                                          controller: form.controllers[1],
+                                          wrongCode: codeStatus == 2,
+                                          index: 1,
+                                          onChange: () {
+                                            checkOtp.value = 0;
+                                          },
+                                          autoFocus: false),
+                                      PinItem(
+                                          borderColor: codeStatus == 1
+                                              ? Color(0xff35CE3F)
+                                              : codeStatus == 2
+                                                  ? Color(0xffFF5F61)
+                                                  : isExpired
+                                                      ? Color(0xffFFBC26)
+                                                      : Color(0xff4D84FF),
+                                          isExpired: isExpired,
+                                          contentColor: codeStatus == 1
+                                              ? Color(0xffF4FFF4)
+                                              : codeStatus == 2
+                                                  ? Color(0xffFDF5F5)
+                                                  : Color(0xffFAFAFA),
+                                          index: 2,
+                                          wrongCode: codeStatus == 2,
+                                          onChange: () {
+                                            checkOtp.value = 0;
+                                          },
+                                          controller: form.controllers[2],
+                                          autoFocus: false),
+                                      PinItem(
+                                          borderColor: codeStatus == 1
+                                              ? Color(0xff35CE3F)
+                                              : codeStatus == 2
+                                                  ? Color(0xffFF5F61)
+                                                  : isExpired
+                                                      ? Color(0xffFFBC26)
+                                                      : Color(0xff4D84FF),
+                                          isExpired: isExpired,
+                                          contentColor: codeStatus == 1
+                                              ? Color(0xffF4FFF4)
+                                              : codeStatus == 2
+                                                  ? Color(0xffFDF5F5)
+                                                  : Color(0xffFAFAFA),
+                                          index: 3,
+                                          wrongCode: codeStatus == 2,
+                                          onChange: () {
+                                            checkOtp.value = 0;
+                                          },
+                                          controller: form.controllers[3],
+                                          autoFocus: false),
+                                      PinItem(
+                                          borderColor: codeStatus == 1
+                                              ? Color(0xff35CE3F)
+                                              : codeStatus == 2
+                                                  ? Color(0xffFF5F61)
+                                                  : isExpired
+                                                      ? Color(0xffFFBC26)
+                                                      : Color(0xff4D84FF),
+                                          contentColor: codeStatus == 1
+                                              ? Color(0xffF4FFF4)
+                                              : codeStatus == 2
+                                                  ? Color(0xffFDF5F5)
+                                                  : Color(0xffFAFAFA),
+                                          isExpired: isExpired,
+                                          index: 4,
+                                          wrongCode: codeStatus == 2,
+                                          onChange: () {
+                                            checkOtp.value = 0;
+                                          },
+                                          controller: form.controllers[4],
+                                          autoFocus: false),
+                                      PinItem(
+                                          borderColor: codeStatus == 1
+                                              ? Color(0xff35CE3F)
+                                              : codeStatus == 2
+                                                  ? Color(0xffFF5F61)
+                                                  : isExpired
+                                                      ? Color(0xffFFBC26)
+                                                      : Color(0xff4D84FF),
+                                          isExpired: isExpired,
+                                          contentColor: codeStatus == 1
+                                              ? Color(0xffF4FFF4)
+                                              : codeStatus == 2
+                                                  ? Color(0xffFDF5F5)
+                                                  : Color(0xffFAFAFA),
+                                          index: 5,
+                                          wrongCode: codeStatus == 2,
+                                          onChange: () {
+                                            checkOtp.value = 0;
+                                          },
+                                          checkOtp: () {
+                                            if (prefsRepository.verificationId !=
+                                                null) {
+                                              String insertedCode =
+                                                  form.controllers[0].text +
+                                                      form.controllers[1].text +
+                                                      form.controllers[2].text +
+                                                      form.controllers[3].text +
+                                                      form.controllers[4].text +
+                                                      form.controllers[5].text;
+                                              if (widget.fromLogin) {
+                                                authBloc.add(VerifyOtpSignInEvent(
+                                                    verificationId:
+                                                        prefsRepository
+                                                            .verificationId!,
+                                                    otp: insertedCode,
+                                                    phone: widget.phoneNumber));
+                                              } else {
+                                                authBloc.add(VerifyOtpSignUpEvent(
+                                                    verificationId:
+                                                        prefsRepository
+                                                            .verificationId!,
+                                                    otp: insertedCode));
+                                              }
                                             } else {
-                                              authBloc.add(VerifyOtpSignUpEvent(
-                                                  verificationId:
-                                                      prefsRepository
-                                                          .verificationId!,
-                                                  otp: insertedCode));
+                                              showMessage(LocaleKeys
+                                                  .please_wait_5_seconds
+                                                  .tr());
+                                              pasteOtpCode('');
+                                              //checkOtp.value = 2;
                                             }
-                                          } else {
-                                            showMessage(LocaleKeys
-                                                .please_wait_5_seconds
-                                                .tr());
-                                            pasteOtpCode('');
-                                            //checkOtp.value = 2;
-                                          }
-                                        },
-                                        controller: form.controllers[5],
-                                        autoFocus: false),
-                                  ],
+                                          },
+                                          controller: form.controllers[5],
+                                          autoFocus: false),
+                                    ],
+                                  ),
                                 );
                               });
                         }),
