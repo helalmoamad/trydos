@@ -140,6 +140,31 @@ class UpdateNameEvent extends AuthEvent {
   // TODO: implement props
   List<Object?> get props => [name];
 }
+
+class UpdateChatUserNameEvent extends AuthEvent {
+  final String name;
+
+  UpdateChatUserNameEvent({
+    required this.name,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [name];
+}
+
+class UpdateStoriesUserEvent extends AuthEvent {
+  final String name;
+
+  UpdateStoriesUserEvent({
+    required this.name,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [name];
+}
+
 class GetCustomerInfoEvent extends AuthEvent {
 
   GetCustomerInfoEvent();

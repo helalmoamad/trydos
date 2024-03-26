@@ -26,6 +26,8 @@ abstract class PrefsRepository {
 
   bool? get isVerifiedPhone;
 
+  String? get myStoriesName;
+
   String? get myChatName;
 
   String? get myChatPhoto;
@@ -52,6 +54,8 @@ abstract class PrefsRepository {
   Future<bool> setStoriesToken(String token);
 
   Future<bool> setMyChatName(String name);
+
+  Future<bool> setMyStoriesName(String name);
 
   Future<bool> setMyChatPhoto(String? photo);
 

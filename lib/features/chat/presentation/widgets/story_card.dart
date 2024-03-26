@@ -1,12 +1,16 @@
+import 'dart:math';
+import 'dart:ui' as ui;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
+import 'package:step_progress_indicator/step_progress_indicator.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/story/data/models/get_stories_model.dart';
 import '../../../../common/helper/helper_functions.dart';
@@ -33,7 +37,6 @@ class StoryCard extends StatelessWidget {
           error: error.toString());
       debugPrint(error.toString());
     };
-
     return InkWell(
       onTap: () {
         int indexOfInitialStory;
@@ -64,33 +67,48 @@ class StoryCard extends StatelessWidget {
           child: Stack(
             children: [
               Container(
-                padding: HWEdgeInsets.only(left: 15.w, right: 10.w),
+                padding: HWEdgeInsets.only(left: 15, right: 10 , top: 5 , bottom: 5),
                 color: context.colorScheme.white,
                 child: Row(
                     //mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      collectionStoryModel.photoPath == null
-                          ? NoImageWidget(
+                      CircularStepProgressIndicator(
+                        totalSteps: collectionStoryModel.stories!.length ,
+                        startingAngle: pi,
+                        child: Padding(
+                          padding: const EdgeInsets.all(1.0),
+                          child: collectionStoryModel.photoPath == null
+                              ? NoImageWidget(
                               width: 60.r,
                               height: 60.r,
                               radius: 180,
                               textStyle: context.textTheme.subtitle1?.br
                                   .copyWith(
-                                      color: const Color(0xff6638FF),
-                                      letterSpacing: 0.18,
-                                      height: 1.33),
+                                  color: const Color(0xff6638FF),
+                                  letterSpacing: 0.18,
+                                  height: 1.33),
                               name: collectionStoryModel.name == null
                                   ? LocaleKeys.uk.tr()
                                   : HelperFunctions
-                                      .getTheFirstTwoLettersOfName(
-                                          collectionStoryModel.name!))
-                          : MyCachedNetworkImage(
-                              height: 60.r,
-                              width: 60.r,
-                              imageUrl: collectionStoryModel.photoPath,
-                              imageFit: BoxFit.cover,
-                            ),
+                                  .getTheFirstTwoLettersOfName(
+                                  collectionStoryModel.name!))
+                              : MyCachedNetworkImage(
+                            height: 60.r,
+                            width: 60.r,
+                            imageUrl: collectionStoryModel.photoPath,
+                            imageFit: BoxFit.cover,
+                          ),
+                        ),
+                        width: 70.r,
+                        height: 90.r,
+                        stepSize: 5.r,
+                        customColor: (index){
+                          if(collectionStoryModel.stories![index].isSeen ?? false) return Colors.grey;
+                          return Colors.green;
+                        },
+                        roundedCap: (index, isSelected) => true,
+                      ),
                       18.horizontalSpace,
                       Flexible(
                         child: Padding(

@@ -7,6 +7,8 @@ abstract class PrefsKey {
 
   static const chatName = r'__$__chatName__$__';
 
+  static const storiesName = r'__$__storiesName__$__';
+
   static const chatPhoto = r'__$__chatPhoto__$__';
 
   static const marketName = r'__$__marketName__$__';

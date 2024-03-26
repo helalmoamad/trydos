@@ -25,6 +25,11 @@ StoryState _$StoryStateFromJson(Map<String, dynamic> json) => StoryState(
                   CollectionStoryModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      currentStoryToMakeItViewedInEachCollection:
+          (json['currentStoryToMakeItViewedInEachCollection'] as List<dynamic>?)
+                  ?.map((e) => EntryConverter.instance.fromJson(e as List))
+                  .toList() ??
+              const [],
       currentPage: json['currentPage'] as int? ?? 0,
       currentStoryInEachCollection:
           (json['currentStoryInEachCollection'] as Map<String, dynamic>?)?.map(
@@ -49,6 +54,10 @@ Map<String, dynamic> _$StoryStateToJson(StoryState instance) =>
       'selectedCollection': instance.selectedCollection,
       'currentStoryInEachCollection': instance.currentStoryInEachCollection
           .map((k, e) => MapEntry(k.toString(), e)),
+      'currentStoryToMakeItViewedInEachCollection': instance
+          .currentStoryToMakeItViewedInEachCollection
+          .map(EntryConverter.instance.toJson)
+          .toList(),
     };
 
 const _$UploadStoryCloudinaryStatusEnumMap = {

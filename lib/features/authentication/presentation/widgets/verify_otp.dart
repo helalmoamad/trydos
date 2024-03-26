@@ -68,7 +68,6 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
 
   @override
   void initState() {
-    debugPrint('deasds');
     authBloc = BlocProvider.of<AuthBloc>(context);
     _enabledResendNotifier = ValueNotifier<bool>(false);
     checkOtp = ValueNotifier<int>(0);

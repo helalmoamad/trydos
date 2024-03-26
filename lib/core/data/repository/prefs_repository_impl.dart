@@ -392,6 +392,12 @@ class PrefsRepositoryImpl extends PrefsRepository {
     return _preferences.setStringList('removedChats', list);
   }
 
+  @override
+  String? get myStoriesName => _preferences.getString(PrefsKey.storiesName);
+
+  @override
+  Future<bool> setMyStoriesName(String name) => _preferences.setString(PrefsKey.storiesName, name);
+
 // @override
 // // TODO: implement localMessages
 // List<Map<String,dynamic>> get localMessages {
