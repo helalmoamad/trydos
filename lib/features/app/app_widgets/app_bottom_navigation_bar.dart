@@ -12,6 +12,7 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
@@ -281,6 +282,13 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     if (prefsRepository.isVerifiedPhone != true) {
                       context.go(GRouter
                           .config.applicationRoutes.kRegistrationPagePath);
+                    } else if (prefsRepository.myChatName == null) {
+                      showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) {
+                            return UpdateUserNameWidget(updateForStoriesServer: false,);
+                          });
                     } else {
                       NotificationSettings settings = await FirebaseMessaging
                           .instance

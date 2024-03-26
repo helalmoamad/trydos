@@ -21,6 +21,7 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
       width: json['width'] as int? ?? 0,
       slopMessageId: json['slopMessageId'] as String? ?? "",
       isSlpoing: json['isSlpoing'] as bool? ?? false,
+      firstRequestForGetChats: json['firstRequestForGetChats'] as bool? ?? true,
       height: json['height'] as int? ?? 0,
       imageCountInEachChat: json['imageCountInEachChat'] as int? ?? 0,
       fileCountInEachChat: json['fileCountInEachChat'] as int? ?? 0,
@@ -169,6 +170,7 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'createAnewChat': instance.createAnewChat,
       'newSortedChatsByDate': instance.newSortedChatsByDate
           ?.map((k, e) => MapEntry(k, e.map((e) => e.toJson()).toList())),
+      'firstRequestForGetChats': instance.firstRequestForGetChats,
     };
 
 const _$GetMediaCountStatusEnumMap = {

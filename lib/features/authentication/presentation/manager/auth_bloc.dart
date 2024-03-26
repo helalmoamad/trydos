@@ -3,7 +3,6 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -12,7 +11,9 @@ import 'package:trydos/features/authentication/domain/use_cases/get_user_country
 import 'package:trydos/features/authentication/domain/use_cases/register_guest_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/send_otp_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/store_fcm_usecase.dart';
+import 'package:trydos/features/authentication/domain/use_cases/update_chat_user_name_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/update_name_usecase.dart';
+import 'package:trydos/features/authentication/domain/use_cases/update_stories_user_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_guest_phone_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_signin_usecase.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
@@ -48,6 +49,8 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 @injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(
+      this.updateStoriesUserUseCase,
+      this.updateChatUserNameUseCase,
       this.createUserUseCase,
       this.loginToChatUseCase,
       this.loginToMarketUseCase,
@@ -63,8 +66,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       this.verifyOtpSignUpUseCase)
       : super(const AuthState()) {
     on<AuthEvent>((event, emit) {});
-    on<CreateUserEvent>(_onCreateUserEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<CreateUserEvent>(_onCreateUserEvent, transformer: throttleDroppable(throttleDuration));
+    on<UpdateStoriesUserEvent>(_onUpdateStoriesUserEvent, transformer: throttleDroppable(throttleDuration));
+    on<UpdateChatUserNameEvent>(_onUpdateChatUserNameEvent, transformer: throttleDroppable(throttleDuration));
     on<LoginToChatEvent>(_onLoginToChatEvent,
         transformer: throttleDroppable(throttleDuration));
     on<LoginToStoriesEvent>(_onLoginToStoriesEvent,
@@ -102,6 +106,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UpdateNameUseCase updateNameUseCase;
   final GetCustomerInfoUseCase getCustomerInfoUseCase;
   final GetUserCountryUseCase getUserCountryUseCase;
+  final UpdateStoriesUserUseCase updateStoriesUserUseCase;
+  final UpdateChatUserNameUseCase updateChatUserNameUseCase;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
 
   FutureOr<void> _onCreateUserEvent(
@@ -249,10 +255,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final id = r.data!.id;
         final token = r.data!.accessToken;
         final checkToken = token?.isNotEmpty ?? false;
-
+        final name = r.data!.name;
         if (checkToken) {
           _prefsRepository.setStoriesToken(token!);
           _prefsRepository.setMyStoriesId(id!);
+          _prefsRepository.setMyStoriesName(name ?? 'No Name');
         }
         apisMustNotToRequest.remove('GetStoryEvent');
         GetIt.I<StoryBloc>().add(GetStoryEvent());
@@ -299,7 +306,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           'login _prefsRepository.marketToken${_prefsRepository.marketToken}');
       debugPrint(
           'login _prefsRepository.storiesToken${_prefsRepository.storiesToken}');
+      if(!r.data!.alreadyExist!){
+        emit(state.copyWith(
+            verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
+            marketUser: r.data!.user,
+            signInErrorMessage: 'auth-001'));
 
+        return;
+      }
       emit(state.copyWith(
           verifyOtpSignInStatus: VerifyOtpSignInStatus.success,
           marketUser: r.data!.user));
@@ -319,7 +333,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _prefsRepository.setOtpCode(event.otp);
       emit(state.copyWith(
           verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
-          signUpErrorMessage: l.message));
+          ));
     }, (r) {
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
@@ -336,15 +350,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         name: r.data!.user!.name,
         phone: r.data!.user!.phone,
       ));
-      if (r.code == 'user-exists') {
+      if(r.data!.alreadyExist!){
         emit(state.copyWith(
             verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
-            marketUser: r.data!.user));
-      } else {
+            marketUser: r.data!.user,
+            signUpErrorMessage: 'auth-001'));
+
+        return;
+      }
         emit(state.copyWith(
             verifyOtpSignUpStatus: VerifyOtpSignUpStatus.success,
             marketUser: r.data!.user));
-      }
     });
   }
 
@@ -426,6 +442,46 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       isFailedTheFirstTime.remove('GetUserCountryEvent');
 
       _prefsRepository.setCountryName(countries.firstWhere((element) => element.code == r.countryCode).name);
+    });
+  }
+
+  FutureOr<void> _onUpdateStoriesUserEvent(UpdateStoriesUserEvent event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(updateStoriesUserStatus: UpdateStoriesUserStatus.loading));
+    final response = await updateStoriesUserUseCase(
+      UpdateStoriesUserParams(name: event.name),
+    );
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('UpdateStoriesUserEvent')) {
+        add(UpdateStoriesUserEvent(name: event.name));
+        isFailedTheFirstTime.add('UpdateStoriesUserEvent');
+      }
+      emit(state.copyWith(updateStoriesUserStatus: UpdateStoriesUserStatus.failure));
+    }, (r) {
+      isFailedTheFirstTime.remove('UpdateStoriesUserEvent');
+      _prefsRepository.setMyStoriesName(event.name);
+      emit(state.copyWith(
+        updateStoriesUserStatus: UpdateStoriesUserStatus.success,
+      ));
+    });
+  }
+
+  FutureOr<void> _onUpdateChatUserNameEvent(UpdateChatUserNameEvent event, Emitter<AuthState> emit) async{
+    emit(state.copyWith(updateChatUserNameStatus: UpdateChatUserNameStatus.loading));
+    final response = await updateChatUserNameUseCase(
+      UpdateChatUserNameParams(name: event.name),
+    );
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('UpdateChatUserNameEvent')) {
+        add(UpdateStoriesUserEvent(name: event.name));
+        isFailedTheFirstTime.add('UpdateChatUserNameEvent');
+      }
+      emit(state.copyWith(updateChatUserNameStatus: UpdateChatUserNameStatus.failure));
+    }, (r) {
+      isFailedTheFirstTime.remove('UpdateChatUserNameEvent');
+      _prefsRepository.setMyChatName(event.name);
+      emit(state.copyWith(
+        updateChatUserNameStatus: UpdateChatUserNameStatus.success,
+      ));
     });
   }
 }

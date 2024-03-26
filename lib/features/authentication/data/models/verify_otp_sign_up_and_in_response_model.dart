@@ -62,6 +62,7 @@ class VerifyOtpSignUpAndInResponseModel {
 }
 
 class Data {
+  final bool? alreadyExist;
   final String? idToken;
   final int? userType;
   final String? token;
@@ -69,6 +70,7 @@ class Data {
   final User? user;
 
   Data({
+    this.alreadyExist,
     this.idToken,
     this.userType,
     this.token,
@@ -77,6 +79,7 @@ class Data {
   });
 
   Data copyWith({
+    bool? alreadyExist,
     String? idToken,
     int? userType,
     String? token,
@@ -84,6 +87,7 @@ class Data {
     User? user,
   }) =>
       Data(
+        alreadyExist: alreadyExist ?? this.alreadyExist,
         idToken: idToken ?? this.idToken,
         userType: userType ?? this.userType,
         token: token ?? this.token,
@@ -92,6 +96,7 @@ class Data {
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
+    alreadyExist: json["already_exists"],
     idToken: json["id_token"],
     userType: json["user_type"],
     token: json["token"],
@@ -100,6 +105,7 @@ class Data {
   );
 
   Map<String, dynamic> toJson() => {
+    "already_exists": alreadyExist,
     "id_token": idToken,
     "user_type": userType,
     "token": token,
