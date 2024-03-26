@@ -9,6 +9,8 @@ enum VerifyOtpSignInStatus { init, loading, success, failure }
 enum VerifyGuestPhoneStatus { init, loading, success, failure }
 enum RegisterGuestStatus { init, loading, success, failure }
 enum UpdateNameStatus { init, loading, success, failure }
+enum UpdateStoriesUserStatus { init, loading, success, failure }
+enum UpdateChatUserNameStatus { init, loading, success, failure }
 enum GetCustomerInfoStatus { init, loading, success, failure }
 
 
@@ -27,6 +29,8 @@ class AuthState {
     this.loginToStoriesStatus = LoginToStoriesStatus.init,
     this.getCustomerInfoStatus = GetCustomerInfoStatus.init,
     this.updateNameStatus = UpdateNameStatus.init,
+    this.updateStoriesUserStatus = UpdateStoriesUserStatus.init,
+    this.updateChatUserNameStatus = UpdateChatUserNameStatus.init,
   });
 
   final CreateUserStatus createUserStatus;
@@ -38,7 +42,9 @@ class AuthState {
   final VerifyGuestPhoneStatus verifyGuestPhoneStatus;
   final RegisterGuestStatus registerGuestStatus;
   final UpdateNameStatus updateNameStatus;
+  final UpdateStoriesUserStatus updateStoriesUserStatus;
   final GetCustomerInfoStatus getCustomerInfoStatus;
+  final UpdateChatUserNameStatus updateChatUserNameStatus;
   final User? marketUser;
   final String? signInErrorMessage;
   final String? signUpErrorMessage;
@@ -50,14 +56,18 @@ class AuthState {
     final String? signInErrorMessage,
     final RegisterGuestStatus? registerGuestStatus,
     final GetCustomerInfoStatus? getCustomerInfoStatus,
+    final UpdateChatUserNameStatus? updateChatUserNameStatus,
     final String? signUpErrorMessage,
     final UpdateNameStatus? updateNameStatus,
     final User? marketUser,
     final VerifyOtpSignUpStatus? verifyOtpSignUpStatus,
+    final UpdateStoriesUserStatus? updateStoriesUserStatus,
     final VerifyOtpSignInStatus? verifyOtpSignInStatus,
     final VerifyGuestPhoneStatus? verifyGuestPhoneStatus
   }) {
     return AuthState(
+      updateChatUserNameStatus: updateChatUserNameStatus ?? this.updateChatUserNameStatus,
+      updateStoriesUserStatus: updateStoriesUserStatus ?? this.updateStoriesUserStatus,
       createUserStatus: createUserStatus ?? this.createUserStatus,
       loginToChatStatus: loginToChatStatus ?? this.loginToChatStatus,
       loginToStoriesStatus: loginToStoriesStatus ?? this.loginToStoriesStatus,

@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
 import 'package:trydos/features/story/helper_functions/check_showing_stories.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection.dart';
@@ -116,7 +117,18 @@ class _StoriesListState extends State<StoriesList> {
                                                             .config
                                                             .applicationRoutes
                                                             .kRegistrationPage);
-                                                      } else {
+                                                      } else if (GetIt.I<PrefsRepository>()
+                                                          .myStoriesName == null){
+                                                        showDialog(
+                                                            context: context,
+                                                            barrierDismissible: false,
+                                                            builder:
+                                                                (BuildContext
+                                                            context) {
+                                                              return UpdateUserNameWidget();
+                                                            });
+                                                      }
+                                                      else {
                                                         showDialog(
                                                             context: context,
                                                             builder:

@@ -41,10 +41,10 @@ bool thereIsAddStoryCard = false;
     };
 
     return BlocBuilder<StoryBloc, StoryState>(
-      buildWhen: (previous, current) {
-        return previous.getStoriesStatus != current.getStoriesStatus &&
-            current.getStoriesStatus == GetStoriesStatus.success;
-      },
+      // buildWhen: (previous, current) {
+      //   return previous.getStoriesStatus != current.getStoriesStatus &&
+      //       current.getStoriesStatus == GetStoriesStatus.success;
+      // },
       builder: (context, state) {
         if (state.storiesCollections.isEmpty) {
           return SliverToBoxAdapter(

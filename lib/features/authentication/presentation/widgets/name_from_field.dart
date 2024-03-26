@@ -58,7 +58,7 @@ class NameFormField extends StatefulWidget {
     this.hintText,
     this.labelText,
     this.inputFormatters,
-    this.autoFocus,
+    this.autoFocus = true,
     this.contentPadding,
     this.filledColor,
     this.bordersColor,
@@ -97,7 +97,7 @@ class NameFormField extends StatefulWidget {
   final String? titleField;
   final bool showLength;
   final bool obscure;
-  final bool? autoFocus;
+  final bool autoFocus;
   final Widget? prefixIcon;
   final Widget? icon;
   final Widget? suffixIcon;
@@ -173,7 +173,7 @@ class _NameFormFieldState extends State<NameFormField> {
                   scrollPadding: widget.scrollPadding,
                   expands: widget.expands,
                   maxLengthEnforcement: widget.maxLengthEnforcement,
-                  focusNode: FocusNode()..requestFocus(),
+                  focusNode: widget.autoFocus ? (FocusNode()..requestFocus()) : FocusNode(),
                   obscureText: widget.obscure,
                   obscuringCharacter: widget.obscuringCharacter,
                   autovalidateMode: widget.autoValidateMode,

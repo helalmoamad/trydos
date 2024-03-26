@@ -33,7 +33,7 @@ dependencies:
   flutter_screenutil: ^5.9.0
   flutter_svg: ^1.0.3
   tuple: ^2.0.2
-  device_info_plus: ^9.1.0
+  device_info_plus: ^10.0.1
   go_router: ^12.0.0
   country_flags: ^2.1.1
   intl: ^0.18.1
@@ -49,7 +49,7 @@ dependencies:
   shimmer: ^3.0.0
   eraser: ^2.0.1
   flutter_bloc: ^8.1.3
-  share_plus: ^7.2.1
+  share_plus: ^8.0.2
   equatable: ^2.0.5
   flutter_slidable: ^3.0.0
   path_provider: ^2.1.1
@@ -58,7 +58,7 @@ dependencies:
   firebase_messaging: ^14.7.10
   firebase_analytics: ^10.8.0
   flutter_cache_manager: ^3.3.1
-  sentry_flutter: ^7.14.0
+  sentry_flutter: ^7.18.0
   firebase_core: ^2.24.2
   contacts_service: ^0.6.3
   mime: ^1.0.4
@@ -75,7 +75,7 @@ dependencies:
   flutter_countdown_timer: ^4.1.0
   get_it: ^7.6.4
   injectable: ^2.3.2
-  flutter_callkit_incoming: ^2.0.0+2
+  flutter_callkit_incoming: ^2.0.3
   logger: ^1.1.0
   story_view: ^0.15.0
   stream_transform: ^2.1.0
@@ -94,6 +94,7 @@ dependencies:
   file_picker: ^6.0.0
   full_screen_image_null_safe: ^2.0.0
   flutter_file_downloader: ^1.1.2
+  step_progress_indicator: ^1.0.2
   camera: ^0.10.5+5
   lottie: 2.7.0
   store_redirect: ^2.0.1

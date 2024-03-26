@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
@@ -19,7 +20,6 @@ import 'package:trydos/features/story/domain/useCases/increase_viewers_usecase.d
 import 'package:trydos/features/story/domain/useCases/upload_story_usecase.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/main.dart';
-import 'package:tuple/tuple.dart' as tuple;
 import '../../data/models/get_stories_model.dart';
 import '../../domain/useCases/add_story_to_our_server_usecase.dart';
 
@@ -356,12 +356,12 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
       IncreaseViewersEvent event, Emitter<StoryState> emit) async {
     /*
     if (state.currentStoryToMakeItViewedInEachCollection
-        .contains(tuple.Tuple2(event.collectionId, event.storyId))) return;
-    List<tuple.Tuple2<String, String>>
+        .contains(Tuple2(event.collectionId, event.storyId))) return;
+    List<Tuple2<String, String>>
         currentStoryToMakeItViewedInEachCollection =
         List.of(state.currentStoryToMakeItViewedInEachCollection);
     currentStoryToMakeItViewedInEachCollection
-        .add(tuple.Tuple2(event.collectionId, event.storyId));
+        .add(Tuple2(event.collectionId, event.storyId));
     emit(state.copyWith(
       currentStoryToMakeItViewedInEachCollection:
           currentStoryToMakeItViewedInEachCollection,
@@ -370,7 +370,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
         IncreaseViewersParams(storyId: event.storyId));
     response.fold((l) {
       currentStoryToMakeItViewedInEachCollection
-          .remove(tuple.Tuple2(event.collectionId, event.storyId));
+          .remove(Tuple2(event.collectionId, event.storyId));
       emit(state.copyWith(
         currentStoryToMakeItViewedInEachCollection:
             currentStoryToMakeItViewedInEachCollection,

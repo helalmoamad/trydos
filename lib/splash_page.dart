@@ -52,7 +52,7 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   void didChangeDependencies() {
-    FirebaseAnalytics.instance.setCurrentScreen(screenName: "Splash Page");
+    FirebaseAnalytics.instance.logScreenView(screenName: "Splash Page");
     super.didChangeDependencies();
   }
 

@@ -138,6 +138,34 @@ class AuthRemoteDatasource {
     return updateName();
   }
 
+  Future<bool> updateStoriesUser(Map<String,dynamic> params){
+    PostClient<bool> updateStoriesUser= PostClient<bool>(
+      serverName: ServerName.stories,
+      requestPrams: RequestConfig<bool>(
+        endpoint: StoriesEndPoints.updateUserEP,
+        data: params,
+        response: ResponseValue<bool>(
+            returnValueOnSuccess: true
+        ),
+      ),
+    );
+    return updateStoriesUser();
+  }
+
+  Future<bool> updateChatUserName(Map<String,dynamic> params){
+    PostClient<bool> updateChatUserName= PostClient<bool>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<bool>(
+        endpoint: ChatEndPoints.updateUserNameEP,
+        data: params,
+        response: ResponseValue<bool>(
+            returnValueOnSuccess: true
+        ),
+      ),
+    );
+    return updateChatUserName();
+  }
+
   Future<VerifyOtpSignUpAndInResponseModel> verifyOtpSignIn(Map<String,dynamic> params){
     GetClient<VerifyOtpSignUpAndInResponseModel> verifyOtpSignIn= GetClient<VerifyOtpSignUpAndInResponseModel>(
       serverName: ServerName.market,
