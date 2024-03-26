@@ -11,6 +11,7 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:video_player/video_player.dart';
 
 import 'my_text_widget.dart';
+import 'video_player_full.dart';
 
 class MYVideoPlayer extends StatefulWidget {
   const MYVideoPlayer(
@@ -96,7 +97,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
               children: [
                 CachedNetworkImage(
                   imageUrl: imageUrl!,
-                  width: 300,
+                  width: 200,
                   height: 300,
                 ),
                 ValueListenableBuilder<bool>(
@@ -161,54 +162,44 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                   behavior: HitTestBehavior.opaque,
                   onTap: () => {
                     setState(() {
-                      _controller!.value.isPlaying
-                          ? _controller!.pause()
-                          : _controller!.play();
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => MYVideoPlayerFull(
+                          chatId: widget.chatId,
+                          videoFile: widget.videoFile,
+                          videoUrl: widget.videoUrl,
+                          key: widget.key,
+                        ),
+                      ));
                     }),
                   },
                   child: SizedBox(
                     height: 400.h,
-                    width: 300,
+                    width: 250.w,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        AspectRatio(
-                          aspectRatio: _controller!.value.aspectRatio,
-                          // Use the VideoPlayer widget to display the video.
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12.0),
-                              child: VideoPlayer(_controller!)),
+                        Container(
+                          width: 1.sw,
+                          height: 1.sh,
+                          child: AspectRatio(
+                            aspectRatio: _controller!.value.aspectRatio,
+                            // Use the VideoPlayer widget to display the video.
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12.0),
+                                child: VideoPlayer(_controller!)),
+                          ),
                         ),
                         _controller!.value.isPlaying
                             ? Container()
                             : Icon(Icons.play_arrow,
                                 size: 50, color: Colors.grey.shade300),
-                        buildSpeed(),
                         Positioned(
                           left: 8,
-                          bottom: 38,
+                          bottom: 25,
                           child: MyTextWidget(getPosition(),
                               style: context.textTheme.bodyText2?.rr
                                   .copyWith(color: Colors.white)),
                         ),
-                        Positioned(
-                          bottom: 15,
-                          left: 0,
-                          right: 0,
-                          child: Container(
-                            margin: const EdgeInsets.all(8),
-                            height: 16,
-                            child: VideoProgressIndicator(
-                              _controller!,
-                              allowScrubbing: true,
-                              colors: VideoProgressColors(
-                                  bufferedColor: Colors.white,
-                                  playedColor: const Color(0xff388CFF),
-                                  backgroundColor:
-                                      Colors.white.withOpacity(0.3)),
-                            ),
-                          ),
-                        )
                       ],
                     ),
                   ),
@@ -220,42 +211,5 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                 child: Center(child: TrydosLoader()),
               );
             });
-  }
-
-  Widget buildSpeed() {
-    const allSpeeds = <double>[0.25, 0.5, 1, 1.5, 2, 3, 5, 10];
-    return Positioned(
-      bottom: 38,
-      right: 8,
-      child: PopupMenuButton<double>(
-        initialValue: _controller!.value.playbackSpeed,
-        tooltip: 'Playback speed',
-        onSelected: _controller!.setPlaybackSpeed,
-        itemBuilder: (context) => allSpeeds
-            .map<PopupMenuEntry<double>>((speed) => PopupMenuItem(
-                  value: speed,
-                  child: MyTextWidget(
-                    '${speed}x',
-                    style: const TextStyle(
-                      color: Color(0xff388CFF),
-                    ),
-                  ),
-                ))
-            .toList(),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          child: MyTextWidget(
-            '${_controller!.value.playbackSpeed}x',
-            style: const TextStyle(
-              color: Color(0xff388CFF),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }

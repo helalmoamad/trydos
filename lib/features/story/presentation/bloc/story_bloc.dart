@@ -306,10 +306,9 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           fullVideoPath: isVideoFile ? event.filePath : null);
       r.fold((id) {
         List<Story> currentUserStories =
-        List.of(state.storiesCollections.first.stories!);
-        currentUserStories.insert(currentUserStories.length, story.copyWith(
-          id: id
-        ));
+            List.of(state.storiesCollections.first.stories!);
+        currentUserStories.insert(
+            currentUserStories.length, story.copyWith(id: id));
         state.storiesCollections.first.stories = currentUserStories;
       }, (collection) {
         state.storiesCollections.insert(0, collection);
@@ -355,6 +354,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
 
   FutureOr<void> _IncreaseViewersEvent(
       IncreaseViewersEvent event, Emitter<StoryState> emit) async {
+    /*
     if (state.currentStoryToMakeItViewedInEachCollection
         .contains(tuple.Tuple2(event.collectionId, event.storyId))) return;
     List<tuple.Tuple2<String, String>>
@@ -391,5 +391,6 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
             return e;
           }).toList()));
     });
+  */
   }
 }
