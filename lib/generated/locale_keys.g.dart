@@ -136,5 +136,6 @@ abstract class  LocaleKeys {
   static const my_stories = 'my_stories';
   static const click_to_add_story = 'click_to_add_story';
   static const insert_name_to_continue = 'insert_name_to_continue';
+  static const must_be_at_least_8_characters = 'must_be_at_least_8_characters';
 
 }

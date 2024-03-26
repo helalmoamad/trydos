@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -43,6 +44,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
     super.didChangeDependencies();
   }
 
+  GlobalKey<FormState> _formkey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -144,55 +146,66 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
               ]),
             ),
             28.verticalSpace,
-            Padding(
-                padding: HWEdgeInsets.symmetric(horizontal: 20.0),
-                child: ValueListenableBuilder<bool>(
-                    valueListenable: displaySubmit,
-                    builder: (context, display, _) {
-                      return NameFormField(
-                        autoFocus: true,
-                        ready: display,
-                        onChange: (String? text) {
-                          displaySubmit.value = text!.length > 8;
-                        },
-                        controller: form.controllers[0],
-                        suffixIcon: Padding(
-                          padding: HWEdgeInsets.only(right: 20.0, top: 22),
-                          child: !display
-                              ? SizedBox(
-                                  width: 22,
-                                  height: 15,
-                                )
-                              : InkWell(
-                                  onTap: () {
-                                    if (!widget.fromLogin) {
-                                      BlocProvider.of<AuthBloc>(context)
-                                          .add(VerifyOtpSignUpEvent(
-                                        name: form.controllers[0].text,
-                                        otp: prefsRepository.otpCode!,
-                                        verificationId:
-                                            prefsRepository.verificationId!,
-                                      ));
-                                    } else {
-                                      BlocProvider.of<AuthBloc>(context)
-                                          .add(UpdateNameEvent(
-                                        name: form.controllers[0].text,
-                                      ));
-                                    }
-                                  },
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        SvgPicture.asset(
-                                          AppAssets.submitArrowSvg,
-                                          width: 10,
-                                          height: 20,
-                                        ),
-                                      ]),
-                                ),
-                        ),
-                      );
-                    })),
+            Form(
+              key: _formkey,
+              child: Padding(
+                  padding: HWEdgeInsets.symmetric(horizontal: 20.0),
+                  child: ValueListenableBuilder<bool>(
+                      valueListenable: displaySubmit,
+                      builder: (context, display, _) {
+                        return NameFormField(
+                          validator: ((value) {
+                            if (value!.length <= 8) {
+                              return LocaleKeys.must_be_at_least_8_characters
+                                  .tr();
+                            }
+                          }),
+                          autoFocus: true,
+                          ready: display,
+                          onChange: (String? text) {
+                            _formkey.currentState!.validate();
+
+                            displaySubmit.value = text!.length > 8;
+                          },
+                          controller: form.controllers[0],
+                          suffixIcon: Padding(
+                            padding: HWEdgeInsets.only(right: 20.0, top: 22),
+                            child: !display
+                                ? SizedBox(
+                                    width: 22,
+                                    height: 15,
+                                  )
+                                : InkWell(
+                                    onTap: () {
+                                      if (!widget.fromLogin) {
+                                        BlocProvider.of<AuthBloc>(context)
+                                            .add(VerifyOtpSignUpEvent(
+                                          name: form.controllers[0].text,
+                                          otp: prefsRepository.otpCode!,
+                                          verificationId:
+                                              prefsRepository.verificationId!,
+                                        ));
+                                      } else {
+                                        BlocProvider.of<AuthBloc>(context)
+                                            .add(UpdateNameEvent(
+                                          name: form.controllers[0].text,
+                                        ));
+                                      }
+                                    },
+                                    child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          SvgPicture.asset(
+                                            AppAssets.submitArrowSvg,
+                                            width: 10,
+                                            height: 20,
+                                          ),
+                                        ]),
+                                  ),
+                          ),
+                        );
+                      })),
+            ),
             10.verticalSpace,
           ],
         ),

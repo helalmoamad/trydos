@@ -5,6 +5,8 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/client_config.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/post.dart';
+
+import 'package:trydos/features/calls/data/models/missed_call_count.dart';
 import 'package:trydos/features/calls/data/models/my_calls.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
@@ -57,6 +59,16 @@ class CallsRemoteDataSource {
     return AnswerCall();
   }
 
+  Future<bool> watchedMissedCall() {
+    PostClient<bool> watchedMissedCall = PostClient<bool>(
+        requestPrams: RequestConfig<bool>(
+            // data: params,
+            endpoint: ChatEndPoints.watchMissedCall,
+            response: ResponseValue<bool>(returnValueOnSuccess: true)),
+        serverName: ServerName.chat);
+    return watchedMissedCall();
+  }
+
   Future<GetAgoraTokenResponseModel> getAgoraToken(String ChatId) {
     PostClient<GetAgoraTokenResponseModel> videoCall =
         PostClient<GetAgoraTokenResponseModel>(
@@ -70,6 +82,21 @@ class CallsRemoteDataSource {
                 )),
             serverName: ServerName.chat);
     return videoCall();
+  }
+
+  Future<MissedCallCountModel> getMissedCallCount() {
+    PostClient<MissedCallCountModel> getMissedCallCount =
+        PostClient<MissedCallCountModel>(
+            requestPrams: RequestConfig<MissedCallCountModel>(
+                // data: params,
+                endpoint: ChatEndPoints.missedCallCount,
+                response: ResponseValue<MissedCallCountModel>(
+                  fromJson: (response) {
+                    return MissedCallCountModel.fromJson(response);
+                  },
+                )),
+            serverName: ServerName.chat);
+    return getMissedCallCount();
   }
 
   Future<bool> rejectCall(Map<String, dynamic> params) {

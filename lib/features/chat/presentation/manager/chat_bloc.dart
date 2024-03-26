@@ -95,6 +95,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         transformer: throttleDroppable(throttleDuration));
     on<GetChatsEvent>(_onGetChatsEvent,
         transformer: throttleDroppable(throttleDuration));
+    on<ReceiveMissCallEvent>(_onReceiveMissCallEvent,
+        transformer: throttleDroppable(throttleDuration));
+
     on<GetContactsEvent>(_onGetContactsEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetMediaCountEvent>(_onGetMediaCountEvent,
@@ -278,12 +281,16 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             return r.channel!.copyWith(
                 localId: event.channelId,
                 messages: e.messages?.map((e) {
+                  print('${r.channel!.channelMembers}' +
+                      "00000000000000000000000000000000000000111111111111100");
                   if (e.localId == event.messageId) {
                     return r.copyWith(localId: e.localId);
                   }
                   return e;
                 }).toList());
           } else if (e.id == event.channelId) {
+            print('${r.channel!.channelMembers}' +
+                "0000000000222222222222222222222222222222222222222222000");
             List<Message> messages = List.of(e.messages ?? []);
             int index = messages.indexWhere((element) =>
                 (element.id == event.messageId ||
@@ -671,6 +678,43 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           scrollToParentMessage: false,
           channelId: event.message.channelId.toString()));
     }
+  }
+
+  FutureOr<void> _onReceiveMissCallEvent(
+      ReceiveMissCallEvent event, Emitter<ChatState> emit) async {
+    print("00000000000000000000000000000000000000000000000000000000000");
+    bool fromPinned = false;
+    List<Chat> chats;
+    if (state.chats.any(
+      (e) => e.id == event.channelId,
+    )) {
+      chats = List.of(state.chats);
+    } else {
+      fromPinned = true;
+      chats = List.of(state.pinnedChats);
+    }
+    Chat chat = chats.firstWhere((element) => element.id == event.channelId,
+        orElse: () => Chat(id: '-1'));
+
+    chats.removeWhere((element) => element.id == chat.id);
+    chats.insert(
+        0,
+        chat.copyWith(
+            totalUnreadMessageCount: event.increaseUnReadMessages
+                ? ((chat.totalUnreadMessageCount ?? 0) + 1)
+                : chat.totalUnreadMessageCount));
+
+    emit(state.copyWith(
+      unReadMessagesFromAllChats: event.increaseUnReadMessages
+          ? (state.unReadMessagesFromAllChats + 1)
+          : state.unReadMessagesFromAllChats,
+      newSortedChatsByDate: groupReceivedMessageOnDays(
+          chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)]),
+      currentChannelReceivedMessage: chat.localId ?? chat.id,
+      channelId: event.channelId,
+      chats: fromPinned ? state.chats : chats,
+      pinnedChats: !fromPinned ? state.pinnedChats : chats,
+    ));
   }
 
   FutureOr<void> _onReadAllMessagesEvent(

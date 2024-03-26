@@ -15,6 +15,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/vedio_player.dart';
+import 'package:trydos/features/authentication/presentation/widgets/adding_name.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/chat/presentation/pages/media_in_profile.dart';
@@ -330,6 +331,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       String mimeStr = images![index].split(" ")[0];
                       if (mimeStr.split('/').contains("video")) {
                         return Container(
+                          margin: EdgeInsets.all(2),
                           width: 200.w,
                           child: MYVideoPlayer(
                             videoFile: File(images![index].split(" ")[1]),

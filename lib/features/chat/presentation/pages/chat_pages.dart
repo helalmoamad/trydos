@@ -21,6 +21,7 @@ import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
+import 'package:trydos/features/calls/domain/useCase/get_missed_call_count.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/chat/presentation/pages/calls_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
@@ -82,6 +83,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   void initState() {
     scrollController.addListener(_getChatsPaginationListener);
     callsBloc = BlocProvider.of<CallsBloc>(context);
+    callsBloc.add(GetMissedCallCountEvent());
     callsBloc.add(GetMyCallsEvent());
     chatPages.insert(
       0,

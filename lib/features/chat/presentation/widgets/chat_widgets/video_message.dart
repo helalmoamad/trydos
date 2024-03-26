@@ -177,7 +177,7 @@ class _VideoMessageState extends State<VideoMessage> {
                             (widget.isReceived || widget.isRead))
                         ? Offset(0, 0)
                         : widget.senderId == widget._prefsRepository.myChatId
-                            ? Offset(150.w, 0)
+                            ? Offset(100.w, 0)
                             : Offset(-50.w, 0),
                     child: Stack(
                       alignment: widget.isSent
@@ -188,6 +188,7 @@ class _VideoMessageState extends State<VideoMessage> {
                           alignment: Alignment.bottomCenter,
                           children: [
                             Container(
+                                width: 300.w,
                                 decoration: BoxDecoration(
                                   color: Colors.grey.shade200,
                                   borderRadius: BorderRadius.circular(12.0),
@@ -206,7 +207,7 @@ class _VideoMessageState extends State<VideoMessage> {
                               offset: const Offset(0, -3),
                               child: Container(
                                 height: 50,
-                                width: 300,
+                                width: 300.w,
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
                                     begin: Alignment(0.0, 0),
@@ -380,7 +381,7 @@ class _VideoMessageState extends State<VideoMessage> {
                             ? Transform.translate(
                                 offset: widget.senderId ==
                                         widget._prefsRepository.myChatId
-                                    ? Offset(-350.w, 0)
+                                    ? Offset(-310.w, 0)
                                     : Offset(110.w, 0),
                                 child: SendRecieveWatchTime(
                                   isRead: widget.isRead,
