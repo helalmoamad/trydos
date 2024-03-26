@@ -3,6 +3,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -192,17 +193,24 @@ class _NameFormFieldState extends State<NameFormField> {
                   style: context.textTheme.bodyText1?.ra.copyWith(
                     color: const Color(0xff5D5C5D),
                     letterSpacing: 0.16,
-                    height: 1.25,
+                    height: 3,
                     decoration: TextDecoration.none,
                   ),
                   decoration: InputDecoration(
+                    errorMaxLines: 1,
+                    errorStyle: TextStyle(
+                      fontSize: 11,
+                      height: 1,
+                    ),
+                    errorBorder: OutlineInputBorder(
+                        gapPadding: 2, borderRadius: BorderRadius.circular(20)),
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
-                    contentPadding:
-                        HWEdgeInsets.only(top: 10, left: 20, bottom: 0),
+                    contentPadding: HWEdgeInsets.only(
+                        top: 0, left: 30, bottom: 0, right: 30),
                     prefixIcon: widget.prefixIcon,
                     suffixIcon: Padding(
-                      padding: HWEdgeInsets.only(bottom: 20),
+                      padding: HWEdgeInsets.only(bottom: 10),
                       child: widget.suffixIcon,
                     ),
                     counterText: '',

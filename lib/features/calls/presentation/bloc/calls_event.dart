@@ -20,6 +20,10 @@ class MakeCallEvent extends CallsEvent {
 
 class EndVideoCallEvent extends CallsEvent {}
 
+class GetMissedCallCountEvent extends CallsEvent {}
+
+class WatchMissedCallEvent extends CallsEvent {}
+
 class AnswerVideoCallEvent extends CallsEvent {
   String messageId;
   String chatId;

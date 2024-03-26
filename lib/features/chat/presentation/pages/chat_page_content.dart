@@ -169,7 +169,7 @@ class ChatPageContentState extends State<ChatPageContent> {
                                             searchedChats[index].id.toString())]
                                     : null,
                                 messageId:
-                                    searchedChats[index].messages!.first.id ??
+                                    searchedChats[index].messages?.first.id ??
                                         "",
                               );
                             });

@@ -12,9 +12,13 @@ enum MakeCallStatus {
 
 enum OpenLocalVideoAndAudioStatus { init, loading, success, failure }
 
+enum WatchedMissedCallStatus { init, loading, success, failure }
+
 enum OpenRemoteVideoAndAudioStatus { init, loading, success, failure }
 
 enum RejectVideoCallStatus { init, loading, success, failure }
+
+enum GetMissedCallCountStatus { init, loading, success, failure }
 
 enum StopRingToneReason { init, refuse, accept }
 
@@ -27,9 +31,11 @@ class CallsState {
   final String? messageId;
   final List<CallReg>? callRegister;
   final int? sessionId;
+  final WatchedMissedCallStatus watchedMissedCallStatus;
   final DeleteMessageStatus deleteMessageStatus;
   final GetMyCallsStatus getMyCallsStatus;
   final RejectVideoCallStatus rejectVideoCallStatus;
+  final GetMissedCallCountStatus getMissedCallCountStatus;
   final String? agoraToken;
   final String? channelIdForCurrentCall;
   final List<int> channelMembers;
@@ -44,8 +50,10 @@ class CallsState {
   CallsState(
       {this.messageId,
       this.sessionId = 23,
+      this.watchedMissedCallStatus = WatchedMissedCallStatus.init,
       this.missedCallCount = 0,
       this.rejectVideoCallStatus = RejectVideoCallStatus.init,
+      this.getMissedCallCountStatus = GetMissedCallCountStatus.init,
       this.agoraToken = null,
       this.channelIdForCurrentCall = null,
       this.callRegister,
@@ -69,16 +77,22 @@ class CallsState {
       final String? currentActiveCallId,
       StopRingToneReason? stopRingToneReason,
       String? agoraToken,
+      WatchedMissedCallStatus? watchedMissedCallStatus,
+      GetMissedCallCountStatus? getMissedCallCountStatus,
       String? receiverCallName,
       String? channelIdForCurrentCall,
       List<int>? channelMembers,
       DeleteMessageStatus? deleteMessageStatus,
-      final int? missedCallCount,
+      int? missedCallCount,
       bool? isVideoCall,
       OpenLocalVideoAndAudioStatus? openVideoAndAudioStatus,
       OpenRemoteVideoAndAudioStatus? openRemoteVideoAndAudioStatus,
       MakeCallStatus? makeCallStatus}) {
     return CallsState(
+        watchedMissedCallStatus:
+            watchedMissedCallStatus ?? this.watchedMissedCallStatus,
+        getMissedCallCountStatus:
+            getMissedCallCountStatus ?? this.getMissedCallCountStatus,
         messageId: messageId ?? this.messageId,
         missedCallCount: missedCallCount ?? this.missedCallCount,
         receiverCallName: receiverCallName ?? this.receiverCallName,

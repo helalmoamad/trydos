@@ -144,9 +144,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       showCallKitIncoming(data, currentUuid,
           isVideo: message.data['type'] == 'VideoCallEvent');
     } else if (message.data['type'] == 'RefuseCallEvent') {
-      print(
-          "12111111111111111111111111155555555555555555555555555555555111111111111111111111111111111111111111111111111111111111111");
-
       declineCallBecauseOfNotificationButton = true;
       Map<String, dynamic> data =
           convert.jsonDecode(message.data['data'].toString());

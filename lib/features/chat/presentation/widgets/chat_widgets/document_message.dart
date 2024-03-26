@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,6 +13,7 @@ import 'package:trydos/common/helper/file_saving.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../core/utils/responsive_padding.dart';
@@ -185,7 +187,18 @@ class _DocumentMessageState extends State<DocumentMessage> {
                         InkWell(
                           onTap: () {
                             if (widget.documentFile != null) {
-                              OpenFile.open(widget.documentFile!.path);
+                              // ignore: body_might_complete_normally_catch_error
+                              OpenFile.open(widget.documentFile!.path)
+                                  .then((value) => {print("access")})
+                                  // ignore: body_might_complete_normally_catch_error
+                                  .catchError((onError) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    content: Text("صيغة الملف غير مدعومة"),
+                                  ),
+                                );
+                              });
                             }
                           },
                           child: Container(

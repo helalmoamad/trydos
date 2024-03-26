@@ -292,9 +292,11 @@ class _VideoInProfileState extends ThemeState<VideoInProfile> {
               return Container(
                 width: 200,
                 height: 200,
-                child: MYVideoPlayer(
-                  chatId: "",
-                  videoFile: File(videos[index]),
+                child: Center(
+                  child: MYVideoPlayer(
+                    chatId: "",
+                    videoFile: File(videos[index]),
+                  ),
                 ),
                 color: Colors.black,
                 margin: EdgeInsets.all(2),

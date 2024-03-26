@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -8,7 +9,9 @@ import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 
 import 'package:trydos/features/calls/domain/useCase/delete_Message.dart';
+import 'package:trydos/features/calls/domain/useCase/get_missed_call_count.dart';
 import 'package:trydos/features/calls/domain/useCase/get_my_calls.dart';
+import 'package:trydos/features/calls/domain/useCase/watch_missed_call.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/main.dart';
 import '../../data/models/my_calls.dart';
@@ -33,26 +36,30 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   final MakeCallUseCase makeCallUseCase;
   final AnswerCallUseCase answerCallUseCase;
   final RejectCallUseCase rejectCallUseCase;
-
+  final WatchMissedCallUseCase watchMissedCallUseCase;
   final GetAgoraTokenUseCase getAgoraTokenUseCase;
   final DeleteMessageUseCase deleteMessageUseCase;
   final GetMyCallsUseCase getMyCallsUseCase;
-
+  final GetMissedCalCountUseCase getMissedCalCountUseCase;
   CallsBloc(
       this.rejectCallUseCase,
       this.makeCallUseCase,
       this.getMyCallsUseCase,
+      this.watchMissedCallUseCase,
       this.answerCallUseCase,
+      this.getMissedCalCountUseCase,
       this.getAgoraTokenUseCase,
       this.deleteMessageUseCase)
       : super(CallsState()) {
     on<CallsEvent>((event, emit) {});
     on<UpdateCurrentActiveCallIdEvent>(_onUpdateCurrentActiveCallIdEvent);
     on<IcreaseMissedCallEvent>(_onIcreaseMissedCallEvent);
-
+    on<GetMissedCallCountEvent>(_onGetMissedCallCountEvent);
     on<ResetMissedCallEvent>(_onResetMissedCallEvent);
     on<InitResponseRejectVideoCallEvent>(_onInitResponseRejectVideoCallEvent);
     on<RejectVideoCallEvent>(_onRejectVideoCallEvent);
+    on<WatchMissedCallEvent>(_onWatchMissedCallEvent);
+
     on<AnswerVideoCallEvent>(_onAnswerVideoCallEvent);
     on<EndVideoCallEvent>(_onEndVideoCallEvent);
     on<MakeCallEvent>(_onMakeCallEvent);
@@ -93,6 +100,18 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
             getMyCallsStatus: GetMyCallsStatus.success, callRegister: r.data));
       },
     );
+  }
+
+  FutureOr<void> _onWatchMissedCallEvent(
+      WatchMissedCallEvent event, Emitter<CallsState> emit) async {
+    emit(state.copyWith(
+        watchedMissedCallStatus: WatchedMissedCallStatus.loading));
+    final response = await watchMissedCallUseCase(NoParams());
+    response.fold(
+        (l) => emit(state.copyWith(
+            watchedMissedCallStatus: WatchedMissedCallStatus.failure)),
+        (r) => emit(state.copyWith(
+            watchedMissedCallStatus: WatchedMissedCallStatus.success)));
   }
 
   FutureOr<void> _onMakeCallEvent(
@@ -154,6 +173,20 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     add(GetMyCallsEvent());
   }
 
+  FutureOr<void> _onGetMissedCallCountEvent(
+      GetMissedCallCountEvent event, Emitter<CallsState> emit) async {
+    emit(state.copyWith(
+        getMissedCallCountStatus: GetMissedCallCountStatus.loading));
+    final missedCallCount = await getMissedCalCountUseCase(NoParams());
+    missedCallCount.fold(
+        (l) => emit(state.copyWith(
+            getMissedCallCountStatus: GetMissedCallCountStatus.failure)), (r) {
+      emit(state.copyWith(
+          getMissedCallCountStatus: GetMissedCallCountStatus.success,
+          missedCallCount: r.data!.missedCals));
+    });
+  }
+
   FutureOr<void> _onIcreaseMissedCallEvent(
       IcreaseMissedCallEvent event, Emitter<CallsState> emit) async {
     int count = state.missedCallCount + 1;
@@ -165,6 +198,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   FutureOr<void> _onResetMissedCallEvent(
       ResetMissedCallEvent event, Emitter<CallsState> emit) async {
     emit(state.copyWith(missedCallCount: 0));
+    add(WatchMissedCallEvent());
     add(GetMyCallsEvent());
   }
 

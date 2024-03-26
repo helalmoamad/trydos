@@ -23,6 +23,7 @@ import '../../../../routes/router.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 import 'dart:ui' as ui;
+
 class VerifyOtp extends StatefulWidget {
   VerifyOtp(
       {Key? key,
@@ -247,32 +248,37 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                 builder: (context,
                                                     enabledResend, _) {
                                                   if (!enabledResend)
-                                                    return CountdownTimer(
-                                                      widgetBuilder:
-                                                          (_, remainingTime) {
-                                                        String seconds = (remainingTime
-                                                                        ?.sec ??
-                                                                    0) <
-                                                                10
-                                                            ? '0${remainingTime?.sec}'
-                                                            : '${remainingTime?.sec}';
-                                                        return MyTextWidget(
-                                                          '0${remainingTime?.min ?? '0'} : $seconds ',
-                                                          style: context
-                                                              .textTheme
-                                                              .caption
-                                                              ?.ra
-                                                              .copyWith(
-                                                                  color: Color(
-                                                                      0xff4D84FF),
-                                                                  height: 1.25),
-                                                        );
-                                                      },
-                                                      controller: controller,
-                                                      onEnd: onEnd,
-                                                      endTime: endTime,
-                                                      endWidget:
-                                                          const SizedBox(),
+                                                    return Directionality(
+                                                      textDirection:
+                                                          ui.TextDirection.ltr,
+                                                      child: CountdownTimer(
+                                                        widgetBuilder:
+                                                            (_, remainingTime) {
+                                                          String seconds = (remainingTime
+                                                                          ?.sec ??
+                                                                      0) <
+                                                                  10
+                                                              ? '0${remainingTime?.sec}'
+                                                              : '${remainingTime?.sec}';
+                                                          return MyTextWidget(
+                                                            '0${remainingTime?.min ?? '0'} : $seconds ',
+                                                            style: context
+                                                                .textTheme
+                                                                .caption
+                                                                ?.ra
+                                                                .copyWith(
+                                                                    color: Color(
+                                                                        0xff4D84FF),
+                                                                    height:
+                                                                        1.25),
+                                                          );
+                                                        },
+                                                        controller: controller,
+                                                        onEnd: onEnd,
+                                                        endTime: endTime,
+                                                        endWidget:
+                                                            const SizedBox(),
+                                                      ),
                                                     );
                                                   return InkWell(
                                                     onTap: _onResendSucceed,
@@ -489,7 +495,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                             checkOtp.value = 0;
                                           },
                                           checkOtp: () {
-                                            if (prefsRepository.verificationId !=
+                                            if (prefsRepository
+                                                    .verificationId !=
                                                 null) {
                                               String insertedCode =
                                                   form.controllers[0].text +
@@ -499,18 +506,21 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                       form.controllers[4].text +
                                                       form.controllers[5].text;
                                               if (widget.fromLogin) {
-                                                authBloc.add(VerifyOtpSignInEvent(
-                                                    verificationId:
-                                                        prefsRepository
-                                                            .verificationId!,
-                                                    otp: insertedCode,
-                                                    phone: widget.phoneNumber));
+                                                authBloc.add(
+                                                    VerifyOtpSignInEvent(
+                                                        verificationId:
+                                                            prefsRepository
+                                                                .verificationId!,
+                                                        otp: insertedCode,
+                                                        phone: widget
+                                                            .phoneNumber));
                                               } else {
-                                                authBloc.add(VerifyOtpSignUpEvent(
-                                                    verificationId:
-                                                        prefsRepository
-                                                            .verificationId!,
-                                                    otp: insertedCode));
+                                                authBloc.add(
+                                                    VerifyOtpSignUpEvent(
+                                                        verificationId:
+                                                            prefsRepository
+                                                                .verificationId!,
+                                                        otp: insertedCode));
                                               }
                                             } else {
                                               showMessage(LocaleKeys

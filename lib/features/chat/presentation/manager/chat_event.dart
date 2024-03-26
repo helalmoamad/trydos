@@ -74,7 +74,11 @@ class GetChatsEvent extends ChatEvent {
   final DateTime? timeStamp;
   final int? limit;
   final int? messagesLimit;
-  const GetChatsEvent({this.chatToNavigateFromTerminated , this.timeStamp , this.limit , this.messagesLimit});
+  const GetChatsEvent(
+      {this.chatToNavigateFromTerminated,
+      this.timeStamp,
+      this.limit,
+      this.messagesLimit});
   @override
   // TODO: implement props
   List<Object?> get props => [];
@@ -266,6 +270,17 @@ class DeleteChatEvent extends ChatEvent {
   List<Object?> get props => [channelId];
 }
 
+class ReceiveMissCallEvent extends ChatEvent {
+  final String channelId;
+  final bool increaseUnReadMessages;
+  const ReceiveMissCallEvent(this.increaseUnReadMessages,
+      {required this.channelId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [channelId];
+}
+
 class ChangeChatPropertyEvent extends ChatEvent {
   final String channelId;
   final int? mute;
@@ -376,7 +391,6 @@ class ResendMessageEvent extends ChatEvent {
   List<Object?> get props => [messageId, channelId];
 }
 
-
 class DeleteMessageNotificationReceivedInChatsEvent extends ChatEvent {
   final String messageId;
   final String channelId;
@@ -385,19 +399,20 @@ class DeleteMessageNotificationReceivedInChatsEvent extends ChatEvent {
   final int deletedByUserId;
   DeleteMessageNotificationReceivedInChatsEvent(
       {required this.messageId,
-        required this.deletedByUserId,
-        required this.channelId,
-        required this.deleteForAll,
-        required this.isDelete});
+      required this.deletedByUserId,
+      required this.channelId,
+      required this.deleteForAll,
+      required this.isDelete});
   @override
   // TODO: implement props
   List<Object?> get props => [messageId, channelId, deleteForAll];
 }
+
 class DeleteChatFromNotificationEvent extends ChatEvent {
   final String channelId;
   DeleteChatFromNotificationEvent({
-        required this.channelId,
-});
+    required this.channelId,
+  });
   @override
   // TODO: implement props
   List<Object?> get props => [channelId];
