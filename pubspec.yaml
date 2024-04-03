@@ -110,11 +110,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   flutter_share: ^2.0.0
+ 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+ 
   injectable_generator: ^2.4.1
   build_runner: ^2.4.8
+
 
 flutter_launcher_icons:
   android: true

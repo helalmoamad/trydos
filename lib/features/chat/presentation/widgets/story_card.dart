@@ -31,6 +31,8 @@ class StoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("" +
+        "111111111${collectionStoryModel.name}1111111111111111111111111111111111111");
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
@@ -67,44 +69,46 @@ class StoryCard extends StatelessWidget {
           child: Stack(
             children: [
               Container(
-                padding: HWEdgeInsets.only(left: 15, right: 10 , top: 5 , bottom: 5),
+                padding:
+                    HWEdgeInsets.only(left: 15, right: 10, top: 5, bottom: 5),
                 color: context.colorScheme.white,
                 child: Row(
                     //mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       CircularStepProgressIndicator(
-                        totalSteps: collectionStoryModel.stories!.length ,
+                        totalSteps: collectionStoryModel.stories!.length,
                         startingAngle: pi,
                         child: Padding(
                           padding: const EdgeInsets.all(1.0),
                           child: collectionStoryModel.photoPath == null
                               ? NoImageWidget(
-                              width: 60.r,
-                              height: 60.r,
-                              radius: 180,
-                              textStyle: context.textTheme.subtitle1?.br
-                                  .copyWith(
-                                  color: const Color(0xff6638FF),
-                                  letterSpacing: 0.18,
-                                  height: 1.33),
-                              name: collectionStoryModel.name == null
-                                  ? LocaleKeys.uk.tr()
-                                  : HelperFunctions
-                                  .getTheFirstTwoLettersOfName(
-                                  collectionStoryModel.name!))
+                                  width: 60.r,
+                                  height: 60.r,
+                                  radius: 180,
+                                  textStyle: context.textTheme.subtitle1?.br
+                                      .copyWith(
+                                          color: const Color(0xff6638FF),
+                                          letterSpacing: 0.18,
+                                          height: 1.33),
+                                  name: collectionStoryModel.name == null
+                                      ? LocaleKeys.uk.tr()
+                                      : HelperFunctions
+                                          .getTheFirstTwoLettersOfName(
+                                              collectionStoryModel.name!))
                               : MyCachedNetworkImage(
-                            height: 60.r,
-                            width: 60.r,
-                            imageUrl: collectionStoryModel.photoPath,
-                            imageFit: BoxFit.cover,
-                          ),
+                                  height: 60.r,
+                                  width: 60.r,
+                                  imageUrl: collectionStoryModel.photoPath,
+                                  imageFit: BoxFit.cover,
+                                ),
                         ),
                         width: 70.r,
                         height: 90.r,
                         stepSize: 5.r,
-                        customColor: (index){
-                          if(collectionStoryModel.stories![index].isSeen ?? false) return Colors.grey;
+                        customColor: (index) {
+                          if (collectionStoryModel.stories![index].isSeen ??
+                              false) return Colors.grey;
                           return Colors.green;
                         },
                         roundedCap: (index, isSelected) => true,

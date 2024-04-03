@@ -18,6 +18,7 @@ import 'package:trydos/features/chat/data/models/media_count.dart';
 import 'package:trydos/features/chat/domain/use_cases/change_chat_property_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/delete_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_contacts_usecase.dart';
+import 'package:trydos/features/chat/domain/use_cases/get_date_time.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_media_count_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_messages_between_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_messages_for_chat_usecase.dart';
@@ -27,6 +28,7 @@ import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.da
 import 'package:trydos/features/chat/domain/use_cases/save_contacts_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/upload_file_usecase.dart';
+import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
 import 'package:trydos/main.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/data/model/pagination_model.dart';
@@ -35,6 +37,7 @@ import '../../../../core/domin/usecases/upload_file_cloudinary_usecase.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../../data/models/my_contacts_response_model.dart';
+import '../utils/firebase_presence.dart';
 import 'chat_event.dart';
 import 'chat_state.dart';
 import 'helper_function_for_chat_bloc/group_received_message_on_days.dart';
@@ -64,7 +67,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       this.uploadFileUseCase,
       this.readAllMessagesUseCase,
       this.receiveMessageUseCase,
-      this.getMediaCountUseCase)
+      this.getMediaCountUseCase,
+      this.getDateTimeUseCase)
       : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
     on<UpdateChannelObjectFromNotificationEvent>(
@@ -72,8 +76,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<DeleteChatFromNotificationEvent>(_onDeleteChatFromNotificationEvent);
     on<ChangeGlobalUsedVariablesInBloc>(_onChangeGlobalUsedVariablesInBloc);
     on<ResendMessageEvent>(_onResendMessageEvent);
+    on<GetDateTimeEvent>(_onGetDateTimeEvent);
     on<AddAMessageToAChannel>(_onAddAMessageToAChannel);
     on<AddChannelToChannels>(_onAddChannelToChannels);
+    on<AddUserConntctSatuseEvent>(_onAddUserConntctSatuseEvent);
     on<SendMessageEvent>(_onSendMessageEvent);
     on<IncreaseFileImageVideoCounterEvent>(
         _onIncreaseFileImageVideoCounterEvent);
@@ -100,7 +106,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
     on<GetContactsEvent>(_onGetContactsEvent,
         transformer: throttleDroppable(throttleDuration));
-    on<GetMediaCountEvent>(_onGetMediaCountEvent,
+
+    on<AddMediaCountEvent>(_onAddMediaCountEvent,
         transformer: throttleDroppable(throttleDuration));
   }
 
@@ -108,6 +115,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   final GetMediaCountUseCase getMediaCountUseCase;
   final SaveContactsUseCase saveContactsUseCase;
   final GetContactsUseCase getContactsUseCase;
+  final GetDateTimeUseCase getDateTimeUseCase;
   final GetMyChatsUseCase getMyChatsUseCase;
   final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
   final UploadFileUseCase uploadFileUseCase;
@@ -316,7 +324,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               currentMessage: ids),
         );
 
-        add(IncreaseFileImageVideoCounterEvent(r.messageType!.name!));
+        //  add(IncreaseFileImageVideoCounterEvent(r.messageType!.name!));
       },
     );
   }
@@ -669,7 +677,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       chats: fromPinned ? state.chats : chats,
       pinnedChats: !fromPinned ? state.pinnedChats : chats,
     ));
-    add(IncreaseFileImageVideoCounterEvent(event.message.messageType!.name!));
+    // add(IncreaseFileImageVideoCounterEvent(event.message.messageType!.name!));
 
     if (index == -1 && event.prevMessageId != null) {
       add(GetAllMessagesBetweenEvent(
@@ -1250,8 +1258,6 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     }
   }
 
-  _onIn(IncreaseFileImageVideoCounterEvent event, Emitter<ChatState> emit) {}
-
   @override
   ChatState? fromJson(Map<String, dynamic> json) {
     return ChatState.fromJson(json);
@@ -1582,7 +1588,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           event.channelId);
     }
     emit(state.copyWith(
-      videoCountInEachChat: isAvideoMessageRemoved
+      /* videoCountInEachChat: isAvideoMessageRemoved
           ? state.videoCountInEachChat - 1
           : state.videoCountInEachChat,
       imageCountInEachChat: isAimageMessageRemoved
@@ -1590,7 +1596,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           : state.imageCountInEachChat,
       fileCountInEachChat: isAdocumentMessageRemoved
           ? state.fileCountInEachChat - 1
-          : state.fileCountInEachChat,
+          : state.fileCountInEachChat,*/
       chats: chats,
       newSortedChatsByDate:
           groupReceivedMessageOnDays(chats: [...pinnedChats, ...chats]),
@@ -1636,5 +1642,33 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           ...(fromPinned ? state.chats : state.pinnedChats)
         ]),
         pinnedChats: !fromPinned ? state.pinnedChats : chats));
+  }
+
+  FutureOr<void> _onAddMediaCountEvent(
+      AddMediaCountEvent event, Emitter<ChatState> emit) {
+    emit(state.copyWith(
+        imageCountInEachChat: event.images,
+        fileCountInEachChat: event.file,
+        videoCountInEachChat: event.videos));
+  }
+
+  FutureOr<void> _onAddUserConntctSatuseEvent(
+      AddUserConntctSatuseEvent event, Emitter<ChatState> emit) {
+    emit(state.copyWith(
+        userConnectedStatuse: event.userConnectedStatuse,
+        currentOpenedChatId: event.chatId));
+  }
+
+  FutureOr<void> _onGetDateTimeEvent(
+      GetDateTimeEvent event, Emitter<ChatState> emit) async {
+    final response = await getDateTimeUseCase(NoParams());
+    response.fold((l) => " ", (r) {
+      DateTime? dateServer = DateTime.tryParse(r);
+      DateTime dateDevice = DateTime.now().toUtc();
+      Duration diff = dateServer!.difference(dateDevice);
+
+      GetIt.I<PrefsRepository>().setDuration(diff.inMinutes);
+      emit(state.copyWith(duration: diff));
+    });
   }
 }

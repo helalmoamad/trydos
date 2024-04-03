@@ -10,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mime/mime.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -17,18 +18,22 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/vedio_player.dart';
 import 'package:trydos/features/authentication/presentation/widgets/adding_name.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/chat/presentation/pages/media_in_profile.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/helper/show_message.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
+import '../../../calls/presentation/bloc/calls_bloc.dart';
+import '../../../calls/presentation/utils/caller_info.dart';
 import '../widgets/chat_widgets/no_image_widget.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -51,11 +56,30 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late ChatBloc chatBloc;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   List<String>? images = [];
+
+  int imagess = 0;
+  late String mimeStr;
+  int filess = 0;
+  int videoss = 0;
   @override
   void initState() {
     images = _prefsRepository.getTheLocalPathForChannel(widget.chatId) ?? [];
+    chatBloc = BlocProvider.of<ChatBloc>(context);
+    images!.forEach((element) {
+      mimeStr = element.split(" ")[0];
+      if (mimeStr.split('/').contains("video")) {
+        videoss++;
+      } else if (mimeStr.split('/').contains("image")) {
+        imagess = imagess + 1;
+      } else {
+        filess++;
+      }
+    });
+    chatBloc.add(
+        AddMediaCountEvent(images: imagess, videos: videoss, file: filess));
     super.initState();
   }
 
@@ -132,7 +156,55 @@ class _ProfilePageState extends State<ProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       InkWell(
-                        onTap: () {},
+                        onTap: () async {
+                          try {
+                            List<Map<String, dynamic>> info =
+                                callerInfo(channelId: widget.chatId);
+                            PermissionStatus microphone =
+                                await Permission.microphone.request();
+                            var status2 =
+                                await Permission.mediaLibrary.request();
+                            if (microphone.isGranted && status2.isGranted) {
+                              //todo we have the receiver id so the chat dose not exist
+                              if (info[0].containsKey('currentReceiver')) {
+                                debugPrint(
+                                    'currentReceiver${info[0]['currentReceiver']}');
+
+                                GetIt.I<CallsBloc>().add(MakeCallEvent(
+                                    receiverUserId:
+                                        info[0]['currentReceiver'].toString(),
+                                    receiverCallName: widget.fullReceiverName,
+                                    chatId: info[1]['channelId'],
+                                    isVideo: false,
+                                    payload: info[1]));
+
+                                // GetIt.I<CallsBloc>().add(VideoCallEvent(
+                                //     receiverUserId: info[0]['currentReceiver'],
+                                //     payload: info[1]));
+//todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
+                              }
+                              //todo else the chat already exist so we don't have the receiver id just the chat id
+                              else {
+                                debugPrint('widget.chatId${widget.chatId}');
+                                debugPrint('info[0]${info[0]}');
+
+                                GetIt.I<CallsBloc>().add(MakeCallEvent(
+                                    isVideo: false,
+                                    receiverCallName: widget.fullReceiverName,
+                                    chatId: info[0]['channelId'],
+                                    payload: info[0]));
+                                //todo we have the id of the chat so we can move to the call immediately
+                              }
+                            } else if (microphone.isDenied ||
+                                status2.isDenied) {
+                              showMessage(LocaleKeys.permission_denied.tr());
+                              openAppSettings();
+                            }
+                          } catch (e, st) {
+                            print(e);
+                            print(st);
+                          }
+                        },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -152,7 +224,40 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       InkWell(
-                        onTap: () {},
+                        onTap: () async {
+                          List<Map<String, dynamic>> info =
+                              callerInfo(channelId: widget.chatId);
+                          PermissionStatus microphone =
+                              await Permission.microphone.request();
+                          var status2 = await Permission.mediaLibrary.request();
+                          PermissionStatus camera =
+                              await Permission.camera.request();
+                          if (microphone.isGranted &&
+                              status2.isGranted &&
+                              camera.isGranted) {
+                            if (info[0].containsKey('currentReceiver')) {
+                              GetIt.I<CallsBloc>().add(MakeCallEvent(
+                                  receiverUserId:
+                                      info[0]['currentReceiver'].toString(),
+                                  receiverCallName: widget.fullReceiverName,
+                                  chatId: info[1]['channelId'],
+                                  isVideo: true,
+                                  payload: info[1]));
+                            } else {
+                              GetIt.I<CallsBloc>().add(MakeCallEvent(
+                                  isVideo: true,
+                                  receiverCallName: widget.fullReceiverName,
+                                  chatId: info[0]['channelId'],
+                                  payload: info[0]));
+                              //todo we have the id of the chat so we can move to the call immediately
+                            }
+                          } else if (microphone.isDenied ||
+                              status2.isDenied ||
+                              camera.isDenied) {
+                            showMessage(LocaleKeys.permission_denied.tr());
+                            openAppSettings();
+                          }
+                        },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -221,6 +326,13 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             10.verticalSpace,
                             BlocBuilder<ChatBloc, ChatState>(
+                              buildWhen: (p, c) =>
+                                  p.imageCountInEachChat !=
+                                      c.imageCountInEachChat ||
+                                  p.fileCountInEachChat !=
+                                      c.fileCountInEachChat ||
+                                  p.videoCountInEachChat !=
+                                      c.videoCountInEachChat,
                               builder: (context, state) {
                                 return Flexible(
                                   child: Row(

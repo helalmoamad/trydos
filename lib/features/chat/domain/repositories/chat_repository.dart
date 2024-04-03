@@ -19,12 +19,15 @@ abstract class ChatRepository {
   Future<Either<Failure, UploadFileResponseModel>> uploadFile(
       Map<String, dynamic> params);
   Future<Either<Failure, bool>> saveContacts(Map<String, dynamic> params);
+  Future<Either<Failure, String>> getDateTime();
+
   Future<Either<Failure, Message>> sendMessage(Map<String, dynamic> params);
   Future<Either<Failure, bool>> readAllMessages(Map<String, dynamic> params);
   Future<Either<Failure, bool>> receiveMessage(Map<String, dynamic> params);
   Future<Either<Failure, bool>> deleteChat(Map<String, dynamic> params);
   Future<Either<Failure, MyContactsResponseModel>> getContacts();
-  Future<Either<Failure, MyChatsResponseModel>> getChats(Map<String, dynamic> params);
+  Future<Either<Failure, MyChatsResponseModel>> getChats(
+      Map<String, dynamic> params);
   Future<Either<Failure, List<Message>>> getMessagesForChat(
       Map<String, dynamic> params);
   Future<Either<Failure, List<Message>>> getMessagesBetween(

@@ -58,6 +58,9 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
           error: error.toString());
     };
     return BlocBuilder<StoryBloc, StoryState>(builder: (context, state) {
+      print("${state.storiesCollections[widget.index].name}" +
+          "11111111111111111111111111111111111555555555555555555555555555555555555555555555555555555");
+
       bool isLastStoryShowed =
           state.storiesCollections[widget.index].stories!.length ==
               (firstWhereNotShowedStoryCollection(

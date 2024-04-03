@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../data/models/my_chats_response_model.dart';
@@ -37,15 +38,16 @@ class ChatState {
   final int width;
   final int height;
   final bool isSlpoing;
-  final int imageCountInEachChat;
-  final int fileCountInEachChat;
-  final int videoCountInEachChat;
+  int imageCountInEachChat;
+  int fileCountInEachChat;
+  int videoCountInEachChat;
   final GetChatsStatus getChatsStatus;
   final SendMessageStatus sendMessageStatus;
   final ReceiveMessageStatus receiveMessageStatus;
   final LoadImageWidthAndHeight loadImageWidthAndHeight;
   final SaveContactsStatus saveContactsStatus;
   final GetContactsStatus getContactsStatus;
+  final Duration? duration;
   final GetMediaCountStatus getMediaCountStatus;
   final ResetReadMessagesStatus readMessagesStatus;
   final GetMessagesBetweenStatus getMessagesBetweenStatus;
@@ -63,8 +65,9 @@ class ChatState {
   final List<String> currentFailedMediaMessage;
   final String channelId;
   final String? messageType;
-
+  final String userConnectedStatuse;
   final String? messageContent;
+
   final String? firstMessageId;
   final String? secondMessageId;
   final String? slopMessageId;
@@ -78,10 +81,12 @@ class ChatState {
   final bool firstRequestForGetChats;
 
   ChatState({
+    this.userConnectedStatuse = " ",
     this.currentFailedMediaMessage = const [],
     this.getMediaCountStatus = GetMediaCountStatus.init,
     this.resendMessageStatus = ResendMessageStatus.init,
     this.width = 0,
+    this.duration,
     this.slopMessageId = "",
     this.isSlpoing = false,
     this.firstRequestForGetChats = true,
@@ -134,6 +139,7 @@ class ChatState {
     LoadImageWidthAndHeight? loadImageWidthAndHeight,
     Map<String, List<Message>>? newSortedChatsByDate,
     final GetChatsStatus? getChatsStatus,
+    final Duration? duration,
     final bool? firstRequestForGetChats,
     final ResendMessageStatus? resendMessageStatus,
     final SendMessageStatus? sendMessageStatus,
@@ -164,9 +170,12 @@ class ChatState {
     final int? unReadMessagesFromAllChats,
     final String? messageType,
     final String? messageContent,
+    String? userConnectedStatuse,
     final List<Chat>? pinnedChats,
   }) {
     return ChatState(
+      duration: duration ?? this.duration,
+      userConnectedStatuse: userConnectedStatuse ?? this.userConnectedStatuse,
       width: width ?? this.width,
       slopMessageId: slopMessageId ?? this.slopMessageId,
       isSlpoing: isSlpoing ?? this.isSlpoing,
@@ -190,7 +199,7 @@ class ChatState {
           chatToNavigateFromTerminated ?? this.chatToNavigateFromTerminated,
       contacts: contacts ?? this.contacts,
       chats: chats ?? this.chats,
-      currentOpenedChatId: currentOpenedChatId,
+      currentOpenedChatId: currentOpenedChatId ?? this.currentOpenedChatId,
       createAnewChat: createAnewChat ?? this.createAnewChat,
       deleteChatStatus: deleteChatStatus ?? this.deleteChatStatus,
       currentFailedMessage: currentFailedMessage ?? this.currentFailedMessage,
