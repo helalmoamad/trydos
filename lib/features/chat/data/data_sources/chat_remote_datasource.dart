@@ -55,6 +55,18 @@ class ChatRemoteDataSource {
     return receiveMessage();
   }
 
+  Future<String> getDateTime() {
+    GetClient<String> getDateTime = GetClient<String>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<String>(
+        endpoint: ChatEndPoints.getDateTime,
+        response:
+            ResponseValue<String>(fromJson: (response) => response["data"]),
+      ),
+    );
+    return getDateTime();
+  }
+
   Future<MyChatsResponseModel> getChats(Map<String, dynamic> params) {
     PostClient<MyChatsResponseModel> getChats =
         PostClient<MyChatsResponseModel>(

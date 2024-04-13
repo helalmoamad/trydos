@@ -10,6 +10,7 @@ import 'package:trydos/config/theme/app_theme.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/blocs/sensitive_connectivity/connectivity_observer.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
@@ -20,20 +21,21 @@ import 'package:trydos/service/service_provider.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'features/calls/presentation/pages/in_app_view.dart';
 import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
+import 'features/chat/presentation/manager/chat_bloc.dart';
+import 'features/chat/presentation/utils/firebase_presence.dart';
 
 class TrydosApplication extends StatefulWidget {
-  const TrydosApplication({Key? key , required this.navKey }) : super(key: key);
-  final GlobalKey<NavigatorState> navKey ;
-
+  const TrydosApplication({Key? key, required this.navKey}) : super(key: key);
+  final GlobalKey<NavigatorState> navKey;
 
   @override
   State<TrydosApplication> createState() => _TrydosApplicationState();
 }
 
-class _TrydosApplicationState extends State<TrydosApplication> with WidgetsBindingObserver {
-
+class _TrydosApplicationState extends State<TrydosApplication>
+    with WidgetsBindingObserver {
   @override
-    void didChangeDependencies() {
+  void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: colorScheme.white,
       statusBarBrightness: Brightness.light,
@@ -44,21 +46,19 @@ class _TrydosApplicationState extends State<TrydosApplication> with WidgetsBindi
 
   final botToastBuilder = BotToastInit();
   @override
+  void initState() {
+    GetIt.I<ChatBloc>().add(GetDateTimeEvent());
+    super.initState();
+    // FirebasePresence.sendUserStatus("online");
 
-
-
+    // TODO: implement initState
+  }
 
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
+          null, null, null, null, null, null, null,
           error: error.toString());
     };
     return ScreenUtilInit(
@@ -70,18 +70,18 @@ class _TrydosApplicationState extends State<TrydosApplication> with WidgetsBindi
             child: Builder(
               builder: (context) {
                 return MaterialApp.router(
-                    debugShowCheckedModeBanner: false,
-                    theme: AppTheme.light,
-                    locale: context.locale,
-                    supportedLocales: context.supportedLocales,
-                    localizationsDelegates: context.localizationDelegates,
-                    routerConfig: GRouter.router,
-                    builder: (context, child) {
-                      LanguageService(context);
-                      ConnectivityObserver.createInstance(context);
-                      ScreenService(context);
-                      return botToastBuilder(context, child);
-                    },
+                  debugShowCheckedModeBanner: false,
+                  theme: AppTheme.light,
+                  locale: context.locale,
+                  supportedLocales: context.supportedLocales,
+                  localizationsDelegates: context.localizationDelegates,
+                  routerConfig: GRouter.router,
+                  builder: (context, child) {
+                    LanguageService(context);
+                    ConnectivityObserver.createInstance(context);
+                    ScreenService(context);
+                    return botToastBuilder(context, child);
+                  },
                 );
               },
             ),

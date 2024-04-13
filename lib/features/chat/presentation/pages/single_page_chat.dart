@@ -24,7 +24,9 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
+import 'package:trydos/features/calls/presentation/widgets/calls_card.dart';
 import 'package:trydos/features/chat/presentation/pages/profile_page.dart';
+import 'package:trydos/features/chat/presentation/utils/firebase_presence.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_input_field.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/document_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_message.dart';
@@ -122,9 +124,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
     autoScrollController = AutoScrollController();
     callsBloc.add(GetMissedCallCountEvent());
     chatBloc.add(ReadAllMessagesEvent(widget.chatId.toString()));
-    if (int.tryParse(widget.chatId) != null) {
-      chatBloc.add(GetMediaCountEvent(channelId: widget.chatId.toString()));
-    }
+    chatBloc.add(AddUserConntctSatuseEvent(
+        userConnectedStatuse: " ", chatId: widget.chatId));
+    //  FirebasePresence.listeningToConnectStatus(friendId:);
+    //  if (int.tryParse(widget.chatId) != null) {
+    //  chatBloc.add(GetMediaCountEvent(channelId: widget.chatId.toString()));
+    // }
 
     autoScrollController.addListener(() {
       if (rebuild) {
@@ -141,7 +146,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
   @override
   void dispose() {
     callsBloc.add(GetMissedCallCountEvent());
-
+    chatBloc
+        .add(AddUserConntctSatuseEvent(userConnectedStatuse: " ", chatId: " "));
     autoScrollController.dispose();
     _audioPlayer.dispose();
     super.dispose();
@@ -151,10 +157,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   @override
   Widget build(BuildContext context) {
+    int duration = GetIt.I<PrefsRepository>().getdurtion ?? 0;
+
+    ChannelMember? member;
     Locale locale = Localizations.localeOf(context);
     bool lan = locale.languageCode.contains("en");
-    print(locale.languageCode +
-        '${"00000000000000000000000000000000000000000000000"}');
     FlutterError.onError = (details) {
       print("asfsd${details.toString()}");
       GetIt.I<PrefsRepository>().saveRequestsData(
@@ -217,25 +224,49 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               ),
                             );
                           }),
-                      BlocBuilder<ChatBloc, ChatState>(
-                          builder: (context, state) {
-                        if ((state.unReadMessagesFromAllChats -
-                                countMessagesReceivedToMeNow) >
-                            0) {
-                          return Row(
-                            children: [
-                              MyTextWidget(
-                                (state.unReadMessagesFromAllChats -
-                                        countMessagesReceivedToMeNow)
-                                    .toString(),
-                                style: textTheme.subtitle1?.rr
-                                    .copyWith(color: const Color(0xff388CFF)),
-                              ),
-                            ],
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      }),
+                      BlocListener<ChatBloc, ChatState>(
+                          listenWhen: (p, c) =>
+                              p.currentOpenedChatId != c.currentOpenedChatId,
+                          listener: (context, state) {
+                            chat = state.chats.firstWhere(
+                                (element) =>
+                                    element.id.toString() == widget.chatId ||
+                                    element.localId.toString() == widget.chatId,
+                                orElse: () => state.pinnedChats.firstWhere(
+                                    (element) =>
+                                        element.id.toString() ==
+                                            widget.chatId ||
+                                        element.localId.toString() ==
+                                            widget.chatId));
+
+                            member = !chat.channelMembers.isNullOrEmpty
+                                ? chat.channelMembers!.firstWhere((element) =>
+                                    element.userId != _prefsRepository.myChatId)
+                                : null;
+                            FirebasePresence.listeningToConnectStatus(
+                                chatId: widget.chatId,
+                                friendId: member!.userId!);
+                          },
+                          child: BlocBuilder<ChatBloc, ChatState>(
+                              builder: (context, state) {
+                            if ((state.unReadMessagesFromAllChats -
+                                    countMessagesReceivedToMeNow) >
+                                0) {
+                              return Row(
+                                children: [
+                                  MyTextWidget(
+                                    (state.unReadMessagesFromAllChats -
+                                            countMessagesReceivedToMeNow)
+                                        .toString(),
+                                    style: textTheme.subtitle1?.rr.copyWith(
+                                        color: const Color(0xff388CFF)),
+                                  ),
+                                ],
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          })),
+
                       20.horizontalSpace,
                       widget.receiverPhoto != null
                           ? Container(
@@ -308,7 +339,80 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                           color: const Color(0xff007CFF)),
                                     );
                                   } else {
-                                    return const SizedBox.shrink();
+                                    return BlocBuilder<ChatBloc, ChatState>(
+                                      builder: (context, state) {
+                                        return DateTime.tryParse(state
+                                                    .userConnectedStatuse) !=
+                                                null
+                                            ? DateTime.tryParse(state
+                                                            .userConnectedStatuse)!
+                                                        .subtract(Duration(
+                                                            minutes: duration))
+                                                        .difference(
+                                                            DateTime.now()
+                                                                .toUtc())
+                                                        .inMinutes
+                                                        .abs() <=
+                                                    5
+                                                ? MyTextWidget("Online",
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: textTheme.caption?.mr
+                                                        .copyWith(
+                                                            color: const Color(
+                                                                0xff007CFF)))
+                                                : Row(
+                                                    children: [
+                                                      MyTextWidget("أخر ظهور ",
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: textTheme
+                                                              .caption?.mr
+                                                              .copyWith(
+                                                                  color: const Color(
+                                                                      0xff007CFF))),
+                                                      MyTextWidget(
+                                                          formatDate(DateTime
+                                                                  .tryParse(state
+                                                                      .userConnectedStatuse)!
+                                                              .subtract(
+                                                                  Duration(
+                                                                      minutes:
+                                                                          duration))),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: textTheme
+                                                              .caption?.mr
+                                                              .copyWith(
+                                                                  color: const Color(
+                                                                      0xff007CFF))),
+                                                      MyTextWidget(" الساعة ",
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: textTheme
+                                                              .caption?.mr
+                                                              .copyWith(
+                                                                  color: const Color(
+                                                                      0xff007CFF))),
+                                                      MyTextWidget(
+                                                          HelperFunctions.gettimesInFormat(DateTime
+                                                                  .tryParse(state
+                                                                      .userConnectedStatuse)!
+                                                              .subtract(Duration(
+                                                                  minutes:
+                                                                      duration))),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: textTheme
+                                                              .caption?.mr
+                                                              .copyWith(
+                                                                  color: const Color(
+                                                                      0xff007CFF))),
+                                                    ],
+                                                  )
+                                            : SizedBox.shrink();
+                                      },
+                                    );
                                   }
                                 },
                               ),
@@ -454,7 +558,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         });
                       }
                       print(widget.chatId);
-                      print(chat.localId);
                       print(state.currentChannelReceivedMessage);
                       if (state.receiveMessageStatus ==
                               ReceiveMessageStatus.success &&
@@ -474,6 +577,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               (element) =>
                                   element.id.toString() == widget.chatId ||
                                   element.localId.toString() == widget.chatId));
+
                       return GestureDetector(
                           onTap: () {
                             rebuildMessage.value = -1;
@@ -1690,5 +1794,18 @@ class MessageSubtitleWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+String formatDate(DateTime dateStr) {
+  DateTime now = DateTime.now();
+  Duration difference = now.difference(dateStr);
+
+  if (difference.inDays == 0) {
+    return LocaleKeys.today.tr();
+  } else if (difference.inDays == 1) {
+    return LocaleKeys.yesterday.tr();
+  } else {
+    return DateFormat.yMd().format(dateStr);
   }
 }

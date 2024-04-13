@@ -94,7 +94,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
     User? receiver = !widget.chat.channelMembers.isNullOrEmpty
         ? widget.chat.channelMembers!
             .firstWhere(
-                (element) => element.userId == _prefsRepository.myChatId)
+                (element) => element.userId != _prefsRepository.myChatId)
             .user
         : null;
     String receiverName = HelperFunctions.getTheFirstTwoLettersOfName(

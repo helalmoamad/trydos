@@ -270,6 +270,19 @@ class DeleteChatEvent extends ChatEvent {
   List<Object?> get props => [channelId];
 }
 
+class AddUserConntctSatuseEvent extends ChatEvent {
+  final String userConnectedStatuse;
+  final String chatId;
+  const AddUserConntctSatuseEvent({
+    required this.userConnectedStatuse,
+    required this.chatId,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [userConnectedStatuse];
+}
+
 class ReceiveMissCallEvent extends ChatEvent {
   final String channelId;
   final bool increaseUnReadMessages;
@@ -347,6 +360,20 @@ class GetMediaCountEvent extends ChatEvent {
   List<Object?> get props => [channelId];
 }
 
+class AddMediaCountEvent extends ChatEvent {
+  int images = 0;
+  int videos = 0;
+
+  int file = 0;
+
+  AddMediaCountEvent(
+      {required this.images, required this.videos, required this.file});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [images, videos, file];
+}
+
 class ChangeSlop extends ChatEvent {
   final String messageId;
 
@@ -416,4 +443,10 @@ class DeleteChatFromNotificationEvent extends ChatEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [channelId];
+}
+
+class GetDateTimeEvent extends ChatEvent {
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
 }
