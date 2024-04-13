@@ -33,17 +33,19 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           child: AppBar(
             //title: title(context),
+            scrolledUnderElevation: appBarParams.scrolledUnderElevation,
             backgroundColor: appBarParams.backgroundColor ??
                 Theme.of(context).colorScheme.surface,
-            leading: leadingAppBar(context),
-            actions: appBarParams.action,
+            leading: LanguageService.rtl ? null : leadingAppBar(context),
+            actions: [LanguageService.rtl ? leadingAppBar(context) : SizedBox.shrink() , ...appBarParams.action ?? []],
             centerTitle: appBarParams.centerTitle,
             elevation: appBarParams.elevation,
             shadowColor: appBarParams.shadowColor,
             surfaceTintColor: appBarParams.surfaceTintColor,
+            leadingWidth: 8.w,
             shape: appBarParams.shape,
+            automaticallyImplyLeading: false,
             flexibleSpace: appBarParams.child,
-
           ),
         ),
         if (appBarParams.dividerBottom)
@@ -90,8 +92,10 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
     onTap: (){
       Navigator.pop(context);
     },
-    child: Padding(
-      padding: HWEdgeInsets.symmetric(vertical: 15),
+    child: Transform.translate(
+      offset: Offset(
+          LanguageService.rtl ? -15 : 15,
+          0),
       child: SvgPicture.asset(
         AppAssets.backIconArrowSvg,
         width: 8.w,

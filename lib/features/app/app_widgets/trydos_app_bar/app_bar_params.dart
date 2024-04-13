@@ -20,8 +20,10 @@ class AppBarParams {
     this.onBack,
     this.tittleStyle,
     this.shape,
+    this.scrolledUnderElevation,
   });
 
+  final double? scrolledUnderElevation;
   final String? title;
   final Widget? child;
   final List<Widget>? action;

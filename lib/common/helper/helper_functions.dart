@@ -299,7 +299,7 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
         opaque: false,
         transitionDuration: const Duration(milliseconds: 300),
         pageBuilder: (BuildContext context, _, __) {
-          return DragToPop(xValueToStartPoping: 70, child: page);
+          return OverscrollPop(workNormally: true, child: page);
         },
         transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
           return new SlideTransition(
@@ -309,6 +309,7 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
               end: Offset.zero,
             ).animate(animation),
           );
-        }));
+        }
+        ));
   }
 }

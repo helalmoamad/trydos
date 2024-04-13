@@ -53,6 +53,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     on<UploadStoryEvent>(_uploadStoryEvent);
     on<AddStoryToOurServerEvent>(_AddStoryToOurServerEvent);
     on<IncreaseViewersEvent>(_IncreaseViewersEvent);
+    on<UpdateNameForUserInCollectionIfExistEvent>(_onUpdateNameForUserInCollectionIfExistEvent);
     on<StoryEvent>((event, emit) {});
     on<GetStoryEvent>(
       _onGetStoryEvent,
@@ -392,5 +393,23 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           }).toList()));
     });
   */
+  }
+
+  FutureOr<void> _onUpdateNameForUserInCollectionIfExistEvent(UpdateNameForUserInCollectionIfExistEvent event, Emitter<StoryState> emit) {
+    int i=0;
+    emit(state.copyWith(
+      storiesCollections: state.storiesCollections.map((e) {
+        if(i == 0){
+          i++;
+          if(e.stories![0].userId == GetIt.I<PrefsRepository>().myStoriesId){
+            return e.copyWith(
+              name: event.name
+            );
+          }
+        }
+        i++;
+        return e;
+      }).toList()
+    ));
   }
 }
