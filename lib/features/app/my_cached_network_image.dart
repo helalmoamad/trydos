@@ -64,7 +64,6 @@ class MyCachedNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
-      key: UniqueKey(),
         valueListenable: rebuildImage,
         builder: (context, count, _) {
           return Container(
@@ -84,6 +83,7 @@ class MyCachedNetworkImage extends StatelessWidget {
               ),
               child: CachedNetworkImage(
                   imageUrl: imageUrl,
+                  key: ValueKey(imageUrl),
                   fit: imageFit,
                   width: width,
                   color: imageColor,

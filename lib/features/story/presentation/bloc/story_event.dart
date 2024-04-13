@@ -102,3 +102,13 @@ class IncreaseViewersEvent extends StoryEvent{
   List<Object?> get props => [];
 
 }
+
+class UpdateNameForUserInCollectionIfExistEvent extends StoryEvent{
+  const UpdateNameForUserInCollectionIfExistEvent({required this.name });
+
+  final String name;
+
+  @override
+  List<Object?> get props => [name];
+
+}
