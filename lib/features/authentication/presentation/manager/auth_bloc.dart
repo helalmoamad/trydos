@@ -457,6 +457,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       emit(state.copyWith(updateStoriesUserStatus: UpdateStoriesUserStatus.failure));
     }, (r) {
+      GetIt.I<StoryBloc>().add(UpdateNameForUserInCollectionIfExistEvent(name: event.name));
       isFailedTheFirstTime.remove('UpdateStoriesUserEvent');
       _prefsRepository.setMyStoriesName(event.name);
       emit(state.copyWith(

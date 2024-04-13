@@ -171,7 +171,8 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                   width: 80,
                                   child: MyTextWidget(
                                     state.storiesCollections[widget.index]
-                                            .name ??
+                                            .name ?? state.storiesCollections[widget.index]
+                                .mobilePhone ??
                                         LocaleKeys.unknown_user.tr(),
                                     textAlign: TextAlign.center,
                                     overflow: TextOverflow.ellipsis,
