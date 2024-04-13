@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +23,7 @@ import '../../../app/my_text_widget.dart';
 import '../../../home/presentation/widgets/sliver_list_seprated.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_state.dart';
+import '../utils/firebase_presence.dart';
 
 class ChatPageContent extends StatefulWidget {
   const ChatPageContent({Key? key, this.onSendForwardMessage})
@@ -32,6 +35,32 @@ class ChatPageContent extends StatefulWidget {
 }
 
 class ChatPageContentState extends State<ChatPageContent> {
+  late Timer timers;
+  int differencetime = 0;
+  @override
+  void initState() {
+    differencetime = GetIt.I<PrefsRepository>().getdurtion ?? 0;
+
+    FirebasePresence.sendUserStatus(DateTime.now()
+        .toUtc()
+        .add(Duration(minutes: differencetime))
+        .toString());
+
+    timers = Timer.periodic(Duration(minutes: 4), (timer) {
+      FirebasePresence.sendUserStatus(DateTime.now()
+          .toUtc()
+          .add(Duration(minutes: differencetime))
+          .toString());
+    });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    timers.cancel();
+    super.dispose();
+  }
 // todo 9/21 unused code
 //  late ChatBloc chatBloc;
 

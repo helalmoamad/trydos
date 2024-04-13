@@ -29,6 +29,7 @@ import 'core/domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
 import 'features/chat/data/models/my_chats_response_model.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
+import 'features/chat/presentation/utils/firebase_presence.dart';
 
 @pragma('vm:entry-point')
 showCallKitIncoming(Map<String, dynamic> data, String currentUuid,

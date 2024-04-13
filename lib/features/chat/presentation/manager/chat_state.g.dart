@@ -7,6 +7,7 @@ part of 'chat_state.dart';
 // **************************************************************************
 
 ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
+      userConnectedStatuse: json['userConnectedStatuse'] as String,
       currentFailedMediaMessage:
           (json['currentFailedMediaMessage'] as List<dynamic>?)
                   ?.map((e) => e as String)
@@ -158,6 +159,7 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'currentFailedMediaMessage': instance.currentFailedMediaMessage,
       'channelId': instance.channelId,
       'messageType': instance.messageType,
+      'userConnectedStatuse': instance.userConnectedStatuse,
       'messageContent': instance.messageContent,
       'firstMessageId': instance.firstMessageId,
       'secondMessageId': instance.secondMessageId,

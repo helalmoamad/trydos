@@ -34,6 +34,12 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   }
 
   @override
+  Future<Either<Failure, String>> getDateTime() async {
+    String result = await dataSource.getDateTime();
+    return Right(result);
+  }
+
+  @override
   Future<Either<Failure, MyContactsResponseModel>> getContacts() {
     return handlingExceptionRequest(tryCall: dataSource.getContacts);
   }
@@ -54,7 +60,8 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, MyChatsResponseModel>> getChats(Map<String, dynamic> params) {
+  Future<Either<Failure, MyChatsResponseModel>> getChats(
+      Map<String, dynamic> params) {
     return handlingExceptionRequest(tryCall: () => dataSource.getChats(params));
   }
 

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -39,8 +41,9 @@ abstract class PrefsRepository {
   String? get verificationId;
 
   String? get otpCode;
-
+  int? get getdurtion;
   Future<bool> setVerifiedPhone(bool verifiedPhone);
+  Future<bool> setDuration(int duration);
   Future<bool> setCountryName(String? countryName);
 
   Future<bool> setVerificationId(String verificationId);

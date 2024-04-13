@@ -396,7 +396,19 @@ class PrefsRepositoryImpl extends PrefsRepository {
   String? get myStoriesName => _preferences.getString(PrefsKey.storiesName);
 
   @override
-  Future<bool> setMyStoriesName(String name) => _preferences.setString(PrefsKey.storiesName, name);
+  Future<bool> setMyStoriesName(String name) =>
+      _preferences.setString(PrefsKey.storiesName, name);
+
+  @override
+  // TODO: implement durtion
+  int? get getdurtion {
+    return _preferences.getInt("duration");
+  }
+
+  @override
+  Future<bool> setDuration(int duration) {
+    return _preferences.setInt("duration", duration);
+  }
 
 // @override
 // // TODO: implement localMessages

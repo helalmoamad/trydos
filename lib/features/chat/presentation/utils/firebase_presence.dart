@@ -119,7 +119,6 @@
 //   }
 // }
 
-
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
@@ -130,6 +129,7 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 
 import '../../../../service/language_service.dart';
 import '../../data/models/my_chats_response_model.dart';
@@ -146,6 +146,7 @@ class FirebasePresence {
     "Sending file...": "يرسل ملف...",
   };
   static final FirebaseDatabase database = FirebaseDatabase.instance;
+  static final FirebaseDatabase databases = FirebaseDatabase.instance;
 
   static Future<void> listeningToTyping({
     required int friendId,
@@ -159,12 +160,13 @@ class FirebasePresence {
         .child(myChatId.toString());
     typingRef.onValue.listen((event) {
       if (event.snapshot.exists) {
-        if(event.snapshot.value is String){
+        if (event.snapshot.value is String) {
           description = event.snapshot.value.toString();
-        }else {
-          description =
-              (event.snapshot.value as Map<dynamic, dynamic>).values.first
-                  .toString();
+        } else {
+          description = (event.snapshot.value as Map<dynamic, dynamic>)
+              .values
+              .first
+              .toString();
         }
         debugPrint('description  $description');
         if (LanguageService.languageCode == 'ar') {
@@ -177,9 +179,36 @@ class FirebasePresence {
     });
   }
 
+  static Future<void> listeningToConnectStatus({
+    required String chatId,
+    required int friendId,
+  }) async {
+    String description;
+    final typingRef =
+        databases.ref().child('ConnectStatus').child(friendId.toString());
+
+    typingRef.onValue.listen((event) {
+      if (event.snapshot.exists) {
+        description = event.snapshot.value.toString();
+        chatBloc.add(AddUserConntctSatuseEvent(
+            userConnectedStatuse: description, chatId: chatId));
+      } else {
+        chatBloc.add(AddUserConntctSatuseEvent(
+            userConnectedStatuse: " ", chatId: chatId));
+      }
+    });
+  }
+
+  static Future<void> sendUserStatus(String? description) async {
+    DatabaseReference con =
+        database.ref().child('ConnectStatus').child(myChatId.toString());
+    await database.goOnline();
+    con.push();
+    con.set(description);
+  }
+
   static Future<void> sendUserTransaction(
-      {required String channelId,
-        String? description}) async {
+      {required String channelId, String? description}) async {
     String friendId = [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
         .firstWhere((element) => element.id == channelId)
         .channelMembers!
@@ -189,14 +218,12 @@ class FirebasePresence {
         .toString();
     DatabaseReference con;
     await database.goOnline();
-    final typingRef =
-    onUserTransactionRef(friendId: friendId);
+    final typingRef = onUserTransactionRef(friendId: friendId);
     con = typingRef.push();
     con.set(description);
   }
 
-  static DatabaseReference onUserTransactionRef(
-      {required String friendId}) {
+  static DatabaseReference onUserTransactionRef({required String friendId}) {
     return database
         .ref()
         .child('Transaction')
@@ -204,30 +231,26 @@ class FirebasePresence {
         .child(friendId.toString());
   }
 
-  static void deleteUserTransaction(
-      {required String channelId}) {
+  static void deleteUserTransaction({required String channelId}) {
     String friendId = [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
         .firstWhere((element) => element.id == channelId)
         .channelMembers!
         .firstWhere((element) => element.userId != myChatId)
         .userId
         .toString();
-    final typingRef =
-    onUserTransactionRef(friendId: friendId);
+    final typingRef = onUserTransactionRef(friendId: friendId);
     typingRef.remove();
   }
 
-  static typingConnectionListener(
-      {required String friendId}) async {
-    final typingRef =
-    onUserTransactionRef(friendId: friendId);
+  static typingConnectionListener({required String friendId}) async {
+    final typingRef = onUserTransactionRef(friendId: friendId);
     await database.goOnline();
     typingSubscription =
         database.ref().child('.info/connected').onValue.listen((event) {
-          if (event.snapshot.value != null) {
-            typingRef.onDisconnect().remove();
-          }
-        });
+      if (event.snapshot.value != null) {
+        typingRef.onDisconnect().remove();
+      }
+    });
   }
 
   static void disconnect() {
@@ -242,7 +265,7 @@ class FirebasePresence {
   static listenToAllChats(List<Chat> chats) {
     if (isSubscribed) return;
     for (int i = 0; i < chats.length; i++) {
-      if(int.tryParse(chats[i].id.toString()) == null )continue;
+      if (int.tryParse(chats[i].id.toString()) == null) continue;
       ChannelMember you = chats[i]
           .channelMembers!
           .firstWhere((element) => element.userId != myChatId);
