@@ -91,6 +91,8 @@ abstract class AppAssets {
   static String get backFromCallSvg=>'back_from_call'.svg;
   static String get backIconArrowSvg=>'back_icon_arrow'.svg;
   static String get endCallSvg=>'end_call'.svg;
+  static String get partyCozSvg=>'party_coz'.svg;
+  static String get polyesterSvg=>'polyester'.svg;
 
   static String get callMutedSvg=>'call_muted'.svg;
   static String get callUnMutedSvg=>'call_unmute'.svg;
@@ -152,6 +154,7 @@ abstract class AppAssets {
   static String get searchOutlinedSvg=>'search_outlined'.svg;
   static String get storeIconInactiveSvg=>'store_icon_inactive'.svg;
   static String get mangoSvg=>'mango'.svg;
+  static String get eyeSvg=>'eye'.svg;
   static String get quickOfferSvg=>'quick_offer'.svg;
   static String get trydosTextSvg=>'trydos_text'.svg;
   static String get backArrowArabic=>'back_arrow_arabic'.svg;

@@ -2,12 +2,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
@@ -16,6 +18,7 @@ import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
 import '../../../app/my_text_widget.dart';
+import '../../../story/presentation/pages/story_collection.dart';
 import '../manager/home_bloc.dart';
 import '../widgets/product_listing/product_item.dart';
 
@@ -138,21 +141,45 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   0,
                               (index) => InkWell(
                                     onTap: () {
-                                      HelperFunctions.slidingNavigation(
-                                          context, ProductDetailsPage());
+                                      pushOverscrollRoute(
+                                          context: context,
+                                          transitionDuration : Duration(milliseconds : 250),
+                                          reverseTransitionDuration : Duration(milliseconds : 400),
+                                          child: ProductDetailsPage(
+                                            productId: state
+                                                .getProductListingWithoutFiltersModel!
+                                                .data!
+                                                .products![index]
+                                                .id
+                                                .toString(),
+                                          ),
+                                          workNormally: true,
+                                          withRoundedCorners: true,
+                                          isArabicLanguage: LanguageService.rtl,
+                                          dragToPopDirection: DragToPopDirection.toBottom,
+                                          scrollToPopOption: ScrollToPopOption.start,
+                                          fullscreenDialog: true);
                                     },
-                                    child: ProductItem(
-                                      slidingModeItem: slidingMode,
-                                      productItem: state
+                                    child: Hero(
+                                      tag: state
                                           .getProductListingWithoutFiltersModel!
                                           .data!
-                                          .products![index],
-                                      itemIndex: index,
-                                      setThisEnabled:
-                                          (int index, int slideMode) {
-                                        setThisEnabledNotifier.value =
-                                            Tuple2(index, slideMode);
-                                      },
+                                          .products![index]
+                                          .id
+                                          .toString(),
+                                      child: ProductItem(
+                                        slidingModeItem: slidingMode,
+                                        productItem: state
+                                            .getProductListingWithoutFiltersModel!
+                                            .data!
+                                            .products![index],
+                                        itemIndex: index,
+                                        setThisEnabled:
+                                            (int index, int slideMode) {
+                                          setThisEnabledNotifier.value =
+                                              Tuple2(index, slideMode);
+                                        },
+                                      ),
                                     ),
                                   )),
                         );

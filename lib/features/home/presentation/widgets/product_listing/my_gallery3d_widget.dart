@@ -68,22 +68,18 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
           widget.onItemClick?.call(index);
         },
         itemBuilder: (context, index) {
-          leftItemIndex =
-               (widget.gallery3dController.currentIndex - 1) < 0
-                  ? ((widget.gallery3dControllerForCircles!.itemCount) ~/
-                          2 -
-                      1)
-                  : (widget.gallery3dController.currentIndex - 1);
+          leftItemIndex = (widget.gallery3dController.currentIndex - 1) < 0
+              ? ((widget.gallery3dControllerForCircles!.itemCount) ~/ 2 - 1)
+              : (widget.gallery3dController.currentIndex - 1);
 
-          rightItemIndex =
-              (widget.gallery3dController.currentIndex + 1) >
-                      ((widget.gallery3dControllerForCircles?.itemCount ?? 0) ~/
-                              2 -
-                          1)
-                  ? 0
-                  : (widget.gallery3dController.currentIndex + 1);
+          rightItemIndex = (widget.gallery3dController.currentIndex + 1) >
+                  ((widget.gallery3dControllerForCircles?.itemCount ?? 0) ~/ 2 -
+                      1)
+              ? 0
+              : (widget.gallery3dController.currentIndex + 1);
           return Visibility(
-            visible:  !((widget.gallery3dControllerForCircles?.currentIndex == 0 &&
+            visible:
+                !((widget.gallery3dControllerForCircles?.currentIndex == 0 &&
                         index == leftItemIndex) ||
                     (widget.gallery3dControllerForCircles?.currentIndex ==
                             ((widget.gallery3dControllerForCircles?.itemCount ??
