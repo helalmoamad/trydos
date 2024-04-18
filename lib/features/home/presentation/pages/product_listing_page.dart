@@ -141,45 +141,42 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   0,
                               (index) => InkWell(
                                     onTap: () {
-                                      pushOverscrollRoute(
-                                          context: context,
-                                          transitionDuration : Duration(milliseconds : 250),
-                                          reverseTransitionDuration : Duration(milliseconds : 400),
-                                          child: ProductDetailsPage(
-                                            productId: state
-                                                .getProductListingWithoutFiltersModel!
-                                                .data!
-                                                .products![index]
-                                                .id
-                                                .toString(),
-                                          ),
-                                          workNormally: true,
-                                          withRoundedCorners: true,
-                                          isArabicLanguage: LanguageService.rtl,
-                                          dragToPopDirection: DragToPopDirection.toBottom,
-                                          scrollToPopOption: ScrollToPopOption.start,
-                                          fullscreenDialog: true);
+                                      // pushOverscrollRoute(
+                                      //     context: context,
+                                      //     transitionDuration : Duration(milliseconds : 250),
+                                      //     reverseTransitionDuration : Duration(milliseconds : 400),
+                                      //     child: ProductDetailsPage(
+                                      //       productItem: state
+                                      //           .getProductListingWithoutFiltersModel!
+                                      //           .data!
+                                      //           .products![index]
+                                      //     ),
+                                      //     workNormally: true,
+                                      //     withRoundedCorners: true,
+                                      //     isArabicLanguage: LanguageService.rtl,
+                                      //     dragToPopDirection: DragToPopDirection.toBottom,
+                                      //     scrollToPopOption: ScrollToPopOption.start,
+                                      //     fullscreenDialog: true);
+                                      HelperFunctions.slidingNavigation(context, ProductDetailsPage(
+                                          productItem: state
+                                              .getProductListingWithoutFiltersModel!
+                                              .data!
+                                              .products![index]
+                                      ));
+
                                     },
-                                    child: Hero(
-                                      tag: state
+                                    child: ProductItem(
+                                      slidingModeItem: slidingMode,
+                                      productItem: state
                                           .getProductListingWithoutFiltersModel!
                                           .data!
-                                          .products![index]
-                                          .id
-                                          .toString(),
-                                      child: ProductItem(
-                                        slidingModeItem: slidingMode,
-                                        productItem: state
-                                            .getProductListingWithoutFiltersModel!
-                                            .data!
-                                            .products![index],
-                                        itemIndex: index,
-                                        setThisEnabled:
-                                            (int index, int slideMode) {
-                                          setThisEnabledNotifier.value =
-                                              Tuple2(index, slideMode);
-                                        },
-                                      ),
+                                          .products![index],
+                                      itemIndex: index,
+                                      setThisEnabled:
+                                          (int index, int slideMode) {
+                                        setThisEnabledNotifier.value =
+                                            Tuple2(index, slideMode);
+                                      },
                                     ),
                                   )),
                         );

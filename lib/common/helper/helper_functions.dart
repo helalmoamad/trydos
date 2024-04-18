@@ -294,22 +294,25 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
     );
   }
 
-  static slidingNavigation(BuildContext context, Widget page) {
-    Navigator.of(context).push(new PageRouteBuilder(
-        opaque: false,
-        transitionDuration: const Duration(milliseconds: 300),
-        pageBuilder: (BuildContext context, _, __) {
-          return OverscrollPop(workNormally: true, child: page);
-        },
-        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-          return new SlideTransition(
-            child: child,
-            position: new Tween<Offset>(
-              begin: const Offset(1, 0), // navigation from right
-              end: Offset.zero,
-            ).animate(animation),
-          );
-        }
-        ));
+  static slidingNavigation(BuildContext context, Widget page , {int milliseconds = 200 }) {
+    Navigator.of(context).push(CupertinoPageRoute(builder: (_)=> page));
+    // Navigator.of(context).push(new PageRouteBuilder(
+    //     opaque: false,
+    //     transitionDuration:  Duration(milliseconds: milliseconds),
+    //     pageBuilder: (BuildContext context, _, __) {
+    //       return DragToPop(
+    //           xValueToStartPoping: 70,
+    //           child: page);
+    //     },
+    //     transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+    //       return new SlideTransition(
+    //         child: child,
+    //         position: new Tween<Offset>(
+    //           begin: const Offset(1, 0), //// navigation from right
+    //           end: Offset.zero,
+    //         ).animate(animation),
+    //       );
+    //     }
+    //     ));
   }
 }
