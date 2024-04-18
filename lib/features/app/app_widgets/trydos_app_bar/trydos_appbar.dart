@@ -42,7 +42,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
             elevation: appBarParams.elevation,
             shadowColor: appBarParams.shadowColor,
             surfaceTintColor: appBarParams.surfaceTintColor,
-            leadingWidth: 8.w,
+            leadingWidth: 30.w,
             shape: appBarParams.shape,
             automaticallyImplyLeading: false,
             flexibleSpace: appBarParams.child,
@@ -92,10 +92,8 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
     onTap: (){
       Navigator.pop(context);
     },
-    child: Transform.translate(
-      offset: Offset(
-          LanguageService.rtl ? -15 : 15,
-          0),
+    child: Container(
+      padding: EdgeInsets.all(8),
       child: SvgPicture.asset(
         AppAssets.backIconArrowSvg,
         width: 8.w,

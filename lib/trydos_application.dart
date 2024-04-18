@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
@@ -69,19 +70,21 @@ class _TrydosApplicationState extends State<TrydosApplication>
           child: ServiceProvider(
             child: Builder(
               builder: (context) {
-                return MaterialApp.router(
-                  debugShowCheckedModeBanner: false,
-                  theme: AppTheme.light,
-                  locale: context.locale,
-                  supportedLocales: context.supportedLocales,
-                  localizationsDelegates: context.localizationDelegates,
-                  routerConfig: GRouter.router,
-                  builder: (context, child) {
-                    LanguageService(context);
-                    ConnectivityObserver.createInstance(context);
-                    ScreenService(context);
-                    return botToastBuilder(context, child);
-                  },
+                return Theme(
+                  data: AppTheme.light,
+                  child: CupertinoApp.router(
+                    debugShowCheckedModeBanner: false,
+                    locale: context.locale,
+                    supportedLocales: context.supportedLocales,
+                    localizationsDelegates: context.localizationDelegates,
+                    routerConfig: GRouter.router,
+                    builder: (context, child) {
+                      LanguageService(context);
+                      ConnectivityObserver.createInstance(context);
+                      ScreenService(context);
+                      return botToastBuilder(context, child);
+                    },
+                  ),
                 );
               },
             ),
