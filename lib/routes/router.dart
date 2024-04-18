@@ -271,10 +271,10 @@ class GRouter {
 
   static Page<dynamic> _builderPage<T>(
       {required Widget child, required GoRouterState state}) {
-    if (Platform.isIOS) {
+    //if (Platform.isIOS) {
       return CupertinoPage<T>(child: child, key: state.pageKey);
-    } else {
-      return MaterialPage<T>(child: child, key: state.pageKey);
-    }
+    // } else {
+    //   return MaterialPage<T>(child: child, key: state.pageKey);
+    // }
   }
 }

@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
@@ -43,7 +44,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
       children: [
         InkWell(
           onTap: (){
-            Navigator.push(context, MaterialPageRoute(builder: (_)=> ProductListingPage(),));
+            HelperFunctions.slidingNavigation(context, ProductListingPage());
           },
           child: Stack(
             alignment: Alignment.bottomCenter,

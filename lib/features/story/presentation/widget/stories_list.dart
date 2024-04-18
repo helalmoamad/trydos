@@ -74,14 +74,15 @@ class _StoriesListState extends State<StoriesList> {
                         return SizedBox(
                             height: 220,
                             child: Directionality(
-                               textDirection: ui.TextDirection.ltr,
+                              textDirection: ui.TextDirection.ltr,
                               child: ListView.separated(
                                   controller: listViewController,
                                   itemBuilder: (context, index) {
                                     //todo FIRST ELEMENT IN THE LISTvIEW IT WILL BE THE UPLOAD BUTTON
                                     if (index == 0) {
                                       return state.uploadStoryCloudinaryStatus ==
-                                              UploadStoryCloudinaryStatus.loading
+                                              UploadStoryCloudinaryStatus
+                                                  .loading
                                           ? TrydosLoader()
                                           : Column(
                                               mainAxisSize: MainAxisSize.min,
@@ -100,12 +101,15 @@ class _StoriesListState extends State<StoriesList> {
                                                       child: Container(
                                                         child: Center(
                                                             child: MyTextWidget(
-                                                                LocaleKeys.upload
+                                                                LocaleKeys
+                                                                    .upload
                                                                     .tr())),
-                                                        decoration: BoxDecoration(
+                                                        decoration:
+                                                            BoxDecoration(
                                                           borderRadius:
                                                               BorderRadius
-                                                                  .circular(20.0),
+                                                                  .circular(
+                                                                      20.0),
                                                           color: Colors.grey,
                                                         ),
                                                         width: 100,
@@ -119,27 +123,28 @@ class _StoriesListState extends State<StoriesList> {
                                                               .config
                                                               .applicationRoutes
                                                               .kRegistrationPage);
-                                                        } else if (GetIt.I<PrefsRepository>()
-                                                            .myStoriesName == null){
+                                                        } else if (GetIt.I<
+                                                                    PrefsRepository>()
+                                                                .myStoriesName ==
+                                                            null) {
                                                           showDialog(
                                                               context: context,
-                                                              barrierDismissible: false,
+                                                              barrierDismissible:
+                                                                  false,
                                                               builder:
                                                                   (BuildContext
-                                                              context) {
+                                                                      context) {
                                                                 return UpdateUserNameWidget();
                                                               });
-                                                        }
-                                                        else {
+                                                        } else {
                                                           showDialog(
                                                               context: context,
                                                               builder:
                                                                   (BuildContext
                                                                       context) {
-                                                                return GalleryAndCameraDialogWidget(
-                                                                    onChooseFileFromCameraAction:
-                                                                        (File?
-                                                                            file) async {
+                                                                return GalleryAndCameraDialogWidget(onChooseFileFromCameraAction:
+                                                                    (File?
+                                                                        file) async {
                                                                   if (file !=
                                                                       null) {
                                                                     GetIt.I<StoryBloc>().add(
@@ -160,8 +165,8 @@ class _StoriesListState extends State<StoriesList> {
                                                                     //   CloudinaryFile.fromFile(
                                                                   }
                                                                 }, onChooseFileFromGalleryAction:
-                                                                        (AssetEntity?
-                                                                            assetEntity) async {
+                                                                    (AssetEntity?
+                                                                        assetEntity) async {
                                                                   if (assetEntity !=
                                                                       null) {
                                                                     File file =
@@ -200,19 +205,20 @@ class _StoriesListState extends State<StoriesList> {
                                                 ? 0
                                                 : indexOfInitialStory;
                                       } else {
-                                        indexOfInitialStory = firstWhereNotShowed(
-                                            state.storiesCollections[index]
+                                        indexOfInitialStory =
+                                            firstWhereNotShowed(state
+                                                .storiesCollections[index]
                                                 .stories!);
                                       }
                                       initialStory = state
                                           .storiesCollections[index]
                                           .stories![indexOfInitialStory];
-
                                       return AnimatedPadding(
                                         duration: Duration(milliseconds: 200),
                                         padding: EdgeInsets.only(
                                             left: focused.value1 != -1 &&
-                                                    focused.value1 == (index - 1)
+                                                    focused.value1 ==
+                                                        (index - 1)
                                                 ? 30
                                                 : 0),
                                         child: GestureDetector(
@@ -231,8 +237,8 @@ class _StoriesListState extends State<StoriesList> {
                                                           115);
                                               if (details.localPosition.dx <=
                                                       (40 +
-                                                          resizeStories
-                                                                  .value.value1 *
+                                                          resizeStories.value
+                                                                  .value1 *
                                                               115 +
                                                           (resizeStories.value
                                                                       .value1 ==
@@ -254,9 +260,12 @@ class _StoriesListState extends State<StoriesList> {
                                                               ? 45
                                                               : 0))) {
                                                 resizeStories.value =
-                                                    resizeStories.value.copyWith(
-                                                        value2: resizeStories
-                                                            .value.value1);
+                                                    resizeStories.value
+                                                        .copyWith(
+                                                            value2:
+                                                                resizeStories
+                                                                    .value
+                                                                    .value1);
                                               } else {
                                                 resizeStories.value =
                                                     resizeStories.value
@@ -264,10 +273,12 @@ class _StoriesListState extends State<StoriesList> {
                                               }
                                             },
                                             onLongPressUp: () {
-                                              resizeStories.value = resizeStories
-                                                      .value =
-                                                  resizeStories.value.copyWith(
-                                                      value2: -1, value1: -1);
+                                              resizeStories.value =
+                                                  resizeStories.value =
+                                                      resizeStories.value
+                                                          .copyWith(
+                                                              value2: -1,
+                                                              value1: -1);
                                             },
                                             onLongPressMoveUpdate: (details) {
                                               resizeStories.value =
@@ -281,8 +292,8 @@ class _StoriesListState extends State<StoriesList> {
                                                           115);
                                               if (details.localPosition.dx <=
                                                       (40 +
-                                                          resizeStories
-                                                                  .value.value1 *
+                                                          resizeStories.value
+                                                                  .value1 *
                                                               115 +
                                                           (resizeStories.value
                                                                       .value1 ==
@@ -301,9 +312,12 @@ class _StoriesListState extends State<StoriesList> {
                                                               ? 50
                                                               : 0))) {
                                                 resizeStories.value =
-                                                    resizeStories.value.copyWith(
-                                                        value2: resizeStories
-                                                            .value.value1);
+                                                    resizeStories.value
+                                                        .copyWith(
+                                                            value2:
+                                                                resizeStories
+                                                                    .value
+                                                                    .value1);
                                               } else {
                                                 resizeStories.value =
                                                     resizeStories.value
@@ -313,12 +327,14 @@ class _StoriesListState extends State<StoriesList> {
                                             child: (initialStory.isPhoto == 1)
                                                 ? StoryItemWidget(
                                                     index: index,
-                                                    onTapOnStoryAction: () async {
+                                                    onTapOnStoryAction:
+                                                        () async {
                                                       GetIt.I<StoryBloc>().add(
                                                           StorySelectedEvent(
                                                               collectionIndex:
                                                                   index,
-                                                              currentPage: index,
+                                                              currentPage:
+                                                                  index,
                                                               selectedStoryIndexInCollection:
                                                                   indexOfInitialStory));
                                                       // Navigator.of(context).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
@@ -333,7 +349,8 @@ class _StoriesListState extends State<StoriesList> {
                                                           dragToPopDirection:
                                                               DragToPopDirection
                                                                   .toBottom,
-                                                          fullscreenDialog: true);
+                                                          fullscreenDialog:
+                                                              true);
                                                       disableResizing();
                                                     },
                                                     onTapOnUserImage: () {
@@ -341,7 +358,8 @@ class _StoriesListState extends State<StoriesList> {
                                                           resizeStories.value
                                                               .copyWith(
                                                                   value2: index,
-                                                                  value1: index);
+                                                                  value1:
+                                                                      index);
                                                     },
                                                     resize:
                                                         index == focused.value1,
@@ -352,13 +370,15 @@ class _StoriesListState extends State<StoriesList> {
                                                   )
                                                 : StoryItemWidget(
                                                     index: index,
-                                                    onTapOnStoryAction: () async {
+                                                    onTapOnStoryAction:
+                                                        () async {
                                                       disableResizing();
                                                       GetIt.I<StoryBloc>().add(
                                                           StorySelectedEvent(
                                                               collectionIndex:
                                                                   index,
-                                                              currentPage: index,
+                                                              currentPage:
+                                                                  index,
                                                               selectedStoryIndexInCollection:
                                                                   indexOfInitialStory));
                                                       // Navigator.of(context).push(MaterialPageRoute(builder: (_)=> StoryCollectionPageView(
@@ -373,7 +393,8 @@ class _StoriesListState extends State<StoriesList> {
                                                           dragToPopDirection:
                                                               DragToPopDirection
                                                                   .toBottom,
-                                                          fullscreenDialog: true);
+                                                          fullscreenDialog:
+                                                              true);
                                                       // Navigator.push(context, MaterialPageRoute(builder: (_)=> StoryCollection(index ,   key: UniqueKey()),));
                                                     },
                                                     onTapOnUserImage: () {
@@ -381,7 +402,8 @@ class _StoriesListState extends State<StoriesList> {
                                                           resizeStories.value
                                                               .copyWith(
                                                                   value2: index,
-                                                                  value1: index);
+                                                                  value1:
+                                                                      index);
                                                     },
                                                     resize:
                                                         index == focused.value1,
@@ -400,7 +422,8 @@ class _StoriesListState extends State<StoriesList> {
                                   padding: EdgeInsetsDirectional.symmetric(
                                       horizontal: 10),
                                   scrollDirection: Axis.horizontal,
-                                  separatorBuilder: (context, index) => SizedBox(
+                                  separatorBuilder: (context, index) =>
+                                      SizedBox(
                                         width: 15,
                                       ),
                                   itemCount:

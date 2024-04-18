@@ -9,26 +9,36 @@ class ProductListingImageWidget extends StatelessWidget {
       this.height,
       required this.innerShadowYOffset,
       this.borderColor,
+      this.withBackGroundShadow = false,
       required this.circleShape,
       required this.imageUrl});
 
   final double? width;
   final double? height;
   final bool circleShape;
+  final bool withBackGroundShadow;
   final double innerShadowYOffset;
   final Color? borderColor;
   final String imageUrl;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
-        borderRadius:
-            BorderRadius.all(Radius.circular(circleShape ? 180.0 : 15)),
-        border: Border.all(
-            width: (width == 20 || width == 200) ? 0.5 : 1,
-            color: borderColor ?? const Color(0xffffffff)),
+          borderRadius:
+              BorderRadius.all(Radius.circular(circleShape ? 180.0 : 15)),
+          border: Border.all(
+              width: (width == 20 || width == 200) ? 0.5 : 1,
+              color: borderColor ?? const Color(0xffffffff)),
+          boxShadow: withBackGroundShadow ? [
+            BoxShadow(
+              color: Color(0x19000000),
+              offset: Offset(0, 3),
+              blurRadius: 6,
+            ),
+          ] : null
       ),
       child: ClipRRect(
           borderRadius:
