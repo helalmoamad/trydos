@@ -19,7 +19,10 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_share_content.dart';
 
 class ProductDetailsBottomSheet extends StatefulWidget {
-  const ProductDetailsBottomSheet({super.key});
+  final String price;
+  final String offerPrice;
+  const ProductDetailsBottomSheet(
+      {super.key, required this.price, required this.offerPrice});
 
   @override
   State<ProductDetailsBottomSheet> createState() =>
@@ -116,8 +119,11 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         ProductDetailsSheetHeader(
-                                            addToBagButtonShapeNotifier:
-                                                addToBagButtonShapeNotifier),
+                                          addToBagButtonShapeNotifier:
+                                              addToBagButtonShapeNotifier,
+                                          price: widget.price,
+                                          offerPrice: widget.offerPrice,
+                                        ),
                                         currentTab >= 0
                                             ? SizedBox(
                                                 height: 350,

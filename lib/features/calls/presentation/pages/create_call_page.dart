@@ -17,10 +17,13 @@ import 'package:trydos/features/calls/presentation/widgets/call_status_widget.da
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/routes/router_config.dart';
 
+import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
+import '../../../chat/presentation/manager/chat_bloc.dart';
+import '../../../chat/presentation/manager/chat_event.dart';
 import '../widgets/no_image_widget.dart';
 
 class CreateCallPage extends StatefulWidget {
@@ -41,8 +44,10 @@ class CreateCallPage extends StatefulWidget {
 }
 
 class _CreateCallPageState extends ThemeState<CreateCallPage> {
+  late ChatBloc chatBloc;
   @override
   void initState() {
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     if (GetIt.I<CallsBloc>().state.makeCallStatus == MakeCallStatus.endCall)
       Navigator.of(context).pop();
 
@@ -52,6 +57,14 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      chatBloc.add(SendErrorChatToServerEvent(
+          error: error.toString(), lastPage: "Create_Call_Page"));
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
+
     GetIt.I<CallsBloc>().add(InitResponseRejectVideoCallEvent());
 
     return Scaffold(

@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/form_utils.dart';
@@ -43,7 +44,21 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
       ValueNotifier(GetIt.I<ChatBloc>().state.contacts);
 
   @override
+  void initState() {
+    chatBloc = BlocProvider.of<ChatBloc>(context);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      chatBloc.add(SendErrorChatToServerEvent(
+          error: error.toString(), lastPage: "My_Contacts_Page"));
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+      print(error);
+    };
     return Scaffold(
       backgroundColor: const Color(0xffF8F8F8),
       appBar: TrydosAppBar(

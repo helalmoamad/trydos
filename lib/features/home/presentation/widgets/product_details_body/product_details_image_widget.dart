@@ -1,15 +1,23 @@
-
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
+import 'package:trydos/features/app/my_cached_network_image.dart';
 
 class ProductDetailsImageWidget extends StatelessWidget {
-  const ProductDetailsImageWidget({super.key , this.width , this.borderColor ,this.imageFit ,  this.height , this.radius});
+  const ProductDetailsImageWidget(
+      {super.key,
+      this.width,
+      this.borderColor,
+      this.imageFit,
+      this.height,
+      this.radius,
+      this.imageUrl});
 
   final double? width;
   final double? height;
   final double? radius;
+  final String? imageUrl;
   final BoxFit? imageFit;
   final Color? borderColor;
   @override
@@ -23,8 +31,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius ?? 30.0),
             border: Border.all(
-                width: 0.5,
-                color: borderColor ?? context.colorScheme.white),
+                width: 0.5, color: borderColor ?? context.colorScheme.white),
             boxShadow: [
               BoxShadow(
                 color: context.colorScheme.black.withOpacity(0.1),
@@ -35,9 +42,12 @@ class ProductDetailsImageWidget extends StatelessWidget {
           ),
           child: ClipRRect(
               borderRadius: BorderRadius.circular(radius ?? 30),
-              child: Image.asset(
-                  'assets/images/details.jpg',
-                  fit: imageFit ?? BoxFit.cover)),
+              child: MyCachedNetworkImage(
+                imageUrl: imageUrl!,
+                height: height ?? 464,
+                width: width ?? 320,
+                imageFit: BoxFit.cover,
+              )),
         ),
         Container(
           height: height ?? 464,

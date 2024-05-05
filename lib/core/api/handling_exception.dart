@@ -26,7 +26,6 @@ abstract class HandlingExceptionRequest {
   }
 
   Exception getException({required int statusCode, String? message}) {
-
     //if(tryAgain==true)
     //return TryAgainException
     if (statusCode == StatusCode.operationFailed.code) {
@@ -36,28 +35,28 @@ abstract class HandlingExceptionRequest {
     }
   }
 
-  Future<Either<Failure, T>> handlingExceptionRequest<T>({required RequestCall<T> tryCall}) async {
+  Future<Either<Failure, T>> handlingExceptionRequest<T>(
+      {required RequestCall<T> tryCall}) async {
     try {
       T response = await tryCall();
       return Right(response);
     } on ServerException {
       // Fluttertoast.showToast(msg: 'sssssss',backgroundColor: Colors.yellow);
       prettyPrinterError("***|| ServerException ||*** ");
-      return const Left(ServerFailure());
-    } on DioError catch (e, s) {
+      return const Left(ServerFailure("ServerException"));
+    } on DioException catch (e, s) {
       // Fluttertoast.showToast(msg: 'aaaaaaaaaaaa',backgroundColor: Colors.yellow);
 
       prettyPrinterError("***|| DioError ||*** \n $s");
       return Left(DioFailure(message: e.response?.data['errors']?[0]['code']));
     } catch (e, stackTrace) {
-
       prettyPrinterError(
         "***|| CATCH ERROR ||***"
         "\n $e"
         "***|| Stack Trace ||***"
         "\n $stackTrace",
       );
-      return Left(ServerFailure(message: e.toString()));
+      return const Left(ServerFailure("ServerException"));
     }
   }
 }

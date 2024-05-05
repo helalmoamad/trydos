@@ -2,18 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 
 import '../../../../../core/utils/theme_state.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
+import '../../manager/home_bloc.dart';
 import '../product_listing/product_listing_image_widget.dart';
 
 class DisplayColorsCard extends StatefulWidget {
@@ -36,7 +40,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
 
   final ValueNotifier<int> displayMode = ValueNotifier(0);
 
-  late final int currentIndexInSlider;
+  int currentIndexInSlider = 0;
 
   final _myListKey = GlobalKey<AnimatedListState>();
   bool isProgrammaticScroll = false;
@@ -54,6 +58,8 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
 
   @override
   void initState() {
+    BlocProvider.of<HomeBloc>(context)
+        .add(AddCurrentIndexEvent(currentIndex: 0));
     widget.scrollController.addListener(changingModeListener);
     syncColorImageList = widget.productItem.syncColorImages ?? [];
     syncColorImageList?.removeWhere((element) => element.images.isNullOrEmpty);
@@ -102,7 +108,8 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: mode == 0 ? 10.0 : 30, top: mode == 0 ? 0 : 10),
+                  padding: EdgeInsets.only(
+                      left: mode == 0 ? 10.0 : 30, top: mode == 0 ? 0 : 10),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -242,7 +249,8 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                           .addPostFrameCallback((timeStamp) {
                                         widget.scrollController.animateTo(
                                             widget.scrollController.position
-                                                .maxScrollExtent - 150,
+                                                    .maxScrollExtent -
+                                                150,
                                             duration:
                                                 Duration(milliseconds: 150),
                                             curve: Curves.easeInOut);
@@ -304,7 +312,10 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                               children: [
                                 if (mode == 1) ...{
                                   MyTextWidget(
-                                    'Trend',
+                                    syncColorImageList![index].colorTrend ==
+                                            true
+                                        ? "Trend"
+                                        : " ",
                                     style: textTheme.overline?.mq.copyWith(
                                         color: Color(0xffFF5F61), height: 1.3),
                                   ),
@@ -312,6 +323,9 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                 GestureDetector(
                                   onTap: () {
                                     currentIndexInSlider = index;
+                                    BlocProvider.of<HomeBloc>(context).add(
+                                        AddCurrentIndexEvent(
+                                            currentIndex: index));
                                   },
                                   child: ProductListingImageWidget(
                                     width: mode == 1 ? 70 : 135,
@@ -330,7 +344,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                   height: 10,
                                 ),
                                 MyTextWidget(
-                                  syncColorImageList![currentIndexInSlider]
+                                  syncColorImageList![index]
                                       .colorName
                                       .toString(),
                                   style: currentIndexInSlider == index
@@ -360,10 +374,10 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                           },
                           itemCount: (syncColorImageList!.length ~/ 2)))
                 },
-                if(mode != 0)
-                SizedBox(
-                  height: 10,
-                )
+                if (mode != 0)
+                  SizedBox(
+                    height: 10,
+                  )
               ],
             ),
           );

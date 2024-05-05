@@ -13,8 +13,8 @@ import 'package:trydos/features/home/data/models/main_categories_response_model.
 import '../../../../core/api/handling_exception.dart';
 import '../../domain/repositories/home_repository.dart';
 import '../data_sources/home_remote_data_source.dart';
+import '../models/get_product_detail_without_related_products_model.dart';
 import '../models/starting_settings_response_model.dart';
-
 
 @LazySingleton(as: HomeRepository)
 class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
@@ -24,25 +24,33 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, StartingSettingsResponseModel>> getStartingSettings() {
-return handlingExceptionRequest(tryCall: dataSource.getStartingSettings);
+    return handlingExceptionRequest(tryCall: dataSource.getStartingSettings);
   }
 
   @override
   Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories() {
     return handlingExceptionRequest(tryCall: dataSource.getMainCategories);
-
   }
 
   @override
-  Future<Either<Failure, HomeSectionResponseModel>> getHomeSections(Map<String, dynamic> params) {
-    return handlingExceptionRequest(tryCall: ()=>dataSource.getHomeSections(params));
-
+  Future<Either<Failure, HomeSectionResponseModel>> getHomeSections(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getHomeSections(params));
   }
 
   @override
-  Future<Either<Failure, GetProductListingWithoutFiltersModel>> getProductsWithoutFilters(Map<String, dynamic> params) {
-    return handlingExceptionRequest(tryCall: ()=>dataSource.getProductsWithoutFilters(params));
-
+  Future<Either<Failure, GetProductListingWithoutFiltersModel>>
+      getProductsWithoutFilters(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getProductsWithoutFilters(params));
   }
 
+  @override
+  Future<Either<Failure, GetProductDetailWithoutRelatedProductsModel>>
+      getProductDetailWithoutSimilarRelatedProducts(String productId) {
+    return handlingExceptionRequest(
+        tryCall: () =>
+            dataSource.getProductDetailWithoutRelatedProducts(productId));
+  }
 }

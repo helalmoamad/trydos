@@ -29,6 +29,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/app/vedio_player.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:video_player/video_player.dart';
 
@@ -54,16 +55,25 @@ class MediaInProfile extends StatefulWidget {
 
 class _MediaInProfileState extends ThemeState<MediaInProfile> {
   final ScrollController scrollController = ScrollController();
-
+  late ChatBloc chatBloc;
   void saveUserContacts() async {}
 
   @override
   void initState() {
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      chatBloc.add(SendErrorChatToServerEvent(
+          error: error.toString(), lastPage: "Media_In_Profile"));
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+      print(error);
+    };
     List<Widget> chatPages = [
       ImageInProfile(
         files: widget.files ?? null,

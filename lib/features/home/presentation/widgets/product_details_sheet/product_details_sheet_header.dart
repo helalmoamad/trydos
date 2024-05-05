@@ -11,8 +11,15 @@ import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/my_text_widget.dart';
 
 class ProductDetailsSheetHeader extends StatefulWidget {
-  const ProductDetailsSheetHeader(
-      {super.key, required this.addToBagButtonShapeNotifier});
+  final String price;
+  final String offerPrice;
+
+  const ProductDetailsSheetHeader({
+    super.key,
+    required this.addToBagButtonShapeNotifier,
+    required this.price,
+    required this.offerPrice,
+  });
 
   final ValueNotifier<int> addToBagButtonShapeNotifier;
 
@@ -97,7 +104,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     MyTextWidget(
-                      '100',
+                      widget.price.split(" ").toList()[0],
                       style: textTheme.headline3?.rq.copyWith(
                         color: Color(0xffC4C2C2),
                         decoration: TextDecoration.lineThrough,
@@ -108,7 +115,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                       width: 5,
                     ),
                     MyTextWidget(
-                      '70',
+                      widget.offerPrice,
                       style: textTheme.headline3?.bq.copyWith(
                         color: Color(0xff505050),
                         height: 0,
@@ -118,8 +125,9 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                       width: 4,
                     ),
                     MyTextWidget(
-                      'USD',
+                      widget.price.split(" ").toList()[1],
                       style: textTheme.caption?.rq.copyWith(
+                        fontSize: 18,
                         color: Color(0xffC4C2C2),
                         height: 0,
                       ),
@@ -143,7 +151,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     MyTextWidget(
-                                      'USD',
+                                      widget.price.split(" ").toList()[1],
                                       style: textTheme.caption?.rq.copyWith(
                                         color: Color(0xffC4C2C2),
                                         height: 0,

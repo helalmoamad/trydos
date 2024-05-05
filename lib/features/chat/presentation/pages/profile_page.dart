@@ -85,6 +85,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
+      chatBloc.add(SendErrorChatToServerEvent(
+          error: error.toString(), lastPage: " Profile_Page "));
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+      print(error);
+    };
+    FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
