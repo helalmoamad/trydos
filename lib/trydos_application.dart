@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:cupertino_back_gesture/cupertino_back_gesture.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -70,11 +71,12 @@ class _TrydosApplicationState extends State<TrydosApplication>
           child: ServiceProvider(
             child: Builder(
               builder: (context) {
-                return Theme(
-                  data: AppTheme.light,
-                  child: CupertinoApp.router(
+                return BackGestureWidthTheme(
+                  backGestureWidth: BackGestureWidth.fraction(1),
+                  child: MaterialApp.router(
                     debugShowCheckedModeBanner: false,
                     locale: context.locale,
+                    theme: AppTheme.light,
                     supportedLocales: context.supportedLocales,
                     localizationsDelegates: context.localizationDelegates,
                     routerConfig: GRouter.router,

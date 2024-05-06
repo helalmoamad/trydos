@@ -10,13 +10,16 @@ import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/my_text_widget.dart';
 
 class ProductDetailsSheetCommentsContent extends StatelessWidget {
-  const ProductDetailsSheetCommentsContent({super.key});
+  const ProductDetailsSheetCommentsContent({super.key, this.scrollController });
 
+  final ScrollController? scrollController ;
   @override
   Widget build(BuildContext context) {
     return ScrollConfiguration(
-      behavior: MaterialScrollBehavior(),
+      behavior: cupertino.CupertinoScrollBehavior(),
       child: ListView(
+        controller: scrollController,
+        physics: cupertino.ClampingScrollPhysics(),
         shrinkWrap: true,
         padding: EdgeInsets.zero,
         children: [
@@ -38,21 +41,14 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                   )),
             ],
           ),
-          ScrollConfiguration(
-            behavior: const cupertino.CupertinoScrollBehavior(),
-            child: ListView.separated(
-                physics: const ClampingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return CommentCard();
-                },
-                shrinkWrap: true,
-                separatorBuilder: (context, index) {
-                  return SizedBox(
-                    height: 5,
-                  );
-                },
-                itemCount: 5),
-          )
+          ...List.generate(5, (index) => Column(
+            children: [
+              CommentCard(),
+              SizedBox(
+                height: 5,
+              )
+            ],
+          ))
         ],
       ),
     );

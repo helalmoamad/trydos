@@ -12,16 +12,24 @@ import '../../../../app/my_text_widget.dart';
 
 class ProductDetailsSheetShareContent extends StatelessWidget {
   const ProductDetailsSheetShareContent(
-      {super.key, required this.indicesOfChatCardsToShare , required this.focusNode});
-  final FocusNode focusNode ;
+      {super.key,
+      required this.indicesOfChatCardsToShare,
+      required this.focusNode,
+       this.scrollController});
+
+  final FocusNode focusNode;
+
   final ValueNotifier<List<int>> indicesOfChatCardsToShare;
+  final ScrollController? scrollController;
 
   @override
   Widget build(BuildContext context) {
     return ScrollConfiguration(
-      behavior: MaterialScrollBehavior(),
+      behavior: cupertino.CupertinoScrollBehavior(),
       child: ListView(
+        controller: scrollController,
         shrinkWrap: true,
+        physics: cupertino.ClampingScrollPhysics(),
         padding: EdgeInsets.zero,
         children: [
           10.verticalSpace,
@@ -47,8 +55,8 @@ class ProductDetailsSheetShareContent extends StatelessWidget {
           Material(
             color: Colors.transparent,
             child: Padding(
-              padding: HWEdgeInsets.symmetric(horizontal: 20.0)
-                  .copyWith(bottom: 10),
+              padding:
+                  HWEdgeInsets.symmetric(horizontal: 20.0).copyWith(bottom: 10),
               child: AppTextField(
                 focusNode: focusNode,
                 filledColor: Color(0xffF8F8F8),
@@ -59,10 +67,8 @@ class ProductDetailsSheetShareContent extends StatelessWidget {
                     .copyWith(color: const Color(0xff8D8D8D)),
                 hintTextStyle: context.textTheme.subtitle2?.lr
                     .copyWith(color: const Color(0xff8D8D8D)),
-
                 prefixIcon: Padding(
-                  padding: HWEdgeInsetsDirectional.only(
-                      top: 15, bottom: 15),
+                  padding: HWEdgeInsetsDirectional.only(top: 15, bottom: 15),
                   child: SvgPicture.asset(
                     AppAssets.searchOutlinedSvg,
                   ),

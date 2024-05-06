@@ -136,11 +136,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           crossAxisSpacing: 10,
                           primary: false,
                           mainAxisSpacing: 15,
+                          physics: ClampingScrollPhysics(),
                           children: List.generate(
                               state.getProductListingWithoutFiltersModel!.data!
                                       .products?.length ??
                                   0,
-                              (index) => InkWell(
+                              (index) => GestureDetector(
                                     onTap: () {
                                       // pushOverscrollRoute(
                                       //     context: context,

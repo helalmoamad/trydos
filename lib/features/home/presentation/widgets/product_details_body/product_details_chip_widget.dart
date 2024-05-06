@@ -5,10 +5,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+
+import '../../../../../common/helper/helper_functions.dart';
 
 class ProductDetailsChipWidget extends StatelessWidget {
   const ProductDetailsChipWidget({super.key, this.withIcon = false});
@@ -19,120 +20,7 @@ class ProductDetailsChipWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        showModalBottomSheet(
-            context: context,
-            backgroundColor: Color(0xffF4F4F4),
-            barrierColor: Color(0xff1D1D1D).withOpacity(0.75),
-            builder: (ctx) {
-              return Container(
-                height: 250,
-                margin: EdgeInsets.all(20)..copyWith(bottom: 0),
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(30)),
-                child: Column(
-                  children: [
-                    DottedBorder(
-                      radius: Radius.circular(15),
-                      borderType: BorderType.RRect,
-                      padding: const EdgeInsets.all(10.0)..copyWith(top: 15),
-                      strokeCap: StrokeCap.round,
-                      strokeWidth: 0.5,
-                      color: Color(0xff707070),
-                      dashPattern: [3, 3],
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SvgPicture.asset(
-                                AppAssets.partyCozSvg,
-                                width: 20,
-                                height: 20,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              MyTextWidget(
-                                'Suitable Occasions',
-                                style: context.textTheme.bodyText1?.mq.copyWith(
-                                    color: Color(0xff8D8D8D),
-                                    fontSize: 15.sp,
-                                    height: 1.26),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10,),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              MyTextWidget(
-                                'According To The Opinions Of Our Fashion Team, The Appropriate Occasions For This Product Have Been Identified Based On Long Experience. We Provide An Opinion Only And Opinions May Differ From One Person To Another. So It Is Suitable For',
-                                style: context.textTheme.bodyText2?.rq.copyWith(
-                                    height: 1.23,
-                                    color: Color(0xff8D8D8D),
-                                    fontSize: 13.sp),
-                              ),
-                              SizedBox(height: 10,),
-                              SizedBox(
-                                height: 16,
-                                child: ListView.separated(
-                                  itemCount: 3,
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (context, index) {
-                                    return Row(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                        if (withIcon) ...{
-                                          MyTextWidget(
-                                            '97%',
-                                            style: context.textTheme.bodyText2?.rq.copyWith(
-                                                height: 1.23,
-                                                color: Color(0xff505050),
-                                                fontSize: 13.sp),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.symmetric(horizontal: 5),
-                                            child: SvgPicture.asset(
-                                              AppAssets.polyesterSvg,
-                                              width: 15,
-                                              height: 15,
-                                            ),
-                                          ),
-                                        },
-                                        MyTextWidget(
-                                          'Casual',
-                                          style: context.textTheme.bodyText2?.rq.copyWith(
-                                              height: 1.23,
-                                              color: Color(0xff8D8D8D),
-                                              fontSize: 13.sp),
-                                        )
-                                      ],
-                                    );
-                                  },
-                                  separatorBuilder: (context, index) {
-                                    return Container(
-                                      margin:
-                                      EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                                      width: 1,
-                                      decoration: BoxDecoration(
-                                          color: Color(0xff8D8D8D),
-                                          borderRadius: BorderRadius.circular(2)),
-                                    );
-                                  },
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Spacer()
-                  ],
-                ),
-              );
-            });
+        HelperFunctions.showDescriptionForProductDetails(context : context);
       },
       child: DottedBorder(
         radius: Radius.circular(15),
@@ -158,8 +46,8 @@ class ProductDetailsChipWidget extends StatelessWidget {
               children: [
                 MyTextWidget(
                   'Suitable Occasions',
-                  style: context.textTheme.caption?.rq
-                      .copyWith(color: Color(0xffC4C2C2), height: 1.3),
+                  style: context.textTheme.overline?.rq
+                      .copyWith(color: Color(0xffC4C2C2), height: 1.3 ),
                 ),
                 SizedBox(
                   height: 16,

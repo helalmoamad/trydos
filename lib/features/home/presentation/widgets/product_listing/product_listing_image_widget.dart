@@ -32,24 +32,28 @@ class ProductListingImageWidget extends StatelessWidget {
           border: Border.all(
               width: (width == 20 || width == 200) ? 0.5 : 1,
               color: borderColor ?? const Color(0xffffffff)),
-          boxShadow: withBackGroundShadow ? [
-            BoxShadow(
-              color: Color(0x19000000),
-              offset: Offset(0, 3),
-              blurRadius: 6,
-            ),
-          ] : null
-      ),
+          boxShadow: withBackGroundShadow
+              ? [
+                  BoxShadow(
+                    color: Color(0x19000000),
+                    offset: Offset(0, 3),
+                    blurRadius: 6,
+                  ),
+                ]
+              : null),
       child: ClipRRect(
           borderRadius:
               BorderRadius.all(Radius.circular(circleShape ? 180.0 : 15)),
           child: Stack(
             children: [
-              MyCachedNetworkImage(
-                  imageUrl: imageUrl,
-                  width: width!,
-                  imageFit: BoxFit.cover,
-                  height: height!),
+              imageUrl.contains('assets')
+                  ? Image.asset(imageUrl,
+                      width: width!, fit: BoxFit.cover, height: height!)
+                  : MyCachedNetworkImage(
+                      imageUrl: imageUrl,
+                      width: width!,
+                      imageFit: BoxFit.cover,
+                      height: height!),
               //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
               Container(
                 width: width,

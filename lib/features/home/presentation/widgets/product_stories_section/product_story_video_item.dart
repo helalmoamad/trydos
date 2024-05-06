@@ -58,11 +58,11 @@ class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
               child: Stack(
                 children: [
                   Container(
-                    width: 135,
+                    width: 135.w,
                     height: 194,
                     decoration: BoxDecoration(
                       border: Border.all(color: colorScheme.white),
-                      borderRadius: BorderRadius.circular(30.0),
+                      borderRadius: BorderRadius.circular(30.0.r),
                       boxShadow: [
                         BoxShadow(
                           color: colorScheme.black.withOpacity(0.1),
@@ -72,14 +72,14 @@ class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
                       ],
                     ),
                     child: ClipRRect(
-                        borderRadius: BorderRadius.circular(30.0),
+                        borderRadius: BorderRadius.circular(30.0.r),
                         child: VideoPlayer(_controller!)),
                   ),
                   Container(
                     height: 194,
-                    width: 135,
+                    width: 135.w,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30.0),
+                      borderRadius: BorderRadius.circular(30.0.r),
                       boxShadow: [
                         BoxShadow(
                             color: colorScheme.white,
@@ -94,8 +94,9 @@ class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
             );
           }
           return TrydosShimmerLoading(
-            width: 135,
+            width: 135.w,
             height: 194,
+            radius: 30.r,
             logoTextHeight: 14,
             logoTextWidth: 48.w,
           );
