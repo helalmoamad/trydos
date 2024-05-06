@@ -9,6 +9,7 @@ import 'package:trydos/features/authentication/data/models/create_user_response_
 import 'package:trydos/features/chat/data/models/change_chat_property_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../core/api/client_config.dart';
@@ -240,5 +241,16 @@ class ChatRemoteDataSource {
       ),
     );
     return receiveMessage();
+  }
+
+  Future<bool> sendErrorChatToServer(Map<String, dynamic> params) {
+    PostClient<bool> sendErrorChatToServer = PostClient<bool>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<bool>(
+          endpoint: ChatEndPoints.sendErrorChatToServer,
+          data: params,
+          response: ResponseValue<bool>(returnValueOnSuccess: true)),
+    );
+    return sendErrorChatToServer();
   }
 }

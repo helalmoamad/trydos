@@ -128,6 +128,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       valueListenable: setThisEnabledNotifier,
                       builder: (context, slidingMode, _) {
                         return GridView.count(
+                          shrinkWrap: true,
                           crossAxisCount: 2,
                           controller: scrollController,
                           padding: const EdgeInsets.only(top: 50),
@@ -158,13 +159,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       //     dragToPopDirection: DragToPopDirection.toBottom,
                                       //     scrollToPopOption: ScrollToPopOption.start,
                                       //     fullscreenDialog: true);
-                                      HelperFunctions.slidingNavigation(context, ProductDetailsPage(
-                                          productItem: state
-                                              .getProductListingWithoutFiltersModel!
-                                              .data!
-                                              .products![index]
-                                      ));
-
+                                      HelperFunctions.slidingNavigation(
+                                          context,
+                                          ProductDetailsPage(
+                                            productItem: state
+                                                .getProductListingWithoutFiltersModel!
+                                                .data!
+                                                .products![index],
+                                          ));
                                     },
                                     child: ProductItem(
                                       slidingModeItem: slidingMode,

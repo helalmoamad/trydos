@@ -20,15 +20,34 @@ class GetMainCategoriesEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class AddCurrentIndexEvent extends HomeEvent {
+  final int currentIndex;
+  AddCurrentIndexEvent({required this.currentIndex});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [currentIndex];
+}
+
 class GetHomeSectionsEvent extends HomeEvent {
   final String categorySlug;
   final bool getWithPagination;
 
-  const GetHomeSectionsEvent(this.categorySlug , {this.getWithPagination = false});
+  const GetHomeSectionsEvent(this.categorySlug,
+      {this.getWithPagination = false});
 
   @override
   // TODO: implement props
   List<Object?> get props => [categorySlug];
+}
+
+class GetProductDatailsWithoutRelatedProductsEvent extends HomeEvent {
+  final String? productId;
+
+  const GetProductDatailsWithoutRelatedProductsEvent({this.productId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [productId];
 }
 
 class GetProductsWithoutFiltersEvent extends HomeEvent {

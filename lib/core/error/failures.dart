@@ -1,4 +1,3 @@
-
 abstract class Failure {
   final String message;
 
@@ -7,11 +6,13 @@ abstract class Failure {
 
 // General failures
 class ServerFailure extends Failure {
-  const ServerFailure({String? message}) : super(message ?? "ServerFailure");
+  const ServerFailure(String s, {String? message})
+      : super(message ?? "ServerFailure");
 }
 
 class OperationFailedFailure extends Failure {
-  const OperationFailedFailure({String? message}) : super(message ?? "OperationFailedFailure");
+  const OperationFailedFailure({String? message})
+      : super(message ?? "OperationFailedFailure");
 }
 
 class DioFailure extends Failure {
@@ -20,5 +21,6 @@ class DioFailure extends Failure {
 
 class TryAgainFailure extends Failure {
   final int tryCount;
-  const TryAgainFailure({String? message , required this.tryCount}) : super(message ?? "TryAgainFailure");
+  const TryAgainFailure({String? message, required this.tryCount})
+      : super(message ?? "TryAgainFailure");
 }

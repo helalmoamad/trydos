@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../data/models/ImageDetail.dart';
@@ -35,5 +36,7 @@ abstract class ChatRepository {
   Future<Either<Failure, ChatImageDetail>> loadWidthAndHeight(
       {required File file});
   Future<Either<Failure, MediaCount>> getMediaCount(
+      Map<String, dynamic> params);
+  Future<Either<Failure, bool>> SendErrorChatToServer(
       Map<String, dynamic> params);
 }

@@ -3,6 +3,7 @@ part of 'auth_bloc.dart';
 abstract class AuthEvent extends Equatable {
   const AuthEvent();
 }
+
 class CreateUserEvent extends AuthEvent {
   final String? name;
   final String? mobilePhone;
@@ -35,8 +36,10 @@ class LoginToChatEvent extends AuthEvent {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [mobilePhone, otpIdToken, fcmToken,originalUserId , name];
+  List<Object?> get props =>
+      [mobilePhone, otpIdToken, fcmToken, originalUserId, name];
 }
+
 class StoreFcmTokenEvent extends AuthEvent {
   final int userId;
   final String fcmToken;
@@ -50,6 +53,7 @@ class StoreFcmTokenEvent extends AuthEvent {
   // TODO: implement props
   List<Object?> get props => [userId, fcmToken];
 }
+
 class DeleteFcmTokenEvent extends AuthEvent {
   final int userId;
   final String fcmToken;
@@ -64,7 +68,7 @@ class DeleteFcmTokenEvent extends AuthEvent {
   List<Object?> get props => [userId, fcmToken];
 }
 
-class SendOtpEvent extends AuthEvent{
+class SendOtpEvent extends AuthEvent {
   final int isViaWhatsApp;
   final String phone;
 
@@ -76,7 +80,8 @@ class SendOtpEvent extends AuthEvent{
   // TODO: implement props
   List<Object?> get props => [phone, isViaWhatsApp];
 }
-class VerifyOtpSignInEvent extends AuthEvent{
+
+class VerifyOtpSignInEvent extends AuthEvent {
   final String verificationId;
   final String otp;
   final String phone;
@@ -88,22 +93,19 @@ class VerifyOtpSignInEvent extends AuthEvent{
   });
   @override
   // TODO: implement props
-  List<Object?> get props => [otp, verificationId , phone];
+  List<Object?> get props => [otp, verificationId, phone];
 }
 
-class VerifyOtpSignUpEvent extends AuthEvent{
+class VerifyOtpSignUpEvent extends AuthEvent {
   final String verificationId;
   final String otp;
   final String? name;
 
-  VerifyOtpSignUpEvent({
-    required this.verificationId,
-    required this.otp,
-    this.name
-  });
+  VerifyOtpSignUpEvent(
+      {required this.verificationId, required this.otp, this.name});
   @override
   // TODO: implement props
-  List<Object?> get props => [otp, name , verificationId];
+  List<Object?> get props => [otp, name, verificationId];
 }
 
 class VerifyGuestPhoneEvent extends AuthEvent {
@@ -117,6 +119,7 @@ class VerifyGuestPhoneEvent extends AuthEvent {
   // TODO: implement props
   List<Object?> get props => [idToken];
 }
+
 class RegisterGuestEvent extends AuthEvent {
   final String deviceId;
 
@@ -166,7 +169,6 @@ class UpdateStoriesUserEvent extends AuthEvent {
 }
 
 class GetCustomerInfoEvent extends AuthEvent {
-
   GetCustomerInfoEvent();
 
   @override
@@ -189,13 +191,13 @@ class LoginToStoriesEvent extends AuthEvent {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [otpIdToken , phone,originalUserId , name];
+  List<Object?> get props => [otpIdToken, phone, originalUserId, name];
 }
 
-class GetUserCountryEvent extends AuthEvent{
+class GetUserCountryEvent extends AuthEvent {
   GetUserCountryEvent();
 
   @override
   // TODO: implement props
-  List<Object?> get props =>[];
+  List<Object?> get props => [];
 }

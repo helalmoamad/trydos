@@ -7,6 +7,10 @@ part of 'home_state.dart';
 // **************************************************************************
 
 HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
+      getProductDetailWithoutSimilarRelatedProductsStatus: $enumDecodeNullable(
+              _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap,
+              json['getProductDetailWithoutSimilarRelatedProductsStatus']) ??
+          GetProductDetailWithoutSimilarRelatedProductsStatus.init,
       getStartingSettingsStatus: $enumDecodeNullable(
               _$GetStartingSettingsStatusEnumMap,
               json['getStartingSettingsStatus']) ??
@@ -23,10 +27,17 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : StartingSetting.fromJson(
               json['startingSetting'] as Map<String, dynamic>),
+      currentIndex: json['currentIndex'] as int? ?? 0,
       mainCategoriesResponseModel: json['mainCategoriesResponseModel'] == null
           ? null
           : MainCategoriesResponseModel.fromJson(
               json['mainCategoriesResponseModel'] as Map<String, dynamic>),
+      getProductDetailWithoutRelatedProductsModel:
+          json['getProductDetailWithoutRelatedProductsModel'] == null
+              ? null
+              : GetProductDetailWithoutRelatedProductsModel.fromJson(
+                  json['getProductDetailWithoutRelatedProductsModel']
+                      as Map<String, dynamic>),
       getProductListingWithoutFiltersModel:
           json['getProductListingWithoutFiltersModel'] == null
               ? null
@@ -49,8 +60,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
 Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getStartingSettingsStatus': _$GetStartingSettingsStatusEnumMap[
           instance.getStartingSettingsStatus]!,
+      'currentIndex': instance.currentIndex,
       'getMainCategoriesStatus':
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
+      'getProductDetailWithoutSimilarRelatedProductsStatus':
+          _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap[
+              instance.getProductDetailWithoutSimilarRelatedProductsStatus]!,
       'getHomeSectionsPaginationObject':
           instance.getHomeSectionsPaginationObject.map((k, e) => MapEntry(
               k,
@@ -64,8 +79,17 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getProductListingWithoutFiltersModel?.toJson(),
       'mainCategoriesResponseModel':
           instance.mainCategoriesResponseModel?.toJson(),
+      'getProductDetailWithoutRelatedProductsModel':
+          instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
       'startingSetting': instance.startingSetting?.toJson(),
     };
+
+const _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap = {
+  GetProductDetailWithoutSimilarRelatedProductsStatus.init: 'init',
+  GetProductDetailWithoutSimilarRelatedProductsStatus.loading: 'loading',
+  GetProductDetailWithoutSimilarRelatedProductsStatus.success: 'success',
+  GetProductDetailWithoutSimilarRelatedProductsStatus.failure: 'failure',
+};
 
 const _$GetStartingSettingsStatusEnumMap = {
   GetStartingSettingsStatus.init: 'init',

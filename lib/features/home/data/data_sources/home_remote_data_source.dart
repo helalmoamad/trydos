@@ -1,5 +1,3 @@
-
-
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
@@ -10,60 +8,81 @@ import 'package:trydos/features/home/data/models/starting_settings_response_mode
 import '../../../../common/constant/configuration/market_url_routes.dart';
 import '../../../../core/api/client_config.dart';
 import '../../../../core/api/methods/detect_server.dart';
+import '../models/get_product_detail_without_related_products_model.dart';
 
 @injectable
 class HomeRemoteDatasource {
-
   Future<StartingSettingsResponseModel> getStartingSettings() {
-    GetClient<StartingSettingsResponseModel> getStartingSettings = GetClient<
-        StartingSettingsResponseModel>(
+    GetClient<StartingSettingsResponseModel> getStartingSettings =
+        GetClient<StartingSettingsResponseModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<StartingSettingsResponseModel>(
         endpoint: MarketEndPoints.getStartingSettingsEP,
         response: ResponseValue<StartingSettingsResponseModel>(
-            fromJson: (response) => StartingSettingsResponseModel.fromJson(response)
-        ),
+            fromJson: (response) =>
+                StartingSettingsResponseModel.fromJson(response)),
       ),
     );
     return getStartingSettings();
   }
-  Future<GetProductListingWithoutFiltersModel> getProductsWithoutFilters(Map<String, dynamic> params) {
-    GetClient<GetProductListingWithoutFiltersModel> getProductsWithoutFilters = GetClient<
-        GetProductListingWithoutFiltersModel>(
+
+  Future<GetProductDetailWithoutRelatedProductsModel>
+      getProductDetailWithoutRelatedProducts(String productId) {
+    GetClient<GetProductDetailWithoutRelatedProductsModel> getStartingSettings =
+        GetClient<GetProductDetailWithoutRelatedProductsModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetProductDetailWithoutRelatedProductsModel>(
+        endpoint: MarketEndPoints.getProductDetailWithoutSimilarRelatedProducts(
+            productId),
+        response: ResponseValue<GetProductDetailWithoutRelatedProductsModel>(
+            fromJson: (response) =>
+                GetProductDetailWithoutRelatedProductsModel.fromJson(response)),
+      ),
+    );
+    return getStartingSettings();
+  }
+
+  Future<GetProductListingWithoutFiltersModel> getProductsWithoutFilters(
+      Map<String, dynamic> params) {
+    GetClient<GetProductListingWithoutFiltersModel> getProductsWithoutFilters =
+        GetClient<GetProductListingWithoutFiltersModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductListingWithoutFiltersModel>(
         endpoint: MarketEndPoints.getProductListingWithoutFiltersEP,
         queryParameters: params,
         response: ResponseValue<GetProductListingWithoutFiltersModel>(
-            fromJson: (response) => GetProductListingWithoutFiltersModel.fromJson(response)
-        ),
+            fromJson: (response) =>
+                GetProductListingWithoutFiltersModel.fromJson(response)),
       ),
     );
     return getProductsWithoutFilters();
   }
+
   Future<MainCategoriesResponseModel> getMainCategories() {
-    GetClient<MainCategoriesResponseModel> getMainCategories = GetClient<
-        MainCategoriesResponseModel>(
+    GetClient<MainCategoriesResponseModel> getMainCategories =
+        GetClient<MainCategoriesResponseModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<MainCategoriesResponseModel>(
         endpoint: MarketEndPoints.getMainCategoriesEP,
         response: ResponseValue<MainCategoriesResponseModel>(
-            fromJson: (response) => MainCategoriesResponseModel.fromJson(response)
-        ),
+            fromJson: (response) =>
+                MainCategoriesResponseModel.fromJson(response)),
       ),
     );
     return getMainCategories();
   }
-  Future<HomeSectionResponseModel> getHomeSections(Map<String , dynamic> params) {
-    GetClient<HomeSectionResponseModel> getHomeSections = GetClient<
-        HomeSectionResponseModel>(
+
+  Future<HomeSectionResponseModel> getHomeSections(
+      Map<String, dynamic> params) {
+    GetClient<HomeSectionResponseModel> getHomeSections =
+        GetClient<HomeSectionResponseModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<HomeSectionResponseModel>(
         endpoint: MarketEndPoints.getHomeSectionsEP,
         queryParameters: params,
         response: ResponseValue<HomeSectionResponseModel>(
-            fromJson: (response) => HomeSectionResponseModel.fromJson(response)
-        ),
+            fromJson: (response) =>
+                HomeSectionResponseModel.fromJson(response)),
       ),
     );
     return getHomeSections();

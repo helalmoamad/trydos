@@ -8,26 +8,37 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 
 class ProductDetailsDescriptionWidget extends StatefulWidget {
-  ProductDetailsDescriptionWidget({super.key});
+  final String description;
+  ProductDetailsDescriptionWidget({
+    super.key,
+    required this.description,
+  });
 
   @override
-  State<ProductDetailsDescriptionWidget> createState() => _ProductDetailsDescriptionWidgetState();
+  State<ProductDetailsDescriptionWidget> createState() =>
+      _ProductDetailsDescriptionWidgetState();
 }
 
-class _ProductDetailsDescriptionWidgetState extends State<ProductDetailsDescriptionWidget> {
+class _ProductDetailsDescriptionWidgetState
+    extends State<ProductDetailsDescriptionWidget> {
   final ValueNotifier<bool> readMoreNotifier = ValueNotifier(true);
 
-   String text = 'Short Fitted Dress In Knit Fabric With A High Neck And Short Sleeves. Short Fitted Dress In Knit Short Fitted Dress In Knit Fabric With A High Neck And Short Sleeves. Short Fitted Dress In Knitshort Fitted Dress In Knit Fabric With A High Neck And Short Sleeves. Short Fitted Dress In Knitshort Fitted Dress In Knit Fabric With A High Neck And Short Sleeves. Short Fitted Dress In Knitshort Fitted Dress In Knit Fabric With A High Neck And Short Sleeves. Short Fitted Dress In Knitshort Fitted Dress In Knit Fabric With A High Neck And Short Sleeves. Short Fitted Short Fitted Dress In Knit Fabric With A High Neck And Short Sleeves. Short Fitted Dress In Knitshort Fitted Dress In Knit Fabric With A High Neck And Short Sleeves. Short Fitted Dress In Knit';
-   String twoLines ='';
+  String text = " ";
+  String twoLines = '';
 
-   @override
+  @override
   void initState() {
+    text = widget.description;
     int index = 4 * ((1.sw.w - 40) ~/ 13.sp) - 12;
-    while(text[index] != ' ' && index > 0){
-      index--;
+    if (text.length <= index) {
+      twoLines = text;
+    } else {
+      while (text[index] != ' ' && index > 0) {
+        index--;
+      }
+      twoLines = text.substring(0, index + 1);
+      text = text.substring(0, text.lastIndexOf(' ') + 1);
     }
-    twoLines = text.substring(0 ,index + 1);
-    text = text.substring(0 , text.lastIndexOf(' ') + 1);
     super.initState();
   }
 
@@ -49,8 +60,10 @@ class _ProductDetailsDescriptionWidgetState extends State<ProductDetailsDescript
                   ),
                   TextSpan(
                       text: !readMore ? "Read Less..." : "Read More...",
-                      style: context.textTheme.bodyText2?.rq
-                          .copyWith(height: 1.23, color: Color(0xff388CFF), fontSize: 13),
+                      style: context.textTheme.bodyText2?.rq.copyWith(
+                          height: 1.23,
+                          color: Color(0xff388CFF),
+                          fontSize: 13),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           readMoreNotifier.value = !readMoreNotifier.value;

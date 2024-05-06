@@ -1,13 +1,11 @@
 
-import 'package:adobe_xd/pinned.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 
 class TrydosShimmerLoading extends StatefulWidget {
   const TrydosShimmerLoading({super.key , required this.width, this.radius = 15 ,  required this.logoTextWidth , required this.height, required this.logoTextHeight, this.circleDimensions});
-  
+
   final double width , logoTextWidth;
   final double height , logoTextHeight;
   final double? circleDimensions;
@@ -24,7 +22,7 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading> with Single
   @override
   void initState() {
     controller = AnimationController(vsync: this , duration: Duration(milliseconds: 300),reverseDuration: Duration(milliseconds: 300));
-   controller.repeat(reverse: true);
+    controller.repeat(reverse: true);
     super.initState();
   }
 
@@ -40,8 +38,8 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading> with Single
       width: widget.width,
       height: widget.height,
       decoration: BoxDecoration(
-        color: Color(0xffE6E6E6),
-        borderRadius: BorderRadius.circular(widget.radius)
+          color: Color(0xffE6E6E6),
+          borderRadius: BorderRadius.circular(widget.radius)
       ),
       child: Center(
         child: Column(

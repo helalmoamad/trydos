@@ -7,6 +7,8 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/calls/data/models/my_calls.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../calls/presentation/widgets/calls_card.dart';
@@ -21,8 +23,9 @@ class CallsPageContent extends StatefulWidget {
 
 class _CallsPageContentState extends ThemeState<CallsPageContent> {
   late CallsBloc callsBloc;
-
+  late ChatBloc chatBloc;
   void initState() {
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
     callsBloc.add(ResetMissedCallEvent());
     callsBloc.add(GetMyCallsEvent());
@@ -40,6 +43,8 @@ class _CallsPageContentState extends ThemeState<CallsPageContent> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
+      chatBloc.add(SendErrorChatToServerEvent(
+          error: error.toString(), lastPage: "Calls_Page_Content"));
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());

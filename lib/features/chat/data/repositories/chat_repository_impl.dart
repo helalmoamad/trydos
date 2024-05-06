@@ -123,4 +123,11 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getMediaCount(params));
   }
+
+  @override
+  Future<Either<Failure, bool>> SendErrorChatToServer(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.sendErrorChatToServer(params));
+  }
 }

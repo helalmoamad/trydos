@@ -15,6 +15,7 @@ import 'package:vibration/vibration.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
+import '../../../chat/presentation/manager/chat_event.dart';
 
 class AgoraInAppWebView extends StatefulWidget {
   String type;
@@ -56,8 +57,10 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     Vibration.vibrate(pattern: [500, 1000, 500, 1000], duration: 3);
   }
 
+  late ChatBloc chatBloc;
   @override
   void initState() {
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     debugPrint("asdafsd{${widget.channelId}");
     debugPrint("asdafsd{${widget.messageId}");
     debugPrint("asdafsd{${widget.uId}");
@@ -96,11 +99,13 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
+      chatBloc.add(SendErrorChatToServerEvent(
+          error: error.toString(), lastPage: "Agora_In_AppWeb_View"));
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
-      debugPrint('error $error');
     };
+
     return BlocListener<CallsBloc, CallsState>(
       listener: (context, state) {
         timer?.cancel();
