@@ -42,6 +42,20 @@ class SendOtpResponseModel {
         data: data ?? this.data,
       );
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is SendOtpResponseModel &&
+        other.isSuccessful == isSuccessful &&
+        other.hasContent == hasContent &&
+        other.code == code &&
+        other.message == message &&
+        other.detailedError == detailedError &&
+        other.data == data;
+  }
+
+
   factory SendOtpResponseModel.fromJson(Map<String, dynamic> json) => SendOtpResponseModel(
     isSuccessful: json["isSuccessful"],
     hasContent: json["hasContent"],
@@ -78,6 +92,12 @@ class Data {
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     verificationId: json["verificationId"],
   );
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Data && other.verificationId == verificationId;
+  }
 
   Map<String, dynamic> toJson() => {
     "verificationId": verificationId,

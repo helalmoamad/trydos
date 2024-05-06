@@ -89,7 +89,7 @@ class _ProductDetailsDisplayPicturesPageState
                               }
                           ),
                         )),
-                    Container(width: 20,height: 160,)
+                    Container(width: 20,height: 160,color: Colors.transparent,)
                   ],
                 ),
               ],

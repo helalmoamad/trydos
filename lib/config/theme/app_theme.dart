@@ -1,3 +1,4 @@
+import 'package:cupertino_back_gesture/cupertino_back_gesture.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +22,12 @@ class AppTheme {
         colorScheme: _lightColorScheme,
         textTheme: textTheme,
         useMaterial3: true,
+        pageTransitionsTheme: PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: CupertinoPageTransitionsBuilderCustomBackGestureWidth(),
+              TargetPlatform.iOS: CupertinoPageTransitionsBuilderCustomBackGestureWidth(),
+            }
+        ),
         typography: Typography.material2018(),
         scaffoldBackgroundColor: _lightColorScheme.background,
         primaryColor: _lightColorScheme.primary,

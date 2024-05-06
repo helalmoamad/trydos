@@ -13,17 +13,19 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
 import 'package:tuple/tuple.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
-as productListingModel;
+    as productListingModel;
 import '../../../../../core/utils/theme_state.dart';
+import '../../../../../service/language_service.dart';
 import '../../../../app/my_text_widget.dart';
 import 'my_gallery3d_widget.dart';
 
 class ProductListing3DSlider extends StatefulWidget {
-  const ProductListing3DSlider({super.key,
-    required this.setThisEnabled,
-    required this.slidingModeItem,
-    required this.itemIndex,
-    required this.productItem});
+  const ProductListing3DSlider(
+      {super.key,
+      required this.setThisEnabled,
+      required this.slidingModeItem,
+      required this.itemIndex,
+      required this.productItem});
 
   final Tuple2<int, int> slidingModeItem;
   final void Function(int, int) setThisEnabled;
@@ -38,7 +40,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
   late ValueNotifier<Map<int, int>> indicatorForProductImages;
 
   late final ValueNotifier<Tuple2<List<String>, List<String>>>
-  threeColorsSlider, threeImagesSlider;
+      threeColorsSlider, threeImagesSlider;
 
   //     ValueNotifier(Tuple2([
   //   'assets/images/product_listing_images/b1.jpg',
@@ -70,14 +72,13 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
   //   'assets/images/product_listing_images/r1.jpg',
   //   'assets/images/product_listing_images/g1.jpg',
   // ];
-  int prevIndexForThreeImages = 0,
-      prevIndexForThreeColors = 0;
+  int prevIndexForThreeImages = 0, prevIndexForThreeColors = 0;
   late final Gallery3DController gallery3dControllerForColors;
 
   late final Gallery3DController gallery3dControllerForProductImages;
 
   late final Gallery3DController
-  gallery3dControllerForProductImagesTrackingIndex;
+      gallery3dControllerForProductImagesTrackingIndex;
 
   Gallery3DController? gallery3dControllerForCircles;
 
@@ -105,8 +106,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
     indicatorForProductImages = ValueNotifier(indicatorValues);
     images = syncColorImageList?.map((e) => e.images![0]).toList() ?? [];
     if (!images.isNullOrEmpty) {
-      List<String> copyOfImages = List.of(images),
-          threeImages;
+      List<String> copyOfImages = List.of(images), threeImages;
       threeImages = images
           .getRange(images.length ~/ 4 - 1, images.length ~/ 4 + 2)
           .toList();
@@ -152,19 +152,23 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
         initialIndex: 0,
         scrollTime: 1);
     gallery3dControllerForCircles =
-    syncColorImageList.isNullOrEmpty || syncColorImageList!.length < 3
-        ? null
-        : Gallery3DController(
-        itemCount: syncColorImageList!.length,
-        autoLoop: false,
-        minScale: (syncColorImageList!.length) == 4 ? 0.7 : (syncColorImageList!.length) <= 8  ? 0.55 : 0.4,
-        initialIndex: syncColorImageList!.length ~/ 4,
-        primaryshiftingOffsetDivision: (syncColorImageList!.length) == 4
-            ? 4.5
-            : (syncColorImageList!.length) <= 8
-            ? 2.5
-            : 1.6,
-        scrollTime: 1);
+        syncColorImageList.isNullOrEmpty || syncColorImageList!.length < 3
+            ? null
+            : Gallery3DController(
+                itemCount: syncColorImageList!.length,
+                autoLoop: false,
+                minScale: (syncColorImageList!.length) == 4
+                    ? 0.7
+                    : (syncColorImageList!.length) <= 8
+                        ? 0.6
+                        : 0.4,
+                initialIndex: syncColorImageList!.length ~/ 4,
+                primaryshiftingOffsetDivision: (syncColorImageList!.length) == 4
+                    ? 4.5
+                    : (syncColorImageList!.length) <= 8
+                        ? 2.8
+                        : 1.6,
+                scrollTime: 1);
     super.initState();
   }
 
@@ -191,468 +195,494 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                     children: [
                       slideModeIndex != 0
                           ? Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (slideModeIndex == 2) ...{
-                              SizedBox(
-                                height: 45,
-                                width: 200.w,
-                                child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  shrinkWrap: true,
-                                  itemBuilder: (ctx, index) {
-                                    return InkWell(
-                                      onTap: () {
-                                        gallery3dControllerForColors
-                                            .animateTo(index, false);
-                                      },
-                                      child: Container(
-                                        width: 30,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.white
-                                                  .withOpacity(0.5),
-                                              offset: Offset(0, 3),
-                                              inset: true,
-                                              blurRadius: 6,
-                                            )
-                                          ],
-                                          borderRadius:
-                                          BorderRadius.circular(8),
-                                          border: Border.all(
-                                              width: 0.5,
-                                              color: Colors.grey.shade400),
-                                        ),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                          BorderRadius.circular(8),
-                                          child: Stack(
-                                            children: [
-                                              MyCachedNetworkImage(
-                                                imageUrl: syncColorImageList
-                                                    .isNullOrEmpty
-                                                    ? widget
-                                                    .productItem.images![index]
-                                                    : syncColorImageList![
-                                                prevIndexInSecondSlider]
-                                                    .images![index],
-                                                height: 40,
-                                                width: 30,
-                                                logoTextHeight: 15,
-                                                logoTextWidth: 20,
-                                                circleDimensions: 7,
-                                                imageFit: BoxFit.cover,
+                              textDirection: TextDirection.ltr,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (slideModeIndex == 2) ...{
+                                    SizedBox(
+                                      height: 45,
+                                      width: 200.w,
+                                      child: ListView.separated(
+                                        scrollDirection: Axis.horizontal,
+                                        shrinkWrap: true,
+                                        itemBuilder: (ctx, index) {
+                                          return InkWell(
+                                            onTap: () {
+                                              gallery3dControllerForColors
+                                                  .animateTo(index, false);
+                                            },
+                                            child: Container(
+                                              width: 30,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.white
+                                                        .withOpacity(0.5),
+                                                    offset: Offset(0, 3),
+                                                    inset: true,
+                                                    blurRadius: 6,
+                                                  )
+                                                ],
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                    width: 0.5,
+                                                    color:
+                                                        Colors.grey.shade400),
                                               ),
-                                              Container(
-                                                height: 40,
-                                                width: 30,
-                                                decoration: BoxDecoration(
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.white
-                                                          .withOpacity(0.5),
-                                                      offset: Offset(0, 3),
-                                                      inset: true,
-                                                      blurRadius: 6,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                child: Stack(
+                                                  children: [
+                                                    MyCachedNetworkImage(
+                                                      imageUrl: syncColorImageList
+                                                              .isNullOrEmpty
+                                                          ? widget.productItem
+                                                              .images![index]
+                                                          : syncColorImageList![
+                                                                  prevIndexInSecondSlider]
+                                                              .images![index],
+                                                      height: 40,
+                                                      width: 30,
+                                                      logoTextHeight: 15,
+                                                      logoTextWidth: 20,
+                                                      circleDimensions: 7,
+                                                      imageFit: BoxFit.cover,
+                                                    ),
+                                                    Container(
+                                                      height: 40,
+                                                      width: 30,
+                                                      decoration: BoxDecoration(
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.white
+                                                                .withOpacity(
+                                                                    0.5),
+                                                            offset:
+                                                                Offset(0, 3),
+                                                            inset: true,
+                                                            blurRadius: 6,
+                                                          )
+                                                        ],
+                                                      ),
                                                     )
                                                   ],
                                                 ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  itemCount:
-                                  syncColorImageList.isNullOrEmpty
-                                      ? widget.productItem.images!.length
-                                      : syncColorImageList![prevIndexInSecondSlider]
-                                      .images!.length,
-                                  padding: EdgeInsets.only(left: 5, top: 5),
-                                  separatorBuilder: (ctx, index) {
-                                    if (index ==
-                                        (widget.productItem.images!.length -
-                                            1)) return SizedBox.shrink();
-                                    return SizedBox(
-                                      width: 2,
-                                    );
-                                  },
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              ValueListenableBuilder<
-                                  Tuple2<List<String>, List<String>>>(
-                                  valueListenable: threeImagesSlider,
-                                  builder: (context, sliderData, child) {
-                                    return MyGallery3DWidget(
-                                      //  key: ValueKey('gallery3dControllerForColors${widget.itemIndex}'),
-                                      gallery3dController:
-                                      gallery3dControllerForProductImages,
-                                      gallery3dControllerForCircles:
-                                      gallery3dControllerForProductImagesTrackingIndex,
-                                      stopScrollingOnEdges:
-                                          (double primaryDelta) {
-                                        return (primaryDelta <= 0 &&
-                                            gallery3dControllerForProductImagesTrackingIndex
-                                                .currentIndex ==
-                                                ((widget
-                                                    .productItem
-                                                    .images
-                                                    ?.length ??
-                                                    0) -
-                                                    1) ||
-                                            (primaryDelta >= 0 &&
-                                                gallery3dControllerForProductImagesTrackingIndex
-                                                    .currentIndex ==
-                                                    0));
-                                      },
-                                      itemWidth: 170.w,
-                                      threeImages: sliderData.item1,
-                                      onItemClick: (index) {
-                                        widget.setThisEnabled.call(-1, -1);
-                                      },
-                                      images: sliderData.item2,
-                                      galleryHeight: 240,
-                                      itemHeight: 240,
-                                      onItemChanged: (int index) {
-                                        bool scrollToLeft = false;
-                                        if ((prevIndexForThreeImages == 0 &&
-                                            index == 2) ||
-                                            (prevIndexForThreeImages == 2 &&
-                                                index == 1) ||
-                                            (prevIndexForThreeImages == 1 &&
-                                                index == 0)) {
-                                          scrollToLeft = true;
-                                        }
-                                        if (!scrollToLeft) {
-                                          gallery3dControllerForProductImagesTrackingIndex
-                                              .currentIndex =
-                                          (gallery3dControllerForProductImagesTrackingIndex
-                                              .currentIndex +
-                                              1) ==
-                                              widget.productItem
-                                                  .images!.length
-                                              ? 0
-                                              : (gallery3dControllerForProductImagesTrackingIndex
-                                              .currentIndex +
-                                              1);
-                                        } else {
-                                          gallery3dControllerForProductImagesTrackingIndex
-                                              .currentIndex =
-                                          (gallery3dControllerForProductImagesTrackingIndex
-                                              .currentIndex -
-                                              1) <
-                                              0
-                                              ? widget.productItem
-                                              .images!.length -
-                                              1
-                                              : (gallery3dControllerForProductImagesTrackingIndex
-                                              .currentIndex -
-                                              1);
-                                        }
-                                        prevIndexForThreeImages = index;
-                                        if (scrollToLeft) {
-                                          updateImagesForThreeImagesSlider(
-                                              true,
-                                              calledFromOnChanged: true);
-                                        } else {
-                                          updateImagesForThreeImagesSlider(
-                                              false,
-                                              calledFromOnChanged: true);
-                                        }
-                                      },
-                                      galleryWidth: 200,
-                                      radius: 15,
-                                      itemCount: widget
-                                          .productItem.images?.length ??
-                                          0,
-                                    );
-                                  }),
-                            } else
-                              const SizedBox.shrink(),
-                            if (slideModeIndex == 1) ...{
-                              ValueListenableBuilder<
-                                  Tuple2<List<String>, List<String>>>(
-                                  valueListenable: threeColorsSlider,
-                                  builder: (context, sliderData, child) {
-                                    return Transform.translate(
-                                      offset: Offset(-5, 0),
-                                      child: MyGallery3DWidget(
-                                        //  key: ValueKey('gallery3dControllerForColors${widget.itemIndex}'),
-                                        gallery3dController:
-                                        gallery3dControllerForColors,
-                                        gallery3dControllerForCircles:
-                                        gallery3dControllerForCircles!,
-                                        stopScrollingOnEdges:
-                                            (double primaryDelta) {
-                                          return (primaryDelta <= 0 &&
-                                              gallery3dControllerForCircles!
-                                                  .currentIndex ==
-                                                  (syncColorImageList!
-                                                      .length ~/
-                                                      2 -
-                                                      1) ||
-                                              (primaryDelta >= 0 &&
-                                                  gallery3dControllerForCircles!
-                                                      .currentIndex ==
-                                                      0));
+                                              ),
+                                            ),
+                                          );
                                         },
-                                        itemWidth: 170.w,
-                                        itemHeight: 240,
-                                        threeImages: sliderData.item1,
-                                        onItemClick: (index) {
-                                          widget.setThisEnabled
-                                              .call(-1, -1);
-                                        },
-                                        images: sliderData.item2,
-                                        galleryHeight: 240,
-                                        onItemChanged: (int index) {
-                                          bool scrollToLeft = false;
-                                          if ((prevIndexForThreeColors ==
-                                              0 &&
-                                              index == 2) ||
-                                              (prevIndexForThreeColors ==
-                                                  2 &&
-                                                  index == 1) ||
-                                              (prevIndexForThreeColors ==
-                                                  1 &&
-                                                  index == 0)) {
-                                            scrollToLeft = true;
-                                          }
-                                          prevIndexForThreeColors = index;
-                                          if (!scrollToLeft) {
-                                            prevIndexInSecondSlider =
-                                                prevIndexInFirstSlider =
-                                            (gallery3dControllerForCircles!
-                                                .currentIndex +
-                                                1) ==
-                                                images.length
-                                                ? 0
-                                                : (gallery3dControllerForCircles!
-                                                .currentIndex +
-                                                1);
-                                            currentColorIndex.value =
-                                                prevIndexInFirstSlider;
-                                            gallery3dControllerForCircles!
-                                                .animateTo(
-                                                prevIndexInFirstSlider,
-                                                false);
-                                          } else {
-                                            prevIndexInSecondSlider =
-                                                prevIndexInFirstSlider =
-                                            (gallery3dControllerForCircles!
-                                                .currentIndex -
-                                                1) <
-                                                0
-                                                ? images.length - 1
-                                                : (gallery3dControllerForCircles!
-                                                .currentIndex -
-                                                1);
-                                            currentColorIndex.value =
-                                                prevIndexInFirstSlider;
-                                            gallery3dControllerForCircles!
-                                                .animateTo(
-                                                prevIndexInFirstSlider,
-                                                true);
-                                          }
-                                          if (scrollToLeft) {
-                                            updateImagesForThreeColorsSlider(
-                                                true,
-                                                calledFromOnChanged: true);
-                                          } else {
-                                            updateImagesForThreeColorsSlider(
-                                                false,
-                                                calledFromOnChanged: true);
-                                          }
-                                        },
-                                        galleryWidth: 200,
-                                        radius: 15,
-                                        itemCount: 3,
-                                      ),
-                                    );
-                                  }),
-                              ValueListenableBuilder<int>(
-                                valueListenable: currentColorIndex,
-                                builder: (context, currentIndex, _) {
-                                  return MyTextWidget(
-                                    syncColorImageList![currentIndex]
-                                        .colorName
-                                        .toString(),
-                                    textAlign: TextAlign.center,
-                                    style: textTheme.caption?.mq.copyWith(
-                                      color: Color(int.parse(
-                                          '0xff${widget.productItem
-                                              .colors![currentIndex %
-                                              widget.productItem.colors!.length]
-                                              .color!.substring(1)}')),
-                                    ),
-                                  );
-                                },
-                              ),
-                            }
-                          ],
-                        ),
-                      )
-                          : Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: SizedBox(
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              SizedBox(
-                                height: 290,
-                                width: 200,
-                                child: CarouselSlider.builder(
-                                    itemCount: syncColorImageList
-                                        .isNullOrEmpty
-                                        ? widget.productItem.images!.length
-                                        : syncColorImageList![
-                                    prevIndexInSecondSlider]
-                                        .images!
-                                        .length,
-                                    carouselController: carouselController,
-                                    options: CarouselOptions(
-                                      initialPage: indicatorForProductImages
-                                          .value[prevIndexInSecondSlider]!,
-                                      height: 290,
-                                      onPageChanged: (page, reason) {
-                                        indicatorForProductImages.value[
-                                        prevIndexInSecondSlider] = page;
-                                        indicatorForProductImages
-                                            .notifyListeners();
-                                        if (widget.slidingModeItem.item1 !=
-                                            -1) {
-                                          widget.setThisEnabled
-                                              .call(-1, -1);
-                                        }
-                                      },
-                                      enableInfiniteScroll: false,
-                                      viewportFraction: 1,
-                                    ),
-                                    itemBuilder: (context, index, _) {
-                                      return ProductListingImageWidget(
-                                        width: 200,
-                                        imageUrl: syncColorImageList
-                                            .isNullOrEmpty
-                                            ? widget
-                                            .productItem.images![index]
+                                        itemCount: syncColorImageList
+                                                .isNullOrEmpty
+                                            ? widget.productItem.images!.length
                                             : syncColorImageList![
-                                        prevIndexInSecondSlider]
-                                            .images![index],
-                                        height: 290,
-                                        circleShape: false,
-                                        innerShadowYOffset: 3,
-                                      );
-                                    }),
-                              ),
-                              Positioned(
-                                top: 0,
-                                child: InkWell(
-                                  onTap: () {
-                                    widget.setThisEnabled
-                                        .call(widget.itemIndex, 2);
-                                    // setState(() {
-                                    //   slideModeIndex = 2;
-                                    // });
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: ValueListenableBuilder<
-                                        Map<int, int>>(
-                                        valueListenable:
-                                        indicatorForProductImages,
-                                        builder:
-                                            (context, currentSelected, _) {
-                                          int itemCount = syncColorImageList
-                                              .isNullOrEmpty
-                                              ? widget.productItem.images!
-                                              .length
-                                              : syncColorImageList![
-                                          prevIndexInSecondSlider]
-                                              .images!
-                                              .length;
-                                          return Row(
-                                            children: List.generate(
-                                                itemCount, (index) {
-                                              return Container(
-                                                margin: EdgeInsets.only(
-                                                    right: index !=
-                                                        (itemCount - 1)
-                                                        ? 2
-                                                        : 0),
-                                                width: index <=
-                                                    (itemCount ~/ 2)
-                                                    ? (index * 2 + 2)
-                                                    : ((index -
-                                                    ((index -
-                                                        (itemCount ~/ 2)) *
-                                                        2)) *
-                                                    2 +
-                                                    2)
-                                                    .abs()
-                                                    .toDouble(),
-                                                height: index <=
-                                                    (itemCount ~/ 2)
-                                                    ? (index * 2 + 2)
-                                                    : ((index -
-                                                    ((index -
-                                                        itemCount ~/ 2) *
-                                                        2)) *
-                                                    2 +
-                                                    2)
-                                                    .abs()
-                                                    .toDouble(),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                  BorderRadius.circular(
-                                                      180),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color:
-                                                      Color(0x33000000),
-                                                      offset: Offset(0, 3),
-                                                      blurRadius: 6,
-                                                    ),
-                                                  ],
-                                                  gradient: index ==
-                                                      currentSelected[
-                                                      prevIndexInSecondSlider]
-                                                      ? LinearGradient(
-                                                      colors: [
-                                                        Color(
-                                                            0xfff53c3c),
-                                                        Color(
-                                                            0xffff9696),
-                                                      ],
-                                                      stops: [
-                                                        0,
-                                                        1
-                                                      ])
-                                                      : null,
-                                                  border: Border.all(
-                                                      width: 0.3,
-                                                      color: const Color(
-                                                          0xff3c3c3c)),
-                                                ),
-                                              );
-                                            }),
+                                                    prevIndexInSecondSlider]
+                                                .images!
+                                                .length,
+                                        padding:
+                                            EdgeInsets.only(left: 5, top: 5),
+                                        separatorBuilder: (ctx, index) {
+                                          if (index ==
+                                              (widget.productItem.images!
+                                                      .length -
+                                                  1)) return SizedBox.shrink();
+                                          return SizedBox(
+                                            width: 2,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    ValueListenableBuilder<
+                                            Tuple2<List<String>, List<String>>>(
+                                        valueListenable: threeImagesSlider,
+                                        builder: (context, sliderData, child) {
+                                          return MyGallery3DWidget(
+                                            //  key: ValueKey('gallery3dControllerForColors${widget.itemIndex}'),
+                                            gallery3dController:
+                                                gallery3dControllerForProductImages,
+                                            gallery3dControllerForCircles:
+                                                gallery3dControllerForProductImagesTrackingIndex,
+                                            stopScrollingOnEdges:
+                                                (double primaryDelta) {
+                                              return (primaryDelta <= 0 &&
+                                                      gallery3dControllerForProductImagesTrackingIndex
+                                                              .currentIndex ==
+                                                          ((widget
+                                                                      .productItem
+                                                                      .images
+                                                                      ?.length ??
+                                                                  0) -
+                                                              1) ||
+                                                  (primaryDelta >= 0 &&
+                                                      gallery3dControllerForProductImagesTrackingIndex
+                                                              .currentIndex ==
+                                                          0));
+                                            },
+                                            itemWidth: 170.w,
+                                            threeImages: sliderData.item1,
+                                            onItemClick: (index) {
+                                              widget.setThisEnabled
+                                                  .call(-1, -1);
+                                            },
+                                            images: sliderData.item2,
+                                            galleryHeight: 240,
+                                            itemHeight: 240,
+                                            onItemChanged: (int index) {
+                                              bool scrollToLeft = false;
+                                              if ((prevIndexForThreeImages ==
+                                                          0 &&
+                                                      index == 2) ||
+                                                  (prevIndexForThreeImages ==
+                                                          2 &&
+                                                      index == 1) ||
+                                                  (prevIndexForThreeImages ==
+                                                          1 &&
+                                                      index == 0)) {
+                                                scrollToLeft = true;
+                                              }
+                                              if (!scrollToLeft) {
+                                                gallery3dControllerForProductImagesTrackingIndex
+                                                        .currentIndex =
+                                                    (gallery3dControllerForProductImagesTrackingIndex
+                                                                    .currentIndex +
+                                                                1) ==
+                                                            widget.productItem
+                                                                .images!.length
+                                                        ? 0
+                                                        : (gallery3dControllerForProductImagesTrackingIndex
+                                                                .currentIndex +
+                                                            1);
+                                              } else {
+                                                gallery3dControllerForProductImagesTrackingIndex
+                                                        .currentIndex =
+                                                    (gallery3dControllerForProductImagesTrackingIndex
+                                                                    .currentIndex -
+                                                                1) <
+                                                            0
+                                                        ? widget
+                                                                .productItem
+                                                                .images!
+                                                                .length -
+                                                            1
+                                                        : (gallery3dControllerForProductImagesTrackingIndex
+                                                                .currentIndex -
+                                                            1);
+                                              }
+                                              prevIndexForThreeImages = index;
+                                              if (scrollToLeft) {
+                                                updateImagesForThreeImagesSlider(
+                                                    true,
+                                                    calledFromOnChanged: true);
+                                              } else {
+                                                updateImagesForThreeImagesSlider(
+                                                    false,
+                                                    calledFromOnChanged: true);
+                                              }
+                                            },
+                                            galleryWidth: 200,
+                                            radius: 15,
+                                            itemCount: widget.productItem.images
+                                                    ?.length ??
+                                                0,
                                           );
                                         }),
-                                  ),
+                                  } else
+                                    const SizedBox.shrink(),
+                                  if (slideModeIndex == 1) ...{
+                                    ValueListenableBuilder<
+                                            Tuple2<List<String>, List<String>>>(
+                                        valueListenable: threeColorsSlider,
+                                        builder: (context, sliderData, child) {
+                                          return Transform.translate(
+                                            offset: Offset(-5, 0),
+                                            child: MyGallery3DWidget(
+                                              //  key: ValueKey('gallery3dControllerForColors${widget.itemIndex}'),
+                                              gallery3dController:
+                                                  gallery3dControllerForColors,
+                                              gallery3dControllerForCircles:
+                                                  gallery3dControllerForCircles!,
+                                              stopScrollingOnEdges:
+                                                  (double primaryDelta) {
+                                                return (primaryDelta <= 0 &&
+                                                        gallery3dControllerForCircles!
+                                                                .currentIndex ==
+                                                            (syncColorImageList!
+                                                                        .length ~/
+                                                                    2 -
+                                                                1) ||
+                                                    (primaryDelta >= 0 &&
+                                                        gallery3dControllerForCircles!
+                                                                .currentIndex ==
+                                                            0));
+                                              },
+                                              itemWidth: 170.w,
+                                              itemHeight: 240,
+                                              threeImages: sliderData.item1,
+                                              onItemClick: (index) {
+                                                widget.setThisEnabled
+                                                    .call(-1, -1);
+                                              },
+                                              images: sliderData.item2,
+                                              galleryHeight: 240,
+                                              onItemChanged: (int index) {
+                                                bool scrollToLeft = false;
+                                                if ((prevIndexForThreeColors ==
+                                                            0 &&
+                                                        index == 2) ||
+                                                    (prevIndexForThreeColors ==
+                                                            2 &&
+                                                        index == 1) ||
+                                                    (prevIndexForThreeColors ==
+                                                            1 &&
+                                                        index == 0)) {
+                                                  scrollToLeft = true;
+                                                }
+                                                prevIndexForThreeColors = index;
+                                                if (!scrollToLeft) {
+                                                  prevIndexInSecondSlider =
+                                                      prevIndexInFirstSlider =
+                                                          (gallery3dControllerForCircles!
+                                                                          .currentIndex +
+                                                                      1) ==
+                                                                  images.length
+                                                              ? 0
+                                                              : (gallery3dControllerForCircles!
+                                                                      .currentIndex +
+                                                                  1);
+                                                  currentColorIndex.value =
+                                                      prevIndexInFirstSlider;
+                                                  gallery3dControllerForCircles!
+                                                      .animateTo(
+                                                          prevIndexInFirstSlider,
+                                                          false);
+                                                } else {
+                                                  prevIndexInSecondSlider =
+                                                      prevIndexInFirstSlider =
+                                                          (gallery3dControllerForCircles!
+                                                                          .currentIndex -
+                                                                      1) <
+                                                                  0
+                                                              ? images.length -
+                                                                  1
+                                                              : (gallery3dControllerForCircles!
+                                                                      .currentIndex -
+                                                                  1);
+                                                  currentColorIndex.value =
+                                                      prevIndexInFirstSlider;
+                                                  gallery3dControllerForCircles!
+                                                      .animateTo(
+                                                          prevIndexInFirstSlider,
+                                                          true);
+                                                }
+                                                if (scrollToLeft) {
+                                                  updateImagesForThreeColorsSlider(
+                                                      true,
+                                                      calledFromOnChanged:
+                                                          true);
+                                                } else {
+                                                  updateImagesForThreeColorsSlider(
+                                                      false,
+                                                      calledFromOnChanged:
+                                                          true);
+                                                }
+                                              },
+                                              galleryWidth: 200,
+                                              radius: 15,
+                                              itemCount: 3,
+                                            ),
+                                          );
+                                        }),
+                                    ValueListenableBuilder<int>(
+                                      valueListenable: currentColorIndex,
+                                      builder: (context, currentIndex, _) {
+                                        return MyTextWidget(
+                                          syncColorImageList![currentIndex]
+                                              .colorName
+                                              .toString(),
+                                          textAlign: TextAlign.center,
+                                          style: textTheme.caption?.mq.copyWith(
+                                            color: Color(int.parse(
+                                                '0xff${widget.productItem.colors![currentIndex % widget.productItem.colors!.length].color!.substring(1)}')),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  }
+                                ],
+                              ),
+                            )
+                          : Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: SizedBox(
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Stack(
+                                      alignment: LanguageService.rtl ? Alignment.centerRight: Alignment.centerLeft,
+                                      children: [
+                                        SizedBox(
+                                          height: 290,
+                                          width: 200,
+                                          child: CarouselSlider.builder(
+                                              itemCount: syncColorImageList
+                                                      .isNullOrEmpty
+                                                  ? widget.productItem.images!
+                                                      .length
+                                                  : syncColorImageList![
+                                                          prevIndexInSecondSlider]
+                                                      .images!
+                                                      .length,
+                                              carouselController:
+                                                  carouselController,
+                                              options: CarouselOptions(
+                                                initialPage:
+                                                    indicatorForProductImages
+                                                            .value[
+                                                        prevIndexInSecondSlider]!,
+                                                height: 290,
+                                                onPageChanged: (page, reason) {
+                                                  indicatorForProductImages
+                                                              .value[
+                                                          prevIndexInSecondSlider] =
+                                                      page;
+                                                  indicatorForProductImages
+                                                      .notifyListeners();
+                                                  if (widget.slidingModeItem
+                                                          .item1 !=
+                                                      -1) {
+                                                    widget.setThisEnabled
+                                                        .call(-1, -1);
+                                                  }
+                                                },
+                                                enableInfiniteScroll: false,
+                                                viewportFraction: 1,
+                                              ),
+                                              itemBuilder: (context, index, _) {
+                                                return ProductListingImageWidget(
+                                                  width: 200,
+                                                  imageUrl: syncColorImageList
+                                                          .isNullOrEmpty
+                                                      ? widget.productItem
+                                                          .images![index]
+                                                      : syncColorImageList![
+                                                              prevIndexInSecondSlider]
+                                                          .images![index],
+                                                  height: 290,
+                                                  circleShape: false,
+                                                  innerShadowYOffset: 3,
+                                                );
+                                              }),
+                                        ),
+                                        Container(
+                                          height: 290,
+                                          width: 30,
+                                          color:Colors.transparent
+                                        )
+                                      ],
+                                    ),
+                                    Positioned(
+                                      top: 0,
+                                      child: InkWell(
+                                        onTap: () {
+                                          widget.setThisEnabled
+                                              .call(widget.itemIndex, 2);
+                                          // setState(() {
+                                          //   slideModeIndex = 2;
+                                          // });
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(5.0),
+                                          child: ValueListenableBuilder<
+                                                  Map<int, int>>(
+                                              valueListenable:
+                                                  indicatorForProductImages,
+                                              builder: (context,
+                                                  currentSelected, _) {
+                                                int itemCount = syncColorImageList
+                                                        .isNullOrEmpty
+                                                    ? widget.productItem.images!
+                                                        .length
+                                                    : syncColorImageList![
+                                                            prevIndexInSecondSlider]
+                                                        .images!
+                                                        .length;
+                                                return Row(
+                                                  children: List.generate(
+                                                      itemCount, (index) {
+                                                    return Container(
+                                                      margin: EdgeInsets.only(
+                                                          right: index !=
+                                                                  (itemCount -
+                                                                      1)
+                                                              ? 2
+                                                              : 0),
+                                                      width: index <=
+                                                              (itemCount ~/ 2)
+                                                          ? (index * 2 + 2)
+                                                          : ((index - ((index - (itemCount ~/ 2)) * 2)) *
+                                                                      2 +
+                                                                  2)
+                                                              .abs()
+                                                              .toDouble(),
+                                                      height: index <=
+                                                              (itemCount ~/ 2)
+                                                          ? (index * 2 + 2)
+                                                          : ((index - ((index - itemCount ~/ 2) * 2)) *
+                                                                      2 +
+                                                                  2)
+                                                              .abs()
+                                                              .toDouble(),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(180),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Color(
+                                                                0x33000000),
+                                                            offset:
+                                                                Offset(0, 3),
+                                                            blurRadius: 6,
+                                                          ),
+                                                        ],
+                                                        gradient: index ==
+                                                                currentSelected[
+                                                                    prevIndexInSecondSlider]
+                                                            ? LinearGradient(
+                                                                colors: [
+                                                                    Color(
+                                                                        0xfff53c3c),
+                                                                    Color(
+                                                                        0xffff9696),
+                                                                  ],
+                                                                stops: [
+                                                                    0,
+                                                                    1
+                                                                  ])
+                                                            : null,
+                                                        border: Border.all(
+                                                            width: 0.3,
+                                                            color: const Color(
+                                                                0xff3c3c3c)),
+                                                      ),
+                                                    );
+                                                  }),
+                                                );
+                                              }),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
+                            ),
                     ],
                   ),
                 ],
@@ -671,8 +701,9 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                MyCachedNetworkImage(imageUrl: widget.productItem
-                                    .brand!.image.toString(),
+                                MyCachedNetworkImage(
+                                    imageUrl: widget.productItem.brand!.image
+                                        .toString(),
                                     logoTextWidth: 60.w,
                                     logoTextHeight: 5,
                                     circleDimensions: 5,
@@ -701,16 +732,17 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     SizedBox(
                                       height: 10,
                                       child: Transform.translate(
-                                        offset: Offset(0, 1),
-                                        child: MyCachedNetworkImage(imageUrl: widget.productItem
-                                                    .category!.icon.toString(),
-                                                    logoTextWidth: 5,
-                                                    logoTextHeight: 5,
-                                                    circleDimensions: 5,
-                                                    width: 10,
-                                                    imageFit: BoxFit.cover,
-                                                    height: 10)
-                                      ),
+                                          offset: Offset(0, 1),
+                                          child: MyCachedNetworkImage(
+                                              imageUrl: widget
+                                                  .productItem.category!.icon
+                                                  .toString(),
+                                              logoTextWidth: 5,
+                                              logoTextHeight: 5,
+                                              circleDimensions: 5,
+                                              width: 10,
+                                              imageFit: BoxFit.cover,
+                                              height: 10)),
                                     ),
                                     // ListView.separated(
                                     //     itemCount: widget.productItem.categories?.length ?? 0,
@@ -737,7 +769,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                           widget.productItem.name.toString(),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: textTheme.overline?.rq.copyWith(
+                                          style:
+                                              textTheme.overline?.rq.copyWith(
                                             color: Color(0xff3c3c3c),
                                           )),
                                     ),
@@ -815,201 +848,202 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
               ),
               slideModeIndex != 2 && gallery3dControllerForCircles != null
                   ? Positioned(
-                  bottom: 70,
-                  child: AnimatedScale(
-                    scale: slideModeIndex == 0 ? 0.57 : 1,
-                    alignment: Alignment.bottomCenter,
-                    duration: Duration(milliseconds: 100),
-                    child: GestureDetector(
-                        onPanStart: (details) {
-                          if (slideModeIndex == 0) {
-                            widget.setThisEnabled.call(widget.itemIndex, 1);
-                            return;
-                          }
-                        },
-                        onPanDown: (details) {
-                          if (slideModeIndex == 0) {
-                            widget.setThisEnabled.call(widget.itemIndex, 1);
-                            return;
-                          }
-                        },
-                        child: Gallery3D(
-                          // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
-                            controller: gallery3dControllerForCircles!,
-                            width: 200.w,
-                            stopScrollingOnEdges: (double primaryDelta) {
-                              return (primaryDelta <= 0 &&
-                                  gallery3dControllerForCircles!
-                                      .currentIndex ==
-                                      (syncColorImageList!.length ~/ 2 -
-                                          1)) ||
-                                  (primaryDelta >= 0 &&
-                                      gallery3dControllerForCircles!
-                                          .currentIndex ==
-                                          0);
-                            },
-                            height: null,
-                            changingPagesScrollOffset: 0.1,
-                            isClip: false,
-                            onItemChanged: (index) {
-                              if (slideModeIndex != 2 &&
-                                  ((prevIndexInSecondSlider < index &&
-                                      (index - prevIndexInSecondSlider) !=
-                                          (syncColorImageList!.length -
-                                              1)) ||
-                                      (prevIndexInSecondSlider ==
-                                          (syncColorImageList!.length -
-                                              1) &&
-                                          index == 0))) {
-                                prevIndexForThreeColors =
-                                (gallery3dControllerForColors
-                                    .currentIndex +
-                                    1) ==
-                                    3
-                                    ? 0
-                                    : (gallery3dControllerForColors
-                                    .currentIndex +
-                                    1);
-                                gallery3dControllerForColors.animateTo(
-                                    prevIndexForThreeColors, false);
-                                updateImagesForThreeColorsSlider(false);
-                              } else if (slideModeIndex != 2) {
-                                prevIndexForThreeColors =
-                                (gallery3dControllerForColors
-                                    .currentIndex -
-                                    1) <
-                                    0
-                                    ? 2
-                                    : (gallery3dControllerForColors
-                                    .currentIndex -
-                                    1);
-                                gallery3dControllerForColors.animateTo(
-                                    prevIndexForThreeColors, true);
-                                updateImagesForThreeColorsSlider(true);
-                              }
-                              if (slideModeIndex != 2) {
-                                prevIndexInFirstSlider = index;
-                                prevIndexInSecondSlider = index;
-                                currentColorIndex.value =
-                                    prevIndexInFirstSlider;
+                      bottom: 70,
+                      child: AnimatedScale(
+                        scale: slideModeIndex == 0 ? 0.625 : 1,
+                        alignment: Alignment.bottomCenter,
+                        duration: Duration(milliseconds: 100),
+                        child: GestureDetector(
+                            onPanStart: (details) {
+                              if (slideModeIndex == 0) {
+                                widget.setThisEnabled.call(widget.itemIndex, 1);
+                                return;
                               }
                             },
-                            itemConfig: GalleryItemConfig(
-                                width: 35,
-                                height: 35,
-                                radius: 180,
-                                isShowTransformMask: false,
-                                shadows: [
-                                  BoxShadow(
-                                    color: Color(0x19000000),
-                                    offset: Offset(0, 3),
-                                    blurRadius: 6,
-                                  ),
-                                ]),
-                            onClickItem: (index) {},
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                onTap: () {
-                                  if (index == prevIndexInFirstSlider) return;
-                                  int indexx = gallery3dControllerForColors
-                                      .currentIndex;
-                                  if ((index -
-                                      (syncColorImageList!.length ~/
-                                          4)) <=
-                                      0) {
-                                    gallery3dControllerForCircles!
-                                        .animateTo(index, false);
-                                    int stepCount = 0;
-                                    if (index > prevIndexInFirstSlider) {
-                                      stepCount =
-                                          index - prevIndexInFirstSlider;
-                                    } else {
-                                      stepCount =
-                                          (syncColorImageList!.length) -
-                                              prevIndexInFirstSlider +
-                                              index;
-                                    }
-                                    for (int i = 0; i < stepCount; i++) {
-                                      indexx++;
-                                      if (indexx == 3) {
-                                        indexx = 0;
-                                      }
-                                      updateImagesForThreeColorsSlider(false,
-                                          currentIndex: indexx);
-                                    }
-                                    for (int i = 0; i < stepCount; i++) {
-                                      gallery3dControllerForColors.animateTo(
-                                          gallery3dControllerForColors
-                                              .currentIndex +
-                                              1 ==
-                                              3
-                                              ? 0
-                                              : (gallery3dControllerForColors
-                                              .currentIndex +
-                                              1),
-                                          false);
-                                    }
-                                  } else {
-                                    gallery3dControllerForCircles!
-                                        .animateTo(index, true);
-                                    int stepCount = 0;
-                                    if (index > prevIndexInFirstSlider) {
-                                      stepCount =
-                                          (syncColorImageList!.length) -
-                                              index +
-                                              prevIndexInFirstSlider;
-                                    } else {
-                                      stepCount =
-                                          prevIndexInFirstSlider - index;
-                                    }
-                                    for (int i = 0; i < stepCount; i++) {
-                                      indexx--;
-                                      if (indexx == -1) {
-                                        indexx = 2;
-                                      }
-                                      updateImagesForThreeColorsSlider(true,
-                                          currentIndex: indexx);
-                                    }
-                                    for (int i = 0; i < stepCount; i++) {
-                                      gallery3dControllerForColors.animateTo(
-                                          (gallery3dControllerForColors
-                                              .currentIndex -
-                                              1) <
-                                              0
-                                              ? 2
-                                              : (gallery3dControllerForColors
-                                              .currentIndex -
-                                              1),
-                                          true);
-                                    }
-                                  }
-                                  prevIndexForThreeColors = indexx;
-                                  prevIndexInSecondSlider =
-                                      prevIndexInFirstSlider = index;
-                                  currentColorIndex.value = index;
+                            onPanDown: (details) {
+                              if (slideModeIndex == 0) {
+                                widget.setThisEnabled.call(widget.itemIndex, 1);
+                                return;
+                              }
+                            },
+                            onTap:(){},
+                            child: Gallery3D(
+                                controller: gallery3dControllerForCircles!,
+                                width: 200.w,
+                                stopScrollingOnEdges: (double primaryDelta) {
+                                  return (primaryDelta <= 0 &&
+                                          gallery3dControllerForCircles!
+                                                  .currentIndex ==
+                                              (syncColorImageList!.length ~/ 2 -
+                                                  1)) ||
+                                      (primaryDelta >= 0 &&
+                                          gallery3dControllerForCircles!
+                                                  .currentIndex ==
+                                              0);
                                 },
-                                child: Visibility(
-                                  visible: index <
-                                      (syncColorImageList!.length ~/ 2),
-                                  child: ProductListingImageWidget(
-                                    width: 35,
-                                    height: 35,
-                                    imageUrl: images[index],
-                                    innerShadowYOffset: 4,
-                                    borderColor: index ==
-                                        prevIndexInFirstSlider
-                                        ? Color(int.parse(
-                                        '0xff${widget.productItem
-                                            .colors![currentColorIndex.value %
-                                            widget.productItem.colors!.length]
-                                            .color!.substring(1)}'))
-                                        : Colors.white,
-                                    circleShape: true,
-                                  ),
+                                height: null,
+                                changingPagesScrollOffset: 0.1,
+                                isClip: false,
+                                onItemChanged: (index) {
+                                  if (slideModeIndex != 2 &&
+                                      ((prevIndexInSecondSlider < index &&
+                                              (index -
+                                                      prevIndexInSecondSlider) !=
+                                                  (syncColorImageList!.length -
+                                                      1)) ||
+                                          (prevIndexInSecondSlider ==
+                                                  (syncColorImageList!.length -
+                                                      1) &&
+                                              index == 0))) {
+                                    prevIndexForThreeColors =
+                                        (gallery3dControllerForColors
+                                                        .currentIndex +
+                                                    1) ==
+                                                3
+                                            ? 0
+                                            : (gallery3dControllerForColors
+                                                    .currentIndex +
+                                                1);
+                                    gallery3dControllerForColors.animateTo(
+                                        prevIndexForThreeColors, false);
+                                    updateImagesForThreeColorsSlider(false);
+                                  } else if (slideModeIndex != 2) {
+                                    prevIndexForThreeColors =
+                                        (gallery3dControllerForColors
+                                                        .currentIndex -
+                                                    1) <
+                                                0
+                                            ? 2
+                                            : (gallery3dControllerForColors
+                                                    .currentIndex -
+                                                1);
+                                    gallery3dControllerForColors.animateTo(
+                                        prevIndexForThreeColors, true);
+                                    updateImagesForThreeColorsSlider(true);
+                                  }
+                                  if (slideModeIndex != 2) {
+                                    prevIndexInFirstSlider = index;
+                                    prevIndexInSecondSlider = index;
+                                    currentColorIndex.value =
+                                        prevIndexInFirstSlider;
+                                  }
+                                },
+                                itemConfig: GalleryItemConfig(
+                                    width: 40,
+                                    height: 40,
+                                    radius: 360,
+                                    isShowTransformMask: false,
+                                    shadows: [
+                                      BoxShadow(
+                                        color: Color(0x19000000),
+                                        offset: Offset(0, 3),
+                                        blurRadius: 6,
+                                      ),
+                                    ]
                                 ),
-                              );
-                            })),
-                  ))
+                                onClickItem: (index) {},
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      if (index == prevIndexInFirstSlider)
+                                        return;
+                                      int indexx = gallery3dControllerForColors
+                                          .currentIndex;
+                                      if ((index -
+                                              (syncColorImageList!.length ~/
+                                                  4)) <=
+                                          0) {
+                                        gallery3dControllerForCircles!
+                                            .animateTo(index, false);
+                                        int stepCount = 0;
+                                        if (index > prevIndexInFirstSlider) {
+                                          stepCount =
+                                              index - prevIndexInFirstSlider;
+                                        } else {
+                                          stepCount =
+                                              (syncColorImageList!.length) -
+                                                  prevIndexInFirstSlider +
+                                                  index;
+                                        }
+                                        for (int i = 0; i < stepCount; i++) {
+                                          indexx++;
+                                          if (indexx == 3) {
+                                            indexx = 0;
+                                          }
+                                          updateImagesForThreeColorsSlider(
+                                              false,
+                                              currentIndex: indexx);
+                                        }
+                                        for (int i = 0; i < stepCount; i++) {
+                                          gallery3dControllerForColors.animateTo(
+                                              gallery3dControllerForColors
+                                                              .currentIndex +
+                                                          1 ==
+                                                      3
+                                                  ? 0
+                                                  : (gallery3dControllerForColors
+                                                          .currentIndex +
+                                                      1),
+                                              false);
+                                        }
+                                      } else {
+                                        gallery3dControllerForCircles!
+                                            .animateTo(index, true);
+                                        int stepCount = 0;
+                                        if (index > prevIndexInFirstSlider) {
+                                          stepCount =
+                                              (syncColorImageList!.length) -
+                                                  index +
+                                                  prevIndexInFirstSlider;
+                                        } else {
+                                          stepCount =
+                                              prevIndexInFirstSlider - index;
+                                        }
+                                        for (int i = 0; i < stepCount; i++) {
+                                          indexx--;
+                                          if (indexx == -1) {
+                                            indexx = 2;
+                                          }
+                                          updateImagesForThreeColorsSlider(true,
+                                              currentIndex: indexx);
+                                        }
+                                        for (int i = 0; i < stepCount; i++) {
+                                          gallery3dControllerForColors.animateTo(
+                                              (gallery3dControllerForColors
+                                                              .currentIndex -
+                                                          1) <
+                                                      0
+                                                  ? 2
+                                                  : (gallery3dControllerForColors
+                                                          .currentIndex -
+                                                      1),
+                                              true);
+                                        }
+                                      }
+                                      prevIndexForThreeColors = indexx;
+                                      prevIndexInSecondSlider =
+                                          prevIndexInFirstSlider = index;
+                                      currentColorIndex.value = index;
+                                    },
+                                    child: Visibility(
+                                      visible: index <
+                                          (syncColorImageList!.length ~/ 2),
+                                      child: ProductListingImageWidget(
+                                        width: 40,
+                                        height: 40,
+                                        imageUrl: images[index],
+                                        innerShadowYOffset: 4,
+                                        borderColor: index ==
+                                                prevIndexInFirstSlider
+                                            ? Color(int.parse(
+                                                '0xff${widget.productItem.colors![currentColorIndex.value % widget.productItem.colors!.length].color!.substring(1)}'))
+                                            : Colors.white,
+                                        circleShape: true,
+                                      ),
+                                    ),
+                                  );
+                                })),
+                      ))
                   : const SizedBox.shrink()
             ],
           ),
@@ -1026,10 +1060,10 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
           (calledFromOnChanged
               ? gallery3dControllerForColors.currentIndex
               : (gallery3dControllerForColors.currentIndex - 1) < 0
-              ? 2
-              : (gallery3dControllerForColors.currentIndex - 1));
+                  ? 2
+                  : (gallery3dControllerForColors.currentIndex - 1));
       String middleImageFromThree =
-      threeImages[index - 1 < 0 ? 2 : (index - 1)];
+          threeImages[index - 1 < 0 ? 2 : (index - 1)];
       threeImages[index - 1 < 0 ? 2 : (index - 1)] = images.last;
       images.removeLast();
       images.insert(0, middleImageFromThree);
@@ -1038,10 +1072,10 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
           (calledFromOnChanged
               ? gallery3dControllerForColors.currentIndex
               : (gallery3dControllerForColors.currentIndex + 1) > 2
-              ? 0
-              : (gallery3dControllerForColors.currentIndex + 1));
+                  ? 0
+                  : (gallery3dControllerForColors.currentIndex + 1));
       String middleImageFromThree =
-      threeImages[index + 1 > 2 ? 0 : (index + 1)];
+          threeImages[index + 1 > 2 ? 0 : (index + 1)];
       threeImages[index + 1 > 2 ? 0 : (index + 1)] = images.first;
       images.removeAt(0);
       images.add(middleImageFromThree);
@@ -1059,10 +1093,10 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
           (calledFromOnChanged
               ? gallery3dControllerForProductImages.currentIndex
               : (gallery3dControllerForProductImages.currentIndex - 1) < 0
-              ? 2
-              : (gallery3dControllerForProductImages.currentIndex - 1));
+                  ? 2
+                  : (gallery3dControllerForProductImages.currentIndex - 1));
       String middleImageFromThree =
-      threeImages[index - 1 < 0 ? 2 : (index - 1)];
+          threeImages[index - 1 < 0 ? 2 : (index - 1)];
       threeImages[index - 1 < 0 ? 2 : (index - 1)] = images.last;
       images.removeLast();
       images.insert(0, middleImageFromThree);
@@ -1071,10 +1105,10 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
           (calledFromOnChanged
               ? gallery3dControllerForProductImages.currentIndex
               : (gallery3dControllerForProductImages.currentIndex + 1) > 2
-              ? 0
-              : (gallery3dControllerForProductImages.currentIndex + 1));
+                  ? 0
+                  : (gallery3dControllerForProductImages.currentIndex + 1));
       String middleImageFromThree =
-      threeImages[index + 1 > 2 ? 0 : (index + 1)];
+          threeImages[index + 1 > 2 ? 0 : (index + 1)];
       threeImages[index + 1 > 2 ? 0 : (index + 1)] = images.first;
       images.removeAt(0);
       images.add(middleImageFromThree);

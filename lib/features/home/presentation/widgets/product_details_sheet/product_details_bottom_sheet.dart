@@ -3,8 +3,11 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -31,19 +34,17 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   final ValueNotifier<List<int>> indicesOfChatCardsToShare = ValueNotifier([]);
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final PageController pageController = PageController();
-  final DraggableScrollableController draggableScrollableController =
-      DraggableScrollableController();
+  final PanelController panelController = PanelController();
 
   @override
   void initState() {
-    draggableScrollableController.addListener(listener);
     _focusNode.addListener(_onFocusChange);
+
     super.initState();
   }
 
   @override
   void dispose() {
-    draggableScrollableController.removeListener(listener);
     _focusNode.addListener(_onFocusChange);
     super.dispose();
   }
@@ -52,118 +53,62 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
     setState(() {});
   }
 
-  void listener() {
-    if (draggableScrollableController.size == 73.5 / (1.sh - 100.h)) {
-      draggableScrollableController.reset();
-      currentActiveTab.value = -1;
-    }
-  }
-
   final _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         ValueListenableBuilder<int>(
             valueListenable: currentActiveTab,
             builder: (context, currentTab, _) {
-              return Flexible(
-                child: DraggableScrollableSheet(
-                    initialChildSize: currentTab == -1
-                        ? 73.5 / (1.sh - 100.h)
-                        : _focusNode.hasFocus
-                            ? 1.h
-                            : 423.5 / (1.sh - 100.h),
-                    minChildSize: 73.5 / (1.sh - 100.h),
-                    snap: true,
-                    snapAnimationDuration: Duration(milliseconds: 100),
-                    maxChildSize: currentTab == -1
-                        ? 73.5 / (1.sh - 100.h)
-                        : _focusNode.hasFocus
-                            ? 1.h
-                            : 423.5 / (1.sh - 100.h),
-                    controller: draggableScrollableController,
-                    builder: (context, scrollController) {
-                      if (draggableScrollableController.isAttached) {
-                        draggableScrollableController.reset();
-                      }
-                      return ScrollConfiguration(
-                        behavior: cupertino.CupertinoScrollBehavior(),
-                        child: SingleChildScrollView(
-                            physics: ClampingScrollPhysics(),
-                            controller: scrollController,
-                            child: Stack(
-                              alignment: Alignment.topCenter,
+              return SlidingUpPanel(
+                maxHeight: 0.54.sh,
+                minHeight: 0.098.sh,
+                onPanelClosed: (){
+                  currentActiveTab.value = -1;
+                },
+                controller: panelController,
+                panelBuilder: (controller) => Column(
+                  children: [
+                    ProductDetailsSheetHeader(
+                        addToBagButtonShapeNotifier:
+                            addToBagButtonShapeNotifier),
+                    currentTab >= 0
+                        ? SizedBox(
+                            height: 350,
+                            child: PageView(
+                              physics: const cupertino.ClampingScrollPhysics(),
+                              scrollBehavior:
+                                  const cupertino.CupertinoScrollBehavior(),
+                              controller: pageController,
+                              onPageChanged: (index) {
+                                currentActiveTab.value = index;
+                                if (indicesOfChatCardsToShare
+                                    .value.isNotEmpty) {
+                                  indicesOfChatCardsToShare.value = [];
+                                }
+                              },
                               children: [
-                                Container(
-                                  width: 1.sw,
-                                  decoration: BoxDecoration(
-                                      color: colorScheme.white,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: const Color(0x1a000000),
-                                          offset: Offset(0, -3),
-                                          blurRadius: 20,
-                                        ),
-                                      ],
-                                      borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(30),
-                                          topRight: Radius.circular(30))),
-                                  child: Directionality(
-                                    textDirection: TextDirection.ltr,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        ProductDetailsSheetHeader(
-                                            addToBagButtonShapeNotifier:
-                                                addToBagButtonShapeNotifier),
-                                        currentTab >= 0
-                                            ? SizedBox(
-                                                height: 350,
-                                                child: PageView(
-                                                  physics:
-                                                      const ClampingScrollPhysics(),
-                                                  scrollBehavior: const cupertino
-                                                      .CupertinoScrollBehavior(),
-                                                  controller: pageController,
-                                                  onPageChanged: (index) {
-                                                    currentActiveTab.value =
-                                                        index;
-                                                    if (indicesOfChatCardsToShare
-                                                        .value.isNotEmpty) {
-                                                      indicesOfChatCardsToShare
-                                                          .value = [];
-                                                    }
-                                                  },
-                                                  children: [
-                                                    ProductDetailsSheetCommentsContent(),
-                                                    ProductDetailsSheetShareContent(
-                                                        focusNode: _focusNode,
-                                                        indicesOfChatCardsToShare:
-                                                            indicesOfChatCardsToShare),
-                                                    ProductDetailsSheetMoreOptionsContent()
-                                                  ],
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                currentTab != -1
-                                    ? Positioned(
-                                        top: 7,
-                                        child: SvgPicture.asset(
-                                          AppAssets.minusMarkSvg,
-                                          width: 25,
-                                          color: Colors.grey.shade200,
-                                        ))
-                                    : const SizedBox.shrink(),
+                                ProductDetailsSheetCommentsContent(
+                                    scrollController: currentTab == 0 ? controller : null),
+                                ProductDetailsSheetShareContent(
+                                    focusNode: _focusNode,
+                                    scrollController: currentTab == 1 ? controller : null,
+                                    indicesOfChatCardsToShare:
+                                        indicesOfChatCardsToShare),
+                                ProductDetailsSheetMoreOptionsContent(
+                                    scrollController: currentTab == 2 ? controller : null)
                               ],
-                            )),
-                      );
-                    }),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ],
+                ),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30.0),
+                    topRight: Radius.circular(30.0)),
               );
             }),
         Divider(
@@ -176,41 +121,23 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               return indices.isEmpty
                   ? ProductDetailsSheetBottomBar(
                       clickOnComments: () {
+                        panelController.open();
                         currentActiveTab.value = 0;
-                        Future.delayed(
-                          Duration(milliseconds: 100),
-                          () {
-                            pageController.animateToPage(0,
-                                duration: Duration(milliseconds: 200),
-                                curve: Curves.easeInOut);
-                          },
-                        );
+                            pageController.jumpToPage(0);
                       },
                       clickOnFavorite: () {
                         currentActiveTab.value = -1;
                       },
                       clickOnMoreOptions: () {
+                        panelController.open();
                         currentActiveTab.value = 2;
-                        Future.delayed(
-                          Duration(milliseconds: 100),
-                          () {
-                            pageController.animateToPage(2,
-                                duration: Duration(milliseconds: 200),
-                                curve: Curves.easeInOut);
-                          },
-                        );
+                            pageController.jumpToPage(2);
                       },
                       clickOnShare: () {
+                        panelController.open();
                         currentActiveTab.value = 1;
-                        Future.delayed(
-                          Duration(milliseconds: 100),
-                          () {
-                            pageController.animateToPage(1,
-                                duration: Duration(milliseconds: 200),
-                                curve: Curves.easeInOut);
+                            pageController.jumpToPage(1);
                           },
-                        );
-                      },
                       currentActiveTab: currentActiveTab,
                       addToBagButtonShapeNotifier: addToBagButtonShapeNotifier)
                   : ShareButton(
@@ -275,5 +202,25 @@ class ShareButton extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class Delegate extends SliverPersistentHeaderDelegate {
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return ProductDetailsSheetHeader(
+        addToBagButtonShapeNotifier: ValueNotifier(0));
+  }
+
+  @override
+  double get maxExtent => 76;
+
+  @override
+  double get minExtent => 76;
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
+    return true;
   }
 }

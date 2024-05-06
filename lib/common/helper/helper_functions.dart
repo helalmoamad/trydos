@@ -1,15 +1,20 @@
 import 'dart:io';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:store_redirect/store_redirect.dart';
 import 'package:trydos/common/constant/countries.dart';
+import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -18,6 +23,8 @@ import '../../features/app/my_text_widget.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:ui' as ui;
+
+import '../constant/design/assets_provider.dart';
 
 class HelperFunctions {
   static changeAppStatus(ThemeMode theme) {
@@ -295,7 +302,7 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
   }
 
   static slidingNavigation(BuildContext context, Widget page , {int milliseconds = 200 }) {
-    Navigator.of(context).push(CupertinoPageRoute(builder: (_)=> page));
+    Navigator.of(context).push(MaterialPageRoute(builder: (_)=> page));
     // Navigator.of(context).push(new PageRouteBuilder(
     //     opaque: false,
     //     transitionDuration:  Duration(milliseconds: milliseconds),
@@ -314,5 +321,121 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
     //       );
     //     }
     //     ));
+  }
+  static void showDescriptionForProductDetails({required BuildContext context , bool withIcon = false}){
+    showModalBottomSheet(
+        context: context,
+        backgroundColor: Color(0xffF4F4F4),
+        barrierColor: Color(0xff1D1D1D).withOpacity(0.75),
+        builder: (ctx) {
+          return Container(
+            height: 250,
+            margin: EdgeInsets.all(20)..copyWith(bottom: 0),
+            decoration:
+            BoxDecoration(borderRadius: BorderRadius.circular(30)),
+            child: Column(
+              children: [
+                DottedBorder(
+                  radius: Radius.circular(15),
+                  borderType: BorderType.RRect,
+                  padding: const EdgeInsets.all(10.0)..copyWith(top: 15),
+                  strokeCap: StrokeCap.round,
+                  strokeWidth: 0.5,
+                  color: Color(0xff707070),
+                  dashPattern: [3, 3],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            AppAssets.partyCozSvg,
+                            width: 20,
+                            height: 20,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          MyTextWidget(
+                            'Suitable Occasions',
+                            style: context.textTheme.bodyText1?.mq.copyWith(
+                                color: Color(0xff8D8D8D),
+                                fontSize: 15.sp,
+                                height: 1.26),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10,),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          MyTextWidget(
+                            'According To The Opinions Of Our Fashion Team, The Appropriate Occasions For This Product Have Been Identified Based On Long Experience. We Provide An Opinion Only And Opinions May Differ From One Person To Another. So It Is Suitable For',
+                            style: context.textTheme.bodyText2?.rq.copyWith(
+                                height: 1.23,
+                                color: Color(0xff8D8D8D),
+                                fontSize: 13.sp),
+                          ),
+                          SizedBox(height: 10,),
+                          SizedBox(
+                            height: 16,
+                            child: ListView.separated(
+                              itemCount: 3,
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    if (withIcon) ...{
+                                      MyTextWidget(
+                                        '97%',
+                                        style: context.textTheme.bodyText2?.rq.copyWith(
+                                            height: 1.23,
+                                            color: Color(0xff505050),
+                                            fontSize: 13.sp),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 5),
+                                        child: SvgPicture.asset(
+                                          AppAssets.polyesterSvg,
+                                          width: 15,
+                                          height: 15,
+                                        ),
+                                      ),
+                                    },
+                                    MyTextWidget(
+                                      'Casual',
+                                      style: context.textTheme.bodyText2?.rq.copyWith(
+                                          height: 1.23,
+                                          color: Color(0xff8D8D8D),
+                                          fontSize: 13.sp),
+                                    )
+                                  ],
+                                );
+                              },
+                              separatorBuilder: (context, index) {
+                                return Container(
+                                  margin:
+                                  EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                                  width: 1,
+                                  decoration: BoxDecoration(
+                                      color: Color(0xff8D8D8D),
+                                      borderRadius: BorderRadius.circular(2)),
+                                );
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Spacer()
+              ],
+            ),
+          );
+        });
   }
 }

@@ -27,7 +27,6 @@ class _ProductItemState extends State<ProductItem> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-        key: UniqueKey(),
         alignment: Alignment.bottomCenter,
         clipBehavior: Clip.none,
         children: [
