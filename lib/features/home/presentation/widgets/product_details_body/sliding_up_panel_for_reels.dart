@@ -8,6 +8,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/reel_widget.dart';
 
 import '../../../../../common/constant/design/assets_provider.dart';
+import '../../../../../trydos_application.dart';
 import '../../../../app/my_text_widget.dart';
 
 class SlidingUpPanelForReels extends StatelessWidget {
@@ -22,6 +23,12 @@ class SlidingUpPanelForReels extends StatelessWidget {
             topLeft: Radius.circular(20.0),
             topRight: Radius.circular(20.0)),
         minHeight: 0,
+        onPanelClosed: (){
+          denySlidingBackForSlidingUpPanels.value = false;
+        },
+        onPanelOpened: (){
+          denySlidingBackForSlidingUpPanels.value = true;
+        },
         controller: panelController,
         maxHeight: 1.sh - 100,
         backdropEnabled: true,

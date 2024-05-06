@@ -53,7 +53,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
           child: ClipRRect(
               borderRadius:
                   borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
-              child: imageUrl!.contains('assets')
+              child: imageUrl?.contains('assets') ?? true
                   ? Image.asset('assets/images/details.jpg',
                       fit: imageFit ?? BoxFit.fill)
                   : MyCachedNetworkImage(
