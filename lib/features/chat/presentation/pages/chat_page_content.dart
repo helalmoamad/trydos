@@ -36,9 +36,11 @@ class ChatPageContent extends StatefulWidget {
 
 class ChatPageContentState extends State<ChatPageContent> {
   late Timer timers;
+  late ChatBloc chatBloc;
   int differencetime = 0;
   @override
   void initState() {
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     differencetime = GetIt.I<PrefsRepository>().getdurtion ?? 0;
 
     FirebasePresence.sendUserStatus(DateTime.now()
@@ -98,6 +100,8 @@ class ChatPageContentState extends State<ChatPageContent> {
 // ! asd
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
+      chatBloc.add(SendErrorChatToServerEvent(
+          error: error.toString(), lastPage: "Chat_Page_Content"));
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());

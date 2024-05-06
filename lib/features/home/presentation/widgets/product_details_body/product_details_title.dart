@@ -1,14 +1,30 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
+    as Brand;
 
 class ProductDetailsTitle extends StatelessWidget {
-  const ProductDetailsTitle({super.key});
+  final Brand.Brand brand;
+  final String ViewerCount;
+  final String productName;
+  final String thumbnail;
+  final String colorName;
+
+  ProductDetailsTitle(
+      {super.key,
+      required this.brand,
+      required this.productName,
+      required this.ViewerCount,
+      required this.thumbnail,
+      required this.colorName});
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +36,11 @@ class ProductDetailsTitle extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SvgPicture.asset(
-                AppAssets.mangoSvg,
-                height: 18,
+              MyCachedNetworkImage(
+                height: 60,
                 width: 112,
+                imageUrl: brand.image!,
+                imageFit: BoxFit.cover,
               ),
               Row(
                 children: [
@@ -36,7 +53,7 @@ class ProductDetailsTitle extends StatelessWidget {
                     width: 5,
                   ),
                   MyTextWidget(
-                    '200k',
+                    ViewerCount,
                     style: context.textTheme.caption?.rq
                         .copyWith(color: Color(0xff505050), height: 1.26),
                   )
@@ -45,20 +62,23 @@ class ProductDetailsTitle extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(height: 10,),
+        SizedBox(
+          height: 10,
+        ),
         Padding(
           padding: EdgeInsets.only(left: 20.0),
           child: Row(
             children: [
               MyTextWidget(
-                'Women Short Dress',
+                productName,
                 style: context.textTheme.subtitle1?.mq.copyWith(
                     color: Color(0xff5D5C5D), height: 1.26, fontSize: 15.sp),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                child: SvgPicture.asset(
-                  AppAssets.dressSvg,
+                child: MyCachedNetworkImage(
+                  imageFit: BoxFit.cover,
+                  imageUrl: thumbnail,
                   height: 15,
                   width: 15,
                 ),
@@ -68,15 +88,14 @@ class ProductDetailsTitle extends StatelessWidget {
                 height: 14,
                 decoration: BoxDecoration(
                     color: Color(0xff8D8D8D),
-                    borderRadius: BorderRadius.circular(2)
-                ),
+                    borderRadius: BorderRadius.circular(2)),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 5.0),
                 child: MyTextWidget(
-                  'Denim Blue',
-                  style: context.textTheme.subtitle1?.rq
-                      .copyWith(color: Color(0xff404E68), height: 1.26, fontSize: 15.sp),
+                  colorName,
+                  style: context.textTheme.subtitle1?.rq.copyWith(
+                      color: Color(0xff404E68), height: 1.26, fontSize: 15.sp),
                 ),
               )
             ],

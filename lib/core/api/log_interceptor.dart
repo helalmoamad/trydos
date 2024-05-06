@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/core/api/client_config.dart';
 import '../../../common/constant/configuration/chat_url_routes.dart';
 import '../../enums/status_code_type.dart';
 import '../domin/repositories/prefs_repository.dart';
@@ -31,7 +33,14 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n timeout: ${options.connectTimeout! ~/ 1000}s",
       );
     }
-    _prefsRepository.saveRequestsData(options.path, options.data is! FormData ? options.data : {'data' : 'formData'}, options.headers, null, options.method, options.queryParameters, options.data is! FormData ? options.data : {'data' : 'formData'});
+    _prefsRepository.saveRequestsData(
+        options.path,
+        options.data is! FormData ? options.data : {'data': 'formData'},
+        options.headers,
+        null,
+        options.method,
+        options.queryParameters,
+        options.data is! FormData ? options.data : {'data': 'formData'});
 
     handler.next(options);
   }
@@ -45,8 +54,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       } else {
         statusType = _StatusType.failed;
       }
-      final requestRoute =
-          response.requestOptions.path;
+      final requestRoute = response.requestOptions.path;
 
       if (statusType == _StatusType.failed) {
         prettyPrinterError(
@@ -66,8 +74,10 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   }
 
   @override
-  void onError(DioError err, ErrorInterceptorHandler handler) {
+  void onError(DioException err, ErrorInterceptorHandler handler) {
     if (kDebugMode) {
+      print("${jsonDecode(err.response.toString())["detailed_error"][0]["file"].toString().contains("chating_staging_trydos")}" +
+          "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999");
       prettyPrinterError(
         "***|| SOMETHING ERROR 💔 ||***"
         "\n error: ${err.error}"
@@ -77,9 +87,14 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n stackTrace: ${err.stackTrace}",
       );
     }
-    _prefsRepository.saveRequestsData(err.requestOptions.path, err.response?.data ?? {
-      'error' : err.error.toString()
-    }, err.response?.headers.map ?? {}, err.response?.statusCode, err.requestOptions.method, err.requestOptions.queryParameters, err.response?.data ?? {});
+    _prefsRepository.saveRequestsData(
+        err.requestOptions.path,
+        err.response?.data ?? {'error': err.error.toString()},
+        err.response?.headers.map ?? {},
+        err.response?.statusCode,
+        err.requestOptions.method,
+        err.requestOptions.queryParameters,
+        err.response?.data ?? {});
 
     // GetIt.I<Dio>().post('${ChatUrls.baseUrl}/${ChatEndPoints.createBugEP}', data: {
     //   "user_id": _prefsRepository.myChatId,

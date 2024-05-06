@@ -450,3 +450,12 @@ class GetDateTimeEvent extends ChatEvent {
   // TODO: implement props
   List<Object?> get props => [];
 }
+
+class SendErrorChatToServerEvent extends ChatEvent {
+  String error;
+  String lastPage;
+  SendErrorChatToServerEvent({required this.error, required this.lastPage});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [error, lastPage];
+}

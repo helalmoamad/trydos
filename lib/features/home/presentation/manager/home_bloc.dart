@@ -10,12 +10,14 @@ import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_sections_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usecase.dart';
 import '../../../../common/helper/helper_functions.dart';
@@ -38,11 +40,17 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 }
 
 @LazySingleton()
-class HomeBloc extends HydratedBloc<HomeEvent, HomeState>{
-  HomeBloc(this.getHomeSectionsUseCase, this.getMainCategoriesUseCase,
-      this.getStartingSettingsUseCase, this.getProductsWithoutFiltersUseCase)
+class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
+  HomeBloc(
+      this.getHomeSectionsUseCase,
+      this.getMainCategoriesUseCase,
+      this.getProductDetailWithoutRelatedProductsUseCase,
+      this.getStartingSettingsUseCase,
+      this.getProductsWithoutFiltersUseCase)
       : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
+    on<AddCurrentIndexEvent>(_onAddCurrentIndexEvent,
+        transformer: throttleDroppable(throttleDuration));
     on<GetHomeSectionsEvent>(_onGetHomeSectionsEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetStartingSettingsEvent>(_onGetStartingSettingsEvent,
@@ -51,11 +59,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState>{
         transformer: throttleDroppable(throttleDuration));
     on<GetProductsWithoutFiltersEvent>(_onGetProductsWithoutFiltersEvent,
         transformer: throttleDroppable(throttleDuration));
+
+    on<GetProductDatailsWithoutRelatedProductsEvent>(
+        _onGetProductDatailsWithoutRelatedProductsEvent,
+        transformer: throttleDroppable(throttleDuration));
   }
 
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final GetStartingSettingsUseCase getStartingSettingsUseCase;
   final GetHomeSectionsUseCase getHomeSectionsUseCase;
+  final GetProductDetailWithoutRelatedProductsUseCase
+      getProductDetailWithoutRelatedProductsUseCase;
+
   final GetMainCategoriesUseCase getMainCategoriesUseCase;
   final GetProductsWithoutFiltersUseCase getProductsWithoutFiltersUseCase;
 
@@ -68,7 +83,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState>{
         Map.of(state.getHomeSectionsPaginationObject);
     if (getHomeSectionsPaginationObject[event.categorySlug] == null) {
       getHomeSectionsPaginationObject[event.categorySlug] =
-      PaginationModel<HomeSectionDataObject>.init();
+          PaginationModel<HomeSectionDataObject>.init();
     }
     if (!event.getWithPagination &&
         (getHomeSectionsPaginationObject[event.categorySlug]!.items.length >
@@ -176,9 +191,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState>{
     }
     add(GetStartingSettingsEvent());
     if (prefsRepository.chatToken != null) {
-      GetIt.I<ChatBloc>().add(GetChatsEvent(
-        limit: 10
-      ));
+      GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
     }
   }
 
@@ -235,16 +248,53 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState>{
     });
   }
 
+  FutureOr<void> _onGetProductDatailsWithoutRelatedProductsEvent(
+      GetProductDatailsWithoutRelatedProductsEvent event,
+      Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        getProductDetailWithoutSimilarRelatedProductsStatus:
+            GetProductDetailWithoutSimilarRelatedProductsStatus.loading));
+    final response =
+        await getProductDetailWithoutRelatedProductsUseCase(event.productId!);
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime
+          .contains('GetProductDatailsWithoutRelatedProductsEvent')) {
+        add(GetMainCategoriesEvent());
+        isFailedTheFirstTime
+            .add('GetProductDatailsWithoutRelatedProductsEvent');
+      }
+      emit(state.copyWith(
+          getProductDetailWithoutSimilarRelatedProductsStatus:
+              GetProductDetailWithoutSimilarRelatedProductsStatus.failure));
+    }, (r) {
+      apisMustNotToRequest.add('GetProductDatailsWithoutRelatedProductsEvent');
+      isFailedTheFirstTime
+          .remove('GetProductDatailsWithoutRelatedProductsEvent');
+      emit(state.copyWith(
+          getProductDetailWithoutRelatedProductsModel: r,
+          getProductDetailWithoutSimilarRelatedProductsStatus:
+              GetProductDetailWithoutSimilarRelatedProductsStatus.success));
+    });
+  }
+
+  _onAddCurrentIndexEvent(AddCurrentIndexEvent event, Emitter<HomeState> emit) {
+    emit(state.copyWith(currentIndex: event.currentIndex));
+  }
+
   @override
   HomeState? fromJson(Map<String, dynamic> json) {
     return HomeState.fromJson(json);
   }
+
   @override
   Map<String, dynamic>? toJson(HomeState state) {
-      return state.copyWith(
-        getMainCategoriesStatus: GetMainCategoriesStatus.init,
-        getProductsWithoutFiltersStatus: GetProductsWithoutFiltersStatus.init,
-        getStartingSettingsStatus: GetStartingSettingsStatus.init,
-      ).toJson();
+    return state
+        .copyWith(
+          getMainCategoriesStatus: GetMainCategoriesStatus.init,
+          getProductsWithoutFiltersStatus: GetProductsWithoutFiltersStatus.init,
+          getStartingSettingsStatus: GetStartingSettingsStatus.init,
+        )
+        .toJson();
   }
 }

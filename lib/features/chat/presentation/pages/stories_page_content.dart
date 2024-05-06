@@ -8,6 +8,8 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/calls/data/models/my_calls.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -27,13 +29,18 @@ class StoriesForChatPageContent extends StatefulWidget {
 
 class _StoriesForChatPageContentState
     extends ThemeState<StoriesForChatPageContent> {
+  late ChatBloc chatBloc;
   void initState() {
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     super.initState();
   }
-bool thereIsAddStoryCard = false;
+
+  bool thereIsAddStoryCard = false;
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
+      chatBloc.add(SendErrorChatToServerEvent(
+          error: error.toString(), lastPage: "Stories_For_Chat_Page_Content"));
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
@@ -78,11 +85,14 @@ bool thereIsAddStoryCard = false;
               }
 
               return StoryCard(
-                index: thereIsAddStoryCard ? (index -1) : index,
+                index: thereIsAddStoryCard ? (index - 1) : index,
                 collectionStoryModel: state.storiesCollections[index],
               );
             },
-            separator:  Divider(color: Colors.grey.shade300,height: 1.h,),
+            separator: Divider(
+              color: Colors.grey.shade300,
+              height: 1.h,
+            ),
             childCount: state.storiesCollections.length,
           )
         ]);

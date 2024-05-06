@@ -163,6 +163,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
     Locale locale = Localizations.localeOf(context);
     bool lan = locale.languageCode.contains("en");
     FlutterError.onError = (details) {
+      chatBloc.add(SendErrorChatToServerEvent(
+          error: details.toString(), lastPage: "Single_Page_Chat"));
       print("asfsd${details.toString()}");
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,

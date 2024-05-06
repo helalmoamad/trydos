@@ -22,7 +22,10 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_share_content.dart';
 
 class ProductDetailsBottomSheet extends StatefulWidget {
-  const ProductDetailsBottomSheet({super.key});
+  final String price;
+  final String offerPrice;
+  const ProductDetailsBottomSheet(
+      {super.key, required this.price, required this.offerPrice});
 
   @override
   State<ProductDetailsBottomSheet> createState() =>
@@ -72,9 +75,26 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                 controller: panelController,
                 panelBuilder: (controller) => Column(
                   children: [
-                    ProductDetailsSheetHeader(
-                        addToBagButtonShapeNotifier:
-                            addToBagButtonShapeNotifier),
+                    Stack(
+                      alignment: Alignment.topCenter,
+                      children: [
+                        ProductDetailsSheetHeader(
+                          addToBagButtonShapeNotifier:
+                          addToBagButtonShapeNotifier,
+                          price: widget.price,
+                          offerPrice: widget.offerPrice,
+                        ),
+                        currentTab != -1
+                            ? Positioned(
+                            top: 7,
+                            child: SvgPicture.asset(
+                              AppAssets.minusMarkSvg,
+                              width: 25,
+                              color: Colors.grey.shade200,
+                            ))
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
                     currentTab >= 0
                         ? SizedBox(
                             height: 350,
@@ -205,22 +225,3 @@ class ShareButton extends StatelessWidget {
   }
 }
 
-class Delegate extends SliverPersistentHeaderDelegate {
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return ProductDetailsSheetHeader(
-        addToBagButtonShapeNotifier: ValueNotifier(0));
-  }
-
-  @override
-  double get maxExtent => 76;
-
-  @override
-  double get minExtent => 76;
-
-  @override
-  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
-    return true;
-  }
-}

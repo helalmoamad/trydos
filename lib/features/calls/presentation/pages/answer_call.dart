@@ -12,6 +12,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/calls/presentation/pages/room_call_page.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:vibration/vibration.dart';
@@ -21,6 +22,7 @@ import '../../../../config/theme/typography.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
+import '../../../chat/presentation/manager/chat_event.dart';
 import '../widgets/call_status_widget.dart';
 import '../../../chat/presentation/widgets/chat_widgets/no_image_widget.dart';
 import 'agora_webview.dart';
@@ -55,8 +57,11 @@ class _AnswerCallState extends State<AnswerCall> {
     super.dispose();
   }
 
+  late ChatBloc chatBloc;
+
   @override
   void initState() {
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     if (GetIt.I<CallsBloc>().state.makeCallStatus == MakeCallStatus.endCall) {
       Navigator.of(context).pop();
       debugPrint('poppp');
@@ -73,6 +78,14 @@ class _AnswerCallState extends State<AnswerCall> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      chatBloc.add(SendErrorChatToServerEvent(
+          error: error.toString(), lastPage: "Answer_Call"));
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
+
     // GoRouter.of(context).p
     return Scaffold(
       backgroundColor: colorScheme.black,

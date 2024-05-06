@@ -49,26 +49,29 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 @injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(
-      this.updateStoriesUserUseCase,
-      this.updateChatUserNameUseCase,
-      this.createUserUseCase,
-      this.loginToChatUseCase,
-      this.loginToMarketUseCase,
-      this.loginToStoriesUseCase,
-      this.storeFcmUseCase,
-      this.updateNameUseCase,
-      this.registerGuestUseCase,
-      this.sendOtpUseCase,
-      this.getCustomerInfoUseCase,
-      this.verifyGuestPhoneUseCase,
-      this.verifyOtpSignInUseCase,
-      this.getUserCountryUseCase,
-      this.verifyOtpSignUpUseCase)
-      : super(const AuthState()) {
+    this.updateStoriesUserUseCase,
+    this.updateChatUserNameUseCase,
+    this.createUserUseCase,
+    this.loginToChatUseCase,
+    this.loginToMarketUseCase,
+    this.loginToStoriesUseCase,
+    this.storeFcmUseCase,
+    this.updateNameUseCase,
+    this.registerGuestUseCase,
+    this.sendOtpUseCase,
+    this.getCustomerInfoUseCase,
+    this.verifyGuestPhoneUseCase,
+    this.verifyOtpSignInUseCase,
+    this.getUserCountryUseCase,
+    this.verifyOtpSignUpUseCase,
+  ) : super(const AuthState()) {
     on<AuthEvent>((event, emit) {});
-    on<CreateUserEvent>(_onCreateUserEvent, transformer: throttleDroppable(throttleDuration));
-    on<UpdateStoriesUserEvent>(_onUpdateStoriesUserEvent, transformer: throttleDroppable(throttleDuration));
-    on<UpdateChatUserNameEvent>(_onUpdateChatUserNameEvent, transformer: throttleDroppable(throttleDuration));
+    on<CreateUserEvent>(_onCreateUserEvent,
+        transformer: throttleDroppable(throttleDuration));
+    on<UpdateStoriesUserEvent>(_onUpdateStoriesUserEvent,
+        transformer: throttleDroppable(throttleDuration));
+    on<UpdateChatUserNameEvent>(_onUpdateChatUserNameEvent,
+        transformer: throttleDroppable(throttleDuration));
     on<LoginToChatEvent>(_onLoginToChatEvent,
         transformer: throttleDroppable(throttleDuration));
     on<LoginToStoriesEvent>(_onLoginToStoriesEvent,
@@ -170,9 +173,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
         add(StoreFcmTokenEvent(userId: id!, fcmToken: event.fcmToken));
         apisMustNotToRequest.remove('GetChatsEvent');
-        GetIt.I<ChatBloc>().add(GetChatsEvent(
-          limit: 10
-        ));
+        GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
       },
     );
   }
@@ -296,9 +297,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           name: r.data!.user!.name,
           phone: r.data!.user!.phone,
         ));
-      }catch(error){
+      } catch (error) {
         showMessage(error.toString());
-
       }
       debugPrint(
           'login _prefsRepository.chatToken${_prefsRepository.chatToken}');
@@ -306,7 +306,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           'login _prefsRepository.marketToken${_prefsRepository.marketToken}');
       debugPrint(
           'login _prefsRepository.storiesToken${_prefsRepository.storiesToken}');
-      if(!r.data!.alreadyExist!){
+      if (!r.data!.alreadyExist!) {
         emit(state.copyWith(
             verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
             marketUser: r.data!.user,
@@ -332,8 +332,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     response.fold((l) {
       _prefsRepository.setOtpCode(event.otp);
       emit(state.copyWith(
-          verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
-          ));
+        verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
+      ));
     }, (r) {
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
@@ -350,7 +350,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         name: r.data!.user!.name,
         phone: r.data!.user!.phone,
       ));
-      if(r.data!.alreadyExist!){
+      if (r.data!.alreadyExist!) {
         emit(state.copyWith(
             verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
             marketUser: r.data!.user,
@@ -358,9 +358,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         return;
       }
-        emit(state.copyWith(
-            verifyOtpSignUpStatus: VerifyOtpSignUpStatus.success,
-            marketUser: r.data!.user));
+      emit(state.copyWith(
+          verifyOtpSignUpStatus: VerifyOtpSignUpStatus.success,
+          marketUser: r.data!.user));
     });
   }
 
@@ -370,7 +370,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final response = await registerGuestUseCase(
       RegisterGuestParams(deviceId: event.deviceId),
     );
-    bool? previousStatusOfIsVerifiedPhone = _prefsRepository.isVerifiedPhone ?? false;
+    bool? previousStatusOfIsVerifiedPhone =
+        _prefsRepository.isVerifiedPhone ?? false;
     _prefsRepository.setVerifiedPhone(false);
 
     response.fold((l) {
@@ -431,7 +432,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-  FutureOr<void> _onGetUserCountryEvent(GetUserCountryEvent event, Emitter<AuthState> emit) async {
+  FutureOr<void> _onGetUserCountryEvent(
+      GetUserCountryEvent event, Emitter<AuthState> emit) async {
     final response = await getUserCountryUseCase(NoParams());
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetUserCountryEvent')) {
@@ -441,12 +443,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       isFailedTheFirstTime.remove('GetUserCountryEvent');
 
-      _prefsRepository.setCountryName(countries.firstWhere((element) => element.code == r.countryCode).name);
+      _prefsRepository.setCountryName(countries
+          .firstWhere((element) => element.code == r.countryCode)
+          .name);
     });
   }
 
-  FutureOr<void> _onUpdateStoriesUserEvent(UpdateStoriesUserEvent event, Emitter<AuthState> emit) async {
-    emit(state.copyWith(updateStoriesUserStatus: UpdateStoriesUserStatus.loading));
+  FutureOr<void> _onUpdateStoriesUserEvent(
+      UpdateStoriesUserEvent event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(
+        updateStoriesUserStatus: UpdateStoriesUserStatus.loading));
     final response = await updateStoriesUserUseCase(
       UpdateStoriesUserParams(name: event.name),
     );
@@ -455,9 +461,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         add(UpdateStoriesUserEvent(name: event.name));
         isFailedTheFirstTime.add('UpdateStoriesUserEvent');
       }
-      emit(state.copyWith(updateStoriesUserStatus: UpdateStoriesUserStatus.failure));
+      emit(state.copyWith(
+          updateStoriesUserStatus: UpdateStoriesUserStatus.failure));
     }, (r) {
-      GetIt.I<StoryBloc>().add(UpdateNameForUserInCollectionIfExistEvent(name: event.name));
+      GetIt.I<StoryBloc>()
+          .add(UpdateNameForUserInCollectionIfExistEvent(name: event.name));
       isFailedTheFirstTime.remove('UpdateStoriesUserEvent');
       _prefsRepository.setMyStoriesName(event.name);
       emit(state.copyWith(
@@ -466,8 +474,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-  FutureOr<void> _onUpdateChatUserNameEvent(UpdateChatUserNameEvent event, Emitter<AuthState> emit) async{
-    emit(state.copyWith(updateChatUserNameStatus: UpdateChatUserNameStatus.loading));
+  FutureOr<void> _onUpdateChatUserNameEvent(
+      UpdateChatUserNameEvent event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(
+        updateChatUserNameStatus: UpdateChatUserNameStatus.loading));
     final response = await updateChatUserNameUseCase(
       UpdateChatUserNameParams(name: event.name),
     );
@@ -476,7 +486,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         add(UpdateStoriesUserEvent(name: event.name));
         isFailedTheFirstTime.add('UpdateChatUserNameEvent');
       }
-      emit(state.copyWith(updateChatUserNameStatus: UpdateChatUserNameStatus.failure));
+      emit(state.copyWith(
+          updateChatUserNameStatus: UpdateChatUserNameStatus.failure));
     }, (r) {
       isFailedTheFirstTime.remove('UpdateChatUserNameEvent');
       _prefsRepository.setMyChatName(event.name);

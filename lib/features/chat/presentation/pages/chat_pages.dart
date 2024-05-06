@@ -109,6 +109,8 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (details) {
+      chatBloc.add(SendErrorChatToServerEvent(
+          error: details.toString(), lastPage: "Chat_Pages"));
       debugPrint("asfsd${details.toString()}");
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,

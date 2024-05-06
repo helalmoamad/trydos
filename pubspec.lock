@@ -822,6 +822,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.13.1"
+  flutter_lints:
+    dependency: "direct dev"
+    description:
+      name: flutter_lints
+      sha256: b543301ad291598523947dc534aaddc5aaad597b709d2426d3a0e0d44c5cb493
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   flutter_local_notifications:
     dependency: "direct main"
     description:
@@ -924,7 +932,7 @@ packages:
     source: hosted
     version: "1.1.6"
   flutter_test:
-    dependency: transitive
+    dependency: "direct dev"
     description: flutter
     source: sdk
     version: "0.0.0"
@@ -1014,7 +1022,7 @@ packages:
     source: hosted
     version: "0.15.4"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "761a297c042deedc1ffbb156d6e2af13886bb305c2a343a4d972504cd67dd938"
@@ -1173,6 +1181,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.0"
+  lints:
+    dependency: transitive
+    description:
+      name: lints
+      sha256: a2c3d198cb5ea2e179926622d433331d8b58374ab8f29cdda6e863bd62fd369c
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   logger:
     dependency: "direct main"
     description:
@@ -1246,13 +1262,13 @@ packages:
     source: hosted
     version: "5.4.4"
   mocktail:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: mocktail
-      sha256: c4b5007d91ca4f67256e720cb1b6d704e79a510183a12fa551021f652577dce6
+      sha256: dd85ca5229cf677079fd9ac740aebfc34d9287cdf294e6b2ba9fae25c39e4dc2
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.3"
+    version: "0.2.0"
   nested:
     dependency: transitive
     description:
@@ -1542,7 +1558,7 @@ packages:
     source: hosted
     version: "4.1.0"
   rxdart:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: rxdart
       sha256: "0c7c0cedd93788d996e33041ffecda924cc54389199cde4e6a34b440f50044cb"

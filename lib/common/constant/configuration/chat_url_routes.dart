@@ -30,6 +30,7 @@ extension ScopeApi on String {
 abstract class ChatEndPoints {
   ///! ----< user >----
   ///
+  static final sendErrorChatToServer = 'mobile_error_log/chat'.usersScope();
   static final loginEP = 'login'.usersScope();
   static final updateUserNameEP = 'update_user_name'.usersScope();
   static final getMyContactsEP = 'my_contacts'.usersScope();

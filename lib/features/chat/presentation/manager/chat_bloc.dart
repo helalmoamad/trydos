@@ -26,6 +26,7 @@ import 'package:trydos/features/chat/domain/use_cases/get_my_chats_usecase.dart'
 import 'package:trydos/features/chat/domain/use_cases/read_all_messages_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/save_contacts_usecase.dart';
+import 'package:trydos/features/chat/domain/use_cases/send_error_to_server_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/upload_file_usecase.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
@@ -68,11 +69,14 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       this.readAllMessagesUseCase,
       this.receiveMessageUseCase,
       this.getMediaCountUseCase,
-      this.getDateTimeUseCase)
+      this.getDateTimeUseCase,
+      this.sendErrorToServerUseCase)
       : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
     on<UpdateChannelObjectFromNotificationEvent>(
         _onUpdateChannelObjectFromNotificationEvent);
+    on<SendErrorChatToServerEvent>(_onSendErrorChatToServerEvent);
+
     on<DeleteChatFromNotificationEvent>(_onDeleteChatFromNotificationEvent);
     on<ChangeGlobalUsedVariablesInBloc>(_onChangeGlobalUsedVariablesInBloc);
     on<ResendMessageEvent>(_onResendMessageEvent);
@@ -117,6 +121,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   final GetContactsUseCase getContactsUseCase;
   final GetDateTimeUseCase getDateTimeUseCase;
   final GetMyChatsUseCase getMyChatsUseCase;
+  final SendErrorToServerUseCase sendErrorToServerUseCase;
   final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
   final UploadFileUseCase uploadFileUseCase;
   final ReadAllMessagesUseCase readAllMessagesUseCase;
@@ -289,16 +294,12 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             return r.channel!.copyWith(
                 localId: event.channelId,
                 messages: e.messages?.map((e) {
-                  print('${r.channel!.channelMembers}' +
-                      "00000000000000000000000000000000000000111111111111100");
                   if (e.localId == event.messageId) {
                     return r.copyWith(localId: e.localId);
                   }
                   return e;
                 }).toList());
           } else if (e.id == event.channelId) {
-            print('${r.channel!.channelMembers}' +
-                "0000000000222222222222222222222222222222222222222222000");
             List<Message> messages = List.of(e.messages ?? []);
             int index = messages.indexWhere((element) =>
                 (element.id == event.messageId ||
@@ -690,7 +691,6 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onReceiveMissCallEvent(
       ReceiveMissCallEvent event, Emitter<ChatState> emit) async {
-    print("00000000000000000000000000000000000000000000000000000000000");
     bool fromPinned = false;
     List<Chat> chats;
     if (state.chats.any(
@@ -1669,6 +1669,20 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
       GetIt.I<PrefsRepository>().setDuration(diff.inMinutes);
       emit(state.copyWith(duration: diff));
+    });
+  }
+
+  FutureOr<void> _onSendErrorChatToServerEvent(
+      SendErrorChatToServerEvent event, Emitter<ChatState> emit) async {
+    final response = await sendErrorToServerUseCase(
+        SendErrorParams(error: event.error, pageName: event.lastPage));
+    response.fold(
+        (l) => print("${event.error.toString().substring(1, 40)}" +
+            "failed to send error to back end" +
+            "544444444444444444444444444444444444444"), (r) {
+      print("${event.error.toString().substring(1, 40)}" +
+          "success to send error to back end" +
+          "2222222222222222222222222222222222222222222222222222222222222222");
     });
   }
 }

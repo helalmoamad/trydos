@@ -83,7 +83,7 @@ class ProductDetailsSheetShareContent extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Wrap(
                     children: List.generate(
-                        15,
+                        10,
                         (index) => ChatCardForShare(
                               index: index,
                               onTap: () {

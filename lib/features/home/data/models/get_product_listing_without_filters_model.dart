@@ -4,9 +4,13 @@
 
 import 'dart:convert';
 
-GetProductListingWithoutFiltersModel getProductListingWithoutFiltersModelFromJson(String str) => GetProductListingWithoutFiltersModel.fromJson(json.decode(str));
+GetProductListingWithoutFiltersModel
+    getProductListingWithoutFiltersModelFromJson(String str) =>
+        GetProductListingWithoutFiltersModel.fromJson(json.decode(str));
 
-String getProductListingWithoutFiltersModelToJson(GetProductListingWithoutFiltersModel data) => json.encode(data.toJson());
+String getProductListingWithoutFiltersModelToJson(
+        GetProductListingWithoutFiltersModel data) =>
+    json.encode(data.toJson());
 
 class GetProductListingWithoutFiltersModel {
   final String? message;
@@ -26,15 +30,17 @@ class GetProductListingWithoutFiltersModel {
         data: data ?? this.data,
       );
 
-  factory GetProductListingWithoutFiltersModel.fromJson(Map<String, dynamic> json) => GetProductListingWithoutFiltersModel(
-    message: json["message"],
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
-  );
+  factory GetProductListingWithoutFiltersModel.fromJson(
+          Map<String, dynamic> json) =>
+      GetProductListingWithoutFiltersModel(
+        message: json["message"],
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "message": message,
-    "data": data?.toJson(),
-  };
+        "message": message,
+        "data": data?.toJson(),
+      };
 }
 
 class Data {
@@ -88,7 +94,8 @@ class Data {
         categoryParentParent: categoryParentParent ?? this.categoryParentParent,
         categoryParent: categoryParent ?? this.categoryParent,
         category: category ?? this.category,
-        categorySeoDescription: categorySeoDescription ?? this.categorySeoDescription,
+        categorySeoDescription:
+            categorySeoDescription ?? this.categorySeoDescription,
         categoryTitle: categoryTitle ?? this.categoryTitle,
         categoryH1: categoryH1 ?? this.categoryH1,
         childCategories: childCategories ?? this.childCategories,
@@ -96,34 +103,46 @@ class Data {
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    totalSize: json["total_size"],
-    limit: json["limit"],
-    offset: json["offset"],
-    products: json["products"] == null ? [] : List<Product>.from(json["products"]!.map((x) => Product.fromJson(x))),
-    categoryParentParent: json["category_parent_parent"],
-    categoryParent: json["category_parent"],
-    category: json["category"] == null ? null : ChildCategoryClass.fromJson(json["category"]),
-    categorySeoDescription: json["category_seo_description"],
-    categoryTitle: json["category_title"],
-    categoryH1: json["category_h1"],
-    childCategories: json["child_categories"] == null ? [] : List<ChildCategoryClass>.from(json["child_categories"]!.map((x) => ChildCategoryClass.fromJson(x))),
-    resultFor: json["result_for"],
-  );
+        totalSize: json["total_size"],
+        limit: json["limit"],
+        offset: json["offset"],
+        products: json["products"] == null
+            ? []
+            : List<Product>.from(
+                json["products"]!.map((x) => Product.fromJson(x))),
+        categoryParentParent: json["category_parent_parent"],
+        categoryParent: json["category_parent"],
+        category: json["category"] == null
+            ? null
+            : ChildCategoryClass.fromJson(json["category"]),
+        categorySeoDescription: json["category_seo_description"],
+        categoryTitle: json["category_title"],
+        categoryH1: json["category_h1"],
+        childCategories: json["child_categories"] == null
+            ? []
+            : List<ChildCategoryClass>.from(json["child_categories"]!
+                .map((x) => ChildCategoryClass.fromJson(x))),
+        resultFor: json["result_for"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "total_size": totalSize,
-    "limit": limit,
-    "offset": offset,
-    "products": products == null ? [] : List<dynamic>.from(products!.map((x) => x.toJson())),
-    "category_parent_parent": categoryParentParent,
-    "category_parent": categoryParent,
-    "category": category?.toJson(),
-    "category_seo_description": categorySeoDescription,
-    "category_title": categoryTitle,
-    "category_h1": categoryH1,
-    "child_categories": childCategories == null ? [] : List<dynamic>.from(childCategories!.map((x) => x.toJson())),
-    "result_for": resultFor,
-  };
+        "total_size": totalSize,
+        "limit": limit,
+        "offset": offset,
+        "products": products == null
+            ? []
+            : List<dynamic>.from(products!.map((x) => x.toJson())),
+        "category_parent_parent": categoryParentParent,
+        "category_parent": categoryParent,
+        "category": category?.toJson(),
+        "category_seo_description": categorySeoDescription,
+        "category_title": categoryTitle,
+        "category_h1": categoryH1,
+        "child_categories": childCategories == null
+            ? []
+            : List<dynamic>.from(childCategories!.map((x) => x.toJson())),
+        "result_for": resultFor,
+      };
 }
 
 class ChildCategoryClass {
@@ -184,35 +203,36 @@ class ChildCategoryClass {
         products: products ?? this.products,
       );
 
-  factory ChildCategoryClass.fromJson(Map<String, dynamic> json) => ChildCategoryClass(
-    id: json["id"],
-    name: json["name"],
-    slug: json["slug"],
-    icon: json["icon"],
-    banner: json["banner"],
-    parentId: json["parent_id"],
-    position: json["position"],
-    productsStyle: json["products_style"],
-    isGift: json["is_gift"],
-    numAvailableProduct: json["num_available_product"],
-    seoDescription: json["seo_description"],
-    products: json["products"],
-  );
+  factory ChildCategoryClass.fromJson(Map<String, dynamic> json) =>
+      ChildCategoryClass(
+        id: json["id"],
+        name: json["name"],
+        slug: json["slug"],
+        icon: json["icon"],
+        banner: json["banner"],
+        parentId: json["parent_id"],
+        position: json["position"],
+        productsStyle: json["products_style"],
+        isGift: json["is_gift"],
+        numAvailableProduct: json["num_available_product"],
+        seoDescription: json["seo_description"],
+        products: json["products"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "slug": slug,
-    "icon": icon,
-    "banner": banner,
-    "parent_id": parentId,
-    "position": position,
-    "products_style": productsStyle,
-    "is_gift": isGift,
-    "num_available_product": numAvailableProduct,
-    "seo_description": seoDescription,
-    "products": products,
-  };
+        "id": id,
+        "name": name,
+        "slug": slug,
+        "icon": icon,
+        "banner": banner,
+        "parent_id": parentId,
+        "position": position,
+        "products_style": productsStyle,
+        "is_gift": isGift,
+        "num_available_product": numAvailableProduct,
+        "seo_description": seoDescription,
+        "products": products,
+      };
 }
 
 class Product {
@@ -306,56 +326,76 @@ class Product {
         inStock: inStock ?? this.inStock,
         rating: rating ?? this.rating,
         flashDealDetails: flashDealDetails ?? this.flashDealDetails,
-        flashDealMaxAllowedQuantity: flashDealMaxAllowedQuantity ?? this.flashDealMaxAllowedQuantity,
+        flashDealMaxAllowedQuantity:
+            flashDealMaxAllowedQuantity ?? this.flashDealMaxAllowedQuantity,
       );
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-    id: json["id"],
-    name: json["name"],
-    slug: json["slug"],
-    shareLink: json["share_link"],
-    details: json["details"],
-    thumbnail: json["thumbnail"],
-    images: json["images"] == null ? [] : List<String>.from(json["images"]!.map((x) => x)),
-    categories: json["categories"] == null ? [] : List<CategoryElement>.from(json["categories"]!.map((x) => CategoryElement.fromJson(x))),
-    category: json["category"] == null ? null : CategoryElement.fromJson(json["category"]),
-    brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
-    colors: json["colors"] == null ? [] : List<Color>.from(json["colors"]!.map((x) => Color.fromJson(x))),
-    syncColorImages: json["sync_color_images"] == null ? [] : List<SyncColorImage>.from(json["sync_color_images"]!.map((x) => SyncColorImage.fromJson(x))),
-    price: json["price"],
-    priceFormatted: json["price_formatted"],
-    offerPrice: json["offer_price"],
-    offerPriceFormatted: json["offer_price_formatted"],
-    isFavourite: json["is_favourite"],
-    inStock: json["in_stock"],
-    rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
-    flashDealDetails: json["flash_deal_details"],
-    flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
-  );
+        id: json["id"],
+        name: json["name"],
+        slug: json["slug"],
+        shareLink: json["share_link"],
+        details: json["details"],
+        thumbnail: json["thumbnail"],
+        images: json["images"] == null
+            ? []
+            : List<String>.from(json["images"]!.map((x) => x)),
+        categories: json["categories"] == null
+            ? []
+            : List<CategoryElement>.from(
+                json["categories"]!.map((x) => CategoryElement.fromJson(x))),
+        category: json["category"] == null
+            ? null
+            : CategoryElement.fromJson(json["category"]),
+        brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
+        colors: json["colors"] == null
+            ? []
+            : List<Color>.from(json["colors"]!.map((x) => Color.fromJson(x))),
+        syncColorImages: json["sync_color_images"] == null
+            ? []
+            : List<SyncColorImage>.from(json["sync_color_images"]!
+                .map((x) => SyncColorImage.fromJson(x))),
+        price: json["price"],
+        priceFormatted: json["price_formatted"],
+        offerPrice: json["offer_price"],
+        offerPriceFormatted: json["offer_price_formatted"],
+        isFavourite: json["is_favourite"],
+        inStock: json["in_stock"],
+        rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
+        flashDealDetails: json["flash_deal_details"],
+        flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "slug": slug,
-    "share_link": shareLink,
-    "details": details,
-    "thumbnail": thumbnail,
-    "images": images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
-    "categories": categories == null ? [] : List<dynamic>.from(categories!.map((x) => x.toJson())),
-    "category": category?.toJson(),
-    "brand": brand?.toJson(),
-    "colors": colors == null ? [] : List<dynamic>.from(colors!.map((x) => x.toJson())),
-    "sync_color_images": syncColorImages == null ? [] : List<dynamic>.from(syncColorImages!.map((x) => x.toJson())),
-    "price": price,
-    "price_formatted": priceFormatted,
-    "offer_price": offerPrice,
-    "offer_price_formatted": offerPriceFormatted,
-    "is_favourite": isFavourite,
-    "in_stock": inStock,
-    "rating": rating?.toJson(),
-    "flash_deal_details": flashDealDetails,
-    "flash_deal_max_allowed_quantity": flashDealMaxAllowedQuantity,
-  };
+        "id": id,
+        "name": name,
+        "slug": slug,
+        "share_link": shareLink,
+        "details": details,
+        "thumbnail": thumbnail,
+        "images":
+            images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
+        "categories": categories == null
+            ? []
+            : List<dynamic>.from(categories!.map((x) => x.toJson())),
+        "category": category?.toJson(),
+        "brand": brand?.toJson(),
+        "colors": colors == null
+            ? []
+            : List<dynamic>.from(colors!.map((x) => x.toJson())),
+        "sync_color_images": syncColorImages == null
+            ? []
+            : List<dynamic>.from(syncColorImages!.map((x) => x.toJson())),
+        "price": price,
+        "price_formatted": priceFormatted,
+        "offer_price": offerPrice,
+        "offer_price_formatted": offerPriceFormatted,
+        "is_favourite": isFavourite,
+        "in_stock": inStock,
+        "rating": rating?.toJson(),
+        "flash_deal_details": flashDealDetails,
+        "flash_deal_max_allowed_quantity": flashDealMaxAllowedQuantity,
+      };
 }
 
 class Brand {
@@ -381,16 +421,16 @@ class Brand {
       );
 
   factory Brand.fromJson(Map<String, dynamic> json) => Brand(
-    id: json["id"],
-    name: json["name"],
-    image: json["image"],
-  );
+        id: json["id"],
+        name: json["name"],
+        image: json["image"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "image": image,
-  };
+        "id": id,
+        "name": name,
+        "image": image,
+      };
 }
 
 class CategoryElement {
@@ -415,17 +455,18 @@ class CategoryElement {
         icon: icon ?? this.icon,
       );
 
-  factory CategoryElement.fromJson(Map<String, dynamic> json) => CategoryElement(
-    id: json["id"],
-    name: json["name"],
-    icon: json["icon"],
-  );
+  factory CategoryElement.fromJson(Map<String, dynamic> json) =>
+      CategoryElement(
+        id: json["id"],
+        name: json["name"],
+        icon: json["icon"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "icon": icon,
-  };
+        "id": id,
+        "name": name,
+        "icon": icon,
+      };
 }
 
 class Color {
@@ -447,14 +488,14 @@ class Color {
       );
 
   factory Color.fromJson(Map<String, dynamic> json) => Color(
-    name: json["name"],
-    color: json["color"],
-  );
+        name: json["name"],
+        color: json["color"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "name": name,
-    "color": color,
-  };
+        "name": name,
+        "color": color,
+      };
 }
 
 class Rating {
@@ -476,41 +517,50 @@ class Rating {
       );
 
   factory Rating.fromJson(Map<String, dynamic> json) => Rating(
-    overallRating: json["overall_rating"],
-    totalRating: json["total_rating"],
-  );
+        overallRating: json["overall_rating"],
+        totalRating: json["total_rating"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "overall_rating": overallRating,
-    "total_rating": totalRating,
-  };
+        "overall_rating": overallRating,
+        "total_rating": totalRating,
+      };
 }
 
 class SyncColorImage {
   final String? colorName;
   final List<String>? images;
+  final bool? colorTrend;
 
   SyncColorImage({
     this.colorName,
     this.images,
+    this.colorTrend,
   });
 
   SyncColorImage copyWith({
     String? colorName,
     List<String>? images,
+    bool? colorTrend,
   }) =>
       SyncColorImage(
         colorName: colorName ?? this.colorName,
         images: images ?? this.images,
+        colorTrend: colorTrend ?? this.colorTrend,
       );
 
   factory SyncColorImage.fromJson(Map<String, dynamic> json) => SyncColorImage(
-    colorName: json["color_name"],
-    images: json["images"] == null ? [] : List<String>.from(json["images"]!.map((x) => x)),
-  );
+        colorName: json["color_name"],
+        images: json["images"] == null
+            ? []
+            : List<String>.from(json["images"]!.map((x) => x)),
+        colorTrend: json["color_trend"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "color_name": colorName,
-    "images": images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
-  };
+        "color_name": colorName,
+        "images":
+            images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
+        "color_trend": colorTrend,
+      };
 }
