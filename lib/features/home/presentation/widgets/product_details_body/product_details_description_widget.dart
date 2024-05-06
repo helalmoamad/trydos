@@ -45,12 +45,12 @@ class _ProductDetailsDescriptionWidgetState extends State<ProductDetailsDescript
                   TextSpan(
                     text: readMore ? twoLines : text,
                     style: context.textTheme.bodyText2?.rq
-                        .copyWith(height: 1.23, color: Color(0xff8D8D8D) , fontSize: 13.sp),
+                        .copyWith(height: 1.23, color: Color(0xff8D8D8D) , fontSize: 13),
                   ),
                   TextSpan(
                       text: !readMore ? "Read Less..." : "Read More...",
                       style: context.textTheme.bodyText2?.rq
-                          .copyWith(height: 1.23, color: Color(0xff388CFF), fontSize: 13.sp),
+                          .copyWith(height: 1.23, color: Color(0xff388CFF), fontSize: 13),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           readMoreNotifier.value = !readMoreNotifier.value;

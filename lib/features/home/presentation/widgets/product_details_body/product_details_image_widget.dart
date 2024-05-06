@@ -5,52 +5,54 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 
 class ProductDetailsImageWidget extends StatelessWidget {
-  const ProductDetailsImageWidget({super.key , this.width , this.borderColor ,this.imageFit ,  this.height , this.radius});
+  const ProductDetailsImageWidget({super.key , this.width , this.withBackGroundShadow = true, this.withInnerShadow = true , this.borderRadius , this.borderColor ,this.imageFit ,  this.height , this.radius});
 
   final double? width;
   final double? height;
   final double? radius;
   final BoxFit? imageFit;
   final Color? borderColor;
+  final BorderRadiusGeometry? borderRadius;
+  final bool withBackGroundShadow ;
+  final bool withInnerShadow ;
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Container(
-          key: UniqueKey(),
-          height: height ?? 464,
-          width: width ?? 320,
+          height: (height ?? 464),
+          width: (width ?? 320),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(radius ?? 30.0),
+            borderRadius: borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
             border: Border.all(
                 width: 0.5,
                 color: borderColor ?? context.colorScheme.white),
-            boxShadow: [
+            boxShadow: withBackGroundShadow ? [
               BoxShadow(
                 color: context.colorScheme.black.withOpacity(0.1),
                 offset: Offset(0, 0),
                 blurRadius: 10,
               ),
-            ],
+            ] : null,
           ),
           child: ClipRRect(
-              borderRadius: BorderRadius.circular(radius ?? 30),
+              borderRadius: borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
               child: Image.asset(
                   'assets/images/details.jpg',
-                  fit: imageFit ?? BoxFit.cover)),
+                  fit: imageFit ?? BoxFit.fill)),
         ),
         Container(
-          height: height ?? 464,
-          width: width ?? 320,
+          height: (height ?? 464),
+          width: (width ?? 320),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(radius ?? 30.0),
-            boxShadow: [
+            borderRadius: borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
+            boxShadow:withInnerShadow ? [
               BoxShadow(
                   color: context.colorScheme.white,
                   offset: Offset(0, 3),
                   blurRadius: 6,
                   inset: true),
-            ],
+            ] : null,
           ),
         ),
       ],

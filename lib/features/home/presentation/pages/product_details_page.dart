@@ -1,18 +1,21 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:overscroll_pop/overscroll_pop.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_display_pictures_page.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
+import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../service/language_service.dart';
-import '../../../story/presentation/pages/story_collection.dart';
+import '../../../app/my_text_widget.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import '../widgets/product_details_body/badges_list.dart';
@@ -20,7 +23,10 @@ import '../widgets/product_details_body/display_colors_card.dart';
 import '../widgets/product_details_body/product_details_chip_widget.dart';
 import '../widgets/product_details_body/product_details_description_widget.dart';
 import '../widgets/product_details_body/product_details_image_widget.dart';
+import '../widgets/product_details_body/sliding_up_panel_for_buyers_camera_shots.dart';
+import '../widgets/product_details_body/sliding_up_panel_for_reels.dart';
 import '../widgets/product_stories_section/product_stories_card.dart';
+import '../widgets/product_details_body/buyers_camera_shots.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   const ProductDetailsPage({super.key, required this.productItem});
@@ -37,7 +43,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   final ValueNotifier<bool> isScrollingPhysics = ValueNotifier(true);
   bool enable = true;
   double? valueOnY;
-
+   final PanelController panelControllerForBuyersCameraShots = PanelController();
+   final PanelController panelControllerForReels = PanelController();
   @override
   void initState() {
     super.initState();
@@ -103,7 +110,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         : const NeverScrollableScrollPhysics(),
                     children: [
                       Stack(
-                        alignment: LanguageService.rtl ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment: LanguageService.rtl
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         children: [
                           SizedBox(
                               height: 464,
@@ -151,7 +160,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   },
                                 ),
                               )),
-                          Container(width: 20,height: 464,)
+                          Container(
+                            width: 30,
+                            height: 464,
+                            color: Colors.transparent,
+                          )
                         ],
                       ),
                       ProductDetailsTitle(),
@@ -199,6 +212,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       ),
                       ProductStoriesCard(),
                       SizedBox(
+                        height: 15,
+                      ),
+                      BuyersCameraShots(
+                        productItem: widget.productItem,
+                        panelControllerForBuyersCameraShots: panelControllerForBuyersCameraShots,
+                      ),
+                      SizedBox(
                         height: 10,
                       ),
                       SizedBox(
@@ -208,7 +228,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   ),
                 ),
               )),
-          ProductDetailsBottomSheet()
+          Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              ProductDetailsBottomSheet(),
+              SlidingUpPanelForBuyersCameraShots(panelController: panelControllerForBuyersCameraShots, panelControllerForReels : panelControllerForReels),
+              SlidingUpPanelForReels(panelController: panelControllerForReels),
+            ],
+          )
         ],
       ),
     );

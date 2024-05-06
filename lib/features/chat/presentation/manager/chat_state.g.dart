@@ -7,7 +7,7 @@ part of 'chat_state.dart';
 // **************************************************************************
 
 ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
-      userConnectedStatuse: json['userConnectedStatuse'] as String,
+      userConnectedStatuse: json['userConnectedStatuse'] as String? ?? " ",
       currentFailedMediaMessage:
           (json['currentFailedMediaMessage'] as List<dynamic>?)
                   ?.map((e) => e as String)
@@ -20,6 +20,9 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
               _$ResendMessageStatusEnumMap, json['resendMessageStatus']) ??
           ResendMessageStatus.init,
       width: json['width'] as int? ?? 0,
+      duration: json['duration'] == null
+          ? null
+          : Duration(microseconds: json['duration'] as int),
       slopMessageId: json['slopMessageId'] as String? ?? "",
       isSlpoing: json['isSlpoing'] as bool? ?? false,
       firstRequestForGetChats: json['firstRequestForGetChats'] as bool? ?? true,
@@ -133,6 +136,7 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
           _$SaveContactsStatusEnumMap[instance.saveContactsStatus]!,
       'getContactsStatus':
           _$GetContactsStatusEnumMap[instance.getContactsStatus]!,
+      'duration': instance.duration?.inMicroseconds,
       'getMediaCountStatus':
           _$GetMediaCountStatusEnumMap[instance.getMediaCountStatus]!,
       'readMessagesStatus':

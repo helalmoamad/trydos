@@ -6,11 +6,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 
 class TrydosShimmerLoading extends StatefulWidget {
-  const TrydosShimmerLoading({super.key , required this.width, required this.logoTextWidth , required this.height, required this.logoTextHeight, this.circleDimensions});
+  const TrydosShimmerLoading({super.key , required this.width, this.radius = 15 ,  required this.logoTextWidth , required this.height, required this.logoTextHeight, this.circleDimensions});
   
   final double width , logoTextWidth;
   final double height , logoTextHeight;
   final double? circleDimensions;
+  final double radius;
 
   @override
   State<TrydosShimmerLoading> createState() => _TrydosShimmerLoadingState();
@@ -40,7 +41,7 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading> with Single
       height: widget.height,
       decoration: BoxDecoration(
         color: Color(0xffE6E6E6),
-        borderRadius: BorderRadius.circular(15)
+        borderRadius: BorderRadius.circular(widget.radius)
       ),
       child: Center(
         child: Column(

@@ -50,6 +50,7 @@ abstract class AppAssets {
   static String get qualityBadgeSvg=>'quality_badge'.svg;
   static String get verifiedBadgeSvg=>'verified_badge'.svg;
   static String get colorPickerSvg=>'color_picker'.svg;
+  static String get chromeIconSvg=>'chrome_icon'.svg;
   static String get indicatorSvg=>'indicator'.svg;
   static String get dressSvg=>'dress'.svg;
   static String get emptySvg=>'empty'.svg;
