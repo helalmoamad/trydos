@@ -1,7 +1,9 @@
+import 'package:cupertino_back_gesture/cupertino_back_gesture.dart';
 import 'package:easy_localization/easy_localization.dart' as localization;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,6 +27,7 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../../service/language_service.dart';
+import '../../../../trydos_application.dart';
 import '../../../app/my_text_widget.dart';
 
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -58,7 +61,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   final ScrollController scrollController = ScrollController();
   late HomeBloc homeBloc;
 
-  final ValueNotifier<bool> isScrollingPhysics = ValueNotifier(true);
   bool enable = true;
   double? valueOnY;
   final PanelController panelControllerForBuyersCameraShots = PanelController();
@@ -81,73 +83,52 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       debugPrint(error.toString());
     };
     return Directionality(
-      textDirection: TextDirection.ltr,
-      child: BlocBuilder<HomeBloc, HomeState>(
-        buildWhen: (p, c) =>
-            p.getProductDetailWithoutSimilarRelatedProductsStatus !=
-                c.getProductDetailWithoutSimilarRelatedProductsStatus ||
-            p.currentIndex != c.currentIndex,
-        builder: (context, state) {
-          if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-              GetProductDetailWithoutSimilarRelatedProductsStatus.loading) {
-            return Center(
-              child: TrydosLoader(),
-            );
-          }
-          if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-              GetProductDetailWithoutSimilarRelatedProductsStatus.failure) {
-            return Center(
-              child: ElevatedButton(
-                  onPressed: () {
-                    homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
-                        productId: widget.productItem.id.toString()));
-                  },
-                  child: MyTextWidget(LocaleKeys.try_again.tr())),
-            );
-          }
-          return Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              Scaffold(
-                  appBar: TrydosAppBar(
-                    appBarParams: AppBarParams(
-                        scrolledUnderElevation: 0,
-                        backIconColor: Colors.black,
-                        withShadow: false),
-                  ),
-                  backgroundColor: Color(0xffF4F4F4),
-                  body: GestureDetector(
-                    // onVerticalDragDown: (DragDownDetails dragDetails){
-                    //   print('sssssssssssssss');
-                    //   print(scrollController.position.pixels);
-                    //   //valueOnY = dragDetails.globalPosition.dy;
-                    // },
-                    // onVerticalDragUpdate: (DragUpdateDetails dragDetails){
-                    //   print('aaaaaaaaaaa');
-                    //   if(valueOnY != null && (dragDetails.globalPosition.dy - valueOnY!) >= 0 && scrollController.position.pixels == scrollController.position.minScrollExtent){
-                    //     valueOnY = null;
-                    //     setState(() {
-                    //       enable = false;
-                    //     });
-                    //   }
-                    // },
-                    // onVerticalDragCancel: (){
-                    //     print('onVerticalDragCancel');
-                    //     isScrollingPhysics.value = true;
-                    //     if(enable == false) {
-                    //       setState(() {
-                    //         enable = true;
-                    //       });
-                    //     }
-                    //   },
-                    // onVerticalDragEnd: (x){
-                    //     print('onVerticalDragEnd');
-                    //     isScrollingPhysics.value = true;
-                    //     setState(() {
-                    //       enable = true;
-                    //     });
-                    //   },
-                    child: ScrollConfiguration(
+        textDirection: TextDirection.ltr,
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            Scaffold(
+                appBar: TrydosAppBar(
+                  appBarParams: AppBarParams(
+                      scrolledUnderElevation: 0,
+                      backIconColor: Colors.black,
+                      withShadow: false),
+                ),
+                backgroundColor: Color(0xffF4F4F4),
+                body: BlocBuilder<HomeBloc, HomeState>(
+                  buildWhen: (p, c) =>
+                      p.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                          c.getProductDetailWithoutSimilarRelatedProductsStatus ||
+                      p.currentIndex != c.currentIndex,
+                  builder: (context, state) {
+                    if (state
+                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                        GetProductDetailWithoutSimilarRelatedProductsStatus
+                            .loading) {
+                      return Center(
+                        child: TrydosLoader(),
+                      );
+                    }
+                    if (state
+                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                        GetProductDetailWithoutSimilarRelatedProductsStatus
+                            .failure) {
+                      return Center(
+                        child: ElevatedButton(
+                            onPressed: () {
+                              homeBloc.add(
+                                  GetProductDatailsWithoutRelatedProductsEvent(
+                                      productId:
+                                          widget.productItem.id.toString()));
+                            },
+                            child: MyTextWidget(LocaleKeys.try_again.tr())),
+                      );
+                    }
+                    print(
+                        'ffffff ${state.getProductDetailWithoutSimilarRelatedProductsStatus}');
+                    print(
+                        'ffffff ${state.getProductDetailWithoutRelatedProductsModel}');
+                    return ScrollConfiguration(
                       behavior: const CupertinoScrollBehavior(),
                       child: ListView(
                         shrinkWrap: true,
@@ -331,6 +312,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ),
                           ProductStoriesCard(),
                           SizedBox(
+                            height: 15,
+                          ),
+                          BuyersCameraShots(
+                            productItem: widget.productItem,
+                            panelControllerForBuyersCameraShots:
+                                panelControllerForBuyersCameraShots,
+                          ),
+                          SizedBox(
                             height: 10,
                           ),
                           SizedBox(
@@ -338,20 +327,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ),
                         ],
                       ),
-                    ),
-                  )),
-              ProductDetailsBottomSheet(
-                price: widget.productItem.priceFormatted ?? " ",
-                offerPrice: (widget.productItem.offerPrice ?? " ").toString(),
-              ),
-              SlidingUpPanelForBuyersCameraShots(
-                  panelController: panelControllerForBuyersCameraShots,
-                  panelControllerForReels: panelControllerForReels),
-              SlidingUpPanelForReels(panelController: panelControllerForReels),
-            ],
-          );
-        },
-      ),
-    );
+                    );
+                  },
+                )),
+            ProductDetailsBottomSheet(
+              price: widget.productItem.priceFormatted ?? " ",
+              offerPrice: (widget.productItem.offerPrice ?? " ").toString(),
+            ),
+            SlidingUpPanelForBuyersCameraShots(
+                panelController: panelControllerForBuyersCameraShots,
+                panelControllerForReels: panelControllerForReels),
+            SlidingUpPanelForReels(panelController: panelControllerForReels),
+          ],
+        ));
   }
 }

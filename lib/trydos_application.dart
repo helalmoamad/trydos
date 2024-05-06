@@ -34,6 +34,9 @@ class TrydosApplication extends StatefulWidget {
   State<TrydosApplication> createState() => _TrydosApplicationState();
 }
 
+final ValueNotifier<bool> denySlidingBackForSlidingUpPanels =
+ValueNotifier(false);
+
 class _TrydosApplicationState extends State<TrydosApplication>
     with WidgetsBindingObserver {
   @override
@@ -71,8 +74,8 @@ class _TrydosApplicationState extends State<TrydosApplication>
           child: ServiceProvider(
             child: Builder(
               builder: (context) {
-                return BackGestureWidthTheme(
-                  backGestureWidth: BackGestureWidth.fraction(1),
+                return ValueListenableBuilder<bool>(
+                  valueListenable: denySlidingBackForSlidingUpPanels,
                   child: MaterialApp.router(
                     debugShowCheckedModeBanner: false,
                     locale: context.locale,
@@ -87,6 +90,12 @@ class _TrydosApplicationState extends State<TrydosApplication>
                       return botToastBuilder(context, child);
                     },
                   ),
+                  builder: (context , deny , child) {
+                    return BackGestureWidthTheme(
+                      backGestureWidth: BackGestureWidth.fraction(deny ? 0 : 1),
+                      child: child!,
+                    );
+                  }
                 );
               },
             ),

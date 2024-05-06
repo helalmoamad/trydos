@@ -1,3 +1,4 @@
+import 'package:cupertino_back_gesture/cupertino_back_gesture.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,6 +9,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 
 import '../../../../../common/constant/design/assets_provider.dart';
+import '../../../../../trydos_application.dart';
 import '../../../../app/my_text_widget.dart';
 
 class SlidingUpPanelForBuyersCameraShots extends StatelessWidget {
@@ -16,14 +18,19 @@ class SlidingUpPanelForBuyersCameraShots extends StatelessWidget {
 
   final PanelController panelController;
   final PanelController panelControllerForReels;
-
   @override
   Widget build(BuildContext context) {
     return SlidingUpPanel(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20.0),
             topRight: Radius.circular(20.0)),
         minHeight: 0,
+        onPanelClosed: (){
+          denySlidingBackForSlidingUpPanels.value = false;
+        },
+        onPanelOpened: (){
+          denySlidingBackForSlidingUpPanels.value = true;
+        },
         controller: panelController,
         maxHeight: 1.sh - 100,
         backdropEnabled: true,
@@ -102,7 +109,7 @@ class SlidingUpPanelForBuyersCameraShots extends StatelessWidget {
                                 onTap: () {
                                   panelControllerForReels.open();
                                 },
-                                child: ProductDetailsImageWidget(
+                                child: const ProductDetailsImageWidget(
                                   radius: 30,
                                   width: 185,
                                   height: 267,
