@@ -61,8 +61,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         transformer: throttleDroppable(throttleDuration));
 
     on<GetProductDatailsWithoutRelatedProductsEvent>(
-        _onGetProductDatailsWithoutRelatedProductsEvent,
-        transformer: throttleDroppable(throttleDuration));
+        _onGetProductDatailsWithoutRelatedProductsEvent,);
   }
 
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
@@ -260,7 +259,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     response.fold((l) {
       if (!isFailedTheFirstTime
           .contains('GetProductDatailsWithoutRelatedProductsEvent')) {
-        add(GetMainCategoriesEvent());
+        add(const GetProductDatailsWithoutRelatedProductsEvent());
         isFailedTheFirstTime
             .add('GetProductDatailsWithoutRelatedProductsEvent');
       }

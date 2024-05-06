@@ -67,7 +67,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
             valueListenable: currentActiveTab,
             builder: (context, currentTab, _) {
               return SlidingUpPanel(
-                maxHeight: 0.54.sh,
+                maxHeight: _focusNode.hasFocus ? 1.sh : 0.54.sh,
                 minHeight: 0.098.sh,
                 onPanelClosed: (){
                   currentActiveTab.value = -1;

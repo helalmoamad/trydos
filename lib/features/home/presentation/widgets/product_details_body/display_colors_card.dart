@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -32,7 +31,7 @@ class DisplayColorsCard extends StatefulWidget {
 class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
   Timer? _timer;
   Timer? _recallForAutoScroll;
-  double _scrollSpeed = 0.25;
+  double scrollSpeed = 0.25;
 
   List<productListingModel.SyncColorImage>? syncColorImageList;
 
@@ -47,7 +46,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
   late final List<ScrollController> controllers;
   late final List<double> scrollOffsets;
   List<int> controllersToStopScroll = [];
-  int? prevMode = null;
+  int? prevMode ;
 
   void changingModeListener() {
     if ((widget.scrollController.position.pixels <= 30 &&
@@ -58,9 +57,8 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
       prevModeForRunHero = null;
       displayMode.value = 0;
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        setState(() {
           prevMode = null;
-        });
+          displayMode.notifyListeners();
       });
     }
 
@@ -85,7 +83,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
       controllersToStopScroll.add(index);
       _startAutoScroll();
       _recallForAutoScroll?.cancel();
-      _recallForAutoScroll = Timer(Duration(seconds: 2), () {
+      _recallForAutoScroll = Timer(const Duration(seconds: 2), () {
         _timer?.cancel();
         controllersToStopScroll.remove(index);
         _startAutoScroll();
@@ -94,11 +92,11 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
   }
 
   void _startAutoScroll() {
-    _timer = Timer.periodic(Duration(milliseconds: 50), (_) {
+    _timer = Timer.periodic(const Duration(milliseconds: 50), (_) {
       setState(() {
         for(int i=0; i< controllers.length ; i++) {
           if (controllers[i].hasClients && !controllersToStopScroll.contains(i)) {
-            scrollOffsets[i] += _scrollSpeed;
+            scrollOffsets[i] += scrollSpeed;
             if (scrollOffsets[i] >= controllers[i].position.maxScrollExtent) {
               scrollOffsets[i] = 0.0;
             }
@@ -126,8 +124,6 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
     syncColorImageList = widget.productItem.syncColorImages ?? [];
     syncColorImageList?.removeWhere((element) => element.images.isNullOrEmpty);
     syncColorImageList = [
-      ...syncColorImageList ?? [],
-      ...syncColorImageList ?? [],
       ...syncColorImageList ?? [],
       ...syncColorImageList ?? [],
     ];
@@ -171,7 +167,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
   final ExpansionTileController expansionTileController =
   ExpansionTileController();
 
-  int? prevModeForRunHero = null;
+  int? prevModeForRunHero ;
 
   bool firstTime = true;
 
@@ -204,7 +200,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                         : 50,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
-                        color: Color(0xffF8F8F8)),
+                        color: const Color(0xffF8F8F8)),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -231,16 +227,16 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                       AppAssets.colorPickerSvg,
                                       height: 20,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
                                     MyTextWidget(
                                       'Available ${syncColorImageList!.length ~/ 2} Color',
                                       style: textTheme.bodyText2?.rq
                                           .copyWith(
-                                          color: Color(0xff8D8D8D)),
+                                          color: const Color(0xff8D8D8D)),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
                                     SvgPicture.asset(
@@ -253,7 +249,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                             ),
                             Padding(
                                 padding: EdgeInsets.only(
-                                    right: mode == 0 ? 0.0 : 10, top: 5),
+                                    right: mode == 0 ? 20.0 : 10, top: 5),
                                 child: mode == 0
                                     ? LocalHero(
                                   tag: 'colors',
@@ -375,10 +371,10 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                   curve: Curves
                                                       .fastEaseInToSlowEaseOut,
                                                   duration:
-                                                  Duration(milliseconds: 300));
+                                                  const Duration(milliseconds: 300));
                                             }
                                           },
-                                          itemConfig: GalleryItemConfig(
+                                          itemConfig: const GalleryItemConfig(
                                               width: 40,
                                               height: 40,
                                               radius: 180,
