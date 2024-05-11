@@ -34,14 +34,14 @@ class HomeState {
       this.getProductsWithoutFiltersStatus =
           GetProductsWithoutFiltersStatus.init,
       this.startingSetting,
-      this.currentIndex = 0,
+      this.currentSelectedColor = 0,
       this.mainCategoriesResponseModel,
       this.getProductDetailWithoutRelatedProductsModel,
       this.getProductListingWithoutFiltersModel,
       this.getHomeSectionsPaginationObject = const {}});
 
   final GetStartingSettingsStatus getStartingSettingsStatus;
-  int currentIndex = 0;
+  int currentSelectedColor = 0;
   final GetMainCategoriesStatus getMainCategoriesStatus;
 
   final GetProductDetailWithoutSimilarRelatedProductsStatus
@@ -72,11 +72,11 @@ class HomeState {
       final GetProductsWithoutFiltersStatus? getProductsWithoutFiltersStatus,
       final GetProductDetailWithoutSimilarRelatedProductsStatus?
           getProductDetailWithoutSimilarRelatedProductsStatus,
-      int? currentIndex,
+      int? currentSelectedColor,
       final GetProductListingWithoutFiltersModel?
           getProductListingWithoutFiltersModel}) {
     return HomeState(
-        currentIndex: currentIndex ?? this.currentIndex,
+        currentSelectedColor: currentSelectedColor ?? this.currentSelectedColor,
         getProductDetailWithoutSimilarRelatedProductsStatus:
             getProductDetailWithoutSimilarRelatedProductsStatus ??
                 this.getProductDetailWithoutSimilarRelatedProductsStatus,

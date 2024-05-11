@@ -2,8 +2,7 @@ import 'package:cupertino_back_gesture/cupertino_back_gesture.dart';
 import 'package:easy_localization/easy_localization.dart' as localization;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/src/widgets/basic.dart' as C;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,6 +15,7 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart'
     as productDetail;
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
@@ -99,35 +99,25 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   buildWhen: (p, c) =>
                       p.getProductDetailWithoutSimilarRelatedProductsStatus !=
                           c.getProductDetailWithoutSimilarRelatedProductsStatus ||
-                      p.currentIndex != c.currentIndex,
+                      p.currentSelectedColor != c.currentSelectedColor,
                   builder: (context, state) {
                     if (state
                             .getProductDetailWithoutSimilarRelatedProductsStatus ==
                         GetProductDetailWithoutSimilarRelatedProductsStatus
-                            .loading) {
-                      return Center(
-                        child: TrydosLoader(),
-                      );
-                    }
-                    if (state
-                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
-                        GetProductDetailWithoutSimilarRelatedProductsStatus
                             .failure) {
-                      return Center(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              homeBloc.add(
-                                  GetProductDatailsWithoutRelatedProductsEvent(
-                                      productId:
-                                          widget.productItem.id.toString()));
-                            },
-                            child: MyTextWidget(LocaleKeys.try_again.tr())),
+                      return Container(
+                        child: C.Center(
+                          child: ElevatedButton(
+                              onPressed: () {
+                                homeBloc.add(
+                                    GetProductDatailsWithoutRelatedProductsEvent(
+                                        productId:
+                                            widget.productItem.id.toString()));
+                              },
+                              child: MyTextWidget(LocaleKeys.try_again.tr())),
+                        ),
                       );
                     }
-                    print(
-                        'ffffff ${state.getProductDetailWithoutSimilarRelatedProductsStatus}');
-                    print(
-                        'ffffff ${state.getProductDetailWithoutRelatedProductsModel}');
                     return ScrollConfiguration(
                       behavior: const CupertinoScrollBehavior(),
                       child: ListView(
@@ -159,7 +149,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                             ? widget
                                                 .productItem
                                                 .syncColorImages![
-                                                    state.currentIndex]
+                                                    state.currentSelectedColor]
                                                 .images!
                                                 .length
                                             : 0,
@@ -199,7 +189,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                       images: widget
                                                               .productItem
                                                               .syncColorImages![
-                                                                  state.currentIndex ??
+                                                                  state.currentSelectedColor ??
                                                                       0]
                                                               .images ??
                                                           [],
@@ -207,24 +197,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                               },
                                               child: widget
                                                           .productItem
-                                                          .syncColorImages![
-                                                              state
-                                                                  .currentIndex]
+                                                          .syncColorImages![state
+                                                              .currentSelectedColor]
                                                           .images!
                                                           .isNotEmpty ||
                                                       widget
                                                               .productItem
                                                               .syncColorImages![
                                                                   state
-                                                                      .currentIndex]
+                                                                      .currentSelectedColor]
                                                               .images !=
                                                           []
                                                   ? ProductDetailsImageWidget(
                                                       imageUrl: widget
                                                           .productItem
-                                                          .syncColorImages![
-                                                              state
-                                                                  .currentIndex]
+                                                          .syncColorImages![state
+                                                              .currentSelectedColor]
                                                           .images![index],
                                                     )
                                                   : SizedBox.shrink());
@@ -244,11 +232,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ProductDetailsTitle(
                             brand: widget.productItem.brand!,
                             productName: widget.productItem.name!,
-                            ViewerCount: state
-                                .getProductDetailWithoutRelatedProductsModel!
-                                .product!
-                                .reviewsCount
-                                .toString(),
                             thumbnail: widget.productItem.thumbnail!,
                             colorName: !widget.productItem.syncColorImages
                                         .isNullOrEmpty &&
@@ -257,7 +240,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 ? widget
                                         .productItem
                                         .syncColorImages![
-                                            state.currentIndex ?? 0]
+                                            state.currentSelectedColor ?? 0]
                                         .colorName ??
                                     " "
                                 : " ",
@@ -266,11 +249,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             height: 5,
                           ),
                           ProductDetailsDescriptionWidget(
-                            description: state
-                                    .getProductDetailWithoutRelatedProductsModel!
-                                    .product!
-                                    .description ??
-                                " ",
+                            description: widget.productItem.details ?? " ",
                           ),
                           SizedBox(
                             height: 12,

@@ -49,7 +49,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       this.getProductsWithoutFiltersUseCase)
       : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
-    on<AddCurrentIndexEvent>(_onAddCurrentIndexEvent,
+    on<AddCurrentSelectedColorEvent>(_onAddCurrentSelectedColorEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetHomeSectionsEvent>(_onGetHomeSectionsEvent,
         transformer: throttleDroppable(throttleDuration));
@@ -61,7 +61,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         transformer: throttleDroppable(throttleDuration));
 
     on<GetProductDatailsWithoutRelatedProductsEvent>(
-        _onGetProductDatailsWithoutRelatedProductsEvent,);
+      _onGetProductDatailsWithoutRelatedProductsEvent,
+    );
   }
 
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
@@ -277,8 +278,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
 
-  _onAddCurrentIndexEvent(AddCurrentIndexEvent event, Emitter<HomeState> emit) {
-    emit(state.copyWith(currentIndex: event.currentIndex));
+  _onAddCurrentSelectedColorEvent(
+      AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
+    emit(state.copyWith(currentSelectedColor: event.currentSelectedColor));
   }
 
   @override

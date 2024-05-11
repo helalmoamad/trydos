@@ -23,8 +23,9 @@ class _ProductDetailsDescriptionWidgetState
     extends State<ProductDetailsDescriptionWidget> {
   final ValueNotifier<bool> readMoreNotifier = ValueNotifier(true);
 
-  String text = " ";
+  String text = "";
   String twoLines = '';
+  bool readMores = true;
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _ProductDetailsDescriptionWidgetState
     int index = 4 * ((1.sw.w - 40) ~/ 13.sp) - 12;
     if (text.length <= index) {
       twoLines = text;
+      readMores = false;
     } else {
       while (text[index] != ' ' && index > 0) {
         index--;
@@ -55,19 +57,23 @@ class _ProductDetailsDescriptionWidgetState
                 text: TextSpan(children: [
                   TextSpan(
                     text: readMore ? twoLines : text,
-                    style: context.textTheme.bodyText2?.rq
-                        .copyWith(height: 1.23, color: Color(0xff8D8D8D) , fontSize: 13),
+                    style: context.textTheme.bodyText2?.rq.copyWith(
+                        height: 1.23, color: Color(0xff8D8D8D), fontSize: 13),
                   ),
-                  TextSpan(
-                      text: !readMore ? "Read Less..." : "Read More...",
-                      style: context.textTheme.bodyText2?.rq.copyWith(
-                          height: 1.23,
-                          color: Color(0xff388CFF),
-                          fontSize: 13),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          readMoreNotifier.value = !readMoreNotifier.value;
-                        }),
+                  readMores
+                      ? TextSpan(
+                          text: !readMore ? "Read Less..." : "Read More...",
+                          style: context.textTheme.bodyText2?.rq.copyWith(
+                              height: 1.23,
+                              color: Color(0xff388CFF),
+                              fontSize: 13),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              readMoreNotifier.value = !readMoreNotifier.value;
+                            })
+                      : TextSpan(
+                          text: "",
+                        )
                 ])),
           );
         });

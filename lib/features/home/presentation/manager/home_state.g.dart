@@ -27,7 +27,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : StartingSetting.fromJson(
               json['startingSetting'] as Map<String, dynamic>),
-      currentIndex: json['currentIndex'] as int? ?? 0,
+      currentSelectedColor:
+          (json['currentSelectedColor'] as num?)?.toInt() ?? 0,
       mainCategoriesResponseModel: json['mainCategoriesResponseModel'] == null
           ? null
           : MainCategoriesResponseModel.fromJson(
@@ -60,7 +61,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
 Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getStartingSettingsStatus': _$GetStartingSettingsStatusEnumMap[
           instance.getStartingSettingsStatus]!,
-      'currentIndex': instance.currentIndex,
+      'currentSelectedColor': instance.currentSelectedColor,
       'getMainCategoriesStatus':
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
       'getProductDetailWithoutSimilarRelatedProductsStatus':

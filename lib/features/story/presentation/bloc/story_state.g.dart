@@ -30,13 +30,13 @@ StoryState _$StoryStateFromJson(Map<String, dynamic> json) => StoryState(
                   ?.map((e) => EntryConverter.instance.fromJson(e as List))
                   .toList() ??
               const [],
-      currentPage: json['currentPage'] as int? ?? 0,
+      currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
       currentStoryInEachCollection:
           (json['currentStoryInEachCollection'] as Map<String, dynamic>?)?.map(
-                (k, e) => MapEntry(int.parse(k), e as int?),
+                (k, e) => MapEntry(int.parse(k), (e as num?)?.toInt()),
               ) ??
               const {},
-      selectedCollection: json['selectedCollection'] as int?,
+      selectedCollection: (json['selectedCollection'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$StoryStateToJson(StoryState instance) =>

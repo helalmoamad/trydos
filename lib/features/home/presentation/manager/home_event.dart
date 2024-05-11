@@ -20,12 +20,12 @@ class GetMainCategoriesEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
-class AddCurrentIndexEvent extends HomeEvent {
-  final int currentIndex;
-  AddCurrentIndexEvent({required this.currentIndex});
+class AddCurrentSelectedColorEvent extends HomeEvent {
+  final int currentSelectedColor;
+  const AddCurrentSelectedColorEvent({required this.currentSelectedColor});
   @override
   // TODO: implement props
-  List<Object?> get props => [currentIndex];
+  List<Object?> get props => [currentSelectedColor];
 }
 
 class GetHomeSectionsEvent extends HomeEvent {

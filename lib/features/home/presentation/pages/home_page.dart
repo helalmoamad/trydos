@@ -144,6 +144,11 @@ class _HomePageState extends State<HomePage> {
                   builder: (context, appState) {
                     return BlocBuilder<HomeBloc, HomeState>(
                       builder: (context, homeState) {
+                        //  print(homeState.getHomeSectionsPaginationObject[0]
+                        //    ?.items[0].sections![0].title);
+                        print(
+                            "{9999999999999999999999999999999999999999999999999999999999999999999999999999999}");
+
                         String? currentSlug = homeState
                             .mainCategoriesResponseModel
                             ?.data
