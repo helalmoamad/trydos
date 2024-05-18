@@ -41,6 +41,9 @@ abstract class AppAssets {
   static String get electronicInactiveSvg=>'electronic_inactive'.svg;
   static String get cartSvg=>'cart'.svg;
   static String get favoriteSvg=>'favorite'.svg;
+  static String get sizeIconSvg=>'size_icon'.svg;
+  static String get coloredSizeIconSvg=>'colored_size_icon'.svg;
+  static String get recyclingSvg=>'recycling'.svg;
   static String get searchSvg=>'search'.svg;
   static String get cameraSvg=>'camera'.svg;
   static String get settingsSvg=>'settings'.svg;

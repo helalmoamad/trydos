@@ -19,17 +19,19 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
       resendMessageStatus: $enumDecodeNullable(
               _$ResendMessageStatusEnumMap, json['resendMessageStatus']) ??
           ResendMessageStatus.init,
-      width: json['width'] as int? ?? 0,
+      width: (json['width'] as num?)?.toInt() ?? 0,
       duration: json['duration'] == null
           ? null
-          : Duration(microseconds: json['duration'] as int),
+          : Duration(microseconds: (json['duration'] as num).toInt()),
       slopMessageId: json['slopMessageId'] as String? ?? "",
       isSlpoing: json['isSlpoing'] as bool? ?? false,
       firstRequestForGetChats: json['firstRequestForGetChats'] as bool? ?? true,
-      height: json['height'] as int? ?? 0,
-      imageCountInEachChat: json['imageCountInEachChat'] as int? ?? 0,
-      fileCountInEachChat: json['fileCountInEachChat'] as int? ?? 0,
-      videoCountInEachChat: json['videoCountInEachChat'] as int? ?? 0,
+      height: (json['height'] as num?)?.toInt() ?? 0,
+      imageCountInEachChat:
+          (json['imageCountInEachChat'] as num?)?.toInt() ?? 0,
+      fileCountInEachChat: (json['fileCountInEachChat'] as num?)?.toInt() ?? 0,
+      videoCountInEachChat:
+          (json['videoCountInEachChat'] as num?)?.toInt() ?? 0,
       loadImageWidthAndHeight: $enumDecodeNullable(
               _$LoadImageWidthAndHeightEnumMap,
               json['loadImageWidthAndHeight']) ??
@@ -83,7 +85,7 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
           GetChatsStatus.init,
       channelId: json['channelId'] as String? ?? '-1',
       unReadMessagesFromAllChats:
-          json['unReadMessagesFromAllChats'] as int? ?? 0,
+          (json['unReadMessagesFromAllChats'] as num?)?.toInt() ?? 0,
       currentChannelReceivedMessage:
           json['currentChannelReceivedMessage'] as String? ?? '-1',
       messageType: json['messageType'] as String?,

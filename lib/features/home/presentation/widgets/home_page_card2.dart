@@ -14,6 +14,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
+import 'package:trydos/service/language_service.dart';
 
 import '../../../app/my_text_widget.dart';
 
@@ -103,7 +104,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                           AppAssets.mangoSvg,
                           height: 20,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 5,
                         ),
                         MyTextWidget(
@@ -113,7 +114,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                           ),
                         ),
                         if (!widget.withSlidingImages)
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                       ],
@@ -224,6 +225,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 ],
               )),
               Positioned(
+                right: LanguageService.rtl ? null : 18.w,
+                left: LanguageService.rtl ? 18.w : null,
+                top: 18,
                 child: Row(
                   children: [
                     SvgPicture.asset(
@@ -242,8 +246,6 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     ),
                   ],
                 ),
-                right: 18.w,
-                top: 18,
               ),
             ],
           ),

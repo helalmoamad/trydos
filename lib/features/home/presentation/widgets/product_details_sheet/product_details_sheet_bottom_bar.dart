@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -20,9 +22,12 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
       required this.clickOnComments,
       required this.clickOnShare,
       required this.clickOnMoreOptions,
+      required this.panelController,
       required this.currentActiveTab});
 
   final ValueNotifier<int> addToBagButtonShapeNotifier;
+
+  final PanelController panelController ;
 
   final ValueNotifier<int> currentActiveTab;
 
@@ -44,7 +49,7 @@ class _ProductDetailsSheetBottomBarState
   @override
   void initState() {
     animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 200));
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
     animationController.addStatusListener(_updateStatus);
     super.initState();
   }
@@ -69,190 +74,282 @@ class _ProductDetailsSheetBottomBarState
         color: colorScheme.white,
         child: Column(
           children: [
-            10.verticalSpace,
+        // ValueListenableBuilder<int>(
+        // valueListenable: widget.currentActiveTab,
+        // builder: (context , currentTab , _) {
+        //   return currentTab == 3 ? const SizedBox.shrink() : 10.verticalSpace;
+        // }),
+            const SizedBox(height: 10,),
             Padding(
               padding: HWEdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ValueListenableBuilder<int>(
-                      valueListenable: widget.addToBagButtonShapeNotifier,
-                      builder: (context, itemCount, _) {
-                        return GestureDetector(
-                          onTapDown: (details) {
-                            if (itemCount > 0) {
-                              if (details.localPosition.dx <= 40.w) {
-                                animationController.forward();
-                                widget.addToBagButtonShapeNotifier.value--;
-                              } else if (details.localPosition.dx >= 140.w) {
-                                animationController.forward();
-                                widget.addToBagButtonShapeNotifier.value++;
-                              }
-                            } else {
-                              animationController.forward();
-                              widget.addToBagButtonShapeNotifier.value++;
-                            }
-                          },
-                          child: AnimatedBuilder(
-                              animation: animationController,
-                              builder: (context, child) {
-                                final sineValue =
-                                    sin(3 * 2 * pi * animationController.value);
-                                return Transform.translate(
-                                    offset: Offset(sineValue * 3, 0),
-                                    child: SizedBox(
-                                      width: itemCount > 0 ? 197.w : 97.w,
-                                      child: Stack(
-                                        alignment: Alignment.topRight,
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                color: itemCount > 0
-                                                    ? Color(0xffCEFFE6)
-                                                    : Color(0xffF8F8F8)),
-                                            child: Center(
-                                              child: Padding(
-                                                padding: HWEdgeInsets.symmetric(
-                                                    vertical: 10),
-                                                child: Column(
-                                                  children: [
-                                                    Row(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment.end,
-                                                      children: [
-                                                        if (itemCount > 0) ...{
-                                                          Expanded(
-                                                              child: SizedBox(
-                                                            height: 20,
-                                                            child:
-                                                                ListView.builder(
-                                                              itemBuilder:
-                                                                  (context,
-                                                                      index) {
-                                                                return Align(
-                                                                    widthFactor: 1 -
-                                                                        (itemCount /
-                                                                            4 *
-                                                                            0.3),
-                                                                    child:
-                                                                        Container(
-                                                                      width: 15,
-                                                                      height: 20,
-                                                                      decoration:
-                                                                          BoxDecoration(
-                                                                        image:
-                                                                            DecorationImage(
-                                                                          image: AssetImage(
-                                                                              AppAssets.profileJpg),
-                                                                          fit: BoxFit
-                                                                              .cover,
-                                                                        ),
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(
-                                                                                5.0),
-                                                                      ),
-                                                                    ));
-                                                              },
-                                                              reverse: true,
-                                                              shrinkWrap: true,
-                                                              scrollDirection:
-                                                                  Axis.horizontal,
-                                                              itemCount:
-                                                                  itemCount,
-                                                            ),
-                                                          ))
-                                                        } else
-                                                          Spacer(),
-                                                        SvgPicture.asset(
-                                                          AppAssets.bagSvg,
-                                                          height: 30.h,
-                                                        ),
-                                                        Spacer()
-                                                      ],
-                                                    ),
-                                                    5.verticalSpace,
-                                                    MyTextWidget(
-                                                      itemCount > 0
-                                                          ? '$itemCount'
-                                                          : 'Add to bag',
-                                                      style: itemCount > 0
-                                                          ? textTheme.caption?.bq
-                                                              .copyWith(
-                                                                  color: Color(
-                                                                      0xff505050))
-                                                          : textTheme.caption?.rq
-                                                              .copyWith(
-                                                                  color: Color(
-                                                                      0xff505050)),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          if (itemCount > 0) ...{
-                                            Positioned(
-                                              top: -35,
-                                              left: -35,
-                                              child: Container(
-                                                width: 55,
-                                                height: 55,
+              child: ValueListenableBuilder<int>(
+                  valueListenable: widget.currentActiveTab,
+                builder: (context , currentTab , _) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ValueListenableBuilder<int>(
+                          valueListenable: widget.addToBagButtonShapeNotifier,
+                          builder: (context, itemCount, _) {
+                            return GestureDetector(
+                              onTapDown: (details) {
+                                if(currentTab != 3) {
+                                  widget.panelController.open();
+                                  widget.currentActiveTab.value = 3;
+                                }else {
+                                  HapticFeedback.lightImpact();
+                                  if (itemCount > 0) {
+                                    if (details.localPosition.dx <= 50.w) {
+                                      animationController.forward();
+                                      widget.addToBagButtonShapeNotifier
+                                          .value--;
+                                    } else
+                                    if (details.localPosition.dx >= (1.sw - 90).w) {
+                                      animationController.forward();
+                                      widget.addToBagButtonShapeNotifier
+                                          .value++;
+                                    }
+                                  } else {
+                                    animationController.forward();
+                                    widget.addToBagButtonShapeNotifier.value++;
+                                  }
+                                }
+                              },
+                              child: AnimatedBuilder(
+                                  animation: animationController,
+                                  builder: (context, child) {
+                                    final sineValue =
+                                        sin(3 * 2 * pi * animationController.value);
+                                    return Transform.translate(
+                                        offset: Offset(sineValue * 3, 0),
+                                        child: SizedBox(
+                                          width: currentTab == 3 ? 1.sw - 40 : itemCount > 0 ? 197.w : 97.w,
+                                          child: Stack(
+                                            alignment: Alignment.topRight,
+                                            children: [
+                                              AnimatedContainer(
+                                                duration: const Duration(milliseconds: 300),
+                                                curve: Curves.fastLinearToSlowEaseIn,
                                                 decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.blue),
                                                     borderRadius:
                                                         BorderRadius.circular(20),
-                                                    color: colorScheme.white),
-                                              ),
-                                            ),
-                                            Positioned(
-                                              left: 0,
-                                              child: Padding(
-                                                padding: EdgeInsets.only(
-                                                    top: itemCount == 1
-                                                        ? 0
-                                                        : 7.h),
-                                                child: SvgPicture.asset(
-                                                  itemCount == 1
-                                                      ? AppAssets.binSvg
-                                                      : AppAssets
-                                                          .minusMarkSvg,
-                                                  height: itemCount == 1
-                                                      ? 15.h
-                                                      : 3.h,
+                                                    color: itemCount > 0
+                                                        ? const Color(0xffCEFFE6)
+                                                        : const Color(0xffF8F8F8)),
+                                                child: Center(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.symmetric(
+                                                        vertical: 10),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          mainAxisAlignment: currentTab == 3 ? MainAxisAlignment.center : MainAxisAlignment.center,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment.end,
+                                                          children: [
+                                                              if (itemCount >
+                                                                  0) ...{
+                                                                Expanded(
+                                                                    child: SizedBox(
+                                                                      height: 20,
+                                                                      child:
+                                                                      ListView
+                                                                          .builder(
+                                                                        itemBuilder:
+                                                                            (
+                                                                            context,
+                                                                            index) {
+                                                                          return Align(
+                                                                              widthFactor: 1 -
+                                                                                  (itemCount /
+                                                                                      12 *
+                                                                                      0.3),
+                                                                              child:
+                                                                              Container(
+                                                                                width: 15,
+                                                                                height: 20,
+                                                                                decoration:
+                                                                                BoxDecoration(
+                                                                                  image:
+                                                                                  DecorationImage(
+                                                                                    image: AssetImage(
+                                                                                        AppAssets
+                                                                                            .profileJpg),
+                                                                                    fit: BoxFit
+                                                                                        .cover,
+                                                                                  ),
+                                                                                  borderRadius:
+                                                                                  BorderRadius
+                                                                                      .circular(
+                                                                                      5.0),
+                                                                                ),
+                                                                              ));
+                                                                        },
+                                                                        reverse: true,
+                                                                        shrinkWrap: true,
+                                                                        scrollDirection:
+                                                                        Axis
+                                                                            .horizontal,
+                                                                        itemCount:
+                                                                        itemCount,
+                                                                      ),
+                                                                    ))
+                                                              } else
+                                                                const Spacer(),
+                                                              SvgPicture.asset(
+                                                                AppAssets
+                                                                    .bagSvg,
+                                                                height: 30.h,
+                                                              ),
+                                                              const Spacer()
+                                                          ],
+                                                        ),
+                                                        const SizedBox(height: 5,),
+                                                          if(currentTab != 3)...{
+                                                            MyTextWidget(
+                                                              itemCount > 0
+                                                                  ? '$itemCount'
+                                                                  : 'Add to bag',
+                                                              style: itemCount >
+                                                                  0
+                                                                  ? textTheme
+                                                                  .caption?.bq
+                                                                  .copyWith(
+                                                                  color: const Color(
+                                                                      0xff505050))
+                                                                  : textTheme
+                                                                  .caption?.rq
+                                                                  .copyWith(
+                                                                  color: const Color(
+                                                                      0xff505050)),
+                                                            )
+                                                          }else ...{
+                                                            Row(
+                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                              children: [
+                                                                MyTextWidget(
+                                                                  'Add ',
+                                                                  style: textTheme
+                                                                      .caption?.mq
+                                                                      .copyWith(
+                                                                      height: 15 / 12 ,
+                                                                      color: const Color(
+                                                                          0xff505050)),
+                                                                ),
+                                                                MyTextWidget(
+                                                                  'to bag ',
+                                                                  style: textTheme
+                                                                      .caption?.rq
+                                                                      .copyWith(
+                                                                      height: 15 / 12 ,
+                                                                      color: const Color(
+                                                                          0xff505050)),
+                                                                ),
+                                                                MyTextWidget(
+                                                                  'blue ',
+                                                                  style: textTheme
+                                                                      .caption?.mq
+                                                                      .copyWith(
+                                                                      height: 15 / 12 ,
+                                                                      color: Colors.blue),
+                                                                ),
+                                                                MyTextWidget(
+                                                                  'color ',
+                                                                  style: textTheme
+                                                                      .caption?.rq
+                                                                      .copyWith(
+                                                                      height: 15 / 12 ,
+                                                                      color: const Color(
+                                                                          0xff505050)),
+                                                                ),
+                                                                MyTextWidget(
+                                                                  'Medium ',
+                                                                  style: textTheme
+                                                                      .caption?.mq
+                                                                      .copyWith(
+                                                                      height: 15 / 12 ,
+                                                                      color: const Color(
+                                                                          0xff505050)),
+                                                                ),
+                                                                MyTextWidget(
+                                                                  'size',
+                                                                  style: textTheme
+                                                                      .caption?.rq
+                                                                      .copyWith(
+                                                                      height: 15 / 12 ,
+                                                                      color: const Color(
+                                                                          0xff505050)),
+                                                                ),
+                                                              ],
+                                                            )
+                                                          }
+                                                      ],
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          },
-                                          Positioned(
-                                            top: -35,
-                                            right: -35,
-                                            child: Container(
-                                              width: 55,
-                                              height: 55,
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  color: colorScheme.white),
-                                            ),
+                                              if (itemCount > 0) ...{
+                                                Positioned(
+                                                  top: -35,
+                                                  left: -35,
+                                                  child: Container(
+                                                    width: 55,
+                                                    height: 55,
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(color: Colors.blue),
+                                                        borderRadius:
+                                                            BorderRadius.circular(20),
+                                                        color: colorScheme.white),
+                                                  ),
+                                                ),
+                                                Positioned(
+                                                  left: 0,
+                                                  child: Padding(
+                                                    padding: EdgeInsets.only(
+                                                        top: itemCount == 1
+                                                            ? 0
+                                                            : 7.h),
+                                                    child: SvgPicture.asset(
+                                                      itemCount == 1
+                                                          ? AppAssets.binSvg
+                                                          : AppAssets
+                                                              .minusMarkSvg,
+                                                      height: itemCount == 1
+                                                          ? 15.h
+                                                          : 3.h,
+                                                    ),
+                                                  ),
+                                                ),
+                                              },
+                                              Positioned(
+                                                top: -35,
+                                                right: -35,
+                                                child: Container(
+                                                  width: 55,
+                                                  height: 55,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(20),
+                                                      border: Border.all(color: Colors.blue),
+                                                      color: colorScheme.white),
+                                                ),
+                                              ),
+                                              SvgPicture.asset(
+                                                AppAssets.plusMarkSvg,
+                                                height: 15.h,
+                                              ),
+                                            ],
                                           ),
-                                          SvgPicture.asset(
-                                            AppAssets.plusMarkSvg,
-                                            height: 15.h,
-                                          ),
-                                        ],
-                                      ),
-                                    ));
-                              }),
-                        );
-                      }),
-                  Spacer(),
-                  Expanded(
-                    flex: 5,
-                    child: ValueListenableBuilder<int>(
-                        valueListenable: widget.currentActiveTab,
-                        builder: (context, currentTab, _) {
-                          return Row(
+                                        ));
+                                  }),
+                            );
+                          }),
+                      if(currentTab != 3)...{
+                        const Spacer(),
+                        Expanded(
+                          flex: 5,
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -270,21 +367,23 @@ class _ProductDetailsSheetBottomBarState
                                   text: '2K',
                                   svgPath: AppAssets.shareSvg,
                                   color:
-                                      currentTab == 1 ? Color(0xff505050) : null,
+                                  currentTab == 1 ? Color(0xff505050) : null,
                                   onTap: widget.clickOnShare),
                               BarWidget(
                                   svgPath: AppAssets.moreOptionSvg,
                                   color:
-                                      currentTab == 2 ? Color(0xff505050) : null,
+                                  currentTab == 2 ? Color(0xff505050) : null,
                                   onTap: widget.clickOnMoreOptions),
                             ],
-                          );
-                        }),
-                  )
-                ],
+                          ),
+                        )
+                      }
+                    ],
+                  );
+                }
               ),
             ),
-            20.verticalSpace
+            const SizedBox(height: 20,)
           ],
         ),
       ),

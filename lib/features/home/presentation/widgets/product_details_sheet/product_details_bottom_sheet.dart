@@ -1,31 +1,34 @@
-import 'dart:async';
-import 'dart:math';
-
-import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_comments_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_header.dart';
+import 'dart:ui' as ui;
+import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_more_options_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_share_content.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_sheet/select_size_sheet.dart';
+import '../../../../../trydos_application.dart';
+import '../product_details_body/product_details_image_widget.dart';
+import '../../../data/models/get_product_listing_without_filters_model.dart'
+as productListingModel;
+import '../product_listing/product_listing_image_widget.dart';
 
 class ProductDetailsBottomSheet extends StatefulWidget {
-  final String price;
-  final String offerPrice;
-  const ProductDetailsBottomSheet(
-      {super.key, required this.price, required this.offerPrice});
+  final productListingModel.Product productItem;
+
+  const ProductDetailsBottomSheet({super.key, required this.productItem});
 
   @override
   State<ProductDetailsBottomSheet> createState() =>
@@ -36,13 +39,50 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
   final ValueNotifier<List<int>> indicesOfChatCardsToShare = ValueNotifier([]);
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
+  final ValueNotifier<double> workOnBlurNotifier = ValueNotifier(10);
   final PageController pageController = PageController();
   final PanelController panelController = PanelController();
+  late final Gallery3DController? gallery3dControllerForCircles;
+  List<productListingModel.SyncColorImage> syncColorImageList = [];
+  List<String> images = [];
+  late int currentIndexInSlider;
+  final GlobalKey colorsGallerySliderKey = GlobalKey();
+  Offset? offsetOfColorsGallerySlider;
+  double valueOfBlur = 10;
 
   @override
   void initState() {
+    syncColorImageList = widget.productItem.syncColorImages ?? [];
+    syncColorImageList.removeWhere((element) => element.images.isNullOrEmpty);
+    syncColorImageList = [
+      ...syncColorImageList,
+      ...syncColorImageList,
+    ];
+    images = syncColorImageList.map((e) => e.images![0]).toList();
+    gallery3dControllerForCircles =
+    syncColorImageList.isNullOrEmpty || syncColorImageList.length < 3
+        ? null
+        : Gallery3DController(
+        itemCount: syncColorImageList.length,
+        autoLoop: false,
+        minScale: (syncColorImageList.length) == 4
+            ? 0.7
+            : (syncColorImageList.length) <= 8
+            ? 0.55
+            : 0.4,
+        initialIndex: syncColorImageList.length ~/ 4,
+        primaryshiftingOffsetDivision: (syncColorImageList.length) == 4
+            ? 4.5
+            : (syncColorImageList.length) <= 8
+            ? 1.6
+            : 1.6,
+        scrollTime: 1);
     _focusNode.addListener(_onFocusChange);
-
+    if (syncColorImageList.length <= 8) {
+      currentIndexInSlider = 0;
+    } else {
+      currentIndexInSlider = syncColorImageList.length ~/ 4;
+    }
     super.initState();
   }
 
@@ -58,50 +98,203 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
 
   final _focusNode = FocusNode();
 
+  bool userWantToScrollHorizontally = false;
+
+  bool firstOpenOfPanel = true;
+
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         ValueListenableBuilder<int>(
             valueListenable: currentActiveTab,
             builder: (context, currentTab, _) {
-              return SlidingUpPanel(
-                maxHeight: _focusNode.hasFocus ? 1.sh : 0.54.sh,
-                minHeight: 0.098.sh,
-                onPanelClosed: (){
-                  currentActiveTab.value = -1;
-                },
-                controller: panelController,
-                panelBuilder: (controller) => Column(
-                  children: [
-                    Stack(
-                      alignment: Alignment.topCenter,
-                      children: [
-                        ProductDetailsSheetHeader(
-                          addToBagButtonShapeNotifier:
-                          addToBagButtonShapeNotifier,
-                          price: widget.price,
-                          offerPrice: widget.offerPrice,
-                        ),
-                        currentTab != -1
-                            ? Positioned(
-                            top: 7,
-                            child: SvgPicture.asset(
-                              AppAssets.minusMarkSvg,
-                              width: 25,
-                              color: Colors.grey.shade200,
-                            ))
-                            : const SizedBox.shrink(),
-                      ],
-                    ),
-                    currentTab >= 0
-                        ? SizedBox(
-                            height: 350,
+              return ValueListenableBuilder<double>(
+                valueListenable: workOnBlurNotifier,
+                child: SlidingUpPanel(
+                  denyVericalSliding: currentTab == 3
+                      ? (currentPosition) {
+
+                    if (panelController.panelPosition != 1) {
+                      return false;
+                    }
+                    if (offsetOfColorsGallerySlider == null) {
+                      final RenderBox renderBox = colorsGallerySliderKey
+                          .currentContext!
+                          .findRenderObject() as RenderBox;
+                      offsetOfColorsGallerySlider = renderBox.localToGlobal(Offset.zero);
+                    }
+                    if (currentPosition.dy > (288.h + 70.w + 10.h)) {
+                      if (currentPosition.dy <=
+                          (288.h + 70.w + 30.h + 125 + 100) &&
+                          currentPosition.dy >=
+                              (288.h + 70.w + 30.h + 125)) {
+                        userWantToScrollHorizontally = true;
+                      }
+                    } else if (
+                    currentPosition.dx >= offsetOfColorsGallerySlider!.dx &&
+                        currentPosition.dx <= (offsetOfColorsGallerySlider!.dx + 200) &&
+                        currentPosition.dy <=
+                            (288.h + 70.w + 10.h) &&
+                        currentPosition.dy >=
+                            (288.h + 10.h)
+                    ) {
+                      userWantToScrollHorizontally = true;
+                    }
+                    return userWantToScrollHorizontally;
+                  }
+                      : null,
+                  controller: panelController,
+                  maxHeight: currentTab == -1
+                      ? 78
+                      : _focusNode.hasFocus
+                      ? 575
+                      : currentTab == 3
+                      ? 330.h + 70.w + 305
+                      : 433,
+                  minHeight: 78,
+                  onPanelClosed: () {
+                    firstOpenOfPanel = true;
+                    denySlidingBackForSlidingUpPanels.value = false;
+                    currentActiveTab.value = -1;
+                  },
+                  onPanelOpened: () {
+                    denySlidingBackForSlidingUpPanels.value = true;
+                  },
+                  color: currentTab == 3 ? Colors.transparent : Colors.white,
+                  boxShadow: const [
+                    CustomBoxShadow(
+                        color: Colors.transparent,
+                        offset: Offset(10.0, 10.0),
+                        blurRadius: 10.0,
+                        blurStyle: BlurStyle.outer)
+                  ],
+                  isDraggable: (currentTab == -1 ? false : true),
+                  onPanelSlide: currentTab == 3
+                      ? (percentOfOpenPart) {
+                    workOnBlurNotifier.value = 20 * (percentOfOpenPart - 0.6);
+                    if (!firstOpenOfPanel &&
+                        percentOfOpenPart <= 1-((290) /(330.h + 70.w + 305)) && percentOfOpenPart >= 0.1
+                    ) {
+                      currentActiveTab.value = -1;
+                      return;
+                    }
+                    if (percentOfOpenPart == 1) {
+                      userWantToScrollHorizontally = false;
+                    } else {
+                      firstOpenOfPanel = false;
+                    }
+                  }
+                      : null,
+                  panelBuilder: (controller) =>
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (currentTab == 3) ...{
+                            ProductDetailsImageWidget(
+                              width: 198.w,
+                              height: 288.h,
+                            ),
+                            10.verticalSpace,
+                            Material(
+                              color: Colors.transparent,
+                              child: GestureDetector(
+                                onPanDown: (details){
+                                  print('kkkkkkkkk ${details.globalPosition.dy}');
+                                },
+                                child: Gallery3D(
+                                    key: colorsGallerySliderKey,
+                                    // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
+                                    controller: gallery3dControllerForCircles!,
+                                    denyScrolling: false,
+                                    width: 200,
+                                    stopScrollingOnEdges: (double primaryDelta) {
+                                      return (primaryDelta <= 0 &&
+                                          gallery3dControllerForCircles!
+                                              .currentIndex ==
+                                              (syncColorImageList.length ~/ 2 -
+                                                  1)) ||
+                                          (primaryDelta >= 0 &&
+                                              gallery3dControllerForCircles!
+                                                  .currentIndex ==
+                                                  0);
+                                    },
+                                    changingPagesScrollOffset: 0.1,
+                                    isClip: false,
+                                    onItemChanged: (index) {
+                                      currentIndexInSlider = index;
+                                    },
+                                    onClickItem: (index) {},
+                                    itemConfig: GalleryItemConfig(
+                                        width: 70.w,
+                                        height: 70.w,
+                                        radius: 180,
+                                        isShowTransformMask: false,
+                                        shadows: const [
+                                          BoxShadow(
+                                            color: Color(0x19000000),
+                                            offset: Offset(0, 3),
+                                            blurRadius: 6,
+                                          ),
+                                        ]),
+                                    itemBuilder: (context, index) {
+                                      return Visibility(
+                                        visible:
+                                        index < (syncColorImageList.length ~/ 2),
+                                        child: ProductListingImageWidget(
+                                          width: 70.w,
+                                          height: 70.w,
+                                          imageUrl: images[index],
+                                          innerShadowYOffset: 4,
+                                          borderColor: index ==
+                                              currentIndexInSlider
+                                              ? Color(int.parse(
+                                              '0xff${widget.productItem
+                                                  .colors![currentIndexInSlider %
+                                                  widget.productItem.colors!
+                                                      .length].color!.substring(
+                                                  1)}'))
+                                              : Colors.white,
+                                          circleShape: true,
+                                        ),
+                                      );
+                                    }),
+                              ),
+                            ),
+                            10.verticalSpace,
+                          },
+                          Stack(
+                            alignment: Alignment.topCenter,
+                            children: [
+                              ProductDetailsSheetHeader(
+                                addToBagButtonShapeNotifier:
+                                addToBagButtonShapeNotifier,
+                                price: widget.productItem.priceFormatted ?? '',
+                                offerPrice: (widget.productItem.offerPrice ??
+                                    '')
+                                    .toString(),
+                              ),
+                              currentTab != -1
+                                  ? Positioned(
+                                  top: 7,
+                                  child: SvgPicture.asset(
+                                    AppAssets.minusMarkSvg,
+                                    width: 25,
+                                    color: Colors.grey.shade200,
+                                  ))
+                                  : const SizedBox.shrink(),
+                            ],
+                          ),
+                          currentTab < 3 && currentTab >= 0
+                              ? SizedBox(
+                            height: 360,
                             child: PageView(
-                              physics: const cupertino.ClampingScrollPhysics(),
+                              physics:
+                              const cupertino.ClampingScrollPhysics(),
                               scrollBehavior:
-                                  const cupertino.CupertinoScrollBehavior(),
+                              const cupertino.CupertinoScrollBehavior(),
                               controller: pageController,
                               onPageChanged: (index) {
                                 currentActiveTab.value = index;
@@ -112,57 +305,83 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               },
                               children: [
                                 ProductDetailsSheetCommentsContent(
-                                    scrollController: currentTab == 0 ? controller : null),
+                                    scrollController:
+                                    currentTab == 0 ? controller : null),
                                 ProductDetailsSheetShareContent(
                                     focusNode: _focusNode,
-                                    scrollController: currentTab == 1 ? controller : null,
+                                    scrollController:
+                                    currentTab == 1 ? controller : null,
                                     indicesOfChatCardsToShare:
-                                        indicesOfChatCardsToShare),
+                                    indicesOfChatCardsToShare),
                                 ProductDetailsSheetMoreOptionsContent(
-                                    scrollController: currentTab == 2 ? controller : null)
+                                    scrollController:
+                                    currentTab == 2 ? controller : null)
                               ],
                             ),
                           )
-                        : const SizedBox.shrink(),
-                  ],
+                              : currentTab == 3
+                              ? SelectSizeContent(
+                            scrollController: controller,
+                            selectedColor: Colors.blue,
+                            addToBagButtonShapeNotifier:
+                            addToBagButtonShapeNotifier,
+                          )
+                              : const SizedBox.shrink(),
+                        ],
+                      ),
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(30.0),
+                      topRight: Radius.circular(30.0)),
                 ),
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30.0),
-                    topRight: Radius.circular(30.0)),
+                builder: (context , blurValue , child) {
+                  return BackdropFilter(
+                    filter: ui.ImageFilter.blur(
+                        sigmaX: currentTab == 3 ? blurValue : 0,
+                        sigmaY: currentTab == 3 ? blurValue : 0),
+                    child: child!
+                  );
+                }
               );
             }),
-        Divider(
-          height: 0.h,
-          color: Color(0xffE6E6E6),
-        ),
+        ValueListenableBuilder<int>(
+            valueListenable: currentActiveTab,
+            builder: (context, currentTab, _) {
+              return currentTab == 3
+                  ? const SizedBox.shrink()
+                  : Divider(
+                height: 0.h,
+                color: const Color(0xffE6E6E6),
+              );
+            }),
         ValueListenableBuilder<List<int>>(
             valueListenable: indicesOfChatCardsToShare,
             builder: (context, indices, _) {
               return indices.isEmpty
                   ? ProductDetailsSheetBottomBar(
-                      clickOnComments: () {
-                        panelController.open();
-                        currentActiveTab.value = 0;
-                            pageController.jumpToPage(0);
-                      },
-                      clickOnFavorite: () {
-                        currentActiveTab.value = -1;
-                      },
-                      clickOnMoreOptions: () {
-                        panelController.open();
-                        currentActiveTab.value = 2;
-                            pageController.jumpToPage(2);
-                      },
-                      clickOnShare: () {
-                        panelController.open();
-                        currentActiveTab.value = 1;
-                            pageController.jumpToPage(1);
-                          },
-                      currentActiveTab: currentActiveTab,
-                      addToBagButtonShapeNotifier: addToBagButtonShapeNotifier)
+                  panelController: panelController,
+                  clickOnComments: () {
+                    panelController.open();
+                    currentActiveTab.value = 0;
+                    pageController.jumpToPage(0);
+                  },
+                  clickOnFavorite: () {
+                    currentActiveTab.value = -1;
+                  },
+                  clickOnMoreOptions: () {
+                    panelController.open();
+                    currentActiveTab.value = 2;
+                    pageController.jumpToPage(2);
+                  },
+                  clickOnShare: () {
+                    panelController.open();
+                    currentActiveTab.value = 1;
+                    pageController.jumpToPage(1);
+                  },
+                  currentActiveTab: currentActiveTab,
+                  addToBagButtonShapeNotifier: addToBagButtonShapeNotifier)
                   : ShareButton(
-                      onTap: () {},
-                    );
+                onTap: () {},
+              );
             }),
       ],
     );
@@ -191,9 +410,9 @@ class ShareButton extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xff3c3c3c),
                 borderRadius: BorderRadius.circular(20.0),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
-                    color: const Color(0x1a000000),
+                    color: Color(0x1a000000),
                     offset: Offset(0, 3),
                     blurRadius: 6,
                   ),
@@ -225,3 +444,25 @@ class ShareButton extends StatelessWidget {
   }
 }
 
+class CustomBoxShadow extends BoxShadow {
+  final BlurStyle blurStyle;
+
+  const CustomBoxShadow({
+    Color color = const Color(0xFF000000),
+    Offset offset = Offset.zero,
+    double blurRadius = 0.0,
+    this.blurStyle = BlurStyle.normal,
+  }) : super(color: color, offset: offset, blurRadius: blurRadius);
+
+  @override
+  Paint toPaint() {
+    final Paint result = Paint()
+      ..color = color
+      ..maskFilter = MaskFilter.blur(this.blurStyle, blurSigma);
+    assert(() {
+      if (debugDisableShadows) result.maskFilter = null;
+      return true;
+    }());
+    return result;
+  }
+}

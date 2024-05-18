@@ -34,9 +34,9 @@ class HomeState {
       this.getProductsWithoutFiltersStatus =
           GetProductsWithoutFiltersStatus.init,
       this.startingSetting,
+      this.cachedProductWithoutRelatedProductsModel = const {},
       this.currentIndex = 0,
       this.mainCategoriesResponseModel,
-      this.getProductDetailWithoutRelatedProductsModel,
       this.getProductListingWithoutFiltersModel,
       this.getHomeSectionsPaginationObject = const {}});
 
@@ -56,27 +56,27 @@ class HomeState {
       getProductListingWithoutFiltersModel;
 
   final MainCategoriesResponseModel? mainCategoriesResponseModel;
-  final GetProductDetailWithoutRelatedProductsModel?
-      getProductDetailWithoutRelatedProductsModel;
 
   final StartingSetting? startingSetting;
+  final Map<String , GetProductDetailWithoutRelatedProductsModel> cachedProductWithoutRelatedProductsModel;
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
-      final GetProductDetailWithoutRelatedProductsModel?
-          getProductDetailWithoutRelatedProductsModel,
       final StartingSetting? startingSetting,
       final MainCategoriesResponseModel? mainCategoriesResponseModel,
       final Map<String, PaginationModel<HomeSectionDataObject>>?
           getHomeSectionsPaginationObject,
+        final Map<String , GetProductDetailWithoutRelatedProductsModel>? cachedProductWithoutRelatedProductsModel,
       final GetProductsWithoutFiltersStatus? getProductsWithoutFiltersStatus,
       final GetProductDetailWithoutSimilarRelatedProductsStatus?
           getProductDetailWithoutSimilarRelatedProductsStatus,
       int? currentIndex,
       final GetProductListingWithoutFiltersModel?
-          getProductListingWithoutFiltersModel}) {
+          getProductListingWithoutFiltersModel
+      }) {
     return HomeState(
         currentIndex: currentIndex ?? this.currentIndex,
+        cachedProductWithoutRelatedProductsModel: cachedProductWithoutRelatedProductsModel ?? this.cachedProductWithoutRelatedProductsModel,
         getProductDetailWithoutSimilarRelatedProductsStatus:
             getProductDetailWithoutSimilarRelatedProductsStatus ??
                 this.getProductDetailWithoutSimilarRelatedProductsStatus,
@@ -94,9 +94,7 @@ class HomeState {
         getProductListingWithoutFiltersModel:
             getProductListingWithoutFiltersModel ??
                 this.getProductListingWithoutFiltersModel,
-        getProductDetailWithoutRelatedProductsModel:
-            getProductDetailWithoutRelatedProductsModel ??
-                this.getProductDetailWithoutRelatedProductsModel);
+    );
   }
 
   factory HomeState.fromJson(Map<String, dynamic> data) =>

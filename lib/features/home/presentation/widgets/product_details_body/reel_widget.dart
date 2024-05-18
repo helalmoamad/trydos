@@ -17,20 +17,38 @@ class ReelWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ProductDetailsImageWidget(
-          height: 595,
-          borderRadius: BorderRadius.only(
-              topRight: Radius.circular(30), topLeft: Radius.circular(30)),
-          width: 1.sw,
-          withBackGroundShadow: false,
-          withInnerShadow: false,
-          imageFit: BoxFit.fill,
+        Stack(
+          children: [
+            ProductDetailsImageWidget(
+              height: 595,
+              borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(30), topLeft: Radius.circular(30)),
+              width: 1.sw,
+              withBackGroundShadow: false,
+              withInnerShadow: false,
+              imageFit: BoxFit.fill,
+            ),
+             Positioned(
+               bottom: 20,
+              right: 20 ,
+              child: Column(
+                mainAxisSize : MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(AppAssets.favoriteSvg),
+                  const SizedBox(height:25),
+                  SvgPicture.asset(AppAssets.shareSvg , color: const Color(0xff505050),),
+                  const SizedBox(height:25),
+                  SvgPicture.asset(AppAssets.moreOptionSvg),
+                ],
+              ),
+            )
+          ],
         ),
         Container(
           width: 1.sw,
-          padding: EdgeInsets.only(left: 10, top: 20, right: 10),
-          decoration: BoxDecoration(
-            color: const Color(0xfff8f8f8),
+          padding: const EdgeInsets.only(left: 10, top: 20, right: 10),
+          decoration: const BoxDecoration(
+            color: Color(0xfff8f8f8),
             borderRadius: BorderRadius.only(
           bottomRight: Radius.circular(30),
             bottomLeft: Radius.circular(30)),
@@ -40,23 +58,23 @@ class ReelWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(
                       bottomRight: Radius.circular(30),
                       bottomLeft: Radius.circular(30)),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0x29000000),
+                      color:  Color(0x29000000),
                       offset: Offset(0, 3),
                       blurRadius: 6,
                     ),
                   ],
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: const BorderRadius.all(Radius.circular(20)),
                   child: Stack(
                     children: [
-                      Container(
+                      SizedBox(
                         width: 20,
                         height: 20,
                         child: Image.asset(
@@ -83,7 +101,7 @@ class ReelWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Expanded(
@@ -105,7 +123,7 @@ class ReelWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: 5,),
+                    const SizedBox(height: 5,),
                     Flexible(
                       child: MyTextWidget(
                         'Amazing Product I Buy It And I Saw It Is Good Quality Regarding Price',
