@@ -75,8 +75,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     super.initState();
   }
 
-  // workNormally: true,
-  // withRoundedCorners: true,
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (error) {
@@ -102,15 +100,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       p.currentIndex != c.currentIndex,
                   builder: (context, state) {
                     if (state
-                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
-                        GetProductDetailWithoutSimilarRelatedProductsStatus
-                            .loading) {
-                      return Center(
-                        child: TrydosLoader(),
-                      );
-                    }
-                    if (state
-                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                        .getProductDetailWithoutSimilarRelatedProductsStatus ==
                         GetProductDetailWithoutSimilarRelatedProductsStatus
                             .failure) {
                       return Center(
@@ -119,15 +109,17 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               homeBloc.add(
                                   GetProductDatailsWithoutRelatedProductsEvent(
                                       productId:
-                                          widget.productItem.id.toString()));
+                                      widget.productItem.id.toString()));
                             },
                             child: MyTextWidget(LocaleKeys.try_again.tr())),
                       );
                     }
-                    print(
-                        'ffffff ${state.getProductDetailWithoutSimilarRelatedProductsStatus}');
-                    print(
-                        'ffffff ${state.getProductDetailWithoutRelatedProductsModel}');
+                    if(!state.cachedProductWithoutRelatedProductsModel.containsKey(widget.productItem.id.toString())) {
+                        return Center(
+                          child: TrydosLoader(),
+                        );
+                    }
+                    String productId = widget.productItem.id.toString();
                     return ScrollConfiguration(
                       behavior: const CupertinoScrollBehavior(),
                       child: ListView(
@@ -227,17 +219,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                                   .currentIndex]
                                                           .images![index],
                                                     )
-                                                  : SizedBox.shrink());
+                                                  : const SizedBox.shrink());
                                         },
                                         separatorBuilder: (context, index) {
-                                          return SizedBox(
+                                          return const SizedBox(
                                             width: 9,
                                           );
                                         },
                                       ))),
                               Container(
-                                width: 20,
+                                width: 40,
                                 height: 464,
+                                color: Colors.transparent,
                               )
                             ],
                           ),
@@ -245,11 +238,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             brand: widget.productItem.brand!,
                             productName: widget.productItem.name!,
                             ViewerCount: state
-                                .getProductDetailWithoutRelatedProductsModel!
+                                .cachedProductWithoutRelatedProductsModel[productId]!
                                 .product!
                                 .reviewsCount
                                 .toString(),
-                            thumbnail: widget.productItem.thumbnail!,
+                            thumbnail: widget.productItem.thumbnail ?? '',
                             colorName: !widget.productItem.syncColorImages
                                         .isNullOrEmpty &&
                                     !widget.productItem.syncColorImages![0]
@@ -267,7 +260,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ),
                           ProductDetailsDescriptionWidget(
                             description: state
-                                    .getProductDetailWithoutRelatedProductsModel!
+                                .cachedProductWithoutRelatedProductsModel[productId]!
                                     .product!
                                     .description ??
                                 " ",
@@ -310,7 +303,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           SizedBox(
                             height: 15,
                           ),
-                          ProductStoriesCard(),
+                         // ProductStoriesCard(),
                           SizedBox(
                             height: 15,
                           ),
@@ -331,8 +324,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   },
                 )),
             ProductDetailsBottomSheet(
-              price: widget.productItem.priceFormatted ?? " ",
-              offerPrice: (widget.productItem.offerPrice ?? " ").toString(),
+              productItem: widget.productItem,
             ),
             SlidingUpPanelForBuyersCameraShots(
                 panelController: panelControllerForBuyersCameraShots,

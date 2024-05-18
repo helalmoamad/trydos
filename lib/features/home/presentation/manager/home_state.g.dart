@@ -27,17 +27,21 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : StartingSetting.fromJson(
               json['startingSetting'] as Map<String, dynamic>),
-      currentIndex: json['currentIndex'] as int? ?? 0,
+      cachedProductWithoutRelatedProductsModel:
+          (json['cachedProductWithoutRelatedProductsModel']
+                      as Map<String, dynamic>?)
+                  ?.map(
+                (k, e) => MapEntry(
+                    k,
+                    GetProductDetailWithoutRelatedProductsModel.fromJson(
+                        e as Map<String, dynamic>)),
+              ) ??
+              const {},
+      currentIndex: (json['currentIndex'] as num?)?.toInt() ?? 0,
       mainCategoriesResponseModel: json['mainCategoriesResponseModel'] == null
           ? null
           : MainCategoriesResponseModel.fromJson(
               json['mainCategoriesResponseModel'] as Map<String, dynamic>),
-      getProductDetailWithoutRelatedProductsModel:
-          json['getProductDetailWithoutRelatedProductsModel'] == null
-              ? null
-              : GetProductDetailWithoutRelatedProductsModel.fromJson(
-                  json['getProductDetailWithoutRelatedProductsModel']
-                      as Map<String, dynamic>),
       getProductListingWithoutFiltersModel:
           json['getProductListingWithoutFiltersModel'] == null
               ? null
@@ -79,9 +83,10 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getProductListingWithoutFiltersModel?.toJson(),
       'mainCategoriesResponseModel':
           instance.mainCategoriesResponseModel?.toJson(),
-      'getProductDetailWithoutRelatedProductsModel':
-          instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
       'startingSetting': instance.startingSetting?.toJson(),
+      'cachedProductWithoutRelatedProductsModel': instance
+          .cachedProductWithoutRelatedProductsModel
+          .map((k, e) => MapEntry(k, e.toJson())),
     };
 
 const _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap = {

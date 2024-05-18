@@ -1454,7 +1454,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       if (parentMessage.senderUserId != message.senderUserId) {
         return ReplayMessage(
           watchedAt: messageStatus?.watchedAt,
-          messageDate: parentMessage.createdAt!,
+          messageDate: parentMessage.createdAt?? DateTime.now(),
           createAt: message.createdAt,
           scrollToMessage: () => scrollToIndex(
               messagesIndexes[parentMessage.id.toString()] ?? -1,

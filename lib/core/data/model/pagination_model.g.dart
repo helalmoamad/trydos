@@ -12,7 +12,7 @@ PaginationModel<T> _$PaginationModelFromJson<T>(
 ) =>
     PaginationModel<T>(
       items: (json['items'] as List<dynamic>).map(fromJsonT).toList(),
-      page: json['page'] as int,
+      page: (json['page'] as num).toInt(),
       paginationStatus:
           $enumDecode(_$PaginationStatusEnumMap, json['paginationStatus']),
       hasReachedMax: json['hasReachedMax'] as bool,

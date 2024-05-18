@@ -19,16 +19,10 @@ class SlidingUpPanelForReels extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SlidingUpPanel(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20.0),
             topRight: Radius.circular(20.0)),
         minHeight: 0,
-        onPanelClosed: (){
-          denySlidingBackForSlidingUpPanels.value = false;
-        },
-        onPanelOpened: (){
-          denySlidingBackForSlidingUpPanels.value = true;
-        },
         controller: panelController,
         maxHeight: 1.sh - 100,
         backdropEnabled: true,
@@ -37,13 +31,13 @@ class SlidingUpPanelForReels extends StatelessWidget {
             height: 1.sh - 100,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
-              color: Color(0xffFEFEFE),
+              color: const Color(0xffFEFEFE),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 20),
+                  padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -52,15 +46,15 @@ class SlidingUpPanelForReels extends StatelessWidget {
                         AppAssets.chromeIconSvg,
                         height: 20,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       MyTextWidget(
                         'Buyers Camera 12 Shot',
                         style: context.textTheme.bodyText2?.rq
-                            .copyWith(color: Color(0xff8D8D8D)),
+                            .copyWith(color: const Color(0xff8D8D8D)),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       SvgPicture.asset(
@@ -70,7 +64,7 @@ class SlidingUpPanelForReels extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 3,
                 ),
                 Padding(
@@ -90,16 +84,16 @@ class SlidingUpPanelForReels extends StatelessWidget {
                 ),
                 Expanded(
                   child: ScrollConfiguration(
-                    behavior: CupertinoScrollBehavior(),
+                    behavior: const CupertinoScrollBehavior(),
                     child: ListView.separated(
                         shrinkWrap: true,
                         controller: scrollController,
-                        physics: ClampingScrollPhysics(),
-                        padding: EdgeInsets.only(left: 10, right: 10, top: 15),
+                        physics: const ClampingScrollPhysics(),
+                        padding: const EdgeInsets.only(left: 10, right: 10, top: 15),
                         itemBuilder: (ctx, index) {
-                          return ReelWidget();
+                          return const ReelWidget();
                         },
-                        separatorBuilder: (ctx, index) => SizedBox(height: 15),
+                        separatorBuilder: (ctx, index) => const SizedBox(height: 15),
                         itemCount: 10),
                   ),
                 ),
