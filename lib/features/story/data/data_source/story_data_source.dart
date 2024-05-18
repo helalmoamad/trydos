@@ -13,13 +13,14 @@ import '../../presentation/bloc/story_bloc.dart';
 import '../models/image_detail.dart';
 import '../models/upload_story_response_model.dart';
 import '../../data/models/get_stories_model.dart';
+
 @injectable
 class StoriesDataSource {
   Completer<ImageDetail> completer = Completer<ImageDetail>();
-
-  Future<ImageDetail> loadWidthAndHeightForImage({required String url,
-    required int collectionId,
-    Function? onError}) async {
+  Future<ImageDetail> loadWidthAndHeightForImage(
+      {required String url,
+      required int collectionId,
+      Function? onError}) async {
     completer = Completer<ImageDetail>();
     Image image;
     image = Image(
@@ -29,20 +30,22 @@ class StoriesDataSource {
       image.image
           .resolve(const ImageConfiguration())
           .addListener(ImageStreamListener(
-            (ImageInfo imageInfo,
-            bool _,) {
-          final dimensions = ImageDetail(
-            width: imageInfo.image.width,
-            height: imageInfo.image.height,
-          );
-          if (completer.isCompleted == false) {
-            completer.complete(dimensions);
-          }
-        },
-        onError: (exception, stackTrace) {
-          if (onError != null) onError();
-        },
-      ));
+            (
+              ImageInfo imageInfo,
+              bool _,
+            ) {
+              final dimensions = ImageDetail(
+                width: imageInfo.image.width,
+                height: imageInfo.image.height,
+              );
+              if (completer.isCompleted == false) {
+                completer.complete(dimensions);
+              }
+            },
+            onError: (exception, stackTrace) {
+              if (onError != null) onError();
+            },
+          ));
     } catch (e, s) {
       GetIt.I<StoryBloc>().add(LoadFailureEvent(collectionId: collectionId));
     }
@@ -64,7 +67,7 @@ class StoriesDataSource {
 
   Future<UploadStoryResponseModel> uploadStory(Map<String, dynamic> params) {
     PostClient<UploadStoryResponseModel> uploadStory =
-    PostClient<UploadStoryResponseModel>(
+        PostClient<UploadStoryResponseModel>(
       onSendProgress: (count, total) {},
       requestPrams: RequestConfig<UploadStoryResponseModel>(
         // sendTimeout: Duration(seconds: 10),
@@ -80,23 +83,25 @@ class StoriesDataSource {
     return uploadStory();
   }
 
-  Future<Either<int , CollectionStoryModel>> addStoryToOurServer(Map<String, dynamic> params) {
-    PostClient<Either<int , CollectionStoryModel>> addStoryToOurServer = PostClient<Either<int , CollectionStoryModel>>(
-      requestPrams: RequestConfig<Either<int , CollectionStoryModel>>(
-        endpoint: StoriesEndPoints.addStoryToOurServerEP,
-        data: params,
-        response: ResponseValue<Either<int , CollectionStoryModel>>(
-          fromJson: (response) {
-            if(response['data']['id'] != null) return Left(response['data']['id']);
+  Future<Either<int, CollectionStoryModel>> addStoryToOurServer(
+      Map<String, dynamic> params) {
+    PostClient<Either<int, CollectionStoryModel>> addStoryToOurServer =
+        PostClient<Either<int, CollectionStoryModel>>(
+      requestPrams: RequestConfig<Either<int, CollectionStoryModel>>(
+          endpoint: StoriesEndPoints.addStoryToOurServerEP,
+          data: params,
+          response: ResponseValue<Either<int, CollectionStoryModel>>(
+              fromJson: (response) {
+            if (response['data']['id'] != null)
+              return Left(response['data']['id']);
             return Right(CollectionStoryModel.fromJson(response['data']));
-          }
-        )
-      ),
+          })),
       serverName: ServerName.stories,
     );
     // uploadStory.call();
     return addStoryToOurServer();
   }
+
   Future<bool> increaseViewers(Map<String, dynamic> params) {
     GetClient<bool> addStoryToOurServer = GetClient<bool>(
       requestPrams: RequestConfig<bool>(

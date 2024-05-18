@@ -282,6 +282,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           signInErrorMessage: l.message));
     }, (r) {
       try {
+        print(
+            "87777777777777777777777777777777777777777777777777777777${r.data!.user!.name}77777777777777777777777${r.data!.user!.id!}");
+
+        _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+        _prefsRepository.setMyMarketName(r.data!.user!.name.toString());
         _prefsRepository.setMarketToken(r.data!.token!);
         _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
         _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
@@ -335,6 +340,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
       ));
     }, (r) {
+      print(
+          "87777777777777777777777777777777777777777777777777777777${r.data!.user!.name}77777777777777777777777${r.data!.user!.id!}");
+      _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+      _prefsRepository.setMyMarketName(r.data!.user!.name.toString());
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());

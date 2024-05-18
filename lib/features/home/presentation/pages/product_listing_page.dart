@@ -1,9 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -23,7 +26,10 @@ import '../manager/home_bloc.dart';
 import '../widgets/product_listing/product_item.dart';
 
 class ProductListingPage extends StatefulWidget {
-  const ProductListingPage({super.key});
+  final String boutiqueSlug;
+  final String? category;
+  const ProductListingPage(
+      {super.key, required this.boutiqueSlug, this.category});
 
   @override
   State<ProductListingPage> createState() => _ProductListingPageState();
@@ -33,16 +39,20 @@ class _ProductListingPageState extends State<ProductListingPage> {
   late AppBloc appBloc;
   late HomeBloc homeBloc;
   double? _previousOffset;
+
   double? _velocity;
   final ScrollController scrollController = ScrollController();
   final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
       ValueNotifier(Tuple2(-1, -1));
+  final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
   @override
   void initState() {
+    print("${"ddddddddddddddddddddddddddddddddddddw${widget.boutiqueSlug}"}");
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    homeBloc.add(GetProductsWithoutFiltersEvent(category: 'رجالي_36'));
+    homeBloc.add(
+        GetProductsWithoutFiltersEvent(boutique_slug: widget.boutiqueSlug));
     scrollController.addListener(() {
       if (scrollController.position.pixels <= 80) {
         debugPrint(scrollController.position.pixels.toString());
@@ -119,7 +129,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       child: ElevatedButton(
                           onPressed: () {
                             homeBloc.add(GetProductsWithoutFiltersEvent(
-                                category: 'رجالي_36'));
+                                boutique_slug: widget.boutiqueSlug));
                           },
                           child: MyTextWidget(LocaleKeys.try_again.tr())),
                     );
@@ -142,7 +152,25 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       .products?.length ??
                                   0,
                               (index) => GestureDetector(
-                                    onTap: () {
+                                    onTap: () async {
+                                      Future.delayed(
+                                          Duration(milliseconds: 100), () {
+                                        print("${prefsRepository.myMarketId.toString()}" +
+                                            "55555555555555555555555555555555555555555");
+                                        print("${prefsRepository.myMarketName.toString()}" +
+                                            "5555555444444444444444444444444444444444444444444444444444444445555555555555555555555");
+                                      });
+                                      await FirebaseAnalytics.instance.logEvent(
+                                          name: 'button_clicked',
+                                          parameters: {
+                                            'userID': prefsRepository.myMarketId
+                                                .toString(),
+                                            'user_name': prefsRepository
+                                                .myMarketName
+                                                .toString(),
+                                            'clicked_button_name':
+                                                'i love you Ahmad',
+                                          });
                                       // pushOverscrollRoute(
                                       //     context: context,
                                       //     transitionDuration : Duration(milliseconds : 250),

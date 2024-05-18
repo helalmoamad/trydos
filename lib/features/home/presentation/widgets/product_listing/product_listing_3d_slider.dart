@@ -525,7 +525,9 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                   alignment: Alignment.center,
                                   children: [
                                     Stack(
-                                      alignment: LanguageService.rtl ? Alignment.centerRight: Alignment.centerLeft,
+                                      alignment: LanguageService.rtl
+                                          ? Alignment.centerRight
+                                          : Alignment.centerLeft,
                                       children: [
                                         SizedBox(
                                           height: 290,
@@ -581,10 +583,9 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                               }),
                                         ),
                                         Container(
-                                          height: 290,
-                                          width: 30,
-                                          color:Colors.transparent
-                                        )
+                                            height: 290,
+                                            width: 30,
+                                            color: Colors.transparent)
                                       ],
                                     ),
                                     Positioned(
@@ -866,7 +867,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                 return;
                               }
                             },
-                            onTap:(){},
+                            onTap: () {},
                             child: Gallery3D(
                                 controller: gallery3dControllerForCircles!,
                                 width: 200.w,
@@ -939,8 +940,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                         offset: Offset(0, 3),
                                         blurRadius: 6,
                                       ),
-                                    ]
-                                ),
+                                    ]),
                                 onClickItem: (index) {},
                                 itemBuilder: (context, index) {
                                   return GestureDetector(

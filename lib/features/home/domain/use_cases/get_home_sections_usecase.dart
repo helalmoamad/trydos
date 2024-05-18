@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart';
+/*import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
@@ -26,4 +26,4 @@ class GetHomeSectionsParams{
   Map<String, dynamic> get map =>{
     "category_slug" :categorySlug,
   };
-}
+}*/

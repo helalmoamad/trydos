@@ -6,10 +6,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
-import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/home_state.dart';
+
 import 'package:flutter_carousel_slider/carousel_slider.dart';
-import '../../presentation/pages/story_collection.dart';
-import '../bloc/story_state.dart';
+import 'story_collection.dart';
 
 class StoryCollectionPageView extends StatefulWidget {
   const StoryCollectionPageView({super.key, required this.initialPage});
@@ -60,7 +62,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
       dealWithStoryWhileDrag: (bool startStories) {
         startStoriesNotifier.value = startStories;
       },
-      child: BlocBuilder<StoryBloc, StoryState>(
+      child: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (p, c) => false,
         builder: (context, state) {
           animationControllers = List.generate(state.storiesCollections.length,
@@ -165,11 +167,10 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                         prevPageNumber != currentPage,
                                     onReachStoryAtEdge: (int collectionIndex,
                                         bool isReachTheLeftMost) {
-                                      GetIt.I<StoryBloc>().add(
-                                          StorySelectedEvent(
-                                              collectionIndex: collectionIndex,
-                                              selectedStoryIndexInCollection: 0,
-                                              currentPage: collectionIndex));
+                                      GetIt.I<HomeBloc>().add(StorySelectEvent(
+                                          collectionIndex: collectionIndex,
+                                          selectedStoryIndexInCollection: 0,
+                                          currentPage: collectionIndex));
                                       if (!isReachTheLeftMost) {
                                         if (collectionIndex ==
                                             state.storiesCollections.length -
@@ -179,8 +180,8 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                           }
                                           return;
                                         }
-                                        GetIt.I<StoryBloc>().add(
-                                            StorySelectedEvent(
+                                        GetIt.I<HomeBloc>().add(
+                                            StorySelectEvent(
                                                 collectionIndex:
                                                     collectionIndex + 1,
                                                 selectedStoryIndexInCollection:
@@ -197,8 +198,8 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                           }
                                           return;
                                         }
-                                        GetIt.I<StoryBloc>().add(
-                                            StorySelectedEvent(
+                                        GetIt.I<HomeBloc>().add(
+                                            StorySelectEvent(
                                                 collectionIndex:
                                                     collectionIndex - 1,
                                                 selectedStoryIndexInCollection:
@@ -241,7 +242,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                 state.storiesCollections.length;
                           }
                           if (currentPage != prevPageNumber) {
-                            GetIt.I<StoryBloc>().add(StorySelectedEvent(
+                            GetIt.I<HomeBloc>().add(StorySelectEvent(
                                 collectionIndex: currentPage,
                                 currentPage: currentPage,
                                 selectedStoryIndexInCollection: -1));

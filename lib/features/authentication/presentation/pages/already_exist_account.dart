@@ -94,10 +94,8 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                                 MyTextWidget(
                                   widget.phoneNumber,
                                   textAlign: TextAlign.start,
-                                  style: context.textTheme.caption?.ra
-                                      .copyWith(
-                                          color: Color(0xff8D8D8D),
-                                          height: 1.25),
+                                  style: context.textTheme.caption?.ra.copyWith(
+                                      color: Color(0xff8D8D8D), height: 1.25),
                                 ),
                               ],
                             ),
@@ -108,10 +106,8 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                                 15.horizontalSpace,
                                 MyTextWidget(
                                   LocaleKeys.you_can_login_now.tr(),
-                                  style: context.textTheme.caption?.ra
-                                      .copyWith(
-                                          color: Color(0xffC4C2C2),
-                                          height: 1.25),
+                                  style: context.textTheme.caption?.ra.copyWith(
+                                      color: Color(0xffC4C2C2), height: 1.25),
                                 )
                               ],
                             ),
@@ -124,8 +120,8 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                 Spacer(),
                 InkWell(
                   onTap: () {
-                    BlocProvider.of<AuthBloc>(context)
-                        .add(VerifyOtpSignInEvent(
+                    context.go(GRouter.config.applicationRoutes.kBasePage);
+                    BlocProvider.of<AuthBloc>(context).add(VerifyOtpSignInEvent(
                       otp: prefsRepository.otpCode!,
                       verificationId: prefsRepository.verificationId!,
                       phone: widget.phoneNumber,

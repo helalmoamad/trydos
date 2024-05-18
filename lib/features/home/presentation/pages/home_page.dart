@@ -18,6 +18,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_card.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -38,6 +39,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late AppBloc appBloc;
+  late HomeBloc homeBloc;
   double? _previousOffset;
   double? _velocity;
   final ScrollController scrollController = ScrollController();
@@ -45,8 +47,21 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
+    homeBloc = BlocProvider.of<HomeBloc>(context);
 
     scrollController.addListener(() {
+      print(
+          "888888888888888888${scrollController.position.maxScrollExtent}88888888888888888888888888888884${scrollController.offset}");
+      if (scrollController.offset >=
+          (scrollController.position.maxScrollExtent *
+              0.7 *
+              (homeBloc.state.getHomeBoutiqesPaginationObject!.page - 1))) {
+        homeBloc.add(GetHomeBoutiqesEvent(
+            offset:
+                homeBloc.state.getHomeBoutiqesPaginationObject!.page.toString(),
+            getWithPagination: true));
+      }
+
       if (scrollController.position.pixels <= 80) {
         debugPrint(scrollController.position.pixels.toString());
         appBloc.add(ShowOrHideBars(true));
@@ -158,21 +173,15 @@ class _HomePageState extends State<HomePage> {
                           itemBuilder: (_, index) => Padding(
                               padding: HWEdgeInsets.symmetric(horizontal: 15.w),
                               child: currentSlug == null ||
-                                      ((homeState
-                                                      .getHomeSectionsPaginationObject[
-                                                          currentSlug]
+                                      ((homeState.getHomeBoutiqesPaginationObject
                                                       ?.paginationStatus ==
                                                   PaginationStatus.loading ||
                                               homeState
-                                                      .getHomeSectionsPaginationObject[
-                                                          currentSlug]
+                                                      .getHomeBoutiqesPaginationObject
                                                       ?.paginationStatus ==
                                                   PaginationStatus.initial) &&
-                                          (homeState
-                                                      .getHomeSectionsPaginationObject[
-                                                          currentSlug]
-                                                      ?.items
-                                                      .length ??
+                                          (homeState.getHomeBoutiqesPaginationObject
+                                                      ?.items.length ??
                                                   0) ==
                                               0)
                                   ? TrydosShimmerLoading(
@@ -183,14 +192,23 @@ class _HomePageState extends State<HomePage> {
                                   : index == 2
                                       ? quickOfferCard()
                                       : HomePageCard2(
-                                          withSlidingImages: index == 1,
+                                          withSlidingImages: homeState
+                                                  .getHomeBoutiqesPaginationObject!
+                                                  .items[index]
+                                                  .banners!
+                                                  .length >
+                                              1,
+                                          boutniqe: homeState
+                                              .getHomeBoutiqesPaginationObject!
+                                              .items[index],
                                         )
                               //HomePageCard(showWhite: index % 2 == 0),
                               ),
                           separator: SizedBox(
                             height: 20,
                           ),
-                          childCount: 8,
+                          childCount: homeState
+                              .getHomeBoutiqesPaginationObject!.items.length,
                         );
                       },
                     );

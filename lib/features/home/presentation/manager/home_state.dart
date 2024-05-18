@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
+import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart';
 
 import '../../../../core/data/model/pagination_model.dart';
@@ -18,40 +20,51 @@ enum GetProductDetailWithoutSimilarRelatedProductsStatus {
   failure
 }
 
+enum SelectedVideoStatus { init, loading, success, failure }
+
 enum GetMainCategoriesStatus { init, loading, success, failure }
 
-enum GetHomeSectionsStatus { init, loading, success, failure }
+enum GetStoriesForProductStatus { init, loading, success, failure }
+
+enum GetHomeBoutiqesStatus { init, loading, success, failure }
 
 enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
 
 @JsonSerializable(explicitToJson: true)
 class HomeState {
-  HomeState(
-      {this.getProductDetailWithoutSimilarRelatedProductsStatus =
-          GetProductDetailWithoutSimilarRelatedProductsStatus.init,
-      this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
-      this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
-      this.getProductsWithoutFiltersStatus =
-          GetProductsWithoutFiltersStatus.init,
-      this.startingSetting,
-      this.currentSelectedColor = 0,
-      this.mainCategoriesResponseModel,
-      this.getProductDetailWithoutRelatedProductsModel,
-      this.getProductListingWithoutFiltersModel,
-      this.getHomeSectionsPaginationObject = const {}});
+  HomeState({
+    this.getProductDetailWithoutSimilarRelatedProductsStatus =
+        GetProductDetailWithoutSimilarRelatedProductsStatus.init,
+    this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
+    this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
+    this.getProductsWithoutFiltersStatus = GetProductsWithoutFiltersStatus.init,
+    this.startingSetting,
+    this.currentPage = 0,
+    this.selectedCollection,
+    this.storiesCollections = const [],
+    this.currentSelectedColor = 0,
+    this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
+    this.mainCategoriesResponseModel,
+    this.getProductDetailWithoutRelatedProductsModel,
+    this.getProductListingWithoutFiltersModel,
+    this.selectedVideoStatus = SelectedVideoStatus.init,
+    this.currentStoryInEachCollection = const {},
+    this.getHomeBoutiqesPaginationObject,
+  });
 
   final GetStartingSettingsStatus getStartingSettingsStatus;
   int currentSelectedColor = 0;
   final GetMainCategoriesStatus getMainCategoriesStatus;
-
+  int? selectedCollection;
+  int currentPage;
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
-
-  final Map<String, PaginationModel<HomeSectionDataObject>>
-      getHomeSectionsPaginationObject;
-
+  GetStoriesForProductStatus getStoriesForProductStatus;
+  final PaginationModel<Boutique>? getHomeBoutiqesPaginationObject;
+  SelectedVideoStatus selectedVideoStatus;
+  List<CollectionStoryModel> storiesCollections;
   final GetProductsWithoutFiltersStatus getProductsWithoutFiltersStatus;
-
+  Map<int, int?> currentStoryInEachCollection;
   final GetProductListingWithoutFiltersModel?
       getProductListingWithoutFiltersModel;
 
@@ -60,40 +73,55 @@ class HomeState {
       getProductDetailWithoutRelatedProductsModel;
 
   final StartingSetting? startingSetting;
+
+  get uploadStoryCloudinaryStatus => null;
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
+      Map<int, int?>? currentStoryInEachCollection,
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
+      int? selectedCollection,
       final StartingSetting? startingSetting,
+      List<CollectionStoryModel>? storiesCollections,
       final MainCategoriesResponseModel? mainCategoriesResponseModel,
-      final Map<String, PaginationModel<HomeSectionDataObject>>?
-          getHomeSectionsPaginationObject,
+      final PaginationModel<Boutique>? getHomeBoutiqesPaginationObject,
+      SelectedVideoStatus? selectedVideoStatus,
+      GetStoriesForProductStatus? getStoriesForProductStatus,
       final GetProductsWithoutFiltersStatus? getProductsWithoutFiltersStatus,
       final GetProductDetailWithoutSimilarRelatedProductsStatus?
           getProductDetailWithoutSimilarRelatedProductsStatus,
       int? currentSelectedColor,
+      int? currentPage,
       final GetProductListingWithoutFiltersModel?
           getProductListingWithoutFiltersModel}) {
     return HomeState(
         currentSelectedColor: currentSelectedColor ?? this.currentSelectedColor,
+        getStoriesForProductStatus:
+            getStoriesForProductStatus ?? this.getStoriesForProductStatus,
+        selectedCollection: selectedCollection ?? this.selectedCollection,
         getProductDetailWithoutSimilarRelatedProductsStatus:
             getProductDetailWithoutSimilarRelatedProductsStatus ??
                 this.getProductDetailWithoutSimilarRelatedProductsStatus,
         getStartingSettingsStatus:
             getStartingSettingsStatus ?? this.getStartingSettingsStatus,
+        currentPage: currentPage ?? this.currentPage,
         getMainCategoriesStatus:
             getMainCategoriesStatus ?? this.getMainCategoriesStatus,
-        getHomeSectionsPaginationObject: getHomeSectionsPaginationObject ??
-            this.getHomeSectionsPaginationObject,
+        getHomeBoutiqesPaginationObject: getHomeBoutiqesPaginationObject ??
+            this.getHomeBoutiqesPaginationObject,
         startingSetting: startingSetting ?? this.startingSetting,
         mainCategoriesResponseModel:
             mainCategoriesResponseModel ?? this.mainCategoriesResponseModel,
         getProductsWithoutFiltersStatus: getProductsWithoutFiltersStatus ??
             this.getProductsWithoutFiltersStatus,
+        currentStoryInEachCollection:
+            currentStoryInEachCollection ?? this.currentStoryInEachCollection,
         getProductListingWithoutFiltersModel:
             getProductListingWithoutFiltersModel ??
                 this.getProductListingWithoutFiltersModel,
+        selectedVideoStatus: selectedVideoStatus ?? this.selectedVideoStatus,
+        storiesCollections: storiesCollections ?? this.storiesCollections,
         getProductDetailWithoutRelatedProductsModel:
             getProductDetailWithoutRelatedProductsModel ??
                 this.getProductDetailWithoutRelatedProductsModel);

@@ -28,16 +28,34 @@ class AddCurrentSelectedColorEvent extends HomeEvent {
   List<Object?> get props => [currentSelectedColor];
 }
 
-class GetHomeSectionsEvent extends HomeEvent {
-  final String categorySlug;
+class GetHomeBoutiqesEvent extends HomeEvent {
+  // final bool getWithPagination;
+  final String offset;
   final bool getWithPagination;
-
-  const GetHomeSectionsEvent(this.categorySlug,
-      {this.getWithPagination = false});
+  const GetHomeBoutiqesEvent({
+    required this.offset,
+    required this.getWithPagination,
+  }
+      //  {this.getWithPagination = false}
+      );
 
   @override
   // TODO: implement props
-  List<Object?> get props => [categorySlug];
+  List<Object?> get props => [];
+}
+
+class StorySelectEvent extends HomeEvent {
+  final int collectionIndex;
+  final int selectedStoryIndexInCollection;
+  final int currentPage;
+  const StorySelectEvent(
+      {required this.collectionIndex,
+      required this.selectedStoryIndexInCollection,
+      required this.currentPage});
+
+  @override
+  List<Object?> get props =>
+      [collectionIndex, selectedStoryIndexInCollection, currentPage];
 }
 
 class GetProductDatailsWithoutRelatedProductsEvent extends HomeEvent {
@@ -58,11 +76,13 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
   final String? searchText;
   final int? offset;
   final int? limit;
+  final String? boutique_slug;
 
   GetProductsWithoutFiltersEvent(
       {this.prices,
       this.brands,
       this.attributes,
+      this.boutique_slug,
       this.searchText,
       this.offset,
       this.limit,
@@ -72,4 +92,19 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
   // TODO: implement props
   List<Object?> get props =>
       [category, prices, brands, attributes, searchText, offset, limit];
+}
+
+class GetStoryForProductEvent extends HomeEvent {
+  const GetStoryForProductEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
+class LoadFailureEvent extends HomeEvent {
+  final int collectionId;
+  const LoadFailureEvent({required this.collectionId});
+  @override
+  List<Object?> get props => [collectionId];
 }

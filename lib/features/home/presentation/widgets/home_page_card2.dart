@@ -1,34 +1,41 @@
 import 'dart:ui' as ui;
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter/rendering.dart' as rendering;
 import 'package:flutter/services.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
+import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 
 import '../../../app/my_text_widget.dart';
 
 class HomePageCard2 extends cupertino.StatefulWidget {
-  HomePageCard2({super.key, this.withSlidingImages = false});
+  HomePageCard2(
+      {super.key, this.withSlidingImages = false, required this.boutniqe});
 
   final bool withSlidingImages;
-
+  final Boutique boutniqe;
   @override
   cupertino.State<HomePageCard2> createState() => _HomePageCard2State();
 }
 
 class _HomePageCard2State extends cupertino.State<HomePageCard2> {
   final ValueNotifier<int> resizeItems = ValueNotifier(-1);
-
+  final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   late AutoScrollController autoScrollController;
   late ScrollController scrollController;
 
@@ -37,21 +44,29 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
     autoScrollController = AutoScrollController();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
         InkWell(
-          onTap: (){
-            HelperFunctions.slidingNavigation(context, ProductListingPage());
+          onTap: () async {
+            await FirebaseAnalytics.instance
+                .logEvent(name: 'button_clicked', parameters: {
+              'user_id': prefsRepository.myMarketId.toString(),
+              'user_name': prefsRepository.myMarketName.toString(),
+              'clicked_button_name': 'i hate you Ahmad',
+            });
+            HelperFunctions.slidingNavigation(context,
+                ProductListingPage(boutiqueSlug: widget.boutniqe.slug!));
           },
           child: Stack(
             alignment: Alignment.bottomCenter,
             clipBehavior: Clip.none,
             children: [
               Container(
-                height: 235,
+                height: 255,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15.0),
                   boxShadow: [
@@ -64,7 +79,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 ),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
-                    child: Image.asset(AppAssets.halloweenJpg, fit: BoxFit.cover)),
+                    child:
+                        Image.asset(AppAssets.halloweenJpg, fit: BoxFit.cover)),
               ),
               Positioned.fill(
                 child: ClipRRect(
@@ -82,10 +98,13 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15.0),
                   child: BackdropFilter(
-                    filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0,),
+                    filter: ui.ImageFilter.blur(
+                      sigmaX: 10.0,
+                      sigmaY: 10.0,
+                    ),
                     child: Container(
-                      decoration:
-                          BoxDecoration(color: Color(0xffffffff).withOpacity(0.8)),
+                      decoration: BoxDecoration(
+                          color: Color(0xffffffff).withOpacity(0.8)),
                     ),
                   ),
                 ),
@@ -99,18 +118,23 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SvgPicture.asset(
-                          AppAssets.mangoSvg,
-                          height: 20,
-                        ),
+                        widget.boutniqe.icon != null
+                            ? MyCachedNetworkImage(
+                                height: 20,
+                                imageFit: cupertino.BoxFit.cover,
+                                imageUrl: widget.boutniqe.icon!,
+                                width: 40,
+                              )
+                            : MyTextWidget(widget.boutniqe.name!,
+                                style: context.textTheme.caption?.rd.copyWith(
+                                  fontSize: 16,
+                                  color: ui.Color.fromARGB(255, 15, 15, 15),
+                                )),
                         SizedBox(
                           height: 5,
                         ),
-                        MyTextWidget(
-                          'Mango Famous Turkish Brand Best Discounts',
-                          style: context.textTheme.caption?.rq.copyWith(
-                            color: const Color(0xff505050),
-                          ),
+                        Html(
+                          data: widget.boutniqe.description!,
                         ),
                         if (!widget.withSlidingImages)
                           SizedBox(
@@ -127,7 +151,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                         ? cupertino.Container(
                             //color: Colors.red,
                             child: CarouselSlider.builder(
-                                itemCount: 5,
+                                itemCount: widget.boutniqe.banners!.length,
                                 itemBuilder: (context, index, _) {
                                   return Padding(
                                     padding: const EdgeInsets.only(
@@ -138,7 +162,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                           height: 155,
                                           width: 1.sw,
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(15.0),
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
                                             border: Border.all(
                                                 width: 0.5,
                                                 color: const Color(0xfffafafa)),
@@ -151,20 +176,26 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                             ],
                                           ),
                                           child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(15),
-                                              child: Image.asset(
-                                                  AppAssets.halloweenJpg,
-                                                  fit: BoxFit.cover)),
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              child: MyCachedNetworkImage(
+                                                imageUrl: widget
+                                                    .boutniqe.banners![index],
+                                                imageFit: BoxFit.cover,
+                                                width: 1.sw,
+                                                height: 155,
+                                              )),
                                         ),
                                         Container(
                                           height: 155,
                                           width: 1.sw,
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(15.0),
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
                                             boxShadow: [
                                               BoxShadow(
-                                                  color:
-                                                      Colors.white.withOpacity(0.7),
+                                                  color: Colors.white
+                                                      .withOpacity(0.7),
                                                   offset: Offset(0, 3),
                                                   blurRadius: 6,
                                                   inset: true),
@@ -180,8 +211,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                   height: 155,
                                   enableInfiniteScroll: false,
                                   viewportFraction: 0.95,
-                                )
-                            ))
+                                )))
                         : Stack(
                             children: [
                               Container(
@@ -190,7 +220,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15.0),
                                   border: Border.all(
-                                      width: 0.5, color: const Color(0xfffafafa)),
+                                      width: 0.5,
+                                      color: const Color(0xfffafafa)),
                                   boxShadow: [
                                     BoxShadow(
                                       color: const Color(0x33000000),
@@ -201,8 +232,12 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 ),
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
-                                    child: Image.asset(AppAssets.halloweenJpg,
-                                        fit: BoxFit.cover)),
+                                    child: MyCachedNetworkImage(
+                                      imageUrl: widget.boutniqe.banners![0],
+                                      imageFit: BoxFit.cover,
+                                      width: 1.sw,
+                                      height: 135,
+                                    )),
                               ),
                               Container(
                                 height: 135,
@@ -224,7 +259,39 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 ],
               )),
               Positioned(
-                child: Row(
+                child: cupertino.Container(
+                  width: 60,
+                  height: 30,
+                  child: cupertino.ListView.separated(
+                    separatorBuilder: (context, index) => 13.horizontalSpace,
+                    shrinkWrap: true,
+                    scrollDirection: cupertino.Axis.horizontal,
+                    itemBuilder: (context, index) => InkWell(
+                      onTap: () {
+                        HelperFunctions.slidingNavigation(
+                            context,
+                            ProductListingPage(
+                              boutiqueSlug: widget.boutniqe.slug!,
+                              category: widget
+                                  .boutniqe
+                                  .mainCategoriesForProductIds![index]
+                                  .categorySlug,
+                            ));
+                      },
+                      child: MyCachedNetworkImage(
+                        imageFit: cupertino.BoxFit.cover,
+                        imageUrl: widget.boutniqe
+                            .mainCategoriesForProductIds![index].categoryIcon!,
+                        width: 12,
+                        height: 12,
+                      ),
+                    ),
+                    itemCount:
+                        widget.boutniqe.mainCategoriesForProductIds!.length,
+                  ),
+                ),
+
+                /*  Row(
                   children: [
                     SvgPicture.asset(
                       AppAssets.manInactiveSvg,
@@ -241,8 +308,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                       height: 12,
                     ),
                   ],
-                ),
-                right: 18.w,
+                ),*/
+                left: 18.w,
                 top: 18,
               ),
             ],
@@ -256,7 +323,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                   HapticFeedback.lightImpact();
                   resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
                 },
-                onPanCancel: (){
+                onPanCancel: () {
                   resizeItems.value = -1;
                 },
                 onPanEnd: (details) {
@@ -264,49 +331,61 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 },
                 onPanUpdate: (details) {
                   int prev = resizeItems.value;
-                  resizeItems.value =
-                      (details.globalPosition.dx - 40) ~/ 35.w;
-                  if(prev != resizeItems.value){
+                  resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
+                  if (prev != resizeItems.value) {
                     HapticFeedback.lightImpact();
                   }
                 },
                 child: Column(
                   children: [
                     SizedBox(
-                      height:  10.w,
+                      height: 10.w,
                     ),
                     Transform.translate(
-                      offset: Offset(10 , 0),
+                      offset: Offset(10, 0),
                       child: SizedBox(
                         width: 340.w,
                         height: focused != -1 ? 100.w : 60.w,
                         child: Stack(
                             alignment: Alignment.bottomCenter,
                             children: List.generate(
-                                9,
-                                    (index) => AnimatedPositioned(
-                                  left: ( index * (40.w - 5.w) +
-                                      (focused != -1
-                                          ? index == (focused + 1)
-                                          ? 20.w
-                                          : index == focused
-                                          ? 5.w
-                                          : index > focused
-                                          ? 20.w
-                                          : 0
-                                          : 0)),
-                                  curve: Curves.fastEaseInToSlowEaseOut,
-                                  bottom: focused == index ? 35.w : 10.w,
-                                  duration: Duration(milliseconds: focused == index ? 150 : 10),
-                                  child: ProductItemCircle(
-                                    index: index,
-                                    isFocused: focused == index,
-                                  ),
-                                ))),
+                                widget.boutniqe.childCategoriesForProductIds!
+                                    .length,
+                                (index) => AnimatedPositioned(
+                                      left: (index * (40.w - 5.w) +
+                                          (focused != -1
+                                              ? index == (focused + 1)
+                                                  ? 20.w
+                                                  : index == focused
+                                                      ? 5.w
+                                                      : index > focused
+                                                          ? 20.w
+                                                          : 0
+                                              : 0)),
+                                      curve: Curves.fastEaseInToSlowEaseOut,
+                                      bottom: focused == index ? 35.w : 10.w,
+                                      duration: Duration(
+                                          milliseconds:
+                                              focused == index ? 150 : 10),
+                                      child: ProductItemCircle(
+                                        index: index,
+                                        isFocused: focused == index,
+                                        imageUrl: widget
+                                            .boutniqe
+                                            .childCategoriesForProductIds![
+                                                index]
+                                            .productThumbnail!,
+                                        name: widget
+                                            .boutniqe
+                                            .childCategoriesForProductIds![
+                                                index]
+                                            .categoryName!,
+                                      ),
+                                    ))),
                       ),
                     ),
                     SizedBox(
-                      height:  10.w,
+                      height: 10.w,
                     )
                   ],
                 ),
@@ -321,9 +400,12 @@ class ProductItemCircle extends StatelessWidget {
   const ProductItemCircle(
       {required this.index,
       required this.isFocused,
-      super.key});
-
+      super.key,
+      required this.imageUrl,
+      required this.name});
+  final String imageUrl;
   final int index;
+  final String name;
   final bool isFocused;
 
   @override
@@ -339,25 +421,27 @@ class ProductItemCircle extends StatelessWidget {
             opacity: isFocused ? 1 : 0,
             curve: Curves.easeInOut,
             child: Transform.translate(
-              offset: Offset(0 , isFocused ? 35.w : 0),
+              offset: Offset(0, isFocused ? 35.w : 0),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                MyTextWidget(
-                  'T-Shirt',
-                  style: context.textTheme.caption?.rr.copyWith(
-                      color: Color(0xff8E8E8E), letterSpacing: 0, height: 1.43),
-                ),
-                MyTextWidget(
-                  '1100',
-                  style: context.textTheme.caption?.rr.copyWith(
-                      color: Color(0xff8E8E8E),
-                      fontSize: 8.sp,
-                      letterSpacing: 0,
-                      height: 1.375),
-                )
-              ]),
+                    MyTextWidget(
+                      name,
+                      style: context.textTheme.caption?.rr.copyWith(
+                          color: Color(0xff8E8E8E),
+                          letterSpacing: 0,
+                          height: 1.43),
+                    ),
+                    MyTextWidget(
+                      '1100',
+                      style: context.textTheme.caption?.rr.copyWith(
+                          color: Color(0xff8E8E8E),
+                          fontSize: 8.sp,
+                          letterSpacing: 0,
+                          height: 1.375),
+                    )
+                  ]),
             ),
           ),
           AnimatedScale(
@@ -368,7 +452,7 @@ class ProductItemCircle extends StatelessWidget {
               children: [
                 Container(
                   height: 40.w,
-                  width:  40.w,
+                  width: 40.w,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     boxShadow: [
@@ -381,11 +465,15 @@ class ProductItemCircle extends StatelessWidget {
                   ),
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(180),
-                      child: Image.asset(AppAssets.profileJpg, fit: BoxFit.fill)),
+                      child: MyCachedNetworkImage(
+                          imageUrl: imageUrl,
+                          width: 40.w,
+                          imageFit: cupertino.BoxFit.cover,
+                          height: 40.w)),
                 ),
                 Container(
-                  height:  40.w,
-                  width:   40.w,
+                  height: 40.w,
+                  width: 40.w,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     boxShadow: [
@@ -399,33 +487,33 @@ class ProductItemCircle extends StatelessWidget {
                 ),
                 index == 8
                     ? Container(
-                  height:  40.w,
-                  width:   40.w,
-                  decoration: BoxDecoration(
-                    color: const Color(0x98000000),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0x29000000),
-                        offset: Offset(0, 3),
-                        blurRadius: 3,
-                      ),
-                      BoxShadow(
-                        color: Colors.white.withOpacity(0.5),
-                        inset: true,
-                        offset: Offset(0, 4),
-                        blurRadius: 6,
-                      ),
-                    ],
-                  ),
-                )
+                        height: 40.w,
+                        width: 40.w,
+                        decoration: BoxDecoration(
+                          color: const Color(0x98000000),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0x29000000),
+                              offset: Offset(0, 3),
+                              blurRadius: 3,
+                            ),
+                            BoxShadow(
+                              color: Colors.white.withOpacity(0.5),
+                              inset: true,
+                              offset: Offset(0, 4),
+                              blurRadius: 6,
+                            ),
+                          ],
+                        ),
+                      )
                     : const SizedBox.shrink(),
                 index == 8
                     ? MyTextWidget(
-                  'More',
-                  style: context.textTheme.overline?.rq
-                      .copyWith(color: Colors.white),
-                )
+                        'More',
+                        style: context.textTheme.overline?.rq
+                            .copyWith(color: Colors.white),
+                      )
                     : const SizedBox.shrink(),
               ],
             ),

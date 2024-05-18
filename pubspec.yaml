@@ -114,13 +114,16 @@ dependencies:
   cupertino_icons: ^1.0.6
   sliding_up_panel: ^2.0.0+1
   local_hero: ^0.3.0
+  flutter_html: ^3.0.0-beta.2
 dev_dependencies:
-  bloc_test: ^9.0.2
-  flutter_test:
-    sdk: flutter
-  injectable_generator: ^2.4.1
-  build_runner: ^2.4.8
-  mockito: ^5.4.4
+
+ flutter_test:
+  sdk: flutter
+ integration_test:
+  sdk: flutter 
+ injectable_generator: ^2.4.1
+ build_runner: ^2.4.8
+ mockito: ^5.4.4
 flutter_launcher_icons:
   android: true
   ios: true
@@ -144,6 +147,7 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
 
   # To add assets to your application, add an assets section, like this:
   assets:

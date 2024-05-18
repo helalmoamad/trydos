@@ -1,5 +1,6 @@
 import 'package:cupertino_back_gesture/cupertino_back_gesture.dart';
 import 'package:easy_localization/easy_localization.dart' as localization;
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/basic.dart' as C;
@@ -7,8 +8,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 
@@ -23,6 +26,7 @@ import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_display_pictures_page.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
+import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/widget/stories_list.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../generated/locale_keys.g.dart';
@@ -69,6 +73,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
+
     homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
         productId: widget.productItem.id.toString()));
 
@@ -97,6 +102,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 backgroundColor: Color(0xffF4F4F4),
                 body: BlocBuilder<HomeBloc, HomeState>(
                   buildWhen: (p, c) =>
+                      p.getStoriesForProductStatus !=
+                          c.getStoriesForProductStatus ||
                       p.getProductDetailWithoutSimilarRelatedProductsStatus !=
                           c.getProductDetailWithoutSimilarRelatedProductsStatus ||
                       p.currentSelectedColor != c.currentSelectedColor,
@@ -289,7 +296,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           SizedBox(
                             height: 15,
                           ),
-                          ProductStoriesCard(),
+                          StoryList(),
                           SizedBox(
                             height: 15,
                           ),

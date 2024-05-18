@@ -23,13 +23,12 @@ SliverMultiBoxAdaptorWidget sliverListSeparated({
         }
         return widget;
       },
-
       childCount: math.max(0, childCount * 2 - 1),
       semanticIndexCallback: (Widget _, int index) {
         return index.isEven ? index ~/ 2 : null;
       },
       addAutomaticKeepAlives: addAutomaticKeepAlives,
-      addRepaintBoundaries:addRepaintBoundaries ,
+      addRepaintBoundaries: addRepaintBoundaries,
       addSemanticIndexes: addSemanticIndexes,
       findChildIndexCallback: findChildIndexCallback,
       semanticIndexOffset: semanticIndexOffset,

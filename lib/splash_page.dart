@@ -37,18 +37,17 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    homeBloc.add(GetHomeSectionsEvent('Women_1'));
+    homeBloc.add(GetHomeBoutiqesEvent(offset: "1", getWithPagination: false));
     homeBloc.add(GetMainCategoriesEvent());
     BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
-    checkAndNavigationCallingPage(
-        context, fromTerminated: true, whereToNavigationAfterCheck: () {
+    checkAndNavigationCallingPage(context, fromTerminated: true,
+        whereToNavigationAfterCheck: () {
       context.go(prefsRepository.marketToken == null
           ? GRouter.config.applicationRoutes.kRegistrationPage
           : GRouter.config.applicationRoutes.kBasePage);
     });
     super.initState();
   }
-
 
   @override
   void didChangeDependencies() {
@@ -62,7 +61,8 @@ class _SplashPageState extends State<SplashPage> {
       listener: (context, state) {
         navigationToSinglePageChat(state.chatToNavigateFromTerminated!);
       },
-      listenWhen: (p,c)=> p.chatToNavigateFromTerminated != c.chatToNavigateFromTerminated,
+      listenWhen: (p, c) =>
+          p.chatToNavigateFromTerminated != c.chatToNavigateFromTerminated,
       child: Scaffold(
           backgroundColor: context.colorScheme.background,
           body: Center(child: logo)),

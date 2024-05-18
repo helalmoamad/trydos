@@ -2,7 +2,7 @@
 //
 //     final homeSectionResponseModel = homeSectionResponseModelFromJson(jsonString);
 
-import 'dart:convert';
+/*import 'dart:convert';
 
 HomeSectionResponseModel homeSectionResponseModelFromJson(String str) => HomeSectionResponseModel.fromJson(json.decode(str));
 
@@ -564,3 +564,4 @@ class SubCategory {
     "products": products,
   };
 }
+*/

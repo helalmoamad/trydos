@@ -73,9 +73,14 @@ class ProductDetailsTitle extends StatelessWidget {
                               width: 5,
                             ),
                             MyTextWidget(
-                              state.getProductDetailWithoutRelatedProductsModel!
-                                  .product!.reviewsCount
-                                  .toString(),
+                              state.getProductDetailWithoutRelatedProductsModel !=
+                                      null
+                                  ? state
+                                      .getProductDetailWithoutRelatedProductsModel!
+                                      .product!
+                                      .reviewsCount
+                                      .toString()
+                                  : "",
                               style: context.textTheme.caption?.rq.copyWith(
                                   color: Color(0xff505050), height: 1.26),
                             )

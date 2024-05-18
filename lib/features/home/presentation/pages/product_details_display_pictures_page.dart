@@ -7,7 +7,7 @@ import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dar
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import '../../../../service/language_service.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
-as images;
+    as images;
 import '../widgets/product_details_body/product_details_image_widget.dart';
 
 class ProductDetailsDisplayPicturesPage extends StatefulWidget {
