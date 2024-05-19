@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -23,8 +24,9 @@ class _ProductDetailsDescriptionWidgetState
     extends State<ProductDetailsDescriptionWidget> {
   final ValueNotifier<bool> readMoreNotifier = ValueNotifier(true);
 
-  String text = " ";
+  String text = "";
   String twoLines = '';
+  bool readMores = true;
 
   @override
   void initState() {
@@ -32,6 +34,7 @@ class _ProductDetailsDescriptionWidgetState
     int index = 4 * ((1.sw.w - 40) ~/ 13.sp) - 12;
     if (text.length <= index) {
       twoLines = text;
+      readMores = false;
     } else {
       while (text[index] != ' ' && index > 0) {
         index--;
@@ -48,28 +51,67 @@ class _ProductDetailsDescriptionWidgetState
         valueListenable: readMoreNotifier,
         builder: (context, readMore, child) {
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.0),
-            child: RichText(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Html(
+                      data: readMore ? twoLines : text,
+                    ),
+                  ),
+                  Expanded(
+                    child: RichText(
+                        maxLines: readMore ? 2 : 12,
+                        overflow: TextOverflow.ellipsis,
+                        text: TextSpan(children: [
+                          readMores
+                              ? TextSpan(
+                                  text: !readMore
+                                      ? "Read Less..."
+                                      : "Read More...",
+                                  style: context.textTheme.bodyText2?.rq
+                                      .copyWith(
+                                          height: 1.23,
+                                          color: Color(0xff388CFF),
+                                          fontSize: 13),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      readMoreNotifier.value =
+                                          !readMoreNotifier.value;
+                                    })
+                              : TextSpan(
+                                  text: "",
+                                )
+                        ])),
+                  ),
+                ],
+              )
+
+              /*     RichText(
                 maxLines: readMore ? 2 : 12,
                 overflow: TextOverflow.ellipsis,
                 text: TextSpan(children: [
                   TextSpan(
                     text: readMore ? twoLines : text,
-                    style: context.textTheme.bodyText2?.rq
-                        .copyWith(height: 1.23, color: Color(0xff8D8D8D) , fontSize: 13),
+                    style: context.textTheme.bodyText2?.rq.copyWith(
+                        height: 1.23, color: Color(0xff8D8D8D), fontSize: 13),
                   ),
-                  TextSpan(
-                      text: !readMore ? "Read Less..." : "Read More...",
-                      style: context.textTheme.bodyText2?.rq.copyWith(
-                          height: 1.23,
-                          color: Color(0xff388CFF),
-                          fontSize: 13),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          readMoreNotifier.value = !readMoreNotifier.value;
-                        }),
-                ])),
-          );
+                  readMores
+                      ? TextSpan(
+                          text: !readMore ? "Read Less..." : "Read More...",
+                          style: context.textTheme.bodyText2?.rq.copyWith(
+                              height: 1.23,
+                              color: Color(0xff388CFF),
+                              fontSize: 13),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              readMoreNotifier.value = !readMoreNotifier.value;
+                            })
+                      : TextSpan(
+                          text: "",
+                        )
+                ]))*/
+              );
         });
   }
 }

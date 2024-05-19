@@ -50,12 +50,13 @@ class Data {
   final List<Product>? products;
   final String? categoryParentParent;
   final String? categoryParent;
-  final ChildCategoryClass? category;
+  final String? category;
   final String? categorySeoDescription;
   final String? categoryTitle;
-  final dynamic categoryH1;
-  final List<ChildCategoryClass>? childCategories;
+  final String? categoryH1;
+  final String? childCategories;
   final String? resultFor;
+  final String? boutiqueSlug;
 
   Data({
     this.totalSize,
@@ -70,6 +71,7 @@ class Data {
     this.categoryH1,
     this.childCategories,
     this.resultFor,
+    this.boutiqueSlug,
   });
 
   Data copyWith({
@@ -79,12 +81,13 @@ class Data {
     List<Product>? products,
     String? categoryParentParent,
     String? categoryParent,
-    ChildCategoryClass? category,
+    String? category,
     String? categorySeoDescription,
     String? categoryTitle,
-    dynamic categoryH1,
-    List<ChildCategoryClass>? childCategories,
+    String? categoryH1,
+    String? childCategories,
     String? resultFor,
+    String? boutiqueSlug,
   }) =>
       Data(
         totalSize: totalSize ?? this.totalSize,
@@ -100,6 +103,7 @@ class Data {
         categoryH1: categoryH1 ?? this.categoryH1,
         childCategories: childCategories ?? this.childCategories,
         resultFor: resultFor ?? this.resultFor,
+        boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -112,17 +116,13 @@ class Data {
                 json["products"]!.map((x) => Product.fromJson(x))),
         categoryParentParent: json["category_parent_parent"],
         categoryParent: json["category_parent"],
-        category: json["category"] == null
-            ? null
-            : ChildCategoryClass.fromJson(json["category"]),
+        category: json["category"],
         categorySeoDescription: json["category_seo_description"],
         categoryTitle: json["category_title"],
         categoryH1: json["category_h1"],
-        childCategories: json["child_categories"] == null
-            ? []
-            : List<ChildCategoryClass>.from(json["child_categories"]!
-                .map((x) => ChildCategoryClass.fromJson(x))),
+        childCategories: json["child_categories"],
         resultFor: json["result_for"],
+        boutiqueSlug: json["boutique_slug"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -134,104 +134,13 @@ class Data {
             : List<dynamic>.from(products!.map((x) => x.toJson())),
         "category_parent_parent": categoryParentParent,
         "category_parent": categoryParent,
-        "category": category?.toJson(),
+        "category": category,
         "category_seo_description": categorySeoDescription,
         "category_title": categoryTitle,
         "category_h1": categoryH1,
-        "child_categories": childCategories == null
-            ? []
-            : List<dynamic>.from(childCategories!.map((x) => x.toJson())),
+        "child_categories": childCategories,
         "result_for": resultFor,
-      };
-}
-
-class ChildCategoryClass {
-  final int? id;
-  final String? name;
-  final String? slug;
-  final String? icon;
-  final String? banner;
-  final int? parentId;
-  final int? position;
-  final int? productsStyle;
-  final int? isGift;
-  final int? numAvailableProduct;
-  final int? seoDescription;
-  final dynamic products;
-
-  ChildCategoryClass({
-    this.id,
-    this.name,
-    this.slug,
-    this.icon,
-    this.banner,
-    this.parentId,
-    this.position,
-    this.productsStyle,
-    this.isGift,
-    this.numAvailableProduct,
-    this.seoDescription,
-    this.products,
-  });
-
-  ChildCategoryClass copyWith({
-    int? id,
-    String? name,
-    String? slug,
-    String? icon,
-    String? banner,
-    int? parentId,
-    int? position,
-    int? productsStyle,
-    int? isGift,
-    int? numAvailableProduct,
-    int? seoDescription,
-    dynamic products,
-  }) =>
-      ChildCategoryClass(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        slug: slug ?? this.slug,
-        icon: icon ?? this.icon,
-        banner: banner ?? this.banner,
-        parentId: parentId ?? this.parentId,
-        position: position ?? this.position,
-        productsStyle: productsStyle ?? this.productsStyle,
-        isGift: isGift ?? this.isGift,
-        numAvailableProduct: numAvailableProduct ?? this.numAvailableProduct,
-        seoDescription: seoDescription ?? this.seoDescription,
-        products: products ?? this.products,
-      );
-
-  factory ChildCategoryClass.fromJson(Map<String, dynamic> json) =>
-      ChildCategoryClass(
-        id: json["id"],
-        name: json["name"],
-        slug: json["slug"],
-        icon: json["icon"],
-        banner: json["banner"],
-        parentId: json["parent_id"],
-        position: json["position"],
-        productsStyle: json["products_style"],
-        isGift: json["is_gift"],
-        numAvailableProduct: json["num_available_product"],
-        seoDescription: json["seo_description"],
-        products: json["products"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "slug": slug,
-        "icon": icon,
-        "banner": banner,
-        "parent_id": parentId,
-        "position": position,
-        "products_style": productsStyle,
-        "is_gift": isGift,
-        "num_available_product": numAvailableProduct,
-        "seo_description": seoDescription,
-        "products": products,
+        "boutique_slug": boutiqueSlug,
       };
 }
 
@@ -243,8 +152,8 @@ class Product {
   final String? details;
   final String? thumbnail;
   final List<String>? images;
-  final List<CategoryElement>? categories;
-  final CategoryElement? category;
+  final List<Category>? categories;
+  final Category? category;
   final Brand? brand;
   final List<Color>? colors;
   final List<SyncColorImage>? syncColorImages;
@@ -290,8 +199,8 @@ class Product {
     String? details,
     String? thumbnail,
     List<String>? images,
-    List<CategoryElement>? categories,
-    CategoryElement? category,
+    List<Category>? categories,
+    Category? category,
     Brand? brand,
     List<Color>? colors,
     List<SyncColorImage>? syncColorImages,
@@ -342,11 +251,11 @@ class Product {
             : List<String>.from(json["images"]!.map((x) => x)),
         categories: json["categories"] == null
             ? []
-            : List<CategoryElement>.from(
-                json["categories"]!.map((x) => CategoryElement.fromJson(x))),
+            : List<Category>.from(
+                json["categories"]!.map((x) => Category.fromJson(x))),
         category: json["category"] == null
             ? null
-            : CategoryElement.fromJson(json["category"]),
+            : Category.fromJson(json["category"]),
         brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
         colors: json["colors"] == null
             ? []
@@ -433,41 +342,47 @@ class Brand {
       };
 }
 
-class CategoryElement {
+class Category {
   final int? id;
-  final String? name;
+  final Name? name;
   final String? icon;
 
-  CategoryElement({
+  Category({
     this.id,
     this.name,
     this.icon,
   });
 
-  CategoryElement copyWith({
+  Category copyWith({
     int? id,
-    String? name,
+    Name? name,
     String? icon,
   }) =>
-      CategoryElement(
+      Category(
         id: id ?? this.id,
         name: name ?? this.name,
         icon: icon ?? this.icon,
       );
 
-  factory CategoryElement.fromJson(Map<String, dynamic> json) =>
-      CategoryElement(
+  factory Category.fromJson(Map<String, dynamic> json) => Category(
         id: json["id"],
-        name: json["name"],
+        name: nameValues.map[json["name"]],
         icon: json["icon"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "name": name,
+        "name": nameValues.reverse[name],
         "icon": icon,
       };
 }
+
+enum Name { LAPTOPS_AND_ACCESSORIES, SOFTWARE_PRODUCTS }
+
+final nameValues = EnumValues({
+  "laptops and accessories": Name.LAPTOPS_AND_ACCESSORIES,
+  "software products": Name.SOFTWARE_PRODUCTS
+});
 
 class Color {
   final String? name;
@@ -528,39 +443,51 @@ class Rating {
 }
 
 class SyncColorImage {
+  final bool? colorTrend;
   final String? colorName;
   final List<String>? images;
-  final bool? colorTrend;
 
   SyncColorImage({
+    this.colorTrend,
     this.colorName,
     this.images,
-    this.colorTrend,
   });
 
   SyncColorImage copyWith({
+    bool? colorTrend,
     String? colorName,
     List<String>? images,
-    bool? colorTrend,
   }) =>
       SyncColorImage(
+        colorTrend: colorTrend ?? this.colorTrend,
         colorName: colorName ?? this.colorName,
         images: images ?? this.images,
-        colorTrend: colorTrend ?? this.colorTrend,
       );
 
   factory SyncColorImage.fromJson(Map<String, dynamic> json) => SyncColorImage(
+        colorTrend: json["color_trend"],
         colorName: json["color_name"],
         images: json["images"] == null
             ? []
             : List<String>.from(json["images"]!.map((x) => x)),
-        colorTrend: json["color_trend"],
       );
 
   Map<String, dynamic> toJson() => {
+        "color_trend": colorTrend,
         "color_name": colorName,
         "images":
             images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
-        "color_trend": colorTrend,
       };
+}
+
+class EnumValues<T> {
+  Map<String, T> map;
+  late Map<T, String> reverseMap;
+
+  EnumValues(this.map);
+
+  Map<T, String> get reverse {
+    reverseMap = map.map((k, v) => MapEntry(v, k));
+    return reverseMap;
+  }
 }

@@ -16,8 +16,13 @@ import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
+
 class WelcomeSection extends StatelessWidget {
-  WelcomeSection({required this.goToCreateAccount , required this.goToLoginSection ,Key? key}) : super(key: key);
+  WelcomeSection(
+      {required this.goToCreateAccount,
+      required this.goToLoginSection,
+      Key? key})
+      : super(key: key);
   final void Function() goToCreateAccount;
   final void Function() goToLoginSection;
 
@@ -48,7 +53,9 @@ class WelcomeSection extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
           MyTextWidget(
             LocaleKeys.why_we_know_you_label.tr(),
             textAlign: TextAlign.center,
@@ -58,26 +65,29 @@ class WelcomeSection extends StatelessWidget {
               height: 1.43,
             ),
           ),
-          SizedBox(height: 30,),
+          SizedBox(
+            height: 30,
+          ),
           InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: () async{
+            onTap: () async {
               clickButton.value = 0;
-              Future.delayed(
-                  Duration(milliseconds: 100),
-                      (){
-                    clickButton.value = -1;
-                    goToLoginSection.call();
-                  }
-              );
-              await FirebaseAnalytics.instance.logEvent(
-                  name: 'button_clicked',
-                  parameters:{
-                    'userID': prefsRepository.myMarketId.toString(),
-                    'user_name':prefsRepository.myMarketName.toString(),
-                    'clicked_button_name': 'i have already account',
-                  });
+              Future.delayed(Duration(milliseconds: 100), () {
+                print("${prefsRepository.myMarketId.toString()}" +
+                    "55555555555555555555555555555555555555555");
+                print("${prefsRepository.myMarketId.toString()}" +
+                    "5555555444444444444444444444444444444444444444444444444444444445555555555555555555555");
+
+                clickButton.value = -1;
+                goToLoginSection.call();
+              });
+              await FirebaseAnalytics.instance
+                  .logEvent(name: 'button_clicked', parameters: {
+                'userID': prefsRepository.myMarketId.toString(),
+                'user_name': prefsRepository.myMarketName.toString(),
+                'clicked_button_name': 'i have already account',
+              });
             },
             child: ValueListenableBuilder<int>(
                 valueListenable: clickButton,
@@ -120,29 +130,30 @@ class WelcomeSection extends StatelessWidget {
                   );
                 }),
           ),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: () async{
+            onTap: () async {
               clickButton.value = 1;
               Future.delayed(Duration(milliseconds: 100), () {
                 clickButton.value = -1;
                 goToCreateAccount.call();
               });
-              await FirebaseAnalytics.instance.logEvent(
-                  name: 'button_clicked',
-                  parameters:{
-                    'userID': prefsRepository.myMarketId.toString(),
-                    'user_name':prefsRepository.myMarketName.toString(),
-                    'clicked_button_name': 'create new account',
-                  });
+              await FirebaseAnalytics.instance
+                  .logEvent(name: 'button_clicked', parameters: {
+                'userID': prefsRepository.myMarketId.toString(),
+                'user_name': prefsRepository.myMarketName.toString(),
+                'clicked_button_name': 'create new account',
+              });
             },
             child: ValueListenableBuilder<int>(
                 valueListenable: clickButton,
                 builder: (context, index, _) {
                   return Padding(
-                    padding:  EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                    padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                     child: DottedBorder(
                       borderPadding: EdgeInsets.zero,
                       padding: EdgeInsets.zero,
@@ -179,24 +190,24 @@ class WelcomeSection extends StatelessWidget {
                   );
                 }),
           ),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
           InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: () async{
-              if(prefsRepository.isVerifiedPhone != false) {
-                String? deviceId = await HelperFunctions
-                    .getDeviceId();
-                BlocProvider.of<AuthBloc>(context).add(
-                    RegisterGuestEvent(deviceId: deviceId!));
+            onTap: () async {
+              if (prefsRepository.isVerifiedPhone != false) {
+                String? deviceId = await HelperFunctions.getDeviceId();
+                BlocProvider.of<AuthBloc>(context)
+                    .add(RegisterGuestEvent(deviceId: deviceId!));
               }
-              await FirebaseAnalytics.instance.logEvent(
-                  name: 'button_clicked',
-                  parameters:{
-                    'userID': prefsRepository.myMarketId.toString(),
-                    'user_name':prefsRepository.myMarketName.toString(),
-                    'clicked_button_name': 'Later, Take Look',
-                  });
+              await FirebaseAnalytics.instance
+                  .logEvent(name: 'button_clicked', parameters: {
+                'userID': prefsRepository.myMarketId.toString(),
+                'user_name': prefsRepository.myMarketName.toString(),
+                'clicked_button_name': 'Later, Take Look',
+              });
               context.go(GRouter.config.applicationRoutes.kBasePage);
             },
             child: Padding(
@@ -212,7 +223,9 @@ class WelcomeSection extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 46,),
+          SizedBox(
+            height: 46,
+          ),
         ],
       ),
     );

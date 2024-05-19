@@ -105,10 +105,10 @@ class _TabsBarState extends State<TabsBar> {
                       padding: HWEdgeInsets.only(right: 15.0),
                       child: InkWell(
                         onTap: () {
-                          appBloc.add(ChangeTab(index));
+                          /* appBloc.add(ChangeTab(index));
                           BlocProvider.of<HomeBloc>(context).add(
                               GetHomeSectionsEvent(
-                                  mainCategory.slug.toString()));
+                                  mainCategory.slug.toString()));*/
                         },
                         child: Column(
                           //crossAxisAlignment: CrossAxisAlignment.center,

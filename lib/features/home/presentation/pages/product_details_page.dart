@@ -1,34 +1,24 @@
-import 'package:cupertino_back_gesture/cupertino_back_gesture.dart';
 import 'package:easy_localization/easy_localization.dart' as localization;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart'
-    as productDetail;
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_display_pictures_page.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
-import '../../../../common/constant/design/assets_provider.dart';
+import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/widget/stories_list.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../../service/language_service.dart';
-import '../../../../trydos_application.dart';
-import '../../../app/my_text_widget.dart';
 
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
@@ -69,6 +59,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
+
     homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
         productId: widget.productItem.id.toString()));
 
@@ -95,9 +86,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 backgroundColor: Color(0xffF4F4F4),
                 body: BlocBuilder<HomeBloc, HomeState>(
                   buildWhen: (p, c) =>
+                      p.getStoriesForProductStatus !=
+                          c.getStoriesForProductStatus ||
                       p.getProductDetailWithoutSimilarRelatedProductsStatus !=
                           c.getProductDetailWithoutSimilarRelatedProductsStatus ||
-                      p.currentIndex != c.currentIndex,
+                      p.currentSelectedColor != c.currentSelectedColor,
                   builder: (context, state) {
                     if (state
                         .getProductDetailWithoutSimilarRelatedProductsStatus ==
@@ -151,7 +144,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                             ? widget
                                                 .productItem
                                                 .syncColorImages![
-                                                    state.currentIndex]
+                                                    state.currentSelectedColor]
                                                 .images!
                                                 .length
                                             : 0,
@@ -191,7 +184,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                       images: widget
                                                               .productItem
                                                               .syncColorImages![
-                                                                  state.currentIndex ??
+                                                                  state.currentSelectedColor ??
                                                                       0]
                                                               .images ??
                                                           [],
@@ -199,24 +192,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                               },
                                               child: widget
                                                           .productItem
-                                                          .syncColorImages![
-                                                              state
-                                                                  .currentIndex]
+                                                          .syncColorImages![state
+                                                              .currentSelectedColor]
                                                           .images!
                                                           .isNotEmpty ||
                                                       widget
                                                               .productItem
                                                               .syncColorImages![
                                                                   state
-                                                                      .currentIndex]
+                                                                      .currentSelectedColor]
                                                               .images !=
                                                           []
                                                   ? ProductDetailsImageWidget(
                                                       imageUrl: widget
                                                           .productItem
-                                                          .syncColorImages![
-                                                              state
-                                                                  .currentIndex]
+                                                          .syncColorImages![state
+                                                              .currentSelectedColor]
                                                           .images![index],
                                                     )
                                                   : const SizedBox.shrink());
@@ -237,11 +228,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ProductDetailsTitle(
                             brand: widget.productItem.brand!,
                             productName: widget.productItem.name!,
-                            ViewerCount: state
-                                .cachedProductWithoutRelatedProductsModel[productId]!
-                                .product!
-                                .reviewsCount
-                                .toString(),
                             thumbnail: widget.productItem.thumbnail ?? '',
                             colorName: !widget.productItem.syncColorImages
                                         .isNullOrEmpty &&
@@ -250,7 +236,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 ? widget
                                         .productItem
                                         .syncColorImages![
-                                            state.currentIndex ?? 0]
+                                            state.currentSelectedColor ?? 0]
                                         .colorName ??
                                     " "
                                 : " ",
@@ -304,6 +290,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             height: 15,
                           ),
                          // ProductStoriesCard(),
+                          StoryList(),
                           SizedBox(
                             height: 15,
                           ),

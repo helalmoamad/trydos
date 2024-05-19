@@ -135,8 +135,7 @@ class HelperFunctions {
         .toList();
   }
 
-static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
-
+  static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
     final List<AssetEntity>? assets = await myMultiAssetPicker(context);
     return assets?[0];
   }
@@ -301,8 +300,9 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
     );
   }
 
-  static slidingNavigation(BuildContext context, Widget page , {int milliseconds = 200 }) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_)=> page));
+  static slidingNavigation(BuildContext context, Widget page,
+      {int milliseconds = 200}) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
     // Navigator.of(context).push(new PageRouteBuilder(
     //     opaque: false,
     //     transitionDuration:  Duration(milliseconds: milliseconds),
@@ -322,7 +322,9 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
     //     }
     //     ));
   }
-  static void showDescriptionForProductDetails({required BuildContext context , bool withIcon = false}){
+
+  static void showDescriptionForProductDetails(
+      {required BuildContext context, bool withIcon = false}) {
     showModalBottomSheet(
         context: context,
         backgroundColor: Color(0xffF4F4F4),
@@ -331,8 +333,7 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
           return Container(
             height: 250,
             margin: EdgeInsets.all(20)..copyWith(bottom: 0),
-            decoration:
-            BoxDecoration(borderRadius: BorderRadius.circular(30)),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(30)),
             child: Column(
               children: [
                 DottedBorder(
@@ -366,7 +367,9 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
                           ),
                         ],
                       ),
-                      SizedBox(height: 10,),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -377,7 +380,9 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
                                 color: Color(0xff8D8D8D),
                                 fontSize: 13.sp),
                           ),
-                          SizedBox(height: 10,),
+                          SizedBox(
+                            height: 10,
+                          ),
                           SizedBox(
                             height: 16,
                             child: ListView.separated(
@@ -391,13 +396,15 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
                                     if (withIcon) ...{
                                       MyTextWidget(
                                         '97%',
-                                        style: context.textTheme.bodyText2?.rq.copyWith(
-                                            height: 1.23,
-                                            color: Color(0xff505050),
-                                            fontSize: 13.sp),
+                                        style: context.textTheme.bodyText2?.rq
+                                            .copyWith(
+                                                height: 1.23,
+                                                color: Color(0xff505050),
+                                                fontSize: 13.sp),
                                       ),
                                       Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 5),
+                                        padding:
+                                            EdgeInsets.symmetric(horizontal: 5),
                                         child: SvgPicture.asset(
                                           AppAssets.polyesterSvg,
                                           width: 15,
@@ -407,18 +414,19 @@ static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
                                     },
                                     MyTextWidget(
                                       'Casual',
-                                      style: context.textTheme.bodyText2?.rq.copyWith(
-                                          height: 1.23,
-                                          color: Color(0xff8D8D8D),
-                                          fontSize: 13.sp),
+                                      style: context.textTheme.bodyText2?.rq
+                                          .copyWith(
+                                              height: 1.23,
+                                              color: Color(0xff8D8D8D),
+                                              fontSize: 13.sp),
                                     )
                                   ],
                                 );
                               },
                               separatorBuilder: (context, index) {
                                 return Container(
-                                  margin:
-                                  EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 5, vertical: 1.5),
                                   width: 1,
                                   decoration: BoxDecoration(
                                       color: Color(0xff8D8D8D),

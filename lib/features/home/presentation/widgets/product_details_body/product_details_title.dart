@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
@@ -8,12 +9,15 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as Brand;
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_state.dart';
 
 class ProductDetailsTitle extends StatelessWidget {
   final Brand.Brand brand;
-  final String ViewerCount;
+
   final String productName;
   final String thumbnail;
   final String colorName;
@@ -22,86 +26,115 @@ class ProductDetailsTitle extends StatelessWidget {
       {super.key,
       required this.brand,
       required this.productName,
-      required this.ViewerCount,
       required this.thumbnail,
       required this.colorName});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              MyCachedNetworkImage(
-                height: 60,
-                width: 112,
-                imageUrl: brand.image!,
-                imageFit: BoxFit.cover,
-              ),
-              Row(
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (p, c) =>
+          p.getProductDetailWithoutSimilarRelatedProductsStatus !=
+              c.getProductDetailWithoutSimilarRelatedProductsStatus ||
+          p.currentSelectedColor != c.currentSelectedColor,
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SvgPicture.asset(
-                    AppAssets.eyeSvg,
-                    height: 15,
-                    width: 15,
+                  MyCachedNetworkImage(
+                    height: 110,
+                    width: 120,
+                    imageUrl: brand.image!,
+                    imageFit: BoxFit.cover,
                   ),
-                  SizedBox(
-                    width: 5,
-                  ),
+                  state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                          GetProductDetailWithoutSimilarRelatedProductsStatus
+                              .loading
+                      ? Center(
+                          child: TrydosShimmerLoading(
+                            width: 70,
+                            height: 70,
+                            logoTextHeight: 14,
+                            logoTextWidth: 20.w,
+                          ),
+                        )
+                      : Row(
+                          children: [
+                            SvgPicture.asset(
+                              AppAssets.eyeSvg,
+                              height: 15,
+                              width: 15,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            MyTextWidget(
+                              state.getProductDetailWithoutRelatedProductsModel !=
+                                      null
+                                  ? state
+                                      .getProductDetailWithoutRelatedProductsModel!
+                                      .product!
+                                      .reviewsCount
+                                      .toString()
+                                  : "",
+                              style: context.textTheme.caption?.rq.copyWith(
+                                  color: Color(0xff505050), height: 1.26),
+                            )
+                          ],
+                        )
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 20.0),
+              child: Row(
+                children: [
                   MyTextWidget(
-                    ViewerCount,
-                    style: context.textTheme.caption?.rq
-                        .copyWith(color: Color(0xff505050), height: 1.26),
+                    productName,
+                    style: context.textTheme.subtitle1?.mq.copyWith(
+                        color: Color(0xff5D5C5D),
+                        height: 1.26,
+                        fontSize: 15.sp),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: MyCachedNetworkImage(
+                      imageFit: BoxFit.cover,
+                      imageUrl: thumbnail,
+                      height: 15,
+                      width: 15,
+                    ),
+                  ),
+                  Container(
+                    width: 1,
+                    height: 14,
+                    decoration: BoxDecoration(
+                        color: Color(0xff8D8D8D),
+                        borderRadius: BorderRadius.circular(2)),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 5.0),
+                    child: MyTextWidget(
+                      colorName,
+                      style: context.textTheme.subtitle1?.rq.copyWith(
+                          color: Color(0xff404E68),
+                          height: 1.26,
+                          fontSize: 15.sp),
+                    ),
                   )
                 ],
-              )
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 20.0),
-          child: Row(
-            children: [
-              MyTextWidget(
-                productName,
-                style: context.textTheme.subtitle1?.mq.copyWith(
-                    color: Color(0xff5D5C5D), height: 1.26, fontSize: 15.sp),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                child: MyCachedNetworkImage(
-                  imageFit: BoxFit.cover,
-                  imageUrl: thumbnail,
-                  height: 15,
-                  width: 15,
-                ),
-              ),
-              Container(
-                width: 1,
-                height: 14,
-                decoration: BoxDecoration(
-                    color: Color(0xff8D8D8D),
-                    borderRadius: BorderRadius.circular(2)),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 5.0),
-                child: MyTextWidget(
-                  colorName,
-                  style: context.textTheme.subtitle1?.rq.copyWith(
-                      color: Color(0xff404E68), height: 1.26, fontSize: 15.sp),
-                ),
-              )
-            ],
-          ),
-        ),
-      ],
+            ),
+          ],
+        );
+      },
     );
   }
 }

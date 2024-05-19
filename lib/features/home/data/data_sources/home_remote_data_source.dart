@@ -1,14 +1,17 @@
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/methods/get.dart';
+import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 
 import '../../../../common/constant/configuration/market_url_routes.dart';
+import '../../../../common/constant/configuration/stories_url_routes.dart';
 import '../../../../core/api/client_config.dart';
 import '../../../../core/api/methods/detect_server.dart';
 import '../models/get_product_detail_without_related_products_model.dart';
+import '../models/get_story_for_product_model.dart';
 
 @injectable
 class HomeRemoteDatasource {
@@ -72,7 +75,21 @@ class HomeRemoteDatasource {
     return getMainCategories();
   }
 
-  Future<HomeSectionResponseModel> getHomeSections(
+  Future<GetStoryForProductModel> getStories() {
+    GetClient<GetStoryForProductModel> getStories =
+        GetClient<GetStoryForProductModel>(
+      serverName: ServerName.stories,
+      requestPrams: RequestConfig<GetStoryForProductModel>(
+        endpoint: StoriesEndPoints.getStoriesEP,
+        response: ResponseValue<GetStoryForProductModel>(
+            fromJson: (response) => GetStoryForProductModel.fromJson(response)),
+      ),
+    );
+
+    return getStories();
+  }
+
+  /*Future<HomeSectionResponseModel> getHomeSections(
       Map<String, dynamic> params) {
     GetClient<HomeSectionResponseModel> getHomeSections =
         GetClient<HomeSectionResponseModel>(
@@ -83,6 +100,20 @@ class HomeRemoteDatasource {
         response: ResponseValue<HomeSectionResponseModel>(
             fromJson: (response) =>
                 HomeSectionResponseModel.fromJson(response)),
+      ),
+    );
+    return getHomeSections();
+  }*/
+
+  Future<GetHomeBoutiquesModel> getHomeBoutiques(Map<String, dynamic> params) {
+    GetClient<GetHomeBoutiquesModel> getHomeSections =
+        GetClient<GetHomeBoutiquesModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetHomeBoutiquesModel>(
+        endpoint: MarketEndPoints.getHomeBoutiqesEP,
+        queryParameters: params,
+        response: ResponseValue<GetHomeBoutiquesModel>(
+            fromJson: (response) => GetHomeBoutiquesModel.fromJson(response)),
       ),
     );
     return getHomeSections();
