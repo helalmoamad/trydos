@@ -410,6 +410,28 @@ class PrefsRepositoryImpl extends PrefsRepository {
     return _preferences.setInt("duration", duration);
   }
 
+  @override
+  // TODO: implement currentEvent
+  String? get currentEvent {
+    return _preferences.getString(PrefsKey.currentEvent);
+  }
+
+  @override
+  Future<bool> setCurrentEvent(String currentEvent) {
+    return _preferences.setString(PrefsKey.currentEvent, currentEvent);
+  }
+
+  @override
+  // TODO: implement serverTime
+  String? get serverTime {
+    return _preferences.getString("ServerTime");
+  }
+
+  @override
+  Future<bool> setServerTime(DateTime serverTime) {
+    return _preferences.setString("ServerTime", serverTime.toString());
+  }
+
 // @override
 // // TODO: implement localMessages
 // List<Map<String,dynamic>> get localMessages {

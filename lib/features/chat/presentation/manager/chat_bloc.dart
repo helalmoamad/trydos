@@ -1665,8 +1665,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     response.fold((l) => " ", (r) {
       DateTime? dateServer = DateTime.tryParse(r);
       DateTime dateDevice = DateTime.now().toUtc();
-      Duration diff = dateServer!.difference(dateDevice);
 
+      Duration diff = dateServer!.difference(dateDevice);
+      GetIt.I<PrefsRepository>().setServerTime(dateServer);
       GetIt.I<PrefsRepository>().setDuration(diff.inMinutes);
       emit(state.copyWith(duration: diff));
     });

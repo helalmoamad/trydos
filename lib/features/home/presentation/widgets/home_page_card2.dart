@@ -20,6 +20,7 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
+import 'package:trydos/service/language_service.dart';
 
 import '../../../app/my_text_widget.dart';
 
@@ -54,10 +55,19 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
           onTap: () async {
             await FirebaseAnalytics.instance
                 .logEvent(name: 'button_clicked', parameters: {
-              'user_id': prefsRepository.myMarketId.toString(),
+              "time_stamp": GetIt.I<PrefsRepository>().serverTime,
+              "previous_event_button_name":
+                  GetIt.I<PrefsRepository>().currentEvent ?? " ",
+              "device_language": LanguageService.languageCode == 'ar'
+                  ? 'ae'
+                  : LanguageService.languageCode,
+              "country_name": GetIt.I<PrefsRepository>().countryName,
+              'userID': prefsRepository.myMarketId.toString(),
               'user_name': prefsRepository.myMarketName.toString(),
-              'clicked_button_name': 'i hate you Ahmad',
+              'clicked_button_name': 'i love you Ahmad',
             });
+            await GetIt.I<PrefsRepository>().setCurrentEvent(
+                "i loveddsssssssssssssssssssssssssssssssssssssssss you Ahmad in past");
             HelperFunctions.slidingNavigation(context,
                 ProductListingPage(boutiqueSlug: widget.boutniqe.slug!));
           },

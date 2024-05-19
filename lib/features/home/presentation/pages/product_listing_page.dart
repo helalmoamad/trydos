@@ -48,7 +48,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   void initState() {
-    print("${"ddddddddddddddddddddddddddddddddddddw${widget.boutiqueSlug}"}");
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(
@@ -158,11 +157,25 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                         print("${prefsRepository.myMarketId.toString()}" +
                                             "55555555555555555555555555555555555555555");
                                         print("${prefsRepository.myMarketName.toString()}" +
-                                            "5555555444444444444444444444444444444444444444444444444444444445555555555555555555555");
+                                            "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryName.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
                                       });
                                       await FirebaseAnalytics.instance.logEvent(
                                           name: 'button_clicked',
                                           parameters: {
+                                            "time_stamp":
+                                                GetIt.I<PrefsRepository>()
+                                                    .serverTime,
+                                            "previous_event_button_name":
+                                                GetIt.I<PrefsRepository>()
+                                                    .currentEvent,
+                                            "device_language": LanguageService
+                                                        .languageCode ==
+                                                    'ar'
+                                                ? 'ae'
+                                                : LanguageService.languageCode,
+                                            "country_name":
+                                                GetIt.I<PrefsRepository>()
+                                                    .countryName,
                                             'userID': prefsRepository.myMarketId
                                                 .toString(),
                                             'user_name': prefsRepository
@@ -171,6 +184,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             'clicked_button_name':
                                                 'i love you Ahmad',
                                           });
+                                      await GetIt.I<PrefsRepository>()
+                                          .setCurrentEvent(
+                                              "i loveddssssssssssss44444444444444444ssssssssssssss you Ahmad in past");
+
                                       // pushOverscrollRoute(
                                       //     context: context,
                                       //     transitionDuration : Duration(milliseconds : 250),
@@ -201,7 +218,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       productItem: state
                                           .getProductListingWithoutFiltersModel!
                                           .data!
-                                          .products![index],
+                                          .products![0],
                                       itemIndex: index,
                                       setThisEnabled:
                                           (int index, int slideMode) {
