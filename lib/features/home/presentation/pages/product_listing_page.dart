@@ -118,12 +118,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     c.getProductsWithoutFiltersStatus,
                 builder: (context, state) {
                   if (state.getProductsWithoutFiltersStatus ==
-                      GetProductsWithoutFiltersStatus.loading) {
-                    return Center(
-                      child: TrydosLoader(),
-                    );
-                  }
-                  if (state.getProductsWithoutFiltersStatus ==
                       GetProductsWithoutFiltersStatus.failure) {
                     return Center(
                       child: ElevatedButton(
@@ -132,6 +126,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                 boutique_slug: widget.boutiqueSlug));
                           },
                           child: MyTextWidget(LocaleKeys.try_again.tr())),
+                    );
+                  }
+                  if (state.getProductListingWithoutFiltersModel == null) {
+                    return Center(
+                      child: TrydosLoader(),
                     );
                   }
                   return ValueListenableBuilder<Tuple2<int, int>>(
@@ -146,7 +145,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           crossAxisSpacing: 10,
                           primary: false,
                           mainAxisSpacing: 15,
-                          physics: ClampingScrollPhysics(),
+                          physics: const ClampingScrollPhysics(),
                           children: List.generate(
                               state.getProductListingWithoutFiltersModel!.data!
                                       .products?.length ??

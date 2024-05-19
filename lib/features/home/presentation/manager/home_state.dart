@@ -49,6 +49,7 @@ class HomeState {
     this.getProductListingWithoutFiltersModel,
     this.selectedVideoStatus = SelectedVideoStatus.init,
     this.currentStoryInEachCollection = const {},
+    this.cachedProductWithoutRelatedProductsModel = const {},
     this.getHomeBoutiqesPaginationObject,
   });
 
@@ -58,7 +59,7 @@ class HomeState {
   int? selectedCollection;
   int currentPage;
   final GetProductDetailWithoutSimilarRelatedProductsStatus
-      getProductDetailWithoutSimilarRelatedProductsStatus;
+  getProductDetailWithoutSimilarRelatedProductsStatus;
   GetStoriesForProductStatus getStoriesForProductStatus;
   final PaginationModel<Boutique>? getHomeBoutiqesPaginationObject;
   SelectedVideoStatus selectedVideoStatus;
@@ -66,65 +67,69 @@ class HomeState {
   final GetProductsWithoutFiltersStatus getProductsWithoutFiltersStatus;
   Map<int, int?> currentStoryInEachCollection;
   final GetProductListingWithoutFiltersModel?
-      getProductListingWithoutFiltersModel;
+  getProductListingWithoutFiltersModel;
 
   final MainCategoriesResponseModel? mainCategoriesResponseModel;
   final GetProductDetailWithoutRelatedProductsModel?
-      getProductDetailWithoutRelatedProductsModel;
+  getProductDetailWithoutRelatedProductsModel;
 
   final StartingSetting? startingSetting;
+
+  final Map<String , GetProductDetailWithoutRelatedProductsModel> cachedProductWithoutRelatedProductsModel;
 
   get uploadStoryCloudinaryStatus => null;
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
-      final GetMainCategoriesStatus? getMainCategoriesStatus,
-      Map<int, int?>? currentStoryInEachCollection,
-      final GetProductDetailWithoutRelatedProductsModel?
-          getProductDetailWithoutRelatedProductsModel,
-      int? selectedCollection,
-      final StartingSetting? startingSetting,
-      List<CollectionStoryModel>? storiesCollections,
-      final MainCategoriesResponseModel? mainCategoriesResponseModel,
-      final PaginationModel<Boutique>? getHomeBoutiqesPaginationObject,
-      SelectedVideoStatus? selectedVideoStatus,
-      GetStoriesForProductStatus? getStoriesForProductStatus,
-      final GetProductsWithoutFiltersStatus? getProductsWithoutFiltersStatus,
-      final GetProductDetailWithoutSimilarRelatedProductsStatus?
-          getProductDetailWithoutSimilarRelatedProductsStatus,
-      int? currentSelectedColor,
-      int? currentPage,
-      final GetProductListingWithoutFiltersModel?
-          getProductListingWithoutFiltersModel}) {
+        final GetMainCategoriesStatus? getMainCategoriesStatus,
+        Map<int, int?>? currentStoryInEachCollection,
+        final GetProductDetailWithoutRelatedProductsModel?
+        getProductDetailWithoutRelatedProductsModel,
+        int? selectedCollection,
+        final StartingSetting? startingSetting,
+        List<CollectionStoryModel>? storiesCollections,
+        final MainCategoriesResponseModel? mainCategoriesResponseModel,
+        final PaginationModel<Boutique>? getHomeBoutiqesPaginationObject,
+        final Map<String , GetProductDetailWithoutRelatedProductsModel>? cachedProductWithoutRelatedProductsModel,
+        SelectedVideoStatus? selectedVideoStatus,
+        GetStoriesForProductStatus? getStoriesForProductStatus,
+        final GetProductsWithoutFiltersStatus? getProductsWithoutFiltersStatus,
+        final GetProductDetailWithoutSimilarRelatedProductsStatus?
+        getProductDetailWithoutSimilarRelatedProductsStatus,
+        int? currentSelectedColor,
+        int? currentPage,
+        final GetProductListingWithoutFiltersModel?
+        getProductListingWithoutFiltersModel}) {
     return HomeState(
         currentSelectedColor: currentSelectedColor ?? this.currentSelectedColor,
         getStoriesForProductStatus:
-            getStoriesForProductStatus ?? this.getStoriesForProductStatus,
+        getStoriesForProductStatus ?? this.getStoriesForProductStatus,
         selectedCollection: selectedCollection ?? this.selectedCollection,
         getProductDetailWithoutSimilarRelatedProductsStatus:
-            getProductDetailWithoutSimilarRelatedProductsStatus ??
-                this.getProductDetailWithoutSimilarRelatedProductsStatus,
+        getProductDetailWithoutSimilarRelatedProductsStatus ??
+            this.getProductDetailWithoutSimilarRelatedProductsStatus,
         getStartingSettingsStatus:
-            getStartingSettingsStatus ?? this.getStartingSettingsStatus,
+        getStartingSettingsStatus ?? this.getStartingSettingsStatus,
         currentPage: currentPage ?? this.currentPage,
         getMainCategoriesStatus:
-            getMainCategoriesStatus ?? this.getMainCategoriesStatus,
+        getMainCategoriesStatus ?? this.getMainCategoriesStatus,
         getHomeBoutiqesPaginationObject: getHomeBoutiqesPaginationObject ??
             this.getHomeBoutiqesPaginationObject,
         startingSetting: startingSetting ?? this.startingSetting,
         mainCategoriesResponseModel:
-            mainCategoriesResponseModel ?? this.mainCategoriesResponseModel,
+        mainCategoriesResponseModel ?? this.mainCategoriesResponseModel,
         getProductsWithoutFiltersStatus: getProductsWithoutFiltersStatus ??
             this.getProductsWithoutFiltersStatus,
         currentStoryInEachCollection:
-            currentStoryInEachCollection ?? this.currentStoryInEachCollection,
+        currentStoryInEachCollection ?? this.currentStoryInEachCollection,
         getProductListingWithoutFiltersModel:
-            getProductListingWithoutFiltersModel ??
-                this.getProductListingWithoutFiltersModel,
+        getProductListingWithoutFiltersModel ??
+            this.getProductListingWithoutFiltersModel,
         selectedVideoStatus: selectedVideoStatus ?? this.selectedVideoStatus,
         storiesCollections: storiesCollections ?? this.storiesCollections,
+        cachedProductWithoutRelatedProductsModel: cachedProductWithoutRelatedProductsModel ?? this.cachedProductWithoutRelatedProductsModel,
         getProductDetailWithoutRelatedProductsModel:
-            getProductDetailWithoutRelatedProductsModel ??
-                this.getProductDetailWithoutRelatedProductsModel);
+        getProductDetailWithoutRelatedProductsModel ??
+            this.getProductDetailWithoutRelatedProductsModel);
   }
 
   factory HomeState.fromJson(Map<String, dynamic> data) =>

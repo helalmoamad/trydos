@@ -97,15 +97,19 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
     syncColorImageList?.removeWhere((element) => element.images.isNullOrEmpty);
     syncColorImageList = [
       ...syncColorImageList ?? [],
-      ...syncColorImageList ?? []
+      ...syncColorImageList ?? [],
+      ...((syncColorImageList?.length ?? 0) == 1
+          ? (syncColorImageList ?? [])
+          : [])
     ];
+
     Map<int, int> indicatorValues = {0: 0};
     for (int i = 1; i < syncColorImageList!.length; i++) {
       indicatorValues[i] = 0;
     }
     indicatorForProductImages = ValueNotifier(indicatorValues);
     images = syncColorImageList?.map((e) => e.images![0]).toList() ?? [];
-    if (!images.isNullOrEmpty) {
+    if (!images.isNullOrEmpty && images.length > 3) {
       List<String> copyOfImages = List.of(images), threeImages;
       threeImages = images
           .getRange(images.length ~/ 4 - 1, images.length ~/ 4 + 2)
@@ -115,6 +119,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
       copyOfImages.addAll(copyOfImages.getRange(0, images.length ~/ 4 - 1));
       copyOfImages.removeRange(0, images.length ~/ 4 - 1);
       threeColorsSlider = ValueNotifier(Tuple2(threeImages, copyOfImages));
+    } else {
+      threeColorsSlider = ValueNotifier(Tuple2(images, []));
     }
     List<String> list = widget.productItem.images ?? [];
     list = [...list, ...list];
@@ -1026,8 +1032,17 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       currentColorIndex.value = index;
                                     },
                                     child: Visibility(
-                                      visible: index <
-                                          (syncColorImageList!.length ~/ 2),
+                                      visible: ((gallery3dControllerForCircles
+                                                      ?.currentIndex ??
+                                                  0) <
+                                              (syncColorImageList!.length ~/
+                                                  2) &&
+                                          index <
+                                              (syncColorImageList!.length ~/ 2)) || (gallery3dControllerForCircles
+                                          ?.currentIndex ??
+                                          0) >=
+                                          (syncColorImageList!.length ~/
+                                              2) ,
                                       child: ProductListingImageWidget(
                                         width: 40,
                                         height: 40,

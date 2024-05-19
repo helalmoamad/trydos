@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
@@ -92,141 +93,147 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: HWEdgeInsets.only(left: 20, top: 15),
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Column(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    MyTextWidget(
-                      widget.price.split(" ").toList()[0],
-                      style: textTheme.headline3?.rq.copyWith(
-                        color: Color(0xffC4C2C2),
-                        decoration: TextDecoration.lineThrough,
-                        height: 0,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    MyTextWidget(
-                      widget.offerPrice,
-                      style: textTheme.headline3?.bq.copyWith(
-                        color: Color(0xff505050),
-                        height: 0,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 4,
-                    ),
-                    MyTextWidget(
-                      widget.price.split(" ").toList()[1],
-                      style: textTheme.caption?.rq.copyWith(
-                        fontSize: 18,
-                        color: Color(0xffC4C2C2),
-                        height: 0,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    ValueListenableBuilder<int>(
-                        valueListenable: widget.addToBagButtonShapeNotifier,
-                        builder: (context, itemCount, _) {
-                          return itemCount > 1
-                              ? Row(
-                                  children: [
-                                    MyTextWidget(
-                                      'x$itemCount = ${itemCount * 70} ',
-                                      style: textTheme.caption?.bq.copyWith(
-                                        color: Color(0xff505050),
-                                        height: 0,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    MyTextWidget(
-                                      widget.price.split(" ").toList()[1],
-                                      style: textTheme.caption?.rq.copyWith(
-                                        color: Color(0xffC4C2C2),
-                                        height: 0,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox.shrink();
-                        }),
-                    SvgPicture.asset(
-                      AppAssets.registerInfoSvg,
-                      height: 12,
-                      color: Color(0xff8E8E8E),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Padding(
-                      padding: HWEdgeInsets.only(bottom: 12.0),
-                      child: MyTextWidget(
-                        'All Inclusive Without Additions',
-                        style: textTheme.caption?.rq.copyWith(
-                          color: Color(0xff8D8D8D),
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(30))
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 15),
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      MyTextWidget(
+                        widget.price.split(" ").toList()[0],
+                        style: textTheme.headline3?.rq.copyWith(
+                          color: Color(0xffC4C2C2),
+                          decoration: TextDecoration.lineThrough,
                           height: 0,
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      width: 11,
-                    ),
-                    Flexible(
-                      child: SizedBox(
-                        height: 15 + 12.h,
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          padding: HWEdgeInsets.only(bottom: 12),
-                          itemBuilder: (
-                            BuildContext context,
-                            int index,
-                          ) {
-                            return Row(
-                              children: [
-                                SvgPicture.asset(
-                                  svg[index],
-                                  height: 15,
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                MyTextWidget(
-                                  texts[index],
-                                  style: textTheme.caption?.rq.copyWith(
-                                    color: Color(0xff8D8D8D),
-                                    height: 0,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                )
-                              ],
-                            );
-                          },
-                          scrollDirection: Axis.horizontal,
-                          itemCount: 3,
+                      SizedBox(
+                        width: 5,
+                      ),
+                      MyTextWidget(
+                        widget.offerPrice,
+                        style: textTheme.headline3?.bq.copyWith(
+                          color: Color(0xff505050),
+                          height: 0,
                         ),
                       ),
-                    )
-                  ],
-                )
-              ],
+                      SizedBox(
+                        width: 4,
+                      ),
+                      MyTextWidget(
+                        widget.price.split(" ").toList()[1],
+                        style: textTheme.caption?.rq.copyWith(
+                          fontSize: 18,
+                          color: Color(0xffC4C2C2),
+                          height: 0,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      ValueListenableBuilder<int>(
+                          valueListenable: widget.addToBagButtonShapeNotifier,
+                          builder: (context, itemCount, _) {
+                            return itemCount > 1
+                                ? Row(
+                                    children: [
+                                      MyTextWidget(
+                                        'x$itemCount = ${itemCount * 70} ',
+                                        style: textTheme.caption?.bq.copyWith(
+                                          color: Color(0xff505050),
+                                          height: 0,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      MyTextWidget(
+                                        widget.price.split(" ").toList()[1],
+                                        style: textTheme.caption?.rq.copyWith(
+                                          color: Color(0xffC4C2C2),
+                                          height: 0,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : const SizedBox.shrink();
+                          }),
+                      SvgPicture.asset(
+                        AppAssets.registerInfoSvg,
+                        height: 12,
+                        color: Color(0xff8E8E8E),
+                      )
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: HWEdgeInsets.only(bottom: 12.0),
+                        child: MyTextWidget(
+                          'All Inclusive Without Additions',
+                          style: textTheme.caption?.rq.copyWith(
+                            color: Color(0xff8D8D8D),
+                            height: 0,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 11,
+                      ),
+                      Flexible(
+                        child: SizedBox(
+                          height: 15 + 12.h,
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            padding: HWEdgeInsets.only(bottom: 12),
+                            itemBuilder: (
+                              BuildContext context,
+                              int index,
+                            ) {
+                              return Row(
+                                children: [
+                                  SvgPicture.asset(
+                                    svg[index],
+                                    height: 15,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  MyTextWidget(
+                                    texts[index],
+                                    style: textTheme.caption?.rq.copyWith(
+                                      color: Color(0xff8D8D8D),
+                                      height: 0,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  )
+                                ],
+                              );
+                            },
+                            scrollDirection: Axis.horizontal,
+                            itemCount: 3,
+                          ),
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
