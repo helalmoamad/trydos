@@ -14,9 +14,10 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
     Map<String, dynamic> headers = client.options.headers;
     final String? token = getServerToken(serverName);
 
-    if (token != null)
+    if (token != null) {
       headers = client.options.headers
-        ..[HttpHeaders.authorizationHeader] = 'Bearer ${token}';
+        ..[HttpHeaders.authorizationHeader] = 'Bearer $token';
+    }
     if (serverName != ServerName.cloudinary) {
       headers = client.options.headers
         ..['country'] = GetIt.I<PrefsRepository>().countryName;

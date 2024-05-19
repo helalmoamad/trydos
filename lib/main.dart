@@ -42,7 +42,7 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
     type: isVideo ? 1 : 0,
     textAccept: 'Accept',
     textDecline: 'Decline',
-    missedCallNotification: NotificationParams(
+    missedCallNotification: const NotificationParams(
       showNotification: true,
       isShowCallback: true,
       subtitle: 'Missed call',
@@ -65,7 +65,7 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
         actionColor: '#4CAF50',
         incomingCallNotificationChannelName: "Incoming Call",
         missedCallNotificationChannelName: "Missed Call"),
-    ios: IOSParams(
+    ios: const IOSParams(
       iconName: 'CallKitLogo',
       handleType: 'generic',
       supportsVideo: true,

@@ -60,10 +60,13 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(15.0),
             child: BackdropFilter(
-              filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0,),
+              filter: ui.ImageFilter.blur(
+                sigmaX: 10.0,
+                sigmaY: 10.0,
+              ),
               child: Container(
                 decoration:
-                BoxDecoration(color: Color(0xffffffff).withOpacity(0.8)),
+                    BoxDecoration(color: Color(0xffffffff).withOpacity(0.8)),
               ),
             ),
           ),
@@ -105,20 +108,17 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          MyTextWidget('Quick Offer',
+                              style: textTheme.bodyText2?.mq.copyWith(
+                                color: const Color(0xff3c3c3c),
+                                height: 0.85,
+                              )),
                           MyTextWidget(
-                            'Quick Offer',
-                            style: textTheme.bodyText2?.mq.copyWith(
-                              color: const Color(0xff3c3c3c),
-                              height: 0.85,
-                            )
-                          ),
-                          MyTextWidget(
-                            'This Offer Is For Only 4 Hours, Remaining:',
-                            style: textTheme.overline?.rq.copyWith(
-                              color: const Color(0xff505050),
-                              height: 1.3,
-                            )
-                          )
+                              'This Offer Is For Only 4 Hours, Remaining:',
+                              style: textTheme.overline?.rq.copyWith(
+                                color: const Color(0xff505050),
+                                height: 1.3,
+                              ))
                         ],
                       ),
                       Spacer(),
@@ -128,7 +128,9 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                 ],
               ),
             ),
-            SizedBox(height: 12,),
+            SizedBox(
+              height: 12,
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Stack(
@@ -179,9 +181,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                   bottom: focused != -1 ? -10.w : 12.w,
                   child: Container(
                     //color: Colors.red,
-                    margin: EdgeInsets.only(
-                        left:  10,
-                        right:  5),
+                    margin: EdgeInsets.only(left: 10, right: 5),
                     child: GestureDetector(
                       onLongPressStart: (details) {
                         resizeItems.value =
@@ -198,10 +198,10 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                       child: Column(
                         children: [
                           SizedBox(
-                            height:  10.w,
+                            height: 10.w,
                           ),
                           Transform.translate(
-                            offset: Offset(10 , 0),
+                            offset: Offset(10, 0),
                             child: SizedBox(
                               width: 340.w,
                               height: focused != -1 ? 100.w : 60.w,
@@ -209,29 +209,36 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                                   alignment: Alignment.bottomCenter,
                                   children: List.generate(
                                       9,
-                                          (index) => AnimatedPositioned(
-                                        left: ( index * (40.w - 5.w) +
-                                            (focused != -1
-                                                ? index == (focused + 1)
-                                                ? 20.w
-                                                : index == focused
-                                                ? 5.w
-                                                : index > focused
-                                                ? 20.w
-                                                : 0
-                                                : 0)),
-                                        curve: Curves.fastEaseInToSlowEaseOut,
-                                        bottom: focused == index ? 35.w : 10.w,
-                                        duration: Duration(milliseconds: focused == index ? 150 : 10),
-                                        child: ProductItemCircle(
-                                          index: index,
-                                          isFocused: focused == index,
-                                        ),
-                                      ))),
+                                      (index) => AnimatedPositioned(
+                                            left: (index * (40.w - 5.w) +
+                                                (focused != -1
+                                                    ? index == (focused + 1)
+                                                        ? 20.w
+                                                        : index == focused
+                                                            ? 5.w
+                                                            : index > focused
+                                                                ? 20.w
+                                                                : 0
+                                                    : 0)),
+                                            curve:
+                                                Curves.fastEaseInToSlowEaseOut,
+                                            bottom:
+                                                focused == index ? 35.w : 10.w,
+                                            duration: Duration(
+                                                milliseconds: focused == index
+                                                    ? 150
+                                                    : 10),
+                                            child: ProductItemCircle(
+                                              index: index,
+                                              isFocused: focused == index,
+                                              imageUrl: '',
+                                              name: '',
+                                            ),
+                                          ))),
                             ),
                           ),
                           SizedBox(
-                            height:  10.w,
+                            height: 10.w,
                           )
                         ],
                       ),

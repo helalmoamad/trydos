@@ -181,8 +181,10 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                         }
                                         GetIt.I<StoryBloc>().add(
                                             StorySelectedEvent(
-                                                collectionIndex: collectionIndex + 1,
-                                                selectedStoryIndexInCollection: -1,
+                                                collectionIndex:
+                                                    collectionIndex + 1,
+                                                selectedStoryIndexInCollection:
+                                                    -1,
                                                 currentPage:
                                                     collectionIndex + 1));
                                         carouselSliderController.nextPage(
@@ -197,8 +199,10 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                         }
                                         GetIt.I<StoryBloc>().add(
                                             StorySelectedEvent(
-                                                collectionIndex: collectionIndex - 1,
-                                                selectedStoryIndexInCollection: -1,
+                                                collectionIndex:
+                                                    collectionIndex - 1,
+                                                selectedStoryIndexInCollection:
+                                                    -1,
                                                 currentPage:
                                                     collectionIndex - 1));
                                         carouselSliderController.previousPage(
