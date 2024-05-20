@@ -16,10 +16,10 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScrollConfiguration(
-      behavior: cupertino.CupertinoScrollBehavior(),
+      behavior: const cupertino.CupertinoScrollBehavior(),
       child: ListView(
         controller: scrollController,
-        physics: cupertino.ClampingScrollPhysics(),
+        physics: const cupertino.ClampingScrollPhysics(),
         shrinkWrap: true,
         padding: EdgeInsets.zero,
         children: [
@@ -32,7 +32,7 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                 AppAssets.chatMarkActiveSvg,
                 height: 20,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               MyTextWidget('Comment About This Product',
@@ -41,7 +41,10 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                   )),
             ],
           ),
-          ...List.generate(5, (index) => Column(
+          const SizedBox(
+            height: 10,
+          ),
+          ...List.generate(5, (index) => const Column(
             children: [
               CommentCard(),
               SizedBox(

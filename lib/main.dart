@@ -12,6 +12,7 @@ import 'package:flutter_callkit_incoming/entities/notification_params.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:get_it/get_it.dart';
 import 'package:eraser/eraser.dart';
+import 'package:uuid/uuid.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -42,7 +43,7 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
     type: isVideo ? 1 : 0,
     textAccept: 'Accept',
     textDecline: 'Decline',
-    missedCallNotification: NotificationParams(
+    missedCallNotification: const NotificationParams(
       showNotification: true,
       isShowCallback: true,
       subtitle: 'Missed call',
@@ -65,7 +66,7 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
         actionColor: '#4CAF50',
         incomingCallNotificationChannelName: "Incoming Call",
         missedCallNotificationChannelName: "Missed Call"),
-    ios: IOSParams(
+    ios: const IOSParams(
       iconName: 'CallKitLogo',
       handleType: 'generic',
       supportsVideo: true,
@@ -243,6 +244,10 @@ void main() async {
   NotificationProcess().setupInteractedMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+  await FirebaseAnalytics.instance
+      .setSessionTimeoutDuration(Duration(seconds: 20));
+  String SessionId = Uuid().v4();
+  GetIt.I<PrefsRepository>().setSessionId(SessionId);
   NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   HttpOverrides.global = MyHttpOverrides();

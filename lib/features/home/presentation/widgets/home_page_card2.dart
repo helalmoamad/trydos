@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -22,6 +23,7 @@ import 'package:trydos/features/home/presentation/pages/product_listing_page.dar
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 import 'package:trydos/service/language_service.dart';
 
+import '../../../../service/language_service.dart';
 import '../../../app/my_text_widget.dart';
 
 class HomePageCard2 extends cupertino.StatefulWidget {
@@ -55,7 +57,11 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
           onTap: () async {
             await FirebaseAnalytics.instance
                 .logEvent(name: 'button_clicked', parameters: {
-              "time_stamp": GetIt.I<PrefsRepository>().serverTime,
+              "time_stamp": DateTime.now()
+                  .toUtc()
+                  .add(Duration(
+                      minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
+                  .toString(),
               "previous_event_button_name":
                   GetIt.I<PrefsRepository>().currentEvent ?? " ",
               "device_language": LanguageService.languageCode == 'ar'
@@ -65,6 +71,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
               'userID': prefsRepository.myMarketId.toString(),
               'user_name': prefsRepository.myMarketName.toString(),
               'clicked_button_name': 'i love you Ahmad',
+              "session_id": GetIt.I<PrefsRepository>().sessionId,
             });
             await GetIt.I<PrefsRepository>().setCurrentEvent(
                 "i loveddsssssssssssssssssssssssssssssssssssssssss you Ahmad in past");
@@ -76,7 +83,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             clipBehavior: Clip.none,
             children: [
               Container(
-                height: 255,
+                height: 235,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15.0),
                   boxShadow: [
@@ -144,7 +151,15 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                           height: 5,
                         ),
                         Html(
+                          shrinkWrap: true,
                           data: widget.boutniqe.description!,
+                          style: {
+                            "body": Style(margin: Margins.all(0)),
+                            "p": Style(
+                              maxLines: 1,
+                              margin: Margins.all(0),
+                            ),
+                          },
                         ),
                         if (!widget.withSlidingImages)
                           SizedBox(
@@ -271,7 +286,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
               Positioned(
                 child: cupertino.Container(
                   width: 60,
-                  height: 30,
+                  height: 12,
                   child: cupertino.ListView.separated(
                     separatorBuilder: (context, index) => 13.horizontalSpace,
                     shrinkWrap: true,
@@ -319,7 +334,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     ),
                   ],
                 ),*/
-                left: 18.w,
+                right: LanguageService.rtl ? null : 18.w,
+                left: LanguageService.rtl ? 18.w : null,
                 top: 18,
               ),
             ],
@@ -330,6 +346,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             builder: (context, focused, _) {
               return GestureDetector(
                 onPanDown: (details) {
+                  print(focused);
                   HapticFeedback.lightImpact();
                   resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
                 },
@@ -359,8 +376,10 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                         child: Stack(
                             alignment: Alignment.bottomCenter,
                             children: List.generate(
-                                widget.boutniqe.childCategoriesForProductIds!
-                                    .length,
+                                min(
+                                    9,
+                                    widget.boutniqe
+                                        .childCategoriesForProductIds!.length),
                                 (index) => AnimatedPositioned(
                                       left: (index * (40.w - 5.w) +
                                           (focused != -1
@@ -390,6 +409,12 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                             .childCategoriesForProductIds![
                                                 index]
                                             .categoryName!,
+                                        count_products: widget
+                                            .boutniqe
+                                            .childCategoriesForProductIds![
+                                                index]
+                                            .countProducts
+                                            .toString(),
                                       ),
                                     ))),
                       ),
@@ -412,9 +437,11 @@ class ProductItemCircle extends StatelessWidget {
       required this.isFocused,
       super.key,
       required this.imageUrl,
-      required this.name});
+      required this.name,
+      required this.count_products});
   final String imageUrl;
   final int index;
+  final String count_products;
   final String name;
   final bool isFocused;
 
@@ -438,13 +465,16 @@ class ProductItemCircle extends StatelessWidget {
                   children: [
                     MyTextWidget(
                       name,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
                       style: context.textTheme.caption?.rr.copyWith(
                           color: Color(0xff8E8E8E),
                           letterSpacing: 0,
                           height: 1.43),
                     ),
                     MyTextWidget(
-                      '1100',
+                      count_products,
+                      textAlign: TextAlign.center,
                       style: context.textTheme.caption?.rr.copyWith(
                           color: Color(0xff8E8E8E),
                           fontSize: 8.sp,

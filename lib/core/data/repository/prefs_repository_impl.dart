@@ -432,6 +432,17 @@ class PrefsRepositoryImpl extends PrefsRepository {
     return _preferences.setString("ServerTime", serverTime.toString());
   }
 
+  @override
+  // TODO: implement sessionId
+  String? get sessionId {
+    return _preferences.getString(PrefsKey.sessionId);
+  }
+
+  @override
+  Future<bool> setSessionId(String sessionId) {
+    return _preferences.setString(PrefsKey.sessionId, sessionId);
+  }
+
 // @override
 // // TODO: implement localMessages
 // List<Map<String,dynamic>> get localMessages {

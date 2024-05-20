@@ -2020,6 +2020,15 @@ class MockPrefsRepository extends _i1.Mock implements _i16.PrefsRepository {
       ) as _i33.Future<bool>);
 
   @override
+  _i33.Future<bool> setServerTime(DateTime? serverTime) => (super.noSuchMethod(
+        Invocation.method(
+          #setServerTime,
+          [serverTime],
+        ),
+        returnValue: _i33.Future<bool>.value(false),
+      ) as _i33.Future<bool>);
+
+  @override
   _i33.Future<bool> setMyChatName(String? name) => (super.noSuchMethod(
         Invocation.method(
           #setMyChatName,
@@ -2159,6 +2168,16 @@ class MockPrefsRepository extends _i1.Mock implements _i16.PrefsRepository {
         Invocation.method(
           #setMyMarketName,
           [name],
+        ),
+        returnValue: _i33.Future<bool>.value(false),
+      ) as _i33.Future<bool>);
+
+  @override
+  _i33.Future<bool> setCurrentEvent(String? currentEvent) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setCurrentEvent,
+          [currentEvent],
         ),
         returnValue: _i33.Future<bool>.value(false),
       ) as _i33.Future<bool>);

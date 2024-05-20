@@ -40,7 +40,7 @@ abstract class PrefsRepository {
   String? get currentEvent;
 
   String? get verificationId;
-
+  String? get sessionId;
   String? get otpCode;
   int? get getdurtion;
   Future<bool> setVerifiedPhone(bool verifiedPhone);
@@ -48,6 +48,7 @@ abstract class PrefsRepository {
   Future<bool> setCountryName(String? countryName);
 
   Future<bool> setVerificationId(String verificationId);
+  Future<bool> setSessionId(String sessionId);
 
   Future<bool> setOtpCode(String otpToken);
 

@@ -64,6 +64,16 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                 (k, e) => MapEntry(int.parse(k), (e as num?)?.toInt()),
               ) ??
               const {},
+      cachedProductWithoutRelatedProductsModel:
+          (json['cachedProductWithoutRelatedProductsModel']
+                      as Map<String, dynamic>?)
+                  ?.map(
+                (k, e) => MapEntry(
+                    k,
+                    GetProductDetailWithoutRelatedProductsModel.fromJson(
+                        e as Map<String, dynamic>)),
+              ) ??
+              const {},
       getHomeBoutiqesPaginationObject:
           json['getHomeBoutiqesPaginationObject'] == null
               ? null
@@ -71,6 +81,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                   json['getHomeBoutiqesPaginationObject']
                       as Map<String, dynamic>,
                   (value) => Boutique.fromJson(value as Map<String, dynamic>)),
+      currentCategorySlug: json['currentCategorySlug'] as String? ?? " ",
     );
 
 Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
@@ -81,6 +92,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
+      'currentCategorySlug': instance.currentCategorySlug,
       'getProductDetailWithoutSimilarRelatedProductsStatus':
           _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap[
               instance.getProductDetailWithoutSimilarRelatedProductsStatus]!,
@@ -106,6 +118,9 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getProductDetailWithoutRelatedProductsModel':
           instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
       'startingSetting': instance.startingSetting?.toJson(),
+      'cachedProductWithoutRelatedProductsModel': instance
+          .cachedProductWithoutRelatedProductsModel
+          .map((k, e) => MapEntry(k, e.toJson())),
     };
 
 const _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap = {

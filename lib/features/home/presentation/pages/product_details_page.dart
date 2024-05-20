@@ -1,38 +1,24 @@
-import 'package:cupertino_back_gesture/cupertino_back_gesture.dart';
 import 'package:easy_localization/easy_localization.dart' as localization;
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/basic.dart' as C;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/app/trydos_shimmer_loading.dart';
-import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart'
-    as productDetail;
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_display_pictures_page.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/widget/stories_list.dart';
-import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../../service/language_service.dart';
-import '../../../../trydos_application.dart';
-import '../../../app/my_text_widget.dart';
 
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
@@ -76,12 +62,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
     homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
         productId: widget.productItem.id.toString()));
-
+    homeBloc.add(GetStoryForProductEvent());
     super.initState();
   }
 
-  // workNormally: true,
-  // withRoundedCorners: true,
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (error) {
@@ -112,19 +96,24 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             .getProductDetailWithoutSimilarRelatedProductsStatus ==
                         GetProductDetailWithoutSimilarRelatedProductsStatus
                             .failure) {
-                      return Container(
-                        child: C.Center(
-                          child: ElevatedButton(
-                              onPressed: () {
-                                homeBloc.add(
-                                    GetProductDatailsWithoutRelatedProductsEvent(
-                                        productId:
-                                            widget.productItem.id.toString()));
-                              },
-                              child: MyTextWidget(LocaleKeys.try_again.tr())),
-                        ),
+                      return Center(
+                        child: ElevatedButton(
+                            onPressed: () {
+                              homeBloc.add(
+                                  GetProductDatailsWithoutRelatedProductsEvent(
+                                      productId:
+                                          widget.productItem.id.toString()));
+                            },
+                            child: MyTextWidget(LocaleKeys.try_again.tr())),
                       );
                     }
+                    if (!state.cachedProductWithoutRelatedProductsModel
+                        .containsKey(widget.productItem.id.toString())) {
+                      return Center(
+                        child: TrydosLoader(),
+                      );
+                    }
+                    String productId = widget.productItem.id.toString();
                     return ScrollConfiguration(
                       behavior: const CupertinoScrollBehavior(),
                       child: ListView(
@@ -222,24 +211,25 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                               .currentSelectedColor]
                                                           .images![index],
                                                     )
-                                                  : SizedBox.shrink());
+                                                  : const SizedBox.shrink());
                                         },
                                         separatorBuilder: (context, index) {
-                                          return SizedBox(
+                                          return const SizedBox(
                                             width: 9,
                                           );
                                         },
                                       ))),
                               Container(
-                                width: 20,
+                                width: 40,
                                 height: 464,
+                                color: Colors.transparent,
                               )
                             ],
                           ),
                           ProductDetailsTitle(
                             brand: widget.productItem.brand!,
                             productName: widget.productItem.name!,
-                            thumbnail: widget.productItem.thumbnail!,
+                            thumbnail: widget.productItem.thumbnail ?? '',
                             colorName: !widget.productItem.syncColorImages
                                         .isNullOrEmpty &&
                                     !widget.productItem.syncColorImages![0]
@@ -256,7 +246,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             height: 5,
                           ),
                           ProductDetailsDescriptionWidget(
-                            description: widget.productItem.details ?? " ",
+                            description: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productId]!
+                                    .product!
+                                    .description ??
+                                " ",
                           ),
                           SizedBox(
                             height: 12,
@@ -296,6 +291,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           SizedBox(
                             height: 15,
                           ),
+                          // ProductStoriesCard(),
                           StoryList(),
                           SizedBox(
                             height: 15,
@@ -317,8 +313,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   },
                 )),
             ProductDetailsBottomSheet(
-              price: widget.productItem.priceFormatted ?? " ",
-              offerPrice: (widget.productItem.offerPrice ?? " ").toString(),
+              productItem: widget.productItem,
             ),
             SlidingUpPanelForBuyersCameraShots(
                 panelController: panelControllerForBuyersCameraShots,

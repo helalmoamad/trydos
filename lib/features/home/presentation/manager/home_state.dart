@@ -32,31 +32,34 @@ enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
 
 @JsonSerializable(explicitToJson: true)
 class HomeState {
-  HomeState({
-    this.getProductDetailWithoutSimilarRelatedProductsStatus =
-        GetProductDetailWithoutSimilarRelatedProductsStatus.init,
-    this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
-    this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
-    this.getProductsWithoutFiltersStatus = GetProductsWithoutFiltersStatus.init,
-    this.startingSetting,
-    this.currentPage = 0,
-    this.selectedCollection,
-    this.storiesCollections = const [],
-    this.currentSelectedColor = 0,
-    this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
-    this.mainCategoriesResponseModel,
-    this.getProductDetailWithoutRelatedProductsModel,
-    this.getProductListingWithoutFiltersModel,
-    this.selectedVideoStatus = SelectedVideoStatus.init,
-    this.currentStoryInEachCollection = const {},
-    this.getHomeBoutiqesPaginationObject,
-  });
+  HomeState(
+      {this.getProductDetailWithoutSimilarRelatedProductsStatus =
+          GetProductDetailWithoutSimilarRelatedProductsStatus.init,
+      this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
+      this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
+      this.getProductsWithoutFiltersStatus =
+          GetProductsWithoutFiltersStatus.init,
+      this.startingSetting,
+      this.currentPage = 0,
+      this.selectedCollection,
+      this.storiesCollections = const [],
+      this.currentSelectedColor = 0,
+      this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
+      this.mainCategoriesResponseModel,
+      this.getProductDetailWithoutRelatedProductsModel,
+      this.getProductListingWithoutFiltersModel,
+      this.selectedVideoStatus = SelectedVideoStatus.init,
+      this.currentStoryInEachCollection = const {},
+      this.cachedProductWithoutRelatedProductsModel = const {},
+      this.getHomeBoutiqesPaginationObject,
+      this.currentCategorySlug = " "});
 
   final GetStartingSettingsStatus getStartingSettingsStatus;
   int currentSelectedColor = 0;
   final GetMainCategoriesStatus getMainCategoriesStatus;
   int? selectedCollection;
   int currentPage;
+  String currentCategorySlug = " ";
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
   GetStoriesForProductStatus getStoriesForProductStatus;
@@ -74,6 +77,9 @@ class HomeState {
 
   final StartingSetting? startingSetting;
 
+  final Map<String, GetProductDetailWithoutRelatedProductsModel>
+      cachedProductWithoutRelatedProductsModel;
+
   get uploadStoryCloudinaryStatus => null;
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
@@ -82,10 +88,13 @@ class HomeState {
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
+      String? currentCategorySlug,
       final StartingSetting? startingSetting,
       List<CollectionStoryModel>? storiesCollections,
       final MainCategoriesResponseModel? mainCategoriesResponseModel,
       final PaginationModel<Boutique>? getHomeBoutiqesPaginationObject,
+      final Map<String, GetProductDetailWithoutRelatedProductsModel>?
+          cachedProductWithoutRelatedProductsModel,
       SelectedVideoStatus? selectedVideoStatus,
       GetStoriesForProductStatus? getStoriesForProductStatus,
       final GetProductsWithoutFiltersStatus? getProductsWithoutFiltersStatus,
@@ -96,6 +105,7 @@ class HomeState {
       final GetProductListingWithoutFiltersModel?
           getProductListingWithoutFiltersModel}) {
     return HomeState(
+        currentCategorySlug: currentCategorySlug ?? this.currentCategorySlug,
         currentSelectedColor: currentSelectedColor ?? this.currentSelectedColor,
         getStoriesForProductStatus:
             getStoriesForProductStatus ?? this.getStoriesForProductStatus,
@@ -122,6 +132,9 @@ class HomeState {
                 this.getProductListingWithoutFiltersModel,
         selectedVideoStatus: selectedVideoStatus ?? this.selectedVideoStatus,
         storiesCollections: storiesCollections ?? this.storiesCollections,
+        cachedProductWithoutRelatedProductsModel:
+            cachedProductWithoutRelatedProductsModel ??
+                this.cachedProductWithoutRelatedProductsModel,
         getProductDetailWithoutRelatedProductsModel:
             getProductDetailWithoutRelatedProductsModel ??
                 this.getProductDetailWithoutRelatedProductsModel);

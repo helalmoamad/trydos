@@ -32,9 +32,11 @@ class GetHomeBoutiqesEvent extends HomeEvent {
   // final bool getWithPagination;
   final String offset;
   final bool getWithPagination;
+  final String category_Slug;
   const GetHomeBoutiqesEvent({
     required this.offset,
     required this.getWithPagination,
+    required this.category_Slug,
   }
       //  {this.getWithPagination = false}
       );
@@ -107,4 +109,11 @@ class LoadFailureEvent extends HomeEvent {
   const LoadFailureEvent({required this.collectionId});
   @override
   List<Object?> get props => [collectionId];
+}
+
+class ChangeCurrentCategorySlugEvent extends HomeEvent {
+  final String changeCurrentSlug;
+  const ChangeCurrentCategorySlugEvent({required this.changeCurrentSlug});
+  @override
+  List<Object?> get props => [changeCurrentSlug];
 }

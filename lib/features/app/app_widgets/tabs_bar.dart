@@ -33,10 +33,11 @@ class TabsBar extends StatefulWidget {
 
 class _TabsBarState extends State<TabsBar> {
   late AppBloc appBloc;
-
+  late HomeBloc homeBloc;
   @override
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
   }
 
@@ -105,10 +106,17 @@ class _TabsBarState extends State<TabsBar> {
                       padding: HWEdgeInsets.only(right: 15.0),
                       child: InkWell(
                         onTap: () {
-                          /* appBloc.add(ChangeTab(index));
-                          BlocProvider.of<HomeBloc>(context).add(
-                              GetHomeSectionsEvent(
-                                  mainCategory.slug.toString()));*/
+                          appBloc.add(ChangeTab(index));
+                          print(
+                              "------------------------------------${homeState.mainCategoriesResponseModel!.data!.mainCategories![index].slug!}");
+                          homeBloc.add(GetHomeBoutiqesEvent(
+                              offset: "1",
+                              getWithPagination: false,
+                              category_Slug: homeState
+                                  .mainCategoriesResponseModel!
+                                  .data!
+                                  .mainCategories![index]
+                                  .slug!));
                         },
                         child: Column(
                           //crossAxisAlignment: CrossAxisAlignment.center,

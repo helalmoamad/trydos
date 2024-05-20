@@ -57,6 +57,7 @@ class _HomePageState extends State<HomePage> {
               0.7 *
               (homeBloc.state.getHomeBoutiqesPaginationObject!.page - 1))) {
         homeBloc.add(GetHomeBoutiqesEvent(
+            category_Slug: homeBloc.state.currentCategorySlug,
             offset:
                 homeBloc.state.getHomeBoutiqesPaginationObject!.page.toString(),
             getWithPagination: true));

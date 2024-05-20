@@ -59,6 +59,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
     on<StorySelectEvent>(_onStorySelectedEvent);
+    on<ChangeCurrentCategorySlugEvent>(_changeCurrentSlugEvent);
     on<AddCurrentSelectedColorEvent>(_onAddCurrentSelectedColorEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetHomeBoutiqesEvent>(_onGetHomeSectionsEvent,
@@ -113,12 +114,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         paginationStatus: PaginationStatus.loading);
     emit(state.copyWith(
         getHomeBoutiqesPaginationObject: getHomeBoutiqesPaginationObject));
-    final response = await getHomeBoutiqesUseCase(
-        GetHomeBoutiqesParams(offset: event.offset));
+    final response = await getHomeBoutiqesUseCase(GetHomeBoutiqesParams(
+        offset: event.offset, category_Slug: event.category_Slug));
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetHomeSectionsEvent')) {
         add(GetHomeBoutiqesEvent(
-            offset: event.offset, getWithPagination: event.getWithPagination));
+            offset: event.offset,
+            getWithPagination: event.getWithPagination,
+            category_Slug: event.category_Slug));
         isFailedTheFirstTime.add('GetHomeBoutiqesEvent');
       }
       getHomeBoutiqesPaginationObject = getHomeBoutiqesPaginationObject!
@@ -126,6 +129,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(
           getHomeBoutiqesPaginationObject: getHomeBoutiqesPaginationObject));
     }, (r) {
+      print(
+          "-----------------------------------------------------------------------------------${r.data!.boutiques}------------------------");
       isFailedTheFirstTime.remove('GetHomeBoutiqesEvent');
       if (state.getMainCategoriesStatus == GetMainCategoriesStatus.success) {
         requestAPIAfterHome();
@@ -137,11 +142,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   ? 2
                   : getHomeBoutiqesPaginationObject!.page + 1,
               hasReachedMax: r.data!.boutiques!.length >= kPageSize,
-              items: (!event.getWithPagination &&
-                      (getHomeBoutiqesPaginationObject!.items.length > 0))
-                  ? [
-                      ...getHomeBoutiqesPaginationObject!.items,
-                    ]
+              items: (!event.getWithPagination)
+                  ? [...r.data!.boutiques!]
                   : [
                       ...getHomeBoutiqesPaginationObject!.items,
                       ...r.data!.boutiques!
@@ -201,6 +203,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
       emit(state.copyWith(
           mainCategoriesResponseModel: r,
+          currentCategorySlug: r.data!.mainCategories![0].slug,
           getMainCategoriesStatus: GetMainCategoriesStatus.success));
     });
   }
@@ -226,104 +229,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   //   await smartLook.start();
   // }
 
-  FutureOr<void> _onGetProductsWithoutFiltersEvent(
-      GetProductsWithoutFiltersEvent event, Emitter<HomeState> emit) async {
-    /*if (state.getProductListingWithoutFiltersModel != null) {
-      return;
-    }*/
-    // emit(state.copyWith(
-    //     getProductsWithoutFiltersStatus:
-    //         GetProductsWithoutFiltersStatus.loading));
-    final response = await getProductsWithoutFiltersUseCase(
-        GetProductsWithoutFiltersParams(
-            offset: event.offset,
-            attributes: event.attributes,
-            brands: event.brands,
-            category: event.category,
-            limit: event.limit,
-            prices: event.prices,
-            searchText: event.searchText));
-
-    response.fold((l) {
-      if (!isFailedTheFirstTime.contains('GetProductsWithoutFiltersEvent')) {
-        add(GetProductsWithoutFiltersEvent(
-            offset: event.offset,
-            attributes: event.attributes,
-            brands: event.brands,
-            category: event.category,
-            limit: event.limit,
-            prices: event.prices,
-            boutique_slug: event.boutique_slug,
-            searchText: event.searchText));
-        isFailedTheFirstTime.add('GetProductsWithoutFiltersEvent');
-      }
-      emit(state.copyWith(
-          getProductsWithoutFiltersStatus:
-              GetProductsWithoutFiltersStatus.failure));
-    }, (r) {
-      isFailedTheFirstTime.remove('GetProductsWithoutFiltersEvent');
-      emit(state.copyWith(
-          getProductListingWithoutFiltersModel: r,
-          getProductsWithoutFiltersStatus:
-              GetProductsWithoutFiltersStatus.success));
-    });
-  }
-
-  FutureOr<void> _onGetProductDatailsWithoutRelatedProductsEvent(
-      GetProductDatailsWithoutRelatedProductsEvent event,
-      Emitter<HomeState> emit) async {
-    emit(state.copyWith(
-        getProductDetailWithoutSimilarRelatedProductsStatus:
-            GetProductDetailWithoutSimilarRelatedProductsStatus.loading));
-    final response =
-        await getProductDetailWithoutRelatedProductsUseCase(event.productId!);
-
-    response.fold((l) {
-      if (!isFailedTheFirstTime
-          .contains('GetProductDatailsWithoutRelatedProductsEvent')) {
-        add(const GetProductDatailsWithoutRelatedProductsEvent());
-        isFailedTheFirstTime
-            .add('GetProductDatailsWithoutRelatedProductsEvent');
-      }
-      emit(state.copyWith(
-          getProductDetailWithoutSimilarRelatedProductsStatus:
-              GetProductDetailWithoutSimilarRelatedProductsStatus.failure));
-      Future.delayed(Duration(seconds: 1), () {
-        add(GetStoryForProductEvent());
-      });
-    }, (r) {
-      apisMustNotToRequest.add('GetProductDatailsWithoutRelatedProductsEvent');
-      isFailedTheFirstTime
-          .remove('GetProductDatailsWithoutRelatedProductsEvent');
-      emit(state.copyWith(
-          getProductDetailWithoutRelatedProductsModel: r,
-          getProductDetailWithoutSimilarRelatedProductsStatus:
-              GetProductDetailWithoutSimilarRelatedProductsStatus.success));
-      Future.delayed(Duration(seconds: 1), () {
-        add(GetStoryForProductEvent());
-      });
-    });
-  }
-
   _onAddCurrentSelectedColorEvent(
       AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
     emit(state.copyWith(currentSelectedColor: event.currentSelectedColor));
-  }
-
-  @override
-  HomeState? fromJson(Map<String, dynamic> json) {
-    return HomeState.fromJson(json);
-  }
-
-  @override
-  Map<String, dynamic>? toJson(HomeState state) {
-    return state
-        .copyWith(
-          getMainCategoriesStatus: GetMainCategoriesStatus.init,
-          getProductsWithoutFiltersStatus: GetProductsWithoutFiltersStatus.init,
-          getStartingSettingsStatus: GetStartingSettingsStatus.init,
-        )
-        .toJson();
   }
 
   _onStorySelectedEvent(StorySelectEvent event, Emitter<HomeState> emit) async {
@@ -434,22 +342,28 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           currentStoryInEachCollection: currentStoryInEachCollection));
     });
   }
-}
 
-
- /* Map<String, PaginationModel<HomeSectionDataObject>>
+  /* Map<String, PaginationModel<HomeSectionDataObject>>
         getHomeSectionsPaginationObject =
         Map.of(state.getHomeSectionsPaginationObject);
     if (getHomeSectionsPaginationObject[event.categorySlug] == null) {
       getHomeSectionsPaginationObject[event.categorySlug] =
-          PaginationModel<HomeSectionDataObject>.init();
+          const PaginationModel<HomeSectionDataObject>.init();
     }
     if (!event.getWithPagination &&
-        (getHomeSectionsPaginationObject[event.categorySlug]!.items.length >
-                0 ||
+        (getHomeSectionsPaginationObject[event.categorySlug]!
+                .items
+                .isNotEmpty ||
             getHomeSectionsPaginationObject[event.categorySlug]!
                     .paginationStatus ==
                 PaginationStatus.loading)) {
+      print('zzzzzzzzzzzzzzzz');
+      print('$getHomeSectionsPaginationObject');
+      print('${!event.getWithPagination}');
+      print(
+          '${getHomeSectionsPaginationObject[event.categorySlug]!.items.isNotEmpty}');
+      print(
+          '${getHomeSectionsPaginationObject[event.categorySlug]!.paginationStatus == PaginationStatus.loading}');
       return;
     }
     getHomeSectionsPaginationObject[event.categorySlug] =
@@ -487,4 +401,107 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           ]);
       emit(state.copyWith(
           getHomeSectionsPaginationObject: getHomeSectionsPaginationObject));
-    });*/
+    });
+  }
+  */
+
+  FutureOr<void> _onGetProductsWithoutFiltersEvent(
+      GetProductsWithoutFiltersEvent event, Emitter<HomeState> emit) async {
+    if (state.getProductListingWithoutFiltersModel != null &&
+        state.getProductsWithoutFiltersStatus !=
+            GetProductsWithoutFiltersStatus.init) {
+      return;
+    }
+    emit(state.copyWith(
+        getProductsWithoutFiltersStatus:
+            GetProductsWithoutFiltersStatus.loading));
+    final response = await getProductsWithoutFiltersUseCase(
+        GetProductsWithoutFiltersParams(
+            offset: event.offset,
+            attributes: event.attributes,
+            brands: event.brands,
+            category: event.category,
+            limit: event.limit,
+            prices: event.prices,
+            searchText: event.searchText));
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('GetProductsWithoutFiltersEvent')) {
+        add(GetProductsWithoutFiltersEvent(
+            offset: event.offset,
+            attributes: event.attributes,
+            brands: event.brands,
+            category: event.category,
+            limit: event.limit,
+            prices: event.prices,
+            searchText: event.searchText));
+        isFailedTheFirstTime.add('GetProductsWithoutFiltersEvent');
+      }
+      emit(state.copyWith(
+          getProductsWithoutFiltersStatus:
+              GetProductsWithoutFiltersStatus.failure));
+    }, (r) {
+      isFailedTheFirstTime.remove('GetProductsWithoutFiltersEvent');
+      emit(state.copyWith(
+          getProductListingWithoutFiltersModel: r,
+          getProductsWithoutFiltersStatus:
+              GetProductsWithoutFiltersStatus.success));
+    });
+  }
+
+  FutureOr<void> _onGetProductDatailsWithoutRelatedProductsEvent(
+      GetProductDatailsWithoutRelatedProductsEvent event,
+      Emitter<HomeState> emit) async {
+    if (state.cachedProductWithoutRelatedProductsModel
+        .containsKey(event.productId)) return;
+    emit(state.copyWith(
+        getProductDetailWithoutSimilarRelatedProductsStatus:
+            GetProductDetailWithoutSimilarRelatedProductsStatus.loading));
+    final response =
+        await getProductDetailWithoutRelatedProductsUseCase(event.productId!);
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime
+          .contains('GetProductDatailsWithoutRelatedProductsEvent')) {
+        add(const GetProductDatailsWithoutRelatedProductsEvent());
+        isFailedTheFirstTime
+            .add('GetProductDatailsWithoutRelatedProductsEvent');
+      }
+      emit(state.copyWith(
+          getProductDetailWithoutSimilarRelatedProductsStatus:
+              GetProductDetailWithoutSimilarRelatedProductsStatus.failure));
+    }, (r) {
+      apisMustNotToRequest.add('GetProductDatailsWithoutRelatedProductsEvent');
+      isFailedTheFirstTime
+          .remove('GetProductDatailsWithoutRelatedProductsEvent');
+      Map<String, GetProductDetailWithoutRelatedProductsModel> newCached =
+          Map.of(state.cachedProductWithoutRelatedProductsModel);
+      newCached[event.productId!] = r;
+      emit(state.copyWith(
+          cachedProductWithoutRelatedProductsModel: newCached,
+          getProductDetailWithoutSimilarRelatedProductsStatus:
+              GetProductDetailWithoutSimilarRelatedProductsStatus.success));
+    });
+  }
+
+  @override
+  HomeState? fromJson(Map<String, dynamic> json) {
+    return HomeState.fromJson(json);
+  }
+
+  @override
+  Map<String, dynamic>? toJson(HomeState state) {
+    return state
+        .copyWith(
+          getMainCategoriesStatus: GetMainCategoriesStatus.init,
+          getProductsWithoutFiltersStatus: GetProductsWithoutFiltersStatus.init,
+          getStartingSettingsStatus: GetStartingSettingsStatus.init,
+        )
+        .toJson();
+  }
+
+  _changeCurrentSlugEvent(
+      ChangeCurrentCategorySlugEvent event, Emitter<HomeState> emit) {
+    emit(state.copyWith(currentCategorySlug: event.changeCurrentSlug));
+  }
+}
