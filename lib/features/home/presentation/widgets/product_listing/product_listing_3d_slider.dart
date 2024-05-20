@@ -10,6 +10,7 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
+import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
 import 'package:tuple/tuple.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
@@ -25,12 +26,14 @@ class ProductListing3DSlider extends StatefulWidget {
       required this.setThisEnabled,
       required this.slidingModeItem,
       required this.itemIndex,
-      required this.productItem});
+      required this.productItem,
+      required this.currentChosenColor});
 
   final Tuple2<int, int> slidingModeItem;
   final void Function(int, int) setThisEnabled;
   final int itemIndex;
   final productListingModel.Product productItem;
+  final ValueNotifier<int> currentChosenColor;
 
   @override
   State<ProductListing3DSlider> createState() => _ProductListing3DSliderState();
@@ -382,6 +385,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                             1);
                                               }
                                               prevIndexForThreeImages = index;
+                                              widget.currentChosenColor.value = prevIndexForThreeImages ;
                                               if (scrollToLeft) {
                                                 updateImagesForThreeImagesSlider(
                                                     true,
@@ -480,12 +484,12 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                               : (gallery3dControllerForCircles!
                                                                       .currentIndex -
                                                                   1);
-                                                  currentColorIndex.value =
-                                                      prevIndexInFirstSlider;
+                                                  currentColorIndex.value = prevIndexInFirstSlider;
                                                   gallery3dControllerForCircles!
                                                       .animateTo(
                                                           prevIndexInFirstSlider,
                                                           true);
+                                                  widget.currentChosenColor.value = prevIndexInFirstSlider ;
                                                 }
                                                 if (scrollToLeft) {
                                                   updateImagesForThreeColorsSlider(
@@ -708,15 +712,12 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                MyCachedNetworkImage(
-                                    imageUrl: widget.productItem.brand!.image
-                                        .toString(),
-                                    logoTextWidth: 60.w,
-                                    logoTextHeight: 5,
-                                    circleDimensions: 5,
-                                    width: 169.w,
-                                    imageFit: BoxFit.fitHeight,
-                                    height: 10),
+                                if (widget.productItem.brand != null)
+                                  SvgNetworkWidget(
+                                      svgUrl: widget.productItem.brand!.image
+                                          .toString(),
+                                      width: 169.w,
+                                      height: 10),
                                 // SvgPicture.asset(
                                 //   AppAssets.mangoSvg,
                                 //   height: 10,
@@ -740,15 +741,11 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       height: 10,
                                       child: Transform.translate(
                                           offset: Offset(0, 1),
-                                          child: MyCachedNetworkImage(
-                                              imageUrl: widget
+                                          child: SvgNetworkWidget(
+                                              svgUrl: widget
                                                   .productItem.category!.icon
                                                   .toString(),
-                                              logoTextWidth: 5,
-                                              logoTextHeight: 5,
-                                              circleDimensions: 5,
                                               width: 10,
-                                              imageFit: BoxFit.cover,
                                               height: 10)),
                                     ),
                                     // ListView.separated(
@@ -892,6 +889,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                 changingPagesScrollOffset: 0.1,
                                 isClip: false,
                                 onItemChanged: (index) {
+                                  widget.currentChosenColor.value = index ;
                                   if (slideModeIndex != 2 &&
                                       ((prevIndexInSecondSlider < index &&
                                               (index -
@@ -1033,16 +1031,17 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     },
                                     child: Visibility(
                                       visible: ((gallery3dControllerForCircles
+                                                          ?.currentIndex ??
+                                                      0) <
+                                                  (syncColorImageList!.length ~/
+                                                      2) &&
+                                              index <
+                                                  (syncColorImageList!.length ~/
+                                                      2)) ||
+                                          (gallery3dControllerForCircles
                                                       ?.currentIndex ??
-                                                  0) <
-                                              (syncColorImageList!.length ~/
-                                                  2) &&
-                                          index <
-                                              (syncColorImageList!.length ~/ 2)) || (gallery3dControllerForCircles
-                                          ?.currentIndex ??
-                                          0) >=
-                                          (syncColorImageList!.length ~/
-                                              2) ,
+                                                  0) >=
+                                              (syncColorImageList!.length ~/ 2),
                                       child: ProductListingImageWidget(
                                         width: 40,
                                         height: 40,

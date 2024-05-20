@@ -89,11 +89,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       p.getStoriesForProductStatus !=
                           c.getStoriesForProductStatus ||
                       p.getProductDetailWithoutSimilarRelatedProductsStatus !=
-                          c.getProductDetailWithoutSimilarRelatedProductsStatus ||
-                      p.currentSelectedColor != c.currentSelectedColor,
+                          c
+                              .getProductDetailWithoutSimilarRelatedProductsStatus ||
+                      p.currentSelectedColorForEveryProduct !=
+                          c.currentSelectedColorForEveryProduct,
                   builder: (context, state) {
                     if (state
-                        .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
                         GetProductDetailWithoutSimilarRelatedProductsStatus
                             .failure) {
                       return Center(
@@ -102,17 +104,15 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               homeBloc.add(
                                   GetProductDatailsWithoutRelatedProductsEvent(
                                       productId:
-                                      widget.productItem.id.toString()));
+                                          widget.productItem.id.toString()));
                             },
                             child: MyTextWidget(LocaleKeys.try_again.tr())),
                       );
                     }
-                    if(!state.cachedProductWithoutRelatedProductsModel.containsKey(widget.productItem.id.toString())) {
-                        return Center(
-                          child: TrydosLoader(),
-                        );
-                    }
                     String productId = widget.productItem.id.toString();
+                    int currentSelectedColor = state
+                            .currentSelectedColorForEveryProduct[productId] ??
+                        (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
                     return ScrollConfiguration(
                       behavior: const CupertinoScrollBehavior(),
                       child: ListView(
@@ -132,22 +132,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   child: ScrollConfiguration(
                                       behavior: const CupertinoScrollBehavior(),
                                       child: ListView.separated(
-                                        itemCount: !widget
+                                        itemCount: widget.productItem
+                                                .syncColorImages.isNullOrEmpty
+                                            ? widget.productItem.images!.length
+                                            : !widget
                                                     .productItem
-                                                    .syncColorImages
-                                                    .isNullOrEmpty &&
-                                                !widget
-                                                    .productItem
-                                                    .syncColorImages![0]
+                                                    .syncColorImages![
+                                                        currentSelectedColor]
                                                     .images
                                                     .isNullOrEmpty
-                                            ? widget
-                                                .productItem
-                                                .syncColorImages![
-                                                    state.currentSelectedColor]
-                                                .images!
-                                                .length
-                                            : 0,
+                                                ? widget
+                                                    .productItem
+                                                    .syncColorImages![
+                                                        currentSelectedColor]
+                                                    .images!
+                                                    .length
+                                                : 0,
                                         primary: false,
                                         shrinkWrap: true,
                                         physics: const ClampingScrollPhysics(),
@@ -183,34 +183,32 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                     ProductDetailsDisplayPicturesPage(
                                                       images: widget
                                                               .productItem
-                                                              .syncColorImages![
-                                                                  state.currentSelectedColor ??
-                                                                      0]
-                                                              .images ??
-                                                          [],
+                                                              .syncColorImages
+                                                              .isNullOrEmpty
+                                                          ? widget.productItem
+                                                                  .images ??
+                                                              []
+                                                          : widget
+                                                                  .productItem
+                                                                  .syncColorImages![
+                                                                      currentSelectedColor]
+                                                                  .images ??
+                                                              [],
                                                     ));
                                               },
-                                              child: widget
-                                                          .productItem
-                                                          .syncColorImages![state
-                                                              .currentSelectedColor]
-                                                          .images!
-                                                          .isNotEmpty ||
-                                                      widget
-                                                              .productItem
-                                                              .syncColorImages![
-                                                                  state
-                                                                      .currentSelectedColor]
-                                                              .images !=
-                                                          []
-                                                  ? ProductDetailsImageWidget(
-                                                      imageUrl: widget
-                                                          .productItem
-                                                          .syncColorImages![state
-                                                              .currentSelectedColor]
-                                                          .images![index],
-                                                    )
-                                                  : const SizedBox.shrink());
+                                              child: ProductDetailsImageWidget(
+                                                imageUrl: widget
+                                                        .productItem
+                                                        .syncColorImages
+                                                        .isNullOrEmpty
+                                                    ? widget.productItem
+                                                        .images![index]
+                                                    : widget
+                                                        .productItem
+                                                        .syncColorImages![
+                                                            currentSelectedColor]
+                                                        .images![index],
+                                              ));
                                         },
                                         separatorBuilder: (context, index) {
                                           return const SizedBox(
@@ -235,8 +233,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         .images.isNullOrEmpty
                                 ? widget
                                         .productItem
-                                        .syncColorImages![
-                                            state.currentSelectedColor ?? 0]
+                                        .syncColorImages![currentSelectedColor]
                                         .colorName ??
                                     " "
                                 : " ",
@@ -244,13 +241,20 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           SizedBox(
                             height: 5,
                           ),
-                          ProductDetailsDescriptionWidget(
-                            description: state
-                                .cachedProductWithoutRelatedProductsModel[productId]!
-                                    .product!
-                                    .description ??
-                                " ",
-                          ),
+                          if (!state.cachedProductWithoutRelatedProductsModel
+                              .containsKey(
+                                  widget.productItem.id.toString())) ...{
+                            TrydosLoader()
+                          } else ...{
+                            ProductDetailsDescriptionWidget(
+                              description: state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productId]!
+                                      .product!
+                                      .description ??
+                                  " ",
+                            ),
+                          },
                           SizedBox(
                             height: 12,
                           ),
@@ -289,7 +293,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           SizedBox(
                             height: 15,
                           ),
-                         // ProductStoriesCard(),
+                          // ProductStoriesCard(),
                           StoryList(),
                           SizedBox(
                             height: 15,

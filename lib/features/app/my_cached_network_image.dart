@@ -63,6 +63,10 @@ class MyCachedNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<String> list ;
+    String url = '';
+      list = imageUrl.split('upload');
+      url = list[0] + 'upload/c_scale,h_${2 * height.toInt()},w_${2 * width.toInt()}'+list[1];
     return ValueListenableBuilder<int>(
         valueListenable: rebuildImage,
         builder: (context, count, _) {
@@ -82,8 +86,8 @@ class MyCachedNetworkImage extends StatelessWidget {
                     : null,
               ),
               child: CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  key: ValueKey(imageUrl),
+                  imageUrl: url,
+                  key: ValueKey(url),
                   fit: imageFit,
                   width: width,
                   color: imageColor,
@@ -116,6 +120,7 @@ class MyCachedNetworkImage extends StatelessWidget {
                     );
                   },
                   errorWidget: (context, url, error) {
+                    print('urlll $url');
                     if (enable) {
                       enable = false;
                       WidgetsBinding.instance.addPostFrameCallback((_) {

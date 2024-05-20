@@ -22,10 +22,11 @@ class GetMainCategoriesEvent extends HomeEvent {
 
 class AddCurrentSelectedColorEvent extends HomeEvent {
   final int currentSelectedColor;
-  const AddCurrentSelectedColorEvent({required this.currentSelectedColor});
+  final String productId;
+  const AddCurrentSelectedColorEvent({required this.currentSelectedColor ,required this.productId});
   @override
   // TODO: implement props
-  List<Object?> get props => [currentSelectedColor];
+  List<Object?> get props => [currentSelectedColor , productId];
 }
 
 class GetHomeBoutiqesEvent extends HomeEvent {

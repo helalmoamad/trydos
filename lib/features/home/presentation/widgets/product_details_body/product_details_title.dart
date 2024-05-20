@@ -35,7 +35,7 @@ class ProductDetailsTitle extends StatelessWidget {
       buildWhen: (p, c) =>
           p.getProductDetailWithoutSimilarRelatedProductsStatus !=
               c.getProductDetailWithoutSimilarRelatedProductsStatus ||
-          p.currentSelectedColor != c.currentSelectedColor,
+          p.currentSelectedColorForEveryProduct != c.currentSelectedColorForEveryProduct,
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

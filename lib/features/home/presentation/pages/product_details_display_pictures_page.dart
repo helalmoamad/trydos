@@ -49,7 +49,6 @@ class _ProductDetailsDisplayPicturesPageState
                       child: ProductDetailsImageWidget(
                         height: 0.6.sh,
                         width: 1.sw,
-                        imageFit: BoxFit.fill,
                         imageUrl: widget.images[selectedIndex],
                       ),
                     ),
@@ -81,7 +80,6 @@ class _ProductDetailsDisplayPicturesPageState
                                         borderColor: index == selectedIndex
                                             ? Color(0xff388CFF)
                                             : null,
-                                        imageFit: BoxFit.fill,
                                         imageUrl: widget.images[index],
                                       ),
                                     );

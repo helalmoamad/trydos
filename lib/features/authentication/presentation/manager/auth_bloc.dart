@@ -452,9 +452,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       isFailedTheFirstTime.remove('GetUserCountryEvent');
 
-      _prefsRepository.setCountryName(countries
+      _prefsRepository.setCountryIso(countries
           .firstWhere((element) => element.code == r.countryCode)
-          .name);
+          .code);
     });
   }
 
