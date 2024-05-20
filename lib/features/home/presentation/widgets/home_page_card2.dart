@@ -24,6 +24,7 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 
 import '../../../../service/language_service.dart';
 import '../../../app/my_text_widget.dart';
+import '../../../app/svg_network_widget.dart';
 
 class HomePageCard2 extends cupertino.StatefulWidget {
   HomePageCard2(
@@ -31,12 +32,14 @@ class HomePageCard2 extends cupertino.StatefulWidget {
 
   final bool withSlidingImages;
   final Boutique boutniqe;
+
   @override
   cupertino.State<HomePageCard2> createState() => _HomePageCard2State();
 }
 
 class _HomePageCard2State extends cupertino.State<HomePageCard2> {
   final ValueNotifier<int> resizeItems = ValueNotifier(-1);
+  final ValueNotifier<int> changeBackgroundBlurImage = ValueNotifier(0);
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   late AutoScrollController autoScrollController;
   late ScrollController scrollController;
@@ -53,6 +56,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
       alignment: Alignment.bottomCenter,
       children: [
         InkWell(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           onTap: () async {
             await FirebaseAnalytics.instance
                 .logEvent(name: 'button_clicked', parameters: {
@@ -81,8 +86,17 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 ),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
-                    child:
-                    Image.asset(AppAssets.halloweenJpg, fit: BoxFit.cover)),
+                    child: ValueListenableBuilder<int>(
+                        valueListenable: changeBackgroundBlurImage,
+                        builder: (context, index, _) {
+                          return MyCachedNetworkImage(
+                            imageFit: cupertino.BoxFit.cover,
+                            imageUrl: widget.boutniqe.banners![index],
+                            width: 1.sw,
+                            radius: 15,
+                            height: 235,
+                          );
+                        })),
               ),
               Positioned.fill(
                 child: ClipRRect(
@@ -113,53 +127,52 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
               ),
               Positioned.fill(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 25.w, top: 15),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            widget.boutniqe.icon != null
-                                ? MyCachedNetworkImage(
-                              height: 20,
-                              imageFit: cupertino.BoxFit.cover,
-                              imageUrl: widget.boutniqe.icon!,
-                              width: 40,
-                            )
-                                : MyTextWidget(widget.boutniqe.name!,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 25.w, top: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        widget.boutniqe.icon != null
+                            ? SvgNetworkWidget(
+                                svgUrl: widget.boutniqe.icon!,
+                                height: 20,
+                                width: 40,
+                              )
+                            : MyTextWidget(widget.boutniqe.name!,
                                 style: context.textTheme.caption?.rd.copyWith(
                                   fontSize: 16,
                                   color: ui.Color.fromARGB(255, 15, 15, 15),
                                 )),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Html(
-                              shrinkWrap: true,
-                              data: widget.boutniqe.description!,
-                              style: {
-                                "body": Style(margin: Margins.all(0)),
-                                "p": Style(
-                                  maxLines: 1,
-                                  margin: Margins.all(0),
-                                ),
-                              },
-                            ),
-                            if (!widget.withSlidingImages)
-                              SizedBox(
-                                height: 10,
-                              ),
-                          ],
+                        SizedBox(
+                          height: 5,
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            left: widget.withSlidingImages ? 0 : 10,
-                            right: widget.withSlidingImages ? 0 : 10),
-                        child: widget.withSlidingImages
-                            ? cupertino.Container(
-                          //color: Colors.red,
+                        Html(
+                          shrinkWrap: true,
+                          data: widget.boutniqe.description!,
+                          style: {
+                            "body": Style(margin: Margins.all(0)),
+                            "p": Style(
+                              maxLines: 1,
+                              margin: Margins.all(0),
+                            ),
+                          },
+                        ),
+                        if (!widget.withSlidingImages)
+                          SizedBox(
+                            height: 10,
+                          ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: widget.withSlidingImages ? 0 : 10,
+                        right: widget.withSlidingImages ? 0 : 10),
+                    child: widget.withSlidingImages
+                        ? cupertino.Container(
+                            //color: Colors.red,
                             child: CarouselSlider.builder(
                                 itemCount: widget.boutniqe.banners!.length,
                                 itemBuilder: (context, index, _) {
@@ -173,7 +186,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                           width: 1.sw,
                                           decoration: BoxDecoration(
                                             borderRadius:
-                                            BorderRadius.circular(15.0),
+                                                BorderRadius.circular(15.0),
                                             border: Border.all(
                                                 width: 0.5,
                                                 color: const Color(0xfffafafa)),
@@ -187,7 +200,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                           ),
                                           child: ClipRRect(
                                               borderRadius:
-                                              BorderRadius.circular(15),
+                                                  BorderRadius.circular(15),
                                               child: MyCachedNetworkImage(
                                                 imageUrl: widget
                                                     .boutniqe.banners![index],
@@ -201,7 +214,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                           width: 1.sw,
                                           decoration: BoxDecoration(
                                             borderRadius:
-                                            BorderRadius.circular(15.0),
+                                                BorderRadius.circular(15.0),
                                             boxShadow: [
                                               BoxShadow(
                                                   color: Colors.white
@@ -218,56 +231,59 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 },
                                 options: CarouselOptions(
                                   initialPage: 0,
+                                  onPageChanged: (int index, _) {
+                                    changeBackgroundBlurImage.value = index;
+                                  },
                                   height: 155,
                                   enableInfiniteScroll: false,
                                   viewportFraction: 0.95,
                                 )))
-                            : Stack(
-                          children: [
-                            Container(
-                              height: 135,
-                              width: 1.sw,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15.0),
-                                border: Border.all(
-                                    width: 0.5,
-                                    color: const Color(0xfffafafa)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0x33000000),
-                                    offset: Offset(0, 3),
-                                    blurRadius: 10,
-                                  ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: MyCachedNetworkImage(
-                                    imageUrl: widget.boutniqe.banners![0],
-                                    imageFit: BoxFit.cover,
-                                    width: 1.sw,
-                                    height: 135,
-                                  )),
-                            ),
-                            Container(
-                              height: 135,
-                              width: 1.sw,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.white.withOpacity(0.7),
+                        : Stack(
+                            children: [
+                              Container(
+                                height: 135,
+                                width: 1.sw,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  border: Border.all(
+                                      width: 0.5,
+                                      color: const Color(0xfffafafa)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0x33000000),
                                       offset: Offset(0, 3),
-                                      blurRadius: 6,
-                                      inset: true),
-                                ],
+                                      blurRadius: 10,
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: MyCachedNetworkImage(
+                                      imageUrl: widget.boutniqe.banners![0],
+                                      imageFit: BoxFit.cover,
+                                      width: 1.sw,
+                                      height: 135,
+                                    )),
                               ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  )),
+                              Container(
+                                height: 135,
+                                width: 1.sw,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.white.withOpacity(0.7),
+                                        offset: Offset(0, 3),
+                                        blurRadius: 6,
+                                        inset: true),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                  )
+                ],
+              )),
               Positioned(
                 child: cupertino.Container(
                   width: 60,
@@ -276,28 +292,28 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     separatorBuilder: (context, index) => 13.horizontalSpace,
                     shrinkWrap: true,
                     scrollDirection: cupertino.Axis.horizontal,
-                    itemBuilder: (context, index) => InkWell(
-                      onTap: () {
-                        HelperFunctions.slidingNavigation(
-                            context,
-                            ProductListingPage(
-                              boutiqueSlug: widget.boutniqe.slug!,
-                              category: widget
-                                  .boutniqe
-                                  .mainCategoriesForProductIds![index]
-                                  .categorySlug,
-                            ));
-                      },
-                      child: MyCachedNetworkImage(
-                        imageFit: cupertino.BoxFit.cover,
-                        imageUrl: widget.boutniqe
-                            .mainCategoriesForProductIds![index].categoryIcon!,
-                        width: 12,
-                        height: 12,
-                      ),
-                    ),
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                          onTap: () {
+                            HelperFunctions.slidingNavigation(
+                                context,
+                                ProductListingPage(
+                                  boutiqueSlug: widget.boutniqe.slug!,
+                                  category: widget
+                                      .boutniqe
+                                      .mainCategoriesForProductIds![index]
+                                      .categorySlug,
+                                ));
+                          },
+                          child: SvgNetworkWidget(
+                            svgUrl:widget.boutniqe.mainCategoriesForProductIds![index]
+                                .categoryIcon!,
+                            width: 12,
+                            height: 12,
+                          ));
+                    },
                     itemCount:
-                    widget.boutniqe.mainCategoriesForProductIds!.length,
+                        widget.boutniqe.mainCategoriesForProductIds!.length,
                   ),
                 ),
 
@@ -332,7 +348,14 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
               return GestureDetector(
                 onPanDown: (details) {
                   HapticFeedback.lightImpact();
-                  resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
+                  resizeItems.value = (details.globalPosition.dx -
+                          40 -
+                          (9 -
+                                  widget.boutniqe.childCategoriesForProductIds!
+                                      .length) /
+                              2 *
+                              (40.w - 5.w)) ~/
+                      35.w;
                 },
                 onPanCancel: () {
                   resizeItems.value = -1;
@@ -342,7 +365,14 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 },
                 onPanUpdate: (details) {
                   int prev = resizeItems.value;
-                  resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
+                  resizeItems.value = (details.globalPosition.dx -
+                          40 -
+                          (9 -
+                                  widget.boutniqe.childCategoriesForProductIds!
+                                      .length) /
+                              2 *
+                              (40.w - 5.w)) ~/
+                      35.w;
                   if (prev != resizeItems.value) {
                     HapticFeedback.lightImpact();
                   }
@@ -360,40 +390,46 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                         child: Stack(
                             alignment: Alignment.bottomCenter,
                             children: List.generate(
-                                min(9 , widget.boutniqe.childCategoriesForProductIds!
-                                    .length),
-                                    (index) => AnimatedPositioned(
-                                  left: (9 - widget.boutniqe.childCategoriesForProductIds!
-                                      .length) /2 * (40.w - 5.w) + (index * (40.w - 5.w) +
-                                      (focused != -1
-                                          ? index == (focused + 1)
-                                          ? 20.w
-                                          : index == focused
-                                          ? 5.w
-                                          : index > focused
-                                          ? 20.w
-                                          : 0
-                                          : 0)),
-                                  curve: Curves.fastEaseInToSlowEaseOut,
-                                  bottom: focused == index ? 35.w : 10.w,
-                                  duration: Duration(
-                                      milliseconds:
-                                      focused == index ? 150 : 10),
-                                  child: ProductItemCircle(
-                                    index: index,
-                                    isFocused: focused == index,
-                                    imageUrl: widget
-                                        .boutniqe
-                                        .childCategoriesForProductIds![
-                                    0]
-                                        .productThumbnail!,
-                                    name: widget
-                                        .boutniqe
-                                        .childCategoriesForProductIds![
-                                    0]
-                                        .categoryName!,
-                                  ),
-                                ))),
+                                min(
+                                    9,
+                                    widget.boutniqe
+                                        .childCategoriesForProductIds!.length),
+                                (index) => AnimatedPositioned(
+                                      left: (9 -
+                                                  widget
+                                                      .boutniqe
+                                                      .childCategoriesForProductIds!
+                                                      .length) /
+                                              2 *
+                                              (40.w - 5.w) +
+                                          (index * (40.w - 5.w) +
+                                              (focused != -1
+                                                  ? index == (focused + 1)
+                                                      ? 20.w
+                                                      : index == focused
+                                                          ? 5.w
+                                                          : index > focused
+                                                              ? 20.w
+                                                              : 0
+                                                  : 0)),
+                                      curve: Curves.fastEaseInToSlowEaseOut,
+                                      bottom: focused == index ? 35.w : 10.w,
+                                      duration: Duration(
+                                          milliseconds:
+                                              focused == index ? 150 : 10),
+                                      child: ProductItemCircle(
+                                        index: index,
+                                        isFocused: focused == index,
+                                        imageUrl: widget
+                                            .boutniqe
+                                            .childCategoriesForProductIds![0]
+                                            .productThumbnail!,
+                                        name: widget
+                                            .boutniqe
+                                            .childCategoriesForProductIds![0]
+                                            .categoryName!,
+                                      ),
+                                    ))),
                       ),
                     ),
                     SizedBox(
@@ -411,10 +447,11 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
 class ProductItemCircle extends StatelessWidget {
   const ProductItemCircle(
       {required this.index,
-        required this.isFocused,
-        super.key,
-        required this.imageUrl,
-        required this.name});
+      required this.isFocused,
+      super.key,
+      required this.imageUrl,
+      required this.name});
+
   final String imageUrl;
   final int index;
   final String name;
@@ -484,8 +521,7 @@ class ProductItemCircle extends StatelessWidget {
                           imageUrl: imageUrl,
                           width: 40.w,
                           imageFit: cupertino.BoxFit.cover,
-                          height: 40.w)
-                  ),
+                          height: 40.w)),
                 ),
                 Container(
                   height: 40.w,
@@ -503,33 +539,33 @@ class ProductItemCircle extends StatelessWidget {
                 ),
                 index == 8
                     ? Container(
-                  height: 40.w,
-                  width: 40.w,
-                  decoration: BoxDecoration(
-                    color: const Color(0x98000000),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0x29000000),
-                        offset: Offset(0, 3),
-                        blurRadius: 3,
-                      ),
-                      BoxShadow(
-                        color: Colors.white.withOpacity(0.5),
-                        inset: true,
-                        offset: Offset(0, 4),
-                        blurRadius: 6,
-                      ),
-                    ],
-                  ),
-                )
+                        height: 40.w,
+                        width: 40.w,
+                        decoration: BoxDecoration(
+                          color: const Color(0x98000000),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0x29000000),
+                              offset: Offset(0, 3),
+                              blurRadius: 3,
+                            ),
+                            BoxShadow(
+                              color: Colors.white.withOpacity(0.5),
+                              inset: true,
+                              offset: Offset(0, 4),
+                              blurRadius: 6,
+                            ),
+                          ],
+                        ),
+                      )
                     : const SizedBox.shrink(),
                 index == 8
                     ? MyTextWidget(
-                  'More',
-                  style: context.textTheme.overline?.rq
-                      .copyWith(color: Colors.white),
-                )
+                        'More',
+                        style: context.textTheme.overline?.rq
+                            .copyWith(color: Colors.white),
+                      )
                     : const SizedBox.shrink(),
               ],
             ),

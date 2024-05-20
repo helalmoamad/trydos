@@ -34,8 +34,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                   CollectionStoryModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      currentSelectedColor:
-          (json['currentSelectedColor'] as num?)?.toInt() ?? 0,
+      currentSelectedColorForEveryProduct:
+          (json['currentSelectedColorForEveryProduct'] as Map<String, dynamic>?)
+                  ?.map(
+                (k, e) => MapEntry(k, (e as num).toInt()),
+              ) ??
+              const {},
       getStoriesForProductStatus: $enumDecodeNullable(
               _$GetStoriesForProductStatusEnumMap,
               json['getStoriesForProductStatus']) ??
@@ -86,7 +90,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
 Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getStartingSettingsStatus': _$GetStartingSettingsStatusEnumMap[
           instance.getStartingSettingsStatus]!,
-      'currentSelectedColor': instance.currentSelectedColor,
+      'currentSelectedColorForEveryProduct':
+          instance.currentSelectedColorForEveryProduct,
       'getMainCategoriesStatus':
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
       'selectedCollection': instance.selectedCollection,

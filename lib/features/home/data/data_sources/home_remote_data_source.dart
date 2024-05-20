@@ -10,6 +10,7 @@ import '../../../../common/constant/configuration/market_url_routes.dart';
 import '../../../../common/constant/configuration/stories_url_routes.dart';
 import '../../../../core/api/client_config.dart';
 import '../../../../core/api/methods/detect_server.dart';
+import '../../../../core/api/methods/post.dart';
 import '../models/get_product_detail_without_related_products_model.dart';
 import '../models/get_story_for_product_model.dart';
 
@@ -47,12 +48,12 @@ class HomeRemoteDatasource {
 
   Future<GetProductListingWithoutFiltersModel> getProductsWithoutFilters(
       Map<String, dynamic> params) {
-    GetClient<GetProductListingWithoutFiltersModel> getProductsWithoutFilters =
-        GetClient<GetProductListingWithoutFiltersModel>(
+    PostClient<GetProductListingWithoutFiltersModel> getProductsWithoutFilters =
+    PostClient<GetProductListingWithoutFiltersModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductListingWithoutFiltersModel>(
         endpoint: MarketEndPoints.getProductListingWithoutFiltersEP,
-        queryParameters: params,
+        data: params,
         response: ResponseValue<GetProductListingWithoutFiltersModel>(
             fromJson: (response) =>
                 GetProductListingWithoutFiltersModel.fromJson(response)),

@@ -42,7 +42,7 @@ class HomeState {
     this.currentPage = 0,
     this.selectedCollection,
     this.storiesCollections = const [],
-    this.currentSelectedColor = 0,
+    this.currentSelectedColorForEveryProduct = const {},
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
     this.getProductDetailWithoutRelatedProductsModel,
@@ -54,7 +54,7 @@ class HomeState {
   });
 
   final GetStartingSettingsStatus getStartingSettingsStatus;
-  int currentSelectedColor = 0;
+  final Map<String , int> currentSelectedColorForEveryProduct ;
   final GetMainCategoriesStatus getMainCategoriesStatus;
   int? selectedCollection;
   int currentPage;
@@ -95,12 +95,12 @@ class HomeState {
         final GetProductsWithoutFiltersStatus? getProductsWithoutFiltersStatus,
         final GetProductDetailWithoutSimilarRelatedProductsStatus?
         getProductDetailWithoutSimilarRelatedProductsStatus,
-        int? currentSelectedColor,
+        final Map<String , int>? currentSelectedColorForEveryProduct,
         int? currentPage,
         final GetProductListingWithoutFiltersModel?
         getProductListingWithoutFiltersModel}) {
     return HomeState(
-        currentSelectedColor: currentSelectedColor ?? this.currentSelectedColor,
+        currentSelectedColorForEveryProduct: currentSelectedColorForEveryProduct ?? this.currentSelectedColorForEveryProduct,
         getStoriesForProductStatus:
         getStoriesForProductStatus ?? this.getStoriesForProductStatus,
         selectedCollection: selectedCollection ?? this.selectedCollection,

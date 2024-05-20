@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import 'dart:ui' as ui;
@@ -14,16 +16,27 @@ class ProductItem extends StatefulWidget {
       required this.slidingModeItem,
       required this.itemIndex,
       required this.productItem});
+
   final void Function(int, int) setThisEnabled;
   final Tuple2<int, int> slidingModeItem;
   final productListingModel.Product productItem;
   final int itemIndex;
+
   @override
   State<ProductItem> createState() => _ProductItemState();
 }
 
 class _ProductItemState extends State<ProductItem> {
   final PageController pageController = PageController();
+  late final ValueNotifier<int> currentChosenColor;
+
+  @override
+  void initState() {
+    currentChosenColor =
+        ValueNotifier((widget.productItem.syncColorImages?.length ?? 0) ~/ 2);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -45,9 +58,23 @@ class _ProductItemState extends State<ProductItem> {
             ),
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(15),
-                child: Image.asset(
-                    'assets/product_listing_background_blur_image.png',
-                    fit: BoxFit.cover)),
+                child: ValueListenableBuilder<int>(
+                    valueListenable: currentChosenColor,
+                    builder: (context, index, _) {
+                      return widget.productItem.syncColorImages.isNullOrEmpty ||
+                              widget.productItem.syncColorImages![index].images
+                                  .isNullOrEmpty
+                          ? Image.asset(
+                              'assets/product_listing_background_blur_image.png',
+                              fit: BoxFit.cover)
+                          : MyCachedNetworkImage(
+                              imageUrl: widget.productItem
+                                  .syncColorImages![index].images![0],
+                              height: 350,
+                              width: 200.w,
+                              imageFit: BoxFit.cover,
+                            );
+                    })),
           ),
           Positioned.fill(
             child: ClipRRect(
@@ -79,6 +106,7 @@ class _ProductItemState extends State<ProductItem> {
           ProductListing3DSlider(
               productItem: widget.productItem,
               slidingModeItem: widget.slidingModeItem,
+              currentChosenColor : currentChosenColor,
               itemIndex: widget.itemIndex,
               setThisEnabled: widget.setThisEnabled),
         ]);

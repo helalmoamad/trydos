@@ -226,13 +226,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   //   await smartLook.start();
   // }
 
-
-
   _onAddCurrentSelectedColorEvent(
       AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
-    emit(state.copyWith(currentSelectedColor: event.currentSelectedColor));
+    Map<String, int> currentSelectedColorForEveryProduct =
+        Map.of(state.currentSelectedColorForEveryProduct);
+    currentSelectedColorForEveryProduct[event.productId] =
+        event.currentSelectedColor;
+    emit(state.copyWith(
+        currentSelectedColorForEveryProduct:
+            currentSelectedColorForEveryProduct));
   }
-
 
   _onStorySelectedEvent(StorySelectEvent event, Emitter<HomeState> emit) async {
     //todo make the story seen when he press to show it
@@ -343,8 +346,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
 
-
- /* Map<String, PaginationModel<HomeSectionDataObject>>
+  /* Map<String, PaginationModel<HomeSectionDataObject>>
         getHomeSectionsPaginationObject =
         Map.of(state.getHomeSectionsPaginationObject);
     if (getHomeSectionsPaginationObject[event.categorySlug] == null) {
@@ -405,9 +407,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
   */
-
-
-
 
   FutureOr<void> _onGetProductsWithoutFiltersEvent(
       GetProductsWithoutFiltersEvent event, Emitter<HomeState> emit) async {
@@ -478,10 +477,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       apisMustNotToRequest.add('GetProductDatailsWithoutRelatedProductsEvent');
       isFailedTheFirstTime
           .remove('GetProductDatailsWithoutRelatedProductsEvent');
-      Map<String , GetProductDetailWithoutRelatedProductsModel> newCached = Map.of(state.cachedProductWithoutRelatedProductsModel);
+      Map<String, GetProductDetailWithoutRelatedProductsModel> newCached =
+          Map.of(state.cachedProductWithoutRelatedProductsModel);
       newCached[event.productId!] = r;
       emit(state.copyWith(
-        cachedProductWithoutRelatedProductsModel: newCached,
+          cachedProductWithoutRelatedProductsModel: newCached,
           getProductDetailWithoutSimilarRelatedProductsStatus:
               GetProductDetailWithoutSimilarRelatedProductsStatus.success));
     });

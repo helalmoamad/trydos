@@ -50,8 +50,8 @@ class SharedPreferencePage extends StatelessWidget {
             ),
             10.verticalSpace,
             SharedPreferenceCard(
-              title: 'country name',
-              value: prefsRepository.countryName.toString(),
+              title: 'country iso',
+              value: prefsRepository.countryIso.toString(),
             ),
             10.verticalSpace,
             SharedPreferenceCard(
