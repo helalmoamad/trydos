@@ -37,8 +37,9 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    homeBloc.add(GetHomeBoutiqesEvent(offset: "1", getWithPagination: false));
     homeBloc.add(GetMainCategoriesEvent());
+    homeBloc.add(GetHomeBoutiqesEvent(offset: "1", categorySlug: 'Men_36'));
+
     BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
     checkAndNavigationCallingPage(context, fromTerminated: true,
         whereToNavigationAfterCheck: () {

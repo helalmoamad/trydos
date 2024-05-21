@@ -111,8 +111,8 @@ class HomeRemoteDatasource {
         GetClient<GetHomeBoutiquesModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetHomeBoutiquesModel>(
-        endpoint: MarketEndPoints.getHomeBoutiqesEP,
-        queryParameters: params,
+        endpoint: MarketEndPoints.getHomeBoutiqesEP(params['category_Slug']),
+        queryParameters: params['queryParameters'],
         response: ResponseValue<GetHomeBoutiquesModel>(
             fromJson: (response) => GetHomeBoutiquesModel.fromJson(response)),
       ),

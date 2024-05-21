@@ -30,7 +30,8 @@ abstract class MarketEndPoints {
   static final getCustomerInfoEP = 'info'.customerScope();
   static final getStartingSettingsEP = 'startingSettings'.homeScope();
   static final getHomeSectionsEP = 'home_sections'.homeScope();
-  static final getHomeBoutiqesEP = 'boutiques'.homeScope();
+  static String getHomeBoutiqesEP(String category_Slug) =>
+      'boutiquesByCategory/$category_Slug'.homeScope();
 
   static final getMainCategoriesEP = 'mainCategories'.homeScope();
   static final getProductListingWithoutFiltersEP =

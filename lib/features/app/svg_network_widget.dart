@@ -12,18 +12,6 @@ class SvgNetworkWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // List<String> list;
-    // String url = '';
-    // list = svgUrl.split('upload');
-    // url = list[0] + 'upload/c_scale';
-    // if (height != null) {
-    //   url += 'h_${2 * height!.toInt()}';
-    // }
-    // if (width != null) {
-    //   url += 'w_${2 * width!.toInt()}';
-    // }
-    // url += list[1];
-    print('svgUrl $svgUrl');
     return SvgPicture.network(
       svgUrl,
       height: height,

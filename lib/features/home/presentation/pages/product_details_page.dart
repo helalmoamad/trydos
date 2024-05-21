@@ -62,7 +62,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
     homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
         productId: widget.productItem.id.toString()));
-
+    homeBloc.add(GetStoryForProductEvent());
     super.initState();
   }
 
