@@ -34,12 +34,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                   CollectionStoryModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      currentSelectedColorForEveryProduct:
-          (json['currentSelectedColorForEveryProduct'] as Map<String, dynamic>?)
-                  ?.map(
-                (k, e) => MapEntry(k, (e as num).toInt()),
-              ) ??
-              const {},
       getStoriesForProductStatus: $enumDecodeNullable(
               _$GetStoriesForProductStatusEnumMap,
               json['getStoriesForProductStatus']) ??
@@ -68,6 +62,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                 (k, e) => MapEntry(int.parse(k), (e as num?)?.toInt()),
               ) ??
               const {},
+      currentSelectedColorForEveryProduct:
+          (json['currentSelectedColorForEveryProduct'] as Map<String, dynamic>?)
+                  ?.map(
+                (k, e) => MapEntry(k, (e as num).toInt()),
+              ) ??
+              const {},
       cachedProductWithoutRelatedProductsModel:
           (json['cachedProductWithoutRelatedProductsModel']
                       as Map<String, dynamic>?)
@@ -78,13 +78,18 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                         e as Map<String, dynamic>)),
               ) ??
               const {},
-      getHomeBoutiqesPaginationObject:
-          json['getHomeBoutiqesPaginationObject'] == null
-              ? null
-              : PaginationModel<Boutique>.fromJson(
-                  json['getHomeBoutiqesPaginationObject']
-                      as Map<String, dynamic>,
-                  (value) => Boutique.fromJson(value as Map<String, dynamic>)),
+      getHomeBoutiquesPaginationObjectByMainCategory:
+          (json['getHomeBoutiquesPaginationObjectByMainCategory']
+                      as Map<String, dynamic>?)
+                  ?.map(
+                (k, e) => MapEntry(
+                    k,
+                    PaginationModel<Boutique>.fromJson(
+                        e as Map<String, dynamic>,
+                        (value) =>
+                            Boutique.fromJson(value as Map<String, dynamic>))),
+              ) ??
+              const {},
     );
 
 Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
@@ -101,10 +106,13 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               instance.getProductDetailWithoutSimilarRelatedProductsStatus]!,
       'getStoriesForProductStatus': _$GetStoriesForProductStatusEnumMap[
           instance.getStoriesForProductStatus]!,
-      'getHomeBoutiqesPaginationObject':
-          instance.getHomeBoutiqesPaginationObject?.toJson(
-        (value) => value.toJson(),
-      ),
+      'getHomeBoutiquesPaginationObjectByMainCategory': instance
+          .getHomeBoutiquesPaginationObjectByMainCategory
+          .map((k, e) => MapEntry(
+              k,
+              e.toJson(
+                (value) => value.toJson(),
+              ))),
       'selectedVideoStatus':
           _$SelectedVideoStatusEnumMap[instance.selectedVideoStatus]!,
       'storiesCollections':

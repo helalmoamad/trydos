@@ -1,13 +1,13 @@
 // To parse this JSON data, do
 //
-//     final getHomeBoutiques = getHomeBoutiquesFromJson(jsonString);
+//     final getHomeBoutiquesModel = getHomeBoutiquesModelFromJson(jsonString);
 
 import 'dart:convert';
 
-GetHomeBoutiquesModel getHomeBoutiquesFromJson(String str) =>
+GetHomeBoutiquesModel getHomeBoutiquesModelFromJson(String str) =>
     GetHomeBoutiquesModel.fromJson(json.decode(str));
 
-String getHomeBoutiquesToJson(GetHomeBoutiquesModel data) =>
+String getHomeBoutiquesModelToJson(GetHomeBoutiquesModel data) =>
     json.encode(data.toJson());
 
 class GetHomeBoutiquesModel {
@@ -182,6 +182,7 @@ class ChildCategoriesForProductId {
   final String? categorySlug;
   final String? categoryName;
   final String? productName;
+  final int? countProducts;
   final String? productThumbnail;
 
   ChildCategoriesForProductId({
@@ -189,6 +190,7 @@ class ChildCategoriesForProductId {
     this.categorySlug,
     this.categoryName,
     this.productName,
+    this.countProducts,
     this.productThumbnail,
   });
 
@@ -197,6 +199,7 @@ class ChildCategoriesForProductId {
     String? categorySlug,
     String? categoryName,
     String? productName,
+    int? countProducts,
     String? productThumbnail,
   }) =>
       ChildCategoriesForProductId(
@@ -204,6 +207,7 @@ class ChildCategoriesForProductId {
         categorySlug: categorySlug ?? this.categorySlug,
         categoryName: categoryName ?? this.categoryName,
         productName: productName ?? this.productName,
+        countProducts: countProducts ?? this.countProducts,
         productThumbnail: productThumbnail ?? this.productThumbnail,
       );
 
@@ -213,6 +217,7 @@ class ChildCategoriesForProductId {
         categorySlug: json["category_slug"],
         categoryName: json["category_name"],
         productName: json["product_name"],
+        countProducts: json["count_products"],
         productThumbnail: json["product_thumbnail"],
       );
 
@@ -221,6 +226,7 @@ class ChildCategoriesForProductId {
         "category_slug": categorySlug,
         "category_name": categoryName,
         "product_name": productName,
+        "count_products": countProducts,
         "product_thumbnail": productThumbnail,
       };
 }

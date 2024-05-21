@@ -233,6 +233,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                                               isFocused: focused == index,
                                               imageUrl: '',
                                               name: '',
+                                              countProducts: '',
                                             ),
                                           ))),
                             ),

@@ -120,7 +120,6 @@ class MyCachedNetworkImage extends StatelessWidget {
                     );
                   },
                   errorWidget: (context, url, error) {
-                    print('urlll $url');
                     if (enable) {
                       enable = false;
                       WidgetsBinding.instance.addPostFrameCallback((_) {

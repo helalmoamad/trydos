@@ -1965,10 +1965,10 @@ class MockPrefsRepository extends _i1.Mock implements _i16.PrefsRepository {
       ) as _i33.Future<bool>);
 
   @override
-  _i33.Future<bool> setCountryName(String? countryName) => (super.noSuchMethod(
+  _i33.Future<bool> setCountryIso(String? countryIso) => (super.noSuchMethod(
         Invocation.method(
-          #setCountryName,
-          [countryName],
+          #setCountryIso,
+          [countryIso],
         ),
         returnValue: _i33.Future<bool>.value(false),
       ) as _i33.Future<bool>);
@@ -1979,6 +1979,15 @@ class MockPrefsRepository extends _i1.Mock implements _i16.PrefsRepository {
         Invocation.method(
           #setVerificationId,
           [verificationId],
+        ),
+        returnValue: _i33.Future<bool>.value(false),
+      ) as _i33.Future<bool>);
+
+  @override
+  _i33.Future<bool> setSessionId(String? sessionId) => (super.noSuchMethod(
+        Invocation.method(
+          #setSessionId,
+          [sessionId],
         ),
         returnValue: _i33.Future<bool>.value(false),
       ) as _i33.Future<bool>);
@@ -2015,6 +2024,15 @@ class MockPrefsRepository extends _i1.Mock implements _i16.PrefsRepository {
         Invocation.method(
           #setStoriesToken,
           [token],
+        ),
+        returnValue: _i33.Future<bool>.value(false),
+      ) as _i33.Future<bool>);
+
+  @override
+  _i33.Future<bool> setServerTime(DateTime? serverTime) => (super.noSuchMethod(
+        Invocation.method(
+          #setServerTime,
+          [serverTime],
         ),
         returnValue: _i33.Future<bool>.value(false),
       ) as _i33.Future<bool>);
@@ -2159,6 +2177,16 @@ class MockPrefsRepository extends _i1.Mock implements _i16.PrefsRepository {
         Invocation.method(
           #setMyMarketName,
           [name],
+        ),
+        returnValue: _i33.Future<bool>.value(false),
+      ) as _i33.Future<bool>);
+
+  @override
+  _i33.Future<bool> setCurrentEvent(String? currentEvent) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setCurrentEvent,
+          [currentEvent],
         ),
         returnValue: _i33.Future<bool>.value(false),
       ) as _i33.Future<bool>);

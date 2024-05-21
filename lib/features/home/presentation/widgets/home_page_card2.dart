@@ -21,6 +21,7 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
+import 'package:trydos/service/language_service.dart';
 
 import '../../../../service/language_service.dart';
 import '../../../app/my_text_widget.dart';
@@ -61,10 +62,24 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
           onTap: () async {
             await FirebaseAnalytics.instance
                 .logEvent(name: 'button_clicked', parameters: {
-              'user_id': prefsRepository.myMarketId.toString(),
+              "time_stamp": DateTime.now()
+                  .toUtc()
+                  .add(Duration(
+                      minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
+                  .toString(),
+              "previous_event_button_name":
+                  GetIt.I<PrefsRepository>().currentEvent ?? " ",
+              "device_language": LanguageService.languageCode == 'ar'
+                  ? 'ae'
+                  : LanguageService.languageCode,
+              "country_name": GetIt.I<PrefsRepository>().countryIso,
+              'userID': prefsRepository.myMarketId.toString(),
               'user_name': prefsRepository.myMarketName.toString(),
-              'clicked_button_name': 'i hate you Ahmad',
+              'clicked_button_name': 'i love you Ahmad',
+              "session_id": GetIt.I<PrefsRepository>().sessionId,
             });
+            await GetIt.I<PrefsRepository>().setCurrentEvent(
+                "i loveddsssssssssssssssssssssssssssssssssssssssss you Ahmad in past");
             HelperFunctions.slidingNavigation(context,
                 ProductListingPage(boutiqueSlug: widget.boutniqe.slug!));
           },
@@ -306,7 +321,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 ));
                           },
                           child: SvgNetworkWidget(
-                            svgUrl:widget.boutniqe.mainCategoriesForProductIds![index]
+                            svgUrl: widget
+                                .boutniqe
+                                .mainCategoriesForProductIds![index]
                                 .categoryIcon!,
                             width: 12,
                             height: 12,
@@ -347,6 +364,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             builder: (context, focused, _) {
               return GestureDetector(
                 onPanDown: (details) {
+                  print(focused);
                   HapticFeedback.lightImpact();
                   resizeItems.value = (details.globalPosition.dx -
                           40 -
@@ -422,12 +440,20 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                         isFocused: focused == index,
                                         imageUrl: widget
                                             .boutniqe
-                                            .childCategoriesForProductIds![0]
+                                            .childCategoriesForProductIds![
+                                                index]
                                             .productThumbnail!,
                                         name: widget
                                             .boutniqe
-                                            .childCategoriesForProductIds![0]
+                                            .childCategoriesForProductIds![
+                                                index]
                                             .categoryName!,
+                                        countProducts: widget
+                                            .boutniqe
+                                            .childCategoriesForProductIds![
+                                                index]
+                                            .countProducts
+                                            .toString(),
                                       ),
                                     ))),
                       ),
@@ -449,11 +475,13 @@ class ProductItemCircle extends StatelessWidget {
       {required this.index,
       required this.isFocused,
       super.key,
+      required this.countProducts,
       required this.imageUrl,
       required this.name});
 
   final String imageUrl;
   final int index;
+  final String countProducts;
   final String name;
   final bool isFocused;
 
@@ -485,7 +513,7 @@ class ProductItemCircle extends StatelessWidget {
                           height: 1.43),
                     ),
                     MyTextWidget(
-                      '1100',
+                      countProducts,
                       textAlign: TextAlign.center,
                       style: context.textTheme.caption?.rr.copyWith(
                           color: Color(0xff8E8E8E),

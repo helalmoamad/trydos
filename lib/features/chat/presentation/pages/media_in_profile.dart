@@ -103,6 +103,7 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
                   children: [
                     InkWell(
                       onTap: () {
+                     
                         GoRouter.of(context).pop();
                       },
                       child: Padding(
