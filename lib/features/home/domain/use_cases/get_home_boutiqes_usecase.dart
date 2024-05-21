@@ -28,8 +28,5 @@ class GetHomeBoutiqesParams {
     required this.categorySlug,
   });
 
-  Map<String, dynamic> get map => {
-        'category_Slug': categorySlug,
-        'queryParameters': {'offset': offset}
-      };
+  Map<String, dynamic> get map => {'slug': categorySlug, 'offset': offset};
 }

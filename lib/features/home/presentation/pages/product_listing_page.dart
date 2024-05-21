@@ -127,7 +127,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           child: MyTextWidget(LocaleKeys.try_again.tr())),
                     );
                   }
-                  if (state.getProductListingWithoutFiltersModel == null) {
+                  if (state.getProductListingWithoutFiltersModel ==
+                      GetProductsWithoutFiltersStatus.loading) {
                     return Center(
                       child: TrydosLoader(),
                     );
