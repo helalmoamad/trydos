@@ -33,12 +33,21 @@ class _SplashPageState extends State<SplashPage> {
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   late HomeBloc homeBloc;
   late AuthBloc authBloc;
-
+  late AppBloc appBloc;
   @override
   void initState() {
+    appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetMainCategoriesEvent());
-    homeBloc.add(GetHomeBoutiqesEvent(offset: "1", categorySlug: 'Men_36'));
+    appBloc.add(ChangeTab(0));
+    homeBloc.add(GetHomeBoutiqesEvent(
+        offset: "1",
+        categorySlug: GetIt.I<HomeBloc>()
+            .state
+            .mainCategoriesResponseModel!
+            .data!
+            .mainCategories![0]
+            .slug!));
 
     BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
     checkAndNavigationCallingPage(context, fromTerminated: true,

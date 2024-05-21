@@ -33,27 +33,26 @@ enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
 
 @JsonSerializable(explicitToJson: true)
 class HomeState {
-  HomeState(
-      {this.getProductDetailWithoutSimilarRelatedProductsStatus =
-          GetProductDetailWithoutSimilarRelatedProductsStatus.init,
-      this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
-      this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
-      this.getProductsWithoutFiltersStatus =
-          GetProductsWithoutFiltersStatus.init,
-      this.startingSetting,
-      this.currentPage = 0,
-      this.selectedCollection,
-      this.storiesCollections = const [],
-      this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
-      this.mainCategoriesResponseModel,
-      this.getProductDetailWithoutRelatedProductsModel,
-      this.getProductListingWithoutFiltersModel,
-      this.selectedVideoStatus = SelectedVideoStatus.init,
-      this.currentStoryInEachCollection = const {},
-      this.currentSelectedColorForEveryProduct = const {},
-      this.cachedProductWithoutRelatedProductsModel = const {},
-      this.getHomeBoutiquesPaginationObjectByMainCategory = const {},
-      });
+  HomeState({
+    this.getProductDetailWithoutSimilarRelatedProductsStatus =
+        GetProductDetailWithoutSimilarRelatedProductsStatus.init,
+    this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
+    this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
+    this.getProductsWithoutFiltersStatus = GetProductsWithoutFiltersStatus.init,
+    this.startingSetting,
+    this.currentPage = 0,
+    this.selectedCollection,
+    this.storiesCollections = const [],
+    this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
+    this.mainCategoriesResponseModel,
+    this.getProductDetailWithoutRelatedProductsModel,
+    this.getProductListingWithoutFiltersModel,
+    this.selectedVideoStatus = SelectedVideoStatus.init,
+    this.currentStoryInEachCollection = const {},
+    this.currentSelectedColorForEveryProduct = const {},
+    this.cachedProductWithoutRelatedProductsModel = const {},
+    this.getHomeBoutiquesPaginationObjectByMainCategory = const {},
+  });
 
   final GetStartingSettingsStatus getStartingSettingsStatus;
   final Map<String, int> currentSelectedColorForEveryProduct;
@@ -64,7 +63,8 @@ class HomeState {
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
   GetStoriesForProductStatus getStoriesForProductStatus;
-  final Map<String, PaginationModel<Boutique>> getHomeBoutiquesPaginationObjectByMainCategory;
+  final Map<String, PaginationModel<Boutique>>
+      getHomeBoutiquesPaginationObjectByMainCategory;
   SelectedVideoStatus selectedVideoStatus;
   List<CollectionStoryModel> storiesCollections;
   final GetProductsWithoutFiltersStatus getProductsWithoutFiltersStatus;
@@ -93,8 +93,9 @@ class HomeState {
       final StartingSetting? startingSetting,
       List<CollectionStoryModel>? storiesCollections,
       final MainCategoriesResponseModel? mainCategoriesResponseModel,
-        final Map<String, PaginationModel<Boutique>>? getHomeBoutiquesPaginationObjectByMainCategory,
-        final Map<String, GetProductDetailWithoutRelatedProductsModel>?
+      final Map<String, PaginationModel<Boutique>>?
+          getHomeBoutiquesPaginationObjectByMainCategory,
+      final Map<String, GetProductDetailWithoutRelatedProductsModel>?
           cachedProductWithoutRelatedProductsModel,
       SelectedVideoStatus? selectedVideoStatus,
       GetStoriesForProductStatus? getStoriesForProductStatus,
@@ -120,8 +121,9 @@ class HomeState {
         currentPage: currentPage ?? this.currentPage,
         getMainCategoriesStatus:
             getMainCategoriesStatus ?? this.getMainCategoriesStatus,
-        getHomeBoutiquesPaginationObjectByMainCategory: getHomeBoutiquesPaginationObjectByMainCategory ??
-            this.getHomeBoutiquesPaginationObjectByMainCategory,
+        getHomeBoutiquesPaginationObjectByMainCategory:
+            getHomeBoutiquesPaginationObjectByMainCategory ??
+                this.getHomeBoutiquesPaginationObjectByMainCategory,
         startingSetting: startingSetting ?? this.startingSetting,
         mainCategoriesResponseModel:
             mainCategoriesResponseModel ?? this.mainCategoriesResponseModel,

@@ -49,7 +49,7 @@ class HomeRemoteDatasource {
   Future<GetProductListingWithoutFiltersModel> getProductsWithoutFilters(
       Map<String, dynamic> params) {
     PostClient<GetProductListingWithoutFiltersModel> getProductsWithoutFilters =
-    PostClient<GetProductListingWithoutFiltersModel>(
+        PostClient<GetProductListingWithoutFiltersModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductListingWithoutFiltersModel>(
         endpoint: MarketEndPoints.getProductListingWithoutFiltersEP,
@@ -59,6 +59,7 @@ class HomeRemoteDatasource {
                 GetProductListingWithoutFiltersModel.fromJson(response)),
       ),
     );
+
     return getProductsWithoutFilters();
   }
 
@@ -107,16 +108,21 @@ class HomeRemoteDatasource {
   }*/
 
   Future<GetHomeBoutiquesModel> getHomeBoutiques(Map<String, dynamic> params) {
-    GetClient<GetHomeBoutiquesModel> getHomeSections =
-        GetClient<GetHomeBoutiquesModel>(
+    print(
+        "-----------------------00000000000000000---------------------------------------------------------------------------${params["slug"]}-----------------------------------");
+
+    PostClient<GetHomeBoutiquesModel> getHomeSections =
+        PostClient<GetHomeBoutiquesModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetHomeBoutiquesModel>(
-        endpoint: MarketEndPoints.getHomeBoutiqesEP(params['category_Slug']),
-        queryParameters: params['queryParameters'],
+        endpoint: MarketEndPoints.getHomeBoutiqesEP,
+        data: params,
         response: ResponseValue<GetHomeBoutiquesModel>(
             fromJson: (response) => GetHomeBoutiquesModel.fromJson(response)),
       ),
     );
+    print("----------------------------------");
+
     return getHomeSections();
   }
 }
