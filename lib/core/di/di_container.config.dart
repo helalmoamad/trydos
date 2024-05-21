@@ -14,8 +14,8 @@ import 'package:injectable/injectable.dart' as _i2;
 import 'package:logger/logger.dart' as _i12;
 import 'package:shared_preferences/shared_preferences.dart' as _i13;
 
-import '../../common/helper/firebase_analytics_sessions.dart' as _i15;
-import '../../features/app/blocs/app_bloc/app_bloc.dart' as _i16;
+import '../../common/helper/firebase_analytics_sessions.dart' as _i16;
+import '../../features/app/blocs/app_bloc/app_bloc.dart' as _i15;
 import '../../features/app/blocs/sensitive_connectivity/sensitive_connectivity_bloc.dart'
     as _i5;
 import '../../features/authentication/data/data_sources/auth_remote_datasource.dart'
@@ -174,8 +174,8 @@ Future<_i1.GetIt> $initGetIt(
     () => appModule.prefsRepository,
     preResolve: true,
   );
-  gh.lazySingleton<_i15.SessionManager>(() => _i15.SessionManager());
-  gh.lazySingleton<_i16.AppBloc>(() => _i16.AppBloc());
+  gh.lazySingleton<_i15.AppBloc>(() => _i15.AppBloc());
+  gh.lazySingleton<_i16.SessionManager>(() => _i16.SessionManager());
   gh.lazySingleton<_i17.StoryRepository>(
       () => _i18.StoryRepositoryImpl(gh<_i11.StoriesDataSource>()));
   gh.lazySingleton<_i19.HomeRepository>(

@@ -59,10 +59,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
     on<StorySelectEvent>(_onStorySelectedEvent);
-    on<ChangeCurrentCategorySlugEvent>(_changeCurrentSlugEvent);
     on<AddCurrentSelectedColorEvent>(_onAddCurrentSelectedColorEvent,
         transformer: throttleDroppable(throttleDuration));
-    on<GetHomeBoutiqesEvent>(_onGetHomeSectionsEvent,
+    on<GetHomeBoutiqesEvent>(_onGetHomeBoutiquesEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetStartingSettingsEvent>(_onGetStartingSettingsEvent,
         transformer: throttleDroppable(throttleDuration));
@@ -102,54 +101,62 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   //final Smartlook smartLook = Smartlook.instance;
 
-  FutureOr<void> _onGetHomeSectionsEvent(
+  FutureOr<void> _onGetHomeBoutiquesEvent(
       GetHomeBoutiqesEvent event, Emitter<HomeState> emit) async {
-    PaginationModel<Boutique>? getHomeBoutiqesPaginationObject =
-        state.getHomeBoutiqesPaginationObject;
-    if (getHomeBoutiqesPaginationObject == null) {
-      getHomeBoutiqesPaginationObject = PaginationModel<Boutique>.init();
+    Map<String, PaginationModel<Boutique>>
+    getHomeBoutiquesPaginationObjectByMainCategory =
+    Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
+    if (getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug] == null) {
+      getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug] =
+      const PaginationModel<Boutique>.init();
     }
-
-    getHomeBoutiqesPaginationObject = getHomeBoutiqesPaginationObject.copyWith(
-        paginationStatus: PaginationStatus.loading);
+    if ((!event.getWithPagination &&
+        (getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
+            .items
+            .isNotEmpty ||
+            getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
+                .paginationStatus ==
+                PaginationStatus.loading)) || (event.getWithPagination && getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!.hasReachedMax)) {
+      return;
+    }
+    getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug] =
+        getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
+            .copyWith(paginationStatus: PaginationStatus.loading);
     emit(state.copyWith(
-        getHomeBoutiqesPaginationObject: getHomeBoutiqesPaginationObject));
+        getHomeBoutiquesPaginationObjectByMainCategory: getHomeBoutiquesPaginationObjectByMainCategory));
+
     final response = await getHomeBoutiqesUseCase(GetHomeBoutiqesParams(
-        offset: event.offset, category_Slug: event.category_Slug));
+        offset: event.offset, categorySlug: event.categorySlug));
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetHomeSectionsEvent')) {
         add(GetHomeBoutiqesEvent(
             offset: event.offset,
             getWithPagination: event.getWithPagination,
-            category_Slug: event.category_Slug));
+            categorySlug: event.categorySlug));
         isFailedTheFirstTime.add('GetHomeBoutiqesEvent');
       }
-      getHomeBoutiqesPaginationObject = getHomeBoutiqesPaginationObject!
-          .copyWith(paginationStatus: PaginationStatus.failure);
+      getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug] =
+          getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
+              .copyWith(paginationStatus: PaginationStatus.failure);
       emit(state.copyWith(
-          getHomeBoutiqesPaginationObject: getHomeBoutiqesPaginationObject));
+          getHomeBoutiquesPaginationObjectByMainCategory: getHomeBoutiquesPaginationObjectByMainCategory));
     }, (r) {
-      print(
-          "-----------------------------------------------------------------------------------${r.data!.boutiques}------------------------");
       isFailedTheFirstTime.remove('GetHomeBoutiqesEvent');
       if (state.getMainCategoriesStatus == GetMainCategoriesStatus.success) {
         requestAPIAfterHome();
       }
-      getHomeBoutiqesPaginationObject = getHomeBoutiqesPaginationObject!
-          .copyWith(
+      getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug] =
+          getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!.copyWith(
               paginationStatus: PaginationStatus.success,
-              page: !event.getWithPagination
-                  ? 2
-                  : getHomeBoutiqesPaginationObject!.page + 1,
-              hasReachedMax: r.data!.boutiques!.length >= kPageSize,
-              items: (!event.getWithPagination)
-                  ? [...r.data!.boutiques!]
-                  : [
-                      ...getHomeBoutiqesPaginationObject!.items,
-                      ...r.data!.boutiques!
-                    ]);
+              page:
+              getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!.page + 1,
+              hasReachedMax: (r.data!.boutiques?.length ?? kPageSize) >= kPageSize,
+              items: [
+                ...getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!.items,
+                ...r.data!.boutiques ?? []
+              ]);
       emit(state.copyWith(
-          getHomeBoutiqesPaginationObject: getHomeBoutiqesPaginationObject));
+          getHomeBoutiquesPaginationObjectByMainCategory: getHomeBoutiquesPaginationObjectByMainCategory));
     });
   }
 
@@ -197,13 +204,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       apisMustNotToRequest.add('GetMainCategoriesEvent');
       isFailedTheFirstTime.remove('GetMainCategoriesEvent');
 
-      if (state.getHomeBoutiqesPaginationObject!.paginationStatus ==
+      if (state.getHomeBoutiquesPaginationObjectByMainCategory['Men_36']?.paginationStatus ==
           PaginationStatus.success) {
         requestAPIAfterHome();
       }
       emit(state.copyWith(
           mainCategoriesResponseModel: r,
-          currentCategorySlug: r.data!.mainCategories![0].slug,
           getMainCategoriesStatus: GetMainCategoriesStatus.success));
     });
   }
@@ -231,7 +237,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   _onAddCurrentSelectedColorEvent(
       AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
-    emit(state.copyWith(currentSelectedColor: event.currentSelectedColor));
+    Map<String, int> currentSelectedColorForEveryProduct =
+        Map.of(state.currentSelectedColorForEveryProduct);
+    currentSelectedColorForEveryProduct[event.productId] =
+        event.currentSelectedColor;
+    emit(state.copyWith(
+        currentSelectedColorForEveryProduct:
+            currentSelectedColorForEveryProduct));
   }
 
   _onStorySelectedEvent(StorySelectEvent event, Emitter<HomeState> emit) async {
@@ -500,8 +512,4 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         .toJson();
   }
 
-  _changeCurrentSlugEvent(
-      ChangeCurrentCategorySlugEvent event, Emitter<HomeState> emit) {
-    emit(state.copyWith(currentCategorySlug: event.changeCurrentSlug));
-  }
 }

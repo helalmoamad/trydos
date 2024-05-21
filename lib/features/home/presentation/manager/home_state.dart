@@ -9,6 +9,7 @@ import '../../data/models/get_product_listing_without_filters_model.dart';
 import '../../data/models/home_sections_response_model.dart';
 import '../../data/models/main_categories_response_model.dart';
 import '../../data/models/starting_settings_response_model.dart';
+
 part 'home_state.g.dart';
 
 enum GetStartingSettingsStatus { init, loading, success, failure }
@@ -43,27 +44,27 @@ class HomeState {
       this.currentPage = 0,
       this.selectedCollection,
       this.storiesCollections = const [],
-      this.currentSelectedColor = 0,
       this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
       this.mainCategoriesResponseModel,
       this.getProductDetailWithoutRelatedProductsModel,
       this.getProductListingWithoutFiltersModel,
       this.selectedVideoStatus = SelectedVideoStatus.init,
       this.currentStoryInEachCollection = const {},
+      this.currentSelectedColorForEveryProduct = const {},
       this.cachedProductWithoutRelatedProductsModel = const {},
-      this.getHomeBoutiqesPaginationObject,
-      this.currentCategorySlug = " "});
+      this.getHomeBoutiquesPaginationObjectByMainCategory = const {},
+      });
 
   final GetStartingSettingsStatus getStartingSettingsStatus;
-  int currentSelectedColor = 0;
+  final Map<String, int> currentSelectedColorForEveryProduct;
+
   final GetMainCategoriesStatus getMainCategoriesStatus;
   int? selectedCollection;
   int currentPage;
-  String currentCategorySlug = " ";
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
   GetStoriesForProductStatus getStoriesForProductStatus;
-  final PaginationModel<Boutique>? getHomeBoutiqesPaginationObject;
+  final Map<String, PaginationModel<Boutique>> getHomeBoutiquesPaginationObjectByMainCategory;
   SelectedVideoStatus selectedVideoStatus;
   List<CollectionStoryModel> storiesCollections;
   final GetProductsWithoutFiltersStatus getProductsWithoutFiltersStatus;
@@ -81,6 +82,7 @@ class HomeState {
       cachedProductWithoutRelatedProductsModel;
 
   get uploadStoryCloudinaryStatus => null;
+
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
@@ -88,25 +90,25 @@ class HomeState {
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
-      String? currentCategorySlug,
       final StartingSetting? startingSetting,
       List<CollectionStoryModel>? storiesCollections,
       final MainCategoriesResponseModel? mainCategoriesResponseModel,
-      final PaginationModel<Boutique>? getHomeBoutiqesPaginationObject,
-      final Map<String, GetProductDetailWithoutRelatedProductsModel>?
+        final Map<String, PaginationModel<Boutique>>? getHomeBoutiquesPaginationObjectByMainCategory,
+        final Map<String, GetProductDetailWithoutRelatedProductsModel>?
           cachedProductWithoutRelatedProductsModel,
       SelectedVideoStatus? selectedVideoStatus,
       GetStoriesForProductStatus? getStoriesForProductStatus,
       final GetProductsWithoutFiltersStatus? getProductsWithoutFiltersStatus,
       final GetProductDetailWithoutSimilarRelatedProductsStatus?
           getProductDetailWithoutSimilarRelatedProductsStatus,
-      int? currentSelectedColor,
+      final Map<String, int>? currentSelectedColorForEveryProduct,
       int? currentPage,
       final GetProductListingWithoutFiltersModel?
           getProductListingWithoutFiltersModel}) {
     return HomeState(
-        currentCategorySlug: currentCategorySlug ?? this.currentCategorySlug,
-        currentSelectedColor: currentSelectedColor ?? this.currentSelectedColor,
+        currentSelectedColorForEveryProduct:
+            currentSelectedColorForEveryProduct ??
+                this.currentSelectedColorForEveryProduct,
         getStoriesForProductStatus:
             getStoriesForProductStatus ?? this.getStoriesForProductStatus,
         selectedCollection: selectedCollection ?? this.selectedCollection,
@@ -118,8 +120,8 @@ class HomeState {
         currentPage: currentPage ?? this.currentPage,
         getMainCategoriesStatus:
             getMainCategoriesStatus ?? this.getMainCategoriesStatus,
-        getHomeBoutiqesPaginationObject: getHomeBoutiqesPaginationObject ??
-            this.getHomeBoutiqesPaginationObject,
+        getHomeBoutiquesPaginationObjectByMainCategory: getHomeBoutiquesPaginationObjectByMainCategory ??
+            this.getHomeBoutiquesPaginationObjectByMainCategory,
         startingSetting: startingSetting ?? this.startingSetting,
         mainCategoriesResponseModel:
             mainCategoriesResponseModel ?? this.mainCategoriesResponseModel,

@@ -50,19 +50,30 @@ class _HomePageState extends State<HomePage> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
 
     scrollController.addListener(() {
-      print(
-          "888888888888888888${scrollController.position.maxScrollExtent}88888888888888888888888888888884${scrollController.offset}");
+      int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
+      String selectedCategorySlug = homeBloc.state.mainCategoriesResponseModel
+              ?.data?.mainCategories?[currentSelectedMainCategoryTab].slug ??
+          '';
+      if (selectedCategorySlug == '') return;
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent *
               0.7 *
-              (homeBloc.state.getHomeBoutiqesPaginationObject!.page - 1))) {
+              (homeBloc
+                      .state
+                      .getHomeBoutiquesPaginationObjectByMainCategory[
+                          selectedCategorySlug]!
+                      .page -
+                  1))) {
         homeBloc.add(GetHomeBoutiqesEvent(
-            category_Slug: homeBloc.state.currentCategorySlug,
-            offset:
-                homeBloc.state.getHomeBoutiqesPaginationObject!.page.toString(),
+            categorySlug: selectedCategorySlug,
+            offset: homeBloc
+                .state
+                .getHomeBoutiquesPaginationObjectByMainCategory[
+                    selectedCategorySlug]!
+                .page
+                .toString(),
             getWithPagination: true));
       }
-
       if (scrollController.position.pixels <= 80) {
         debugPrint(scrollController.position.pixels.toString());
         appBloc.add(ShowOrHideBars(true));
@@ -168,37 +179,54 @@ class _HomePageState extends State<HomePage> {
                             ?.data
                             ?.mainCategories?[appState.tabIndex]
                             .slug;
+                        if(currentSlug == null ||
+                            ((homeState
+                                .getHomeBoutiquesPaginationObjectByMainCategory[
+                            currentSlug]
+                                ?.paginationStatus ==
+                                PaginationStatus.loading ||
+                                homeState
+                                    .getHomeBoutiquesPaginationObjectByMainCategory[
+                                currentSlug]
+                                    ?.paginationStatus ==
+                                    PaginationStatus.initial) &&
+                                (homeState
+                                    .getHomeBoutiquesPaginationObjectByMainCategory[
+                                currentSlug]
+                                    ?.items
+                                    .length ??
+                                    0) ==
+                                    0)){
+                          return sliverListSeparated(
+                              itemBuilder: (_, index) => Padding(
+                                padding: HWEdgeInsets.symmetric(horizontal: 15.w),
+                                child: TrydosShimmerLoading(
+                                    width: 1.sw,
+                                    logoTextWidth: 70.w,
+                                    height: 235,
+                                    logoTextHeight: 20)
+                            //HomePageCard(showWhite: index % 2 == 0),
+                          ),
+                        separator: SizedBox(
+                        height: 20,
+                        ),
+                        childCount: 10
+                        );
+                        }
                         return sliverListSeparated(
                           itemBuilder: (_, index) => Padding(
                               padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                              child: currentSlug == null ||
-                                      ((homeState.getHomeBoutiqesPaginationObject
-                                                      ?.paginationStatus ==
-                                                  PaginationStatus.loading ||
-                                              homeState
-                                                      .getHomeBoutiqesPaginationObject
-                                                      ?.paginationStatus ==
-                                                  PaginationStatus.initial) &&
-                                          (homeState.getHomeBoutiqesPaginationObject
-                                                      ?.items.length ??
-                                                  0) ==
-                                              0)
-                                  ? TrydosShimmerLoading(
-                                      width: 1.sw,
-                                      logoTextWidth: 70.w,
-                                      height: 235,
-                                      logoTextHeight: 20)
-                                  : index == 2
-                                      ? quickOfferCard()
-                                      : HomePageCard2(
+                              child: HomePageCard2(
                                           withSlidingImages: homeState
-                                                  .getHomeBoutiqesPaginationObject!
+                                                  .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                      currentSlug]!
                                                   .items[index]
                                                   .banners!
                                                   .length >
                                               1,
                                           boutniqe: homeState
-                                              .getHomeBoutiqesPaginationObject!
+                                              .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                  currentSlug]!
                                               .items[index],
                                         )
                               //HomePageCard(showWhite: index % 2 == 0),
@@ -207,7 +235,11 @@ class _HomePageState extends State<HomePage> {
                             height: 20,
                           ),
                           childCount: homeState
-                              .getHomeBoutiqesPaginationObject!.items.length,
+                                  .getHomeBoutiquesPaginationObjectByMainCategory[
+                                      currentSlug]
+                                  ?.items
+                                  .length ??
+                              0,
                         );
                       },
                     );

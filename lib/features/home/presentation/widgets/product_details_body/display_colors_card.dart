@@ -124,8 +124,6 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
 
   @override
   void initState() {
-    BlocProvider.of<HomeBloc>(context)
-        .add(AddCurrentSelectedColorEvent(currentSelectedColor: 0));
     syncColorImageList = widget.productItem.syncColorImages ?? [];
     syncColorImageList?.removeWhere((element) => element.images.isNullOrEmpty);
     syncColorImageList = [
@@ -511,7 +509,9 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                             context)
                                                         .add(AddCurrentSelectedColorEvent(
                                                             currentSelectedColor:
-                                                                index));
+                                                                index,
+                                                    productId: widget.productItem.id.toString()
+                                                    ));
                                                   },
                                                   child: Column(
                                                     crossAxisAlignment:

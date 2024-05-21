@@ -220,11 +220,11 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   // TODO: implement deviceIp
-  String? get countryName => _preferences.getString('countryName');
+  String? get countryIso => _preferences.getString('countryIso');
 
   @override
-  Future<bool> setCountryName(String? countryName) =>
-      _preferences.setString('countryName', countryName!);
+  Future<bool> setCountryIso(String? countryIso) =>
+      _preferences.setString('countryIso', countryIso!);
 
   @override
   String? getTheLocalPathForFile(String filePath, String chatId) {

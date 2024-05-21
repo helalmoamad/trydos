@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:easy_localization/easy_localization.dart';
@@ -213,6 +214,13 @@ class _StoriesListState extends State<StoriesList> {
                                       initialStory = state
                                           .storiesCollections[index]
                                           .stories![indexOfInitialStory];
+                                      String? imageOfVideoUrl;
+                                      if(initialStory.isPhoto != 1){
+                                        int index = initialStory
+                                            .fullVideoPath!.lastIndexOf('.');
+                                        imageOfVideoUrl = initialStory
+                                            .fullVideoPath!.substring(0 , index) + '.png';
+                                      }
                                       return AnimatedPadding(
                                         duration: Duration(milliseconds: 200),
                                         padding: EdgeInsets.only(
@@ -410,10 +418,7 @@ class _StoriesListState extends State<StoriesList> {
                                                     resizeUserImage:
                                                         index == focused.value2,
                                                     firstPhotoNotShowed:
-                                                        initialStory
-                                                            .fullVideoPath!
-                                                            .replaceAll(
-                                                                'mp4', 'png'),
+                                                    imageOfVideoUrl,
                                                   )),
                                       );
                                     }

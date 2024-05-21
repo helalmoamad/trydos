@@ -156,7 +156,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                         print("${prefsRepository.myMarketId.toString()}" +
                                             "55555555555555555555555555555555555555555");
                                         print("${prefsRepository.myMarketName.toString()}" +
-                                            "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryName.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
+                                            "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
                                       });
                                       await FirebaseAnalytics.instance.logEvent(
                                           name: 'button_clicked',
@@ -179,7 +179,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 : LanguageService.languageCode,
                                             "country_name":
                                                 GetIt.I<PrefsRepository>()
-                                                    .countryName,
+                                                    .countryIso,
                                             'userID': prefsRepository.myMarketId
                                                 .toString(),
                                             'user_name': prefsRepository

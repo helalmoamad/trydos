@@ -10,6 +10,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
+import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -34,6 +35,7 @@ class TabsBar extends StatefulWidget {
 class _TabsBarState extends State<TabsBar> {
   late AppBloc appBloc;
   late HomeBloc homeBloc;
+
   @override
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
@@ -74,80 +76,87 @@ class _TabsBarState extends State<TabsBar> {
             );
           }
           return BlocBuilder<AppBloc, AppState>(
-            buildWhen: (oldState, newState) =>
-                oldState.tabIndex != newState.tabIndex,
-            builder: (context, state) {
-              return Container(
-                width: 1.sw,
-                height: 55.h,
-                padding: EdgeInsets.all(4.r),
-                decoration: BoxDecoration(
-                  color: colorScheme.white,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x1a000000),
-                      offset: Offset(0, 0),
-                      blurRadius: 6,
-                    ),
-                  ],
-                ),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                      children: List.generate(
-                          homeState.mainCategoriesResponseModel?.data
-                                  ?.mainCategories?.length ??
-                              0, (index) {
-                    MainCategory mainCategory = homeState
-                        .mainCategoriesResponseModel!
-                        .data!
-                        .mainCategories![index];
-                    return Padding(
-                      padding: HWEdgeInsets.only(right: 15.0),
-                      child: InkWell(
-                        onTap: () {
-                          appBloc.add(ChangeTab(index));
-                          print(
-                              "------------------------------------${homeState.mainCategoriesResponseModel!.data!.mainCategories![index].slug!}");
-                          homeBloc.add(GetHomeBoutiqesEvent(
-                              offset: "1",
-                              getWithPagination: false,
-                              category_Slug: homeState
-                                  .mainCategoriesResponseModel!
-                                  .data!
-                                  .mainCategories![index]
-                                  .slug!));
-                        },
-                        child: Column(
-                          //crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.network(
-                              mainCategory.icon.toString(),
-                              height: 25.h,
-                              color: state.tabIndex == index
-                                  ? Colors.black
-                                  : Color(0xff0ffC4C2C2),
-                            ),
-                            4.verticalSpace,
-                            MyTextWidget(
-                              mainCategory.name.toString(),
-                              maxLines: 1,
-                              style: textTheme.overline?.lr.copyWith(
-                                  letterSpacing: 0,
-                                  color: state.tabIndex != index
-                                      ? Color(0xffC4C2C2)
-                                      : Color(0xff505050)),
-                            ),
-                          ],
+              buildWhen: (oldState, newState) =>
+                  oldState.tabIndex != newState.tabIndex,
+              builder: (context, state) {
+                return Container(
+                    width: 1.sw,
+                    height: 55.h,
+                    padding: EdgeInsets.all(4.r),
+                    decoration: BoxDecoration(
+                      color: colorScheme.white,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x1a000000),
+                          offset: Offset(0, 0),
+                          blurRadius: 6,
                         ),
-                      ),
-                    );
-                  })),
-                ),
-              );
-            },
-          );
+                      ],
+                    ),
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                            width: 1.sw - 8.r,
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: List.generate(
+                                  homeState.mainCategoriesResponseModel?.data
+                                          ?.mainCategories?.length ??
+                                      0,
+                                  (index) {
+                                    MainCategory mainCategory = homeState
+                                        .mainCategoriesResponseModel!
+                                        .data!
+                                        .mainCategories![index];
+                                    return Padding(
+                                        padding: HWEdgeInsets.only(right: 15.0),
+                                        child: InkWell(
+                                          onTap: () {
+                                            /* appBloc.add(ChangeTab(index));
+                            BlocProvider.of<HomeBloc>(context).add(
+                                GetHomeSectionsEvent(
+                                    mainCategory.slug.toString()));*/
+                                            appBloc.add(ChangeTab(index));
+                                            homeBloc.add(GetHomeBoutiqesEvent(
+                                                offset: "1",
+                                                categorySlug: homeState
+                                                    .mainCategoriesResponseModel!
+                                                    .data!
+                                                    .mainCategories![index]
+                                                    .slug!));
+                                          },
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              SvgNetworkWidget(
+                                                svgUrl: mainCategory.icon
+                                                    .toString(),
+                                                height: 25.h,
+                                                color: state.tabIndex == index
+                                                    ? Colors.black
+                                                    : Color(0xff0ffC4C2C2),
+                                              ),
+                                              4.verticalSpace,
+                                              MyTextWidget(
+                                                mainCategory.name.toString(),
+                                                maxLines: 1,
+                                                style: textTheme.overline?.lr
+                                                    .copyWith(
+                                                        letterSpacing: 0,
+                                                        color: state.tabIndex !=
+                                                                index
+                                                            ? Color(0xffC4C2C2)
+                                                            : Color(
+                                                                0xff505050)),
+                                              ),
+                                            ],
+                                          ),
+                                        ));
+                                  },
+                                )))));
+              });
         });
   }
 }

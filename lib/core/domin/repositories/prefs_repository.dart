@@ -9,7 +9,7 @@ abstract class PrefsRepository {
   String? get chatToken;
   String? get marketToken;
   String? get storiesToken;
-  String? get countryName;
+  String? get countryIso;
   int? get fcmTokenId;
   String? get serverTime;
   int? get myChatId;
@@ -45,7 +45,7 @@ abstract class PrefsRepository {
   int? get getdurtion;
   Future<bool> setVerifiedPhone(bool verifiedPhone);
   Future<bool> setDuration(int duration);
-  Future<bool> setCountryName(String? countryName);
+  Future<bool> setCountryIso(String? countryIso);
 
   Future<bool> setVerificationId(String verificationId);
   Future<bool> setSessionId(String sessionId);

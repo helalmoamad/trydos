@@ -25,6 +25,7 @@ import 'package:trydos/service/language_service.dart';
 
 import '../../../../service/language_service.dart';
 import '../../../app/my_text_widget.dart';
+import '../../../app/svg_network_widget.dart';
 
 class HomePageCard2 extends cupertino.StatefulWidget {
   HomePageCard2(
@@ -32,12 +33,14 @@ class HomePageCard2 extends cupertino.StatefulWidget {
 
   final bool withSlidingImages;
   final Boutique boutniqe;
+
   @override
   cupertino.State<HomePageCard2> createState() => _HomePageCard2State();
 }
 
 class _HomePageCard2State extends cupertino.State<HomePageCard2> {
   final ValueNotifier<int> resizeItems = ValueNotifier(-1);
+  final ValueNotifier<int> changeBackgroundBlurImage = ValueNotifier(0);
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   late AutoScrollController autoScrollController;
   late ScrollController scrollController;
@@ -54,6 +57,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
       alignment: Alignment.bottomCenter,
       children: [
         InkWell(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           onTap: () async {
             await FirebaseAnalytics.instance
                 .logEvent(name: 'button_clicked', parameters: {
@@ -67,7 +72,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
               "device_language": LanguageService.languageCode == 'ar'
                   ? 'ae'
                   : LanguageService.languageCode,
-              "country_name": GetIt.I<PrefsRepository>().countryName,
+              "country_name": GetIt.I<PrefsRepository>().countryIso,
               'userID': prefsRepository.myMarketId.toString(),
               'user_name': prefsRepository.myMarketName.toString(),
               'clicked_button_name': 'i love you Ahmad',
@@ -96,8 +101,17 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 ),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
-                    child:
-                        Image.asset(AppAssets.halloweenJpg, fit: BoxFit.cover)),
+                    child: ValueListenableBuilder<int>(
+                        valueListenable: changeBackgroundBlurImage,
+                        builder: (context, index, _) {
+                          return MyCachedNetworkImage(
+                            imageFit: cupertino.BoxFit.cover,
+                            imageUrl: widget.boutniqe.banners![index],
+                            width: 1.sw,
+                            radius: 15,
+                            height: 235,
+                          );
+                        })),
               ),
               Positioned.fill(
                 child: ClipRRect(
@@ -136,10 +150,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         widget.boutniqe.icon != null
-                            ? MyCachedNetworkImage(
+                            ? SvgNetworkWidget(
+                                svgUrl: widget.boutniqe.icon!,
                                 height: 20,
-                                imageFit: cupertino.BoxFit.cover,
-                                imageUrl: widget.boutniqe.icon!,
                                 width: 40,
                               )
                             : MyTextWidget(widget.boutniqe.name!,
@@ -233,6 +246,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 },
                                 options: CarouselOptions(
                                   initialPage: 0,
+                                  onPageChanged: (int index, _) {
+                                    changeBackgroundBlurImage.value = index;
+                                  },
                                   height: 155,
                                   enableInfiniteScroll: false,
                                   viewportFraction: 0.95,
@@ -291,26 +307,28 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     separatorBuilder: (context, index) => 13.horizontalSpace,
                     shrinkWrap: true,
                     scrollDirection: cupertino.Axis.horizontal,
-                    itemBuilder: (context, index) => InkWell(
-                      onTap: () {
-                        HelperFunctions.slidingNavigation(
-                            context,
-                            ProductListingPage(
-                              boutiqueSlug: widget.boutniqe.slug!,
-                              category: widget
-                                  .boutniqe
-                                  .mainCategoriesForProductIds![index]
-                                  .categorySlug,
-                            ));
-                      },
-                      child: MyCachedNetworkImage(
-                        imageFit: cupertino.BoxFit.cover,
-                        imageUrl: widget.boutniqe
-                            .mainCategoriesForProductIds![index].categoryIcon!,
-                        width: 12,
-                        height: 12,
-                      ),
-                    ),
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                          onTap: () {
+                            HelperFunctions.slidingNavigation(
+                                context,
+                                ProductListingPage(
+                                  boutiqueSlug: widget.boutniqe.slug!,
+                                  category: widget
+                                      .boutniqe
+                                      .mainCategoriesForProductIds![index]
+                                      .categorySlug,
+                                ));
+                          },
+                          child: SvgNetworkWidget(
+                            svgUrl: widget
+                                .boutniqe
+                                .mainCategoriesForProductIds![index]
+                                .categoryIcon!,
+                            width: 12,
+                            height: 12,
+                          ));
+                    },
                     itemCount:
                         widget.boutniqe.mainCategoriesForProductIds!.length,
                   ),
@@ -348,7 +366,14 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 onPanDown: (details) {
                   print(focused);
                   HapticFeedback.lightImpact();
-                  resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
+                  resizeItems.value = (details.globalPosition.dx -
+                          40 -
+                          (9 -
+                                  widget.boutniqe.childCategoriesForProductIds!
+                                      .length) /
+                              2 *
+                              (40.w - 5.w)) ~/
+                      35.w;
                 },
                 onPanCancel: () {
                   resizeItems.value = -1;
@@ -358,7 +383,14 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 },
                 onPanUpdate: (details) {
                   int prev = resizeItems.value;
-                  resizeItems.value = (details.globalPosition.dx - 40) ~/ 35.w;
+                  resizeItems.value = (details.globalPosition.dx -
+                          40 -
+                          (9 -
+                                  widget.boutniqe.childCategoriesForProductIds!
+                                      .length) /
+                              2 *
+                              (40.w - 5.w)) ~/
+                      35.w;
                   if (prev != resizeItems.value) {
                     HapticFeedback.lightImpact();
                   }
@@ -381,16 +413,23 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                     widget.boutniqe
                                         .childCategoriesForProductIds!.length),
                                 (index) => AnimatedPositioned(
-                                      left: (index * (40.w - 5.w) +
-                                          (focused != -1
-                                              ? index == (focused + 1)
-                                                  ? 20.w
-                                                  : index == focused
-                                                      ? 5.w
-                                                      : index > focused
-                                                          ? 20.w
-                                                          : 0
-                                              : 0)),
+                                      left: (9 -
+                                                  widget
+                                                      .boutniqe
+                                                      .childCategoriesForProductIds!
+                                                      .length) /
+                                              2 *
+                                              (40.w - 5.w) +
+                                          (index * (40.w - 5.w) +
+                                              (focused != -1
+                                                  ? index == (focused + 1)
+                                                      ? 20.w
+                                                      : index == focused
+                                                          ? 5.w
+                                                          : index > focused
+                                                              ? 20.w
+                                                              : 0
+                                                  : 0)),
                                       curve: Curves.fastEaseInToSlowEaseOut,
                                       bottom: focused == index ? 35.w : 10.w,
                                       duration: Duration(
@@ -409,7 +448,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                             .childCategoriesForProductIds![
                                                 index]
                                             .categoryName!,
-                                        count_products: widget
+                                        countProducts: widget
                                             .boutniqe
                                             .childCategoriesForProductIds![
                                                 index]
@@ -436,12 +475,13 @@ class ProductItemCircle extends StatelessWidget {
       {required this.index,
       required this.isFocused,
       super.key,
+      required this.countProducts,
       required this.imageUrl,
-      required this.name,
-      required this.count_products});
+      required this.name});
+
   final String imageUrl;
   final int index;
-  final String count_products;
+  final String countProducts;
   final String name;
   final bool isFocused;
 
@@ -473,7 +513,7 @@ class ProductItemCircle extends StatelessWidget {
                           height: 1.43),
                     ),
                     MyTextWidget(
-                      count_products,
+                      countProducts,
                       textAlign: TextAlign.center,
                       style: context.textTheme.caption?.rr.copyWith(
                           color: Color(0xff8E8E8E),

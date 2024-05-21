@@ -21,11 +21,15 @@ class GetHomeBoutiqesUseCase
 
 class GetHomeBoutiqesParams {
   final String? offset;
-  final String category_Slug;
+  final String categorySlug;
+
   GetHomeBoutiqesParams({
     this.offset,
-    required this.category_Slug,
+    required this.categorySlug,
   });
 
-  Map<String, dynamic> get map => {};
+  Map<String, dynamic> get map => {
+        'category_Slug': categorySlug,
+        'queryParameters': {'offset': offset}
+      };
 }

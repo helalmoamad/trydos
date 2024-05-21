@@ -86,8 +86,8 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
                       1) &&
                   index == rightItemIndex))}');
           return Visibility(
-            visible:
-                !((widget.gallery3dControllerForCircles?.currentIndex == 0 &&
+            visible: widget.gallery3dControllerForCircles?.itemCount == 3 ? index == 0 :
+                !( (widget.gallery3dControllerForCircles?.currentIndex == 0 &&
                         index == leftItemIndex) ||
                     (widget.gallery3dControllerForCircles?.currentIndex ==
                             ((widget.gallery3dControllerForCircles?.itemCount ??
