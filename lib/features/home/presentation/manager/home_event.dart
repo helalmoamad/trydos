@@ -23,10 +23,11 @@ class GetMainCategoriesEvent extends HomeEvent {
 class AddCurrentSelectedColorEvent extends HomeEvent {
   final int currentSelectedColor;
   final String productId;
-  const AddCurrentSelectedColorEvent({required this.currentSelectedColor ,required this.productId});
+  const AddCurrentSelectedColorEvent(
+      {required this.currentSelectedColor, required this.productId});
   @override
   // TODO: implement props
-  List<Object?> get props => [currentSelectedColor , productId];
+  List<Object?> get props => [currentSelectedColor, productId];
 }
 
 class GetHomeBoutiqesEvent extends HomeEvent {
@@ -77,7 +78,7 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
   final List<int>? brands;
   final List<Map<String, dynamic>>? attributes;
   final String? searchText;
-  final int? offset;
+  final int offset;
   final int? limit;
   final String? boutique_slug;
 
@@ -87,7 +88,7 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
       this.attributes,
       this.boutique_slug,
       this.searchText,
-      this.offset,
+      required this.offset,
       this.limit,
       this.category});
 
@@ -111,4 +112,3 @@ class LoadFailureEvent extends HomeEvent {
   @override
   List<Object?> get props => [collectionId];
 }
-

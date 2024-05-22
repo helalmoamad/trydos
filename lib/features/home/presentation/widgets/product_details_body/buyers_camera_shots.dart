@@ -24,7 +24,7 @@ class BuyersCameraShots extends StatefulWidget {
       required this.productItem,
       required this.panelControllerForBuyersCameraShots});
 
-  final productListingModel.Product productItem;
+  final productListingModel.Products productItem;
   final PanelController panelControllerForBuyersCameraShots;
 
   @override

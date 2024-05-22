@@ -19,10 +19,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               _$GetMainCategoriesStatusEnumMap,
               json['getMainCategoriesStatus']) ??
           GetMainCategoriesStatus.init,
-      getProductsWithoutFiltersStatus: $enumDecodeNullable(
-              _$GetProductsWithoutFiltersStatusEnumMap,
-              json['getProductsWithoutFiltersStatus']) ??
-          GetProductsWithoutFiltersStatus.init,
       startingSetting: json['startingSetting'] == null
           ? null
           : StartingSetting.fromJson(
@@ -48,12 +44,18 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               : GetProductDetailWithoutRelatedProductsModel.fromJson(
                   json['getProductDetailWithoutRelatedProductsModel']
                       as Map<String, dynamic>),
-      getProductListingWithoutFiltersModel:
-          json['getProductListingWithoutFiltersModel'] == null
-              ? null
-              : GetProductListingWithoutFiltersModel.fromJson(
-                  json['getProductListingWithoutFiltersModel']
-                      as Map<String, dynamic>),
+      getProductListingPaginationWithoutFiltersModel:
+          (json['getProductListingPaginationWithoutFiltersModel']
+                      as Map<String, dynamic>?)
+                  ?.map(
+                (k, e) => MapEntry(
+                    k,
+                    PaginationModel<Products>.fromJson(
+                        e as Map<String, dynamic>,
+                        (value) =>
+                            Products.fromJson(value as Map<String, dynamic>))),
+              ) ??
+              const {},
       selectedVideoStatus: $enumDecodeNullable(
               _$SelectedVideoStatusEnumMap, json['selectedVideoStatus']) ??
           SelectedVideoStatus.init,
@@ -117,13 +119,15 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           _$SelectedVideoStatusEnumMap[instance.selectedVideoStatus]!,
       'storiesCollections':
           instance.storiesCollections.map((e) => e.toJson()).toList(),
-      'getProductsWithoutFiltersStatus':
-          _$GetProductsWithoutFiltersStatusEnumMap[
-              instance.getProductsWithoutFiltersStatus]!,
       'currentStoryInEachCollection': instance.currentStoryInEachCollection
           .map((k, e) => MapEntry(k.toString(), e)),
-      'getProductListingWithoutFiltersModel':
-          instance.getProductListingWithoutFiltersModel?.toJson(),
+      'getProductListingPaginationWithoutFiltersModel': instance
+          .getProductListingPaginationWithoutFiltersModel
+          .map((k, e) => MapEntry(
+              k,
+              e.toJson(
+                (value) => value.toJson(),
+              ))),
       'mainCategoriesResponseModel':
           instance.mainCategoriesResponseModel?.toJson(),
       'getProductDetailWithoutRelatedProductsModel':
@@ -153,13 +157,6 @@ const _$GetMainCategoriesStatusEnumMap = {
   GetMainCategoriesStatus.loading: 'loading',
   GetMainCategoriesStatus.success: 'success',
   GetMainCategoriesStatus.failure: 'failure',
-};
-
-const _$GetProductsWithoutFiltersStatusEnumMap = {
-  GetProductsWithoutFiltersStatus.init: 'init',
-  GetProductsWithoutFiltersStatus.loading: 'loading',
-  GetProductsWithoutFiltersStatus.success: 'success',
-  GetProductsWithoutFiltersStatus.failure: 'failure',
 };
 
 const _$GetStoriesForProductStatusEnumMap = {

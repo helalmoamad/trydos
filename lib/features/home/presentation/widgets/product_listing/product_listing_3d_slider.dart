@@ -32,7 +32,7 @@ class ProductListing3DSlider extends StatefulWidget {
   final Tuple2<int, int> slidingModeItem;
   final void Function(int, int) setThisEnabled;
   final int itemIndex;
-  final productListingModel.Product productItem;
+  final productListingModel.Products productItem;
   final ValueNotifier<int> currentChosenColor;
 
   @override
@@ -385,7 +385,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                             1);
                                               }
                                               prevIndexForThreeImages = index;
-                                              widget.currentChosenColor.value = prevIndexForThreeImages ;
+                                              widget.currentChosenColor.value =
+                                                  prevIndexForThreeImages;
                                               if (scrollToLeft) {
                                                 updateImagesForThreeImagesSlider(
                                                     true,
@@ -484,12 +485,15 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                               : (gallery3dControllerForCircles!
                                                                       .currentIndex -
                                                                   1);
-                                                  currentColorIndex.value = prevIndexInFirstSlider;
+                                                  currentColorIndex.value =
+                                                      prevIndexInFirstSlider;
                                                   gallery3dControllerForCircles!
                                                       .animateTo(
                                                           prevIndexInFirstSlider,
                                                           true);
-                                                  widget.currentChosenColor.value = prevIndexInFirstSlider ;
+                                                  widget.currentChosenColor
+                                                          .value =
+                                                      prevIndexInFirstSlider;
                                                 }
                                                 if (scrollToLeft) {
                                                   updateImagesForThreeColorsSlider(
@@ -889,7 +893,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                 changingPagesScrollOffset: 0.1,
                                 isClip: false,
                                 onItemChanged: (index) {
-                                  widget.currentChosenColor.value = index ;
+                                  widget.currentChosenColor.value = index;
                                   if (slideModeIndex != 2 &&
                                       ((prevIndexInSecondSlider < index &&
                                               (index -

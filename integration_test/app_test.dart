@@ -10,21 +10,23 @@ void main() {
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
     testWidgets("chat", (Tester) async {
       HomePageCard2(
-          boutniqe: Boutique(
-            banners: [
-              "https://res.cloudinary.com/dtcmozf4d/image/upload/v1/boutiques/boutiques/2024-05-16-6646227b8d82d.png",
-              "https://res.cloudinary.com/dtcmozf4d/image/upload/v1/boutiques/boutiques/2024-05-16-6646227dc28f7.jpg"
-            ],
-            childCategoriesForProductIds: [],
-            description: "frgrfgrfegr",
-            name: "fgfgfg",
-            id: 14,
-            mainCategoriesForProductIds: [],
-            icon:
-                ' https://res.cloudinary.com/dtcmozf4d/image/upload/v1/boutiques/boutiques/icon/2024-05-16-66462280625fd.png',
-            position: 0,
-          ),
-          withSlidingImages: true);
+        boutniqe: Boutique(
+          banners: [
+            "https://res.cloudinary.com/dtcmozf4d/image/upload/v1/boutiques/boutiques/2024-05-16-6646227b8d82d.png",
+            "https://res.cloudinary.com/dtcmozf4d/image/upload/v1/boutiques/boutiques/2024-05-16-6646227dc28f7.jpg"
+          ],
+          childCategoriesForProductIds: [],
+          description: "frgrfgrfegr",
+          name: "fgfgfg",
+          id: 14,
+          mainCategoriesForProductIds: [],
+          icon:
+              ' https://res.cloudinary.com/dtcmozf4d/image/upload/v1/boutiques/boutiques/icon/2024-05-16-66462280625fd.png',
+          position: 0,
+        ),
+        withSlidingImages: true,
+        category_Slug: '',
+      );
       await Tester.pumpAndSettle();
       final chat = find.byType(InkWell).first;
       await Tester.tap(chat);
