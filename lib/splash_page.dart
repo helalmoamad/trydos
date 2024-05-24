@@ -40,14 +40,6 @@ class _SplashPageState extends State<SplashPage> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetMainCategoriesEvent());
     appBloc.add(ChangeTab(0));
-    homeBloc.add(GetHomeBoutiqesEvent(
-        offset: "1",
-        categorySlug: GetIt.I<HomeBloc>()
-            .state
-            .mainCategoriesResponseModel!
-            .data!
-            .mainCategories![0]
-            .slug!));
 
     BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
     checkAndNavigationCallingPage(context, fromTerminated: true,

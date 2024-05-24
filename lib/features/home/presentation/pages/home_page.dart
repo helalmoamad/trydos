@@ -59,11 +59,10 @@ class _HomePageState extends State<HomePage> {
           (scrollController.position.maxScrollExtent *
               0.7 *
               (homeBloc
-                      .state
-                      .getHomeBoutiquesPaginationObjectByMainCategory[
-                          selectedCategorySlug]!
-                      .page -
-                  1))) {
+                  .state
+                  .getHomeBoutiquesPaginationObjectByMainCategory[
+                      selectedCategorySlug]!
+                  .page))) {
         homeBloc.add(GetHomeBoutiqesEvent(
             categorySlug: selectedCategorySlug,
             offset: homeBloc
@@ -179,56 +178,57 @@ class _HomePageState extends State<HomePage> {
                             ?.data
                             ?.mainCategories?[appState.tabIndex]
                             .slug;
-                        if(currentSlug == null ||
+                        if (currentSlug == null ||
                             ((homeState
-                                .getHomeBoutiquesPaginationObjectByMainCategory[
-                            currentSlug]
-                                ?.paginationStatus ==
-                                PaginationStatus.loading ||
-                                homeState
-                                    .getHomeBoutiquesPaginationObjectByMainCategory[
-                                currentSlug]
-                                    ?.paginationStatus ==
-                                    PaginationStatus.initial) &&
+                                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                currentSlug]
+                                            ?.paginationStatus ==
+                                        PaginationStatus.loading ||
+                                    homeState
+                                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                currentSlug]
+                                            ?.paginationStatus ==
+                                        PaginationStatus.initial) &&
                                 (homeState
-                                    .getHomeBoutiquesPaginationObjectByMainCategory[
-                                currentSlug]
-                                    ?.items
-                                    .length ??
-                                    0) ==
-                                    0)){
+                                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                currentSlug]
+                                            ?.items
+                                            .length ??
+                                        0) ==
+                                    0)) {
                           return sliverListSeparated(
                               itemBuilder: (_, index) => Padding(
-                                padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                                child: TrydosShimmerLoading(
-                                    width: 1.sw,
-                                    logoTextWidth: 70.w,
-                                    height: 235,
-                                    logoTextHeight: 20)
-                            //HomePageCard(showWhite: index % 2 == 0),
-                          ),
-                        separator: SizedBox(
-                        height: 20,
-                        ),
-                        childCount: 10
-                        );
+                                  padding:
+                                      HWEdgeInsets.symmetric(horizontal: 15.w),
+                                  child: TrydosShimmerLoading(
+                                      width: 1.sw,
+                                      logoTextWidth: 70.w,
+                                      height: 235,
+                                      logoTextHeight: 20)
+                                  //HomePageCard(showWhite: index % 2 == 0),
+                                  ),
+                              separator: SizedBox(
+                                height: 20,
+                              ),
+                              childCount: 10);
                         }
                         return sliverListSeparated(
                           itemBuilder: (_, index) => Padding(
                               padding: HWEdgeInsets.symmetric(horizontal: 15.w),
                               child: HomePageCard2(
-                                          withSlidingImages: homeState
-                                                  .getHomeBoutiquesPaginationObjectByMainCategory[
-                                                      currentSlug]!
-                                                  .items[index]
-                                                  .banners!
-                                                  .length >
-                                              1,
-                                          boutniqe: homeState
-                                              .getHomeBoutiquesPaginationObjectByMainCategory[
-                                                  currentSlug]!
-                                              .items[index],
-                                        )
+                                category_Slug: currentSlug,
+                                withSlidingImages: homeState
+                                        .getHomeBoutiquesPaginationObjectByMainCategory[
+                                            currentSlug]!
+                                        .items[index]
+                                        .banners!
+                                        .length >
+                                    1,
+                                boutniqe: homeState
+                                    .getHomeBoutiquesPaginationObjectByMainCategory[
+                                        currentSlug]!
+                                    .items[index],
+                              )
                               //HomePageCard(showWhite: index % 2 == 0),
                               ),
                           separator: SizedBox(

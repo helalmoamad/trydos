@@ -28,8 +28,12 @@ import '../widgets/product_listing/product_item.dart';
 class ProductListingPage extends StatefulWidget {
   final String boutiqueSlug;
   final String? category;
-  const ProductListingPage(
-      {super.key, required this.boutiqueSlug, this.category});
+
+  const ProductListingPage({
+    super.key,
+    required this.boutiqueSlug,
+    this.category,
+  });
 
   @override
   State<ProductListingPage> createState() => _ProductListingPageState();
@@ -51,7 +55,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetProductsWithoutFiltersEvent(
-        boutique_slug: widget.boutiqueSlug, category: widget.category));
+      boutique_slug: widget.boutiqueSlug,
+      category: widget.category,
+      offset: 1,
+    ));
     scrollController.addListener(() {
       if (scrollController.position.pixels <= 80) {
         debugPrint(scrollController.position.pixels.toString());
@@ -113,26 +120,31 @@ class _ProductListingPageState extends State<ProductListingPage> {
             children: [
               BlocBuilder<HomeBloc, HomeState>(
                 buildWhen: (p, c) =>
-                    p.getProductsWithoutFiltersStatus !=
-                    c.getProductsWithoutFiltersStatus,
+                    p.getProductListingStatus != c.getProductListingStatus,
                 builder: (context, state) {
-                  if (state.getProductsWithoutFiltersStatus ==
+                  if ((state.getProductListingStatus ==
+                          GetProductsWithoutFiltersStatus.loading) ||
+                      (state.getProductListingPaginationWithoutFiltersModel[
+                              widget.boutiqueSlug] ==
+                          null)) {
+                    return Center(
+                      child: TrydosLoader(),
+                    );
+                  }
+                  if (state.getProductListingStatus ==
                       GetProductsWithoutFiltersStatus.failure) {
                     return Center(
                       child: ElevatedButton(
                           onPressed: () {
                             homeBloc.add(GetProductsWithoutFiltersEvent(
-                                boutique_slug: widget.boutiqueSlug));
+                              boutique_slug: widget.boutiqueSlug,
+                              offset: 1,
+                            ));
                           },
                           child: MyTextWidget(LocaleKeys.try_again.tr())),
                     );
                   }
-                  if (state.getProductListingWithoutFiltersModel ==
-                      GetProductsWithoutFiltersStatus.loading) {
-                    return Center(
-                      child: TrydosLoader(),
-                    );
-                  }
+
                   return ValueListenableBuilder<Tuple2<int, int>>(
                       valueListenable: setThisEnabledNotifier,
                       builder: (context, slidingMode, _) {
@@ -147,9 +159,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           mainAxisSpacing: 15,
                           physics: const ClampingScrollPhysics(),
                           children: List.generate(
-                              state.getProductListingWithoutFiltersModel!.data!
-                                      .products?.length ??
-                                  0,
+                              state
+                                  .getProductListingPaginationWithoutFiltersModel[
+                                      widget.boutiqueSlug]!
+                                  .items
+                                  .length,
                               (index) => GestureDetector(
                                     onTap: () async {
                                       Future.delayed(
@@ -216,17 +230,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           context,
                                           ProductDetailsPage(
                                             productItem: state
-                                                .getProductListingWithoutFiltersModel!
-                                                .data!
-                                                .products![index],
+                                                .getProductListingPaginationWithoutFiltersModel[
+                                                    widget.boutiqueSlug]!
+                                                .items[index],
                                           ));
                                     },
                                     child: ProductItem(
                                       slidingModeItem: slidingMode,
                                       productItem: state
-                                          .getProductListingWithoutFiltersModel!
-                                          .data!
-                                          .products![index],
+                                          .getProductListingPaginationWithoutFiltersModel[
+                                              widget.boutiqueSlug]!
+                                          .items[index],
                                       itemIndex: index,
                                       setThisEnabled:
                                           (int index, int slideMode) {

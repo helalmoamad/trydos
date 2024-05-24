@@ -41,7 +41,7 @@ class ProductDetailsPage extends StatefulWidget {
     required this.productItem,
   });
 
-  final productListingModel.Product productItem;
+  final productListingModel.Products productItem;
 
   @override
   State<ProductDetailsPage> createState() => _ProductDetailsPageState();
@@ -63,6 +63,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
         productId: widget.productItem.id.toString()));
     homeBloc.add(GetStoryForProductEvent());
+    homeBloc.add(AddCurrentSelectedColorEvent(
+        currentSelectedColor: 0, productId: widget.productItem.id.toString()));
     super.initState();
   }
 
