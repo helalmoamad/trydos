@@ -19,7 +19,7 @@ class ProductItem extends StatefulWidget {
 
   final void Function(int, int) setThisEnabled;
   final Tuple2<int, int> slidingModeItem;
-  final productListingModel.Product productItem;
+  final productListingModel.Products productItem;
   final int itemIndex;
 
   @override
@@ -106,7 +106,7 @@ class _ProductItemState extends State<ProductItem> {
           ProductListing3DSlider(
               productItem: widget.productItem,
               slidingModeItem: widget.slidingModeItem,
-              currentChosenColor : currentChosenColor,
+              currentChosenColor: currentChosenColor,
               itemIndex: widget.itemIndex,
               setThisEnabled: widget.setThisEnabled),
         ]);

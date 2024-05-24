@@ -108,9 +108,6 @@ class HomeRemoteDatasource {
   }*/
 
   Future<GetHomeBoutiquesModel> getHomeBoutiques(Map<String, dynamic> params) {
-    print(
-        "-----------------------00000000000000000---------------------------------------------------------------------------${params["slug"]}-----------------------------------");
-
     PostClient<GetHomeBoutiquesModel> getHomeSections =
         PostClient<GetHomeBoutiquesModel>(
       serverName: ServerName.market,

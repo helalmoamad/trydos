@@ -119,12 +119,23 @@ class _TabsBarState extends State<TabsBar> {
                                     mainCategory.slug.toString()));*/
                                             appBloc.add(ChangeTab(index));
                                             homeBloc.add(GetHomeBoutiqesEvent(
+                                                getWithPagination: false,
                                                 offset: "1",
                                                 categorySlug: homeState
                                                     .mainCategoriesResponseModel!
                                                     .data!
                                                     .mainCategories![index]
                                                     .slug!));
+                                            /*   homeBloc.add(
+                                                GetProductsWithoutFiltersEvent(
+                                                    offset: 1,
+                                                    category: homeState
+                                                        .mainCategoriesResponseModel!
+                                                        .data!
+                                                        .mainCategories![index]
+                                                        .slug!,
+                                                    selectedProssesType:
+                                                        'category'));*/
                                           },
                                           child: Column(
                                             crossAxisAlignment:

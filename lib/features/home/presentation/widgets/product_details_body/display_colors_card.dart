@@ -24,7 +24,7 @@ class DisplayColorsCard extends StatefulWidget {
   const DisplayColorsCard(
       {super.key, required this.productItem, required this.scrollController});
 
-  final productListingModel.Product productItem;
+  final productListingModel.Products productItem;
   final ScrollController scrollController;
 
   @override
@@ -399,17 +399,14 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                     (context,
                                                                         index) {
                                                                   return Visibility(
-                                                                    visible: ((gallery3dControllerForCircles
-                                                                        ?.currentIndex ??
-                                                                        0) <
-                                                                        (syncColorImageList!.length ~/
-                                                                            2) &&
-                                                                        index <
-                                                                            (syncColorImageList!.length ~/ 2)) || (gallery3dControllerForCircles
-                                                                        ?.currentIndex ??
-                                                                        0) >=
-                                                                        (syncColorImageList!.length ~/
-                                                                            2),
+                                                                    visible: ((gallery3dControllerForCircles?.currentIndex ?? 0) < (syncColorImageList!.length ~/ 2) &&
+                                                                            index <
+                                                                                (syncColorImageList!.length ~/
+                                                                                    2)) ||
+                                                                        (gallery3dControllerForCircles?.currentIndex ??
+                                                                                0) >=
+                                                                            (syncColorImageList!.length ~/
+                                                                                2),
                                                                     child:
                                                                         ProductListingImageWidget(
                                                                       width: 40,
@@ -510,8 +507,9 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                         .add(AddCurrentSelectedColorEvent(
                                                             currentSelectedColor:
                                                                 index,
-                                                    productId: widget.productItem.id.toString()
-                                                    ));
+                                                            productId: widget
+                                                                .productItem.id
+                                                                .toString()));
                                                   },
                                                   child: Column(
                                                     crossAxisAlignment:

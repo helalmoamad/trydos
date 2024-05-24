@@ -29,8 +29,11 @@ import '../../../app/svg_network_widget.dart';
 
 class HomePageCard2 extends cupertino.StatefulWidget {
   HomePageCard2(
-      {super.key, this.withSlidingImages = false, required this.boutniqe});
-
+      {super.key,
+      this.withSlidingImages = false,
+      required this.boutniqe,
+      required this.category_Slug});
+  final String category_Slug;
   final bool withSlidingImages;
   final Boutique boutniqe;
 
@@ -80,8 +83,11 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             });
             await GetIt.I<PrefsRepository>().setCurrentEvent(
                 "i loveddsssssssssssssssssssssssssssssssssssssssss you Ahmad in past");
-            HelperFunctions.slidingNavigation(context,
-                ProductListingPage(boutiqueSlug: widget.boutniqe.slug!));
+            HelperFunctions.slidingNavigation(
+                context,
+                ProductListingPage(
+                  boutiqueSlug: widget.boutniqe.slug!,
+                ));
           },
           child: Stack(
             alignment: Alignment.bottomCenter,
@@ -435,25 +441,39 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                       duration: Duration(
                                           milliseconds:
                                               focused == index ? 150 : 10),
-                                      child: ProductItemCircle(
-                                        index: index,
-                                        isFocused: focused == index,
-                                        imageUrl: widget
-                                            .boutniqe
-                                            .childCategoriesForProductIds![
-                                                index]
-                                            .productThumbnail!,
-                                        name: widget
-                                            .boutniqe
-                                            .childCategoriesForProductIds![
-                                                index]
-                                            .categoryName!,
-                                        countProducts: widget
-                                            .boutniqe
-                                            .childCategoriesForProductIds![
-                                                index]
-                                            .countProducts
-                                            .toString(),
+                                      child: InkWell(
+                                        onTap: () =>
+                                            HelperFunctions.slidingNavigation(
+                                                context,
+                                                ProductListingPage(
+                                                  boutiqueSlug:
+                                                      widget.boutniqe.slug!,
+                                                  category: widget
+                                                      .boutniqe
+                                                      .mainCategoriesForProductIds![
+                                                          index]
+                                                      .categorySlug,
+                                                )),
+                                        child: ProductItemCircle(
+                                          index: index,
+                                          isFocused: focused == index,
+                                          imageUrl: widget
+                                              .boutniqe
+                                              .childCategoriesForProductIds![
+                                                  index]
+                                              .productThumbnail!,
+                                          name: widget
+                                              .boutniqe
+                                              .childCategoriesForProductIds![
+                                                  index]
+                                              .categoryName!,
+                                          countProducts: widget
+                                              .boutniqe
+                                              .childCategoriesForProductIds![
+                                                  index]
+                                              .countProducts
+                                              .toString(),
+                                        ),
                                       ),
                                     ))),
                       ),
