@@ -140,7 +140,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     );
                   }
                   if (state.getProductListingStatus ==
-                      GetProductsWithoutFiltersStatus.failure) {
+                          GetProductsWithoutFiltersStatus.failure &&
+                      state
+                          .getProductListingPaginationWithoutFiltersModel[
+                              widget.boutiqueSlug]!
+                          .items
+                          .isEmpty) {
                     return Center(
                       child: ElevatedButton(
                           onPressed: () {
