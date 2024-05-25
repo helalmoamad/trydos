@@ -15,6 +15,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
 
+import '../../../../core/data/model/pagination_model.dart';
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
 import '../../../app/app_widgets/tabs_bar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
@@ -55,7 +56,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetProductsWithoutFiltersEvent(
-      boutique_slug: widget.boutiqueSlug,
+      boutiqueSlug: widget.boutiqueSlug,
       category: widget.category,
       offset: 1,
     ));
@@ -119,13 +120,20 @@ class _ProductListingPageState extends State<ProductListingPage> {
             alignment: Alignment.topCenter,
             children: [
               BlocBuilder<HomeBloc, HomeState>(
-                buildWhen: (p, c) =>
-                    p.getProductListingStatus != c.getProductListingStatus,
+                buildWhen: (p, c) {
+                  String key = widget.boutiqueSlug + (widget.category ?? '');
+                  return p.getProductListingPaginationWithoutFiltersModel[key]
+                          ?.paginationStatus !=
+                      c.getProductListingPaginationWithoutFiltersModel[key]
+                          ?.paginationStatus;
+                },
                 builder: (context, state) {
-                  if ((state.getProductListingStatus ==
-                          GetProductsWithoutFiltersStatus.loading) ||
+                  String key = widget.boutiqueSlug + (widget.category ?? '');
+                  if ((state.getProductListingPaginationWithoutFiltersModel[key]
+                              ?.paginationStatus ==
+                          PaginationStatus.loading) ||
                       (state.getProductListingPaginationWithoutFiltersModel[
-                              widget.boutiqueSlug] ==
+                              key] ==
                           null)) {
                     return Center(
                       child: TrydosLoader(),
@@ -137,7 +145,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       child: ElevatedButton(
                           onPressed: () {
                             homeBloc.add(GetProductsWithoutFiltersEvent(
-                              boutique_slug: widget.boutiqueSlug,
+                              boutiqueSlug: widget.boutiqueSlug,
+                              category: widget.category,
                               offset: 1,
                             ));
                           },
@@ -161,7 +170,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           children: List.generate(
                               state
                                   .getProductListingPaginationWithoutFiltersModel[
-                                      widget.boutiqueSlug]!
+                                      key]!
                                   .items
                                   .length,
                               (index) => GestureDetector(
@@ -231,7 +240,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           ProductDetailsPage(
                                             productItem: state
                                                 .getProductListingPaginationWithoutFiltersModel[
-                                                    widget.boutiqueSlug]!
+                                                    key]!
                                                 .items[index],
                                           ));
                                     },
@@ -239,7 +248,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       slidingModeItem: slidingMode,
                                       productItem: state
                                           .getProductListingPaginationWithoutFiltersModel[
-                                              widget.boutiqueSlug]!
+                                              key]!
                                           .items[index],
                                       itemIndex: index,
                                       setThisEnabled:
