@@ -627,7 +627,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           reRequestTheseProductListingInBoutiques: {},
           reRequestTheseBoutiques: {},
           getMainCategoriesStatus: GetMainCategoriesStatus.init,
-          getProductListingPaginationWithoutFiltersModel: {},
           getStartingSettingsStatus: GetStartingSettingsStatus.init,
         )
         .toJson();

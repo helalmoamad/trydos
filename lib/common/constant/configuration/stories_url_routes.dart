@@ -5,8 +5,7 @@ extension ScopeApi on String {
 
   String get _prefix => '/stories/public/$_api/${_currentVersion}';
 
-
-  String storiesScope()=>'$_prefix/stories/$this';
+  String storiesScope() => '$_prefix/stories/$this';
   String usersScope() => '$_prefix/users/$this';
 }
 
@@ -14,13 +13,12 @@ abstract class StoriesEndPoints {
   static final loginEP = 'login'.usersScope();
   static final updateUserEP = 'update'.usersScope();
 // ----<stories scope>----
-  static final getStoriesEP='users_stories'.storiesScope();
-  static final uploadStoriesEP='upload_story'.storiesScope();
-  static final addStoryToOurServerEP='add_story'.storiesScope();
-  static String increaseViewersEP(String storyId)=>'increase_viewers'.storiesScope() + '/$storyId';
-
+  static final getStoriesEP = 'users_stories'.storiesScope();
+  static final uploadStoriesEP = 'upload_story'.storiesScope();
+  static final addStoryToOurServerEP = 'add_story'.storiesScope();
+  static String increaseViewersEP(String storyId) =>
+      'increase_viewers'.storiesScope() + '/$storyId';
 }
-
 
 abstract class StoriesUrls {
   static String get baseUrl => _baseUrlDev;
