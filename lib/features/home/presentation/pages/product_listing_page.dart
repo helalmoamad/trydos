@@ -122,17 +122,25 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 buildWhen: (p, c) =>
                     p.getProductListingStatus != c.getProductListingStatus,
                 builder: (context, state) {
-                  if ((state.getProductListingStatus ==
-                          GetProductsWithoutFiltersStatus.loading) ||
-                      (state.getProductListingPaginationWithoutFiltersModel[
+                  if ((state.getProductListingPaginationWithoutFiltersModel[
                               widget.boutiqueSlug] ==
-                          null)) {
+                          null) ||
+                      state
+                          .getProductListingPaginationWithoutFiltersModel[
+                              widget.boutiqueSlug]!
+                          .items
+                          .isEmpty) {
                     return Center(
                       child: TrydosLoader(),
                     );
                   }
                   if (state.getProductListingStatus ==
-                      GetProductsWithoutFiltersStatus.failure) {
+                          GetProductsWithoutFiltersStatus.failure &&
+                      state
+                          .getProductListingPaginationWithoutFiltersModel[
+                              widget.boutiqueSlug]!
+                          .items
+                          .isEmpty) {
                     return Center(
                       child: ElevatedButton(
                           onPressed: () {

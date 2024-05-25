@@ -179,23 +179,13 @@ class _HomePageState extends State<HomePage> {
                             ?.mainCategories?[appState.tabIndex]
                             .slug;
                         if (currentSlug == null ||
-                            ((homeState
-                                            .getHomeBoutiquesPaginationObjectByMainCategory[
-                                                currentSlug]
-                                            ?.paginationStatus ==
-                                        PaginationStatus.loading ||
-                                    homeState
-                                            .getHomeBoutiquesPaginationObjectByMainCategory[
-                                                currentSlug]
-                                            ?.paginationStatus ==
-                                        PaginationStatus.initial) &&
-                                (homeState
-                                            .getHomeBoutiquesPaginationObjectByMainCategory[
-                                                currentSlug]
-                                            ?.items
-                                            .length ??
-                                        0) ==
-                                    0)) {
+                            (homeState
+                                        .getHomeBoutiquesPaginationObjectByMainCategory[
+                                            currentSlug]
+                                        ?.items
+                                        .length ??
+                                    0) ==
+                                0) {
                           return sliverListSeparated(
                               itemBuilder: (_, index) => Padding(
                                   padding:

@@ -630,9 +630,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   Map<String, dynamic>? toJson(HomeState state) {
     return state
         .copyWith(
-          getHomeBoutiquesPaginationObjectByMainCategory: {},
+          getHomeBoutiquesPaginationObjectByMainCategory:
+              state.getHomeBoutiquesPaginationObjectByMainCategory,
           getMainCategoriesStatus: GetMainCategoriesStatus.init,
-          getProductListingPaginationWithoutFiltersModel: {},
+          getProductListingPaginationWithoutFiltersModel:
+              state.getProductListingPaginationWithoutFiltersModel,
           getStartingSettingsStatus: GetStartingSettingsStatus.init,
         )
         .toJson();

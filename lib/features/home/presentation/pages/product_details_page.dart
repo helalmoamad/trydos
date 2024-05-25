@@ -249,12 +249,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             TrydosLoader()
                           } else ...{
                             ProductDetailsDescriptionWidget(
-                              description: state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          productId]!
-                                      .product!
-                                      .description ??
-                                  " ",
+                              description: widget.productItem.details ?? " ",
                             ),
                           },
                           SizedBox(
