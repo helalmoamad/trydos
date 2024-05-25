@@ -111,7 +111,7 @@ abstract class ChatUrls {
   static Uri get baseUri => Uri.parse(_baseUrlDev);
 
   static const String _baseUrlDev =
-      'https://chating_staging_trydos.trydos.tech';
+      'https://chating_staging_trydos.antiksef.online';
   static const String _baseUrlDevWithHttp =
-      'http://chating_staging_trydos.trydos.tech';
+      'http://chating_staging_trydos.antiksef.online';
 }
