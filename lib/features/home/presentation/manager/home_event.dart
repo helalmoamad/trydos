@@ -80,13 +80,15 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
   final String? searchText;
   final int offset;
   final int? limit;
-  final String? boutique_slug;
+  final String boutiqueSlug;
+  final bool getWithPagination ;
 
   GetProductsWithoutFiltersEvent(
       {this.prices,
       this.brands,
       this.attributes,
-      this.boutique_slug,
+      required this.boutiqueSlug,
+      this.getWithPagination = false,
       this.searchText,
       required this.offset,
       this.limit,
@@ -95,7 +97,7 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props =>
-      [category, prices, brands, attributes, searchText, offset, limit];
+      [category, prices, brands, attributes, getWithPagination ,  searchText, offset, limit , boutiqueSlug];
 }
 
 class GetStoryForProductEvent extends HomeEvent {

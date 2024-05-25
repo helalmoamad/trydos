@@ -178,14 +178,26 @@ class _HomePageState extends State<HomePage> {
                             ?.data
                             ?.mainCategories?[appState.tabIndex]
                             .slug;
-                        if (currentSlug == null ||
-                            (homeState
-                                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                                            currentSlug]
-                                        ?.items
-                                        .length ??
-                                    0) ==
-                                0) {
+                        if (currentSlug == null || homeState
+                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                        currentSlug] == null ||
+                            ((homeState
+                                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                currentSlug]
+                                            ?.paginationStatus ==
+                                        PaginationStatus.loading ||
+                                    homeState
+                                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                currentSlug]
+                                            ?.paginationStatus ==
+                                        PaginationStatus.initial) &&
+                                (homeState
+                                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                currentSlug]
+                                            ?.items
+                                            .length ??
+                                        0) ==
+                                    0)) {
                           return sliverListSeparated(
                               itemBuilder: (_, index) => Padding(
                                   padding:

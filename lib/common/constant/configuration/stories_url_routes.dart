@@ -27,6 +27,5 @@ abstract class StoriesUrls {
   static Uri get baseUri => Uri.parse(_baseUrlDev);
 
   static const String _baseUrlDev = 'https://stories_staging.antiksef.online';
-  static const String _baseUrlDevWithHttp =
-      'http://stories_staging.antiksef.online';
+  static const String _baseUrlDevWithHttp = 'http://stories_staging.antiksef.online';
 }
