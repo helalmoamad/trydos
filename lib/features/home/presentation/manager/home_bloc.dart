@@ -399,9 +399,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 .hasReachedMax)) {
       return;
     }
-    reRequestTheseBoutiques[event.categorySlug] = true;
     emit(state.copyWith(
-        reRequestTheseBoutiques: reRequestTheseBoutiques,
         getHomeBoutiquesPaginationObjectByMainCategory:
         getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
           if(key == event.categorySlug) return MapEntry(key, value.copyWith(
@@ -446,7 +444,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           boutiques[index] = r.data!.boutiques![i];
         }
       }
+      bool resetListAfterGetData = !(reRequestTheseBoutiques[event.categorySlug] ?? false);
+      reRequestTheseBoutiques[event.categorySlug] = true;
       emit(state.copyWith(
+          reRequestTheseBoutiques: reRequestTheseBoutiques,
           getHomeBoutiquesPaginationObjectByMainCategory:
           getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
             if(key == event.categorySlug) {
@@ -461,7 +462,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       hasReachedMax:
       (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
       items: [
-      ...getHomeBoutiquesPaginationObjectByMainCategory[
+                  ...resetListAfterGetData ? [] : getHomeBoutiquesPaginationObjectByMainCategory[
       event.categorySlug]!
           .items,
       ...r.data!.boutiques ?? []
@@ -502,7 +503,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             getProductsWithoutFilters[keyForCacheData]!.hasReachedMax)) {
       return;
     }
-    reRequestTheseProductListingInBoutiques[keyForCacheData] = true;
     emit(state.copyWith(
         reRequestTheseProductListingInBoutiques:
             reRequestTheseProductListingInBoutiques,
@@ -554,6 +554,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           })));
     }, (r) {
       isFailedTheFirstTime.remove('GetProductsWithoutFiltersEvent');
+      bool resetListAfterGetData = !(reRequestTheseProductListingInBoutiques[keyForCacheData] ?? false);
+      reRequestTheseProductListingInBoutiques[keyForCacheData] = true;
       emit(state.copyWith(
           getProductListingPaginationWithoutFiltersModel:
               getProductsWithoutFilters.map((key, value) {
@@ -566,7 +568,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                       hasReachedMax:
                       (r.data!.products?.length ?? kPageSize) < kPageSize,
                       items: [
-                        ...getProductsWithoutFilters[keyForCacheData]!.items,
+                        ...resetListAfterGetData ? [] : getProductsWithoutFilters[keyForCacheData]!.items,
                         ...r.data?.products ?? []
                       ]));
                 }else{
