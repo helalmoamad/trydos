@@ -121,6 +121,7 @@ class VerificationMethods extends StatelessWidget {
               children: [
                 Expanded(
                   child: InkWell(
+                    key: Key('choose_whatsapp_button'),
                     highlightColor: Colors.transparent,
                     splashColor: Colors.transparent,
                     onTap: () {
