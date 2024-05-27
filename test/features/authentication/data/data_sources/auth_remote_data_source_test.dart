@@ -20,7 +20,7 @@ void main() {
 
   const testCityName = 'New York';
   group('Accounts', () {
-    const baseUrl = 'https://chating_staging_trydos.trydos.tech';
+    const baseUrl = 'https://chating_staging_trydos.antiksef.online';
 
     setUp(() {
       dio = Dio(BaseOptions(baseUrl: baseUrl));

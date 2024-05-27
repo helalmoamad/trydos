@@ -179,6 +179,9 @@ class _HomePageState extends State<HomePage> {
                             ?.mainCategories?[appState.tabIndex]
                             .slug;
                         if (currentSlug == null ||
+                            homeState.getHomeBoutiquesPaginationObjectByMainCategory[
+                                    currentSlug] ==
+                                null ||
                             ((homeState
                                             .getHomeBoutiquesPaginationObjectByMainCategory[
                                                 currentSlug]

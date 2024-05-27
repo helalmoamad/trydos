@@ -31,6 +31,8 @@ class _ProductDetailsDescriptionWidgetState
   @override
   void initState() {
     text = widget.description;
+    print(
+        "--------------------------------------------------------------------------------------------------------------${text}************************************************************");
     int index = 4 * ((1.sw.w - 40) ~/ 13.sp) - 12;
     if (text.length <= index) {
       twoLines = text;
