@@ -291,7 +291,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     if (state == AppLifecycleState.paused) {}
     if (state == AppLifecycleState.resumed) {
       chatBloc.add(GetDateTimeEvent());
-
       DealWithMessagesStoredFromBackground();
       DealWithChatsToDeleteFromBackground();
       DealWithChatsToEditStoredFromBackground();
