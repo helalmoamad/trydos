@@ -1661,6 +1661,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onGetDateTimeEvent(
       GetDateTimeEvent event, Emitter<ChatState> emit) async {
+    if(_prefsRepository.chatToken == null) return;
     final response = await getDateTimeUseCase(NoParams());
     response.fold((l) => " ", (r) {
       DateTime? dateServer = DateTime.tryParse(r);
