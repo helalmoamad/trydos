@@ -1,6 +1,7 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
@@ -15,7 +16,7 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Login success test ',
+    'Login failed after waiting 2 minutes without entering otp',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
@@ -76,19 +77,51 @@ void main() {
         successMessage: 'Find VerifyOtp Success',
         failedMessage: 'Find VerifyOtp failed',
       );
-      //////////////////////////
-      await GlobalTestFunctions.enterTestOtp(tester: tester, number: '9');
-      await Future.delayed(const Duration(seconds: 5));
-      //////////////////////////
-      await GlobalTestFunctions.waitFor(tester, find.byType(LoginSuccessfully));
-      //////////////////////////
+      ////////////////////////////
+      final Finder otpRemainingTime = find.byKey(Key('otp_remaining_time'));
       await GlobalTestFunctions.findWidget(
         tester: tester,
-        widgetType: LoginSuccessfully,
-        successMessage: 'Find LoginSuccessfully Success',
-        failedMessage: 'Find LoginSuccessfully failed',
+        actual: otpRemainingTime,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find otpRemainingTime Success',
+        failedMessage: 'Find otpRemainingTime failed',
       );
-      //////////////////////////
+      ////////////////////////////
+      final textWidget = tester.widget<MyTextWidget>(otpRemainingTime);
+      final textContent = textWidget.text;
+
+      try {
+        expect(
+            textContent == '02 : 00 ' ||
+                textContent == '01 : 59 ' ||
+                textContent == '01 : 58 ' ||
+                textContent == '01 : 57 ',
+            isTrue);
+        debugPrint('otpRemainingTime start from 2 minutes success');
+      } catch (e) {
+        print(
+            '//////// otpRemainingTime start from 2 minutes failed Failure: //////////\n $e');
+        rethrow;
+      }
+
+      await Future.delayed(const Duration(minutes: 2));
+      await tester.pumpAndSettle();
+
+      final Finder resendCodeButton = find.byKey(Key('resend_code_button'));
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: resendCodeButton,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find resend Code Button Success',
+        failedMessage: 'Find resend Code Button failed',
+      );
+      //////////////////////////////
+      await GlobalTestFunctions.findNoWidget(
+        tester: tester,
+        widgetType: LoginSuccessfully,
+        successMessage: 'Find nothing LoginSuccessfully Success',
+        failedMessage: 'Find nothing LoginSuccessfully failed',
+      );
     },
   );
 }

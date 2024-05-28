@@ -260,6 +260,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                               ? '0${remainingTime?.sec}'
                                                               : '${remainingTime?.sec}';
                                                           return MyTextWidget(
+                                                            key: Key(
+                                                                'otp_remaining_time'),
                                                             '0${remainingTime?.min ?? '0'} : $seconds ',
                                                             style: context
                                                                 .textTheme
@@ -282,6 +284,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                   return InkWell(
                                                     onTap: _onResendSucceed,
                                                     child: MyTextWidget(
+                                                      key: Key(
+                                                          'resend_code_button'),
                                                       LocaleKeys.resend_code
                                                               .tr() +
                                                           " ",
