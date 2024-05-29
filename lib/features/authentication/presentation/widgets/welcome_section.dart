@@ -10,6 +10,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'dart:ui' as ui;
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
@@ -69,7 +70,7 @@ class WelcomeSection extends StatelessWidget {
             height: 30,
           ),
           InkWell(
-            key: Key('have_already_account_button'),
+            key: Key(WidgetsKey.haveAccountButtonKey),
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () async {

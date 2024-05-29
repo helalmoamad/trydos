@@ -25,6 +25,7 @@ class GlobalTestFunctions {
     Type? widgetType,
     dynamic actual,
     bool withDelayAndPumpAndSettle = true,
+    int delayInSeconds = 2,
     required String successMessage,
     required String failedMessage,
   }) async {
@@ -37,9 +38,8 @@ class GlobalTestFunctions {
       rethrow;
     }
     if (withDelayAndPumpAndSettle) {
-      await Future.delayed(const Duration(seconds: 2));
       await tester.pumpAndSettle();
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(Duration(seconds: delayInSeconds));
     }
   }
 
@@ -91,5 +91,6 @@ class GlobalTestFunctions {
     await Future.delayed(const Duration(seconds: 1));
     await tester.enterText(otpItem6, number);
     await Future.delayed(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
   }
 }
