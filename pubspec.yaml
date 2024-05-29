@@ -45,13 +45,16 @@ dependencies:
   easy_localization: ^3.0.3
   url_launcher: ^6.1.14
   flutter_launcher_icons: ^0.13.1
-  flutter_gallery_3d: ^1.1.1
+  flutter_gallery_3d:
+    git:
+      url: https://helalmohamad@bitbucket.org/trydos/flutter_gallery_3d-1.1.1.git
   fluttertoast: ^8.2.2
   dartz: ^0.10.1
   shimmer: ^3.0.0
   eraser: ^2.0.1
   step_progress_indicator: ^1.0.2
   flutter_bloc: ^8.1.3
+  bloc: ^8.1.4
   share_plus: ^7.2.1
   equatable: ^2.0.5
   flutter_slidable: ^3.0.0
@@ -90,7 +93,9 @@ dependencies:
   bot_toast: ^4.1.3
   dotted_border: ^2.1.0
   form_field_validator: ^1.1.0
-  flutter_carousel_slider: ^1.1.0
+  flutter_carousel_slider:
+    git:
+      url: https://helalmohamad@bitbucket.org/trydos/flutter_carousel_slider-1.1.0.git
   video_player: ^2.8.1
   flutter_spinkit: ^5.2.0
   wechat_assets_picker: ^9.0.0
@@ -101,7 +106,9 @@ dependencies:
   camera: ^0.10.5+5
   lottie: 2.7.0
   store_redirect: ^2.0.1
-  overscroll_pop: ^0.0.9
+  overscroll_pop:
+    git:
+      url: https://helalmohamad@bitbucket.org/trydos/overscroll_pop-0.0.9.git
   vibration: 1.8.4
   webview_flutter: 4.4.2
   flutter_inappwebview: 6.0.0
@@ -112,7 +119,9 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
-  sliding_up_panel: ^2.0.0+1
+  sliding_up_panel:
+    git:
+      url: https://helalmohamad@bitbucket.org/trydos/sliding_up_panel-2.0.0-1.git
   local_hero: ^0.3.0
   flutter_html: ^3.0.0-beta.2
 dev_dependencies:

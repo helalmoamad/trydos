@@ -131,8 +131,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 builder: (context, state) {
                   String key = widget.boutiqueSlug + (widget.category ?? '');
                   if ((state.getProductListingPaginationWithoutFiltersModel[key]
-                              ?.paginationStatus ==
-                          PaginationStatus.loading && (state.getProductListingPaginationWithoutFiltersModel[key]?.items.isNullOrEmpty ?? true)) ||
+                                  ?.paginationStatus ==
+                              PaginationStatus.loading &&
+                          (state
+                                  .getProductListingPaginationWithoutFiltersModel[
+                                      key]
+                                  ?.items
+                                  .isNullOrEmpty ??
+                              true)) ||
                       (state.getProductListingPaginationWithoutFiltersModel[
                               key] ==
                           null)) {
