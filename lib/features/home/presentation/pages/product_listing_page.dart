@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -130,8 +131,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 builder: (context, state) {
                   String key = widget.boutiqueSlug + (widget.category ?? '');
                   if ((state.getProductListingPaginationWithoutFiltersModel[key]
-                              ?.paginationStatus ==
-                          PaginationStatus.loading) ||
+                                  ?.paginationStatus ==
+                              PaginationStatus.loading &&
+                          (state
+                                  .getProductListingPaginationWithoutFiltersModel[
+                                      key]
+                                  ?.items
+                                  .isNullOrEmpty ??
+                              true)) ||
                       (state.getProductListingPaginationWithoutFiltersModel[
                               key] ==
                           null)) {

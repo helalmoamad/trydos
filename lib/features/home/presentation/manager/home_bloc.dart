@@ -399,16 +399,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 .hasReachedMax)) {
       return;
     }
-    reRequestTheseBoutiques[event.categorySlug] = true;
-    emit(state.copyWith(
-        reRequestTheseBoutiques: reRequestTheseBoutiques,
-        getHomeBoutiquesPaginationObjectByMainCategory:
-            getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
-          if (key == event.categorySlug)
-            return MapEntry(key,
-                value.copyWith(paginationStatus: PaginationStatus.loading));
-          return MapEntry(key, value);
-        })));
+    emit(state.copyWith(getHomeBoutiquesPaginationObjectByMainCategory:
+        getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
+      if (key == event.categorySlug)
+        return MapEntry(
+            key, value.copyWith(paginationStatus: PaginationStatus.loading));
+      return MapEntry(key, value);
+    })));
 
     final response = await getHomeBoutiqesUseCase(GetHomeBoutiqesParams(
         offset: event.offset, categorySlug: event.categorySlug));
@@ -445,31 +442,38 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           boutiques[index] = r.data!.boutiques![i];
         }
       }
-      emit(state.copyWith(getHomeBoutiquesPaginationObjectByMainCategory:
-          getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
-        if (key == event.categorySlug) {
-          return MapEntry(
-              key,
-              value.copyWith(
-                  paginationStatus: PaginationStatus.success,
-                  page: event.getWithPagination
-                      ? getHomeBoutiquesPaginationObjectByMainCategory[
-                                  event.categorySlug]!
-                              .page +
-                          1
-                      : 2,
-                  hasReachedMax:
-                      (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
-                  items: [
-                    ...getHomeBoutiquesPaginationObjectByMainCategory[
-                            event.categorySlug]!
-                        .items,
-                    ...r.data!.boutiques ?? []
-                  ]));
-        } else {
-          return MapEntry(key, value);
-        }
-      })));
+      bool resetListAfterGetData =
+          !(reRequestTheseBoutiques[event.categorySlug] ?? false);
+      reRequestTheseBoutiques[event.categorySlug] = true;
+      emit(state.copyWith(
+          reRequestTheseBoutiques: reRequestTheseBoutiques,
+          getHomeBoutiquesPaginationObjectByMainCategory:
+              getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
+            if (key == event.categorySlug) {
+              return MapEntry(
+                  key,
+                  value.copyWith(
+                      paginationStatus: PaginationStatus.success,
+                      page: event.getWithPagination
+                          ? getHomeBoutiquesPaginationObjectByMainCategory[
+                                      event.categorySlug]!
+                                  .page +
+                              1
+                          : 2,
+                      hasReachedMax:
+                          (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
+                      items: [
+                        ...resetListAfterGetData
+                            ? []
+                            : getHomeBoutiquesPaginationObjectByMainCategory[
+                                    event.categorySlug]!
+                                .items,
+                        ...r.data!.boutiques ?? []
+                      ]));
+            } else {
+              return MapEntry(key, value);
+            }
+          })));
     });
   }
 
@@ -500,7 +504,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             getProductsWithoutFilters[keyForCacheData]!.hasReachedMax)) {
       return;
     }
-    reRequestTheseProductListingInBoutiques[keyForCacheData] = true;
     emit(state.copyWith(
         reRequestTheseProductListingInBoutiques:
             reRequestTheseProductListingInBoutiques,
@@ -549,6 +552,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       })));
     }, (r) {
       isFailedTheFirstTime.remove('GetProductsWithoutFiltersEvent');
+      bool resetListAfterGetData =
+          !(reRequestTheseProductListingInBoutiques[keyForCacheData] ?? false);
+      reRequestTheseProductListingInBoutiques[keyForCacheData] = true;
       emit(state.copyWith(getProductListingPaginationWithoutFiltersModel:
           getProductsWithoutFilters.map((key, value) {
         if (key == keyForCacheData) {
@@ -562,7 +568,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   hasReachedMax:
                       (r.data!.products?.length ?? kPageSize) < kPageSize,
                   items: [
-                    ...getProductsWithoutFilters[keyForCacheData]!.items,
+                    ...resetListAfterGetData
+                        ? []
+                        : getProductsWithoutFilters[keyForCacheData]!.items,
                     ...r.data?.products ?? []
                   ]));
         } else {
@@ -575,8 +583,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onGetProductDatailsWithoutRelatedProductsEvent(
       GetProductDatailsWithoutRelatedProductsEvent event,
       Emitter<HomeState> emit) async {
-    // if (state.cachedProductWithoutRelatedProductsModel
-    //     .containsKey(event.productId)) return;
+    emit(state.copyWith(
+        getProductDetailWithoutSimilarRelatedProductsStatus:
+            GetProductDetailWithoutSimilarRelatedProductsStatus.loading));
+
+    if (state.cachedProductWithoutRelatedProductsModel
+        .containsKey(event.productId)) return;
     emit(state.copyWith(
         getProductDetailWithoutSimilarRelatedProductsStatus:
             GetProductDetailWithoutSimilarRelatedProductsStatus.loading));
@@ -614,15 +626,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   @override
   Map<String, dynamic>? toJson(HomeState state) {
-    return state
-        .copyWith(
-          getProductDetailWithoutSimilarRelatedProductsStatus:
-              GetProductDetailWithoutSimilarRelatedProductsStatus.init,
-          reRequestTheseProductListingInBoutiques: {},
-          reRequestTheseBoutiques: {},
-          getMainCategoriesStatus: GetMainCategoriesStatus.init,
-          getStartingSettingsStatus: GetStartingSettingsStatus.init,
-        )
-        .toJson();
+    return state.copyWith(
+      reRequestTheseProductListingInBoutiques: {},
+      reRequestTheseBoutiques: {},
+      getMainCategoriesStatus: GetMainCategoriesStatus.init,
+      getStartingSettingsStatus: GetStartingSettingsStatus.init,
+    ).toJson();
   }
 }

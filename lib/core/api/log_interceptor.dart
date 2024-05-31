@@ -76,8 +76,6 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (kDebugMode) {
-      print("${jsonDecode(err.response.toString())["detailed_error"][0]["file"].toString().contains("chating_staging_trydos")}" +
-          "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999");
       prettyPrinterError(
         "***|| SOMETHING ERROR 💔 ||***"
         "\n error: ${err.error}"

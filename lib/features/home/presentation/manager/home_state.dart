@@ -66,8 +66,8 @@ class HomeState {
   final GetMainCategoriesStatus getMainCategoriesStatus;
   int? selectedCollection;
   int currentPage;
-  final Map<String  , bool> reRequestTheseBoutiques;
-  final Map<String  , bool> reRequestTheseProductListingInBoutiques;
+  final Map<String, bool> reRequestTheseBoutiques;
+  final Map<String, bool> reRequestTheseProductListingInBoutiques;
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
 
@@ -100,8 +100,8 @@ class HomeState {
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
-        final Map<String  , bool>? reRequestTheseBoutiques,
-        final Map<String  , bool>? reRequestTheseProductListingInBoutiques,
+      final Map<String, bool>? reRequestTheseBoutiques,
+      final Map<String, bool>? reRequestTheseProductListingInBoutiques,
       final GetProductListingStatus? getProductListingStatus,
       final StartingSetting? startingSetting,
       List<CollectionStoryModel>? storiesCollections,
@@ -124,8 +124,11 @@ class HomeState {
         currentSelectedColorForEveryProduct:
             currentSelectedColorForEveryProduct ??
                 this.currentSelectedColorForEveryProduct,
-        reRequestTheseBoutiques : reRequestTheseBoutiques ?? this.reRequestTheseBoutiques,
-        reRequestTheseProductListingInBoutiques : reRequestTheseProductListingInBoutiques ?? this.reRequestTheseProductListingInBoutiques,
+        reRequestTheseBoutiques:
+            reRequestTheseBoutiques ?? this.reRequestTheseBoutiques,
+        reRequestTheseProductListingInBoutiques:
+            reRequestTheseProductListingInBoutiques ??
+                this.reRequestTheseProductListingInBoutiques,
         getStoriesForProductStatus:
             getStoriesForProductStatus ?? this.getStoriesForProductStatus,
         selectedCollection: selectedCollection ?? this.selectedCollection,

@@ -50,8 +50,8 @@ class ProductDetailsTitle extends StatelessWidget {
                 children: [
                   SvgNetworkWidget(
                     svgUrl: brand.image!,
-                    height: 110,
-                    width: 120,
+                    height: 30,
+                    width: 30,
                   ),
                   state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                           GetProductDetailWithoutSimilarRelatedProductsStatus
