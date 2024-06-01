@@ -52,8 +52,8 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
   int? prevMode;
 
   void changingModeListener() {
-    if ((widget.scrollController.position.pixels <= 30 &&
-            displayMode.value == 1) ||
+    if ((widget.scrollController.position.pixels <= (widget.scrollController.position.maxScrollExtent - 550) &&
+        displayMode.value == 1) ||
         (widget.scrollController.position.pixels <= 90 &&
             displayMode.value == 2)) {
       prevMode = displayMode.value;
@@ -179,10 +179,10 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
     return ValueListenableBuilder<int>(
         valueListenable: displayMode,
         builder: (context, mode, _) {
-          return (widget.scrollController.position.pixels <= 30 &&
-                      prevMode == 1) ||
+          return ((widget.scrollController.position.pixels <= (widget.scrollController.position.maxScrollExtent - 550) &&
+              displayMode.value == 1) ||
                   (widget.scrollController.position.pixels <= 90 &&
-                      prevMode == 2)
+                      prevMode == 2))
               ? SizedBox.shrink()
               : LocalHeroScope(
                   duration: const Duration(milliseconds: 200),

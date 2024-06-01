@@ -317,7 +317,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                         valueListenable: threeImagesSlider,
                                         builder: (context, sliderData, child) {
                                           return MyGallery3DWidget(
-                                            //  key: ValueKey('gallery3dControllerForColors${widget.itemIndex}'),
+                                            key: UniqueKey(),
                                             gallery3dController:
                                                 gallery3dControllerForProductImages,
                                             gallery3dControllerForCircles:
