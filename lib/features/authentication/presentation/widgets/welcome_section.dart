@@ -69,6 +69,7 @@ class WelcomeSection extends StatelessWidget {
             height: 30,
           ),
           InkWell(
+            key: Key('have_already_account_button'),
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () async {

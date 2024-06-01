@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,6 +12,8 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
 import 'package:tuple/tuple.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
@@ -88,7 +91,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
   late final ValueNotifier<int> currentColorIndex;
 
   late int prevIndexInFirstSlider;
-
+  late HomeBloc homeBloc;
   late int prevIndexInSecondSlider;
   int slideModeIndex = 0;
   final CarouselController carouselController = CarouselController();
@@ -96,6 +99,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
 
   @override
   void initState() {
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     syncColorImageList = widget.productItem.syncColorImages;
     syncColorImageList?.removeWhere((element) => element.images.isNullOrEmpty);
     syncColorImageList = [
@@ -516,6 +520,14 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     ValueListenableBuilder<int>(
                                       valueListenable: currentColorIndex,
                                       builder: (context, currentIndex, _) {
+                                        print("${currentIndex}" +
+                                            "00000000000000000000");
+                                        homeBloc.add(
+                                            AddCurrentSelectedColorEvent(
+                                                currentSelectedColor:
+                                                    currentIndex,
+                                                productId: widget.productItem.id
+                                                    .toString()));
                                         return MyTextWidget(
                                           syncColorImageList![currentIndex]
                                               .colorName

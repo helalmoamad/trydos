@@ -60,7 +60,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                       imageUrl: imageUrl!,
                       height: height ?? 464,
                       width: width ?? 320,
-                      imageFit: imageFit ?? BoxFit.fill,
+                      imageFit: imageFit ?? BoxFit.cover,
                     )),
         ),
         Container(

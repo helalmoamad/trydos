@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -7,6 +8,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 
 import '../../../../../core/utils/responsive_padding.dart';
+import '../../../../../generated/locale_keys.g.dart';
 
 class ProductDetailsDescriptionWidget extends StatefulWidget {
   final String description;
@@ -31,10 +33,9 @@ class _ProductDetailsDescriptionWidgetState
   @override
   void initState() {
     text = widget.description;
-    print(
-        "--------------------------------------------------------------------------------------------------------------${text}************************************************************");
     int index = 4 * ((1.sw.w - 40) ~/ 13.sp) - 12;
-    if (text.length <= index) {
+
+    if (text.length - 5 < index) {
       twoLines = text;
       readMores = false;
     } else {
@@ -42,7 +43,7 @@ class _ProductDetailsDescriptionWidgetState
         index--;
       }
       twoLines = text.substring(0, index + 1);
-      text = text.substring(0, text.lastIndexOf(' ') + 1);
+      text = text.substring(0, text.length);
     }
     super.initState();
   }
@@ -53,39 +54,34 @@ class _ProductDetailsDescriptionWidgetState
         valueListenable: readMoreNotifier,
         builder: (context, readMore, child) {
           return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
+              padding: EdgeInsets.symmetric(horizontal: 5.0),
+              child: Column(
                 children: [
-                  Expanded(
-                    child: Html(
-                      data: readMore ? twoLines : text,
-                    ),
+                  Html(
+                    data: readMore ? twoLines : text,
                   ),
-                  Expanded(
-                    child: RichText(
-                        maxLines: readMore ? 2 : 12,
-                        overflow: TextOverflow.ellipsis,
-                        text: TextSpan(children: [
-                          readMores
-                              ? TextSpan(
-                                  text: !readMore
-                                      ? "Read Less..."
-                                      : "Read More...",
-                                  style: context.textTheme.bodyText2?.rq
-                                      .copyWith(
-                                          height: 1.23,
-                                          color: Color(0xff388CFF),
-                                          fontSize: 13),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      readMoreNotifier.value =
-                                          !readMoreNotifier.value;
-                                    })
-                              : TextSpan(
-                                  text: "",
-                                )
-                        ])),
-                  ),
+                  RichText(
+                      maxLines: readMore ? 2 : 12,
+                      overflow: TextOverflow.ellipsis,
+                      text: TextSpan(children: [
+                        readMores
+                            ? TextSpan(
+                                text: !readMore
+                                    ? LocaleKeys.readLess.tr()
+                                    : LocaleKeys.readMore.tr(),
+                                style: context.textTheme.bodyText2?.rq.copyWith(
+                                    height: 1.23,
+                                    color: Color(0xff388CFF),
+                                    fontSize: 13),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    readMoreNotifier.value =
+                                        !readMoreNotifier.value;
+                                  })
+                            : TextSpan(
+                                text: " ",
+                              )
+                      ]))
                 ],
               )
 
