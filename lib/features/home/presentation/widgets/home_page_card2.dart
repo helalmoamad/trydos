@@ -151,7 +151,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(left: 25.w, top: 15),
+                    padding: EdgeInsetsDirectional.only(start: 25.w, top: 15),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -305,7 +305,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                   )
                 ],
               )),
-              Positioned(
+              PositionedDirectional(
                 child: cupertino.Container(
                   width: 60,
                   height: 12,
@@ -358,8 +358,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     ),
                   ],
                 ),*/
-                right: LanguageService.rtl ? null : 18.w,
-                left: LanguageService.rtl ? 18.w : null,
+                end: 18.w,
                 top: 18,
               ),
             ],

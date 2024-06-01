@@ -13,6 +13,7 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_display_pictures_page.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_body/display_sizes_card.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/widget/stories_list.dart';
@@ -286,6 +287,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ),
                           DisplayColorsCard(
                               productItem: widget.productItem,
+                              scrollController: scrollController),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          DisplaySizesCard(
                               scrollController: scrollController),
                           SizedBox(
                             height: 15,
