@@ -504,8 +504,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       return;
     }
     emit(state.copyWith(
-        reRequestTheseProductListingInBoutiques:
-            reRequestTheseProductListingInBoutiques,
         getProductListingPaginationWithoutFiltersModel:
         getProductsWithoutFilters.map((key, value) {
           if(key == keyForCacheData) {
