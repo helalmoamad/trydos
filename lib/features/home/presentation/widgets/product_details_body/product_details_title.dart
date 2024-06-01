@@ -15,6 +15,8 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 
+import '../../../../app/svg_network_widget.dart';
+
 class ProductDetailsTitle extends StatelessWidget {
   final Brand.Brand brand;
 
@@ -35,7 +37,8 @@ class ProductDetailsTitle extends StatelessWidget {
       buildWhen: (p, c) =>
           p.getProductDetailWithoutSimilarRelatedProductsStatus !=
               c.getProductDetailWithoutSimilarRelatedProductsStatus ||
-          p.currentSelectedColorForEveryProduct != c.currentSelectedColorForEveryProduct,
+          p.currentSelectedColorForEveryProduct !=
+              c.currentSelectedColorForEveryProduct,
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,11 +48,10 @@ class ProductDetailsTitle extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  MyCachedNetworkImage(
-                    height: 110,
-                    width: 120,
-                    imageUrl: brand.image!,
-                    imageFit: BoxFit.cover,
+                  SvgNetworkWidget(
+                    svgUrl: brand.image!,
+                    height: 30,
+                    width: 30,
                   ),
                   state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                           GetProductDetailWithoutSimilarRelatedProductsStatus
@@ -80,7 +82,7 @@ class ProductDetailsTitle extends StatelessWidget {
                                       .product!
                                       .reviewsCount
                                       .toString()
-                                  : "",
+                                  : "0",
                               style: context.textTheme.caption?.rq.copyWith(
                                   color: Color(0xff505050), height: 1.26),
                             )
@@ -93,7 +95,7 @@ class ProductDetailsTitle extends StatelessWidget {
               height: 10,
             ),
             Padding(
-              padding: EdgeInsets.only(left: 20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
                 children: [
                   MyTextWidget(
@@ -120,7 +122,7 @@ class ProductDetailsTitle extends StatelessWidget {
                         borderRadius: BorderRadius.circular(2)),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 5.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: MyTextWidget(
                       colorName,
                       style: context.textTheme.subtitle1?.rq.copyWith(

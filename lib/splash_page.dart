@@ -42,6 +42,7 @@ class _SplashPageState extends State<SplashPage> {
     appBloc.add(ChangeTab(0));
 
     BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
+
     checkAndNavigationCallingPage(context, fromTerminated: true,
         whereToNavigationAfterCheck: () {
       context.go(prefsRepository.marketToken == null

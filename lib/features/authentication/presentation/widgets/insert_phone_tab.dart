@@ -165,6 +165,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                 valueListenable: displaySubmit,
                 builder: (context, display, _) {
                   return PhoneFormField(
+                    key: Key('login_phone_form_field'),
                     focusNode: widget.focusNode,
                     onChange: (String? text) {
                       Country newCountry = countries.firstWhere(
@@ -240,6 +241,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                               height: 15.h,
                             )
                           : InkWell(
+                              key: Key('login_confirm_phone_button'),
                               onTap: () {
                                 widget.moveToNextStep
                                     .call('${form.controllers[0].text}');
