@@ -5,4 +5,5 @@ class WidgetsKey {
   static const chooseWhatsappButtonKey = 'choose_whatsapp_button';
   static const otpRemainingTimeKey = 'otp_remaining_time';
   static const resendCodeButtonKey = 'resend_code_button';
+  static const laterTakeLookKey = 'later_take_look_button';
 }

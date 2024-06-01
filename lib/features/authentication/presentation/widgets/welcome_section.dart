@@ -198,6 +198,7 @@ class WelcomeSection extends StatelessWidget {
           InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
+            key: Key(WidgetsKey.laterTakeLookKey),
             onTap: () async {
               if (prefsRepository.isVerifiedPhone != false) {
                 String? deviceId = await HelperFunctions.getDeviceId();

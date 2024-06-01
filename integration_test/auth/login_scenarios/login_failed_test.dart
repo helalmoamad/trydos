@@ -45,7 +45,7 @@ void main() {
                 isTrue);
             debugPrint('otpRemainingTime start from 2 minutes success');
           } catch (e) {
-            print(
+            debugPrint(
                 '//////// otpRemainingTime start from 2 minutes failed Failure: //////////\n $e');
             rethrow;
           }
