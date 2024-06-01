@@ -14,17 +14,18 @@ class MyCachedNetworkImage extends StatelessWidget {
       {Key? key,
       required this.imageUrl,
       required this.width,
-        this.logoTextWidth,
-        this.logoTextHeight,
+      this.logoTextWidth,
+      this.logoTextHeight,
       required this.imageFit,
-        this.imageBuilder,
-        this.imageColor,
-        this.progressIndicatorBuilderWidget,
-        this.callWhenDisplayImage,
-        this.callWhenLoadingImage,
-       this.radius=12,
-       this.withImageShadow=false,
-      required this.height, this.circleDimensions})
+      this.imageBuilder,
+      this.imageColor,
+      this.progressIndicatorBuilderWidget,
+      this.callWhenDisplayImage,
+      this.callWhenLoadingImage,
+      this.radius = 12,
+      this.withImageShadow = false,
+      required this.height,
+      this.circleDimensions})
       : super(key: key);
 
   final ValueNotifier<int> rebuildImage = ValueNotifier(0);
@@ -57,16 +58,18 @@ class MyCachedNetworkImage extends StatelessWidget {
           rebuildImage.value++;
         });
       },
-      child: Icon(Icons.refresh, color: const Color(0xffff5f61), size: min(25 ,height)),
+      child: Icon(Icons.refresh,
+          color: const Color(0xffff5f61), size: min(25, height)),
     ));
   }
 
   @override
   Widget build(BuildContext context) {
-    List<String> list ;
+    List<String> list;
     String url = '';
-      list = imageUrl.split('upload');
-      url = list[0] + 'upload/c_scale,h_${2 * height.toInt()},w_${2 * width.toInt()}'+list[1];
+    list = imageUrl.split('upload');
+    url = list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1];
+
     return ValueListenableBuilder<int>(
         valueListenable: rebuildImage,
         builder: (context, count, _) {
@@ -77,12 +80,12 @@ class MyCachedNetworkImage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(radius),
                 boxShadow: withImageShadow
                     ? [
-                  BoxShadow(
-                    color: context.colorScheme.black.withOpacity(0.16),
-                    offset: const Offset(0, 3),
-                    blurRadius: 6,
-                  ),
-                ]
+                        BoxShadow(
+                          color: context.colorScheme.black.withOpacity(0.16),
+                          offset: const Offset(0, 3),
+                          blurRadius: 6,
+                        ),
+                      ]
                     : null,
               ),
               child: CachedNetworkImage(
@@ -93,32 +96,35 @@ class MyCachedNetworkImage extends StatelessWidget {
                   color: imageColor,
                   height: height,
                   cacheManager: CustomCacheManager(),
-
-                  progressIndicatorBuilder: (context, _, progress){
+                  progressIndicatorBuilder: (context, _, progress) {
                     callWhenLoadingImage?.call();
-                    return progressIndicatorBuilderWidget ?? TrydosShimmerLoading(
-                      width: width,
-                      height: height,
-                      logoTextHeight: logoTextHeight  ?? 14,
-                      logoTextWidth: logoTextWidth ?? 48.w,
-                      circleDimensions: circleDimensions,
-                    );
-                  } ,
-                  imageBuilder: imageBuilder ?? (ctx , image){
-                    callWhenDisplayImage?.call();
-                    return
-                      Container(
-                      width: width,
-                      height: height,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(radius),
-                        image: DecorationImage(
-                          image: image,
-                          fit: imageFit,
-                        )
-                      ),
-                    );
+                    return progressIndicatorBuilderWidget ??
+                        TrydosShimmerLoading(
+                          width: width,
+                          height: height,
+                          logoTextHeight: logoTextHeight ?? 14,
+                          logoTextWidth: logoTextWidth ?? 48.w,
+                          circleDimensions: circleDimensions,
+                        );
                   },
+                  imageBuilder: imageBuilder ??
+                      (ctx, image) {
+                        callWhenDisplayImage?.call();
+                        return ClipRRect(
+                            child: Align(
+                          alignment: Alignment.center,
+                          child: Container(
+                            width: width,
+                            height: height,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(radius),
+                                image: DecorationImage(
+                                  image: image,
+                                  fit: imageFit,
+                                )),
+                          ),
+                        ));
+                      },
                   errorWidget: (context, url, error) {
                     if (enable) {
                       enable = false;

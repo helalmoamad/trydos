@@ -132,6 +132,8 @@
   "answer": "Answer",
   "calling": "Calling ...",
   "my_stories": "My Stories",
+  "read_more":"Read More ...",
+  "read_less":"Read Less ...",
   "click_to_add_story": "Click to add a new story",
   "insert_name_to_continue": "Insert name to continue",
   "must_be_at_least_8_characters": "Must be at least 8 characters"

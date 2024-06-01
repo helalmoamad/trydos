@@ -100,6 +100,7 @@ abstract class AppAssets {
   static String get endCallSvg=>'end_call'.svg;
   static String get partyCozSvg=>'party_coz'.svg;
   static String get polyesterSvg=>'polyester'.svg;
+  static String get malokanSvg=>'malokan'.svg;
 
   static String get callMutedSvg=>'call_muted'.svg;
   static String get callUnMutedSvg=>'call_unmute'.svg;

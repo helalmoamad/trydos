@@ -33,6 +33,8 @@ abstract class LocaleKeys {
   static const trems_of_services = 'trems_of_services';
   static const to = 'to';
   static const tap = 'tap';
+  static const readMore = 'read_more';
+  static const readLess = 'read_less';
   static const to_accept_trydos = 'to_accept_trydos';
   static const phone_numbber = 'phone_numbber';
   static const enter_your_phonenumber_registered_with_us =

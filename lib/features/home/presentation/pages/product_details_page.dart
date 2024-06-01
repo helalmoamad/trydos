@@ -13,6 +13,7 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_display_pictures_page.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_body/display_sizes_card.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/widget/stories_list.dart';
@@ -63,8 +64,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
         productId: widget.productItem.id.toString()));
     homeBloc.add(GetStoryForProductEvent());
-    homeBloc.add(AddCurrentSelectedColorEvent(
-        currentSelectedColor: 0, productId: widget.productItem.id.toString()));
+
     super.initState();
   }
 
@@ -73,164 +73,162 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     FlutterError.onError = (error) {
       debugPrint(error.toString());
     };
-    return Directionality(
-        textDirection: TextDirection.ltr,
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            Scaffold(
-                appBar: TrydosAppBar(
-                  appBarParams: AppBarParams(
-                      scrolledUnderElevation: 0,
-                      backIconColor: Colors.black,
-                      withShadow: false),
-                ),
-                backgroundColor: Color(0xffF4F4F4),
-                body: BlocBuilder<HomeBloc, HomeState>(
-                  buildWhen: (p, c) =>
-                      p.getStoriesForProductStatus !=
-                          c.getStoriesForProductStatus ||
-                      p.getProductDetailWithoutSimilarRelatedProductsStatus !=
-                          c
-                              .getProductDetailWithoutSimilarRelatedProductsStatus ||
-                      p.currentSelectedColorForEveryProduct !=
-                          c.currentSelectedColorForEveryProduct,
-                  builder: (context, state) {
-                    if (state
-                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
-                        GetProductDetailWithoutSimilarRelatedProductsStatus
-                            .failure) {
-                      return Center(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              homeBloc.add(
-                                  GetProductDatailsWithoutRelatedProductsEvent(
-                                      productId:
-                                          widget.productItem.id.toString()));
-                            },
-                            child: MyTextWidget(LocaleKeys.try_again.tr())),
-                      );
-                    }
-                    String productId = widget.productItem.id.toString();
-                    int currentSelectedColor = state
-                            .currentSelectedColorForEveryProduct[productId] ??
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        Scaffold(
+            appBar: TrydosAppBar(
+              appBarParams: AppBarParams(
+                  scrolledUnderElevation: 0,
+                  backIconColor: Colors.black,
+                  withShadow: false),
+            ),
+            backgroundColor: Color(0xffF4F4F4),
+            body: BlocBuilder<HomeBloc, HomeState>(
+              buildWhen: (p, c) =>
+                  p.getStoriesForProductStatus !=
+                      c.getStoriesForProductStatus ||
+                  p.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                      c.getProductDetailWithoutSimilarRelatedProductsStatus ||
+                  p.currentSelectedColorForEveryProduct !=
+                      c.currentSelectedColorForEveryProduct,
+              builder: (context, state) {
+                String productId = widget.productItem.id.toString();
+                /*     if (state
+                        .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                    GetProductDetailWithoutSimilarRelatedProductsStatus
+                        .failure) {
+                  return Center(
+                    child: ElevatedButton(
+                        onPressed: () {
+                          homeBloc.add(
+                              GetProductDatailsWithoutRelatedProductsEvent(
+                                  productId:
+                                      widget.productItem.id.toString()));
+                        },
+                        child: MyTextWidget(LocaleKeys.try_again.tr())),
+                  );
+                }*/
+
+                int currentSelectedColor =
+                    state.currentSelectedColorForEveryProduct[productId] ??
                         (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
-                    return ScrollConfiguration(
-                      behavior: const CupertinoScrollBehavior(),
-                      child: ListView(
-                        shrinkWrap: true,
-                        controller: scrollController,
-                        physics: enable
-                            ? const ClampingScrollPhysics()
-                            : const NeverScrollableScrollPhysics(),
+                return ScrollConfiguration(
+                  behavior: const CupertinoScrollBehavior(),
+                  child: ListView(
+                    shrinkWrap: true,
+                    controller: scrollController,
+                    physics: enable
+                        ? const ClampingScrollPhysics()
+                        : const NeverScrollableScrollPhysics(),
+                    children: [
+                      Stack(
+                        alignment: LanguageService.rtl
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         children: [
-                          Stack(
-                            alignment: LanguageService.rtl
-                                ? Alignment.centerRight
-                                : Alignment.centerLeft,
-                            children: [
-                              SizedBox(
-                                  height: 464,
-                                  child: ScrollConfiguration(
-                                      behavior: const CupertinoScrollBehavior(),
-                                      child: ListView.separated(
-                                        itemCount: widget.productItem
-                                                .syncColorImages.isNullOrEmpty
-                                            ? widget.productItem.images!.length
-                                            : !widget
+                          SizedBox(
+                              height: 464,
+                              child: ScrollConfiguration(
+                                  behavior: const CupertinoScrollBehavior(),
+                                  child: ListView.separated(
+                                    itemCount: widget.productItem
+                                            .syncColorImages.isNullOrEmpty
+                                        ? widget.productItem.images!.length
+                                        : !widget
+                                                .productItem
+                                                .syncColorImages![
+                                                    currentSelectedColor]
+                                                .images
+                                                .isNullOrEmpty
+                                            ? widget
+                                                .productItem
+                                                .syncColorImages![
+                                                    currentSelectedColor]
+                                                .images!
+                                                .length
+                                            : 0,
+                                    primary: false,
+                                    shrinkWrap: true,
+                                    physics: const ClampingScrollPhysics(),
+                                    scrollDirection: Axis.horizontal,
+                                    padding: EdgeInsets.only(
+                                        left: 10,
+                                        right: 10,
+                                        top: 10,
+                                        bottom: 15),
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                          onTap: () {
+                                            // pushOverscrollRoute(
+                                            //     context: context,
+                                            //     transitionDuration:
+                                            //         Duration(milliseconds: 250),
+                                            //     reverseTransitionDuration:
+                                            //         Duration(milliseconds: 400),
+                                            //     child:
+                                            //         ProductDetailsDisplayPicturesPage(
+                                            //             pictureIndex: index),
+                                            //     workNormally: true,
+                                            //     withRoundedCorners: true,
+                                            //     isArabicLanguage:
+                                            //         LanguageService.rtl,
+                                            //     dragToPopDirection:
+                                            //         DragToPopDirection.toBottom,
+                                            //     scrollToPopOption:
+                                            //         ScrollToPopOption.start,
+                                            //     fullscreenDialog: true);
+                                            HelperFunctions.slidingNavigation(
+                                                context,
+                                                ProductDetailsDisplayPicturesPage(
+                                                  images: widget
+                                                          .productItem
+                                                          .syncColorImages
+                                                          .isNullOrEmpty
+                                                      ? widget.productItem
+                                                              .images ??
+                                                          []
+                                                      : widget
+                                                              .productItem
+                                                              .syncColorImages![
+                                                                  currentSelectedColor]
+                                                              .images ??
+                                                          [],
+                                                ));
+                                          },
+                                          child: ProductDetailsImageWidget(
+                                            imageUrl: widget
                                                     .productItem
-                                                    .syncColorImages![
-                                                        currentSelectedColor]
-                                                    .images
+                                                    .syncColorImages
                                                     .isNullOrEmpty
                                                 ? widget
+                                                    .productItem.images![index]
+                                                : widget
                                                     .productItem
                                                     .syncColorImages![
                                                         currentSelectedColor]
-                                                    .images!
-                                                    .length
-                                                : 0,
-                                        primary: false,
-                                        shrinkWrap: true,
-                                        physics: const ClampingScrollPhysics(),
-                                        scrollDirection: Axis.horizontal,
-                                        padding: EdgeInsets.only(
-                                            left: 10,
-                                            right: 10,
-                                            top: 10,
-                                            bottom: 15),
-                                        itemBuilder: (context, index) {
-                                          return GestureDetector(
-                                              onTap: () {
-                                                // pushOverscrollRoute(
-                                                //     context: context,
-                                                //     transitionDuration:
-                                                //         Duration(milliseconds: 250),
-                                                //     reverseTransitionDuration:
-                                                //         Duration(milliseconds: 400),
-                                                //     child:
-                                                //         ProductDetailsDisplayPicturesPage(
-                                                //             pictureIndex: index),
-                                                //     workNormally: true,
-                                                //     withRoundedCorners: true,
-                                                //     isArabicLanguage:
-                                                //         LanguageService.rtl,
-                                                //     dragToPopDirection:
-                                                //         DragToPopDirection.toBottom,
-                                                //     scrollToPopOption:
-                                                //         ScrollToPopOption.start,
-                                                //     fullscreenDialog: true);
-                                                HelperFunctions.slidingNavigation(
-                                                    context,
-                                                    ProductDetailsDisplayPicturesPage(
-                                                      images: widget
-                                                              .productItem
-                                                              .syncColorImages
-                                                              .isNullOrEmpty
-                                                          ? widget.productItem
-                                                                  .images ??
-                                                              []
-                                                          : widget
-                                                                  .productItem
-                                                                  .syncColorImages![
-                                                                      currentSelectedColor]
-                                                                  .images ??
-                                                              [],
-                                                    ));
-                                              },
-                                              child: ProductDetailsImageWidget(
-                                                imageUrl: widget
-                                                        .productItem
-                                                        .syncColorImages
-                                                        .isNullOrEmpty
-                                                    ? widget.productItem
-                                                        .images![index]
-                                                    : widget
-                                                        .productItem
-                                                        .syncColorImages![
-                                                            currentSelectedColor]
-                                                        .images![index],
-                                              ));
-                                        },
-                                        separatorBuilder: (context, index) {
-                                          return const SizedBox(
-                                            width: 9,
-                                          );
-                                        },
-                                      ))),
-                              Container(
-                                width: 40,
-                                height: 464,
-                                color: Colors.transparent,
-                              )
-                            ],
-                          ),
-                          ProductDetailsTitle(
-                            brand: widget.productItem.brand!,
-                            productName: widget.productItem.name!,
-                            thumbnail: widget.productItem.thumbnail ?? '',
-                            colorName: !widget.productItem.syncColorImages
-                                        .isNullOrEmpty &&
+                                                    .images![index],
+                                          ));
+                                    },
+                                    separatorBuilder: (context, index) {
+                                      return const SizedBox(
+                                        width: 9,
+                                      );
+                                    },
+                                  ))),
+                          Container(
+                            width: 40,
+                            height: 464,
+                            color: Colors.transparent,
+                          )
+                        ],
+                      ),
+                      ProductDetailsTitle(
+                        brand: widget.productItem.brand!,
+                        productName: widget.productItem.name!,
+                        thumbnail: widget.productItem.thumbnail ?? '',
+                        colorName:
+                            !widget.productItem.syncColorImages.isNullOrEmpty &&
                                     !widget.productItem.syncColorImages![0]
                                         .images.isNullOrEmpty
                                 ? widget
@@ -290,6 +288,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           SizedBox(
                             height: 15,
                           ),
+                          DisplaySizesCard(
+                              scrollController: scrollController),
+                          SizedBox(
+                            height: 15,
+                          ),
                           // ProductStoriesCard(),
                           StoryList(),
                           SizedBox(
@@ -308,17 +311,17 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ),
                         ],
                       ),
-                    );
-                  },
-                )),
-            ProductDetailsBottomSheet(
-              productItem: widget.productItem,
-            ),
-            SlidingUpPanelForBuyersCameraShots(
-                panelController: panelControllerForBuyersCameraShots,
-                panelControllerForReels: panelControllerForReels),
-            SlidingUpPanelForReels(panelController: panelControllerForReels),
-          ],
-        ));
+                );
+              },
+            )),
+        ProductDetailsBottomSheet(
+          productItem: widget.productItem,
+        ),
+        SlidingUpPanelForBuyersCameraShots(
+            panelController: panelControllerForBuyersCameraShots,
+            panelControllerForReels: panelControllerForReels),
+        SlidingUpPanelForReels(panelController: panelControllerForReels),
+      ],
+    );
   }
 }
