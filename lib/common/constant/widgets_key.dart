@@ -6,4 +6,10 @@ class WidgetsKey {
   static const otpRemainingTimeKey = 'otp_remaining_time';
   static const resendCodeButtonKey = 'resend_code_button';
   static const laterTakeLookKey = 'later_take_look_button';
+  static const mainCategoriesTabNullKey = 'main_categories_tab_null';
+  static const mainCategoriesTabKey = 'main_categories_tab';
+  static const storiesSuccessStatusKey = 'stories_success_status_key';
+  static const storiesFailureStatusKey = 'stories_failure_status_key';
+  static const boutiquesSuccessStatusKey = 'boutiques_success_status_key';
+  static const boutiquesFailureStatusKey = 'boutiques_failure_status_key';
 }

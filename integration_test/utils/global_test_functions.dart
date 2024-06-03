@@ -46,20 +46,25 @@ class GlobalTestFunctions {
   //////////////////////////////////////////////////////////////
   static Future<void> findNoWidget({
     required WidgetTester tester,
-    required Type widgetType,
+    dynamic actual,
+    Type? widgetType,
+    bool withDelayAndPumpAndSettle = true,
+    int delayInSeconds = 2,
     required String successMessage,
     required String failedMessage,
   }) async {
     try {
-      expect(find.byType(widgetType), findsNothing);
+      expect(
+          widgetType == null ? actual : find.byType(widgetType), findsNothing);
       debugPrint(successMessage);
     } catch (e) {
       print('//////// $failedMessage Failure: //////////\n $e');
       rethrow;
     }
-    await Future.delayed(const Duration(seconds: 2));
-    await tester.pumpAndSettle();
-    await Future.delayed(const Duration(milliseconds: 100));
+    if (withDelayAndPumpAndSettle) {
+      await tester.pumpAndSettle();
+      await Future.delayed(Duration(seconds: delayInSeconds));
+    }
   }
 
   //////////////////////////////////////////////////////////////

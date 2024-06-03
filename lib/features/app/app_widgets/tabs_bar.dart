@@ -16,6 +16,7 @@ import 'package:trydos/features/home/data/models/main_categories_response_model.
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 
 import '../../../common/constant/design/assets_provider.dart';
+import '../../../common/constant/widgets_key.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/responsive_padding.dart';
 import '../../home/presentation/manager/home_bloc.dart';
@@ -67,6 +68,7 @@ class _TabsBarState extends State<TabsBar> {
                 ],
               ),
               child: Row(
+                  key: Key(WidgetsKey.mainCategoriesTabNullKey),
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(
                       5,
@@ -98,6 +100,7 @@ class _TabsBarState extends State<TabsBar> {
                         child: SizedBox(
                             width: 1.sw - 8.r,
                             child: Row(
+                                key: Key(WidgetsKey.mainCategoriesTabKey),
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: List.generate(

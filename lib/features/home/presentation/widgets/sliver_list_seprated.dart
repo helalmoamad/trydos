@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'dart:math' as math;
 
 SliverMultiBoxAdaptorWidget sliverListSeparated({
+  Key? key,
   required final IndexedWidgetBuilder itemBuilder,
   required final Widget separator,
   required int childCount,
@@ -12,6 +13,7 @@ SliverMultiBoxAdaptorWidget sliverListSeparated({
   final int semanticIndexOffset = 0,
 }) {
   return SliverList(
+    key: key,
     delegate: SliverChildBuilderDelegate(
       (BuildContext context, int index) {
         final int itemIndex = index ~/ 2;
