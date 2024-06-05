@@ -118,6 +118,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 int currentSelectedColor =
                     state.currentSelectedColorForEveryProduct[productId] ??
                         (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
+                print(
+                    "777777777777777777777777777777777///////////////////////////////////////////////////////////${state.currentSelectedColorForEveryProduct[productId]}");
                 return ScrollConfiguration(
                   behavior: const CupertinoScrollBehavior(),
                   child: ListView(
@@ -317,8 +319,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         height: 15,
                       ),
                       DisplayColorsCard(
-                          productItem: widget.productItem,
-                          scrollController: scrollController),
+                        productItem: widget.productItem,
+                        scrollController: scrollController,
+                        currentColorForProduct:
+                            state.currentSelectedColorForEveryProduct[
+                                    widget.productItem.id.toString()] ??
+                                0,
+                      ),
                       SizedBox(
                         height: 15,
                       ),

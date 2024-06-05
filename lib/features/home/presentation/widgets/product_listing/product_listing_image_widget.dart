@@ -11,11 +11,13 @@ class ProductListingImageWidget extends StatelessWidget {
       this.borderColor,
       this.withBackGroundShadow = false,
       required this.circleShape,
-      required this.imageUrl});
+      required this.imageUrl,
+      this.index});
 
   final double? width;
   final double? height;
   final bool circleShape;
+  final int? index;
   final bool withBackGroundShadow;
   final double innerShadowYOffset;
   final Color? borderColor;

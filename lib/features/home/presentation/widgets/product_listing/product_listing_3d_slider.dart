@@ -441,6 +441,14 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                               itemHeight: 240,
                                               threeImages: sliderData.item1,
                                               onItemClick: (index) {
+                                                homeBloc.add(
+                                                    AddCurrentSelectedColorEvent(
+                                                        currentSelectedColor:
+                                                            gallery3dControllerForCircles!
+                                                                .currentIndex,
+                                                        productId: widget
+                                                            .productItem.id
+                                                            .toString()));
                                                 widget.setThisEnabled
                                                     .call(-1, -1);
                                               },
@@ -520,14 +528,6 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     ValueListenableBuilder<int>(
                                       valueListenable: currentColorIndex,
                                       builder: (context, currentIndex, _) {
-                                        print("${currentIndex}" +
-                                            "00000000000000000000");
-                                        homeBloc.add(
-                                            AddCurrentSelectedColorEvent(
-                                                currentSelectedColor:
-                                                    currentIndex,
-                                                productId: widget.productItem.id
-                                                    .toString()));
                                         return MyTextWidget(
                                           syncColorImageList![currentIndex]
                                               .colorName
@@ -594,6 +594,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                               ),
                                               itemBuilder: (context, index, _) {
                                                 return ProductListingImageWidget(
+                                                  index:
+                                                      prevIndexInSecondSlider,
                                                   width: 200,
                                                   imageUrl: syncColorImageList
                                                           .isNullOrEmpty
@@ -811,7 +813,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                             Row(
                               children: [
                                 MyTextWidget(
-                                  '100',
+                                  widget.productItem.price.toString(),
                                   style: textTheme.caption?.lq.copyWith(
                                     color: Color(0xff3c3c3c),
                                     decoration: TextDecoration.lineThrough,
@@ -822,7 +824,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                   width: 2,
                                 ),
                                 MyTextWidget(
-                                  '90',
+                                  widget.productItem.offerPrice.toString(),
                                   style: textTheme.caption?.bq.copyWith(
                                     color: Color(0xff3c3c3c),
                                     height: 0,
@@ -832,7 +834,9 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                   width: 2,
                                 ),
                                 MyTextWidget(
-                                  'USD',
+                                  widget.productItem.priceFormatted!
+                                      .split(" ")
+                                      .toList()[1],
                                   style: textTheme.overline?.lq.copyWith(
                                     color: Color(0xff5D5D5D),
                                     height: 0,
@@ -1007,6 +1011,11 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                               false);
                                         }
                                       } else {
+                                        homeBloc.add(
+                                            AddCurrentSelectedColorEvent(
+                                                currentSelectedColor: index,
+                                                productId: widget.productItem.id
+                                                    .toString()));
                                         gallery3dControllerForCircles!
                                             .animateTo(index, true);
                                         int stepCount = 0;
@@ -1059,6 +1068,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                   0) >=
                                               (syncColorImageList!.length ~/ 2),
                                       child: ProductListingImageWidget(
+                                        index: index,
                                         width: 40,
                                         height: 40,
                                         imageUrl: images[index],
