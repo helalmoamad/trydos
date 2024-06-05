@@ -13,16 +13,18 @@ import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/theme_state.dart';
 
 class SelectSizeContent extends StatefulWidget {
-  const SelectSizeContent({
-    super.key,
-    required this.scrollController,
-    required this.selectedColor,
-    required this.addToBagButtonShapeNotifier,
-  });
+  const SelectSizeContent(
+      {super.key,
+        required this.scrollController,
+        required this.selectedColor,
+        required this.addToBagButtonShapeNotifier,
+        required this.sizeIsNotAvailableNotifier,
+      });
 
-  final ScrollController scrollController;
+  final ScrollController scrollController ;
   final Color selectedColor;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
+  final ValueNotifier<String?> sizeIsNotAvailableNotifier;
 
   @override
   State<SelectSizeContent> createState() => _SelectSizeContentState();
@@ -34,7 +36,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   List<String> sizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
   final CarouselController carouselController = CarouselController();
-  late final ValueNotifier<int> currentIndexInSizes;
+  late final ValueNotifier<int> currentIndexInSizes ;
 
   @override
   void initState() {
@@ -48,6 +50,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
         scrollTime: 1);
     super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -101,8 +104,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   separatorBuilder: (ctx, index) => const SizedBox(
-                        width: 6,
-                      ),
+                    width: 6,
+                  ),
                   itemBuilder: (ctx, index) {
                     if (index > 0 && index % 10 == 9) {
                       return const SizedBox(
@@ -126,7 +129,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: ValueListenableBuilder<int>(
                 valueListenable: currentIndexInSizes,
-                builder: (context, currentIndex, _) {
+                builder: (context , currentIndex , _) {
                   return Stack(
                     alignment: Alignment.center,
                     children: [
@@ -147,16 +150,18 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                 color: sizes[currentIndex] == 'S'
                                     ? const Color(0xffFF5F61)
                                     : sizes[currentIndex] == 'XS'
-                                        ? const Color(0xffFFAF5F)
-                                        : const Color(0xff505050),
-                              )),
+                                    ? const Color(0xffFFAF5F)
+                                    : const Color(0xff505050),
+                              )
+                          ),
                           Container(
                             height: 70,
                             width: 70,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(180),
                                 border: Border.all(
-                                    color: widget.selectedColor, width: 0.5),
+                                    color: widget.selectedColor,
+                                    width: 0.5),
                                 boxShadow: [
                                   BoxShadow(
                                       color: colorScheme.white,
@@ -170,7 +175,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                       CarouselSlider.builder(
                           itemCount: sizes.length,
                           carouselController: carouselController,
-                          itemBuilder: (ctx, index, _) {
+                          itemBuilder: (ctx, index , _) {
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 5),
                               child: Center(
@@ -180,26 +185,28 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                     height: 1.3,
                                     fontSize: index != currentIndex
                                         ? index < currentIndex
-                                            ? max(
-                                                10.sp,
-                                                (25 -
-                                                        (currentIndex - index) *
-                                                            5)
-                                                    .sp)
-                                            : max(
-                                                10.sp,
-                                                (25 -
-                                                        (index - currentIndex) *
-                                                            5)
-                                                    .sp)
+                                        ? max(
+                                        10.sp,
+                                        (25 -
+                                            (currentIndex -
+                                                index) *
+                                                5)
+                                            .sp)
+                                        : max(
+                                        10.sp,
+                                        (25 -
+                                            (index -
+                                                currentIndex) *
+                                                5)
+                                            .sp)
                                         : 30.sp,
                                     color: index == currentIndex
                                         ? Colors.white
                                         : sizes[index] == 'S'
-                                            ? const Color(0xffFF5F61)
-                                            : sizes[index] == 'XS'
-                                                ? const Color(0xffFFAF5F)
-                                                : const Color(0xff505050),
+                                        ? const Color(0xffFF5F61)
+                                        : sizes[index] == 'XS'
+                                        ? const Color(0xffFFAF5F)
+                                        : const Color(0xff505050),
                                   ),
                                 ),
                               ),
@@ -212,12 +219,19 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                               onPageChanged: (index, reason) {
                                 HapticFeedback.lightImpact();
                                 currentIndexInSizes.value = index;
+                                if(sizes[index] == 'S'){
+                                  widget.sizeIsNotAvailableNotifier.value = sizes[index];
+                                }else{
+                                  widget.sizeIsNotAvailableNotifier.value = null ;
+                                }
                                 setState(() {});
                               },
-                              viewportFraction: 0.22)),
+                              viewportFraction: 0.22)
+                      ),
                     ],
                   );
-                }),
+                }
+            ),
           ),
           SizedBox(
             height: 8,
@@ -229,8 +243,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   separatorBuilder: (ctx, index) => const SizedBox(
-                        width: 6,
-                      ),
+                    width: 6,
+                  ),
                   itemBuilder: (ctx, index) {
                     if (index > 0 && index % 10 == 9) {
                       return const SizedBox(
@@ -256,8 +270,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
           ),
           ValueListenableBuilder<int>(
               valueListenable: currentIndexInSizes,
-              builder: (context, currentIndex, _) {
-                if (sizes[currentIndex] == 'S') {
+              builder: (context , currentIndex , _) {
+                if(sizes[currentIndex] == 'S') {
                   return MyTextWidget(
                     'Not Available Now, Stock Is Sold Out',
                     style: textTheme.caption?.mq
@@ -287,21 +301,22 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                       style: textTheme.caption?.rq
                           .copyWith(height: 1, color: const Color(0xff505050)),
                     ),
-                    if (sizes[currentIndex] == 'XS') ...{
+                    if(sizes[currentIndex] == 'XS')...{
                       MyTextWidget(
                         'Last ',
-                        style: textTheme.caption?.rq.copyWith(
-                            height: 1, color: const Color(0xffFFAF5F)),
+                        style: textTheme.caption?.rq
+                            .copyWith(height: 1, color: const Color(0xffFFAF5F)),
                       ),
                       MyTextWidget(
                         '2',
-                        style: textTheme.caption?.mq.copyWith(
-                            height: 1, color: const Color(0xffFFAF5F)),
+                        style: textTheme.caption?.mq
+                            .copyWith(height: 1, color: const Color(0xffFFAF5F)),
                       ),
                     }
                   ],
                 );
-              }),
+              }
+          ),
           const SizedBox(
             height: 10,
           ),
@@ -362,55 +377,3 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   }
 }
 
-// Gallery3D(
-// changingPagesScrollOffset: 0.1,
-// itemConfig: const GalleryItemConfig(
-// width: 70,
-// height: 70,
-// radius: 180,
-// isShowTransformMask: false,
-// shadows: [
-// BoxShadow(
-// color: Color(0x19000000),
-// offset: Offset(0, 3),
-// blurRadius: 6,
-// ),
-// ]),
-// stopScrollingOnEdges: (double primaryDelta) {
-// return (primaryDelta <= 0 &&
-// gallery3dControllerForSizes.currentIndex ==
-// (sizes.length ~/ 2 - 1)) ||
-// (primaryDelta >= 0 &&
-// gallery3dControllerForSizes.currentIndex == 0);
-// },
-// height: null,
-// controller: gallery3dControllerForSizes,
-// width: 1.sw - 80,
-// itemBuilder: (context, index) {
-// return Visibility(
-// visible: index <
-// (sizes.length ~/
-// 2),
-// child: Container(
-// decoration:
-// index == gallery3dControllerForSizes.currentIndex
-// ? BoxDecoration(
-// borderRadius: BorderRadius.circular(180),
-// border: Border.all(
-// color: widget.selectedColor, width: 0.5),
-// color: Colors.deepOrange,
-// )
-//     : null,
-// child: Center(
-// child: Text(
-// sizes[index],
-// style: textTheme.headline2?.bq.copyWith(
-// color: index ==
-// gallery3dControllerForSizes.currentIndex
-// ? Colors.white
-//     : const Color(0xff505050)),
-// ),
-// ),
-// ),
-// );
-// }),
