@@ -40,6 +40,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   final ValueNotifier<List<int>> indicesOfChatCardsToShare = ValueNotifier([]);
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final ValueNotifier<double> workOnBlurNotifier = ValueNotifier(10);
+  final ValueNotifier<String?> sizeIsNotAvailableNotifier = ValueNotifier(null);
   final PageController pageController = PageController();
   final PanelController panelController = PanelController();
   late final Gallery3DController? gallery3dControllerForCircles;
@@ -154,12 +155,14 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                 : 433,
                     minHeight: 78,
                     onPanelClosed: () {
+                      sizeIsNotAvailableNotifier.value = null;
                       firstOpenOfPanel = true;
                       denySlidingBackForSlidingUpPanels.value = false;
                       currentActiveTab.value = -1;
                     },
                     onPanelOpened: () {
                       denySlidingBackForSlidingUpPanels.value = true;
+                      firstOpenOfPanel = false;
                     },
                     color: currentTab == 3 ? Colors.transparent : Colors.white,
                     boxShadow: const [
@@ -183,8 +186,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             }
                             if (percentOfOpenPart == 1) {
                               userWantToScrollHorizontally = false;
-                            } else {
-                              firstOpenOfPanel = false;
                             }
                           }
                         : null,
@@ -199,75 +200,70 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                           10.verticalSpace,
                           Material(
                             color: Colors.transparent,
-                            child: GestureDetector(
-                              onPanDown: (details) {
-                                print('kkkkkkkkk ${details.globalPosition.dy}');
-                              },
-                              child: Gallery3D(
-                                  key: colorsGallerySliderKey,
-                                  // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
-                                  controller: gallery3dControllerForCircles!,
-                                  denyScrolling: false,
-                                  width: 200,
-                                  stopScrollingOnEdges: (double primaryDelta) {
-                                    return (primaryDelta <= 0 &&
-                                            gallery3dControllerForCircles!
-                                                    .currentIndex ==
+                            child: Gallery3D(
+                                key: colorsGallerySliderKey,
+                                // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
+                                controller: gallery3dControllerForCircles!,
+                                denyScrolling: false,
+                                width: 200,
+                                stopScrollingOnEdges: (double primaryDelta) {
+                                  return (primaryDelta <= 0 &&
+                                          gallery3dControllerForCircles!
+                                                  .currentIndex ==
+                                              (syncColorImageList.length ~/
+                                                      2 -
+                                                  1)) ||
+                                      (primaryDelta >= 0 &&
+                                          gallery3dControllerForCircles!
+                                                  .currentIndex ==
+                                              0);
+                                },
+                                changingPagesScrollOffset: 0.1,
+                                isClip: false,
+                                onItemChanged: (index) {
+                                  currentIndexInSlider = index;
+                                },
+                                onClickItem: (index) {},
+                                itemConfig: GalleryItemConfig(
+                                    width: 70.w,
+                                    height: 70.w,
+                                    radius: 180,
+                                    isShowTransformMask: false,
+                                    shadows: const [
+                                      BoxShadow(
+                                        color: Color(0x19000000),
+                                        offset: Offset(0, 3),
+                                        blurRadius: 6,
+                                      ),
+                                    ]),
+                                itemBuilder: (context, index) {
+                                  return Visibility(
+                                    visible: ((gallery3dControllerForCircles
+                                                        ?.currentIndex ??
+                                                    0) <
                                                 (syncColorImageList.length ~/
-                                                        2 -
-                                                    1)) ||
-                                        (primaryDelta >= 0 &&
-                                            gallery3dControllerForCircles!
-                                                    .currentIndex ==
-                                                0);
-                                  },
-                                  changingPagesScrollOffset: 0.1,
-                                  isClip: false,
-                                  onItemChanged: (index) {
-                                    currentIndexInSlider = index;
-                                  },
-                                  onClickItem: (index) {},
-                                  itemConfig: GalleryItemConfig(
+                                                    2) &&
+                                            index <
+                                                (syncColorImageList.length ~/
+                                                    2)) ||
+                                        (gallery3dControllerForCircles
+                                                    ?.currentIndex ??
+                                                0) >=
+                                            (syncColorImageList.length ~/ 2),
+                                    child: ProductListingImageWidget(
                                       width: 70.w,
                                       height: 70.w,
-                                      radius: 180,
-                                      isShowTransformMask: false,
-                                      shadows: const [
-                                        BoxShadow(
-                                          color: Color(0x19000000),
-                                          offset: Offset(0, 3),
-                                          blurRadius: 6,
-                                        ),
-                                      ]),
-                                  itemBuilder: (context, index) {
-                                    return Visibility(
-                                      visible: ((gallery3dControllerForCircles
-                                                          ?.currentIndex ??
-                                                      0) <
-                                                  (syncColorImageList.length ~/
-                                                      2) &&
-                                              index <
-                                                  (syncColorImageList.length ~/
-                                                      2)) ||
-                                          (gallery3dControllerForCircles
-                                                      ?.currentIndex ??
-                                                  0) >=
-                                              (syncColorImageList.length ~/ 2),
-                                      child: ProductListingImageWidget(
-                                        width: 70.w,
-                                        height: 70.w,
-                                        imageUrl: images[index],
-                                        innerShadowYOffset: 4,
-                                        borderColor: index ==
-                                                currentIndexInSlider
-                                            ? Color(int.parse(
-                                                '0xff${widget.productItem.colors![currentIndexInSlider % widget.productItem.colors!.length].color!.substring(1)}'))
-                                            : Colors.white,
-                                        circleShape: true,
-                                      ),
-                                    );
-                                  }),
-                            ),
+                                      imageUrl: images[index],
+                                      innerShadowYOffset: 4,
+                                      borderColor: index ==
+                                              currentIndexInSlider
+                                          ? Color(int.parse(
+                                              '0xff${widget.productItem.colors![currentIndexInSlider % widget.productItem.colors!.length].color!.substring(1)}'))
+                                          : Colors.white,
+                                      circleShape: true,
+                                    ),
+                                  );
+                                }),
                           ),
                           10.verticalSpace,
                         },
@@ -329,6 +325,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                 ? SelectSizeContent(
                                     scrollController: controller,
                                     selectedColor: Colors.blue,
+                                    sizeIsNotAvailableNotifier:
+                                        sizeIsNotAvailableNotifier,
                                     addToBagButtonShapeNotifier:
                                         addToBagButtonShapeNotifier,
                                   )
@@ -382,6 +380,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         pageController.jumpToPage(1);
                       },
                       currentActiveTab: currentActiveTab,
+                      sizeIsNotAvailableNotifier: sizeIsNotAvailableNotifier,
                       addToBagButtonShapeNotifier: addToBagButtonShapeNotifier)
                   : ShareButton(
                       onTap: () {},
