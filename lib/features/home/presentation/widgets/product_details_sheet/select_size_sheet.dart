@@ -15,9 +15,9 @@ import '../../../../../core/utils/theme_state.dart';
 class SelectSizeContent extends StatefulWidget {
   const SelectSizeContent(
       {super.key,
-      required this.scrollController,
-      required this.selectedColor,
-      required this.addToBagButtonShapeNotifier,
+        required this.scrollController,
+        required this.selectedColor,
+        required this.addToBagButtonShapeNotifier,
         required this.sizeIsNotAvailableNotifier,
       });
 
@@ -104,8 +104,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   separatorBuilder: (ctx, index) => const SizedBox(
-                        width: 6,
-                      ),
+                    width: 6,
+                  ),
                   itemBuilder: (ctx, index) {
                     if (index > 0 && index % 10 == 9) {
                       return const SizedBox(
@@ -128,109 +128,109 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: ValueListenableBuilder<int>(
-              valueListenable: currentIndexInSizes,
-              builder: (context , currentIndex , _) {
-                return Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Stack(
-                      children: [
-                        Container(
+                valueListenable: currentIndexInSizes,
+                builder: (context , currentIndex , _) {
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Stack(
+                        children: [
+                          Container(
+                              height: 70,
+                              width: 70,
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    offset: const Offset(0, 3),
+                                    blurRadius: 3,
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(180),
+                                color: sizes[currentIndex] == 'S'
+                                    ? const Color(0xffFF5F61)
+                                    : sizes[currentIndex] == 'XS'
+                                    ? const Color(0xffFFAF5F)
+                                    : const Color(0xff505050),
+                              )
+                          ),
+                          Container(
                             height: 70,
                             width: 70,
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                offset: const Offset(0, 3),
-                                blurRadius: 3,
-                              ),
-                            ],
-                            borderRadius: BorderRadius.circular(180),
-                            color: sizes[currentIndex] == 'S'
-                                ? const Color(0xffFF5F61)
-                                : sizes[currentIndex] == 'XS'
-                                ? const Color(0xffFFAF5F)
-                                : const Color(0xff505050),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(180),
+                                border: Border.all(
+                                    color: widget.selectedColor,
+                                    width: 0.5),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: colorScheme.white,
+                                      offset: const Offset(0, 4),
+                                      blurRadius: 6,
+                                      inset: true),
+                                ]),
                           )
-                        ),
-                        Container(
-                          height: 70,
-                          width: 70,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(180),
-                              border: Border.all(
-                                  color: widget.selectedColor,
-                                  width: 0.5),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: colorScheme.white,
-                                    offset: const Offset(0, 4),
-                                    blurRadius: 6,
-                                    inset: true),
-                              ]),
-                        )
-                      ],
-                    ),
-                    CarouselSlider.builder(
-                        itemCount: sizes.length,
-                        carouselController: carouselController,
-                        itemBuilder: (ctx, index , _) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 5),
-                            child: Center(
-                              child: Text(
-                                sizes[index],
-                                style: textTheme.headline2?.bq.copyWith(
-                                  height: 1.3,
-                                  fontSize: index != currentIndex
-                                      ? index < currentIndex
-                                          ? max(
-                                              10.sp,
-                                              (25 -
-                                                      (currentIndex -
-                                                              index) *
-                                                          5)
-                                                  .sp)
-                                          : max(
-                                              10.sp,
-                                              (25 -
-                                                      (index -
-                                                          currentIndex) *
-                                                          5)
-                                                  .sp)
-                                      : 30.sp,
-                                  color: index == currentIndex
-                                      ? Colors.white
-                                      : sizes[index] == 'S'
-                                          ? const Color(0xffFF5F61)
-                                          : sizes[index] == 'XS'
-                                              ? const Color(0xffFFAF5F)
-                                              : const Color(0xff505050),
+                        ],
+                      ),
+                      CarouselSlider.builder(
+                          itemCount: sizes.length,
+                          carouselController: carouselController,
+                          itemBuilder: (ctx, index , _) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: Center(
+                                child: Text(
+                                  sizes[index],
+                                  style: textTheme.headline2?.bq.copyWith(
+                                    height: 1.3,
+                                    fontSize: index != currentIndex
+                                        ? index < currentIndex
+                                        ? max(
+                                        10.sp,
+                                        (25 -
+                                            (currentIndex -
+                                                index) *
+                                                5)
+                                            .sp)
+                                        : max(
+                                        10.sp,
+                                        (25 -
+                                            (index -
+                                                currentIndex) *
+                                                5)
+                                            .sp)
+                                        : 30.sp,
+                                    color: index == currentIndex
+                                        ? Colors.white
+                                        : sizes[index] == 'S'
+                                        ? const Color(0xffFF5F61)
+                                        : sizes[index] == 'XS'
+                                        ? const Color(0xffFFAF5F)
+                                        : const Color(0xff505050),
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                        options: CarouselOptions(
-                            initialPage: sizes.length ~/ 2,
-                            height: 80,
-                            enableInfiniteScroll: false,
-                            onPageChanged: (index, reason) {
-                              HapticFeedback.lightImpact();
-                              currentIndexInSizes.value = index;
-                              if(sizes[index] == 'S'){
-                                widget.sizeIsNotAvailableNotifier.value = sizes[index];
-                              }else{
-                                widget.sizeIsNotAvailableNotifier.value = null ;
-                              }
-                              setState(() {});
-                            },
-                            viewportFraction: 0.22)
-                    ),
-                  ],
-                );
-              }
+                            );
+                          },
+                          options: CarouselOptions(
+                              initialPage: sizes.length ~/ 2,
+                              height: 80,
+                              enableInfiniteScroll: false,
+                              onPageChanged: (index, reason) {
+                                HapticFeedback.lightImpact();
+                                currentIndexInSizes.value = index;
+                                if(sizes[index] == 'S'){
+                                  widget.sizeIsNotAvailableNotifier.value = sizes[index];
+                                }else{
+                                  widget.sizeIsNotAvailableNotifier.value = null ;
+                                }
+                                setState(() {});
+                              },
+                              viewportFraction: 0.22)
+                      ),
+                    ],
+                  );
+                }
             ),
           ),
           SizedBox(
@@ -243,8 +243,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   separatorBuilder: (ctx, index) => const SizedBox(
-                        width: 6,
-                      ),
+                    width: 6,
+                  ),
                   itemBuilder: (ctx, index) {
                     if (index > 0 && index % 10 == 9) {
                       return const SizedBox(
@@ -269,53 +269,53 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
             height: 10,
           ),
           ValueListenableBuilder<int>(
-            valueListenable: currentIndexInSizes,
-            builder: (context , currentIndex , _) {
-              if(sizes[currentIndex] == 'S') {
-                return MyTextWidget(
-                  'Not Available Now, Stock Is Sold Out',
-                  style: textTheme.caption?.mq
-                      .copyWith(height: 1, color: const Color(0xffFF5F61)),
+              valueListenable: currentIndexInSizes,
+              builder: (context , currentIndex , _) {
+                if(sizes[currentIndex] == 'S') {
+                  return MyTextWidget(
+                    'Not Available Now, Stock Is Sold Out',
+                    style: textTheme.caption?.mq
+                        .copyWith(height: 1, color: const Color(0xffFF5F61)),
+                  );
+                }
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    MyTextWidget(
+                      'M ',
+                      style: textTheme.caption?.bq
+                          .copyWith(height: 1, color: const Color(0xff505050)),
+                    ),
+                    MyTextWidget(
+                      'Recommended ',
+                      style: textTheme.caption?.rq
+                          .copyWith(height: 1, color: const Color(0xff505050)),
+                    ),
+                    MyTextWidget(
+                      'Size ',
+                      style: textTheme.caption?.bq
+                          .copyWith(height: 1, color: const Color(0xff505050)),
+                    ),
+                    MyTextWidget(
+                      'For You ',
+                      style: textTheme.caption?.rq
+                          .copyWith(height: 1, color: const Color(0xff505050)),
+                    ),
+                    if(sizes[currentIndex] == 'XS')...{
+                      MyTextWidget(
+                        'Last ',
+                        style: textTheme.caption?.rq
+                            .copyWith(height: 1, color: const Color(0xffFFAF5F)),
+                      ),
+                      MyTextWidget(
+                        '2',
+                        style: textTheme.caption?.mq
+                            .copyWith(height: 1, color: const Color(0xffFFAF5F)),
+                      ),
+                    }
+                  ],
                 );
               }
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  MyTextWidget(
-                    'M ',
-                    style: textTheme.caption?.bq
-                        .copyWith(height: 1, color: const Color(0xff505050)),
-                  ),
-                  MyTextWidget(
-                    'Recommended ',
-                    style: textTheme.caption?.rq
-                        .copyWith(height: 1, color: const Color(0xff505050)),
-                  ),
-                  MyTextWidget(
-                    'Size ',
-                    style: textTheme.caption?.bq
-                        .copyWith(height: 1, color: const Color(0xff505050)),
-                  ),
-                  MyTextWidget(
-                    'For You ',
-                    style: textTheme.caption?.rq
-                        .copyWith(height: 1, color: const Color(0xff505050)),
-                  ),
-                  if(sizes[currentIndex] == 'XS')...{
-                    MyTextWidget(
-                      'Last ',
-                      style: textTheme.caption?.rq
-                          .copyWith(height: 1, color: const Color(0xffFFAF5F)),
-                    ),
-                    MyTextWidget(
-                      '2',
-                      style: textTheme.caption?.mq
-                          .copyWith(height: 1, color: const Color(0xffFFAF5F)),
-                    ),
-                  }
-                ],
-              );
-            }
           ),
           const SizedBox(
             height: 10,
@@ -377,55 +377,3 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   }
 }
 
-// Gallery3D(
-// changingPagesScrollOffset: 0.1,
-// itemConfig: const GalleryItemConfig(
-// width: 70,
-// height: 70,
-// radius: 180,
-// isShowTransformMask: false,
-// shadows: [
-// BoxShadow(
-// color: Color(0x19000000),
-// offset: Offset(0, 3),
-// blurRadius: 6,
-// ),
-// ]),
-// stopScrollingOnEdges: (double primaryDelta) {
-// return (primaryDelta <= 0 &&
-// gallery3dControllerForSizes.currentIndex ==
-// (sizes.length ~/ 2 - 1)) ||
-// (primaryDelta >= 0 &&
-// gallery3dControllerForSizes.currentIndex == 0);
-// },
-// height: null,
-// controller: gallery3dControllerForSizes,
-// width: 1.sw - 80,
-// itemBuilder: (context, index) {
-// return Visibility(
-// visible: index <
-// (sizes.length ~/
-// 2),
-// child: Container(
-// decoration:
-// index == gallery3dControllerForSizes.currentIndex
-// ? BoxDecoration(
-// borderRadius: BorderRadius.circular(180),
-// border: Border.all(
-// color: widget.selectedColor, width: 0.5),
-// color: Colors.deepOrange,
-// )
-//     : null,
-// child: Center(
-// child: Text(
-// sizes[index],
-// style: textTheme.headline2?.bq.copyWith(
-// color: index ==
-// gallery3dControllerForSizes.currentIndex
-// ? Colors.white
-//     : const Color(0xff505050)),
-// ),
-// ),
-// ),
-// );
-// }),

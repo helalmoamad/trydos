@@ -17,7 +17,7 @@ abstract class HomeRepository {
       Map<String, dynamic> params);*/
   Future<Either<Failure, GetHomeBoutiquesModel>> getHomeBoutiqes(
       Map<String, dynamic> params);
-  Future<Either<Failure, GetStoryForProductModel>> getStories();
+  Future<Either<Failure, GetStoryForProductModel>> getStories(String productId);
   Future<Either<Failure, GetProductListingWithoutFiltersModel>>
       getProductsWithoutFilters(Map<String, dynamic> params);
   Future<Either<Failure, GetProductDetailWithoutRelatedProductsModel>>

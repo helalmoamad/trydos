@@ -1,4 +1,4 @@
-import 'dart:developer';
+/*import 'dart:developer';
 import 'dart:io';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:easy_localization/easy_localization.dart';
@@ -93,12 +93,13 @@ class _StoryListState extends State<StoryList> {
                                         .storiesCollections[index]
                                         .stories![indexOfInitialStory];
                                     String? imageOfVideoUrl;
-                                    if(initialStory.isPhoto != 1){
-
-                                      int index = initialStory
-                                          .fullVideoPath!.lastIndexOf('.');
+                                    if (initialStory.isPhoto != 1) {
+                                      int index = initialStory.fullVideoPath!
+                                          .lastIndexOf('.');
                                       imageOfVideoUrl = initialStory
-                                          .fullVideoPath!.substring(0 , index) + '.png';
+                                              .fullVideoPath!
+                                              .substring(0, index) +
+                                          '.png';
                                     }
                                     return AnimatedPadding(
                                       duration: Duration(milliseconds: 200),
@@ -280,7 +281,7 @@ class _StoryListState extends State<StoryList> {
                                                   resizeUserImage:
                                                       index == focused.value2,
                                                   firstPhotoNotShowed:
-                                                  imageOfVideoUrl,
+                                                      imageOfVideoUrl,
                                                 )),
                                     );
                                   },
@@ -342,3 +343,4 @@ class _StoryListState extends State<StoryList> {
 //  );
 //  return uint8list!;
 //}
+*/
