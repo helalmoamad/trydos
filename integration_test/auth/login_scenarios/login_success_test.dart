@@ -55,7 +55,7 @@ void main() {
       final Finder confirmPhoneButton =
           find.byKey(Key('login_confirm_phone_button'));
 
-      await tester.enterText(phoneField, '963997412860');
+      await tester.enterText(phoneField, '963934330889');
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(confirmPhoneButton);
       await tester.pumpAndSettle();
@@ -90,6 +90,7 @@ void main() {
         successMessage: 'Find LoginSuccessfully Success',
         failedMessage: 'Find LoginSuccessfully failed',
       );
+      await GlobalTestFunctions.waitFor(tester, find.byType(BasePage));
       //////////////////////////
       await GlobalTestFunctions.findWidget(
         tester: tester,

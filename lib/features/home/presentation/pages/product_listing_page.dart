@@ -80,6 +80,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     super.dispose();
   }
 
+  Key gridViewKeyForRendering = UniqueKey();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -123,6 +124,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
               BlocBuilder<HomeBloc, HomeState>(
                 buildWhen: (p, c) {
                   String key = widget.boutiqueSlug + (widget.category ?? '');
+                  if(p.getProductListingPaginationWithoutFiltersModel[key]?.items != c.getProductListingPaginationWithoutFiltersModel[key]?.items){
+                    gridViewKeyForRendering = UniqueKey();
+                  }
                   return p.getProductListingPaginationWithoutFiltersModel[key]
                           ?.paginationStatus !=
                       c.getProductListingPaginationWithoutFiltersModel[key]
@@ -148,11 +152,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   }
                   if (state.getProductListingStatus ==
                           GetProductsWithoutFiltersStatus.failure &&
-                      state
-                          .getProductListingPaginationWithoutFiltersModel[
-                              widget.boutiqueSlug]!
-                          .items
-                          .isEmpty) {
+                      state.getProductListingPaginationWithoutFiltersModel[key]!
+                          .items.isNullOrEmpty) {
                     return Center(
                       child: ElevatedButton(
                           onPressed: () {
@@ -165,18 +166,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           child: MyTextWidget(LocaleKeys.try_again.tr())),
                     );
                   }
-
                   return ValueListenableBuilder<Tuple2<int, int>>(
                       valueListenable: setThisEnabledNotifier,
                       builder: (context, slidingMode, _) {
                         return GridView.count(
+                          key: gridViewKeyForRendering,
                           shrinkWrap: true,
                           crossAxisCount: 2,
                           controller: scrollController,
                           padding: const EdgeInsets.only(top: 50),
                           childAspectRatio: 200.w / 350,
                           crossAxisSpacing: 10,
-                          primary: false,
                           mainAxisSpacing: 15,
                           physics: const ClampingScrollPhysics(),
                           children: List.generate(

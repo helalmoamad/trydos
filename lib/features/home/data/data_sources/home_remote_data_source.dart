@@ -77,12 +77,12 @@ class HomeRemoteDatasource {
     return getMainCategories();
   }
 
-  Future<GetStoryForProductModel> getStories() {
+  Future<GetStoryForProductModel> getStories(String productId) {
     GetClient<GetStoryForProductModel> getStories =
         GetClient<GetStoryForProductModel>(
       serverName: ServerName.stories,
       requestPrams: RequestConfig<GetStoryForProductModel>(
-        endpoint: StoriesEndPoints.getStoriesEP,
+        endpoint: StoriesEndPoints.getStoriesForProsuctEP(productId),
         response: ResponseValue<GetStoryForProductModel>(
             fromJson: (response) => GetStoryForProductModel.fromJson(response)),
       ),

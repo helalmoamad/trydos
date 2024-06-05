@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
@@ -13,6 +15,7 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_display_pictures_page.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_body/display_sizes_card.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/widget/stories_list.dart';
@@ -62,7 +65,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
     homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
         productId: widget.productItem.id.toString()));
-    homeBloc.add(GetStoryForProductEvent());
+    homeBloc.add(
+        GetStoryForProductEvent(productId: widget.productItem.id.toString()));
 
     super.initState();
   }
@@ -90,7 +94,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   p.getProductDetailWithoutSimilarRelatedProductsStatus !=
                       c.getProductDetailWithoutSimilarRelatedProductsStatus ||
                   p.currentSelectedColorForEveryProduct !=
-                      c.currentSelectedColorForEveryProduct,
+                      c.currentSelectedColorForEveryProduct ||
+                  p.cachedProductWithoutRelatedProductsModel !=
+                      c.cachedProductWithoutRelatedProductsModel,
               builder: (context, state) {
                 String productId = widget.productItem.id.toString();
                 /*     if (state
@@ -255,28 +261,58 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       SizedBox(
                         height: 15,
                       ),
-                      SizedBox(
-                          height: 52,
-                          child: ScrollConfiguration(
-                            behavior: const CupertinoScrollBehavior(),
-                            child: ListView.separated(
-                              itemCount: 5,
-                              physics: const ClampingScrollPhysics(),
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              padding: EdgeInsets.only(left: 20, right: 20),
-                              itemBuilder: (context, index) {
-                                return ProductDetailsChipWidget(
-                                  withIcon: index % 2 != 0,
-                                );
-                              },
-                              separatorBuilder: (context, index) {
-                                return SizedBox(
-                                  width: 8,
-                                );
-                              },
-                            ),
-                          )),
+                      if (!state.cachedProductWithoutRelatedProductsModel
+                              .containsKey(widget.productItem.id.toString()) ||
+                          state.cachedProductWithoutRelatedProductsModel[
+                                  widget.productItem.id] ==
+                              null ||
+                          state
+                                  .cachedProductWithoutRelatedProductsModel[
+                                      widget.productItem.id]!
+                                  .product ==
+                              null) ...{
+                        SizedBox.shrink()
+                      } else ...{
+                        SizedBox(
+                            height: 52,
+                            child: ScrollConfiguration(
+                              behavior: const CupertinoScrollBehavior(),
+                              child: ListView.separated(
+                                itemCount: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        widget.productItem.id]!
+                                    .product!
+                                    .descriptors!
+                                    .length,
+                                physics: const ClampingScrollPhysics(),
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                padding: EdgeInsets.only(left: 20, right: 20),
+                                itemBuilder: (context, index) {
+                                  return ProductDetailsChipWidget(
+                                    withIcon: state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                widget.productItem.id]!
+                                            .product!
+                                            .descriptors![index]
+                                            .descriptorGroup!
+                                            .icon !=
+                                        null,
+                                    descriptor: state
+                                        .cachedProductWithoutRelatedProductsModel[
+                                            widget.productItem.id]!
+                                        .product!
+                                        .descriptors![index],
+                                  );
+                                },
+                                separatorBuilder: (context, index) {
+                                  return SizedBox(
+                                    width: 8,
+                                  );
+                                },
+                              ),
+                            )),
+                      },
                       SizedBox(
                         height: 15,
                       ),
@@ -286,8 +322,29 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       SizedBox(
                         height: 15,
                       ),
+                      DisplaySizesCard(
+                          scrollController: scrollController,
+                          sizes: state.cachedProductWithoutRelatedProductsModel[
+                                      widget.productItem.id.toString()] !=
+                                  null
+                              ? state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              widget.productItem.id.toString()]!
+                                          .product!
+                                          .choiceOptions !=
+                                      null
+                                  ? state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          widget.productItem.id.toString()]!
+                                      .product!
+                                      .choiceOptions
+                                  : null
+                              : state.sizes),
+                      SizedBox(
+                        height: 15,
+                      ),
                       // ProductStoriesCard(),
-                      StoryList(),
+                      ProductStoriesCard(),
                       SizedBox(
                         height: 15,
                       ),

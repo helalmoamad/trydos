@@ -63,7 +63,9 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, GetStoryForProductModel>> getStories() {
-    return handlingExceptionRequest(tryCall: dataSource.getStories);
+  Future<Either<Failure, GetStoryForProductModel>> getStories(
+      String productId) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getStories(productId));
   }
 }

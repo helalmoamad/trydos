@@ -8,13 +8,13 @@ import '../repositories/home_repository.dart';
 
 @injectable
 class GetStoryForProductUseCase
-    extends UseCase<GetStoryForProductModel, NoParams> {
+    extends UseCase<GetStoryForProductModel, String> {
   final HomeRepository repository;
 
   GetStoryForProductUseCase(this.repository);
 
   @override
-  Future<Either<Failure, GetStoryForProductModel>> call(NoParams params) {
-    return repository.getStories();
+  Future<Either<Failure, GetStoryForProductModel>> call(String productId) {
+    return repository.getStories(productId);
   }
 }
