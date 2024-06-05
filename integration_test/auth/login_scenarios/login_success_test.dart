@@ -8,6 +8,7 @@ import 'package:trydos/features/authentication/presentation/widgets/insert_phone
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
 import 'package:trydos/features/authentication/presentation/widgets/welcome_section.dart';
+import 'package:trydos/features/chat/presentation/pages/chat_pages.dart';
 import 'package:trydos/main.dart' as app;
 import '../../utils/global_test_functions.dart';
 
@@ -54,7 +55,7 @@ void main() {
       final Finder confirmPhoneButton =
           find.byKey(Key('login_confirm_phone_button'));
 
-      await tester.enterText(phoneField, '963997412860');
+      await tester.enterText(phoneField, '963934330889');
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(confirmPhoneButton);
       await tester.pumpAndSettle();
@@ -89,10 +90,18 @@ void main() {
         successMessage: 'Find LoginSuccessfully Success',
         failedMessage: 'Find LoginSuccessfully failed',
       );
+      await GlobalTestFunctions.waitFor(tester, find.byType(BasePage));
       //////////////////////////
       await GlobalTestFunctions.findWidget(
         tester: tester,
         widgetType: BasePage,
+        successMessage: 'Find LoginSuccessfully Success',
+        failedMessage: 'Find LoginSuccessfully failed',
+      );
+      //////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        widgetType: ChatPages,
         successMessage: 'Find LoginSuccessfully Success',
         failedMessage: 'Find LoginSuccessfully failed',
       );

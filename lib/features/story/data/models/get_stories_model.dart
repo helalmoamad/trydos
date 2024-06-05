@@ -7,9 +7,11 @@ import 'dart:convert';
 import 'package:trydos/features/story/data/models/image_detail.dart';
 import 'package:video_player/video_player.dart';
 
-GetStoriesModel getStoriesModelFromJson(String str) => GetStoriesModel.fromJson(json.decode(str));
+GetStoriesModel getStoriesModelFromJson(String str) =>
+    GetStoriesModel.fromJson(json.decode(str));
 
-String getStoriesModelToJson(GetStoriesModel data) => json.encode(data.toJson());
+String getStoriesModelToJson(GetStoriesModel data) =>
+    json.encode(data.toJson());
 
 class GetStoriesModel {
   bool? isSuccessful;
@@ -45,23 +47,24 @@ class GetStoriesModel {
         data: data ?? this.data,
       );
 
-  factory GetStoriesModel.fromJson(Map<String, dynamic> json) => GetStoriesModel(
-    isSuccessful: json["isSuccessful"],
-    hasContent: json["hasContent"],
-    code: json["code"],
-    message: json["message"],
-    detailedError: json["detailed_error"],
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
-  );
+  factory GetStoriesModel.fromJson(Map<String, dynamic> json) =>
+      GetStoriesModel(
+        isSuccessful: json["isSuccessful"],
+        hasContent: json["hasContent"],
+        code: json["code"],
+        message: json["message"],
+        detailedError: json["detailed_error"],
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "isSuccessful": isSuccessful,
-    "hasContent": hasContent,
-    "code": code,
-    "message": message,
-    "detailed_error": detailedError,
-    "data": data?.toJson(),
-  };
+        "isSuccessful": isSuccessful,
+        "hasContent": hasContent,
+        "code": code,
+        "message": message,
+        "detailed_error": detailedError,
+        "data": data?.toJson(),
+      };
 }
 
 class Data {
@@ -127,37 +130,47 @@ class Data {
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    currentPage: json["current_page"],
-    collections: json["data"] == null ? [] : List<CollectionStoryModel>.from(json["data"]!.map((x) => CollectionStoryModel.fromJson(x))),
-    firstPageUrl: json["first_page_url"],
-    from: json["from"],
-    lastPage: json["last_page"],
-    lastPageUrl: json["last_page_url"],
-    links: json["links"] == null ? [] : List<Link>.from(json["links"]!.map((x) => Link.fromJson(x))),
-    nextPageUrl: json["next_page_url"],
-    path: json["path"],
-    perPage: json["per_page"],
-    prevPageUrl: json["prev_page_url"],
-    to: json["to"],
-    total: json["total"],
-  );
+        currentPage: json["current_page"],
+        collections: json["data"] == null
+            ? []
+            : List<CollectionStoryModel>.from(
+                json["data"]!.map((x) => CollectionStoryModel.fromJson(x))),
+        firstPageUrl: json["first_page_url"],
+        from: json["from"],
+        lastPage: json["last_page"],
+        lastPageUrl: json["last_page_url"],
+        links: json["links"] == null
+            ? []
+            : List<Link>.from(json["links"]!.map((x) => Link.fromJson(x))),
+        nextPageUrl: json["next_page_url"],
+        path: json["path"],
+        perPage: json["per_page"],
+        prevPageUrl: json["prev_page_url"],
+        to: json["to"],
+        total: json["total"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "current_page": currentPage,
-    "data": collections == null ? [] : List<dynamic>.from(collections!.map((x) => x.toJson())),
-    "first_page_url": firstPageUrl,
-    "from": from,
-    "last_page": lastPage,
-    "last_page_url": lastPageUrl,
-    "links": links == null ? [] : List<dynamic>.from(links!.map((x) => x.toJson())),
-    "next_page_url": nextPageUrl,
-    "path": path,
-    "per_page": perPage,
-    "prev_page_url": prevPageUrl,
-    "to": to,
-    "total": total,
-  };
+        "current_page": currentPage,
+        "data": collections == null
+            ? []
+            : List<dynamic>.from(collections!.map((x) => x.toJson())),
+        "first_page_url": firstPageUrl,
+        "from": from,
+        "last_page": lastPage,
+        "last_page_url": lastPageUrl,
+        "links": links == null
+            ? []
+            : List<dynamic>.from(links!.map((x) => x.toJson())),
+        "next_page_url": nextPageUrl,
+        "path": path,
+        "per_page": perPage,
+        "prev_page_url": prevPageUrl,
+        "to": to,
+        "total": total,
+      };
 }
+
 enum SelectedStoriesStatus { init, loading, success, failure }
 
 class CollectionStoryModel {
@@ -203,7 +216,9 @@ class CollectionStoryModel {
       CollectionStoryModel(
         id: id ?? this.id,
         mobilePhone: mobilePhone ?? this.mobilePhone,
-        selectedStoriesStatusForCollection: selectedStoriesStatusForCollection ?? this.selectedStoriesStatusForCollection,
+        selectedStoriesStatusForCollection:
+            selectedStoriesStatusForCollection ??
+                this.selectedStoriesStatusForCollection,
         imageDetail: imageDetail ?? this.imageDetail,
         photoPath: photoPath ?? this.photoPath,
         name: name ?? this.name,
@@ -214,29 +229,36 @@ class CollectionStoryModel {
         media: media ?? this.media,
       );
 
-  factory CollectionStoryModel.fromJson(Map<String, dynamic> json) => CollectionStoryModel(
-    id: json["id"],
-    mobilePhone: json["mobile_phone"],
-    photoPath: json["photo_path"],
-    name: json["name"],
-    username: json["username"],
-    originalUserId: json["original_user_id"],
-    email: json["email"],
-    stories: json["stories"] == null ? [] : List<Story>.from(json["stories"]!.map((x) => Story.fromJson(x))),
-    media: json["media"] == null ? [] : List<dynamic>.from(json["media"]!.map((x) => x)),
-  );
+  factory CollectionStoryModel.fromJson(Map<String, dynamic> json) =>
+      CollectionStoryModel(
+        id: json["id"],
+        mobilePhone: json["mobile_phone"],
+        photoPath: json["photo_path"],
+        name: json["name"],
+        username: json["username"],
+        originalUserId: json["original_user_id"],
+        email: json["email"],
+        stories: json["stories"] == null
+            ? []
+            : List<Story>.from(json["stories"]!.map((x) => Story.fromJson(x))),
+        media: json["media"] == null
+            ? []
+            : List<dynamic>.from(json["media"]!.map((x) => x)),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "mobile_phone": mobilePhone,
-    "photo_path": photoPath,
-    "name": name,
-    "username": username,
-    "original_user_id": originalUserId,
-    "email": email,
-    "stories": stories == null ? [] : List<dynamic>.from(stories!.map((x) => x.toJson())),
-    "media": media == null ? [] : List<dynamic>.from(media!.map((x) => x)),
-  };
+        "id": id,
+        "mobile_phone": mobilePhone,
+        "photo_path": photoPath,
+        "name": name,
+        "username": username,
+        "original_user_id": originalUserId,
+        "email": email,
+        "stories": stories == null
+            ? []
+            : List<dynamic>.from(stories!.map((x) => x.toJson())),
+        "media": media == null ? [] : List<dynamic>.from(media!.map((x) => x)),
+      };
 }
 
 class Story {
@@ -260,7 +282,7 @@ class Story {
   Story({
     this.height,
     this.width,
-    this.isInitialStory=false,
+    this.isInitialStory = false,
     this.id,
     this.cutVideoName,
     this.cutVideoPath,
@@ -297,9 +319,9 @@ class Story {
     List<dynamic>? media,
   }) =>
       Story(
-        height: height??this.height,
-        width: width??this.width,
-        isInitialStory: isInitialStory??this.isInitialStory,
+        height: height ?? this.height,
+        width: width ?? this.width,
+        isInitialStory: isInitialStory ?? this.isInitialStory,
         id: id ?? this.id,
         cutVideoName: cutVideoName ?? this.cutVideoName,
         cutVideoPath: cutVideoPath ?? this.cutVideoPath,
@@ -317,39 +339,40 @@ class Story {
       );
 
   factory Story.fromJson(Map<String, dynamic> json) => Story(
-
-    id: json["id"],
-    cutVideoName: json["cut_video_name"],
-    cutVideoPath: json["cut_video_path"],
-    fullVideoName: json["full_video_name"],
-    fullVideoPath: json["full_video_path"],
-    storageVideoPath: json["storage_video_path"],
-    userId: json["user_id"],
-    isPhoto: json["is_photo"],
-    isVideo: json["is_video"],
-    photoPath: json["photo_path"],
-    file: json["file"],
-    isSeen: json["is_seen"],
-    viewersCount: json["viewers_count"],
-    media: json["media"] == null ? [] : List<dynamic>.from(json["media"]!.map((x) => x)),
-  );
+        id: json["id"],
+        cutVideoName: json["cut_video_name"],
+        cutVideoPath: json["cut_video_path"],
+        fullVideoName: json["full_video_name"],
+        fullVideoPath: json["full_video_path"],
+        storageVideoPath: json["storage_video_path"],
+        userId: json["user_id"],
+        isPhoto: json["is_photo"],
+        isVideo: json["is_video"],
+        photoPath: json["photo_path"],
+        file: json["file"],
+        isSeen: json["is_seen"],
+        viewersCount: json["viewers_count"],
+        media: json["media"] == null
+            ? []
+            : List<dynamic>.from(json["media"]!.map((x) => x)),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "cut_video_name": cutVideoName,
-    "cut_video_path": cutVideoPath,
-    "full_video_name": fullVideoName,
-    "full_video_path": fullVideoPath,
-    "storage_video_path": storageVideoPath,
-    "user_id": userId,
-    "is_photo": isPhoto,
-    "is_video": isVideo,
-    "photo_path": photoPath,
-    "file": file,
-    "is_seen": isSeen,
-    "viewers_count": viewersCount,
-    "media": media == null ? [] : List<dynamic>.from(media!.map((x) => x)),
-  };
+        "id": id,
+        "cut_video_name": cutVideoName,
+        "cut_video_path": cutVideoPath,
+        "full_video_name": fullVideoName,
+        "full_video_path": fullVideoPath,
+        "storage_video_path": storageVideoPath,
+        "user_id": userId,
+        "is_photo": isPhoto,
+        "is_video": isVideo,
+        "photo_path": photoPath,
+        "file": file,
+        "is_seen": isSeen,
+        "viewers_count": viewersCount,
+        "media": media == null ? [] : List<dynamic>.from(media!.map((x) => x)),
+      };
 }
 
 class Link {
@@ -375,14 +398,14 @@ class Link {
       );
 
   factory Link.fromJson(Map<String, dynamic> json) => Link(
-    url: json["url"],
-    label: json["label"],
-    active: json["active"],
-  );
+        url: json["url"],
+        label: json["label"],
+        active: json["active"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "url": url,
-    "label": label,
-    "active": active,
-  };
+        "url": url,
+        "label": label,
+        "active": active,
+      };
 }

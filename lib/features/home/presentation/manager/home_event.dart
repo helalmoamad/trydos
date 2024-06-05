@@ -48,20 +48,6 @@ class GetHomeBoutiqesEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
-class StorySelectEvent extends HomeEvent {
-  final int collectionIndex;
-  final int selectedStoryIndexInCollection;
-  final int currentPage;
-  const StorySelectEvent(
-      {required this.collectionIndex,
-      required this.selectedStoryIndexInCollection,
-      required this.currentPage});
-
-  @override
-  List<Object?> get props =>
-      [collectionIndex, selectedStoryIndexInCollection, currentPage];
-}
-
 class GetProductDatailsWithoutRelatedProductsEvent extends HomeEvent {
   final String? productId;
 
@@ -110,7 +96,8 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
 }
 
 class GetStoryForProductEvent extends HomeEvent {
-  const GetStoryForProductEvent();
+  final String productId;
+  GetStoryForProductEvent({required this.productId});
 
   @override
   // TODO: implement props
