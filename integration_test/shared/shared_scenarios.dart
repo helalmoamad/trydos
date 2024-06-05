@@ -12,6 +12,8 @@ import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import '../utils/global_test_functions.dart';
 
 class SharedScenarios {
+  static final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
+
   static Future<void> goToVerifyOtp({required WidgetTester tester}) async {
     await GlobalTestFunctions.waitFor(tester, find.byType(RegistrationPage));
 
@@ -90,15 +92,7 @@ class SharedScenarios {
       failedMessage: 'Find WelcomeSection failed',
     );
     ////////////////////////////
-    final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
-    try {
-      expect(prefsRepository.marketToken, isNull);
-      debugPrint('marketToken is null before guest register');
-    } catch (e) {
-      print(
-          '//////// marketToken is NOT null before guest register Failure: //////////\n $e');
-      rethrow;
-    }
+    await testTokensAreNull(isJustForMarketToken: true);
     ////////////////////////////
     final Finder laterTakeLookButton =
         find.byKey(Key(WidgetsKey.laterTakeLookKey));
@@ -115,5 +109,82 @@ class SharedScenarios {
       successMessage: 'Find HomePage Success',
       failedMessage: 'Find HomePage failed',
     );
+  }
+
+  static Future<void> testTokensAreNull(
+      {required bool isJustForMarketToken}) async {
+    if (isJustForMarketToken) {
+      try {
+        expect(prefsRepository.marketToken, isNull);
+        debugPrint('marketToken is Null before');
+      } catch (e) {
+        print(
+            '//////// marketToken is NOT null before Failure: //////////\n $e');
+        rethrow;
+      }
+    } else {
+      try {
+        expect(prefsRepository.marketToken, isNull);
+        debugPrint('marketToken is Null before');
+      } catch (e) {
+        print(
+            '//////// marketToken is Not Null before Failure: //////////\n $e');
+        rethrow;
+      }
+      ////////////////////////////
+      try {
+        expect(prefsRepository.storiesToken, isNull);
+        debugPrint('storiesToken is Null before');
+      } catch (e) {
+        print(
+            '//////// storiesToken is Not Null before Failure: //////////\n $e');
+        rethrow;
+      }
+      ////////////////////////////
+      try {
+        expect(prefsRepository.chatToken, isNull);
+        debugPrint('chatToken is Null before');
+      } catch (e) {
+        print('//////// chatToken is Not Null before Failure: //////////\n $e');
+        rethrow;
+      }
+    }
+  }
+
+  static Future<void> testTokensAreNotNull(
+      {required bool isJustForMarketToken}) async {
+    if (isJustForMarketToken) {
+      try {
+        expect(prefsRepository.marketToken, isNotNull);
+        debugPrint('marketToken is NOT null after');
+      } catch (e) {
+        print('//////// marketToken is null after Failure: //////////\n $e');
+        rethrow;
+      }
+    } else {
+      try {
+        expect(prefsRepository.marketToken, isNotNull);
+        debugPrint('marketToken is NOT null after ');
+      } catch (e) {
+        print('//////// marketToken is null after  Failure: //////////\n $e');
+        rethrow;
+      }
+      ////////////////////////////
+      try {
+        expect(prefsRepository.storiesToken, isNotNull);
+        debugPrint('storiesToken is NOT null after ');
+      } catch (e) {
+        print('//////// storiesToken is null after  Failure: //////////\n $e');
+        rethrow;
+      }
+      ////////////////////////////
+      try {
+        expect(prefsRepository.chatToken, isNotNull);
+        debugPrint('chatToken is NOT null after ');
+      } catch (e) {
+        print('//////// chatToken is null after  Failure: //////////\n $e');
+        rethrow;
+      }
+    }
   }
 }

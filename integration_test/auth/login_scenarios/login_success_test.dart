@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
+import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart' as app;
 import '../../utils/global_test_functions.dart';
 import '../../shared/shared_scenarios.dart';
@@ -10,13 +11,15 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Login success test ',
+    'Login success test and market token , stories token ,chat token have been returned',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
       //////////////////////////
       await SharedScenarios.goToVerifyOtp(tester: tester);
-      //////////////////////////
+      ////////////////////////////
+      await SharedScenarios.testTokensAreNull(isJustForMarketToken: false);
+      ////////////////////////////
       await GlobalTestFunctions.enterTestOtp(tester: tester, number: '9');
       await Future.delayed(const Duration(seconds: 5));
       //////////////////////////
@@ -28,6 +31,16 @@ void main() {
         successMessage: 'Find LoginSuccessfully Success',
         failedMessage: 'Find LoginSuccessfully failed',
       );
+      //////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        widgetType: HomePage,
+        successMessage: 'Find HomePage Success',
+        failedMessage: 'Find HomePage failed',
+      );
+      ////////////////////////////
+      await SharedScenarios.testTokensAreNotNull(isJustForMarketToken: false);
+      ////////////////////////////
     },
   );
 }
