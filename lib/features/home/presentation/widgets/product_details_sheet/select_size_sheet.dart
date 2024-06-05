@@ -18,11 +18,13 @@ class SelectSizeContent extends StatefulWidget {
       required this.scrollController,
       required this.selectedColor,
       required this.addToBagButtonShapeNotifier,
+        required this.sizeIsNotAvailableNotifier,
       });
 
   final ScrollController scrollController ;
   final Color selectedColor;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
+  final ValueNotifier<String?> sizeIsNotAvailableNotifier;
 
   @override
   State<SelectSizeContent> createState() => _SelectSizeContentState();
@@ -217,6 +219,11 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                             onPageChanged: (index, reason) {
                               HapticFeedback.lightImpact();
                               currentIndexInSizes.value = index;
+                              if(sizes[index] == 'S'){
+                                widget.sizeIsNotAvailableNotifier.value = sizes[index];
+                              }else{
+                                widget.sizeIsNotAvailableNotifier.value = null ;
+                              }
                               setState(() {});
                             },
                             viewportFraction: 0.22)

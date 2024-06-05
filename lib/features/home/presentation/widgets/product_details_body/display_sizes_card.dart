@@ -51,30 +51,25 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
   late final List<double> scrollOffsets;
   List<int> controllersToStopScroll = [];
   int? prevMode;
+  final GlobalKey selectSizeCardKey = GlobalKey();
 
   void changingModeListener() {
-    print(widget.scrollController.position.pixels);
-    if ((widget.scrollController.position.pixels <= (widget.scrollController.position.maxScrollExtent - 500) &&
-            displayMode.value == 1)) {
+    if (renderBox == null && selectSizeCardKey.currentContext != null) {
+      renderBox =
+      selectSizeCardKey.currentContext?.findRenderObject() as RenderBox;
+    }
+    if (renderBox != null &&
+        displayMode.value == 1 &&
+        (renderBox!.localToGlobal(Offset.zero).dy + 175 - 1.sh).abs() <= 10) {
       prevMode = displayMode.value;
       prevModeForRunHero = null;
       displayMode.value = 0;
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         prevMode = null;
         displayMode.notifyListeners();
+        renderBox = null;
       });
     }
-
-    // if (widget.scrollController.position.activity is DrivenScrollActivity) {
-    //   return;
-    // }
-    // if(expandedOrNot.value){
-    //   expansionTileController.collapse();
-    //   expandedOrNot.value = false;
-    //   if(displayMode.value == 2) {
-    //     displayMode.value--;
-    //   }
-    // }
   }
 
   void _scrollListener(ScrollController _scrollController, {int index = 0}) {
@@ -121,6 +116,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
   //   }
   //   super.dispose();
   // }
+  RenderBox? renderBox;
 
   @override
   void initState() {
@@ -167,8 +163,9 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
     return ValueListenableBuilder<int>(
         valueListenable: displayMode,
         builder: (context, mode, _) {
-          return (widget.scrollController.position.pixels <= (widget.scrollController.position.maxScrollExtent - 475) &&
-              displayMode.value == 1)
+          return renderBox != null &&
+              prevMode == 1 &&
+              (renderBox!.localToGlobal(Offset.zero).dy + 175 - 1.sh).abs() <= 10
               ? SizedBox.shrink()
               : LocalHeroScope(
                   duration: const Duration(milliseconds: 200),
@@ -182,6 +179,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                         curve: Curves.fastLinearToSlowEaseIn,
                         alignment: Alignment.topCenter,
                         child: Container(
+                          key: selectSizeCardKey,
                           height: mode == 2
                               ? 300
                               : mode == 1
@@ -373,12 +371,12 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                             },
                                                             itemConfig:
                                                                 const GalleryItemConfig(
-                                                                    width: 40,
-                                                                    height: 40,
-                                                                    radius: 180,
-                                                                    isShowTransformMask:
-                                                                        false,
-                                                                ),
+                                                              width: 40,
+                                                              height: 40,
+                                                              radius: 180,
+                                                              isShowTransformMask:
+                                                                  false,
+                                                            ),
                                                             itemBuilder:
                                                                 (context,
                                                                     index) {
@@ -479,15 +477,13 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                   },
                                                   child: AnimatedContainer(
                                                       duration: Duration(
-                                                          milliseconds:
-                                                              300),
+                                                          milliseconds: 300),
                                                       curve: Curves
                                                           .fastLinearToSlowEaseIn,
-                                                      alignment: Alignment
-                                                          .topCenter,
+                                                      alignment:
+                                                          Alignment.topCenter,
                                                       child: SizeItemWidget(
-                                                        sizeName:
-                                                            sizes![index],
+                                                        sizeName: sizes![index],
                                                         width: mode == 1
                                                             ? 70
                                                             : 135,
@@ -510,18 +506,23 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                     )
                                   : SizedBox.shrink(),
                               if (mode != 0) ...{
-                                SizedBox(height: 15,),
+                                SizedBox(
+                                  height: 15,
+                                ),
                                 Container(
-                                  width: 1.sw,
-                                    margin: EdgeInsets.symmetric(horizontal: 20),
+                                    width: 1.sw,
+                                    margin:
+                                        EdgeInsets.symmetric(horizontal: 20),
                                     height: 30,
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(10),
                                         color: Color(0xffF4F4F4)),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         SvgPicture.asset(
                                             AppAssets.registerInfoSvg),
@@ -569,37 +570,38 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                 SizedBox(
                                   height: 5,
                                 ),
-                              Container(
-                              height: 30,
-                              margin: EdgeInsets.symmetric(horizontal: 20),
-                              child:DottedBorder(
-                                  radius: Radius.circular(10),
-                                  borderType: BorderType.RRect,
-                                  strokeCap: StrokeCap.round,
-                                  strokeWidth: 0.5,
-                                  color: Color(0xff707070),
-                                  dashPattern: [3, 3],
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        AppAssets.malokanSvg,
-                                        height: 20,
-                                      ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      MyTextWidget(
-                                        'Need Help Finding Your Size?',
-                                        style: textTheme.caption?.rq
-                                            .copyWith(
-                                                color:
-                                                    const Color(0xff505050)),
-                                      ),
-                                    ],
+                                Container(
+                                  height: 30,
+                                  margin: EdgeInsets.symmetric(horizontal: 20),
+                                  child: DottedBorder(
+                                    radius: Radius.circular(10),
+                                    borderType: BorderType.RRect,
+                                    strokeCap: StrokeCap.round,
+                                    strokeWidth: 0.5,
+                                    color: Color(0xff707070),
+                                    dashPattern: [3, 3],
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                          AppAssets.malokanSvg,
+                                          height: 20,
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        MyTextWidget(
+                                          'Need Help Finding Your Size?',
+                                          style: textTheme.caption?.rq.copyWith(
+                                              color: const Color(0xff505050)),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),)
+                                )
                               }
                             ],
                           ),

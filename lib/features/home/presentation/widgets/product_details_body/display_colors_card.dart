@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:local_hero/local_hero.dart';
 import 'package:trydos/common/constant/constant.dart';
@@ -50,20 +51,46 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
   late final List<double> scrollOffsets;
   List<int> controllersToStopScroll = [];
   int? prevMode;
+  final GlobalKey selectColorCardKey = GlobalKey();
 
   void changingModeListener() {
-    if ((widget.scrollController.position.pixels <= (widget.scrollController.position.maxScrollExtent - 550) &&
-        displayMode.value == 1) ||
-        (widget.scrollController.position.pixels <= 90 &&
-            displayMode.value == 2)) {
+
+    if (renderBox == null && selectColorCardKey.currentContext != null) {
+      renderBox =
+      selectColorCardKey.currentContext?.findRenderObject() as RenderBox;
+    }
+
+    if(renderBox != null){
+      print(renderBox!.size.height);
+      print(renderBox!.localToGlobal(Offset.zero).dy);
+      print(1.sh);
+    }
+
+    if (renderBox != null &&
+        (displayMode.value == 1 || displayMode.value == 2)&&
+        (renderBox!.localToGlobal(Offset.zero).dy + 175 - 1.sh).abs() <= 10) {
       prevMode = displayMode.value;
       prevModeForRunHero = null;
       displayMode.value = 0;
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         prevMode = null;
         displayMode.notifyListeners();
+        renderBox = null;
       });
     }
+
+    // if ((widget.scrollController.position.pixels <= (widget.scrollController.position.maxScrollExtent - 650) &&
+    //     displayMode.value == 1) ||
+    //     (widget.scrollController.position.pixels <= (widget.scrollController.position.maxScrollExtent - 775) &&
+    //         displayMode.value == 2)) {
+    //   prevMode = displayMode.value;
+    //   prevModeForRunHero = null;
+    //   displayMode.value = 0;
+    //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //     prevMode = null;
+    //     displayMode.notifyListeners();
+    //   });
+    // }
 
     // if (widget.scrollController.position.activity is DrivenScrollActivity) {
     //   return;
@@ -171,7 +198,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
       ExpansionTileController();
 
   int? prevModeForRunHero;
-
+  RenderBox? renderBox;
   bool firstTime = true;
 
   @override
@@ -179,11 +206,11 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
     return ValueListenableBuilder<int>(
         valueListenable: displayMode,
         builder: (context, mode, _) {
-          return ((widget.scrollController.position.pixels <= (widget.scrollController.position.maxScrollExtent - 550) &&
-              displayMode.value == 1) ||
-                  (widget.scrollController.position.pixels <= 90 &&
-                      prevMode == 2))
-              ? SizedBox.shrink()
+          return
+            (renderBox != null &&
+                (prevMode == 1 || prevMode == 2)&&
+                (renderBox!.localToGlobal(Offset.zero).dy + 175 - 1.sh).abs() <= 10)
+               ? SizedBox.shrink()
               : LocalHeroScope(
                   duration: const Duration(milliseconds: 200),
                   curve: Curves.fastLinearToSlowEaseIn,
@@ -196,6 +223,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                         curve: Curves.fastLinearToSlowEaseIn,
                         alignment: Alignment.topCenter,
                         child: Container(
+                          key: selectColorCardKey,
                           height: mode == 2
                               ? 300
                               : mode == 1
