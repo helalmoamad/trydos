@@ -10,6 +10,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
@@ -102,6 +103,7 @@ class CreateAccountSection extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: InkWell(
+            key: Key(WidgetsKey.agreeContinueButtonKey),
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () {

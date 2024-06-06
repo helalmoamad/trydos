@@ -136,6 +136,7 @@ class WelcomeSection extends StatelessWidget {
             height: 10,
           ),
           InkWell(
+            key: Key(WidgetsKey.createNewAccountButtonKey),
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () async {

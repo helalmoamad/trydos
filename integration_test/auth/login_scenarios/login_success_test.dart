@@ -11,17 +11,16 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Login success test and market token , stories token ,chat token have been returned',
+    'Login success test and market token , stories token ,chat token have been received',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
       //////////////////////////
-      await SharedScenarios.goToVerifyOtp(tester: tester);
+      await SharedScenarios.goToVerifyOtp(tester: tester, isForLogin: true);
       ////////////////////////////
       await SharedScenarios.testTokensAreNull(isJustForMarketToken: false);
       ////////////////////////////
       await GlobalTestFunctions.enterTestOtp(tester: tester, number: '9');
-      await Future.delayed(const Duration(seconds: 5));
       //////////////////////////
       await GlobalTestFunctions.waitFor(tester, find.byType(LoginSuccessfully));
       //////////////////////////

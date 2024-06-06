@@ -21,7 +21,7 @@ void main() {
           app.main();
           await tester.pumpAndSettle();
           //////////////////////////
-          await SharedScenarios.goToVerifyOtp(tester: tester);
+          await SharedScenarios.goToVerifyOtp(tester: tester, isForLogin: true);
           ////////////////////////////
           final Finder otpRemainingTime =
               find.byKey(Key(WidgetsKey.otpRemainingTimeKey));
@@ -78,7 +78,7 @@ void main() {
           app.main();
           await tester.pumpAndSettle();
           //////////////////////////
-          await SharedScenarios.goToVerifyOtp(tester: tester);
+          await SharedScenarios.goToVerifyOtp(tester: tester, isForLogin: true);
           ////////////////////////////
           await GlobalTestFunctions.enterTestOtp(tester: tester, number: '8');
           await Future.delayed(const Duration(seconds: 30));

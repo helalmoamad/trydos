@@ -1,5 +1,9 @@
 class WidgetsKey {
   static const haveAccountButtonKey = 'have_already_account_button';
+  static const createNewAccountButtonKey = 'create_new_account_button';
+  static const agreeContinueButtonKey = 'agree_continue_button';
+  static const loginContinueButtonKey = 'login_continue_button';
+  static const takeLookButtonKey = 'take_look_button';
   static const loginPhoneFormFieldKey = 'login_phone_form_field';
   static const loginConfirmPhoneButtonKey = 'login_confirm_phone_button';
   static const chooseWhatsappButtonKey = 'choose_whatsapp_button';

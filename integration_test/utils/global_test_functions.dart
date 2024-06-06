@@ -72,6 +72,8 @@ class GlobalTestFunctions {
     required WidgetTester tester,
     required String number,
   }) async {
+    await Future.delayed(const Duration(seconds: 5));
+
     final Finder otpItem1 = find.byKey(Key('otp_item_1'));
     final Finder otpItem2 = find.byKey(Key('otp_item_2'));
     final Finder otpItem3 = find.byKey(Key('otp_item_3'));
@@ -95,7 +97,6 @@ class GlobalTestFunctions {
     await tester.pumpAndSettle();
     await Future.delayed(const Duration(seconds: 1));
     await tester.enterText(otpItem6, number);
-    await Future.delayed(const Duration(seconds: 5));
     await tester.pumpAndSettle();
   }
 }

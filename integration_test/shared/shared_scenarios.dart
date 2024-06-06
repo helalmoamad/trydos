@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/widgets_key.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
+import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
@@ -14,7 +15,10 @@ import '../utils/global_test_functions.dart';
 class SharedScenarios {
   static final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
-  static Future<void> goToVerifyOtp({required WidgetTester tester}) async {
+  static Future<void> goToVerifyOtp({
+    required WidgetTester tester,
+    required bool isForLogin,
+  }) async {
     await GlobalTestFunctions.waitFor(tester, find.byType(RegistrationPage));
 
     await GlobalTestFunctions.findWidget(
@@ -33,9 +37,29 @@ class SharedScenarios {
     ////////////////////////////
     final Finder haveAccountButton =
         find.byKey(Key(WidgetsKey.haveAccountButtonKey));
+    final Finder createNewAccountButton =
+        find.byKey(Key(WidgetsKey.createNewAccountButtonKey));
     await Future.delayed(const Duration(seconds: 1));
-    await tester.tap(haveAccountButton);
+    if (isForLogin) {
+      await tester.tap(haveAccountButton);
+    } else {
+      await tester.tap(createNewAccountButton);
+    }
     await tester.pumpAndSettle();
+    //////////////////////////
+    if (!isForLogin) {
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        widgetType: CreateAccountSection,
+        successMessage: 'Find CreateAccountSection Success',
+        failedMessage: 'Find CreateAccountSection failed',
+      );
+      final Finder agreeContinueButton =
+          find.byKey(Key(WidgetsKey.agreeContinueButtonKey));
+      await Future.delayed(const Duration(seconds: 1));
+      await tester.tap(agreeContinueButton);
+      await tester.pumpAndSettle();
+    }
     //////////////////////////
     await GlobalTestFunctions.findWidget(
       tester: tester,
