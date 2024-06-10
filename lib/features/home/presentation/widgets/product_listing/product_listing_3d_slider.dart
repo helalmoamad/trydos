@@ -12,6 +12,8 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
+    as listing;
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
@@ -115,7 +117,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
       indicatorValues[i] = 0;
     }
     indicatorForProductImages = ValueNotifier(indicatorValues);
-    images = syncColorImageList?.map((e) => e.images![0]).toList() ?? [];
+    images =
+        syncColorImageList?.map((e) => e.images![0].filePath!).toList() ?? [];
     if (!images.isNullOrEmpty && images.length > 3) {
       List<String> copyOfImages = List.of(images), threeImages;
       threeImages = images
@@ -129,7 +132,11 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
     } else {
       threeColorsSlider = ValueNotifier(Tuple2(images, []));
     }
-    List<String> list = widget.productItem.images ?? [];
+    List<listing.Thumbnail> lists = widget.productItem.images ?? [];
+    List<String> list = [];
+    lists.forEach((element) {
+      list.add(element.filePath!);
+    });
     list = [...list, ...list];
     if (list.length == 2) {
       list.add(list[0]);
@@ -164,6 +171,9 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
         currentIndex: 0,
         initialIndex: 0,
         scrollTime: 1);
+    homeBloc.add(AddCurrentSelectedColorEvent(
+        currentSelectedColor: syncColorImageList!.length ~/ 4,
+        productId: widget.productItem.id.toString()));
     gallery3dControllerForCircles =
         syncColorImageList.isNullOrEmpty || syncColorImageList!.length < 3
             ? null
@@ -182,6 +192,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                         ? 2.8
                         : 1.6,
                 scrollTime: 1);
+
     super.initState();
   }
 
@@ -190,6 +201,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
     slideModeIndex = widget.itemIndex == widget.slidingModeItem.item1
         ? widget.slidingModeItem.item2
         : 0;
+
     FlutterError.onError = (error) {
       debugPrint(error.toString());
     };
@@ -254,11 +266,14 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                     MyCachedNetworkImage(
                                                       imageUrl: syncColorImageList
                                                               .isNullOrEmpty
-                                                          ? widget.productItem
+                                                          ? widget
+                                                              .productItem
                                                               .images![index]
+                                                              .filePath!
                                                           : syncColorImageList![
                                                                   prevIndexInSecondSlider]
-                                                              .images![index],
+                                                              .images![index]
+                                                              .filePath!,
                                                       height: 40,
                                                       width: 30,
                                                       logoTextHeight: 15,
@@ -594,16 +609,17 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                               ),
                                               itemBuilder: (context, index, _) {
                                                 return ProductListingImageWidget(
-                                                  index:
-                                                      prevIndexInSecondSlider,
                                                   width: 200,
                                                   imageUrl: syncColorImageList
                                                           .isNullOrEmpty
-                                                      ? widget.productItem
+                                                      ? widget
+                                                          .productItem
                                                           .images![index]
+                                                          .filePath!
                                                       : syncColorImageList![
                                                               prevIndexInSecondSlider]
-                                                          .images![index],
+                                                          .images![index]
+                                                          .filePath!,
                                                   height: 290,
                                                   circleShape: false,
                                                   innerShadowYOffset: 3,
@@ -1068,7 +1084,6 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                   0) >=
                                               (syncColorImageList!.length ~/ 2),
                                       child: ProductListingImageWidget(
-                                        index: index,
                                         width: 40,
                                         height: 40,
                                         imageUrl: images[index],

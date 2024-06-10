@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 
 abstract class HomeEvent extends Equatable {
   const HomeEvent();
@@ -109,4 +110,14 @@ class LoadFailureEvent extends HomeEvent {
   const LoadFailureEvent({required this.collectionId});
   @override
   List<Object?> get props => [collectionId];
+}
+
+class AddSizesFotColorsEvent extends HomeEvent {
+  final String currentColorName;
+  final List<Variation>? variation;
+
+  const AddSizesFotColorsEvent(
+      {required this.currentColorName, required this.variation});
+  @override
+  List<Object?> get props => [currentColorName];
 }

@@ -74,6 +74,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onGetStoryEvent,
       // transformer: throttleDroppable(throttleDuration)
     );
+    on<AddSizesFotColorsEvent>(
+      _onAddSizesFotColorsEvent,
+      // transformer: throttleDroppable(throttleDuration)
+    );
 
     on<GetProductDatailsWithoutRelatedProductsEvent>(
       _onGetProductDatailsWithoutRelatedProductsEvent,
@@ -179,6 +183,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   _onAddCurrentSelectedColorEvent(
       AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
+    print(
+        "999999999999999999999999***************************************************************");
     Map<String, int> currentSelectedColorForEveryProduct =
         Map.of(state.currentSelectedColorForEveryProduct);
     currentSelectedColorForEveryProduct[event.productId] =
@@ -485,6 +491,28 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
 
+  FutureOr<void> _onAddSizesFotColorsEvent(
+      AddSizesFotColorsEvent event, Emitter<HomeState> emit) async {
+    ;
+    List<String> sizes = [];
+    if (event.variation != null) {
+      event.variation!.forEach((element) {
+        if (element.type!.split("-")[0] == event.currentColorName &&
+            element.qty != null) {
+          if (element.qty! > 0) {
+            print("-----------type----${element.type!.split("-")[0]}" +
+                "----------cu--${event.currentColorName}" +
+                "---type----${element.type!.split("-")[1]}" +
+                "----------cusizw--${element.qty}");
+            sizes.add(element.type!.split("-")[1]);
+          }
+        }
+      });
+    }
+
+    emit(state.copyWith(sizes: sizes));
+  }
+
   FutureOr<void> _onGetProductDatailsWithoutRelatedProductsEvent(
       GetProductDatailsWithoutRelatedProductsEvent event,
       Emitter<HomeState> emit) async {
@@ -518,7 +546,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           Map.of(state.cachedProductWithoutRelatedProductsModel);
       newCached[event.productId!] = r;
       emit(state.copyWith(
-          sizes: r.product!.choiceOptions,
           cachedProductWithoutRelatedProductsModel: newCached,
           getProductDetailWithoutSimilarRelatedProductsStatus:
               GetProductDetailWithoutSimilarRelatedProductsStatus.success));
@@ -533,6 +560,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   @override
   Map<String, dynamic>? toJson(HomeState state) {
     return state.copyWith(
+      currentSelectedColorForEveryProduct: {},
       reRequestTheseProductListingInBoutiques: {},
       reRequestTheseBoutiques: {},
       getMainCategoriesStatus: GetMainCategoriesStatus.init,

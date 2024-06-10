@@ -3,21 +3,21 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 
 class ProductListingImageWidget extends StatelessWidget {
-  const ProductListingImageWidget(
-      {super.key,
-      this.width,
-      this.height,
-      required this.innerShadowYOffset,
-      this.borderColor,
-      this.withBackGroundShadow = false,
-      required this.circleShape,
-      required this.imageUrl,
-      this.index});
+  const ProductListingImageWidget({
+    super.key,
+    this.width,
+    this.height,
+    required this.innerShadowYOffset,
+    this.borderColor,
+    this.withBackGroundShadow = false,
+    required this.circleShape,
+    required this.imageUrl,
+  });
 
   final double? width;
   final double? height;
   final bool circleShape;
-  final int? index;
+
   final bool withBackGroundShadow;
   final double innerShadowYOffset;
   final Color? borderColor;
