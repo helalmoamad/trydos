@@ -53,7 +53,7 @@ class _RegistrationPageState extends State<RegistrationPage>
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFFFFF),
       statusBarBrightness: Brightness.light,
-      statusBarIconBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.dark,
     ));
     FirebaseAnalytics.instance
         .setCurrentScreen(screenName: "Registration Page");
@@ -232,6 +232,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                             '?phoneNumber=$phoneNumber');
                                         return;
                                       }
+                                      fromLogin = false;
                                       pageController.animateToPage(5,
                                           duration: Duration(milliseconds: 500),
                                           curve: Curves.easeInOut);
@@ -239,6 +240,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                     },
                                     fromLogin: fromLogin,
                                     onLoginFailed: () {
+                                      fromLogin = true;
                                       pageController.animateToPage(5,
                                           duration: Duration(milliseconds: 500),
                                           curve: Curves.easeInOut);
@@ -255,11 +257,10 @@ class _RegistrationPageState extends State<RegistrationPage>
                                         : AppAssets.smsSvg,
                                     phoneNumber: phoneNumber),
                                 AddingName(
-                                  fromLogin: false,
+                                  fromLogin: fromLogin,
                                 )
                               ]),
                           onWillPop: () async {
-                            debugPrint('tttttttttttttttt');
                             if (PopScopeValue > 0) {
                               if (PopScopeValue == 2 && fromLogin) {
                                 await pageController.animateToPage(

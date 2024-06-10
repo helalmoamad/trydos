@@ -23,6 +23,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
       required this.clickOnFavorite,
       required this.clickOnComments,
       required this.clickOnShare,
+      required this.onFinishBuying,
       required this.clickOnMoreOptions,
       required this.panelController,
       required this.currentActiveTab,
@@ -40,6 +41,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
   final void Function() clickOnComments;
   final void Function() clickOnShare;
   final void Function() clickOnMoreOptions;
+  final void Function() onFinishBuying;
 
   @override
   State<ProductDetailsSheetBottomBar> createState() =>
@@ -141,8 +143,15 @@ class _ProductDetailsSheetBottomBarState
                                                       widget
                                                           .addToBagButtonShapeNotifier
                                                           .value++;
+                                                    }else {
+                                                      animationController
+                                                          .forward();
+                                                      widget.onFinishBuying.call();
+                                                      Future.delayed(Duration(milliseconds: 400) , (){
+                                                        widget.panelController.close();
+                                                      });
                                                     }
-                                                  } else {
+                                                  }else{
                                                     animationController
                                                         .forward();
                                                     widget

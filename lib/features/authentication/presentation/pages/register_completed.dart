@@ -35,7 +35,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffBCFFDF),
       statusBarBrightness: Brightness.light,
-      statusBarIconBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.dark,
     ));
     FirebaseAnalytics.instance
         .setCurrentScreen(screenName: "Register Completed Page");

@@ -37,7 +37,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffF4F8FF),
       statusBarBrightness: Brightness.light,
-      statusBarIconBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.dark,
     ));
     super.didChangeDependencies();
   }

@@ -5,10 +5,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
-
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/my_text_widget.dart';
+import 'package:like_button/like_button.dart';
 
 class ReelWidget extends StatelessWidget {
   const ReelWidget({super.key});
@@ -28,16 +28,30 @@ class ReelWidget extends StatelessWidget {
               withInnerShadow: false,
               imageFit: BoxFit.fill,
             ),
-             Positioned(
-               bottom: 20,
-              right: 20 ,
+            Positioned(
+              bottom: 20,
+              right: 20,
               child: Column(
-                mainAxisSize : MainAxisSize.min,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  SvgPicture.asset(AppAssets.favoriteSvg),
-                  const SizedBox(height:25),
-                  SvgPicture.asset(AppAssets.shareSvg , color: const Color(0xff505050),),
-                  const SizedBox(height:25),
+                  LikeButton(
+                    circleColor:
+                        CircleColor(start: Colors.redAccent, end: Colors.red),
+                    bubblesColor: BubblesColor(
+                      dotPrimaryColor: Colors.red.shade300,
+                      dotSecondaryColor: Colors.red,
+                    ),
+                    likeBuilder: (bool isLiked) {
+                      return SvgPicture.asset(AppAssets.favoriteSvg,
+                          color: isLiked ? Colors.red : Colors.black);
+                    },
+                  ),
+                  const SizedBox(height: 25),
+                  SvgPicture.asset(
+                    AppAssets.shareSvg,
+                    color: const Color(0xff505050),
+                  ),
+                  const SizedBox(height: 25),
                   SvgPicture.asset(AppAssets.moreOptionSvg),
                 ],
               ),
@@ -50,8 +64,8 @@ class ReelWidget extends StatelessWidget {
           decoration: const BoxDecoration(
             color: Color(0xfff8f8f8),
             borderRadius: BorderRadius.only(
-          bottomRight: Radius.circular(30),
-            bottomLeft: Radius.circular(30)),
+                bottomRight: Radius.circular(30),
+                bottomLeft: Radius.circular(30)),
           ),
           height: 110,
           child: Row(
@@ -64,7 +78,7 @@ class ReelWidget extends StatelessWidget {
                       bottomLeft: Radius.circular(30)),
                   boxShadow: [
                     BoxShadow(
-                      color:  Color(0x29000000),
+                      color: Color(0x29000000),
                       offset: Offset(0, 3),
                       blurRadius: 6,
                     ),
@@ -123,7 +137,9 @@ class ReelWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 5,),
+                    const SizedBox(
+                      height: 5,
+                    ),
                     Flexible(
                       child: MyTextWidget(
                         'Amazing Product I Buy It And I Saw It Is Good Quality Regarding Price',
@@ -135,8 +151,13 @@ class ReelWidget extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        SvgPicture.asset(AppAssets.favoriteSvg , height: 15,),
-                        SizedBox(width: 5,),
+                        SvgPicture.asset(
+                          AppAssets.favoriteSvg,
+                          height: 15,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
                         MyTextWidget(
                           '110k',
                           style: context.textTheme.caption?.rq

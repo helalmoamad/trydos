@@ -185,7 +185,8 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                   curve: Curves.fastLinearToSlowEaseIn,
                   child: Padding(
                     padding: EdgeInsets.only(
-                        left: mode == 0 ? 20.0 : 0, right: mode == 0 ? 10 : 0),
+                        left: mode == 0 ? 15.0 : 0,
+                        right: mode == 0 ? 15.0 : 0),
                     child: AnimatedSize(
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.fastLinearToSlowEaseIn,
@@ -260,22 +261,25 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                   prevModeForRunHero = 1;
                                                 });
                                                 displayMode.value = 1;
-                                                if ((widget
-                                                                .scrollController
-                                                                .position
-                                                                .pixels -
-                                                            widget
-                                                                .scrollController
-                                                                .position
-                                                                .maxScrollExtent)
-                                                        .abs() >
-                                                    120) {
+                                                if (widget.scrollController
+                                                        .position.pixels <
+                                                    (1.sh -
+                                                        renderBox!
+                                                            .localToGlobal(
+                                                                Offset.zero)
+                                                            .dy +
+                                                        150 -
+                                                        renderBox!
+                                                            .size.height)) {
                                                   widget.scrollController.animateTo(
-                                                      widget
-                                                              .scrollController
-                                                              .position
-                                                              .maxScrollExtent -
-                                                          100,
+                                                      (1.sh -
+                                                          renderBox!
+                                                              .localToGlobal(
+                                                                  Offset.zero)
+                                                              .dy +
+                                                          150 -
+                                                          renderBox!
+                                                              .size.height),
                                                       curve: Curves
                                                           .fastEaseInToSlowEaseOut,
                                                       duration: Duration(
@@ -352,20 +356,29 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                             });
                                                             displayMode.value =
                                                                 1;
-                                                            if ((widget.scrollController.position
-                                                                            .pixels -
-                                                                        widget
-                                                                            .scrollController
-                                                                            .position
-                                                                            .maxScrollExtent)
-                                                                    .abs() >
-                                                                120) {
+                                                            if (widget
+                                                                    .scrollController
+                                                                    .position
+                                                                    .pixels <
+                                                                (1.sh -
+                                                                    renderBox!
+                                                                        .localToGlobal(Offset
+                                                                            .zero)
+                                                                        .dy +
+                                                                    150 -
+                                                                    renderBox!
+                                                                        .size
+                                                                        .height)) {
                                                               widget.scrollController.animateTo(
-                                                                  widget
-                                                                          .scrollController
-                                                                          .position
-                                                                          .maxScrollExtent -
-                                                                      100,
+                                                                  (1.sh -
+                                                                      renderBox!
+                                                                          .localToGlobal(Offset
+                                                                              .zero)
+                                                                          .dy +
+                                                                      150 -
+                                                                      renderBox!
+                                                                          .size
+                                                                          .height),
                                                                   curve: Curves
                                                                       .fastEaseInToSlowEaseOut,
                                                                   duration: const Duration(
@@ -411,31 +424,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                             ),
                                           )
                                         : GestureDetector(
-                                            onTap: () {
-                                              // if (displayMode.value == 1) {
-                                              //   if ((widget
-                                              //                   .scrollController
-                                              //                   .position
-                                              //                   .pixels -
-                                              //               widget
-                                              //                   .scrollController
-                                              //                   .position
-                                              //                   .maxScrollExtent)
-                                              //           .abs() >
-                                              //       170) {
-                                              //     widget.scrollController.animateTo(
-                                              //         widget
-                                              //                 .scrollController
-                                              //                 .position
-                                              //                 .maxScrollExtent -
-                                              //             140,
-                                              //         curve: Curves
-                                              //             .fastEaseInToSlowEaseOut,
-                                              //         duration: Duration(
-                                              //             milliseconds: 300));
-                                              //   }
-                                              // }
-                                            },
+                                            onTap: () {},
                                             child: Container(
                                               width: 30,
                                               height: 30,

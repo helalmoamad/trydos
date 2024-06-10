@@ -56,6 +56,7 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
+        print(error.toString());
     };
     return BlocBuilder<StoryBloc, StoryState>(builder: (context, state) {
       print("${state.storiesCollections[widget.index].name}" +
