@@ -27,6 +27,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           : StartingSetting.fromJson(
               json['startingSetting'] as Map<String, dynamic>),
       currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
+      sizes: (json['sizes'] as List<dynamic>?)
+          ?.map((e) => ChoiceOption.fromJson(e as Map<String, dynamic>))
+          .toList(),
       reRequestTheseBoutiques:
           (json['reRequestTheseBoutiques'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(k, e as bool),
@@ -115,6 +118,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getProductDetailWithoutSimilarRelatedProductsStatus':
           _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap[
               instance.getProductDetailWithoutSimilarRelatedProductsStatus]!,
+      'sizes': instance.sizes?.map((e) => e.toJson()).toList(),
       'getProductListingStatus':
           _$GetProductListingStatusEnumMap[instance.getProductListingStatus]!,
       'getStoriesForProductStatus': _$GetStoriesForProductStatusEnumMap[

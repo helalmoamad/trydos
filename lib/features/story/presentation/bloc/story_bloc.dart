@@ -25,7 +25,7 @@ import '../../domain/useCases/add_story_to_our_server_usecase.dart';
 
 part 'story_event.dart';
 
-const throttleDuration = Duration(milliseconds: 1000);
+const throttleDuration = Duration(minutes: 2);
 
 EventTransformer<E> throttleDroppable<E>(Duration duration) {
   return (events, mapper) {

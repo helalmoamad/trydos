@@ -339,7 +339,7 @@ Future<_i1.GetIt> $initGetIt(
         gh<_i75.GetAgoraTokenUseCase>(),
         gh<_i74.DeleteMessageUseCase>(),
       ));
-  gh.factory<_i84.AuthBloc>(() => _i84.AuthBloc(
+  gh.lazySingleton<_i84.AuthBloc>(() => _i84.AuthBloc(
         gh<_i39.UpdateStoriesUserUseCase>(),
         gh<_i37.UpdateChatUserNameUseCase>(),
         gh<_i57.CreateUserUseCase>(),

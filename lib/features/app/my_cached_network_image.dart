@@ -67,7 +67,9 @@ class MyCachedNetworkImage extends StatelessWidget {
   Widget build(BuildContext context) {
     List<String> list;
     String url = '';
+    print(imageUrl);
     list = imageUrl.split('upload');
+    print(list);
     url = list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1];
 
     return ValueListenableBuilder<int>(

@@ -39,7 +39,7 @@ import 'dart:convert' as convert;
 
 import 'home_state.dart';
 
-const throttleDuration = Duration(milliseconds: 1000);
+const throttleDuration = Duration(minutes: 2);
 
 EventTransformer<E> throttleDroppable<E>(Duration duration) {
   return (events, mapper) {
