@@ -23,12 +23,15 @@ class ProductDetailsTitle extends StatelessWidget {
   final String productName;
   final String thumbnail;
   final String colorName;
-
+  final double orginalWidth;
+  final double orginalHeight;
   ProductDetailsTitle(
       {super.key,
       required this.brand,
       required this.productName,
       required this.thumbnail,
+      required this.orginalHeight,
+      required this.orginalWidth,
       required this.colorName});
 
   @override
@@ -108,6 +111,8 @@ class ProductDetailsTitle extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: MyCachedNetworkImage(
+                      ordinalHeight: orginalHeight,
+                      ordinalwidth: orginalWidth,
                       imageFit: BoxFit.cover,
                       imageUrl: thumbnail,
                       height: 15,

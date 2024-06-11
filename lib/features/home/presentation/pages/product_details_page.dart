@@ -216,6 +216,34 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                 ));
                                           },
                                           child: ProductDetailsImageWidget(
+                                            orginalHeight: widget
+                                                    .productItem
+                                                    .syncColorImages
+                                                    .isNullOrEmpty
+                                                ? double.parse(widget
+                                                    .productItem
+                                                    .images![index]
+                                                    .originalHeight!)
+                                                : double.parse(widget
+                                                    .productItem
+                                                    .syncColorImages![
+                                                        currentSelectedColor]
+                                                    .images![index]
+                                                    .originalHeight!),
+                                            orginalWidth: widget
+                                                    .productItem
+                                                    .syncColorImages
+                                                    .isNullOrEmpty
+                                                ? double.parse(widget
+                                                    .productItem
+                                                    .images![index]
+                                                    .originalWidth!)
+                                                : double.parse(widget
+                                                    .productItem
+                                                    .syncColorImages![
+                                                        currentSelectedColor]
+                                                    .images![index]
+                                                    .originalWidth!),
                                             imageUrl: widget
                                                     .productItem
                                                     .syncColorImages
@@ -244,6 +272,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         ],
                       ),
                       ProductDetailsTitle(
+                        orginalHeight: double.parse(
+                            widget.productItem.thumbnail!.originalHeight!),
+                        orginalWidth: double.parse(
+                            widget.productItem.thumbnail!.originalWidth!),
                         brand: widget.productItem.brand!,
                         productName: widget.productItem.name ?? "",
                         thumbnail: widget.productItem.thumbnail!.filePath ?? '',

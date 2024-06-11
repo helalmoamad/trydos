@@ -15,6 +15,8 @@ class MyCachedNetworkImage extends StatelessWidget {
       required this.imageUrl,
       required this.width,
       this.logoTextWidth,
+      this.ordinalHeight,
+      this.ordinalwidth,
       this.logoTextHeight,
       required this.imageFit,
       this.imageBuilder,
@@ -36,6 +38,8 @@ class MyCachedNetworkImage extends StatelessWidget {
   final double width;
   final double? logoTextWidth;
   final double height;
+  final double? ordinalHeight;
+  final double? ordinalwidth;
   final double? logoTextHeight;
   final BoxFit imageFit;
   final double radius;
@@ -69,7 +73,7 @@ class MyCachedNetworkImage extends StatelessWidget {
     String url = '';
     list = imageUrl.split('upload');
 
-    url = width > height
+    url = ordinalwidth! > ordinalHeight!
         ? list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1]
         : list[0] + 'upload/c_scale,w_${2 * width.toInt()}' + list[1];
 

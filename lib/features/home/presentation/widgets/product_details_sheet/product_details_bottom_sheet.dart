@@ -58,6 +58,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   Offset? offsetOfColorsGallerySlider;
   double valueOfBlur = 10;
   late HomeBloc homeBloc;
+  List<double>? orginalWidth;
+  List<double>? orginalHeight;
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -68,6 +70,12 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
       ...syncColorImageList,
     ];
     images = syncColorImageList.map((e) => e.images![0].filePath!).toList();
+    orginalWidth = syncColorImageList
+        .map((e) => double.parse(e.images![0].originalWidth!))
+        .toList();
+    orginalHeight = syncColorImageList
+        .map((e) => double.parse(e.images![0].originalHeight!))
+        .toList();
     gallery3dControllerForCircles =
         syncColorImageList.isNullOrEmpty || syncColorImageList.length < 3
             ? null
@@ -206,6 +214,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             children: [
                               if (currentTab == 3) ...{
                                 ProductDetailsImageWidget(
+                                  orginalHeight:
+                                      orginalHeight![currentIndexInSlider],
+                                  orginalWidth:
+                                      orginalWidth![currentIndexInSlider],
                                   imageUrl: images[currentIndexInSlider],
                                   width: 198.w,
                                   height: 288.h,
@@ -278,6 +290,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   (syncColorImageList.length ~/
                                                       2),
                                           child: ProductListingImageWidget(
+                                            orginalHeight:
+                                                orginalHeight![index],
+                                            orginalWidth: orginalWidth![index],
                                             width: 70.w,
                                             height: 70.w,
                                             imageUrl: images[index],
