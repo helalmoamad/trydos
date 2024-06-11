@@ -70,7 +70,7 @@ class _ProductItemState extends State<ProductItem> {
                               fit: BoxFit.cover)
                           : MyCachedNetworkImage(
                               imageUrl: widget.productItem
-                                  .syncColorImages![index].images![0],
+                                  .syncColorImages![index].images![0].filePath!,
                               height: 350,
                               width: 200.w,
                               imageFit: BoxFit.cover,

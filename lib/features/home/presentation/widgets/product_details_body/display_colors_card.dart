@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:local_hero/local_hero.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
@@ -23,11 +24,14 @@ import '../product_listing/product_listing_image_widget.dart';
 
 class DisplayColorsCard extends StatefulWidget {
   const DisplayColorsCard(
-      {super.key, required this.productItem, required this.scrollController});
+      {super.key,
+      required this.productItem,
+      required this.scrollController,
+      required this.currentColorForProduct});
 
   final productListingModel.Products productItem;
   final ScrollController scrollController;
-
+  final int currentColorForProduct;
   @override
   State<DisplayColorsCard> createState() => _DisplayColorsCardState();
 }
@@ -58,7 +62,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
       renderBox =
           selectColorCardKey.currentContext?.findRenderObject() as RenderBox;
     }
-    print(widget.scrollController.position.pixels);
+
     if (renderBox != null &&
         (displayMode.value == 1 || displayMode.value == 2) &&
         (renderBox!.localToGlobal(Offset.zero).dy + 175 - 1.sh).abs() <= 10) {
@@ -160,7 +164,8 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
     //   });
     // });
     widget.scrollController.addListener(changingModeListener);
-    images = syncColorImageList?.map((e) => e.images![0]).toList() ?? [];
+    images =
+        syncColorImageList?.map((e) => e.images![0].filePath!).toList() ?? [];
     gallery3dControllerForCircles =
         syncColorImageList.isNullOrEmpty || syncColorImageList!.length < 3
             ? null
@@ -179,11 +184,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                         ? 2.5
                         : 1.6,
                 scrollTime: 1);
-    if (syncColorImageList!.length <= 8) {
-      currentIndexInSlider = 0;
-    } else {
-      currentIndexInSlider = syncColorImageList!.length ~/ 4;
-    }
+    currentIndexInSlider = widget.currentColorForProduct;
     super.initState();
   }
 

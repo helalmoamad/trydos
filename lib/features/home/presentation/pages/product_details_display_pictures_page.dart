@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
+    as listing;
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import '../../../../service/language_service.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
@@ -11,7 +13,7 @@ import '../../data/models/get_product_listing_without_filters_model.dart'
 import '../widgets/product_details_body/product_details_image_widget.dart';
 
 class ProductDetailsDisplayPicturesPage extends StatefulWidget {
-  final List<String> images;
+  final List<listing.Thumbnail> images;
   const ProductDetailsDisplayPicturesPage({super.key, required this.images});
 
   @override
@@ -49,7 +51,7 @@ class _ProductDetailsDisplayPicturesPageState
                       child: ProductDetailsImageWidget(
                         height: 0.6.sh,
                         width: 1.sw,
-                        imageUrl: widget.images[selectedIndex],
+                        imageUrl: widget.images[selectedIndex].filePath,
                       ),
                     ),
                     Stack(
@@ -80,7 +82,7 @@ class _ProductDetailsDisplayPicturesPageState
                                         borderColor: index == selectedIndex
                                             ? Color(0xff388CFF)
                                             : null,
-                                        imageUrl: widget.images[index],
+                                        imageUrl: widget.images[index].filePath,
                                       ),
                                     );
                                   },

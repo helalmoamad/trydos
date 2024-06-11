@@ -29,7 +29,7 @@ import '../../../../service/language_service.dart';
 
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
-    as productListingModel;
+as productListingModel;
 
 import '../manager/home_state.dart';
 import '../widgets/product_details_body/badges_list.dart';
@@ -111,8 +111,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               backgroundColor: Color(0xffF4F4F4),
               body: BlocBuilder<HomeBloc, HomeState>(
                 buildWhen: (p, c) =>
-                    p.getStoriesForProductStatus !=
-                        c.getStoriesForProductStatus ||
+                p.getStoriesForProductStatus !=
+                    c.getStoriesForProductStatus ||
                     p.getProductDetailWithoutSimilarRelatedProductsStatus !=
                         c.getProductDetailWithoutSimilarRelatedProductsStatus ||
                     p.currentSelectedColorForEveryProduct !=
@@ -138,8 +138,23 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   }*/
 
                   int currentSelectedColor = state
-                          .currentSelectedColorForEveryProduct[productId] ??
+                      .currentSelectedColorForEveryProduct[productId] ??
                       (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
+
+                  homeBloc.add(AddSizesFotColorsEvent(
+                      currentColorName: widget.productItem
+                          .syncColorImages![currentSelectedColor].colorName ??
+                          "",
+                      variation: state.cachedProductWithoutRelatedProductsModel[
+                      widget.productItem.id.toString()] !=
+                          null
+                          ? state
+                          .cachedProductWithoutRelatedProductsModel[
+                      widget.productItem.id.toString()]!
+                          .product!
+                          .variation
+                          : null));
+
                   return ScrollConfiguration(
                     behavior: const CupertinoScrollBehavior(),
                     child: ListView(
@@ -160,21 +175,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                     behavior: const CupertinoScrollBehavior(),
                                     child: ListView.separated(
                                       itemCount: widget.productItem
-                                              .syncColorImages.isNullOrEmpty
+                                          .syncColorImages.isNullOrEmpty
                                           ? widget.productItem.images!.length
                                           : !widget
-                                                  .productItem
-                                                  .syncColorImages![
-                                                      currentSelectedColor]
-                                                  .images
-                                                  .isNullOrEmpty
-                                              ? widget
-                                                  .productItem
-                                                  .syncColorImages![
-                                                      currentSelectedColor]
-                                                  .images!
-                                                  .length
-                                              : 0,
+                                          .productItem
+                                          .syncColorImages![
+                                      currentSelectedColor]
+                                          .images
+                                          .isNullOrEmpty
+                                          ? widget
+                                          .productItem
+                                          .syncColorImages![
+                                      currentSelectedColor]
+                                          .images!
+                                          .length
+                                          : 0,
                                       primary: false,
                                       shrinkWrap: true,
                                       physics: const ClampingScrollPhysics(),
@@ -209,32 +224,32 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                   context,
                                                   ProductDetailsDisplayPicturesPage(
                                                     images: widget
-                                                            .productItem
-                                                            .syncColorImages
-                                                            .isNullOrEmpty
+                                                        .productItem
+                                                        .syncColorImages
+                                                        .isNullOrEmpty
                                                         ? widget.productItem
-                                                                .images ??
-                                                            []
+                                                        .images ??
+                                                        []
                                                         : widget
-                                                                .productItem
-                                                                .syncColorImages![
-                                                                    currentSelectedColor]
-                                                                .images ??
-                                                            [],
+                                                        .productItem
+                                                        .syncColorImages![
+                                                    currentSelectedColor]
+                                                        .images ??
+                                                        [],
                                                   ));
                                             },
                                             child: ProductDetailsImageWidget(
                                               imageUrl: widget
-                                                      .productItem
-                                                      .syncColorImages
-                                                      .isNullOrEmpty
+                                                  .productItem
+                                                  .syncColorImages
+                                                  .isNullOrEmpty
                                                   ? widget.productItem
-                                                      .images![index]
+                                                  .images![index].filePath!
                                                   : widget
-                                                      .productItem
-                                                      .syncColorImages![
-                                                          currentSelectedColor]
-                                                      .images![index],
+                                                  .productItem
+                                                  .syncColorImages![
+                                              currentSelectedColor]
+                                                  .images![index].filePath!,
                                             ));
                                       },
                                       separatorBuilder: (context, index) {
@@ -253,16 +268,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         ProductDetailsTitle(
                           brand: widget.productItem.brand!,
                           productName: widget.productItem.name!,
-                          thumbnail: widget.productItem.thumbnail ?? '',
+                          thumbnail: widget.productItem.thumbnail!.filePath ?? '',
                           colorName: !widget.productItem.syncColorImages
-                                      .isNullOrEmpty &&
-                                  !widget.productItem.syncColorImages![0].images
-                                      .isNullOrEmpty
+                              .isNullOrEmpty &&
+                              !widget.productItem.syncColorImages![0].images
+                                  .isNullOrEmpty
                               ? widget
-                                      .productItem
-                                      .syncColorImages![currentSelectedColor]
-                                      .colorName ??
-                                  " "
+                              .productItem
+                              .syncColorImages![currentSelectedColor]
+                              .colorName ??
+                              " "
                               : " ",
                         ),
                         SizedBox(
@@ -284,16 +299,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           height: 15,
                         ),
                         if (!state.cachedProductWithoutRelatedProductsModel
-                                .containsKey(
-                                    widget.productItem.id.toString()) ||
-                            state.cachedProductWithoutRelatedProductsModel[
-                                    widget.productItem.id] ==
-                                null ||
+                            .containsKey(widget.productItem.id.toString()) ||
                             state
-                                    .cachedProductWithoutRelatedProductsModel[
-                                        widget.productItem.id]!
-                                    .product ==
-                                null) ...{
+                                .cachedProductWithoutRelatedProductsModel[
+                            widget.productItem.id.toString()]!
+                                .product!
+                                .descriptors
+                                .isNullOrEmpty) ...{
                           SizedBox.shrink()
                         } else ...{
                           SizedBox(
@@ -303,7 +315,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 child: ListView.separated(
                                   itemCount: state
                                       .cachedProductWithoutRelatedProductsModel[
-                                          widget.productItem.id]!
+                                  widget.productItem.id]!
                                       .product!
                                       .descriptors!
                                       .length,
@@ -314,16 +326,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   itemBuilder: (context, index) {
                                     return ProductDetailsChipWidget(
                                       withIcon: state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                                  widget.productItem.id]!
-                                              .product!
-                                              .descriptors![index]
-                                              .descriptorGroup!
-                                              .icon !=
+                                          .cachedProductWithoutRelatedProductsModel[
+                                      widget.productItem.id]!
+                                          .product!
+                                          .descriptors![index]
+                                          .descriptorGroup!
+                                          .icon !=
                                           null,
                                       descriptor: state
                                           .cachedProductWithoutRelatedProductsModel[
-                                              widget.productItem.id]!
+                                      widget.productItem.id]!
                                           .product!
                                           .descriptors![index],
                                     );
@@ -342,38 +354,39 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         if (!widget
                             .productItem.syncColorImages.isNullOrEmpty) ...{
                           DisplayColorsCard(
-                              productItem: widget.productItem,
-                              scrollController: scrollController),
+                            productItem: widget.productItem,
+                            scrollController: scrollController,
+                            currentColorForProduct:
+                            state.currentSelectedColorForEveryProduct[
+                            widget.productItem.id.toString()] ??
+                                0,
+                          ),
                           SizedBox(
                             height: 15,
                           ),
                         },
-                        if (state
+                        if (!state.cachedProductWithoutRelatedProductsModel
+                            .containsKey(widget.productItem.id.toString()) ||
+                            state
                                 .cachedProductWithoutRelatedProductsModel[
-                                    widget.productItem.id.toString()]
-                                ?.product
-                                ?.choiceOptions
-                                ?.isNotEmpty ??
-                            false) ...{
+                            widget.productItem.id.toString()]!
+                                .product!
+                                .choiceOptions
+                                .isNullOrEmpty) ...{
+                          SizedBox.shrink()
+                        } else ...{
                           DisplaySizesCard(
+                              productItem: widget.productItem,
+                              currentColorForProduct:
+                              state.currentSelectedColorForEveryProduct[
+                              widget.productItem.id.toString()] ??
+                                  0,
                               scrollController: scrollController,
-                              sizes: state.cachedProductWithoutRelatedProductsModel[
-                                          widget.productItem.id.toString()] !=
-                                      null
-                                  ? state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                                  widget.productItem.id
-                                                      .toString()]!
-                                              .product!
-                                              .choiceOptions !=
-                                          null
-                                      ? state
-                                          .cachedProductWithoutRelatedProductsModel[
-                                              widget.productItem.id.toString()]!
-                                          .product!
-                                          .choiceOptions
-                                      : null
-                                  : state.sizes),
+                              variation: state
+                                  .cachedProductWithoutRelatedProductsModel[
+                              widget.productItem.id.toString()]!
+                                  .product!
+                                  .variation),
                           SizedBox(
                             height: 15,
                           ),
@@ -387,7 +400,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         BuyersCameraShots(
                           productItem: widget.productItem,
                           panelControllerForBuyersCameraShots:
-                              panelControllerForBuyersCameraShots,
+                          panelControllerForBuyersCameraShots,
                         ),
                         SizedBox(
                           height: 10,
@@ -400,9 +413,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   );
                 },
               )),
-          ProductDetailsBottomSheet(
-            productItem: widget.productItem,
-          ),
+          BlocBuilder<HomeBloc, HomeState>(
+              buildWhen: (previous, current) =>
+              previous.currentSelectedColorForEveryProduct !=
+                  current.currentSelectedColorForEveryProduct,
+              builder: (context, state) {
+                return ProductDetailsBottomSheet(
+                  productItem: widget.productItem,
+                  currentColor: state.currentSelectedColorForEveryProduct[
+                  widget.productItem.id.toString()] ??
+                      widget.productItem.syncColorImages!.length ~/ 4,
+                );
+              }),
           SlidingUpPanelForBuyersCameraShots(
               panelController: panelControllerForBuyersCameraShots,
               panelControllerForReels: panelControllerForReels),
