@@ -12,6 +12,7 @@ enum UpdateNameStatus { init, loading, success, failure }
 enum UpdateStoriesUserStatus { init, loading, success, failure }
 enum UpdateChatUserNameStatus { init, loading, success, failure }
 enum GetCustomerInfoStatus { init, loading, success, failure }
+enum GetCustomerCountryStatus {  loading, success, failure }
 
 
 class AuthState {
@@ -20,6 +21,7 @@ class AuthState {
     this.loginToChatStatus = LoginToChatStatus.init,
     this.sendOtpStatus = SendOtpStatus.init,
     this.marketUser ,
+    this.countryName ,
     this.signInErrorMessage ,
     this.signUpErrorMessage ,
     this.registerGuestStatus = RegisterGuestStatus.init,
@@ -29,6 +31,7 @@ class AuthState {
     this.loginToStoriesStatus = LoginToStoriesStatus.init,
     this.getCustomerInfoStatus = GetCustomerInfoStatus.init,
     this.updateNameStatus = UpdateNameStatus.init,
+    this.getCustomerCountryStatus = GetCustomerCountryStatus.loading,
     this.updateStoriesUserStatus = UpdateStoriesUserStatus.init,
     this.updateChatUserNameStatus = UpdateChatUserNameStatus.init,
   });
@@ -45,15 +48,19 @@ class AuthState {
   final UpdateStoriesUserStatus updateStoriesUserStatus;
   final GetCustomerInfoStatus getCustomerInfoStatus;
   final UpdateChatUserNameStatus updateChatUserNameStatus;
+  final GetCustomerCountryStatus getCustomerCountryStatus;
   final User? marketUser;
   final String? signInErrorMessage;
   final String? signUpErrorMessage;
+  final String? countryName;
   AuthState copyWith({
     final CreateUserStatus? createUserStatus,
     final LoginToChatStatus? loginToChatStatus,
     final LoginToStoriesStatus? loginToStoriesStatus,
     final SendOtpStatus? sendOtpStatus,
     final String? signInErrorMessage,
+    final String? countryName,
+    final GetCustomerCountryStatus? getCustomerCountryStatus,
     final RegisterGuestStatus? registerGuestStatus,
     final GetCustomerInfoStatus? getCustomerInfoStatus,
     final UpdateChatUserNameStatus? updateChatUserNameStatus,
@@ -69,6 +76,7 @@ class AuthState {
       updateChatUserNameStatus: updateChatUserNameStatus ?? this.updateChatUserNameStatus,
       updateStoriesUserStatus: updateStoriesUserStatus ?? this.updateStoriesUserStatus,
       createUserStatus: createUserStatus ?? this.createUserStatus,
+      countryName: countryName ?? this.countryName,
       loginToChatStatus: loginToChatStatus ?? this.loginToChatStatus,
       loginToStoriesStatus: loginToStoriesStatus ?? this.loginToStoriesStatus,
       registerGuestStatus: registerGuestStatus ?? this.registerGuestStatus,
@@ -77,6 +85,7 @@ class AuthState {
       signUpErrorMessage: signUpErrorMessage ?? this.signUpErrorMessage,
       signInErrorMessage: signInErrorMessage ?? this.signInErrorMessage,
       marketUser: marketUser ?? this.marketUser,
+      getCustomerCountryStatus: getCustomerCountryStatus ?? this.getCustomerCountryStatus,
       updateNameStatus: updateNameStatus ?? this.updateNameStatus,
       verifyOtpSignUpStatus: verifyOtpSignUpStatus ?? this.verifyOtpSignUpStatus,
       verifyOtpSignInStatus: verifyOtpSignInStatus ?? this.verifyOtpSignInStatus,

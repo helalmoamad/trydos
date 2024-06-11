@@ -22,8 +22,9 @@ Future<GetIt> configureDependencies() async => $initGetIt(_getIt);
 @module
 abstract class AppModule {
   BaseOptions get dioOption => BaseOptions(
-        connectTimeout: const Duration(seconds: 30),
-        receiveTimeout: const Duration(seconds: 30),
+        connectTimeout: const Duration(minutes: 2),
+        receiveTimeout: const Duration(minutes: 2),
+        sendTimeout: const Duration(minutes: 2),
         contentType: 'application/json',
         responseType: ResponseType.json,
         headers: <String, String>{
