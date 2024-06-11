@@ -44,8 +44,8 @@ class HomeState {
     this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
     this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
     this.startingSetting,
-    this.currentPage = 0,
     this.sizes,
+    this.currentPage = 0,
     this.reRequestTheseBoutiques = const {},
     this.reRequestTheseProductListingInBoutiques = const {},
     this.getProductListingStatus = GetProductListingStatus.init,
@@ -69,13 +69,13 @@ class HomeState {
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
-  List<ChoiceOption>? sizes;
+
   final GetProductListingStatus getProductListingStatus;
   GetStoriesForProductStatus getStoriesForProductStatus;
   final Map<String, PaginationModel<Boutique>>
       getHomeBoutiquesPaginationObjectByMainCategory;
   List<Story>? storiesForProduct;
-
+  List<String>? sizes;
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
 
@@ -95,7 +95,7 @@ class HomeState {
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
-      List<ChoiceOption>? sizes,
+      List<String>? sizes,
       final Map<String, bool>? reRequestTheseBoutiques,
       final Map<String, bool>? reRequestTheseProductListingInBoutiques,
       final GetProductListingStatus? getProductListingStatus,
@@ -115,6 +115,7 @@ class HomeState {
       final Map<String, PaginationModel<product.Products>>?
           getProductListingPaginationWithoutFiltersModel}) {
     return HomeState(
+        sizes: sizes ?? this.sizes,
         getProductListingStatus:
             getProductListingStatus ?? this.getProductListingStatus,
         currentSelectedColorForEveryProduct:
@@ -131,7 +132,6 @@ class HomeState {
         getProductDetailWithoutSimilarRelatedProductsStatus:
             getProductDetailWithoutSimilarRelatedProductsStatus ??
                 this.getProductDetailWithoutSimilarRelatedProductsStatus,
-        sizes: sizes ?? this.sizes,
         getStartingSettingsStatus:
             getStartingSettingsStatus ?? this.getStartingSettingsStatus,
         currentPage: currentPage ?? this.currentPage,

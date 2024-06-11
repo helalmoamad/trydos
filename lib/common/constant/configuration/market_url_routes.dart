@@ -10,14 +10,16 @@ extension ScopeApi on String {
   String authScope() => '$_api/${_currentVersion}/auth/$this';
 
   String customerScope() => '$_api/${_currentVersion}/customer/$this';
-  String productsScope() => '$_api/${_currentVersion}/products/$this';
+  String productsScope() => '$_api/${_currentVersion}/mobile/products/$this';
+  String productScope() => '$_api/${_currentVersion}/mobile/product/$this';
+
   String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
 }
 
 abstract class MarketEndPoints {
   static String getProductDetailWithoutSimilarRelatedProducts(
           String productId) =>
-      "details_without_similar_related_products/$productId".productsScope();
+      "details_without_similar_related_products/$productId".productScope();
   static final sendOtpEP = 'send_otp'.phoneScope();
   static final verifyOtpSignInEP = 'verify_otp_singin'.phoneScope();
   static final verifyOtpSignUpEP = 'verify_otp_signup'.phoneScope();
