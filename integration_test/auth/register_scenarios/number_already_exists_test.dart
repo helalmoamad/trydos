@@ -6,7 +6,6 @@ import 'package:trydos/features/authentication/presentation/pages/already_exist_
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart' as app;
-
 import '../../shared/shared_scenarios.dart';
 import '../../utils/global_test_functions.dart';
 

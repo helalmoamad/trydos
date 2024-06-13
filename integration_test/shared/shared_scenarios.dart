@@ -18,6 +18,7 @@ class SharedScenarios {
   static Future<void> goToVerifyOtp({
     required WidgetTester tester,
     required bool isForLogin,
+    String phoneNumber ='963997412860',
   }) async {
     await GlobalTestFunctions.waitFor(tester, find.byType(RegistrationPage));
 
@@ -73,7 +74,7 @@ class SharedScenarios {
     final Finder confirmPhoneButton =
         find.byKey(Key(WidgetsKey.loginConfirmPhoneButtonKey));
 
-    await tester.enterText(phoneField, '963997412860');
+    await tester.enterText(phoneField, phoneNumber);
     await Future.delayed(const Duration(seconds: 2));
     await tester.tap(confirmPhoneButton);
     await tester.pumpAndSettle();

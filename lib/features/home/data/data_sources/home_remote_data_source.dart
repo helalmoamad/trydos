@@ -5,7 +5,6 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
-
 import '../../../../common/constant/configuration/market_url_routes.dart';
 import '../../../../common/constant/configuration/stories_url_routes.dart';
 import '../../../../core/api/client_config.dart';
