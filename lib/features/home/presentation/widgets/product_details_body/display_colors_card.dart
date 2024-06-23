@@ -289,16 +289,10 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                           (timeStamp) {
                                                     prevModeForRunHero = 1;
                                                   });
-                                                  print('aaa ${widget.scrollController
-                                                      .position.pixels}');
-                                                  print('bbb ${(1.sh -
-                                                      renderBox!
-                                                          .localToGlobal(
-                                                          Offset.zero)
-                                                          .dy +
-                                                      150 -
-                                                      renderBox!
-                                                          .size.height)}');
+                                                  print(
+                                                      'aaa ${widget.scrollController.position.pixels}');
+                                                  print(
+                                                      'bbb ${(1.sh - renderBox!.localToGlobal(Offset.zero).dy + 150 - renderBox!.size.height)}');
                                                   if (widget.scrollController
                                                           .position.pixels <
                                                       (1.sh -

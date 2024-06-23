@@ -87,6 +87,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 context,
                 ProductListingPage(
                   boutiqueSlug: widget.boutniqe.slug!,
+                  boutiqueDescription: widget.boutniqe.description!,
+                  boutiqueFirstBanner: widget.boutniqe.banners![0],
+                  boutiqueIcon: widget.boutniqe.icon,
                 ));
           },
           child: Stack(
@@ -324,6 +327,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                       .boutniqe
                                       .mainCategoriesForProductIds![index]
                                       .categorySlug,
+                                  boutiqueDescription: widget.boutniqe.description!,
+                                  boutiqueFirstBanner: widget.boutniqe.banners![0],
+                                  boutiqueIcon: widget.boutniqe.icon,
                                 ));
                           },
                           child: SvgNetworkWidget(
@@ -452,6 +458,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                       .mainCategoriesForProductIds![
                                                           index]
                                                       .categorySlug,
+                                                  boutiqueDescription: widget.boutniqe.description!,
+                                                  boutiqueFirstBanner: widget.boutniqe.banners![0],
+                                                  boutiqueIcon: widget.boutniqe.icon,
                                                 )),
                                         child: ProductItemCircle(
                                           index: index,

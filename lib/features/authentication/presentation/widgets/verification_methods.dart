@@ -9,6 +9,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../app/my_text_widget.dart';
@@ -121,7 +122,7 @@ class VerificationMethods extends StatelessWidget {
               children: [
                 Expanded(
                   child: InkWell(
-                    key: Key('choose_whatsapp_button'),
+                    key: Key(WidgetsKey.chooseWhatsappButtonKey),
                     highlightColor: Colors.transparent,
                     splashColor: Colors.transparent,
                     onTap: () {

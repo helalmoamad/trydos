@@ -1,0 +1,215 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:trydos/common/constant/widgets_key.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
+import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
+import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
+import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
+import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
+import 'package:trydos/features/authentication/presentation/widgets/welcome_section.dart';
+import 'package:trydos/features/home/presentation/pages/home_page.dart';
+import '../utils/global_test_functions.dart';
+
+class SharedScenarios {
+  static final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
+
+  static Future<void> goToVerifyOtp({
+    required WidgetTester tester,
+    required bool isForLogin,
+    String phoneNumber ='963997412860',
+  }) async {
+    await GlobalTestFunctions.waitFor(tester, find.byType(RegistrationPage));
+
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      widgetType: RegistrationPage,
+      successMessage: 'Find Registration Page Success',
+      failedMessage: 'Find Registration Page failed',
+    );
+    ////////////////////////////
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      widgetType: WelcomeSection,
+      successMessage: 'Find WelcomeSection Success',
+      failedMessage: 'Find WelcomeSection failed',
+    );
+    ////////////////////////////
+    final Finder haveAccountButton =
+        find.byKey(Key(WidgetsKey.haveAccountButtonKey));
+    final Finder createNewAccountButton =
+        find.byKey(Key(WidgetsKey.createNewAccountButtonKey));
+    await Future.delayed(const Duration(seconds: 1));
+    if (isForLogin) {
+      await tester.tap(haveAccountButton);
+    } else {
+      await tester.tap(createNewAccountButton);
+    }
+    await tester.pumpAndSettle();
+    //////////////////////////
+    if (!isForLogin) {
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        widgetType: CreateAccountSection,
+        successMessage: 'Find CreateAccountSection Success',
+        failedMessage: 'Find CreateAccountSection failed',
+      );
+      final Finder agreeContinueButton =
+          find.byKey(Key(WidgetsKey.agreeContinueButtonKey));
+      await Future.delayed(const Duration(seconds: 1));
+      await tester.tap(agreeContinueButton);
+      await tester.pumpAndSettle();
+    }
+    //////////////////////////
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      widgetType: InsertPhoneTab,
+      successMessage: 'Find InsertPhoneTab Success',
+      failedMessage: 'Find InsertPhoneTab failed',
+    );
+    //////////////////////////
+    final Finder phoneField =
+        find.byKey(Key(WidgetsKey.loginPhoneFormFieldKey));
+    final Finder confirmPhoneButton =
+        find.byKey(Key(WidgetsKey.loginConfirmPhoneButtonKey));
+
+    await tester.enterText(phoneField, phoneNumber);
+    await Future.delayed(const Duration(seconds: 2));
+    await tester.tap(confirmPhoneButton);
+    await tester.pumpAndSettle();
+    //////////////////////////
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      widgetType: VerificationMethods,
+      successMessage: 'Find VerificationMethods Success',
+      failedMessage: 'Find VerificationMethods failed',
+    );
+    //////////////////////////
+    final Finder chooseWhatsAppButton =
+        find.byKey(Key(WidgetsKey.chooseWhatsappButtonKey));
+    await tester.tap(chooseWhatsAppButton);
+    await tester.pumpAndSettle();
+    //////////////////////////
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      widgetType: VerifyOtp,
+      successMessage: 'Find VerifyOtp Success',
+      failedMessage: 'Find VerifyOtp failed',
+    );
+  }
+
+  /////////////////////////////////////////
+  static Future<void> registerGuest({required WidgetTester tester}) async {
+    await GlobalTestFunctions.waitFor(tester, find.byType(RegistrationPage));
+
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      widgetType: RegistrationPage,
+      successMessage: 'Find Registration Page Success',
+      failedMessage: 'Find Registration Page failed',
+    );
+    ////////////////////////////
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      widgetType: WelcomeSection,
+      successMessage: 'Find WelcomeSection Success',
+      failedMessage: 'Find WelcomeSection failed',
+    );
+    ////////////////////////////
+    await testTokensAreNull(isJustForMarketToken: true);
+    ////////////////////////////
+    final Finder laterTakeLookButton =
+        find.byKey(Key(WidgetsKey.laterTakeLookKey));
+    await Future.delayed(const Duration(seconds: 1));
+    await tester.tap(laterTakeLookButton);
+    await tester.pumpAndSettle();
+    ////////////////////////////
+    await GlobalTestFunctions.waitFor(tester, find.byType(HomePage),
+        timeout: Duration(seconds: 40));
+    //////////////////////////
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      widgetType: HomePage,
+      successMessage: 'Find HomePage Success',
+      failedMessage: 'Find HomePage failed',
+    );
+  }
+
+  static Future<void> testTokensAreNull(
+      {required bool isJustForMarketToken}) async {
+    if (isJustForMarketToken) {
+      try {
+        expect(prefsRepository.marketToken, isNull);
+        debugPrint('marketToken is Null before');
+      } catch (e) {
+        print(
+            '//////// marketToken is NOT null before Failure: //////////\n $e');
+        rethrow;
+      }
+    } else {
+      try {
+        expect(prefsRepository.marketToken, isNull);
+        debugPrint('marketToken is Null before');
+      } catch (e) {
+        print(
+            '//////// marketToken is Not Null before Failure: //////////\n $e');
+        rethrow;
+      }
+      ////////////////////////////
+      try {
+        expect(prefsRepository.storiesToken, isNull);
+        debugPrint('storiesToken is Null before');
+      } catch (e) {
+        print(
+            '//////// storiesToken is Not Null before Failure: //////////\n $e');
+        rethrow;
+      }
+      ////////////////////////////
+      try {
+        expect(prefsRepository.chatToken, isNull);
+        debugPrint('chatToken is Null before');
+      } catch (e) {
+        print('//////// chatToken is Not Null before Failure: //////////\n $e');
+        rethrow;
+      }
+    }
+  }
+
+  static Future<void> testTokensAreNotNull(
+      {required bool isJustForMarketToken}) async {
+    if (isJustForMarketToken) {
+      try {
+        expect(prefsRepository.marketToken, isNotNull);
+        debugPrint('marketToken is NOT null after');
+      } catch (e) {
+        print('//////// marketToken is null after Failure: //////////\n $e');
+        rethrow;
+      }
+    } else {
+      try {
+        expect(prefsRepository.marketToken, isNotNull);
+        debugPrint('marketToken is NOT null after ');
+      } catch (e) {
+        print('//////// marketToken is null after  Failure: //////////\n $e');
+        rethrow;
+      }
+      ////////////////////////////
+      try {
+        expect(prefsRepository.storiesToken, isNotNull);
+        debugPrint('storiesToken is NOT null after ');
+      } catch (e) {
+        print('//////// storiesToken is null after  Failure: //////////\n $e');
+        rethrow;
+      }
+      ////////////////////////////
+      try {
+        expect(prefsRepository.chatToken, isNotNull);
+        debugPrint('chatToken is NOT null after ');
+      } catch (e) {
+        print('//////// chatToken is null after  Failure: //////////\n $e');
+        rethrow;
+      }
+    }
+  }
+}

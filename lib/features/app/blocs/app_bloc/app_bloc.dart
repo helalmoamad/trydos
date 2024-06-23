@@ -10,6 +10,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
             tabIndex: 0,
             tabIndexInChat: 0,
             showBars: true,
+            hideBottomNavigationBar: false,
             replyOnMe: false,
             replyType: '',
             thereIsReply: false)) {
@@ -18,6 +19,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     on<ChangeTab>(_onChangeTab);
     on<ChangeTabInChat>(_onChangeTabInChat);
     on<ShowOrHideBars>(_onShowOrHideBars);
+    on<HideBottomNavigationBar>(_onHideBottomNavigationBar);
     on<RefreshChatInputField>(_onRefreshChatInputField);
     on<AddUserToTypingList>(_onAddUserToTypingList);
     on<RemoveUserFromTypingList>(_onRemoveUserFromTypingList);
@@ -49,6 +51,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     Emitter<AppState> emit,
   ) {
     emit(state.copyWith(showBars: event.show));
+  }
+
+  _onHideBottomNavigationBar(
+    HideBottomNavigationBar event,
+    Emitter<AppState> emit,
+  ) {
+    emit(state.copyWith(hideBottomNavigationBar: event.hide));
   }
 
    _onRefreshChatInputField(
