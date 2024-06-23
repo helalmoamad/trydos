@@ -16,6 +16,7 @@ import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/features/authentication/presentation/widgets/pin_item.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
@@ -260,8 +261,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                               ? '0${remainingTime?.sec}'
                                                               : '${remainingTime?.sec}';
                                                           return MyTextWidget(
-                                                            key: Key(
-                                                                'otp_remaining_time'),
+                                                            key: Key(WidgetsKey
+                                                                .otpRemainingTimeKey),
                                                             '0${remainingTime?.min ?? '0'} : $seconds ',
                                                             style: context
                                                                 .textTheme
@@ -284,8 +285,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                   return InkWell(
                                                     onTap: _onResendSucceed,
                                                     child: MyTextWidget(
-                                                      key: Key(
-                                                          'resend_code_button'),
+                                                      key: Key(WidgetsKey
+                                                          .resendCodeButtonKey),
                                                       LocaleKeys.resend_code
                                                               .tr() +
                                                           " ",

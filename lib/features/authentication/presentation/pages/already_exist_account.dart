@@ -13,6 +13,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
@@ -118,6 +119,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                 ),
                 Spacer(),
                 InkWell(
+                  key: Key(WidgetsKey.loginContinueButtonKey),
                   onTap: () {
                     context.go(GRouter.config.applicationRoutes.kBasePage);
                     // BlocProvider.of<AuthBloc>(context).add(VerifyOtpSignInEvent(
@@ -151,6 +153,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                 ),
                 20.verticalSpace,
                 InkWell(
+                  key: Key(WidgetsKey.takeLookButtonKey),
                   focusColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   onTap: () async {
