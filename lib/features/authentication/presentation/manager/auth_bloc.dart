@@ -371,6 +371,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> _onRegisterGuestEvent(
       RegisterGuestEvent event, Emitter<AuthState> emit) async {
     _prefsRepository.clearTokenForMarket();
+    _prefsRepository.clearTokensForChatAndStory();
     emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.loading));
     final response = await registerGuestUseCase(
       RegisterGuestParams(deviceId: event.deviceId),
@@ -389,7 +390,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
-      _prefsRepository.clearTokensForChatAndStory();
       emit(state.copyWith(
           registerGuestStatus: RegisterGuestStatus.success,
           marketUser: r.data!.user));

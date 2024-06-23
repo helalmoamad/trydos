@@ -1,7 +1,9 @@
 import 'package:country_flags/country_flags.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -123,10 +125,13 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                           SvgPicture.asset(AppAssets.phoneOtpSvg,
                               width: 10, height: 10),
                           5.horizontalSpace,
-                          MyTextWidget(
-                            LocaleKeys.we_will_send_code.tr(),
-                            style: context.textTheme.caption?.ra.copyWith(
-                                color: Color(0xffC4C2C2), height: 1.25),
+                          SizedBox(
+                            width: 1.sw - 120,
+                            child: MyTextWidget(
+                              LocaleKeys.we_will_send_code.tr(),
+                              style: context.textTheme.caption?.ra.copyWith(
+                                  color: Color(0xffC4C2C2), height: 1.25),
+                            ),
                           )
                         ],
                       ),
@@ -140,11 +145,15 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                 width: 10, height: 10),
                           ),
                           5.horizontalSpace,
-                          MyTextWidget(
-                            LocaleKeys.your_Privacy.tr(),
-                            textAlign: TextAlign.start,
-                            style: context.textTheme.caption?.ra.copyWith(
-                                color: Color(0xffC4C2C2), height: 1.25.h),
+                          SizedBox(
+                            width: 1.sw - 120,
+                            child: MyTextWidget(
+                              LocaleKeys.your_Privacy.tr(),
+                              textAlign: TextAlign.start,
+                              maxLines: 2,
+                              style: context.textTheme.caption?.ra.copyWith(
+                                  color: Color(0xffC4C2C2), height: 1.25.h),
+                            ),
                           )
                         ],
                       ),

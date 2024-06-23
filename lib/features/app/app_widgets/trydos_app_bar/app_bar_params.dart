@@ -9,6 +9,7 @@ class AppBarParams {
     this.dividerBottom = false,
     this.withShadow = true,
     this.child,
+    this.leading,
     this.title,
     this.iconColor,
     this.action,
@@ -26,6 +27,7 @@ class AppBarParams {
   final double? scrolledUnderElevation;
   final String? title;
   final Widget? child;
+  final Widget? leading;
   final List<Widget>? action;
   final bool translateTitle;
   final double? elevation;

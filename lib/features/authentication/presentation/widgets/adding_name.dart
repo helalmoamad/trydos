@@ -179,12 +179,16 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                                     onTap: () {
                                       if (!widget.fromLogin) {
                                         BlocProvider.of<AuthBloc>(context)
-                                            .add(VerifyOtpSignUpEvent(
+                                            .add(UpdateNameEvent(
                                           name: form.controllers[0].text,
-                                          otp: prefsRepository.otpCode!,
-                                          verificationId:
-                                              prefsRepository.verificationId!,
                                         ));
+                                        // BlocProvider.of<AuthBloc>(context)
+                                        //     .add(VerifyOtpSignUpEvent(
+                                        //   name: form.controllers[0].text,
+                                        //   otp: prefsRepository.otpCode!,
+                                        //   verificationId:
+                                        //       prefsRepository.verificationId!,
+                                        // ));
                                       } else {
                                         BlocProvider.of<AuthBloc>(context)
                                             .add(UpdateNameEvent(

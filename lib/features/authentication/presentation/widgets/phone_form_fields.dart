@@ -276,8 +276,8 @@ class PhoneNumberFormatter extends TextInputFormatter {
         newText[newText.length - 1] == '0') {
       needEdit = oldText;
     }
-    debugPrint(needEdit);
-    String result = needEdit.substring(0, country.dialCode.length - 1) + ' ';
+    if(country.name == '') return needEdit;
+    String result =  needEdit.substring(0, country.dialCode.length - 1) + ' ';
     for (int i = country.dialCode.length - 1; i < needEdit.length; i++) {
       result += needEdit[i];
       if ((i - country.dialCode.length + 2) % 3 == 0) {

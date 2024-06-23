@@ -67,8 +67,8 @@ class _ProductDetailsDescriptionWidgetState
                         readMores
                             ? TextSpan(
                                 text: !readMore
-                                    ? LocaleKeys.readLess.tr()
-                                    : LocaleKeys.readMore.tr(),
+                                    ? LocaleKeys.read_less.tr()
+                                    : LocaleKeys.read_more.tr(),
                                 style: context.textTheme.bodyText2?.rq.copyWith(
                                     height: 1.23,
                                     color: Color(0xff388CFF),
