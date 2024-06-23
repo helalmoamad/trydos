@@ -120,11 +120,11 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                 InkWell(
                   onTap: () {
                     context.go(GRouter.config.applicationRoutes.kBasePage);
-                    BlocProvider.of<AuthBloc>(context).add(VerifyOtpSignInEvent(
-                      otp: prefsRepository.otpCode!,
-                      verificationId: prefsRepository.verificationId!,
-                      phone: widget.phoneNumber,
-                    ));
+                    // BlocProvider.of<AuthBloc>(context).add(VerifyOtpSignInEvent(
+                    //   otp: prefsRepository.otpCode!,
+                    //   verificationId: prefsRepository.verificationId!,
+                    //   phone: widget.phoneNumber,
+                    // ));
                   },
                   child: Container(
                     width: 1.sw,

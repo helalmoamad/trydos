@@ -32,7 +32,6 @@ class _ProductItemState extends State<ProductItem> {
 
   @override
   void initState() {
-    print('dddddddddd');
     currentChosenColor =
         ValueNotifier((widget.productItem.syncColorImages?.length ?? 0) ~/ 2);
     super.initState();

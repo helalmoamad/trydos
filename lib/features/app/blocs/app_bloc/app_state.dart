@@ -7,6 +7,7 @@ class AppState {
       required this.tabIndex,
       required this.tabIndexInChat,
       required this.showBars,
+      required this.hideBottomNavigationBar,
       this.messageId,
       this.pusherActivityIds=const {},
       this.pusherActivityDescription=const {},
@@ -20,6 +21,7 @@ class AppState {
   final int tabIndex;
   final int tabIndexInChat;
   final bool showBars;
+  final bool hideBottomNavigationBar;
   final bool thereIsReply;
   final bool replyOnMe;
   final String replyType;
@@ -45,7 +47,10 @@ class AppState {
         final Map<int , String?>? pusherActivityDescription,
         final String? messageId,
         final String? imageUrl,
-      final bool? showBars}) {
+      final bool? showBars,
+      final bool? hideBottomNavigationBar,
+
+      }) {
     return AppState(
       currentIndex: currentIndex ?? this.currentIndex,
       tabIndex: tabIndex ?? this.tabIndex,
@@ -55,6 +60,7 @@ class AppState {
       tabIndexInChat: tabIndexInChat ?? this.tabIndexInChat,
       senderParentMessageId: senderParentMessageId ?? this.senderParentMessageId,
       showBars: showBars ?? this.showBars,
+      hideBottomNavigationBar: hideBottomNavigationBar ?? this.hideBottomNavigationBar,
       message: message ?? this.message,
       pusherActivityIds: pusherActivityIds ?? this.pusherActivityIds,
       pusherActivityDescription: pusherActivityDescription ?? this.pusherActivityDescription,

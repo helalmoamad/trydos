@@ -41,6 +41,16 @@ class ShowOrHideBars extends AppEvent{
   List<Object?> get props =>[show];
 }
 
+class HideBottomNavigationBar extends AppEvent{
+  HideBottomNavigationBar(this.hide);
+
+  final bool hide;
+
+  @override
+  // TODO: implement props
+  List<Object?> get props =>[hide];
+}
+
 class RefreshChatInputField extends AppEvent{
    final bool thereIsReply;
    final bool replyOnMe;

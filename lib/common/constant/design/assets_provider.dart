@@ -63,6 +63,11 @@ abstract class AppAssets {
   static String get freeReturnSvg=>'free_return'.svg;
   static String get arrivalOfShippingSvg=>'arrival_of_shipping'.svg;
 
+  static String get filtersSvg=>'filters'.svg;
+  static String get sortingSvg=>'sorting'.svg;
+  static String get starBadgeSvg=>'star_badge'.svg;
+  static String get searchOutlinedReversedSvg=>'search_outlined_reversed'.svg;
+
   static String get singleChatSvg=>'single_chat'.svg;
   static String get chatNotificationSvg=>'chat_notification'.svg;
   static String get singleChatOutlinedSvg=>'single_chat_outlined'.svg;
@@ -167,6 +172,11 @@ abstract class AppAssets {
   static String get storyFilmSvg=>'story_film'.svg;
   static String get bagsSvg=>'bags'.svg;
   static String get searchOutlinedSvg=>'search_outlined'.svg;
+  static String get realCameraSvg=>'real_camera'.svg;
+  static String get microphoneSvg=>'microphone'.svg;
+  static String get trendingSvg=>'trending'.svg;
+  static String get searchHistorySvg=>'search_history'.svg;
+  static String get favoriteActiveSvg=>'favourite-active'.svg;
   static String get storeIconInactiveSvg=>'store_icon_inactive'.svg;
   static String get mangoSvg=>'mango'.svg;
   static String get eyeSvg=>'eye'.svg;

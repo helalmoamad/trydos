@@ -1,0 +1,184 @@
+import 'package:flutter/animation.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/search/presentation/widgets/search_history_chip.dart';
+
+import '../../../../common/constant/design/assets_provider.dart';
+
+class SearchHistory extends StatefulWidget {
+  const SearchHistory({super.key});
+
+  @override
+  State<SearchHistory> createState() => _SearchHistoryState();
+}
+
+class _SearchHistoryState extends State<SearchHistory> {
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  final ValueNotifier<bool> changeViewMode = ValueNotifier(false);
+  List<String> _items = [
+    'Birthday',
+    'Man Pantalon',
+    'Birthday',
+    'Man Pantalon',
+    'Birthday',
+    'Man Pantalon',
+    'Birthday',
+    'Man Pantalon',
+    'Birthday',
+    'Man Pantalon',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(top: 10.0, start: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ValueListenableBuilder<bool>(
+            valueListenable: changeViewMode,
+            builder: (context , value , _) {
+              return _items.isNotEmpty ? Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      changeViewMode.value = !changeViewMode.value;
+                    },
+                    child: SvgPicture.asset(
+                      AppAssets.searchHistorySvg,
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  if(value)...{
+                    Expanded(
+                  child : SizedBox(
+                    height: 28,
+                    child: Row(
+                        children: [
+                          MyTextWidget(
+                            'Search History',
+                            style: context.textTheme.bodyText2?.mq
+                                .copyWith(
+                                height: 18 / 14,
+                                color: Color(0xff505050)),
+                          ),
+                          Spacer(),
+                          GestureDetector(
+                            onTap: (){
+                              setState(() {
+                                _items.clear();
+                              });
+                            },
+                            child: MyTextWidget(
+                              'Clear All',
+                              style: context.textTheme.bodyText2?.rq
+                                  .copyWith(
+                                  height: 18 / 14,
+                                  decoration: TextDecoration.underline,
+                                  color: Color(0xff505050)),
+                            ),
+                          ),
+                          SizedBox(width: 25,),
+                        ],
+                      ),
+                  ),),
+                  }else ...{
+                    Expanded(
+                      child: SizedBox(
+                          height: 28,
+                          child: AnimatedList(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            key: _listKey,
+                            initialItemCount: _items.length,
+                            itemBuilder: (ctx, index, animation) {
+                              return buildItem(index, _items[index] , animation);
+                            },
+                          )),
+                    ),
+                  }
+                ],
+              ) : const SizedBox.shrink();
+            }
+
+          ),
+          ValueListenableBuilder<bool>(
+              valueListenable: changeViewMode,
+              builder: (context, value, _) {
+                return value && _items.isNotEmpty ? ScrollConfiguration(
+                  behavior: CupertinoScrollBehavior(),
+                  child: ListView.separated(
+                        shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
+                        padding: EdgeInsets.only(top: 15 , right: 20),
+                        itemBuilder: (ctx, index) => Container(
+                          height: 40,
+                          width: 1.sw,
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                              color: Color(0xffF8F8F8),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: MyTextWidget(
+                              _items[index],
+                              textAlign: TextAlign.start,
+                              style: context.textTheme.bodyText2?.rq
+                                  .copyWith(
+                                  height: 18 / 14,
+                                  color: Color(0xff8D8D8D)),
+                            ),
+                          ),
+                        ),
+                        itemCount: _items.length,
+                        separatorBuilder: (ctx, index) => SizedBox(
+                          height: 5,
+                        ),
+                      ),
+                ) : SizedBox.shrink();
+              })
+        ],
+      ),
+    );
+  }
+
+  Widget buildItem(int index , String text, Animation<double> animation) {
+    return AnimatedBuilder(
+        animation: animation,
+        builder: (context, child) {
+      return Transform(
+        transform: Matrix4.identity()
+          ..translate(0.0, 0.0,  (1.0 - animation.value)),
+        child: Opacity(
+          opacity: animation.value,
+          child: child,
+        ),
+      );
+    },
+    child: SearchHistoryChip(
+      text: text,
+      onClickClose: () {
+        final removedItem = _items[index];
+        _items.removeAt(index);
+        changeViewMode.notifyListeners();
+        _listKey.currentState!.removeItem(
+          index,
+          (context, animation) => buildItem(index ,removedItem, animation),
+        );
+        //removeFromHistory.value = !removeFromHistory.value;
+      },
+    ));
+  }
+}
