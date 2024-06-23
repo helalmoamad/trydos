@@ -38,7 +38,7 @@ part 'auth_event.dart';
 
 part 'auth_state.dart';
 
-const throttleDuration = Duration(milliseconds: 1000);
+const throttleDuration = Duration(minutes: 2);
 
 EventTransformer<E> throttleDroppable<E>(Duration duration) {
   return (events, mapper) {
@@ -46,7 +46,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
   };
 }
 
-@injectable
+@LazySingleton()
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(
     this.updateStoriesUserUseCase,
@@ -276,15 +276,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           verificationId: event.verificationId, otp: event.otp),
     );
     response.fold((l) {
-      _prefsRepository.setOtpCode(event.otp);
       emit(state.copyWith(
           verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
           signInErrorMessage: l.message));
     }, (r) {
       try {
-        print(
-            "87777777777777777777777777777777777777777777777777777777${r.data!.user!.name}77777777777777777777777${r.data!.user!.id!}");
-
         _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
         _prefsRepository.setMyMarketName(r.data!.user!.name.toString());
         _prefsRepository.setMarketToken(r.data!.token!);
@@ -335,7 +331,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           name: event.name),
     );
     response.fold((l) {
-      _prefsRepository.setOtpCode(event.otp);
       emit(state.copyWith(
         verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
       ));
@@ -375,6 +370,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onRegisterGuestEvent(
       RegisterGuestEvent event, Emitter<AuthState> emit) async {
+    _prefsRepository.clearTokenForMarket();
     emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.loading));
     final response = await registerGuestUseCase(
       RegisterGuestParams(deviceId: event.deviceId),
@@ -393,6 +389,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
+      _prefsRepository.clearTokensForChatAndStory();
       emit(state.copyWith(
           registerGuestStatus: RegisterGuestStatus.success,
           marketUser: r.data!.user));
@@ -443,18 +440,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onGetUserCountryEvent(
       GetUserCountryEvent event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(
+        getCustomerCountryStatus : GetCustomerCountryStatus.loading
+    ));
     final response = await getUserCountryUseCase(NoParams());
     response.fold((l) {
+      emit(state.copyWith(
+          getCustomerCountryStatus : GetCustomerCountryStatus.failure
+      ));
       if (!isFailedTheFirstTime.contains('GetUserCountryEvent')) {
         add(GetUserCountryEvent());
         isFailedTheFirstTime.add('GetUserCountryEvent');
       }
     }, (r) {
       isFailedTheFirstTime.remove('GetUserCountryEvent');
-
-      _prefsRepository.setCountryIso(countries
-          .firstWhere((element) => element.code == r.countryCode)
-          .code);
+        _prefsRepository.setCountryIso(r.countryCode);
+      emit(state.copyWith(
+           countryName: r.country,
+          getCustomerCountryStatus : GetCustomerCountryStatus.success
+      ));
     });
   }
 

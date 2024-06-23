@@ -12,6 +12,7 @@ extension ScopeApi on String {
   String customerScope() => '$_api/${_currentVersion}/customer/$this';
   String productsScope() => '$_api/${_currentVersion}/mobile/products/$this';
   String productScope() => '$_api/${_currentVersion}/mobile/product/$this';
+  String productScopeWeb() => '$_api/${_currentVersion}/web/product/$this';
 
   String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
 }
@@ -20,6 +21,7 @@ abstract class MarketEndPoints {
   static String getProductDetailWithoutSimilarRelatedProducts(
           String productId) =>
       "details_without_similar_related_products/$productId".productScope();
+
   static final sendOtpEP = 'send_otp'.phoneScope();
   static final verifyOtpSignInEP = 'verify_otp_singin'.phoneScope();
   static final verifyOtpSignUpEP = 'verify_otp_signup'.phoneScope();
@@ -33,7 +35,8 @@ abstract class MarketEndPoints {
   static final getStartingSettingsEP = 'startingSettings'.homeScope();
   static final getHomeSectionsEP = 'home_sections'.homeScope();
   static final getHomeBoutiqesEP = 'boutiquesByCategory'.homeScope();
-
+  static String getCommentForProductEP(String productId) =>
+      'likesCommentsSharesDetails/$productId'.productScopeWeb();
   static final getMainCategoriesEP = 'mainCategories'.homeScope();
   static final getProductListingWithoutFiltersEP =
       'with_colors_without_filter'.productsScope();

@@ -70,7 +70,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
         setThisEnabledNotifier.value = Tuple2(-1, -1);
       }
     });
-    super.initState();
+     super.initState();
   }
 
   @override
@@ -125,7 +125,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 BlocBuilder<HomeBloc, HomeState>(
                   buildWhen: (p, c) {
                     String key = widget.boutiqueSlug + (widget.category ?? '');
-                    if(p.getProductListingPaginationWithoutFiltersModel[key]?.items != c.getProductListingPaginationWithoutFiltersModel[key]?.items){
+                    if (p.getProductListingPaginationWithoutFiltersModel[key]
+                            ?.items !=
+                        c.getProductListingPaginationWithoutFiltersModel[key]
+                            ?.items) {
                       gridViewKeyForRendering = UniqueKey();
                     }
                     return p.getProductListingPaginationWithoutFiltersModel[key]
@@ -135,7 +138,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   },
                   builder: (context, state) {
                     String key = widget.boutiqueSlug + (widget.category ?? '');
-                    if ((state.getProductListingPaginationWithoutFiltersModel[key]
+                    if ((state
+                                    .getProductListingPaginationWithoutFiltersModel[
+                                        key]
                                     ?.paginationStatus ==
                                 PaginationStatus.loading &&
                             (state
@@ -153,8 +158,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     }
                     if (state.getProductListingStatus ==
                             GetProductsWithoutFiltersStatus.failure &&
-                        state.getProductListingPaginationWithoutFiltersModel[key]!
-                            .items.isNullOrEmpty) {
+                        state
+                            .getProductListingPaginationWithoutFiltersModel[
+                                key]!
+                            .items
+                            .isNullOrEmpty) {
                       return Center(
                         child: ElevatedButton(
                             onPressed: () {
@@ -195,9 +203,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           print("${prefsRepository.myMarketName.toString()}" +
                                               "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
                                         });
-                                        await FirebaseAnalytics.instance.logEvent(
-                                            name: 'button_clicked',
-                                            parameters: {
+                                        await FirebaseAnalytics.instance
+                                            .logEvent(
+                                                name: 'button_clicked',
+                                                parameters: {
                                               "time_stamp": DateTime.now()
                                                   .toUtc()
                                                   .add(Duration(
@@ -213,11 +222,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           .languageCode ==
                                                       'ar'
                                                   ? 'ae'
-                                                  : LanguageService.languageCode,
+                                                  : LanguageService
+                                                      .languageCode,
                                               "country_name":
                                                   GetIt.I<PrefsRepository>()
                                                       .countryIso,
-                                              'userID': prefsRepository.myMarketId
+                                              'userID': prefsRepository
+                                                  .myMarketId
                                                   .toString(),
                                               'user_name': prefsRepository
                                                   .myMarketName

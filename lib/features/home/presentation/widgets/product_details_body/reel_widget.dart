@@ -5,10 +5,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
-
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/my_text_widget.dart';
+import 'package:like_button/like_button.dart';
 
 class ReelWidget extends StatelessWidget {
   const ReelWidget({super.key});
@@ -35,6 +35,18 @@ class ReelWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SvgPicture.asset(AppAssets.favoriteSvg),
+                  LikeButton(
+                    circleColor:
+                        CircleColor(start: Colors.redAccent, end: Colors.red),
+                    bubblesColor: BubblesColor(
+                      dotPrimaryColor: Colors.red.shade300,
+                      dotSecondaryColor: Colors.red,
+                    ),
+                    likeBuilder: (bool isLiked) {
+                      return SvgPicture.asset(AppAssets.favoriteSvg,
+                          color: isLiked ? Colors.red : Colors.black);
+                    },
+                  ),
                   const SizedBox(height: 25),
                   SvgPicture.asset(
                     AppAssets.shareSvg,

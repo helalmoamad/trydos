@@ -58,7 +58,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
               borderRadius:
                   borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
               child: imageUrl?.contains('assets') ?? true
-                  ? Image.asset('assets/images/details.jpg',
+                  ? Image.asset('assets/images/address2.png',
                       fit: imageFit ?? BoxFit.cover)
                   : MyCachedNetworkImage(
                       ordinalHeight: orginalHeight,

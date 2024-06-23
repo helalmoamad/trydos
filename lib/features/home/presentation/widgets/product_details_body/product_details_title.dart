@@ -53,18 +53,18 @@ class ProductDetailsTitle extends StatelessWidget {
                 children: [
                   SvgNetworkWidget(
                     svgUrl: brand.image!,
-                    height: 30,
-                    width: 30,
+                    height: 18,
                   ),
                   state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                           GetProductDetailWithoutSimilarRelatedProductsStatus
                               .loading
                       ? Center(
                           child: TrydosShimmerLoading(
-                            width: 70,
-                            height: 70,
-                            logoTextHeight: 14,
-                            logoTextWidth: 20.w,
+                            width: 18,
+                            height: 18,
+                            logoTextHeight: 6,
+                            circleDimensions: 10,
+                            logoTextWidth: 6,
                           ),
                         )
                       : Row(
@@ -117,6 +117,9 @@ class ProductDetailsTitle extends StatelessWidget {
                       imageUrl: thumbnail,
                       height: 15,
                       width: 15,
+                      circleDimensions: 7,
+                      logoTextHeight: 7,
+                      logoTextWidth: 12,
                     ),
                   ),
                   Container(

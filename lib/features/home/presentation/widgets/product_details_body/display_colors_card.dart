@@ -63,12 +63,6 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
           selectColorCardKey.currentContext?.findRenderObject() as RenderBox;
     }
 
-    if (renderBox != null) {
-      print(renderBox!.size.height);
-      print(renderBox!.localToGlobal(Offset.zero).dy);
-      print(1.sh);
-    }
-
     if (renderBox != null &&
         (displayMode.value == 1 || displayMode.value == 2) &&
         (renderBox!.localToGlobal(Offset.zero).dy + 175 - 1.sh).abs() <= 10) {
@@ -190,11 +184,6 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                         ? 2.5
                         : 1.6,
                 scrollTime: 1);
-    /* if (syncColorImageList!.length <= 8) {
-    currentIndexInSlider = 0;
-    } else {
-      currentIndexInSlider = syncColorImageList!.length ~/ 4;
-    }*/
     currentIndexInSlider = widget.currentColorForProduct;
     super.initState();
   }
@@ -222,8 +211,8 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                   curve: Curves.fastLinearToSlowEaseIn,
                   child: Padding(
                       padding: EdgeInsets.only(
-                          left: mode == 0 ? 20.0 : 0,
-                          right: mode == 0 ? 10 : 0),
+                          left: mode == 0 ? 15.0 : 0,
+                          right: mode == 0 ? 15.0 : 0),
                       child: AnimatedSize(
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.fastLinearToSlowEaseIn,
@@ -300,28 +289,41 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                           (timeStamp) {
                                                     prevModeForRunHero = 1;
                                                   });
-                                                  displayMode.value = 1;
-                                                  if ((widget
-                                                                  .scrollController
-                                                                  .position
-                                                                  .pixels -
-                                                              widget
-                                                                  .scrollController
-                                                                  .position
-                                                                  .maxScrollExtent)
-                                                          .abs() >
-                                                      120) {
+                                                  print('aaa ${widget.scrollController
+                                                      .position.pixels}');
+                                                  print('bbb ${(1.sh -
+                                                      renderBox!
+                                                          .localToGlobal(
+                                                          Offset.zero)
+                                                          .dy +
+                                                      150 -
+                                                      renderBox!
+                                                          .size.height)}');
+                                                  if (widget.scrollController
+                                                          .position.pixels <
+                                                      (1.sh -
+                                                          renderBox!
+                                                              .localToGlobal(
+                                                                  Offset.zero)
+                                                              .dy +
+                                                          150 -
+                                                          renderBox!
+                                                              .size.height)) {
                                                     widget.scrollController.animateTo(
-                                                        widget
-                                                                .scrollController
-                                                                .position
-                                                                .maxScrollExtent -
-                                                            100,
+                                                        (1.sh -
+                                                            renderBox!
+                                                                .localToGlobal(
+                                                                    Offset.zero)
+                                                                .dy +
+                                                            150 -
+                                                            renderBox!
+                                                                .size.height),
                                                         curve: Curves
                                                             .fastEaseInToSlowEaseOut,
                                                         duration: Duration(
                                                             milliseconds: 300));
                                                   }
+                                                  displayMode.value = 1;
                                                 },
                                                 child:
                                                     (syncColorImageList
@@ -399,13 +401,28 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                   });
                                                                   displayMode
                                                                       .value = 1;
-                                                                  if ((widget.scrollController.position.pixels -
-                                                                              widget.scrollController.position.maxScrollExtent)
-                                                                          .abs() >
-                                                                      120) {
+                                                                  if (widget
+                                                                          .scrollController
+                                                                          .position
+                                                                          .pixels <
+                                                                      (1.sh -
+                                                                          renderBox!
+                                                                              .localToGlobal(Offset
+                                                                                  .zero)
+                                                                              .dy +
+                                                                          150 -
+                                                                          renderBox!
+                                                                              .size
+                                                                              .height)) {
                                                                     widget.scrollController.animateTo(
-                                                                        widget.scrollController.position.maxScrollExtent -
-                                                                            100,
+                                                                        (1.sh -
+                                                                            renderBox!
+                                                                                .localToGlobal(Offset
+                                                                                    .zero)
+                                                                                .dy +
+                                                                            150 -
+                                                                            renderBox!
+                                                                                .size.height),
                                                                         curve: Curves
                                                                             .fastEaseInToSlowEaseOut,
                                                                         duration:
@@ -469,22 +486,25 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                               onTap: () {
                                                 if (displayMode.value == 1) {
                                                   displayMode.value = 2;
-                                                  if ((widget
-                                                                  .scrollController
-                                                                  .position
-                                                                  .pixels -
-                                                              widget
-                                                                  .scrollController
-                                                                  .position
-                                                                  .maxScrollExtent)
-                                                          .abs() >
-                                                      170) {
+                                                  if (widget.scrollController
+                                                          .position.pixels <
+                                                      (1.sh -
+                                                          renderBox!
+                                                              .localToGlobal(
+                                                                  Offset.zero)
+                                                              .dy +
+                                                          renderBox!
+                                                                  .size.height /
+                                                              2)) {
                                                     widget.scrollController.animateTo(
-                                                        widget
-                                                                .scrollController
-                                                                .position
-                                                                .maxScrollExtent -
-                                                            140,
+                                                        (1.sh -
+                                                            renderBox!
+                                                                .localToGlobal(
+                                                                    Offset.zero)
+                                                                .dy +
+                                                            renderBox!.size
+                                                                    .height /
+                                                                2),
                                                         curve: Curves
                                                             .fastEaseInToSlowEaseOut,
                                                         duration: Duration(

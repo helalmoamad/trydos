@@ -1134,10 +1134,11 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                               index <
                                                   (syncColorImageList!.length ~/
                                                       2)) ||
-                                          (gallery3dControllerForCircles
+                                          ((gallery3dControllerForCircles
                                                       ?.currentIndex ??
                                                   0) >=
-                                              (syncColorImageList!.length ~/ 2),
+                                              (syncColorImageList!.length ~/ 2) && index >= (syncColorImageList!.length ~/
+                                  2)),
                                       child: ProductListingImageWidget(
                                         orginalHeight: orginalHeigh[index],
                                         orginalWidth: orginalWidth[index],

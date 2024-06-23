@@ -26,6 +26,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : StartingSetting.fromJson(
               json['startingSetting'] as Map<String, dynamic>),
+      sizes:
+          (json['sizes'] as List<dynamic>?)?.map((e) => e as String).toList(),
       currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
       reRequestTheseBoutiques:
           (json['reRequestTheseBoutiques'] as Map<String, dynamic>?)?.map(
@@ -128,6 +130,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               ))),
       'storiesForProduct':
           instance.storiesForProduct?.map((e) => e.toJson()).toList(),
+      'sizes': instance.sizes,
       'getProductListingPaginationWithoutFiltersModel': instance
           .getProductListingPaginationWithoutFiltersModel
           .map((k, e) => MapEntry(

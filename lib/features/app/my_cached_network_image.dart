@@ -73,9 +73,15 @@ class MyCachedNetworkImage extends StatelessWidget {
     String url = '';
     list = imageUrl.split('upload');
 
-    url = ordinalwidth! > ordinalHeight!
-        ? list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1]
-        : list[0] + 'upload/c_scale,w_${2 * width.toInt()}' + list[1];
+    if (ordinalHeight != null && ordinalwidth != null) {
+      print(
+          "000000000000000000555555555555555555555----------------------------------------${ordinalHeight}--------------------${ordinalwidth}");
+      url = ordinalwidth! >= ordinalHeight!
+          ? list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1]
+          : list[0] + 'upload/c_scale,w_${2 * width.toInt()}' + list[1];
+    } else {
+      url = list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1];
+    }
 
     return ValueListenableBuilder<int>(
         valueListenable: rebuildImage,

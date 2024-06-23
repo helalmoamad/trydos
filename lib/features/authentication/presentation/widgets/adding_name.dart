@@ -39,7 +39,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffF4FFF4),
       statusBarBrightness: Brightness.light,
-      statusBarIconBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.dark,
     ));
     super.didChangeDependencies();
   }

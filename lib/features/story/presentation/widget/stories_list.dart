@@ -60,6 +60,7 @@ class _StoriesListState extends State<StoriesList> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
+      print(error.toString());
     };
     return BlocBuilder<StoryBloc, StoryState>(builder: (context, state) {
 //todo the ScrollConfiguration make behavior to the scroll

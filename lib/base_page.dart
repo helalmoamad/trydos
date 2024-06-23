@@ -344,7 +344,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFFFFF),
       statusBarBrightness: Brightness.light,
-      statusBarIconBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.dark,
     ));
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "Base Page");
     super.didChangeDependencies();
