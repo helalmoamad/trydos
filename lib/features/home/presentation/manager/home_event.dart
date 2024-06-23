@@ -31,6 +31,14 @@ class AddCurrentSelectedColorEvent extends HomeEvent {
   List<Object?> get props => [currentSelectedColor, productId];
 }
 
+class GetCommentForProductEvent extends HomeEvent {
+  final String productId;
+  const GetCommentForProductEvent({required this.productId});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [productId];
+}
+
 class GetHomeBoutiqesEvent extends HomeEvent {
   // final bool getWithPagination;
   final String offset;

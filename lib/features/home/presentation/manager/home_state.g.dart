@@ -22,6 +22,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               _$GetMainCategoriesStatusEnumMap,
               json['getMainCategoriesStatus']) ??
           GetMainCategoriesStatus.init,
+      getCommentForProductStatus: $enumDecodeNullable(
+              _$GetCommentForProductStatusEnumMap,
+              json['getCommentForProductStatus']) ??
+          GetCommentForProductStatus.init,
       startingSetting: json['startingSetting'] == null
           ? null
           : StartingSetting.fromJson(
@@ -107,6 +111,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getStartingSettingsStatus]!,
       'currentSelectedColorForEveryProduct':
           instance.currentSelectedColorForEveryProduct,
+      'getCommentForProductStatus': _$GetCommentForProductStatusEnumMap[
+          instance.getCommentForProductStatus]!,
       'getMainCategoriesStatus':
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
       'selectedCollection': instance.selectedCollection,
@@ -167,6 +173,13 @@ const _$GetMainCategoriesStatusEnumMap = {
   GetMainCategoriesStatus.loading: 'loading',
   GetMainCategoriesStatus.success: 'success',
   GetMainCategoriesStatus.failure: 'failure',
+};
+
+const _$GetCommentForProductStatusEnumMap = {
+  GetCommentForProductStatus.init: 'init',
+  GetCommentForProductStatus.loading: 'loading',
+  GetCommentForProductStatus.success: 'success',
+  GetCommentForProductStatus.failure: 'failure',
 };
 
 const _$GetProductListingStatusEnumMap = {

@@ -12,6 +12,7 @@ import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/authentication/presentation/widgets/phone_form_fields.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
@@ -20,6 +21,7 @@ import 'package:trydos/features/home/data/models/get_story_for_product_model.dar
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
+import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_boutiqes_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_sections_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
@@ -53,6 +55,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       //  this.getHomeSectionsUseCase,
       this.getMainCategoriesUseCase,
       this.getStoryUseCase,
+      this.getCommentForProductUseCase,
       this.getHomeBoutiqesUseCase,
       this.getWidthAndHeightUseCase,
       this.getProductDetailWithoutRelatedProductsUseCase,
@@ -82,12 +85,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetProductDatailsWithoutRelatedProductsEvent>(
       _onGetProductDatailsWithoutRelatedProductsEvent,
     );
+
+    on<GetCommentForProductEvent>(
+      _onGetCommentForProductEvent,
+    );
   }
 
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final GetStartingSettingsUseCase getStartingSettingsUseCase;
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final GetHomeBoutiqesUseCase getHomeBoutiqesUseCase;
+  final GetCommentForProductUseCase getCommentForProductUseCase;
   final GetStoryForProductUseCase getStoryUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
       getProductDetailWithoutRelatedProductsUseCase;
@@ -183,8 +191,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   _onAddCurrentSelectedColorEvent(
       AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
-    print(
-        "999999999999999999999999***************************************************************");
     Map<String, int> currentSelectedColorForEveryProduct =
         Map.of(state.currentSelectedColorForEveryProduct);
     currentSelectedColorForEveryProduct[event.productId] =
@@ -500,10 +506,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         if (element.type!.split("-")[0] == event.currentColorName &&
             element.qty != null) {
           if (element.qty! > 0) {
-            print("-----------type----${element.type!.split("-")[0]}" +
-                "----------cu--${event.currentColorName}" +
-                "---type----${element.type!.split("-")[1]}" +
-                "----------cusizw--${element.qty}");
             sizes.add(element.type!.split("-")[1]);
           }
         }
@@ -566,5 +568,54 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       getMainCategoriesStatus: GetMainCategoriesStatus.init,
       getStartingSettingsStatus: GetStartingSettingsStatus.init,
     ).toJson();
+  }
+
+  FutureOr<void> _onGetCommentForProductEvent(
+      GetCommentForProductEvent event, Emitter<HomeState> emit) async {
+    String keyForCacheData = event.productId;
+    Map<String, GetCommentForProductModel> getCommentForProduct =
+        Map.of(state.getCommentForProductModel);
+
+    if (getCommentForProduct[keyForCacheData] == null) {
+      emit(state.copyWith(
+          getCommentForProductStatus: GetCommentForProductStatus.init));
+    }
+
+    if (!state.getCommentForProductModel.containsKey(keyForCacheData)) {
+      emit(state.copyWith(
+          getCommentForProductStatus: GetCommentForProductStatus.loading));
+    }
+
+    final response = await getCommentForProductUseCase(event.productId);
+
+    response.fold((l) {
+      print(
+          "777777777777777777777777777777777++++++++++++++++++++++++++++++++++77777777++++++++99999999999999999999ng()]}");
+
+      if (!isFailedTheFirstTime.contains('GetProductsWithoutFiltersEvent')) {
+        add(GetCommentForProductEvent(productId: event.productId));
+        isFailedTheFirstTime.add('GetProductsWithoutFiltersEvent');
+      }
+      emit(state.copyWith(
+          getCommentForProductModel: getCommentForProduct,
+          getCommentForProductStatus: GetCommentForProductStatus.init));
+    }, (r) {
+      isFailedTheFirstTime.remove('GetProductsWithoutFiltersEvent');
+      if (getCommentForProduct[keyForCacheData] == null ||
+          !state.getCommentForProductModel.containsKey(keyForCacheData)) {
+        getCommentForProduct.addAll({keyForCacheData: r});
+      }
+
+      emit(state.copyWith(
+        getCommentForProductModel: getCommentForProduct.map((key, value) {
+          if (key == keyForCacheData) {
+            return MapEntry(key, r);
+          } else {
+            return MapEntry(key, value);
+          }
+        }),
+        getCommentForProductStatus: GetCommentForProductStatus.success,
+      ));
+    });
   }
 }

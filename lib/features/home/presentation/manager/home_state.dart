@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
@@ -25,6 +26,8 @@ enum GetProductDetailWithoutSimilarRelatedProductsStatus {
 
 enum SelectedVideoStatus { init, loading, success, failure }
 
+enum GetCommentForProductStatus { init, loading, success, failure }
+
 enum GetMainCategoriesStatus { init, loading, success, failure }
 
 enum GetStoriesForProductStatus { init, loading, success, failure }
@@ -43,10 +46,12 @@ class HomeState {
         GetProductDetailWithoutSimilarRelatedProductsStatus.init,
     this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
     this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
+    this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.startingSetting,
     this.sizes,
     this.currentPage = 0,
     this.reRequestTheseBoutiques = const {},
+    this.getCommentForProductModel = const {},
     this.reRequestTheseProductListingInBoutiques = const {},
     this.getProductListingStatus = GetProductListingStatus.init,
     this.selectedCollection,
@@ -61,7 +66,7 @@ class HomeState {
 
   final GetStartingSettingsStatus getStartingSettingsStatus;
   final Map<String, int> currentSelectedColorForEveryProduct;
-
+  final GetCommentForProductStatus getCommentForProductStatus;
   final GetMainCategoriesStatus getMainCategoriesStatus;
   int? selectedCollection;
   int currentPage;
@@ -78,6 +83,7 @@ class HomeState {
   List<String>? sizes;
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
+  final Map<String, GetCommentForProductModel> getCommentForProductModel;
 
   final MainCategoriesResponseModel? mainCategoriesResponseModel;
   final GetProductDetailWithoutRelatedProductsModel?
@@ -91,6 +97,7 @@ class HomeState {
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
+      final GetCommentForProductStatus? getCommentForProductStatus,
       Map<int, int?>? currentStoryInEachCollection,
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
@@ -113,9 +120,15 @@ class HomeState {
       int? currentPage,
       List<Story>? storiesForProduct,
       final Map<String, PaginationModel<product.Products>>?
-          getProductListingPaginationWithoutFiltersModel}) {
+          getProductListingPaginationWithoutFiltersModel,
+      final Map<String, GetCommentForProductModel>?
+          getCommentForProductModel}) {
     return HomeState(
+        getCommentForProductModel:
+            getCommentForProductModel ?? this.getCommentForProductModel,
         sizes: sizes ?? this.sizes,
+        getCommentForProductStatus:
+            getCommentForProductStatus ?? this.getCommentForProductStatus,
         getProductListingStatus:
             getProductListingStatus ?? this.getProductListingStatus,
         currentSelectedColorForEveryProduct:

@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/methods/get.dart';
+import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
@@ -44,6 +45,20 @@ class HomeRemoteDatasource {
       ),
     );
     return getStartingSettings();
+  }
+
+  Future<GetCommentForProductModel> getCommentForProduct(String productId) {
+    GetClient<GetCommentForProductModel> getCommentForProduct =
+        GetClient<GetCommentForProductModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetCommentForProductModel>(
+        endpoint: MarketEndPoints.getCommentForProductEP(productId),
+        response: ResponseValue<GetCommentForProductModel>(
+            fromJson: (response) =>
+                GetCommentForProductModel.fromJson(response)),
+      ),
+    );
+    return getCommentForProduct();
   }
 
   Future<GetProductListingWithoutFiltersModel> getProductsWithoutFilters(
