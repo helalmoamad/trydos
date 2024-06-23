@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -17,6 +18,7 @@ import 'package:trydos/features/authentication/presentation/pages/login_page.dar
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
+
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/theme_state.dart';
@@ -249,7 +251,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     context.go(GRouter
                         .config.applicationRoutes.kSharedPreferencePagePath);
                   },
-                  onTap: () => appBloc.add(ChangeBasePage(1)),
+                  onTap: () {
+                    appBloc.add(ChangeBasePage(1));
+                  },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -271,7 +275,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                 ? colorScheme.grey200
                                 : colorScheme.black,
                             letterSpacing: 0.28),
-                      ),
+                      )
                     ],
                   ),
                 ),
@@ -287,7 +291,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           context: context,
                           barrierDismissible: false,
                           builder: (context) {
-                            return UpdateUserNameWidget(updateForStoriesServer: false,);
+                            return UpdateUserNameWidget(
+                              updateForStoriesServer: false,
+                            );
                           });
                     } else {
                       NotificationSettings settings = await FirebaseMessaging
@@ -391,7 +397,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         });
                   },
                   onTap: () {
-                    if(prefsRepository.chatToken != null) return ;
+                    if (prefsRepository.chatToken != null) return;
                     appBloc.add(ChangeBasePage(0));
                     context
                         .go(GRouter.config.applicationRoutes.kRegistrationPage);

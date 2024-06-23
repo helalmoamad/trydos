@@ -122,17 +122,19 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       ValueListenableBuilder<bool>(
                           valueListenable: displayBoutiqueIconInAppBar,
                           builder: (context, display, _) {
-                            return widget.boutiqueIcon != null ? Visibility(
-                              visible: display,
-                              child: Padding(
-                                padding:
-                                    EdgeInsetsDirectional.only(start: 30.w),
-                                child: SvgNetworkWidget(
-                                  svgUrl: widget.boutiqueIcon!,
-                                  height: 20,
-                                ),
-                              ),
-                            ): SizedBox.shrink();
+                            return widget.boutiqueIcon != null
+                                ? Visibility(
+                                    visible: display,
+                                    child: Padding(
+                                      padding: EdgeInsetsDirectional.only(
+                                          start: 30.w),
+                                      child: SvgNetworkWidget(
+                                        svgUrl: widget.boutiqueIcon!,
+                                        height: 20,
+                                      ),
+                                    ),
+                                  )
+                                : SizedBox.shrink();
                           }),
                       Spacer(),
                       Padding(
@@ -390,11 +392,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 (String message) {
                                               timerForDisplayFilterSectionTitle
                                                   ?.cancel();
-                                              showTitleForFilterList.value = message;
+                                              showTitleForFilterList.value =
+                                                  message;
                                               timerForDisplayFilterSectionTitle =
-                                                  Timer(Duration(seconds: 3), () {
-                                                    showTitleForFilterList.value = null;
-                                                  });
+                                                  Timer(Duration(seconds: 3),
+                                                      () {
+                                                showTitleForFilterList.value =
+                                                    null;
+                                              });
                                             },
                                           ),
                                         ],

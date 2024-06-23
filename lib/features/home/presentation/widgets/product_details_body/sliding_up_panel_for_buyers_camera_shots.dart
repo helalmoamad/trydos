@@ -14,7 +14,9 @@ import '../../../../app/my_text_widget.dart';
 
 class SlidingUpPanelForBuyersCameraShots extends StatelessWidget {
   const SlidingUpPanelForBuyersCameraShots(
-      {super.key, required this.panelController, required this.panelControllerForReels});
+      {super.key,
+      required this.panelController,
+      required this.panelControllerForReels});
 
   final PanelController panelController;
   final PanelController panelControllerForReels;
@@ -22,13 +24,12 @@ class SlidingUpPanelForBuyersCameraShots extends StatelessWidget {
   Widget build(BuildContext context) {
     return SlidingUpPanel(
         borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20.0),
-            topRight: Radius.circular(20.0)),
+            topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
         minHeight: 0,
-        onPanelClosed: (){
+        onPanelClosed: () {
           denySlidingBackForSlidingUpPanels.value = false;
         },
-        onPanelOpened: (){
+        onPanelOpened: () {
           denySlidingBackForSlidingUpPanels.value = true;
         },
         controller: panelController,

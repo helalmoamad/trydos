@@ -7,6 +7,8 @@ class ProductListingImageWidget extends StatelessWidget {
     super.key,
     this.width,
     this.height,
+    this.orginalHeight,
+    this.orginalWidth,
     required this.innerShadowYOffset,
     this.borderColor,
     this.withBackGroundShadow = false,
@@ -17,7 +19,8 @@ class ProductListingImageWidget extends StatelessWidget {
   final double? width;
   final double? height;
   final bool circleShape;
-
+  final double? orginalWidth;
+  final double? orginalHeight;
   final bool withBackGroundShadow;
   final double innerShadowYOffset;
   final Color? borderColor;
