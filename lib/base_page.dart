@@ -2,6 +2,7 @@ import 'dart:convert' as convert;
 import 'dart:developer';
 import 'package:adobe_xd/pinned.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -26,6 +27,7 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
+import 'features/app/app_widgets/tabs_bar.dart';
 import 'features/authentication/presentation/pages/first_registeration_page.dart';
 import 'features/calls/presentation/pages/in_app_view.dart';
 import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
@@ -277,6 +279,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   late HomeBloc homeBloc;
   late CallsBloc callsBloc;
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
+  final ValueNotifier<int> buildSearchResult = ValueNotifier(0);
+  final ValueNotifier<bool> hideTrendingAndHistory = ValueNotifier(false);
 
   final List<Widget> pages = [
     const HomePage(),
@@ -314,6 +318,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    pages.add(SearchPage(buildSearchResult : buildSearchResult , hideTrendingAndHistory: hideTrendingAndHistory,),);
     WidgetsBinding.instance.addObserver(this);
     chatBloc = BlocProvider.of<ChatBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -560,17 +565,42 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                   buildWhen: (p, c) => p.showBars != c.showBars,
                   builder: (context, state) {
                     if (state.showBars == true) {
-                      return const AppBottomNavBar();
+                      return BlocBuilder<AppBloc, AppState>(
+                          buildWhen: (p, c) =>
+                              p.hideBottomNavigationBar !=
+                              c.hideBottomNavigationBar,
+                          builder: (context, state) {
+                            return state.hideBottomNavigationBar
+                                ? const SizedBox.shrink()
+                                : const AppBottomNavBar();
+                          });
                     } else {
                       return const SizedBox.shrink();
                     }
                   }),
-              body: BlocBuilder<AppBloc, AppState>(
-                buildWhen: (oldState, newState) =>
-                    oldState.currentIndex != newState.currentIndex,
-                builder: (_, state) {
-                  return pages[state.currentIndex];
-                },
+              body: Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  BlocBuilder<AppBloc, AppState>(
+                    buildWhen: (oldState, newState) =>
+                        oldState.currentIndex != newState.currentIndex,
+                    builder: (_, state) {
+                      return pages[state.currentIndex];
+                    },
+                  ),
+                  BlocBuilder<AppBloc, AppState>(
+                      buildWhen: (p, c) => p.showBars != c.showBars || p.currentIndex != c.currentIndex,
+                      builder: (context, state) {
+                        if (state.showBars == true && state.currentIndex ==0 || state.currentIndex == 4) {
+                          return  TabsBar(
+                            buildSearchResult: buildSearchResult,
+                            hideTrendingAndHistory: hideTrendingAndHistory,
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      })
+                ],
               ),
             )),
       ),

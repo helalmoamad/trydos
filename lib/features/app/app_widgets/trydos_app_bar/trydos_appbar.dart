@@ -16,6 +16,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
   }) : super(key: key);
 
   final AppBarParams appBarParams;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -23,21 +24,24 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            boxShadow: appBarParams.withShadow ? [
-              BoxShadow(
-                color: context.colorScheme.black.withOpacity(0.1),
-                offset: Offset(0,0),
-                blurRadius: 6
-              )
-            ] : null
-          ),
+              boxShadow: appBarParams.withShadow
+                  ? [
+                      BoxShadow(
+                          color: context.colorScheme.black.withOpacity(0.1),
+                          offset: Offset(0, 0),
+                          blurRadius: 6)
+                    ]
+                  : null),
           child: AppBar(
             //title: title(context),
             scrolledUnderElevation: appBarParams.scrolledUnderElevation,
             backgroundColor: appBarParams.backgroundColor ??
                 Theme.of(context).colorScheme.surface,
             leading: LanguageService.rtl ? null : leadingAppBar(context),
-            actions: [LanguageService.rtl ? leadingAppBar(context) : SizedBox.shrink() , ...appBarParams.action ?? []],
+            actions: [
+              LanguageService.rtl ? leadingAppBar(context) : SizedBox.shrink(),
+              ...appBarParams.action ?? []
+            ],
             centerTitle: appBarParams.centerTitle,
             elevation: appBarParams.elevation,
             shadowColor: appBarParams.shadowColor,
@@ -76,7 +80,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
           },
           if (appBarParams.title != null)
             MyTextWidget(
-               appBarParams.title!,
+              appBarParams.title!,
               style: appBarParams.tittleStyle ??
                   Theme.of(context).textTheme.headline3?.copyWith(
                         color: appBarParams.textColor,
@@ -87,19 +91,31 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget leadingAppBar(BuildContext context) => appBarParams.hasLeading
-      ? InkWell(
-    onTap: (){
-      Navigator.pop(context);
-    },
-    child: Container(
-      padding: EdgeInsets.all(8),
-      child: SvgPicture.asset(
-        AppAssets.backIconArrowSvg,
-        width: 8.w,
-        color: appBarParams.backIconColor ?? const Color(0xff388CFF),
-      ),
-    ),
-  )
-      : const SizedBox();
+  Widget leadingAppBar(BuildContext context, {Widget? leading}) =>
+      appBarParams.hasLeading
+          ? Row(
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: SvgPicture.asset(
+                      AppAssets.backIconArrowSvg,
+                      width: 8.w,
+                      color:
+                          appBarParams.backIconColor ?? const Color(0xff388CFF),
+                    ),
+                  ),
+                ),
+                if (leading != null) ...{
+                  SizedBox(
+                    width: 10,
+                  ),
+                  leading
+                }
+              ],
+            )
+          : const SizedBox();
 }
