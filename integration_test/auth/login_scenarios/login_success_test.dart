@@ -30,6 +30,7 @@ void main() {
         successMessage: 'Find LoginSuccessfully Success',
         failedMessage: 'Find LoginSuccessfully failed',
       );
+      await GlobalTestFunctions.waitFor(tester, find.byType(BasePage));
       //////////////////////////
       await GlobalTestFunctions.findWidget(
         tester: tester,

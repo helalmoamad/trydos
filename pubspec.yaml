@@ -49,6 +49,7 @@ dependencies:
     git:
       url: https://helalmohamad@bitbucket.org/trydos/flutter_gallery_3d-1.1.1.git
   fluttertoast: ^8.2.2
+  like_button: ^2.0.5
   dartz: ^0.10.1
   shimmer: ^3.0.0
   eraser: ^2.0.1

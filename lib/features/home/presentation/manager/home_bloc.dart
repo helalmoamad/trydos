@@ -39,7 +39,7 @@ import 'dart:convert' as convert;
 
 import 'home_state.dart';
 
-const throttleDuration = Duration(milliseconds: 1000);
+const throttleDuration = Duration(minutes: 2);
 
 EventTransformer<E> throttleDroppable<E>(Duration duration) {
   return (events, mapper) {
@@ -60,7 +60,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       this.getProductsWithoutFiltersUseCase)
       : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
-    on<StorySelectEvent>(_onStorySelectedEvent);
     on<AddCurrentSelectedColorEvent>(_onAddCurrentSelectedColorEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetHomeBoutiqesEvent>(_onGetHomeBoutiquesEvent,
@@ -75,16 +74,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onGetStoryEvent,
       // transformer: throttleDroppable(throttleDuration)
     );
+    on<AddSizesFotColorsEvent>(
+      _onAddSizesFotColorsEvent,
+      // transformer: throttleDroppable(throttleDuration)
+    );
 
-    on<LoadFailureEvent>(((event, emit) => emit(state.copyWith(
-            storiesCollections: state.storiesCollections.map((e) {
-          if (e.id == event.collectionId) {
-            return e.copyWith(
-                selectedStoriesStatusForCollection:
-                    SelectedStoriesStatus.failure);
-          }
-          return e;
-        }).toList()))));
     on<GetProductDatailsWithoutRelatedProductsEvent>(
       _onGetProductDatailsWithoutRelatedProductsEvent,
     );
@@ -189,6 +183,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   _onAddCurrentSelectedColorEvent(
       AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
+    print(
+        "999999999999999999999999***************************************************************");
     Map<String, int> currentSelectedColorForEveryProduct =
         Map.of(state.currentSelectedColorForEveryProduct);
     currentSelectedColorForEveryProduct[event.productId] =
@@ -198,90 +194,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             currentSelectedColorForEveryProduct));
   }
 
-  _onStorySelectedEvent(StorySelectEvent event, Emitter<HomeState> emit) async {
-    //todo make the story seen when he press to show it
-
-    Map<int, int?> currentStoryInEachCollection =
-        Map.of(state.currentStoryInEachCollection);
-    currentStoryInEachCollection[event.collectionIndex] =
-        event.selectedStoryIndexInCollection == -1
-            ? currentStoryInEachCollection[event.collectionIndex]
-            : event.selectedStoryIndexInCollection;
-    //todo make  the state loading
-    emit(state.copyWith(
-      //selectedStoriesStatus: SelectedStoriesStatus.loading,
-      currentPage:
-          event.currentPage == -1 ? state.currentPage : event.currentPage,
-      selectedCollection: event.collectionIndex,
-      currentStoryInEachCollection: currentStoryInEachCollection,
-    ));
-
-    var currentStoryInSelectedCollection =
-        state.storiesCollections[event.collectionIndex].stories![max(
-            state.currentStoryInEachCollection[event.collectionIndex]!,
-            event.selectedStoryIndexInCollection)];
-    if (currentStoryInSelectedCollection.isPhoto == 1) {
-//todo debug
-      //todo bring the real width and height for selected photo
-      final response = await getWidthAndHeightUseCase(widthAndHeightParams(
-          url: currentStoryInSelectedCollection.photoPath!,
-          collectionId: state.storiesCollections[event.collectionIndex].id!));
-      response.fold((l) {
-        if (isFailedTheFirstTime.contains('StorySelectedEvent')) {
-          isFailedTheFirstTime.remove('StorySelectedEvent');
-          emit(state.copyWith(
-              storiesCollections: state.storiesCollections.map((e) {
-            if (e.id == state.storiesCollections[event.collectionIndex].id) {
-              return e.copyWith(
-                  selectedStoriesStatusForCollection:
-                      SelectedStoriesStatus.failure);
-            }
-            return e;
-          }).toList()));
-        } else {
-          isFailedTheFirstTime.insert(
-              isFailedTheFirstTime.length, 'StorySelectedEvent');
-          GetIt.I<HomeBloc>().add(StorySelectEvent(
-              collectionIndex: event.collectionIndex,
-              selectedStoryIndexInCollection:
-                  event.selectedStoryIndexInCollection,
-              currentPage: event.currentPage));
-        }
-      }, (r) {
-//todo just make the state success with the width and height for the image and in the emitter above you changed the initial  story
-        emit(state.copyWith(
-            storiesCollections: state.storiesCollections.map((e) {
-          if (e.id == state.storiesCollections[event.collectionIndex].id) {
-            return e.copyWith(
-                selectedStoriesStatusForCollection:
-                    SelectedStoriesStatus.success,
-                imageDetail: r);
-          }
-          return e;
-        }).toList()));
-      });
-    } else {
-      //todo it's a video all what i will do is make it seen
-      emit(state.copyWith(
-        storiesCollections: state.storiesCollections.map((e) {
-          if (e.id == state.storiesCollections[event.collectionIndex].id) {
-            return e.copyWith(
-              selectedStoriesStatusForCollection: SelectedStoriesStatus.success,
-            );
-          }
-          return e;
-        }).toList(),
-        currentStoryInEachCollection: currentStoryInEachCollection,
-        selectedCollection: event.collectionIndex,
-      ));
-    }
-  }
-
   Future<void> _onGetStoryEvent(
-      GetStoryForProductEvent, Emitter<HomeState> emit) async {
+      GetStoryForProductEvent event, Emitter<HomeState> emit) async {
     emit(state.copyWith(
         getStoriesForProductStatus: GetStoriesForProductStatus.loading));
-    final response = await getStoryUseCase(NoParams());
+    final response = await getStoryUseCase(event.productId);
 
     response.fold((l) {
       if (isFailedTheFirstTime.contains('GetStoryEvent')) {
@@ -291,19 +208,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       } else {
         isFailedTheFirstTime.insert(
             isFailedTheFirstTime.length, 'GetStoryEvent');
-        GetIt.I<HomeBloc>().add(GetStoryForProductEvent);
+        GetIt.I<HomeBloc>()
+            .add(GetStoryForProductEvent(productId: event.productId));
       }
     }, (r) {
       apisMustNotToRequest.add('GetStoryEvent');
-      Map<int, int> currentStoryInEachCollection = {};
-      int i = 0;
-      r.data?.collections?.forEach((element) {
-        currentStoryInEachCollection[i++] = 0;
-      });
+
       emit(state.copyWith(
-          getStoriesForProductStatus: GetStoriesForProductStatus.success,
-          storiesCollections: r.data!.collections,
-          currentStoryInEachCollection: currentStoryInEachCollection));
+        storiesForProduct: r.data!.story,
+        getStoriesForProductStatus: GetStoriesForProductStatus.success,
+      ));
     });
   }
 
@@ -504,16 +418,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             getProductsWithoutFilters[keyForCacheData]!.hasReachedMax)) {
       return;
     }
-    emit(state.copyWith(
-        getProductListingPaginationWithoutFiltersModel:
-            getProductsWithoutFilters.map((key, value) {
-          if (key == keyForCacheData) {
-            return MapEntry(key,
-                value.copyWith(paginationStatus: PaginationStatus.loading));
-          } else {
-            return MapEntry(key, value);
-          }
-        })));
+    emit(state.copyWith(getProductListingPaginationWithoutFiltersModel:
+        getProductsWithoutFilters.map((key, value) {
+      if (key == keyForCacheData) {
+        return MapEntry(
+            key, value.copyWith(paginationStatus: PaginationStatus.loading));
+      } else {
+        return MapEntry(key, value);
+      }
+    })));
     final response = await getProductsWithoutFiltersUseCase(
         GetProductsWithoutFiltersParams(
             offset: event.offset,
@@ -578,6 +491,28 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
 
+  FutureOr<void> _onAddSizesFotColorsEvent(
+      AddSizesFotColorsEvent event, Emitter<HomeState> emit) async {
+    ;
+    List<String> sizes = [];
+    if (event.variation != null) {
+      event.variation!.forEach((element) {
+        if (element.type!.split("-")[0] == event.currentColorName &&
+            element.qty != null) {
+          if (element.qty! > 0) {
+            print("-----------type----${element.type!.split("-")[0]}" +
+                "----------cu--${event.currentColorName}" +
+                "---type----${element.type!.split("-")[1]}" +
+                "----------cusizw--${element.qty}");
+            sizes.add(element.type!.split("-")[1]);
+          }
+        }
+      });
+    }
+
+    emit(state.copyWith(sizes: sizes));
+  }
+
   FutureOr<void> _onGetProductDatailsWithoutRelatedProductsEvent(
       GetProductDatailsWithoutRelatedProductsEvent event,
       Emitter<HomeState> emit) async {
@@ -585,8 +520,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         getProductDetailWithoutSimilarRelatedProductsStatus:
             GetProductDetailWithoutSimilarRelatedProductsStatus.loading));
 
-    if (state.cachedProductWithoutRelatedProductsModel
-        .containsKey(event.productId)) return;
+    //  if (state.cachedProductWithoutRelatedProductsModel
+    //      .containsKey(event.productId)) return;
     emit(state.copyWith(
         getProductDetailWithoutSimilarRelatedProductsStatus:
             GetProductDetailWithoutSimilarRelatedProductsStatus.loading));
@@ -625,6 +560,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   @override
   Map<String, dynamic>? toJson(HomeState state) {
     return state.copyWith(
+      currentSelectedColorForEveryProduct: {},
       reRequestTheseProductListingInBoutiques: {},
       reRequestTheseBoutiques: {},
       getMainCategoriesStatus: GetMainCategoriesStatus.init,

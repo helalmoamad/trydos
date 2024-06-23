@@ -54,7 +54,8 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
       ...syncColorImageList ?? [],
       ...syncColorImageList ?? [],
     ];
-    images = syncColorImageList?.map((e) => e.images![0]).toList() ?? [];
+    images =
+        syncColorImageList?.map((e) => e.images![0].filePath!).toList() ?? [];
     gallery3dControllerForCircles =
         syncColorImageList.isNullOrEmpty || syncColorImageList!.length < 3
             ? null

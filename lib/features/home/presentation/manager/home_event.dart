@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 
 abstract class HomeEvent extends Equatable {
   const HomeEvent();
@@ -46,20 +47,6 @@ class GetHomeBoutiqesEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [];
-}
-
-class StorySelectEvent extends HomeEvent {
-  final int collectionIndex;
-  final int selectedStoryIndexInCollection;
-  final int currentPage;
-  const StorySelectEvent(
-      {required this.collectionIndex,
-      required this.selectedStoryIndexInCollection,
-      required this.currentPage});
-
-  @override
-  List<Object?> get props =>
-      [collectionIndex, selectedStoryIndexInCollection, currentPage];
 }
 
 class GetProductDatailsWithoutRelatedProductsEvent extends HomeEvent {
@@ -110,7 +97,8 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
 }
 
 class GetStoryForProductEvent extends HomeEvent {
-  const GetStoryForProductEvent();
+  final String productId;
+  GetStoryForProductEvent({required this.productId});
 
   @override
   // TODO: implement props
@@ -122,4 +110,14 @@ class LoadFailureEvent extends HomeEvent {
   const LoadFailureEvent({required this.collectionId});
   @override
   List<Object?> get props => [collectionId];
+}
+
+class AddSizesFotColorsEvent extends HomeEvent {
+  final String currentColorName;
+  final List<Variation>? variation;
+
+  const AddSizesFotColorsEvent(
+      {required this.currentColorName, required this.variation});
+  @override
+  List<Object?> get props => [currentColorName];
 }

@@ -8,19 +8,22 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/app/svg_network_widget.dart';
+import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 
 import '../../../../../common/helper/helper_functions.dart';
 
 class ProductDetailsChipWidget extends StatelessWidget {
-  const ProductDetailsChipWidget({super.key, this.withIcon = false});
-
+  const ProductDetailsChipWidget(
+      {super.key, this.withIcon = false, required this.descriptor});
+  final DataDescriptor? descriptor;
   final bool withIcon;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        HelperFunctions.showDescriptionForProductDetails(context : context);
+        HelperFunctions.showDescriptionForProductDetails(context: context);
       },
       child: DottedBorder(
         radius: Radius.circular(15),
@@ -33,8 +36,8 @@ class ProductDetailsChipWidget extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SvgPicture.asset(
-              AppAssets.partyCozSvg,
+            SvgNetworkWidget(
+              svgUrl: descriptor!.descriptorGroup!.icon!,
               width: 20,
               height: 20,
             ),
@@ -45,45 +48,50 @@ class ProductDetailsChipWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 MyTextWidget(
-                  'Suitable Occasions',
+                  descriptor!.descriptorGroup!.name!,
                   style: context.textTheme.overline?.rq
-                      .copyWith(color: Color(0xffC4C2C2), height: 1.3 ),
+                      .copyWith(color: Color(0xffC4C2C2), height: 1.3),
                 ),
                 SizedBox(
                   height: 16,
                   child: ListView.separated(
-                    itemCount: 3,
+                    itemCount: descriptor!.descriptors!.length,
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          if (withIcon) ...{
-                            MyTextWidget(
-                              '97%',
-                              style: context.textTheme.bodyText2?.rq.copyWith(
-                                  height: 1.23,
-                                  color: Color(0xff505050),
-                                  fontSize: 13.sp),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
-                              child: SvgPicture.asset(
-                                AppAssets.polyesterSvg,
-                                width: 15,
-                                height: 15,
+                      print(descriptor!.descriptors![index].descriptor!.icon!);
+                      return Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            if (withIcon) ...{
+                              MyTextWidget(
+                                descriptor!.descriptors![index].value!,
+                                style: context.textTheme.bodyText2?.rq.copyWith(
+                                    height: 1.23,
+                                    color: Color(0xff505050),
+                                    fontSize: 13.sp),
                               ),
-                            ),
-                          },
-                          MyTextWidget(
-                            'Casual',
-                            style: context.textTheme.caption?.rq.copyWith(
-                                height: 1.23,
-                                color: Color(0xff8D8D8D),
-                                fontSize: 13.sp),
-                          )
-                        ],
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: SvgNetworkWidget(
+                                  svgUrl: descriptor!
+                                      .descriptors![index].descriptor!.icon!,
+                                  width: 15,
+                                  height: 15,
+                                ),
+                              ),
+                            },
+                            MyTextWidget(
+                              descriptor!.descriptors![index].descriptor!.name!,
+                              style: context.textTheme.caption?.rq.copyWith(
+                                  height: 1.23,
+                                  color: Color(0xff8D8D8D),
+                                  fontSize: 13.sp),
+                            )
+                          ],
+                        ),
                       );
                     },
                     separatorBuilder: (context, index) {

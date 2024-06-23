@@ -443,6 +443,17 @@ class PrefsRepositoryImpl extends PrefsRepository {
     return _preferences.setString(PrefsKey.sessionId, sessionId);
   }
 
+  @override
+  Future<bool> clearTokenForMarket() {
+    return _preferences.remove(PrefsKey.marketToken);
+  }
+
+  @override
+  Future<bool> clearTokensForChatAndStory() {
+    _preferences.remove(PrefsKey.chatToken);
+    return _preferences.remove(PrefsKey.storiesToken);
+  }
+
 // @override
 // // TODO: implement localMessages
 // List<Map<String,dynamic>> get localMessages {

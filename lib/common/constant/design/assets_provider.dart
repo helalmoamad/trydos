@@ -99,6 +99,12 @@ abstract class AppAssets {
   static String get backIconArrowSvg=>'back_icon_arrow'.svg;
   static String get endCallSvg=>'end_call'.svg;
   static String get partyCozSvg=>'party_coz'.svg;
+  static String get refundSvg=>'refund'.svg;
+  static String get airplaneSvg=>'airplan'.svg;
+  static String get locationSvg=>'location_icon'.svg;
+  static String get deliveryPathSvg=>'delivery_path'.svg;
+  static String get fastPackingIconSvg=>'fast_packing_icon'.svg;
+  static String get fastPackingManIconSvg=>'fast_packing_man_icon'.svg;
   static String get polyesterSvg=>'polyester'.svg;
   static String get malokanSvg=>'malokan'.svg;
 
@@ -129,6 +135,7 @@ abstract class AppAssets {
   static String get removeIconSvg=>'remove_icon'.svg;
   static String get editIconSvg=>'edit_icon'.svg;
   static String get notificationIconSvg=>'notification_icon'.svg;
+  static String get notificationOutlinedIconSvg=>'notification_outlined_icon'.svg;
   static String get goBackIconSvg=>'go_back_icon'.svg;
   static String get addToGroupSvg=>'add_to_group'.svg;
   static String get backButtonSvg=>'back_button'.svg;

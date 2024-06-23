@@ -45,7 +45,7 @@ import 'helper_function_for_chat_bloc/group_received_message_on_days.dart';
 import 'helper_function_for_chat_bloc/merge_chats_from_pagination.dart';
 import 'helper_function_for_chat_bloc/merge_the_old_chat_with_new.dart';
 
-const throttleDuration = Duration(milliseconds: 1000);
+const throttleDuration = Duration(minutes: 2);
 
 EventTransformer<E> throttleDroppable<E>(Duration duration) {
   return (events, mapper) {
@@ -100,7 +100,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<ChangeChatPropertyEvent>(_onChangeChatPropertyEvent);
     on<GetMessagesForChatEvent>(_onGetMessagesForChatEvent);
     on<GetAllMessagesBetweenEvent>(_onGetAllMessagesBetweenEvent,
-        transformer: throttleDroppable(const Duration(minutes: 2)));
+        transformer: throttleDroppable(throttleDuration));
     on<SaveContactsEvent>(_onSaveContactsEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetChatsEvent>(_onGetChatsEvent,

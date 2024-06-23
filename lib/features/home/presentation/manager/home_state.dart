@@ -38,23 +38,22 @@ enum GetProductListingStatus { init, loading, success, failure }
 @JsonSerializable(explicitToJson: true)
 class HomeState {
   HomeState({
+    this.storiesForProduct,
     this.getProductDetailWithoutSimilarRelatedProductsStatus =
         GetProductDetailWithoutSimilarRelatedProductsStatus.init,
     this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
     this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
     this.startingSetting,
+    this.sizes,
     this.currentPage = 0,
     this.reRequestTheseBoutiques = const {},
     this.reRequestTheseProductListingInBoutiques = const {},
     this.getProductListingStatus = GetProductListingStatus.init,
     this.selectedCollection,
-    this.storiesCollections = const [],
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
     this.getProductDetailWithoutRelatedProductsModel,
     this.getProductListingPaginationWithoutFiltersModel = const {},
-    this.selectedVideoStatus = SelectedVideoStatus.init,
-    this.currentStoryInEachCollection = const {},
     this.currentSelectedColorForEveryProduct = const {},
     this.cachedProductWithoutRelatedProductsModel = const {},
     this.getHomeBoutiquesPaginationObjectByMainCategory = const {},
@@ -75,10 +74,8 @@ class HomeState {
   GetStoriesForProductStatus getStoriesForProductStatus;
   final Map<String, PaginationModel<Boutique>>
       getHomeBoutiquesPaginationObjectByMainCategory;
-  SelectedVideoStatus selectedVideoStatus;
-  List<CollectionStoryModel> storiesCollections;
-
-  Map<int, int?> currentStoryInEachCollection;
+  List<Story>? storiesForProduct;
+  List<String>? sizes;
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
 
@@ -91,8 +88,6 @@ class HomeState {
   final Map<String, GetProductDetailWithoutRelatedProductsModel>
       cachedProductWithoutRelatedProductsModel;
 
-  get uploadStoryCloudinaryStatus => null;
-
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
@@ -100,11 +95,11 @@ class HomeState {
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
+      List<String>? sizes,
       final Map<String, bool>? reRequestTheseBoutiques,
       final Map<String, bool>? reRequestTheseProductListingInBoutiques,
       final GetProductListingStatus? getProductListingStatus,
       final StartingSetting? startingSetting,
-      List<CollectionStoryModel>? storiesCollections,
       final MainCategoriesResponseModel? mainCategoriesResponseModel,
       final Map<String, PaginationModel<Boutique>>?
           getHomeBoutiquesPaginationObjectByMainCategory,
@@ -116,9 +111,11 @@ class HomeState {
           getProductDetailWithoutSimilarRelatedProductsStatus,
       final Map<String, int>? currentSelectedColorForEveryProduct,
       int? currentPage,
+      List<Story>? storiesForProduct,
       final Map<String, PaginationModel<product.Products>>?
           getProductListingPaginationWithoutFiltersModel}) {
     return HomeState(
+        sizes: sizes ?? this.sizes,
         getProductListingStatus:
             getProductListingStatus ?? this.getProductListingStatus,
         currentSelectedColorForEveryProduct:
@@ -138,6 +135,7 @@ class HomeState {
         getStartingSettingsStatus:
             getStartingSettingsStatus ?? this.getStartingSettingsStatus,
         currentPage: currentPage ?? this.currentPage,
+        storiesForProduct: storiesForProduct ?? this.storiesForProduct,
         getMainCategoriesStatus:
             getMainCategoriesStatus ?? this.getMainCategoriesStatus,
         getHomeBoutiquesPaginationObjectByMainCategory:
@@ -146,13 +144,9 @@ class HomeState {
         startingSetting: startingSetting ?? this.startingSetting,
         mainCategoriesResponseModel:
             mainCategoriesResponseModel ?? this.mainCategoriesResponseModel,
-        currentStoryInEachCollection:
-            currentStoryInEachCollection ?? this.currentStoryInEachCollection,
         getProductListingPaginationWithoutFiltersModel:
             getProductListingPaginationWithoutFiltersModel ??
                 this.getProductListingPaginationWithoutFiltersModel,
-        selectedVideoStatus: selectedVideoStatus ?? this.selectedVideoStatus,
-        storiesCollections: storiesCollections ?? this.storiesCollections,
         cachedProductWithoutRelatedProductsModel:
             cachedProductWithoutRelatedProductsModel ??
                 this.cachedProductWithoutRelatedProductsModel,
