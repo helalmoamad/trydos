@@ -34,6 +34,8 @@ void main() {
         successMessage: 'Find Adding Name Success',
         failedMessage: 'Find Adding Name failed',
       );
+
+      /// name should be more than 8 char
     },
   );
 }
