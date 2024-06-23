@@ -14,6 +14,7 @@ import 'package:trydos/features/home/data/models/main_categories_response_model.
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/constant/design/constant_design.dart';
+import '../../../common/constant/widgets_key.dart';
 import '../../../core/utils/responsive_padding.dart';
 import '../../home/presentation/manager/home_bloc.dart';
 import '../../home/presentation/manager/home_state.dart';
@@ -86,6 +87,7 @@ class _TabsBarState extends State<TabsBar> {
                     ],
                   ),
                   child: Row(
+                      key: Key(WidgetsKey.mainCategoriesTabNullKey),
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(
                           5,
@@ -283,6 +285,7 @@ class _TabsBarState extends State<TabsBar> {
                                   builder: (context, state) {
                                     if (state.currentIndex != 4) {
                                       return Row(
+                                          key: Key(WidgetsKey.mainCategoriesTabKey),
                                           mainAxisSize: MainAxisSize.min,
                                           children: List.generate(
                                             (homeState

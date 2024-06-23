@@ -15,6 +15,8 @@ class MyCachedNetworkImage extends StatelessWidget {
       required this.imageUrl,
       required this.width,
       this.logoTextWidth,
+      this.ordinalHeight,
+      this.ordinalwidth,
       this.logoTextHeight,
       required this.imageFit,
       this.imageBuilder,
@@ -36,6 +38,8 @@ class MyCachedNetworkImage extends StatelessWidget {
   final double width;
   final double? logoTextWidth;
   final double height;
+  final double? ordinalHeight;
+  final double? ordinalwidth;
   final double? logoTextHeight;
   final BoxFit imageFit;
   final double radius;
@@ -68,9 +72,16 @@ class MyCachedNetworkImage extends StatelessWidget {
     List<String> list;
     String url = '';
     list = imageUrl.split('upload');
-    url = width > height
-        ? list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1]
-        : list[0] + 'upload/c_scale,w_${2 * width.toInt()}' + list[1];
+
+    if (ordinalHeight != null && ordinalwidth != null) {
+      print(
+          "000000000000000000555555555555555555555----------------------------------------${ordinalHeight}--------------------${ordinalwidth}");
+      url = ordinalwidth! >= ordinalHeight!
+          ? list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1]
+          : list[0] + 'upload/c_scale,w_${2 * width.toInt()}' + list[1];
+    } else {
+      url = list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1];
+    }
 
     return ValueListenableBuilder<int>(
         valueListenable: rebuildImage,

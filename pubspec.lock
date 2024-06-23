@@ -697,10 +697,11 @@ packages:
   flutter_carousel_slider:
     dependency: "direct main"
     description:
-      name: flutter_carousel_slider
-      sha256: "4cd0691b98ebbf8b40361e01779b3a211002c963d3709630e775fba699d3b821"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "8674bfc111e82b1f69e50cc556b19c8004864865"
+      url: "https://helalmohamad@bitbucket.org/trydos/flutter_carousel_slider-1.1.0.git"
+    source: git
     version: "1.1.0"
   flutter_countdown_timer:
     dependency: "direct main"
@@ -726,10 +727,11 @@ packages:
   flutter_gallery_3d:
     dependency: "direct main"
     description:
-      name: flutter_gallery_3d
-      sha256: "1c8b5d15c4e8ab653558e2c73f7291bb7367c860749b721bcc8d625a920c5c34"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "0726ea227c1f86ffa8f01a24b9f867aa1ce60edd"
+      url: "https://helalmohamad@bitbucket.org/trydos/flutter_gallery_3d-1.1.1.git"
+    source: git
     version: "1.1.1"
   flutter_html:
     dependency: "direct main"
@@ -1287,10 +1289,11 @@ packages:
   overscroll_pop:
     dependency: "direct main"
     description:
-      name: overscroll_pop
-      sha256: "397bcdb2ca1bdfa6ac6192c893a2cf681d2f821f7901c301c7667c1931a1fda2"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "8bc50be3ddd57cf779d3b845cc40df65043aa241"
+      url: "https://helalmohamad@bitbucket.org/trydos/overscroll_pop-0.0.9.git"
+    source: git
     version: "0.0.9"
   package_config:
     dependency: transitive
@@ -1676,10 +1679,11 @@ packages:
   sliding_up_panel:
     dependency: "direct main"
     description:
-      name: sliding_up_panel
-      sha256: "578e90956a6212d1e406373250b2436a0f3afece29aee3c24c8360094d6cf968"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "40dfb3cc000fbe8cd97f2c4cdb6b04b784c94620"
+      url: "https://helalmohamad@bitbucket.org/trydos/sliding_up_panel-2.0.0-1.git"
+    source: git
     version: "2.0.0+1"
   source_gen:
     dependency: transitive

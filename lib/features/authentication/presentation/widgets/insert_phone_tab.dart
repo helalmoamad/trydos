@@ -15,6 +15,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../common/constant/countries.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
@@ -174,7 +175,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                 valueListenable: displaySubmit,
                 builder: (context, display, _) {
                   return PhoneFormField(
-                    key: Key('login_phone_form_field'),
+                    key: Key(WidgetsKey.loginPhoneFormFieldKey),
                     focusNode: widget.focusNode,
                     onChange: (String? text) {
                       Country newCountry = countries.firstWhere(
@@ -250,7 +251,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                               height: 15.h,
                             )
                           : InkWell(
-                              key: Key('login_confirm_phone_button'),
+                              key: Key(WidgetsKey.loginConfirmPhoneButtonKey),
                               onTap: () {
                                 widget.moveToNextStep
                                     .call('${form.controllers[0].text}');

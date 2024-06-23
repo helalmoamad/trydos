@@ -19,10 +19,10 @@ import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/widgets/home_page_card.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../story/presentation/widget/stories_list.dart';
@@ -197,6 +197,7 @@ class _HomePageState extends State<HomePage> {
                                     0) ==
                                 0)) {
                       return sliverListSeparated(
+                          key: Key(WidgetsKey.boutiquesFailureStatusKey),
                           itemBuilder: (_, index) => Padding(
                               padding:
                                   HWEdgeInsets.symmetric(horizontal: 15.w),
@@ -213,6 +214,7 @@ class _HomePageState extends State<HomePage> {
                           childCount: 10);
                     }
                     return sliverListSeparated(
+                      key: Key(WidgetsKey.boutiquesSuccessStatusKey),
                       itemBuilder: (_, index) => Padding(
                           padding: HWEdgeInsets.symmetric(horizontal: 15.w),
                           child: HomePageCard2(

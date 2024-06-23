@@ -22,6 +22,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 //import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
 import '../../../app/my_text_widget.dart';
@@ -74,6 +75,7 @@ class _StoriesListState extends State<StoriesList> {
                     switch (state.getStoriesStatus) {
                       case GetStoriesStatus.success:
                         return SizedBox(
+                            key: Key(WidgetsKey.storiesSuccessStatusKey),
                             height: 220,
                             child: Directionality(
                               textDirection: ui.TextDirection.ltr,
@@ -216,11 +218,13 @@ class _StoriesListState extends State<StoriesList> {
                                           .storiesCollections[index]
                                           .stories![indexOfInitialStory];
                                       String? imageOfVideoUrl;
-                                      if(initialStory.isPhoto != 1){
-                                        int index = initialStory
-                                            .fullVideoPath!.lastIndexOf('.');
+                                      if (initialStory.isPhoto != 1) {
+                                        int index = initialStory.fullVideoPath!
+                                            .lastIndexOf('.');
                                         imageOfVideoUrl = initialStory
-                                            .fullVideoPath!.substring(0 , index) + '.png';
+                                                .fullVideoPath!
+                                                .substring(0, index) +
+                                            '.png';
                                       }
                                       return AnimatedPadding(
                                         duration: Duration(milliseconds: 200),
@@ -419,7 +423,7 @@ class _StoriesListState extends State<StoriesList> {
                                                     resizeUserImage:
                                                         index == focused.value2,
                                                     firstPhotoNotShowed:
-                                                    imageOfVideoUrl,
+                                                        imageOfVideoUrl,
                                                   )),
                                       );
                                     }
@@ -439,6 +443,7 @@ class _StoriesListState extends State<StoriesList> {
                         return Container();
                       case GetStoriesStatus.failure:
                         return Center(
+                          key: Key(WidgetsKey.storiesFailureStatusKey),
                           child: ElevatedButton(
                               onPressed: () {
                                 GetIt.I<StoryBloc>().add(GetStoryEvent());

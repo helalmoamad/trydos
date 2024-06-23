@@ -1,5 +1,4 @@
 extension AssetsUtils on String {
-
   /// assets/svg/$this.svg
   String get svg => 'assets/svg/$this.svg';
 
@@ -22,46 +21,48 @@ extension AssetsUtils on String {
 }
 
 abstract class AppAssets {
-
   /// region SVG Section
-  static String get logoSvg=>'logo'.svg;
-  static String get logoIconSvg=>'logo_icon'.svg;
-  static String get inactiveLogoIconSvg=>'inactive_logo_icon'.svg;
-  static String get logoTextActiveSvg=>'logo_text_active'.svg;
-  static String get logoTextInactiveSvg=>'logo_text_inactive'.svg;
-  static String get manActiveSvg=>'man_active'.svg;
-  static String get manInactiveSvg=>'man_inactive'.svg;
-  static String get womenActiveSvg=>'woman_active'.svg;
-  static String get womenInactiveSvg=>'woman_inactive'.svg;
-  static String get homeActiveSvg=>'home_active'.svg;
-  static String get homeInactiveSvg=>'home_inactive'.svg;
-  static String get childrenActiveSvg=>'children_active'.svg;
-  static String get childrenInactiveSvg=>'children_inactive'.svg;
-  static String get electronicActiveSvg=>'electronic_active'.svg;
-  static String get electronicInactiveSvg=>'electronic_inactive'.svg;
-  static String get cartSvg=>'cart'.svg;
-  static String get favoriteSvg=>'favorite'.svg;
-  static String get sizeIconSvg=>'size_icon'.svg;
-  static String get coloredSizeIconSvg=>'colored_size_icon'.svg;
-  static String get recyclingSvg=>'recycling'.svg;
-  static String get searchSvg=>'search'.svg;
-  static String get cameraSvg=>'camera'.svg;
-  static String get settingsSvg=>'settings'.svg;
-  static String get arrowsSvg=>'arrows'.svg;
-  static String get chatSvg=>'chat'.svg;
-  static String get activeChatSvg=>'chat_active'.svg;
-  static String get qualityBadgeSvg=>'quality_badge'.svg;
-  static String get verifiedBadgeSvg=>'verified_badge'.svg;
-  static String get colorPickerSvg=>'color_picker'.svg;
-  static String get chromeIconSvg=>'chrome_icon'.svg;
-  static String get indicatorSvg=>'indicator'.svg;
-  static String get dressSvg=>'dress'.svg;
-  static String get emptySvg=>'empty'.svg;
-  static String get colorIndicatorSvg=>'color_indicator'.svg;
-  static String get textSvg=>'text'.svg;
-  static String get freeShippingSvg=>'free_shipping'.svg;
-  static String get freeReturnSvg=>'free_return'.svg;
-  static String get arrivalOfShippingSvg=>'arrival_of_shipping'.svg;
+  static String get logoSvg => 'logo'.svg;
+  static String get countItemSvg => 'countitem'.svg;
+  static String get sizeSvg => 'size'.svg;
+  static String get adresswSvg => 'adressw'.svg;
+  static String get logoIconSvg => 'logo_icon'.svg;
+  static String get inactiveLogoIconSvg => 'inactive_logo_icon'.svg;
+  static String get logoTextActiveSvg => 'logo_text_active'.svg;
+  static String get logoTextInactiveSvg => 'logo_text_inactive'.svg;
+  static String get manActiveSvg => 'man_active'.svg;
+  static String get manInactiveSvg => 'man_inactive'.svg;
+  static String get womenActiveSvg => 'woman_active'.svg;
+  static String get womenInactiveSvg => 'woman_inactive'.svg;
+  static String get homeActiveSvg => 'home_active'.svg;
+  static String get homeInactiveSvg => 'home_inactive'.svg;
+  static String get childrenActiveSvg => 'children_active'.svg;
+  static String get childrenInactiveSvg => 'children_inactive'.svg;
+  static String get electronicActiveSvg => 'electronic_active'.svg;
+  static String get electronicInactiveSvg => 'electronic_inactive'.svg;
+  static String get cartSvg => 'cart'.svg;
+  static String get favoriteSvg => 'favorite'.svg;
+  static String get sizeIconSvg => 'size_icon'.svg;
+  static String get coloredSizeIconSvg => 'colored_size_icon'.svg;
+  static String get recyclingSvg => 'recycling'.svg;
+  static String get searchSvg => 'search'.svg;
+  static String get cameraSvg => 'camera'.svg;
+  static String get settingsSvg => 'settings'.svg;
+  static String get arrowsSvg => 'arrows'.svg;
+  static String get chatSvg => 'chat'.svg;
+  static String get activeChatSvg => 'chat_active'.svg;
+  static String get qualityBadgeSvg => 'quality_badge'.svg;
+  static String get verifiedBadgeSvg => 'verified_badge'.svg;
+  static String get colorPickerSvg => 'color_picker'.svg;
+  static String get chromeIconSvg => 'chrome_icon'.svg;
+  static String get indicatorSvg => 'indicator'.svg;
+  static String get dressSvg => 'dress'.svg;
+  static String get emptySvg => 'empty'.svg;
+  static String get colorIndicatorSvg => 'color_indicator'.svg;
+  static String get textSvg => 'text'.svg;
+  static String get freeShippingSvg => 'free_shipping'.svg;
+  static String get freeReturnSvg => 'free_return'.svg;
+  static String get arrivalOfShippingSvg => 'arrival_of_shipping'.svg;
 
   static String get filtersSvg=>'filters'.svg;
   static String get sortingSvg=>'sorting'.svg;
@@ -113,28 +114,29 @@ abstract class AppAssets {
   static String get polyesterSvg=>'polyester'.svg;
   static String get malokanSvg=>'malokan'.svg;
 
-  static String get callMutedSvg=>'call_muted'.svg;
-  static String get callUnMutedSvg=>'call_unmute'.svg;
-  static String get videoCallSvg=>'video_call'.svg;
-  static String get cancelVideoCallSvg=>'cancel_video_call'.svg;
-  static String get makeCallSvg=>'make_call'.svg;
-  static String get makeVideoCallSvg=>'make_video_call'.svg;
-  static String get pauseSvg=>'pause'.svg;
-  static String get playSvg=>'play'.svg;
-  static String get voiceReceivedSvg=>'voice_received'.svg;
-  static String get voicePlayedSvg=>'voice_played'.svg;
-  static String get missedCallInChatSvg=>'missed_call_in_chat'.svg;
-  static String get missedVideoCallInChatSvg=>'missing_video_call_in_chat'.svg;
-  static String get forwardedSvg=>'forwarded'.svg;
-  static String get addStickersSvg=>'add_stickers'.svg;
-  static String get replyOnMessageSvg=>'reply_on_message'.svg;
-  static String get closeSvg=>'close'.svg;
-  static String get sendMessageSvg=>'send_message'.svg;
-  static String get takePictureSvg=>'take_picture'.svg;
-  static String get recordVoiceSvg=>'record_voice'.svg;
-  static String get recordingVoiceSvg=>'recording_voice'.svg;
-  static String get replyButtonLogoSvg=>'reply_button_logo'.svg;
-  static String get MessageFailedSvg=>'message_failed'.svg;
+  static String get callMutedSvg => 'call_muted'.svg;
+  static String get callUnMutedSvg => 'call_unmute'.svg;
+  static String get videoCallSvg => 'video_call'.svg;
+  static String get cancelVideoCallSvg => 'cancel_video_call'.svg;
+  static String get makeCallSvg => 'make_call'.svg;
+  static String get makeVideoCallSvg => 'make_video_call'.svg;
+  static String get pauseSvg => 'pause'.svg;
+  static String get playSvg => 'play'.svg;
+  static String get voiceReceivedSvg => 'voice_received'.svg;
+  static String get voicePlayedSvg => 'voice_played'.svg;
+  static String get missedCallInChatSvg => 'missed_call_in_chat'.svg;
+  static String get missedVideoCallInChatSvg =>
+      'missing_video_call_in_chat'.svg;
+  static String get forwardedSvg => 'forwarded'.svg;
+  static String get addStickersSvg => 'add_stickers'.svg;
+  static String get replyOnMessageSvg => 'reply_on_message'.svg;
+  static String get closeSvg => 'close'.svg;
+  static String get sendMessageSvg => 'send_message'.svg;
+  static String get takePictureSvg => 'take_picture'.svg;
+  static String get recordVoiceSvg => 'record_voice'.svg;
+  static String get recordingVoiceSvg => 'recording_voice'.svg;
+  static String get replyButtonLogoSvg => 'reply_button_logo'.svg;
+  static String get MessageFailedSvg => 'message_failed'.svg;
 
   static String get copyIconSvg=>'copy_icon'.svg;
   static String get removeIconSvg=>'remove_icon'.svg;
@@ -193,31 +195,27 @@ abstract class AppAssets {
 
   ///endregion
 
-
 //...
 //...
 
   ///! JPG  Section
   ///! PNG  Section
-  static String get image1Png=>'image1'.png;
-  static String get image2Png=>'image2'.png;
-  static String get color1Png=>'color1'.png;
-  static String get color2Png=>'color2'.png;
-  static String get color3Png=>'color3'.png;
-  static String get trydosWelcomePng=>'trydos_welcome'.png;
+  static String get image1Png => 'image1'.png;
+  static String get image2Png => 'image2'.png;
+  static String get color1Png => 'color1'.png;
+  static String get address2Png => 'address2'.png;
+  static String get color2Png => 'color2'.png;
+  static String get color3Png => 'color3'.png;
+  static String get trydosWelcomePng => 'trydos_welcome'.png;
 
+  static String get profileJpg => 'profile'.jpg;
+  static String get backgroundJpg => 'background'.jpg;
+  static String get halloweenJpg => 'Halloween'.jpg;
 
-  static String get profileJpg=>'profile'.jpg;
-  static String get backgroundJpg=>'background'.jpg;
-  static String get halloweenJpg=>'Halloween'.jpg;
-
-
-
-/// region JSON Section
+  /// region JSON Section
 
   ///endregion
   ///! FLR  Section
-
 }
 
 /*
