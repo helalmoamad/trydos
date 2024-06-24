@@ -14,11 +14,15 @@ class ProductDetailsImageWidget extends StatelessWidget {
       this.borderRadius,
       this.borderColor,
       this.imageFit,
+      this.orginalHeight,
+      this.orginalWidth,
       this.height,
       this.radius});
 
   final double? width;
   final double? height;
+  final double? orginalWidth;
+  final double? orginalHeight;
   final double? radius;
   final String? imageUrl;
   final BoxFit? imageFit;
@@ -54,9 +58,11 @@ class ProductDetailsImageWidget extends StatelessWidget {
               borderRadius:
                   borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
               child: imageUrl?.contains('assets') ?? true
-                  ? Image.asset('assets/images/details.jpg',
+                  ? Image.asset('assets/images/address2.png',
                       fit: imageFit ?? BoxFit.cover)
                   : MyCachedNetworkImage(
+                      ordinalHeight: orginalHeight,
+                      ordinalwidth: orginalWidth,
                       imageUrl: imageUrl!,
                       height: height ?? 464,
                       width: width ?? 320,

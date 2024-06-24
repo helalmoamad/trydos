@@ -32,7 +32,6 @@ class _ProductItemState extends State<ProductItem> {
 
   @override
   void initState() {
-    print('dddddddddd');
     currentChosenColor =
         ValueNotifier((widget.productItem.syncColorImages?.length ?? 0) ~/ 2);
     super.initState();
@@ -69,6 +68,16 @@ class _ProductItemState extends State<ProductItem> {
                               'assets/product_listing_background_blur_image.png',
                               fit: BoxFit.cover)
                           : MyCachedNetworkImage(
+                              ordinalHeight: double.parse(widget
+                                  .productItem
+                                  .syncColorImages![index]
+                                  .images![0]
+                                  .originalHeight!),
+                              ordinalwidth: double.parse(widget
+                                  .productItem
+                                  .syncColorImages![index]
+                                  .images![0]
+                                  .originalWidth!),
                               imageUrl: widget.productItem
                                   .syncColorImages![index].images![0].filePath!,
                               height: 350,

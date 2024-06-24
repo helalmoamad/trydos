@@ -63,7 +63,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
   //   'assets/images/product_listing_images/p1.jpg',
   // ]));
   List<String> images = [];
-
+  List<double> orginalWidth = [];
+  List<double> orginalHeigh = [];
   // = [
   //   'assets/images/product_listing_images/bl1.jpg',
   //   'assets/images/product_listing_images/p1.jpg',
@@ -119,6 +120,14 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
     indicatorForProductImages = ValueNotifier(indicatorValues);
     images =
         syncColorImageList?.map((e) => e.images![0].filePath!).toList() ?? [];
+    orginalHeigh = syncColorImageList
+            ?.map((e) => double.parse(e.images![0].originalHeight!))
+            .toList() ??
+        [];
+    orginalWidth = syncColorImageList
+            ?.map((e) => double.parse(e.images![0].originalWidth!))
+            .toList() ??
+        [];
     if (!images.isNullOrEmpty && images.length > 3) {
       List<String> copyOfImages = List.of(images), threeImages;
       threeImages = images
@@ -264,6 +273,30 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                 child: Stack(
                                                   children: [
                                                     MyCachedNetworkImage(
+                                                      ordinalHeight: syncColorImageList
+                                                              .isNullOrEmpty
+                                                          ? double.parse(widget
+                                                              .productItem
+                                                              .images![index]
+                                                              .originalHeight!)
+                                                          : double.parse(
+                                                              syncColorImageList![
+                                                                      prevIndexInSecondSlider]
+                                                                  .images![
+                                                                      index]
+                                                                  .originalHeight!),
+                                                      ordinalwidth: syncColorImageList
+                                                              .isNullOrEmpty
+                                                          ? double.parse(widget
+                                                              .productItem
+                                                              .images![index]
+                                                              .originalWidth!)
+                                                          : double.parse(
+                                                              syncColorImageList![
+                                                                      prevIndexInSecondSlider]
+                                                                  .images![
+                                                                      index]
+                                                                  .originalWidth!),
                                                       imageUrl: syncColorImageList
                                                               .isNullOrEmpty
                                                           ? widget
@@ -609,6 +642,28 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                               ),
                                               itemBuilder: (context, index, _) {
                                                 return ProductListingImageWidget(
+                                                  orginalHeight: syncColorImageList
+                                                          .isNullOrEmpty
+                                                      ? double.parse(widget
+                                                          .productItem
+                                                          .images![index]
+                                                          .originalHeight!)
+                                                      : double.parse(
+                                                          syncColorImageList![
+                                                                  prevIndexInSecondSlider]
+                                                              .images![index]
+                                                              .originalHeight!),
+                                                  orginalWidth: syncColorImageList
+                                                          .isNullOrEmpty
+                                                      ? double.parse(widget
+                                                          .productItem
+                                                          .images![index]
+                                                          .originalWidth!)
+                                                      : double.parse(
+                                                          syncColorImageList![
+                                                                  prevIndexInSecondSlider]
+                                                              .images![index]
+                                                              .originalWidth!),
                                                   width: 200,
                                                   imageUrl: syncColorImageList
                                                           .isNullOrEmpty
@@ -1085,6 +1140,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                               (syncColorImageList!.length ~/ 2) && index >= (syncColorImageList!.length ~/
                                   2)),
                                       child: ProductListingImageWidget(
+                                        orginalHeight: orginalHeigh[index],
+                                        orginalWidth: orginalWidth[index],
                                         width: 40,
                                         height: 40,
                                         imageUrl: images[index],

@@ -11,6 +11,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../base_page.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
@@ -133,6 +134,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                   height: 20,
                 ),
                 InkWell(
+                  key: Key(WidgetsKey.skipForNowKey),
                   focusColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   onTap: () {

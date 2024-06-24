@@ -262,7 +262,7 @@ void main() async {
       bundle: SentryAssetBundle(),
       child: TrydosApplication(
         navKey: navigatorKey,
-      ),
+      )
     )),
   );
 }
