@@ -20,4 +20,6 @@ class WidgetsKey {
   static const nameFormFieldKey = 'name_form_field';
   static const confirmNameButtonKey = 'confirm_name_button_key';
   static const skipForNowKey = 'skip_for_now_key';
+  static const registerCancelKey = 'register_cancel_key';
+  static const chatNavBarKey = 'chat_navbar_key';
 }

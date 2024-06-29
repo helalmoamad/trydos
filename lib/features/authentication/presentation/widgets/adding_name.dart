@@ -157,7 +157,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                         return NameFormField(
                           key: Key(WidgetsKey.nameFormFieldKey),
                           validator: ((value) {
-                            if (value!.length <= 8) {
+                            if (value!.length < 8) {
                               return LocaleKeys.must_be_at_least_8_characters
                                   .tr();
                             }
