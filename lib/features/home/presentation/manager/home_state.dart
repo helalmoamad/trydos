@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
@@ -30,6 +31,8 @@ enum GetCommentForProductStatus { init, loading, success, failure }
 
 enum GetMainCategoriesStatus { init, loading, success, failure }
 
+enum GetCartItemsStatus { init, loading, success, failure }
+
 enum GetStoriesForProductStatus { init, loading, success, failure }
 
 enum GetHomeBoutiqesStatus { init, loading, success, failure }
@@ -50,6 +53,7 @@ class HomeState {
     this.startingSetting,
     this.sizes,
     this.currentPage = 0,
+    this.getCartShippingItemsModel,
     this.reRequestTheseBoutiques = const {},
     this.getCommentForProductModel = const {},
     this.reRequestTheseProductListingInBoutiques = const {},
@@ -57,6 +61,7 @@ class HomeState {
     this.selectedCollection,
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
+    this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
     this.getProductListingPaginationWithoutFiltersModel = const {},
     this.currentSelectedColorForEveryProduct = const {},
@@ -67,6 +72,7 @@ class HomeState {
   final GetStartingSettingsStatus getStartingSettingsStatus;
   final Map<String, int> currentSelectedColorForEveryProduct;
   final GetCommentForProductStatus getCommentForProductStatus;
+
   final GetMainCategoriesStatus getMainCategoriesStatus;
   int? selectedCollection;
   int currentPage;
@@ -74,7 +80,7 @@ class HomeState {
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
-
+  final GetCartItemsStatus getCartItemsStatus;
   final GetProductListingStatus getProductListingStatus;
   GetStoriesForProductStatus getStoriesForProductStatus;
   final Map<String, PaginationModel<Boutique>>
@@ -83,6 +89,7 @@ class HomeState {
   List<String>? sizes;
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
+  final GetCartShippingItemsModel? getCartShippingItemsModel;
   final Map<String, GetCommentForProductModel> getCommentForProductModel;
 
   final MainCategoriesResponseModel? mainCategoriesResponseModel;
@@ -98,12 +105,14 @@ class HomeState {
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       final GetCommentForProductStatus? getCommentForProductStatus,
+      final GetCartItemsStatus? getCartItemsStatus,
       Map<int, int?>? currentStoryInEachCollection,
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
       List<String>? sizes,
       final Map<String, bool>? reRequestTheseBoutiques,
+      final GetCartShippingItemsModel? getCartShippingItemsModel,
       final Map<String, bool>? reRequestTheseProductListingInBoutiques,
       final GetProductListingStatus? getProductListingStatus,
       final StartingSetting? startingSetting,
@@ -127,6 +136,8 @@ class HomeState {
         getCommentForProductModel:
             getCommentForProductModel ?? this.getCommentForProductModel,
         sizes: sizes ?? this.sizes,
+        getCartShippingItemsModel:
+            getCartShippingItemsModel ?? this.getCartShippingItemsModel,
         getCommentForProductStatus:
             getCommentForProductStatus ?? this.getCommentForProductStatus,
         getProductListingStatus:
@@ -134,6 +145,7 @@ class HomeState {
         currentSelectedColorForEveryProduct:
             currentSelectedColorForEveryProduct ??
                 this.currentSelectedColorForEveryProduct,
+        getCartItemsStatus: getCartItemsStatus ?? this.getCartItemsStatus,
         reRequestTheseBoutiques:
             reRequestTheseBoutiques ?? this.reRequestTheseBoutiques,
         reRequestTheseProductListingInBoutiques:

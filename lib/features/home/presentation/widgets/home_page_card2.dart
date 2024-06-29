@@ -88,8 +88,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 ProductListingPage(
                   boutiqueSlug: widget.boutniqe.slug!,
                   boutiqueDescription: widget.boutniqe.description!,
-                  boutiqueFirstBanner: widget.boutniqe.banners![0],
-                  boutiqueIcon: widget.boutniqe.icon,
+                  boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
+                  boutiqueIcon: widget.boutniqe.icon!.filePath,
                 ));
           },
           child: Stack(
@@ -115,7 +115,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                         builder: (context, index, _) {
                           return MyCachedNetworkImage(
                             imageFit: cupertino.BoxFit.cover,
-                            imageUrl: widget.boutniqe.banners![index],
+                            imageUrl: widget.boutniqe.banners![index].filePath!,
                             width: 1.sw,
                             radius: 15,
                             height: 235,
@@ -160,7 +160,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                       children: [
                         widget.boutniqe.icon != null
                             ? SvgNetworkWidget(
-                                svgUrl: widget.boutniqe.icon!,
+                                svgUrl: widget.boutniqe.icon!.filePath!,
                                 height: 20,
                                 width: 40,
                               )
@@ -226,8 +226,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                               borderRadius:
                                                   BorderRadius.circular(15),
                                               child: MyCachedNetworkImage(
-                                                imageUrl: widget
-                                                    .boutniqe.banners![index],
+                                                imageUrl: widget.boutniqe
+                                                    .banners![index].filePath!,
                                                 imageFit: BoxFit.cover,
                                                 width: 1.sw,
                                                 height: 155,
@@ -283,7 +283,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
                                     child: MyCachedNetworkImage(
-                                      imageUrl: widget.boutniqe.banners![0],
+                                      imageUrl:
+                                          widget.boutniqe.banners![0].filePath!,
                                       imageFit: BoxFit.cover,
                                       width: 1.sw,
                                       height: 135,
@@ -327,9 +328,11 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                       .boutniqe
                                       .mainCategoriesForProductIds![index]
                                       .categorySlug,
-                                  boutiqueDescription: widget.boutniqe.description!,
-                                  boutiqueFirstBanner: widget.boutniqe.banners![0],
-                                  boutiqueIcon: widget.boutniqe.icon,
+                                  boutiqueDescription:
+                                      widget.boutniqe.description!,
+                                  boutiqueFirstBanner:
+                                      widget.boutniqe.banners![0].filePath!,
+                                  boutiqueIcon: widget.boutniqe.icon!.filePath,
                                 ));
                           },
                           child: SvgNetworkWidget(
@@ -458,9 +461,14 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                       .mainCategoriesForProductIds![
                                                           index]
                                                       .categorySlug,
-                                                  boutiqueDescription: widget.boutniqe.description!,
-                                                  boutiqueFirstBanner: widget.boutniqe.banners![0],
-                                                  boutiqueIcon: widget.boutniqe.icon,
+                                                  boutiqueDescription: widget
+                                                      .boutniqe.description!,
+                                                  boutiqueFirstBanner: widget
+                                                      .boutniqe
+                                                      .banners![0]
+                                                      .filePath!,
+                                                  boutiqueIcon: widget
+                                                      .boutniqe.icon!.filePath,
                                                 )),
                                         child: ProductItemCircle(
                                           index: index,

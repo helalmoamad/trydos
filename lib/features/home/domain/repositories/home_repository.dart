@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
@@ -13,6 +14,8 @@ import '../../data/models/get_story_for_product_model.dart';
 
 abstract class HomeRepository {
   Future<Either<Failure, StartingSettingsResponseModel>> getStartingSettings();
+  Future<Either<Failure, GetCartShippingItemsModel>> getCartShippingItem();
+
   Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories();
   /* Future<Either<Failure, HomeSectionResponseModel>> getHomeSections(
       Map<String, dynamic> params);*/

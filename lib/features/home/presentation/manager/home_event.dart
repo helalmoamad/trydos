@@ -129,3 +129,15 @@ class AddSizesFotColorsEvent extends HomeEvent {
   @override
   List<Object?> get props => [currentColorName];
 }
+
+class GetCartItemEvent extends HomeEvent {
+  const GetCartItemEvent();
+  @override
+  List<Object?> get props => [];
+}
+
+class AddItemToCartEvent extends HomeEvent {
+  const AddItemToCartEvent();
+  @override
+  List<Object?> get props => [];
+}

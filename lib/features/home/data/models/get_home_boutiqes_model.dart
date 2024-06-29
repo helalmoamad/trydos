@@ -89,11 +89,11 @@ class Data {
 class Boutique {
   final int? id;
   final String? name;
-  final String? icon;
+  final Icon? icon;
   final String? slug;
   final int? position;
   final String? description;
-  final List<String>? banners;
+  final List<Icon>? banners;
   final List<MainCategoriesForProductId>? mainCategoriesForProductIds;
   final List<ChildCategoriesForProductId>? childCategoriesForProductIds;
 
@@ -112,11 +112,11 @@ class Boutique {
   Boutique copyWith({
     int? id,
     String? name,
-    String? icon,
+    Icon? icon,
     String? slug,
     int? position,
     String? description,
-    List<String>? banners,
+    List<Icon>? banners,
     List<MainCategoriesForProductId>? mainCategoriesForProductIds,
     List<ChildCategoriesForProductId>? childCategoriesForProductIds,
   }) =>
@@ -137,13 +137,13 @@ class Boutique {
   factory Boutique.fromJson(Map<String, dynamic> json) => Boutique(
         id: json["id"],
         name: json["name"],
-        icon: json["icon"],
+        icon: json["icon"] == null ? null : Icon.fromJson(json["icon"]),
         slug: json["slug"],
         position: json["position"],
         description: json["description"],
         banners: json["banners"] == null
             ? []
-            : List<String>.from(json["banners"]!.map((x) => x)),
+            : List<Icon>.from(json["banners"]!.map((x) => Icon.fromJson(x))),
         mainCategoriesForProductIds: json["mainCategoriesForProductIds"] == null
             ? []
             : List<MainCategoriesForProductId>.from(
@@ -160,12 +160,13 @@ class Boutique {
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
-        "icon": icon,
+        "icon": icon?.toJson(),
         "slug": slug,
         "position": position,
         "description": description,
-        "banners":
-            banners == null ? [] : List<dynamic>.from(banners!.map((x) => x)),
+        "banners": banners == null
+            ? []
+            : List<dynamic>.from(banners!.map((x) => x.toJson())),
         "mainCategoriesForProductIds": mainCategoriesForProductIds == null
             ? []
             : List<dynamic>.from(
@@ -174,6 +175,41 @@ class Boutique {
             ? []
             : List<dynamic>.from(
                 childCategoriesForProductIds!.map((x) => x.toJson())),
+      };
+}
+
+class Icon {
+  final String? filePath;
+  final String? originalWidth;
+  final String? originalHeight;
+
+  Icon({
+    this.filePath,
+    this.originalWidth,
+    this.originalHeight,
+  });
+
+  Icon copyWith({
+    String? filePath,
+    String? originalWidth,
+    String? originalHeight,
+  }) =>
+      Icon(
+        filePath: filePath ?? this.filePath,
+        originalWidth: originalWidth ?? this.originalWidth,
+        originalHeight: originalHeight ?? this.originalHeight,
+      );
+
+  factory Icon.fromJson(Map<String, dynamic> json) => Icon(
+        filePath: json["file_path"],
+        originalWidth: json["original_width"],
+        originalHeight: json["original_height"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "file_path": filePath,
+        "original_width": originalWidth,
+        "original_height": originalHeight,
       };
 }
 

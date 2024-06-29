@@ -170,11 +170,8 @@ class _HomePageState extends State<HomePage> {
                     //  print(homeState.getHomeSectionsPaginationObject[0]
                     //    ?.items[0].sections![0].title);
 
-                    String? currentSlug = homeState
-                        .mainCategoriesResponseModel
-                        ?.data
-                        ?.mainCategories?[appState.tabIndex]
-                        .slug;
+                    String? currentSlug = homeState.mainCategoriesResponseModel
+                        ?.data?.mainCategories?[appState.tabIndex].slug;
                     if (currentSlug == null ||
                         homeState.getHomeBoutiquesPaginationObjectByMainCategory[
                                 currentSlug] ==
@@ -199,8 +196,7 @@ class _HomePageState extends State<HomePage> {
                       return sliverListSeparated(
                           key: Key(WidgetsKey.boutiquesFailureStatusKey),
                           itemBuilder: (_, index) => Padding(
-                              padding:
-                                  HWEdgeInsets.symmetric(horizontal: 15.w),
+                              padding: HWEdgeInsets.symmetric(horizontal: 15.w),
                               child: TrydosShimmerLoading(
                                   width: 1.sw,
                                   logoTextWidth: 70.w,

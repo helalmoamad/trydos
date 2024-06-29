@@ -10,18 +10,16 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/authentication/presentation/widgets/phone_form_fields.dart';
-import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
+
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as product;
-import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
-import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
-import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
-import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
+
 import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_boutiqes_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_sections_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
@@ -55,6 +53,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       //  this.getHomeSectionsUseCase,
       this.getMainCategoriesUseCase,
       this.getStoryUseCase,
+      this.getCartItemUseCase,
       this.getCommentForProductUseCase,
       this.getHomeBoutiqesUseCase,
       this.getWidthAndHeightUseCase,
@@ -67,10 +66,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         transformer: throttleDroppable(throttleDuration));
     on<GetHomeBoutiqesEvent>(_onGetHomeBoutiquesEvent,
         transformer: throttleDroppable(throttleDuration));
+    on<GetCartItemEvent>(_onGetCartItemEvent,
+        transformer: throttleDroppable(throttleDuration));
+
     on<GetStartingSettingsEvent>(_onGetStartingSettingsEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetMainCategoriesEvent>(_onGetMainCategoriesEvent,
         transformer: throttleDroppable(throttleDuration));
+    on<AddItemToCartEvent>(_onAddItemToCartEvent,
+        transformer: throttleDroppable(throttleDuration));
+
     on<GetProductsWithoutFiltersEvent>(_onGetProductsWithoutFiltersEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetStoryForProductEvent>(
@@ -95,6 +100,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetStartingSettingsUseCase getStartingSettingsUseCase;
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final GetHomeBoutiqesUseCase getHomeBoutiqesUseCase;
+  final GetCartItemUseCase getCartItemUseCase;
   final GetCommentForProductUseCase getCommentForProductUseCase;
   final GetStoryForProductUseCase getStoryUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
@@ -617,5 +623,46 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         getCommentForProductStatus: GetCommentForProductStatus.success,
       ));
     });
+  }
+
+  FutureOr<void> _onGetCartItemEvent(
+      GetCartItemEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.loading));
+    final response = await getCartItemUseCase(NoParams());
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('GetCartItemEvent')) {
+        add(GetCartItemEvent());
+        isFailedTheFirstTime.add('GetCartItemEvent');
+      }
+      emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
+    }, (r) {
+      apisMustNotToRequest.add('GetCartItemEvent');
+      isFailedTheFirstTime.remove('GetCartItemEvent');
+      emit(state.copyWith(
+          getCartShippingItemsModel: r,
+          getCartItemsStatus: GetCartItemsStatus.success));
+      add(AddItemToCartEvent());
+    });
+  }
+
+  FutureOr<void> _onAddItemToCartEvent(
+      AddItemToCartEvent event, Emitter<HomeState> emit) async {
+    List<Cart> carts;
+    GetCartShippingItemsModel getCartShippingItemsModel =
+        state.getCartShippingItemsModel!;
+    carts = state.getCartShippingItemsModel!.data!.cart ?? [];
+    Cart cart;
+    cart = Cart(
+        name: "helal",
+        thumbnail: "asset",
+        offerPriceFormatted: "250 #",
+        quantity: 2,
+        priceNum: 233,
+        variations: Variations(color: "dfdaf", size: "34 rw"));
+    carts.add(cart);
+    getCartShippingItemsModel.data!.cart != carts;
+    emit(state.copyWith(
+      getCartShippingItemsModel: getCartShippingItemsModel,
+    ));
   }
 }
