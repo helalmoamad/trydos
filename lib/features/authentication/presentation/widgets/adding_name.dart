@@ -15,6 +15,7 @@ import 'package:trydos/features/authentication/presentation/widgets/name_from_fi
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
@@ -154,8 +155,9 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                       valueListenable: displaySubmit,
                       builder: (context, display, _) {
                         return NameFormField(
+                          key: Key(WidgetsKey.nameFormFieldKey),
                           validator: ((value) {
-                            if (value!.length <= 8) {
+                            if (value!.length < 8) {
                               return LocaleKeys.must_be_at_least_8_characters
                                   .tr();
                             }
@@ -176,6 +178,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                                     height: 15,
                                   )
                                 : InkWell(
+                                    key: Key(WidgetsKey.confirmNameButtonKey),
                                     onTap: () {
                                       if (!widget.fromLogin) {
                                         BlocProvider.of<AuthBloc>(context)

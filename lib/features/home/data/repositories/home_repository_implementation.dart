@@ -9,6 +9,7 @@ import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_an
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
@@ -51,14 +52,14 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, GetProductListingWithoutFiltersModel>>
-      getProductsWithoutFilters(Map<String, dynamic> params) {
+  getProductsWithoutFilters(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getProductsWithoutFilters(params));
   }
 
   @override
   Future<Either<Failure, GetProductDetailWithoutRelatedProductsModel>>
-      getProductDetailWithoutSimilarRelatedProducts(String productId) {
+  getProductDetailWithoutSimilarRelatedProducts(String productId) {
     return handlingExceptionRequest(
         tryCall: () =>
             dataSource.getProductDetailWithoutRelatedProducts(productId));
@@ -69,6 +70,11 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       String productId) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getStories(productId));
+  }
+
+  @override
+  Future<Either<Failure, GetProductFiltersModel>> getProductFilters() {
+    return handlingExceptionRequest(tryCall: dataSource.getProductFilters);
   }
 
   @override

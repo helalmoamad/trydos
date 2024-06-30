@@ -42,11 +42,19 @@ class SearchHistoryChip extends StatelessWidget {
           ),
           GestureDetector(
             onTap: onClickClose,
-            child: CloseCircle(
-                width: 12,
-                height: 12,
-                borderColor: Color(0xffC4C2C2),
-                closeSvgColor: Color(0xffFF5F61)),
+            child: Container(
+              width : 40,
+              height:40,
+              color: Colors.transparent, // don't remove it
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: CloseCircle(
+                    width: 12,
+                    height: 12,
+                    borderColor: Color(0xffC4C2C2),
+                    closeSvgColor: Color(0xffFF5F61)),
+              ),
+            ),
           )
         ],
       ),

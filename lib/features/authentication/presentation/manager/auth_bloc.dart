@@ -78,8 +78,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         transformer: throttleDroppable(throttleDuration));
     on<StoreFcmTokenEvent>(_onStoreFcmTokenEvent,
         transformer: throttleDroppable(throttleDuration));
-    on<SendOtpEvent>(_onSendOtpEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<SendOtpEvent>(_onSendOtpEvent);
     on<VerifyOtpSignInEvent>(_onVerifyOtpSignInEvent,
         transformer: throttleDroppable(throttleDuration));
     on<VerifyOtpSignUpEvent>(_onVerifyOtpSignUpEvent,
@@ -372,6 +371,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       RegisterGuestEvent event, Emitter<AuthState> emit) async {
     _prefsRepository.clearTokenForMarket();
     _prefsRepository.clearTokensForChatAndStory();
+    _prefsRepository.setVerifiedPhone(false);
     emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.loading));
     final response = await registerGuestUseCase(
       RegisterGuestParams(deviceId: event.deviceId),

@@ -8,6 +8,7 @@ import 'package:trydos/features/home/data/models/get_story_for_product_model.dar
 import 'package:trydos/features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart';
 
 import '../../../../core/data/model/pagination_model.dart';
+import '../../data/models/get_product_filters_model.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
     as product;
 import '../../data/models/home_sections_response_model.dart';
@@ -27,6 +28,7 @@ enum GetProductDetailWithoutSimilarRelatedProductsStatus {
 
 enum SelectedVideoStatus { init, loading, success, failure }
 
+enum GetProductFiltersStatus { init, loading, success, failure }
 enum GetCommentForProductStatus { init, loading, success, failure }
 
 enum GetMainCategoriesStatus { init, loading, success, failure }
@@ -52,6 +54,8 @@ class HomeState {
     this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.startingSetting,
     this.sizes,
+    this.getProductFiltersStatus = GetProductFiltersStatus.init,
+    this.getProductFiltersModel,
     this.currentPage = 0,
     this.getCartShippingItemsModel,
     this.reRequestTheseBoutiques = const {},
@@ -74,6 +78,8 @@ class HomeState {
   final GetCommentForProductStatus getCommentForProductStatus;
 
   final GetMainCategoriesStatus getMainCategoriesStatus;
+  final GetProductFiltersStatus getProductFiltersStatus;
+  final GetProductFiltersModel? getProductFiltersModel;
   int? selectedCollection;
   int currentPage;
   final Map<String, bool> reRequestTheseBoutiques;
@@ -111,6 +117,8 @@ class HomeState {
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
       List<String>? sizes,
+        final GetProductFiltersStatus? getProductFiltersStatus,
+        final GetProductFiltersModel? getProductFiltersModel,
       final Map<String, bool>? reRequestTheseBoutiques,
       final GetCartShippingItemsModel? getCartShippingItemsModel,
       final Map<String, bool>? reRequestTheseProductListingInBoutiques,
@@ -136,6 +144,8 @@ class HomeState {
         getCommentForProductModel:
             getCommentForProductModel ?? this.getCommentForProductModel,
         sizes: sizes ?? this.sizes,
+        getProductFiltersStatus: getProductFiltersStatus ?? this.getProductFiltersStatus,
+        getProductFiltersModel: getProductFiltersModel ?? this.getProductFiltersModel,
         getCartShippingItemsModel:
             getCartShippingItemsModel ?? this.getCartShippingItemsModel,
         getCommentForProductStatus:

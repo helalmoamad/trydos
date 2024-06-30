@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:trydos/base_page.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
@@ -87,7 +88,7 @@ class _RegistrationPageState extends State<RegistrationPage>
         builder: (ctx, index, child) {
           if (index < 2) {
             FocusScope.of(context).unfocus();
-          } else {
+          } else if(index != 6){
             focusNode.requestFocus();
           }
           return Scaffold(
@@ -105,6 +106,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                       builder: (context, index, _) {
                         if (index > 1)
                           return InkWell(
+                            key: Key(WidgetsKey.registerCancelKey),
                             highlightColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onTap: () {

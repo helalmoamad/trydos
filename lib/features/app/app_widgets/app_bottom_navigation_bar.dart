@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/constant/widgets_key.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -253,7 +254,6 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         .config.applicationRoutes.kSharedPreferencePagePath);
                   },
                   onTap: () {
-                    HelperFunctions.slidingNavigation(context, CartPage());
                     appBloc.add(ChangeBasePage(1));
                   },
                   child: Column(
@@ -284,6 +284,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               ),
               Expanded(
                 child: InkWell(
+                  key: Key(WidgetsKey.chatNavBarKey),
                   onTap: () async {
                     if (prefsRepository.isVerifiedPhone != true) {
                       context.go(GRouter

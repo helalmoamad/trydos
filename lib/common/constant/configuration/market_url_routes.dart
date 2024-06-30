@@ -11,8 +11,9 @@ extension ScopeApi on String {
   String authScope() => '$_api/${_currentVersion}/auth/$this';
 
   String customerScope() => '$_api/${_currentVersion}/customer/$this';
-  String productsScope() => '$_api/${_currentVersion}/mobile/$this';
-  String productScope() => '$_api/${_currentVersion}/mobile/product/$this';
+  String productsScope() => '$_api/${_currentVersion}/mobile/products/$this';
+  String  productScope() => '$_api/${_currentVersion}/mobile/product/$this';
+  String mobileScope() => '$_api/${_currentVersion}/mobile/$this';
   String productScopeWeb() => '$_api/${_currentVersion}/web/product/$this';
   String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
   String cartScope() => '$_api/${_Version10}/cart/$this';
@@ -41,7 +42,8 @@ abstract class MarketEndPoints {
   static String getCommentForProductEP(String productId) =>
       'likesCommentsSharesDetails/$productId'.productScopeWeb();
   static final getMainCategoriesEP = 'mainCategories'.homeScope();
-  static final getProductListingWithoutFiltersEP = 'products'.productsScope();
+  static final getProductFiltersEP = 'filters'.productsScope();
+  static final getProductListingWithoutFiltersEP = 'products'.mobileScope();
 }
 
 abstract class MarketUrls {

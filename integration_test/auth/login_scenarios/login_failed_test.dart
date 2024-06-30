@@ -16,7 +16,7 @@ void main() {
     'Login failed tests',
     () {
       testWidgets(
-        'Login failed after waiting 2 minutes without entering otp',
+        'Login failed after waiting 2 minutes without entering otp (Expired OTP )',
         (WidgetTester tester) async {
           app.main();
           await tester.pumpAndSettle();

@@ -20,6 +20,8 @@ import 'package:trydos/features/home/presentation/widgets/product_details_body/p
 
 class CartPage extends StatefulWidget {
   State<CartPage> createState() => _CartPageState();
+
+  const CartPage();
 }
 
 class _CartPageState extends State<CartPage> {
@@ -28,6 +30,7 @@ class _CartPageState extends State<CartPage> {
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetCartItemEvent());
+    homeBloc.add(GetProductFiltersEvent());
     super.initState();
   }
 

@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,18 +21,15 @@ import 'package:trydos/features/home/presentation/pages/product_details_page.dar
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
-
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
-import '../../../app/app_widgets/tabs_bar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
-import '../../../story/presentation/pages/story_collection.dart';
 import '../manager/home_bloc.dart';
 import '../widgets/product_listing/product_item.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
@@ -65,17 +62,22 @@ class _ProductListingPageState extends State<ProductListingPage> {
   late HomeBloc homeBloc;
   double? _previousOffset;
   Timer? timerForDisplayFilterSectionTitle;
-
+  final GlobalKey htmlDescriptionKey = GlobalKey();
+  final ValueNotifier<double> htmlDescriptionHeight = ValueNotifier(0);
   double? _velocity;
   final ScrollController scrollController = ScrollController();
   final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
       ValueNotifier(Tuple2(-1, -1));
   final ValueNotifier<String?> showTitleForFilterList = ValueNotifier(null);
   final ValueNotifier<bool> displayBoutiqueIconInAppBar = ValueNotifier(false);
+  final ValueNotifier<bool> filterPageExpanded = ValueNotifier(false);
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
-
+  final ValueNotifier<List<Tuple3<int, int?, double>>> selectedFiltersNotifier =
+      ValueNotifier([]);
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback(postFrameCallback);
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetProductsWithoutFiltersEvent(
@@ -88,6 +90,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
         debugPrint(scrollController.position.pixels.toString());
         appBloc.add(ShowOrHideBars(true));
       }
+      // else if(filterPageExpanded.value){
+      //   scrollController.jumpTo(80);
+      // }
       if (setThisEnabledNotifier.value.item1 != -1) {
         setThisEnabledNotifier.value = Tuple2(-1, -1);
       }
@@ -104,6 +109,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   Key gridViewKeyForRendering = UniqueKey();
 
+  void postFrameCallback(_) {
+    var context = htmlDescriptionKey.currentContext;
+    if (context == null || htmlDescriptionHeight.value != 0) return;
+    htmlDescriptionHeight.value = context.size!.height;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -112,64 +123,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
           alignment: Alignment.topCenter,
           children: [
             Scaffold(
-              backgroundColor: Color(0xffF4F4F4),
-              appBar: TrydosAppBar(
-                appBarParams: AppBarParams(
-                    backgroundColor: colorScheme.white,
-                    scrolledUnderElevation: 0,
-                    backIconColor: Colors.black,
-                    action: [
-                      ValueListenableBuilder<bool>(
-                          valueListenable: displayBoutiqueIconInAppBar,
-                          builder: (context, display, _) {
-                            return widget.boutiqueIcon != null
-                                ? Visibility(
-                                    visible: display,
-                                    child: Padding(
-                                      padding: EdgeInsetsDirectional.only(
-                                          start: 30.w),
-                                      child: SvgNetworkWidget(
-                                        svgUrl: widget.boutiqueIcon!,
-                                        height: 20,
-                                      ),
-                                    ),
-                                  )
-                                : SizedBox.shrink();
-                          }),
-                      Spacer(),
-                      Padding(
-                        padding: const EdgeInsetsDirectional.only(end: 30.0),
-                        child: SvgPicture.asset(
-                          AppAssets.searchOutlinedReversedSvg,
-                          width: 20,
-                          height: 20,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsetsDirectional.only(end: 30.0),
-                        child: SvgPicture.asset(AppAssets.sortingSvg,
-                            width: 20, height: 20),
-                      ),
-                      Padding(
-                        padding: const EdgeInsetsDirectional.only(end: 30.0),
-                        child: SvgPicture.asset(
-                          AppAssets.filtersSvg,
-                          width: 20,
-                          height: 20,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsetsDirectional.only(end: 10.0),
-                        child: SvgPicture.asset(
-                          AppAssets.shareSvg,
-                          width: 20,
-                          height: 20,
-                          color: Color(0xff3C3C3C),
-                        ),
-                      ),
-                    ],
-                    withShadow: false),
-              ),
+              backgroundColor: Color(0xffF8F8F8),
               bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
                   buildWhen: (p, c) => p.showBars != c.showBars,
                   builder: (context, state) {
@@ -264,165 +218,336 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     return ValueListenableBuilder<Tuple2<int, int>>(
                         valueListenable: setThisEnabledNotifier,
                         builder: (context, slidingMode, _) {
-                          return SingleChildScrollView(
-                              controller: scrollController,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                      decoration: BoxDecoration(
-                                        color: colorScheme.white,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Color(0x19000000),
-                                            offset: Offset(0, 0),
-                                            blurRadius: 6,
-                                          ),
-                                        ],
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              if (widget.boutiqueIcon != null)
-                                                SvgNetworkWidget(
-                                                  svgUrl: widget.boutiqueIcon!,
+                          return ValueListenableBuilder<bool>(
+                            valueListenable: filterPageExpanded,
+                            builder: (context , isExpanded , _) {
+                              return CustomScrollView(
+                                  controller:  scrollController,
+                                  physics: ClampingScrollPhysics(),
+                                  slivers: [
+                                    SliverAppBar(
+                                      pinned: true,
+                                      backgroundColor: colorScheme.white,
+                                      automaticallyImplyLeading: false,
+                                      flexibleSpace: TrydosAppBar(
+                                        appBarParams: AppBarParams(
+                                            backgroundColor: colorScheme.white,
+                                            scrolledUnderElevation: 0,
+                                            backIconColor: Colors.black,
+                                            action: [
+                                              ValueListenableBuilder<bool>(
+                                                  valueListenable:
+                                                      displayBoutiqueIconInAppBar,
+                                                  builder: (context, display, _) {
+                                                    return widget.boutiqueIcon !=
+                                                            null
+                                                        ? Visibility(
+                                                            visible: display,
+                                                            child: Padding(
+                                                              padding:
+                                                                  EdgeInsetsDirectional
+                                                                      .only(
+                                                                          start:
+                                                                              30.w),
+                                                              child:
+                                                                  SvgNetworkWidget(
+                                                                svgUrl: widget
+                                                                    .boutiqueIcon!,
+                                                                height: 20,
+                                                              ),
+                                                            ),
+                                                          )
+                                                        : SizedBox.shrink();
+                                                  }),
+                                              Spacer(),
+                                              Padding(
+                                                padding: const EdgeInsetsDirectional
+                                                    .only(end: 30.0),
+                                                child: SvgPicture.asset(
+                                                  AppAssets
+                                                      .searchOutlinedReversedSvg,
+                                                  width: 20,
                                                   height: 20,
                                                 ),
-                                              SizedBox(
-                                                width: 10,
                                               ),
-                                              SvgPicture.asset(
-                                                AppAssets.verifiedBadgeSvg,
-                                                height: 15,
-                                                width: 15,
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              SvgPicture.asset(
-                                                AppAssets.starBadgeSvg,
-                                                height: 15,
-                                                width: 15,
-                                              ),
+                                              isExpanded
+                                                  ? SizedBox.shrink()
+                                                  : Padding(
+                                                      padding:
+                                                          const EdgeInsetsDirectional
+                                                              .only(
+                                                              end: 30.0),
+                                                      child: SvgPicture.asset(
+                                                          AppAssets
+                                                              .sortingSvg,
+                                                          width: 20,
+                                                          height: 20),
+                                                    ),
+                                              Padding(
+                                                  padding:
+                                                      const EdgeInsetsDirectional
+                                                          .only(end: 30.0),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      //scrollController.animateTo(180 + htmlDescriptionHeight.value, duration: Duration(milliseconds: 100), curve: Curves.linear);
+                                                     // Future.delayed(Duration(milliseconds: 200) , (){
+                                                        int length =
+                                                            selectedFiltersNotifier
+                                                                .value.length;
+                                                        selectedFiltersNotifier
+                                                            .value
+                                                            .clear();
+                                                        _clearAllItemsFromAnimatedList(
+                                                            length);
+                                                        selectedFiltersNotifier
+                                                            .notifyListeners();
+                                                        filterPageExpanded
+                                                            .value = true;
+                                                       // scrollController.jumpTo(0);
+                                                      //});
+                                                    },
+                                                    child: SvgPicture.asset(
+                                                      AppAssets.filtersSvg,
+                                                      width: 20,
+                                                      height: 20,
+                                                      color: isExpanded
+                                                          ? Color(0xffFF5F61)
+                                                          : null,
+                                                    ),
+                                                  )),
+                                              ValueListenableBuilder<bool>(
+                                                  valueListenable:
+                                                      filterPageExpanded,
+                                                  builder:
+                                                      (context, expanded, child) {
+                                                    return Padding(
+                                                      padding: EdgeInsetsDirectional
+                                                          .only(
+                                                              end: !expanded
+                                                                  ? 10.0
+                                                                  : 25),
+                                                      child: !expanded
+                                                          ? SvgPicture.asset(
+                                                              AppAssets.shareSvg,
+                                                              width: 20,
+                                                              height: 20,
+                                                              color:
+                                                                  Color(0xff3C3C3C),
+                                                            )
+                                                          : GestureDetector(
+                                                              onTap: () {
+                                                                filterPageExpanded
+                                                                    .value = false;
+                                                              },
+                                                              child:
+                                                                  SvgPicture.asset(
+                                                                AppAssets.closeSvg,
+                                                                width: 15,
+                                                                height: 15,
+                                                                color: Color(
+                                                                    0xffFF5F61),
+                                                              ),
+                                                            ),
+                                                    );
+                                                  }),
                                             ],
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Html(
-                                            shrinkWrap: true,
-                                            data: widget.boutiqueDescription,
-                                            style: {
-                                              "body":
-                                                  Style(margin: Margins.all(0)),
-                                              "p": Style(
-                                                maxLines: 1,
-                                                margin: Margins.all(0),
-                                              ),
-                                            },
-                                          ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 25.0),
-                                            child: Stack(
-                                              children: [
-                                                Container(
-                                                  height: 135,
-                                                  width: 1.sw,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15.0),
-                                                    border: Border.all(
-                                                        width: 0.5,
-                                                        color: const Color(
-                                                            0xfffafafa)),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: const Color(
-                                                            0x33000000),
-                                                        offset: Offset(0, 3),
-                                                        blurRadius: 10,
+                                            withShadow: false),
+                                      ),
+                                    ),
+                                    ValueListenableBuilder<double>(
+                                        valueListenable: htmlDescriptionHeight,
+                                        builder: (context, htmlHeight, child) {
+                                          return SliverAppBar(
+                                            pinned: false,
+                                            collapsedHeight: 180 + htmlHeight,
+                                            backgroundColor: colorScheme.white,
+                                            automaticallyImplyLeading: false,
+                                            flexibleSpace: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Column(children: [
+                                                    Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        if (widget.boutiqueIcon !=
+                                                            null)
+                                                          SvgNetworkWidget(
+                                                            svgUrl: widget
+                                                                .boutiqueIcon!,
+                                                            height: 20,
+                                                          ),
+                                                        SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        SvgPicture.asset(
+                                                          AppAssets
+                                                              .verifiedBadgeSvg,
+                                                          height: 15,
+                                                          width: 15,
+                                                        ),
+                                                        SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        SvgPicture.asset(
+                                                          AppAssets.starBadgeSvg,
+                                                          height: 15,
+                                                          width: 15,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    Visibility(
+                                                      visible: htmlHeight != -1,
+                                                      child: Html(
+                                                          key: htmlDescriptionKey,
+                                                          shrinkWrap: true,
+                                                          data: widget
+                                                              .boutiqueDescription,
+                                                          style: {
+                                                            "body": Style(
+                                                                margin:
+                                                                    Margins.all(0)),
+                                                            "p": Style(
+                                                              margin:
+                                                                  Margins.all(0),
+                                                            ),
+                                                          }),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 25.0),
+                                                      child: Stack(
+                                                        children: [
+                                                          Container(
+                                                            height: 135,
+                                                            width: 1.sw,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15.0),
+                                                              border: Border.all(
+                                                                  width: 0.5,
+                                                                  color: const Color(
+                                                                      0xfffafafa)),
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                  color: const Color(
+                                                                      0x33000000),
+                                                                  offset:
+                                                                      Offset(0, 3),
+                                                                  blurRadius: 10,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            child: ClipRRect(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            15),
+                                                                child:
+                                                                    MyCachedNetworkImage(
+                                                                  imageUrl: widget
+                                                                      .boutiqueFirstBanner,
+                                                                  imageFit:
+                                                                      BoxFit.cover,
+                                                                  width: 1.sw,
+                                                                  height: 135,
+                                                                )),
+                                                          ),
+                                                          Container(
+                                                            height: 135,
+                                                            width: 1.sw,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15.0),
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                    color: Colors
+                                                                        .white
+                                                                        .withOpacity(
+                                                                            0.7),
+                                                                    offset: Offset(
+                                                                        0, 3),
+                                                                    blurRadius: 6,
+                                                                    inset: true),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
-                                                    ],
-                                                  ),
-                                                  child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15),
-                                                      child:
-                                                          MyCachedNetworkImage(
-                                                        imageUrl: widget
-                                                            .boutiqueFirstBanner,
-                                                        imageFit: BoxFit.cover,
-                                                        width: 1.sw,
-                                                        height: 135,
-                                                      )),
-                                                ),
-                                                Container(
-                                                  height: 135,
-                                                  width: 1.sw,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15.0),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                          color: Colors.white
-                                                              .withOpacity(0.7),
-                                                          offset: Offset(0, 3),
-                                                          blurRadius: 6,
-                                                          inset: true),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          StackedFiltersList(
-                                            onMoveToAnotherFiltersSection:
-                                                (String message) {
-                                              timerForDisplayFilterSectionTitle
-                                                  ?.cancel();
-                                              showTitleForFilterList.value =
-                                                  message;
-                                              timerForDisplayFilterSectionTitle =
-                                                  Timer(Duration(seconds: 3),
-                                                      () {
-                                                showTitleForFilterList.value =
-                                                    null;
+                                                    ),
+                                                    SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                  ])
+                                                ]),
+                                          );
+                                        }),
+                                    ValueListenableBuilder<bool>(
+                                        valueListenable: filterPageExpanded,
+                                        builder: (context, isExpanded, child) {
+                                          return ValueListenableBuilder<
+                                                  List<Tuple3<int, int?, double>>>(
+                                              valueListenable:
+                                                  selectedFiltersNotifier,
+                                              builder: (context, filters, _) {
+                                                return SliverAppBar(
+                                                    pinned: isExpanded ? false : true,
+                                                    surfaceTintColor:
+                                                        Colors.transparent,
+                                                    backgroundColor:
+                                                        colorScheme.white,
+                                                    automaticallyImplyLeading:
+                                                        false,
+                                                    titleSpacing: 0,
+                                                    toolbarHeight: isExpanded
+                                                        ? 860
+                                                        : selectedFiltersNotifier
+                                                                .value.isNotEmpty
+                                                            ? 145
+                                                            : 115,
+                                                      title: StackedFiltersList(
+                                                          isExpanded: isExpanded,
+                                                          controller: isExpanded ? scrollController : null,
+                                                          listKey: listKey,
+                                                          selectedFiltersNotifier:
+                                                              selectedFiltersNotifier,
+                                                          onMoveToAnotherFiltersSection:
+                                                              (_) {}));
                                               });
-                                            },
-                                          ),
-                                        ],
-                                      )),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  GridView.count(
-                                    key: gridViewKeyForRendering,
-                                    shrinkWrap: true,
-                                    crossAxisCount: 2,
-                                    childAspectRatio: 200.w / 350,
-                                    crossAxisSpacing: 10,
-                                    mainAxisSpacing: 15,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    children: List.generate(
-                                        state
-                                            .getProductListingPaginationWithoutFiltersModel[
-                                                key]!
-                                            .items
-                                            .length,
-                                        (index) => GestureDetector(
+                                        }),
+                                    SliverPadding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      sliver: SliverGrid(
+                                        key: gridViewKeyForRendering,
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          childAspectRatio: 200.w / 350,
+                                          crossAxisSpacing: 10,
+                                          mainAxisSpacing: 15,
+                                        ),
+                                        delegate: SliverChildBuilderDelegate(
+                                          childCount: state
+                                              .getProductListingPaginationWithoutFiltersModel[
+                                                  key]!
+                                              .items
+                                              .length,
+                                          (BuildContext context, int index) {
+                                            return GestureDetector(
                                               onTap: () async {
                                                 Future.delayed(
                                                     Duration(milliseconds: 100),
@@ -436,8 +561,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     .logEvent(
                                                         name: 'button_clicked',
                                                         parameters: {
-                                                      "time_stamp": DateTime
-                                                              .now()
+                                                      "time_stamp": DateTime.now()
                                                           .toUtc()
                                                           .add(Duration(
                                                               minutes: GetIt.I<
@@ -455,21 +579,20 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               ? 'ae'
                                                               : LanguageService
                                                                   .languageCode,
-                                                      "country_name": GetIt.I<
-                                                              PrefsRepository>()
-                                                          .countryIso,
+                                                      "country_name":
+                                                          GetIt.I<PrefsRepository>()
+                                                              .countryIso,
                                                       'userID': prefsRepository
                                                           .myMarketId
                                                           .toString(),
-                                                      'user_name':
-                                                          prefsRepository
-                                                              .myMarketName
-                                                              .toString(),
+                                                      'user_name': prefsRepository
+                                                          .myMarketName
+                                                          .toString(),
                                                       'clicked_button_name':
                                                           'i love you Ahmad',
-                                                      "session_id": GetIt.I<
-                                                              PrefsRepository>()
-                                                          .sessionId,
+                                                      "session_id":
+                                                          GetIt.I<PrefsRepository>()
+                                                              .sessionId,
                                                     });
                                                 await GetIt.I<PrefsRepository>()
                                                     .setCurrentEvent(
@@ -514,10 +637,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       Tuple2(index, slideMode);
                                                 },
                                               ),
-                                            )),
-                                  ),
-                                ],
-                              ));
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ]);
+                            }
+                          );
                         });
                   },
                 ),
@@ -581,5 +708,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
         ),
       ),
     );
+  }
+
+  void _clearAllItemsFromAnimatedList(int length) {
+    for (var i = 0; i < length; i++) {
+      listKey.currentState!.removeItem(0,
+          (BuildContext context, Animation<double> animation) {
+        return Container();
+      });
+    }
   }
 }
