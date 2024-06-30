@@ -28,6 +28,7 @@ import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/stories_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/story_page_content.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../common/helper/show_message.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
@@ -156,6 +157,9 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
             },
             child: Scaffold(
               floatingActionButton: FloatingActionButton(
+                key: Key(
+                  WidgetsKey.myContactsFloatingActionKey,
+                ),
                 onPressed: () {
                   context
                       .go(GRouter.config.applicationRoutes.kMyContactsPagePath);

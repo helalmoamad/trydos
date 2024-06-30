@@ -22,4 +22,6 @@ class WidgetsKey {
   static const skipForNowKey = 'skip_for_now_key';
   static const registerCancelKey = 'register_cancel_key';
   static const chatNavBarKey = 'chat_navbar_key';
+  static const myContactsFloatingActionKey =
+      'my_contacts_floating_action_button_key';
 }
