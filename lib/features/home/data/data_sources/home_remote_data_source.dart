@@ -1,5 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/methods/get.dart';
+import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
+import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
@@ -44,6 +46,20 @@ class HomeRemoteDatasource {
       ),
     );
     return getStartingSettings();
+  }
+
+  Future<GetCommentForProductModel> getCommentForProduct(String productId) {
+    GetClient<GetCommentForProductModel> getCommentForProduct =
+        GetClient<GetCommentForProductModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetCommentForProductModel>(
+        endpoint: MarketEndPoints.getCommentForProductEP(productId),
+        response: ResponseValue<GetCommentForProductModel>(
+            fromJson: (response) =>
+                GetCommentForProductModel.fromJson(response)),
+      ),
+    );
+    return getCommentForProduct();
   }
 
   Future<GetProductListingWithoutFiltersModel> getProductsWithoutFilters(
@@ -105,21 +121,19 @@ class HomeRemoteDatasource {
     return getStories();
   }
 
-  /*Future<HomeSectionResponseModel> getHomeSections(
-      Map<String, dynamic> params) {
-    GetClient<HomeSectionResponseModel> getHomeSections =
-        GetClient<HomeSectionResponseModel>(
+  Future<GetCartShippingItemsModel> GetCartShippingItems() {
+    GetClient<GetCartShippingItemsModel> getCartShippingItems =
+        GetClient<GetCartShippingItemsModel>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<HomeSectionResponseModel>(
-        endpoint: MarketEndPoints.getHomeSectionsEP,
-        queryParameters: params,
-        response: ResponseValue<HomeSectionResponseModel>(
+      requestPrams: RequestConfig<GetCartShippingItemsModel>(
+        endpoint: MarketEndPoints.getCartItemEP,
+        response: ResponseValue<GetCartShippingItemsModel>(
             fromJson: (response) =>
-                HomeSectionResponseModel.fromJson(response)),
+                GetCartShippingItemsModel.fromJson(response)),
       ),
     );
-    return getHomeSections();
-  }*/
+    return getCartShippingItems();
+  }
 
   Future<GetHomeBoutiquesModel> getHomeBoutiques(Map<String, dynamic> params) {
     PostClient<GetHomeBoutiquesModel> getHomeSections =
@@ -132,7 +146,6 @@ class HomeRemoteDatasource {
             fromJson: (response) => GetHomeBoutiquesModel.fromJson(response)),
       ),
     );
-    print("----------------------------------");
 
     return getHomeSections();
   }

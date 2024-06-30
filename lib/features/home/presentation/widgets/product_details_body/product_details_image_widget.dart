@@ -34,6 +34,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(imageUrl);
     return Stack(
       children: [
         Container(

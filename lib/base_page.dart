@@ -37,6 +37,7 @@ import 'features/chat/presentation/manager/chat_event.dart';
 import 'features/chat/presentation/manager/chat_state.dart';
 import 'features/chat/presentation/utils/firebase_presence.dart';
 import 'features/home/presentation/manager/home_state.dart';
+import 'features/home/presentation/widgets/cart_page.dart';
 
 Widget get logo {
   debugPrint('deblogo');
@@ -284,7 +285,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   final List<Widget> pages = [
     const HomePage(),
-    const HomePage(),
+    const CartPage(),
     const ChatPages(description: ''),
     const RegistrationPage(),
   ];

@@ -116,6 +116,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   sliding_up_panel: ^2.0.0+1
+   
   local_hero: ^0.3.0
   flutter_html: ^3.0.0-beta.2
 dev_dependencies:

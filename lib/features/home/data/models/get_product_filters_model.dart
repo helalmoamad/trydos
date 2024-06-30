@@ -10,41 +10,41 @@ String getProductFiltersModelToJson(GetProductFiltersModel data) => json.encode(
 
 class GetProductFiltersModel {
   final String? message;
-  final Data? data;
+  final Filter? filters;
 
   GetProductFiltersModel({
     this.message,
-    this.data,
+    this.filters,
   });
 
   GetProductFiltersModel copyWith({
     String? message,
-    Data? data,
+    Filter? data,
   }) =>
       GetProductFiltersModel(
         message: message ?? this.message,
-        data: data ?? this.data,
+        filters: data ?? this.filters,
       );
 
   factory GetProductFiltersModel.fromJson(Map<String, dynamic> json) => GetProductFiltersModel(
     message: json["message"],
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
+    filters: json["data"] == null ? null : Filter.fromJson(json["data"]),
   );
 
   Map<String, dynamic> toJson() => {
     "message": message,
-    "data": data?.toJson(),
+    "data": filters?.toJson(),
   };
 }
 
-class Data {
+class Filter {
   final List<Brand>? brands;
   final List<Attribute>? attributes;
   final List<String>? colors;
   final Prices? prices;
   final String? boutiqueSlug;
 
-  Data({
+  Filter({
     this.brands,
     this.attributes,
     this.colors,
@@ -52,14 +52,14 @@ class Data {
     this.boutiqueSlug,
   });
 
-  Data copyWith({
+  Filter copyWith({
     List<Brand>? brands,
     List<Attribute>? attributes,
     List<String>? colors,
     Prices? prices,
     String? boutiqueSlug,
   }) =>
-      Data(
+      Filter(
         brands: brands ?? this.brands,
         attributes: attributes ?? this.attributes,
         colors: colors ?? this.colors,
@@ -67,7 +67,7 @@ class Data {
         boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
       );
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory Filter.fromJson(Map<String, dynamic> json) => Filter(
     brands: json["brands"] == null ? [] : List<Brand>.from(json["brands"]!.map((x) => Brand.fromJson(x))),
     attributes: json["attributes"] == null ? [] : List<Attribute>.from(json["attributes"]!.map((x) => Attribute.fromJson(x))),
     colors: json["colors"] == null ? [] : List<String>.from(json["colors"]!.map((x) => x)),
