@@ -60,8 +60,6 @@ void main() {
             failedMessage: 'Find AlreadyExistAccount failed',
           );
           ////////////////////////////
-          await SharedScenarios.testTokensAreNull(isJustForMarketToken: false);
-          ////////////////////////////
           final Finder loginContinueButtonKey =
               find.byKey(Key(WidgetsKey.loginContinueButtonKey));
           await Future.delayed(const Duration(seconds: 1));
@@ -78,6 +76,8 @@ void main() {
             failedMessage: 'Find LoginSuccessfully failed',
           );
           //////////////////////////
+          await GlobalTestFunctions.waitFor(tester, find.byType(HomePage));
+          //////////////////////////
           await GlobalTestFunctions.findWidget(
             tester: tester,
             widgetType: HomePage,
@@ -87,6 +87,47 @@ void main() {
           ////////////////////////////
           await SharedScenarios.testTokensAreNotNull(
               isJustForMarketToken: false);
+          ////////////////////////////
+        },
+      );
+
+      testWidgets(
+        'Entering existing number and continue as guest',
+        (WidgetTester tester) async {
+          app.main();
+          await tester.pumpAndSettle();
+          //////////////////////////
+          await SharedScenarios.goToVerifyOtp(
+              tester: tester, isForLogin: false);
+          ////////////////////////////
+          await GlobalTestFunctions.enterTestOtp(tester: tester, number: '9');
+          //////////////////////////
+          await GlobalTestFunctions.waitFor(
+              tester, find.byType(AlreadyExistAccount));
+          //////////////////////////
+          await GlobalTestFunctions.findWidget(
+            tester: tester,
+            widgetType: AlreadyExistAccount,
+            successMessage: 'Find AlreadyExistAccount Success',
+            failedMessage: 'Find AlreadyExistAccount failed',
+          );
+          ////////////////////////////
+          final Finder takeLookButtonKey =
+              find.byKey(Key(WidgetsKey.takeLookButtonKey));
+          await Future.delayed(const Duration(seconds: 1));
+          await tester.tap(takeLookButtonKey);
+          await tester.pumpAndSettle();
+          //////////////////////////
+          await GlobalTestFunctions.waitFor(tester, find.byType(HomePage));
+          //////////////////////////
+          await GlobalTestFunctions.findWidget(
+            tester: tester,
+            widgetType: HomePage,
+            successMessage: 'Find HomePage Success',
+            failedMessage: 'Find HomePage failed',
+          );
+          ////////////////////////////
+          await SharedScenarios.testTokensAreNull(isJustForMarketToken: false);
           ////////////////////////////
         },
       );

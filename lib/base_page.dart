@@ -318,7 +318,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    pages.add(SearchPage(buildSearchResult : buildSearchResult , hideTrendingAndHistory: hideTrendingAndHistory,),);
+    pages.add(
+      SearchPage(
+        buildSearchResult: buildSearchResult,
+        hideTrendingAndHistory: hideTrendingAndHistory,
+      ),
+    );
     WidgetsBinding.instance.addObserver(this);
     chatBloc = BlocProvider.of<ChatBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -589,10 +594,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                     },
                   ),
                   BlocBuilder<AppBloc, AppState>(
-                      buildWhen: (p, c) => p.showBars != c.showBars || p.currentIndex != c.currentIndex,
+                      buildWhen: (p, c) =>
+                          p.showBars != c.showBars ||
+                          p.currentIndex != c.currentIndex,
                       builder: (context, state) {
-                        if (state.showBars == true && state.currentIndex ==0 || state.currentIndex == 4) {
-                          return  TabsBar(
+                        if (state.showBars == true && state.currentIndex == 0 ||
+                            state.currentIndex == 4) {
+                          return TabsBar(
                             buildSearchResult: buildSearchResult,
                             hideTrendingAndHistory: hideTrendingAndHistory,
                           );

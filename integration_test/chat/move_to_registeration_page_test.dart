@@ -1,24 +1,37 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:trydos/common/constant/widgets_key.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart' as app;
-import '../../utils/global_test_functions.dart';
-import '../../shared/shared_scenarios.dart';
+import '../shared/shared_scenarios.dart';
+import '../utils/global_test_functions.dart';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Login success test and market token , stories token ,chat token have been received',
+    'Go to registeration page after going to chat if you have not logged in before , and then login',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
       //////////////////////////
-      await SharedScenarios.goToVerifyOtp(tester: tester, isForLogin: true);
+      await SharedScenarios.registerGuest(tester: tester);
+      //////////////////////////
+      await SharedScenarios.testTokensAreNotNull(isJustForMarketToken: true);
       ////////////////////////////
-      await SharedScenarios.testTokensAreNull(isJustForMarketToken: false);
+      final Finder chatNavBarButton = find.byKey(
+        Key(
+          WidgetsKey.chatNavBarKey,
+        ),
+      );
+      await Future.delayed(const Duration(seconds: 1));
+      await tester.tap(chatNavBarButton);
+      await tester.pumpAndSettle();
+      //////////////////////////////
+      await SharedScenarios.goToVerifyOtp(tester: tester, isForLogin: true);
       ////////////////////////////
       await GlobalTestFunctions.enterTestOtp(tester: tester, number: '9');
       //////////////////////////
