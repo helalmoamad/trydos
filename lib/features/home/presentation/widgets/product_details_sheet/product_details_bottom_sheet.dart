@@ -65,6 +65,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
+
     syncColorImageList = widget.productItem.syncColorImages ?? [];
     syncColorImageList.removeWhere((element) => element.images.isNullOrEmpty);
     syncColorImageList = [
@@ -343,7 +344,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                           ),
                           currentTab < 3 && currentTab >= 0
                               ? SizedBox(
-                                  height: 360,
+                                  height: 358,
                                   child: PageView(
                                     physics:
                                         const cupertino.ClampingScrollPhysics(),
@@ -359,6 +360,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                     },
                                     children: [
                                       ProductDetailsSheetCommentsContent(
+                                          productId:
+                                              widget.productItem.id.toString(),
                                           scrollController: currentTab == 0
                                               ? controller
                                               : null),

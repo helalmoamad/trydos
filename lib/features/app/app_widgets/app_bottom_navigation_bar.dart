@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/constant/widgets_key.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -18,6 +19,7 @@ import 'package:trydos/features/authentication/presentation/pages/login_page.dar
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
+import 'package:trydos/features/home/presentation/widgets/cart_page.dart';
 
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
@@ -282,6 +284,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               ),
               Expanded(
                 child: InkWell(
+                  key: Key(WidgetsKey.chatNavBarKey),
                   onTap: () async {
                     if (prefsRepository.isVerifiedPhone != true) {
                       context.go(GRouter

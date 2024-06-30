@@ -4,6 +4,8 @@ import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/widgets_key.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
+import 'package:trydos/features/authentication/presentation/pages/register_completed.dart';
+import 'package:trydos/features/authentication/presentation/widgets/adding_name.dart';
 import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
@@ -18,48 +20,51 @@ class SharedScenarios {
   static Future<void> goToVerifyOtp({
     required WidgetTester tester,
     required bool isForLogin,
-    String phoneNumber ='963997412860',
+    bool isAfterAddName = false,
+    String phoneNumber = '963997412860',
   }) async {
-    await GlobalTestFunctions.waitFor(tester, find.byType(RegistrationPage));
+    if (!isAfterAddName) {
+      await GlobalTestFunctions.waitFor(tester, find.byType(RegistrationPage));
 
-    await GlobalTestFunctions.findWidget(
-      tester: tester,
-      widgetType: RegistrationPage,
-      successMessage: 'Find Registration Page Success',
-      failedMessage: 'Find Registration Page failed',
-    );
-    ////////////////////////////
-    await GlobalTestFunctions.findWidget(
-      tester: tester,
-      widgetType: WelcomeSection,
-      successMessage: 'Find WelcomeSection Success',
-      failedMessage: 'Find WelcomeSection failed',
-    );
-    ////////////////////////////
-    final Finder haveAccountButton =
-        find.byKey(Key(WidgetsKey.haveAccountButtonKey));
-    final Finder createNewAccountButton =
-        find.byKey(Key(WidgetsKey.createNewAccountButtonKey));
-    await Future.delayed(const Duration(seconds: 1));
-    if (isForLogin) {
-      await tester.tap(haveAccountButton);
-    } else {
-      await tester.tap(createNewAccountButton);
-    }
-    await tester.pumpAndSettle();
-    //////////////////////////
-    if (!isForLogin) {
       await GlobalTestFunctions.findWidget(
         tester: tester,
-        widgetType: CreateAccountSection,
-        successMessage: 'Find CreateAccountSection Success',
-        failedMessage: 'Find CreateAccountSection failed',
+        widgetType: RegistrationPage,
+        successMessage: 'Find Registration Page Success',
+        failedMessage: 'Find Registration Page failed',
       );
-      final Finder agreeContinueButton =
-          find.byKey(Key(WidgetsKey.agreeContinueButtonKey));
+      ////////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        widgetType: WelcomeSection,
+        successMessage: 'Find WelcomeSection Success',
+        failedMessage: 'Find WelcomeSection failed',
+      );
+      ////////////////////////////
+      final Finder haveAccountButton =
+          find.byKey(Key(WidgetsKey.haveAccountButtonKey));
+      final Finder createNewAccountButton =
+          find.byKey(Key(WidgetsKey.createNewAccountButtonKey));
       await Future.delayed(const Duration(seconds: 1));
-      await tester.tap(agreeContinueButton);
+      if (isForLogin) {
+        await tester.tap(haveAccountButton);
+      } else {
+        await tester.tap(createNewAccountButton);
+      }
       await tester.pumpAndSettle();
+      //////////////////////////
+      if (!isForLogin) {
+        await GlobalTestFunctions.findWidget(
+          tester: tester,
+          widgetType: CreateAccountSection,
+          successMessage: 'Find CreateAccountSection Success',
+          failedMessage: 'Find CreateAccountSection failed',
+        );
+        final Finder agreeContinueButton =
+            find.byKey(Key(WidgetsKey.agreeContinueButtonKey));
+        await Future.delayed(const Duration(seconds: 1));
+        await tester.tap(agreeContinueButton);
+        await tester.pumpAndSettle();
+      }
     }
     //////////////////////////
     await GlobalTestFunctions.findWidget(
@@ -211,5 +216,53 @@ class SharedScenarios {
         rethrow;
       }
     }
+  }
+
+  static Future<void> addingNameAfterRegister({
+    required String name,
+    required WidgetTester tester,
+  }) async {
+    await GlobalTestFunctions.waitFor(
+      tester,
+      find.byType(AddingName),
+    );
+    //////////////////////////
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      widgetType: AddingName,
+      successMessage: 'Find Adding Name Success',
+      failedMessage: 'Find Adding Name failed',
+    );
+    //////////////////////////
+    final Finder nameField = find.byKey(Key(WidgetsKey.nameFormFieldKey));
+    final Finder confirmNameButton =
+        find.byKey(Key(WidgetsKey.confirmNameButtonKey));
+    await tester.enterText(nameField, name);
+    await Future.delayed(const Duration(seconds: 2));
+    await tester.tap(confirmNameButton);
+    await tester.pumpAndSettle();
+    //////////////////////////
+    await GlobalTestFunctions.waitFor(tester, find.byType(RegisterCompleted));
+    ///////////////////////////
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      widgetType: RegisterCompleted,
+      successMessage: 'Find RegisterCompleted Page Success',
+      failedMessage: 'Find RegisterCompleted Page failed',
+    );
+    //////////////////////////
+    await Future.delayed(const Duration(seconds: 2));
+    final Finder skipForNowButton = find.byKey(Key(WidgetsKey.skipForNowKey));
+    await tester.tap(skipForNowButton);
+    await tester.pumpAndSettle();
+    //////////////////////////
+    await GlobalTestFunctions.waitFor(tester, find.byType(HomePage));
+    //////////////////////////
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      widgetType: HomePage,
+      successMessage: 'Find HomePage Success',
+      failedMessage: 'Find HomePage failed',
+    );
   }
 }

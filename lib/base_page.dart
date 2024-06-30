@@ -37,6 +37,7 @@ import 'features/chat/presentation/manager/chat_event.dart';
 import 'features/chat/presentation/manager/chat_state.dart';
 import 'features/chat/presentation/utils/firebase_presence.dart';
 import 'features/home/presentation/manager/home_state.dart';
+import 'features/home/presentation/widgets/cart_page.dart';
 
 Widget get logo {
   debugPrint('deblogo');
@@ -284,7 +285,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   final List<Widget> pages = [
     const HomePage(),
-    const HomePage(),
+    const CartPage(),
     const ChatPages(description: ''),
     const RegistrationPage(),
   ];
@@ -318,7 +319,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    pages.add(SearchPage(buildSearchResult : buildSearchResult , hideTrendingAndHistory: hideTrendingAndHistory,),);
+    pages.add(
+      SearchPage(
+        buildSearchResult: buildSearchResult,
+        hideTrendingAndHistory: hideTrendingAndHistory,
+      ),
+    );
     WidgetsBinding.instance.addObserver(this);
     chatBloc = BlocProvider.of<ChatBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -589,10 +595,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                     },
                   ),
                   BlocBuilder<AppBloc, AppState>(
-                      buildWhen: (p, c) => p.showBars != c.showBars || p.currentIndex != c.currentIndex,
+                      buildWhen: (p, c) =>
+                          p.showBars != c.showBars ||
+                          p.currentIndex != c.currentIndex,
                       builder: (context, state) {
-                        if (state.showBars == true && state.currentIndex ==0 || state.currentIndex == 4) {
-                          return  TabsBar(
+                        if (state.showBars == true && state.currentIndex == 0 ||
+                            state.currentIndex == 4) {
+                          return TabsBar(
                             buildSearchResult: buildSearchResult,
                             hideTrendingAndHistory: hideTrendingAndHistory,
                           );

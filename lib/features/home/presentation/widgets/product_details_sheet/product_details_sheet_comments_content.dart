@@ -1,65 +1,122 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
+import 'package:flutter/foundation.dart';
+import 'package:flutter/semantics.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/my_text_widget.dart';
 
 class ProductDetailsSheetCommentsContent extends StatelessWidget {
-  const ProductDetailsSheetCommentsContent({super.key, this.scrollController });
+  final String productId;
+  const ProductDetailsSheetCommentsContent(
+      {super.key, this.scrollController, required this.productId});
 
-  final ScrollController? scrollController ;
+  final ScrollController? scrollController;
   @override
   Widget build(BuildContext context) {
-    return ScrollConfiguration(
-      behavior: const cupertino.CupertinoScrollBehavior(),
-      child: ListView(
-        controller: scrollController,
-        physics: const cupertino.ClampingScrollPhysics(),
-        shrinkWrap: true,
-        padding: EdgeInsets.zero,
-        children: [
-          10.verticalSpace,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) =>
+          previous.getCommentForProductStatus !=
+          current.getCommentForProductStatus,
+      builder: (context, state) {
+        if (state.getCommentForProductStatus ==
+                GetCommentForProductStatus.loading ||
+            state.getCommentForProductModel[productId] == null) {
+          return cupertino.SizedBox.shrink();
+        }
+        return ScrollConfiguration(
+          behavior: const cupertino.CupertinoScrollBehavior(),
+          child: ListView(
+            controller: scrollController,
+            physics: const cupertino.ClampingScrollPhysics(),
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
             children: [
-              SvgPicture.asset(
-                AppAssets.chatMarkActiveSvg,
-                height: 20,
+              10.verticalSpace,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(
+                    AppAssets.chatMarkActiveSvg,
+                    height: 20,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  MyTextWidget('Comment About This Product',
+                      style: context.textTheme.subtitle1?.mq.copyWith(
+                        color: Color(0xff505050),
+                      )),
+                ],
               ),
-              const SizedBox(
-                width: 10,
-              ),
-              MyTextWidget('Comment About This Product',
-                  style: context.textTheme.subtitle1?.mq.copyWith(
-                    color: Color(0xff505050),
-                  )),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          ...List.generate(5, (index) => const Column(
-            children: [
-              CommentCard(),
               SizedBox(
-                height: 5,
-              )
+                height: 10,
+              ),
+              ...List.generate(
+                  state.getCommentForProductModel[productId]!
+                          .commentsForProduct!.commentsCount ??
+                      0,
+                  (index) => Column(
+                        children: [
+                          CommentCard(
+                            comment: state.getCommentForProductModel[productId]!
+                                .commentsForProduct!.comments![index].comment!,
+                            imageUrl: state
+                                    .getCommentForProductModel[productId]!
+                                    .commentsForProduct!
+                                    .comments![index]
+                                    .customer!
+                                    .image ??
+                                "",
+                            names: state
+                                    .getCommentForProductModel[productId]!
+                                    .commentsForProduct!
+                                    .comments![index]
+                                    .customer!
+                                    .name ??
+                                "",
+                            date: HelperFunctions.getDatesInFormat(state
+                                .getCommentForProductModel[productId]!
+                                .commentsForProduct!
+                                .comments![index]
+                                .createdAt!),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          )
+                        ],
+                      ))
             ],
-          ))
-        ],
-      ),
+          ),
+        );
+      },
     );
   }
 }
 
 class CommentCard extends StatelessWidget {
-  const CommentCard({super.key});
+  final String imageUrl;
+  final String date;
+  final String names;
+  final String comment;
+  const CommentCard(
+      {super.key,
+      required this.imageUrl,
+      required this.names,
+      required this.comment,
+      required this.date});
 
   @override
   Widget build(BuildContext context) {
@@ -90,13 +147,13 @@ class CommentCard extends StatelessWidget {
               child: Stack(
                 children: [
                   Container(
-                    width: 20,
-                    height: 20,
-                    child: Image.asset(
-                      AppAssets.profileJpg,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                      width: 20,
+                      height: 20,
+                      child: MyCachedNetworkImage(
+                          imageUrl: imageUrl,
+                          width: 20,
+                          imageFit: cupertino.BoxFit.cover,
+                          height: 20)),
                   Container(
                     width: 20,
                     height: 20,
@@ -127,12 +184,12 @@ class CommentCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     MyTextWidget(
-                      'Yxxx Oxxx',
+                      names,
                       style: context.textTheme.subtitle2?.rq
                           .copyWith(color: Color(0xff969696)),
                     ),
                     MyTextWidget(
-                      '18 feb',
+                      date,
                       style: context.textTheme.overline?.rq
                           .copyWith(color: Color(0xff969696)),
                     ),
@@ -140,7 +197,7 @@ class CommentCard extends StatelessWidget {
                 ),
                 Flexible(
                   child: MyTextWidget(
-                    'Amazing Product I Buy It And I Saw It Is Good Quality Regarding Price',
+                    comment,
                     style: context.textTheme.subtitle2?.rq
                         .copyWith(color: Color(0xff5D5C5D)),
                     maxLines: 5,
@@ -152,5 +209,11 @@ class CommentCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('name', names));
   }
 }

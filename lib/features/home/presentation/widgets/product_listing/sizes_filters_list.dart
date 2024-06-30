@@ -17,17 +17,23 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 
 class SizesFiltersList extends StatefulWidget {
   const SizesFiltersList({
-    super.key, required this.selectedFilters,
+    super.key, required this.selectedFilters, required this.sizes,
   });
   final ValueNotifier<List<int>> selectedFilters;
+  final List<String> sizes ;
   @override
   State<SizesFiltersList> createState() => _SizesFiltersListState();
 }
 
 class _SizesFiltersListState extends State<SizesFiltersList> {
-  List<String> sizes = ['S', 'M', 'L', 'XL', 'XXL'];
   final CarouselController carouselController = CarouselController();
-  late final ValueNotifier<int> currentIndexInSizes = ValueNotifier(2);
+  late final ValueNotifier<int> currentIndexInSizes ;
+
+  @override
+  void initState() {
+    currentIndexInSizes = ValueNotifier(widget.sizes.length ~/ 2);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +74,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                       valueListenable: currentIndexInSizes,
                       builder: (context, currentIndex, _) {
                         return ListView.separated(
-                            itemCount: sizes.length,
+                            itemCount: widget.sizes.length,
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
                             separatorBuilder: (ctx , index)=> SizedBox(width: 10,),
@@ -96,7 +102,8 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                           dashPattern: [3, 3],
                                           child: Center(
                                             child: Text(
-                                              sizes[index],
+                                              widget.sizes[index],
+                                              overflow: TextOverflow.ellipsis,
                                               style:
                                               // index == currentIndex
                                               //     ? textTheme.bodyText2?.bq.copyWith(

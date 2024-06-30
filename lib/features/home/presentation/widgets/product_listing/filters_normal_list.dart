@@ -5,16 +5,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
-class FiltersNormalList extends StatefulWidget {
+class FiltersNormalList<T> extends StatefulWidget {
   const FiltersNormalList(
-      {super.key, required this.filterListTitle, required this.isBrandFilter, required this.selectedFilters});
+      {super.key, required this.filterListTitle, required this.isBrandFilter, required this.selectedFilters, required this.filters});
 
   final bool isBrandFilter;
   final String filterListTitle;
   final ValueNotifier<List<int>> selectedFilters;
+  final List<T> filters ;
 
   @override
   State<FiltersNormalList> createState() => _FiltersNormalListState();
@@ -24,6 +27,9 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
 
   @override
   Widget build(BuildContext context) {
+    if(widget.filters.isNullOrEmpty){
+      return SizedBox.shrink();
+    }
     return Padding(
       padding: const EdgeInsets.only(left: 25.0),
       child: Column(
@@ -93,8 +99,8 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                     child: Center(
                                       child: widget.isBrandFilter
                                           ? Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                                            child: SvgPicture.asset(AppAssets.mangoSvg),
+                                            padding:  EdgeInsets.symmetric(horizontal: 5.0),
+                                            child: SvgNetworkWidget(svgUrl: widget.filters[index].image,),
                                           )
                                           : SizedBox.shrink(),
                                     ),
@@ -108,7 +114,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                             ),
                             SizedBox(height: 5),
                             MyTextWidget(
-                              'T-shirt',
+                              widget.isBrandFilter ? widget.filters[index].name : 'T-shirt',
                               maxLines: 1,
                               textAlign: TextAlign.center,
                               style: context.textTheme.caption?.rq.copyWith(
@@ -131,7 +137,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                       separatorBuilder: (ctx, index) => SizedBox(
                             width: 10,
                           ),
-                      itemCount: 10);
+                      itemCount: widget.filters.length);
                 }),
           ),
           SizedBox(height: 20),

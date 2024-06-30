@@ -16,6 +16,7 @@ import 'package:trydos/routes/router.dart';
 
 import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
@@ -146,6 +147,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                           ),
                           Spacer(),
                           InkWell(
+                            key: Key(WidgetsKey.createNewAccountContinueKey),
                             onTap: () {
                               pageContent.value = 1;
                               pageController.animateToPage(1,

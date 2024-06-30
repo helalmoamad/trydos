@@ -12,6 +12,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:tuple/tuple.dart';
 
@@ -19,9 +20,10 @@ import '../../../../search/presentation/widgets/close_circle.dart';
 
 class PriceFilter extends StatefulWidget {
   const PriceFilter({
-    super.key,
+    super.key, required this.pricesFiltersRanges,
   });
 
+  final Prices pricesFiltersRanges;
   @override
   State<PriceFilter> createState() => _PriceFilterState();
 }

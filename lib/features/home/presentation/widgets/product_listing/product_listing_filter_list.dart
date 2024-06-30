@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter/rendering.dart' as rendring;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,8 +18,14 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/price_
 import 'package:trydos/features/home/presentation/widgets/product_listing/sizes_filters_list.dart';
 import 'package:tuple/tuple.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../../app/my_text_widget.dart';
+import '../../../../story/presentation/widget/try_again.dart';
+import '../../../data/models/get_product_filters_model.dart';
+import '../../manager/home_bloc.dart';
+import '../../manager/home_event.dart';
+import '../../manager/home_state.dart';
 import 'filters_normal_list.dart';
 
 class StackedFiltersList extends StatefulWidget {
@@ -65,6 +72,23 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<HomeBloc, HomeState>(
+  builder: (context, state) {
+    if(state.getProductFiltersStatus == GetProductFiltersStatus.loading){
+      return Center(
+        child: TrydosLoader()
+      );
+    }
+    if(state.getProductFiltersStatus == GetProductFiltersStatus.failure){
+      return Center(
+          child: TryAgainWidget(
+              tryAgain: (){
+                BlocProvider.of<HomeBloc>(context).add(GetProductFiltersEvent());
+              }
+          )
+      );
+    }
+    Filter filters = state.getProductFiltersModel!.filters!;
     return ValueListenableBuilder<List<Tuple3<int, int?, double>>>(
         valueListenable: widget.selectedFiltersNotifier,
         builder: (context, selectedFilters, child) {
@@ -535,15 +559,20 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                   selectedFilters: selectedFiltersByBrand,
                   filterListTitle: 'Filter By Brand',
                   isBrandFilter: true,
+                  filters: filters.brands ?? [],
                 ),
                 FiltersNormalList(
                   selectedFilters: selectedFiltersByOffer,
                   filterListTitle: 'Filter By Offer',
                   isBrandFilter: false,
+                  filters: [],
                 ),
-                PriceFilter(),
+                PriceFilter(
+                  pricesFiltersRanges: filters.prices!,
+                ),
                 SizesFiltersList(
                   selectedFilters: selectedFiltersBySize,
+                  sizes: filters.attributes?[0].options ?? [],
                 ),
               },
               if (!widget.isExpanded) ...{
@@ -769,6 +798,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
             ],
           );
         });
+  },
+);
   }
 
   Widget buildItem(

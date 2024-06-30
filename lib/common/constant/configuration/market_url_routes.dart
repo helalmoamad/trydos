@@ -2,6 +2,7 @@ extension ScopeApi on String {
   String get _api => 'api';
 
   String get _currentVersion => 'new_v1';
+  String get _Version10 => 'v10';
 
   String phoneScope() => '$_api/${_currentVersion}/phone/$this';
 
@@ -12,9 +13,10 @@ extension ScopeApi on String {
   String customerScope() => '$_api/${_currentVersion}/customer/$this';
   String productsScope() => '$_api/${_currentVersion}/mobile/products/$this';
   String  productScope() => '$_api/${_currentVersion}/mobile/product/$this';
+  String mobileScope() => '$_api/${_currentVersion}/mobile/$this';
   String productScopeWeb() => '$_api/${_currentVersion}/web/product/$this';
-
   String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
+  String cartScope() => '$_api/${_Version10}/cart/$this';
 }
 
 abstract class MarketEndPoints {
@@ -23,6 +25,8 @@ abstract class MarketEndPoints {
       "details_without_similar_related_products/$productId".productScope();
 
   static final sendOtpEP = 'send_otp'.phoneScope();
+  static final getCartItemEP = 'cart_shipping'.cartScope();
+
   static final verifyOtpSignInEP = 'verify_otp_singin'.phoneScope();
   static final verifyOtpSignUpEP = 'verify_otp_signup'.phoneScope();
   static final verifyOtpFromGuestEP = 'verify_otp_from_guest'.phoneScope();
@@ -39,8 +43,7 @@ abstract class MarketEndPoints {
       'likesCommentsSharesDetails/$productId'.productScopeWeb();
   static final getMainCategoriesEP = 'mainCategories'.homeScope();
   static final getProductFiltersEP = 'filters'.productsScope();
-  static final getProductListingWithoutFiltersEP =
-      'with_colors_without_filter'.productsScope();
+  static final getProductListingWithoutFiltersEP = 'products'.mobileScope();
 }
 
 abstract class MarketUrls {
