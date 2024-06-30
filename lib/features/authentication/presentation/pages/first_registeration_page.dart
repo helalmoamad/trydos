@@ -87,7 +87,7 @@ class _RegistrationPageState extends State<RegistrationPage>
         builder: (ctx, index, child) {
           if (index < 2) {
             FocusScope.of(context).unfocus();
-          } else {
+          } else if(index != 6){
             focusNode.requestFocus();
           }
           return Scaffold(

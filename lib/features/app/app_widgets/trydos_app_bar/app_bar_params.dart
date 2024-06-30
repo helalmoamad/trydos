@@ -22,6 +22,7 @@ class AppBarParams {
     this.tittleStyle,
     this.shape,
     this.scrolledUnderElevation,
+    this.bottom,
   });
 
   final double? scrolledUnderElevation;
@@ -42,6 +43,7 @@ class AppBarParams {
   final bool dividerBottom;
   final bool withShadow;
   final ShapeBorder? shape;
+  final PreferredSizeWidget? bottom;
 
   @override
   String toString() {

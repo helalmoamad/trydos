@@ -8,11 +8,13 @@ import 'package:trydos/features/home/data/models/starting_settings_response_mode
 import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
 
 import '../../../../core/error/failures.dart';
+import '../../data/models/get_product_filters_model.dart';
 import '../../data/models/get_story_for_product_model.dart';
 
 abstract class HomeRepository {
   Future<Either<Failure, StartingSettingsResponseModel>> getStartingSettings();
   Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories();
+  Future<Either<Failure, GetProductFiltersModel>> getProductFilters();
   /* Future<Either<Failure, HomeSectionResponseModel>> getHomeSections(
       Map<String, dynamic> params);*/
   Future<Either<Failure, GetHomeBoutiquesModel>> getHomeBoutiqes(

@@ -7,6 +7,7 @@ import 'package:trydos/features/authentication/data/models/send_otp_response_mod
 import 'package:trydos/features/authentication/data/models/verify_guest_phone_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
@@ -67,5 +68,10 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       String productId) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getStories(productId));
+  }
+
+  @override
+  Future<Either<Failure, GetProductFiltersModel>> getProductFilters() {
+    return handlingExceptionRequest(tryCall: dataSource.getProductFilters);
   }
 }

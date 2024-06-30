@@ -33,7 +33,6 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ]
                   : null),
           child: AppBar(
-            //title: title(context),
             scrolledUnderElevation: appBarParams.scrolledUnderElevation,
             backgroundColor: appBarParams.backgroundColor ??
                 Theme.of(context).colorScheme.surface,
@@ -50,6 +49,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
             shape: appBarParams.shape,
             automaticallyImplyLeading: false,
             flexibleSpace: appBarParams.child,
+            bottom: appBarParams.bottom,
           ),
         ),
         if (appBarParams.dividerBottom)

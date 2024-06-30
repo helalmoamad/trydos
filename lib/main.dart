@@ -23,7 +23,6 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/notification_process.dart';
 import 'package:trydos/trydos_application.dart';
-import 'package:uuid/uuid.dart';
 import 'common/helper/helper_functions.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;

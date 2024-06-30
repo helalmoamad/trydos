@@ -28,6 +28,14 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               json['startingSetting'] as Map<String, dynamic>),
       sizes:
           (json['sizes'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      getProductFiltersStatus: $enumDecodeNullable(
+              _$GetProductFiltersStatusEnumMap,
+              json['getProductFiltersStatus']) ??
+          GetProductFiltersStatus.init,
+      getProductFiltersModel: json['getProductFiltersModel'] == null
+          ? null
+          : GetProductFiltersModel.fromJson(
+              json['getProductFiltersModel'] as Map<String, dynamic>),
       currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
       reRequestTheseBoutiques:
           (json['reRequestTheseBoutiques'] as Map<String, dynamic>?)?.map(
@@ -109,6 +117,9 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.currentSelectedColorForEveryProduct,
       'getMainCategoriesStatus':
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
+      'getProductFiltersStatus':
+          _$GetProductFiltersStatusEnumMap[instance.getProductFiltersStatus]!,
+      'getProductFiltersModel': instance.getProductFiltersModel?.toJson(),
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
       'reRequestTheseBoutiques': instance.reRequestTheseBoutiques,
@@ -167,6 +178,13 @@ const _$GetMainCategoriesStatusEnumMap = {
   GetMainCategoriesStatus.loading: 'loading',
   GetMainCategoriesStatus.success: 'success',
   GetMainCategoriesStatus.failure: 'failure',
+};
+
+const _$GetProductFiltersStatusEnumMap = {
+  GetProductFiltersStatus.init: 'init',
+  GetProductFiltersStatus.loading: 'loading',
+  GetProductFiltersStatus.success: 'success',
+  GetProductFiltersStatus.failure: 'failure',
 };
 
 const _$GetProductListingStatusEnumMap = {

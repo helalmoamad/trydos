@@ -4,7 +4,6 @@ part of 'app_theme.dart';
 const _lightColorScheme = ColorScheme.light(
   primary : Color(0xff2C2A2A),
   onPrimary : Color(0xffF5F5F5),
-
   primaryContainer: Color(0xff429F3D),
   onPrimaryContainer: Color(0xffF7F7F7),
 

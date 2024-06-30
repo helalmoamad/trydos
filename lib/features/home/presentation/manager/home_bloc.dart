@@ -24,6 +24,7 @@ import 'package:trydos/features/home/domain/use_cases/get_home_boutiqes_usecase.
 import 'package:trydos/features/home/domain/use_cases/get_home_sections_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
@@ -54,6 +55,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       this.getMainCategoriesUseCase,
       this.getStoryUseCase,
       this.getHomeBoutiqesUseCase,
+      this.getProductFiltersUseCase,
       this.getWidthAndHeightUseCase,
       this.getProductDetailWithoutRelatedProductsUseCase,
       this.getStartingSettingsUseCase,
@@ -61,6 +63,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
     on<AddCurrentSelectedColorEvent>(_onAddCurrentSelectedColorEvent,
+        transformer: throttleDroppable(throttleDuration));
+    on<GetProductFiltersEvent>(_onGetProductFiltersEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetHomeBoutiqesEvent>(_onGetHomeBoutiquesEvent,
         transformer: throttleDroppable(throttleDuration));
@@ -72,11 +76,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         transformer: throttleDroppable(throttleDuration));
     on<GetStoryForProductEvent>(
       _onGetStoryEvent,
-      // transformer: throttleDroppable(throttleDuration)
     );
     on<AddSizesFotColorsEvent>(
       _onAddSizesFotColorsEvent,
-      // transformer: throttleDroppable(throttleDuration)
     );
 
     on<GetProductDatailsWithoutRelatedProductsEvent>(
@@ -93,6 +95,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       getProductDetailWithoutRelatedProductsUseCase;
 
   final GetMainCategoriesUseCase getMainCategoriesUseCase;
+  final GetProductFiltersUseCase getProductFiltersUseCase;
   final GetProductsWithoutFiltersUseCase getProductsWithoutFiltersUseCase;
 
   //final Smartlook smartLook = Smartlook.instance;
@@ -566,5 +569,28 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       getMainCategoriesStatus: GetMainCategoriesStatus.init,
       getStartingSettingsStatus: GetStartingSettingsStatus.init,
     ).toJson();
+  }
+
+  FutureOr<void> _onGetProductFiltersEvent(GetProductFiltersEvent event, Emitter<HomeState> emit) async{
+
+    emit(state.copyWith(
+        getProductFiltersStatus: GetProductFiltersStatus.loading));
+    final response = await getProductFiltersUseCase(NoParams());
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('GetProductFiltersEvent')) {
+        add(GetMainCategoriesEvent());
+        isFailedTheFirstTime.add('GetProductFiltersEvent');
+      }
+      emit(state.copyWith(
+          getProductFiltersStatus: GetProductFiltersStatus.failure));
+    }, (r) {
+      apisMustNotToRequest.add('GetProductFiltersEvent');
+      isFailedTheFirstTime.remove('GetProductFiltersEvent');
+      emit(state.copyWith(
+          getProductFiltersModel: r,
+          getProductFiltersStatus: GetProductFiltersStatus.success));
+    });
+
   }
 }
