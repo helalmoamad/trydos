@@ -284,91 +284,94 @@ class _TabsBarState extends State<TabsBar> {
                                       p.currentIndex != c.currentIndex,
                                   builder: (context, state) {
                                     if (state.currentIndex != 4) {
-                                      return Row(
-                                          key: Key(WidgetsKey.mainCategoriesTabKey),
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: List.generate(
-                                            (homeState
-                                                    .mainCategoriesResponseModel
-                                                    ?.data
-                                                    ?.mainCategories
-                                                    ?.length ??
-                                                0),
-                                            (index) {
-                                              MainCategory mainCategory = homeState
-                                                  .mainCategoriesResponseModel!
-                                                  .data!
-                                                  .mainCategories![index];
-                                              return Padding(
-                                                  padding: HWEdgeInsets.only(
-                                                      right: 15.0),
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      /* appBloc.add(ChangeTab(index));
-                                                        BlocProvider.of<HomeBloc>(context).add(
-                                GetHomeSectionsEvent(
-                                    mainCategory.slug.toString()));*/
-                                                      appBloc.add(
-                                                          ChangeTab(index));
-                                                      homeBloc.add(GetHomeBoutiqesEvent(
-                                                          getWithPagination:
-                                                              false,
-                                                          offset: "1",
-                                                          categorySlug: homeState
-                                                              .mainCategoriesResponseModel!
-                                                              .data!
-                                                              .mainCategories![
-                                                                  index]
-                                                              .slug!));
-                                                      /*   homeBloc.add(
-                                                GetProductsWithoutFiltersEvent(
-                                                    offset: 1,
-                                                    category: homeState
-                                                        .mainCategoriesResponseModel!
-                                                        .data!
-                                                        .mainCategories![index]
-                                                        .slug!,
-                                                    selectedProssesType:
-                                                        'category'));*/
-                                                    },
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        SvgNetworkWidget(
-                                                          svgUrl: mainCategory
-                                                              .icon
-                                                              .toString(),
-                                                          height: 25,
-                                                          color: state.tabIndex ==
-                                                                  index
-                                                              ? Colors.black
-                                                              : Color(
-                                                                  0xffC4C2C2),
-                                                        ),
-                                                        4.verticalSpace,
-                                                        MyTextWidget(
-                                                          mainCategory.name
-                                                              .toString(),
-                                                          maxLines: 1,
-                                                          style: textTheme
-                                                              .overline?.lr
-                                                              .copyWith(
-                                                                  letterSpacing:
-                                                                      0,
-                                                                  color: state.tabIndex !=
-                                                                          index
-                                                                      ? Color(
-                                                                          0xffC4C2C2)
-                                                                      : Color(
-                                                                          0xff505050)),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ));
-                                            },
-                                          ));
+                                      return SizedBox(
+                                        width: 1.sw - 50,
+                                        child: Row(
+                                            key: Key(WidgetsKey.mainCategoriesTabKey),
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: List.generate(
+                                              (homeState
+                                                      .mainCategoriesResponseModel
+                                                      ?.data
+                                                      ?.mainCategories
+                                                      ?.length ??
+                                                  0),
+                                              (index) {
+                                                MainCategory mainCategory = homeState
+                                                    .mainCategoriesResponseModel!
+                                                    .data!
+                                                    .mainCategories![index];
+                                                return Padding(
+                                                    padding: HWEdgeInsets.only(
+                                                        right: 15.0),
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        /* appBloc.add(ChangeTab(index));
+                                                          BlocProvider.of<HomeBloc>(context).add(
+                                                                        GetHomeSectionsEvent(
+                                                                            mainCategory.slug.toString()));*/
+                                                        appBloc.add(
+                                                            ChangeTab(index));
+                                                        homeBloc.add(GetHomeBoutiqesEvent(
+                                                            getWithPagination:
+                                                                false,
+                                                            offset: "1",
+                                                            categorySlug: homeState
+                                                                .mainCategoriesResponseModel!
+                                                                .data!
+                                                                .mainCategories![
+                                                                    index]
+                                                                .slug!));
+                                                        /*   homeBloc.add(
+                                                  GetProductsWithoutFiltersEvent(
+                                                      offset: 1,
+                                                      category: homeState
+                                                          .mainCategoriesResponseModel!
+                                                          .data!
+                                                          .mainCategories![index]
+                                                          .slug!,
+                                                      selectedProssesType:
+                                                          'category'));*/
+                                                      },
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          SvgNetworkWidget(
+                                                            svgUrl: mainCategory
+                                                                .icon
+                                                                .toString(),
+                                                            height: 25,
+                                                            color: state.tabIndex ==
+                                                                    index
+                                                                ? Colors.black
+                                                                : Color(
+                                                                    0xffC4C2C2),
+                                                          ),
+                                                          4.verticalSpace,
+                                                          MyTextWidget(
+                                                            mainCategory.name
+                                                                .toString(),
+                                                            maxLines: 1,
+                                                            style: textTheme
+                                                                .overline?.lr
+                                                                .copyWith(
+                                                                    letterSpacing:
+                                                                        0,
+                                                                    color: state.tabIndex !=
+                                                                            index
+                                                                        ? Color(
+                                                                            0xffC4C2C2)
+                                                                        : Color(
+                                                                            0xff505050)),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ));
+                                              },
+                                            )),
+                                      );
                                     }
                                     return SizedBox.shrink();
                                   },

@@ -9,11 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:store_redirect/store_redirect.dart';
+import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -127,12 +130,23 @@ class HelperFunctions {
         });
       }
     }
+    String myPhoneNumber = GetIt.I<PrefsRepository>().myPhoneNumber!;
+    String dialCode = countries
+        .firstWhere((element) => myPhoneNumber.startsWith(element.dialCode))
+        .dialCode;
+    String myPhoneNumberWithoutDial = myPhoneNumber.contains('+')
+        ? myPhoneNumber.substring(dialCode.length)
+        : myPhoneNumber;
     return myContacts
         .map((e) => {
-              "mobile_phone": e.phones!.first.value,
+              "mobile_phone": e.phones!.first.value!.contains('+')
+                  ? dialCode + e.phones!.first.value!
+                  : e.phones!.first.value,
               "name": e.displayName ?? 'No Name',
             })
-        .toList();
+        .toList()
+      ..removeWhere((element) =>
+          element['mobile_phone']?.endsWith(myPhoneNumberWithoutDial) ?? false);
   }
 
   static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {

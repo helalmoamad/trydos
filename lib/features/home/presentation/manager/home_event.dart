@@ -21,6 +21,14 @@ class GetMainCategoriesEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class GetProductFiltersEvent extends HomeEvent {
+  const GetProductFiltersEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
 class AddCurrentSelectedColorEvent extends HomeEvent {
   final int currentSelectedColor;
   final String productId;

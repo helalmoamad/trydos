@@ -11,6 +11,7 @@ import '../../../../core/api/client_config.dart';
 import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/api/methods/post.dart';
 import '../models/get_product_detail_without_related_products_model.dart';
+import '../models/get_product_filters_model.dart';
 import '../models/get_story_for_product_model.dart';
 
 @injectable
@@ -74,6 +75,20 @@ class HomeRemoteDatasource {
       ),
     );
     return getMainCategories();
+  }
+
+  Future<GetProductFiltersModel> getProductFilters() {
+    PostClient<GetProductFiltersModel> getProductFilters =
+    PostClient<GetProductFiltersModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetProductFiltersModel>(
+        endpoint: MarketEndPoints.getProductFiltersEP,
+        response: ResponseValue<GetProductFiltersModel>(
+            fromJson: (response) =>
+                GetProductFiltersModel.fromJson(response)),
+      ),
+    );
+    return getProductFilters();
   }
 
   Future<GetStoryForProductModel> getStories(String productId) {
