@@ -23,6 +23,7 @@ class AuthState {
     this.marketUser ,
     this.countryName ,
     this.signInErrorMessage ,
+    this.sendOtpError ,
     this.signUpErrorMessage ,
     this.registerGuestStatus = RegisterGuestStatus.init,
     this.verifyOtpSignUpStatus = VerifyOtpSignUpStatus.init,
@@ -52,6 +53,7 @@ class AuthState {
   final User? marketUser;
   final String? signInErrorMessage;
   final String? signUpErrorMessage;
+  final String? sendOtpError;
   final String? countryName;
   AuthState copyWith({
     final CreateUserStatus? createUserStatus,
@@ -65,6 +67,7 @@ class AuthState {
     final GetCustomerInfoStatus? getCustomerInfoStatus,
     final UpdateChatUserNameStatus? updateChatUserNameStatus,
     final String? signUpErrorMessage,
+    final String? sendOtpError,
     final UpdateNameStatus? updateNameStatus,
     final User? marketUser,
     final VerifyOtpSignUpStatus? verifyOtpSignUpStatus,
@@ -77,6 +80,7 @@ class AuthState {
       updateStoriesUserStatus: updateStoriesUserStatus ?? this.updateStoriesUserStatus,
       createUserStatus: createUserStatus ?? this.createUserStatus,
       countryName: countryName ?? this.countryName,
+      sendOtpError: sendOtpError ?? this.sendOtpError,
       loginToChatStatus: loginToChatStatus ?? this.loginToChatStatus,
       loginToStoriesStatus: loginToStoriesStatus ?? this.loginToStoriesStatus,
       registerGuestStatus: registerGuestStatus ?? this.registerGuestStatus,
