@@ -22,18 +22,41 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               _$GetMainCategoriesStatusEnumMap,
               json['getMainCategoriesStatus']) ??
           GetMainCategoriesStatus.init,
+      getCommentForProductStatus: $enumDecodeNullable(
+              _$GetCommentForProductStatusEnumMap,
+              json['getCommentForProductStatus']) ??
+          GetCommentForProductStatus.init,
       startingSetting: json['startingSetting'] == null
           ? null
           : StartingSetting.fromJson(
               json['startingSetting'] as Map<String, dynamic>),
       sizes:
           (json['sizes'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      getProductFiltersStatus: $enumDecodeNullable(
+              _$GetProductFiltersStatusEnumMap,
+              json['getProductFiltersStatus']) ??
+          GetProductFiltersStatus.init,
+      getProductFiltersModel: json['getProductFiltersModel'] == null
+          ? null
+          : GetProductFiltersModel.fromJson(
+              json['getProductFiltersModel'] as Map<String, dynamic>),
       currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
+      getCartShippingItemsModel: json['getCartShippingItemsModel'] == null
+          ? null
+          : GetCartShippingItemsModel.fromJson(
+              json['getCartShippingItemsModel'] as Map<String, dynamic>),
       reRequestTheseBoutiques:
           (json['reRequestTheseBoutiques'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(k, e as bool),
               ) ??
               const {},
+      getCommentForProductModel: (json['getCommentForProductModel']
+                  as Map<String, dynamic>?)
+              ?.map(
+            (k, e) => MapEntry(k,
+                GetCommentForProductModel.fromJson(e as Map<String, dynamic>)),
+          ) ??
+          const {},
       reRequestTheseProductListingInBoutiques:
           (json['reRequestTheseProductListingInBoutiques']
                       as Map<String, dynamic>?)
@@ -54,6 +77,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : MainCategoriesResponseModel.fromJson(
               json['mainCategoriesResponseModel'] as Map<String, dynamic>),
+      getCartItemsStatus: $enumDecodeNullable(
+              _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
+          GetCartItemsStatus.init,
       getProductDetailWithoutRelatedProductsModel:
           json['getProductDetailWithoutRelatedProductsModel'] == null
               ? null
@@ -107,8 +133,13 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getStartingSettingsStatus]!,
       'currentSelectedColorForEveryProduct':
           instance.currentSelectedColorForEveryProduct,
+      'getCommentForProductStatus': _$GetCommentForProductStatusEnumMap[
+          instance.getCommentForProductStatus]!,
       'getMainCategoriesStatus':
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
+      'getProductFiltersStatus':
+          _$GetProductFiltersStatusEnumMap[instance.getProductFiltersStatus]!,
+      'getProductFiltersModel': instance.getProductFiltersModel?.toJson(),
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
       'reRequestTheseBoutiques': instance.reRequestTheseBoutiques,
@@ -117,6 +148,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getProductDetailWithoutSimilarRelatedProductsStatus':
           _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap[
               instance.getProductDetailWithoutSimilarRelatedProductsStatus]!,
+      'getCartItemsStatus':
+          _$GetCartItemsStatusEnumMap[instance.getCartItemsStatus]!,
       'getProductListingStatus':
           _$GetProductListingStatusEnumMap[instance.getProductListingStatus]!,
       'getStoriesForProductStatus': _$GetStoriesForProductStatusEnumMap[
@@ -138,6 +171,9 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               e.toJson(
                 (value) => value.toJson(),
               ))),
+      'getCartShippingItemsModel': instance.getCartShippingItemsModel?.toJson(),
+      'getCommentForProductModel': instance.getCommentForProductModel
+          .map((k, e) => MapEntry(k, e.toJson())),
       'mainCategoriesResponseModel':
           instance.mainCategoriesResponseModel?.toJson(),
       'getProductDetailWithoutRelatedProductsModel':
@@ -169,6 +205,20 @@ const _$GetMainCategoriesStatusEnumMap = {
   GetMainCategoriesStatus.failure: 'failure',
 };
 
+const _$GetCommentForProductStatusEnumMap = {
+  GetCommentForProductStatus.init: 'init',
+  GetCommentForProductStatus.loading: 'loading',
+  GetCommentForProductStatus.success: 'success',
+  GetCommentForProductStatus.failure: 'failure',
+};
+
+const _$GetProductFiltersStatusEnumMap = {
+  GetProductFiltersStatus.init: 'init',
+  GetProductFiltersStatus.loading: 'loading',
+  GetProductFiltersStatus.success: 'success',
+  GetProductFiltersStatus.failure: 'failure',
+};
+
 const _$GetProductListingStatusEnumMap = {
   GetProductListingStatus.init: 'init',
   GetProductListingStatus.loading: 'loading',
@@ -181,4 +231,11 @@ const _$GetStoriesForProductStatusEnumMap = {
   GetStoriesForProductStatus.loading: 'loading',
   GetStoriesForProductStatus.success: 'success',
   GetStoriesForProductStatus.failure: 'failure',
+};
+
+const _$GetCartItemsStatusEnumMap = {
+  GetCartItemsStatus.init: 'init',
+  GetCartItemsStatus.loading: 'loading',
+  GetCartItemsStatus.success: 'success',
+  GetCartItemsStatus.failure: 'failure',
 };

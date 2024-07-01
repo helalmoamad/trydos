@@ -19,6 +19,7 @@ import 'package:trydos/features/authentication/presentation/pages/login_page.dar
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
+import 'package:trydos/features/home/presentation/widgets/cart_page.dart';
 
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';

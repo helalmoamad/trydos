@@ -47,7 +47,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_gallery_3d:
     git:
-      url: https://helalmohamad@bitbucket.org/trydos/flutter_gallery_3d-1.1.1.git
+        url: https://helalmohamad@bitbucket.org/trydos/flutter_gallery_3d-1.1.1.git
   fluttertoast: ^8.2.2
   like_button: ^2.0.5
   dartz: ^0.10.1
@@ -90,6 +90,7 @@ dependencies:
   bloc_concurrency: ^0.2.2
   dio: ^5.3.3
   json_serializable: ^6.7.1
+  flutter_xlider: ^3.5.0
   connectivity_plus: ^5.0.1
   bot_toast: ^4.1.3
   dotted_border: ^2.1.0
@@ -123,17 +124,18 @@ dependencies:
   sliding_up_panel:
     git:
       url: https://helalmohamad@bitbucket.org/trydos/sliding_up_panel-2.0.0-1.git
+   
   local_hero: ^0.3.0
   flutter_html: ^3.0.0-beta.2
 dev_dependencies:
 
- flutter_test:
-  sdk: flutter
- integration_test:
-  sdk: flutter 
- injectable_generator: ^2.4.1
- build_runner: ^2.4.8
- mockito: ^5.4.4
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  injectable_generator: ^2.4.1
+  build_runner: ^2.4.8
+  mockito: ^5.4.4
 flutter_launcher_icons:
   android: true
   ios: true

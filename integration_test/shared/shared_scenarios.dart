@@ -141,8 +141,10 @@ class SharedScenarios {
     );
   }
 
-  static Future<void> testTokensAreNull(
-      {required bool isJustForMarketToken}) async {
+  static Future<void> testTokensAreNull({
+    required bool isJustForMarketToken,
+    bool isJustForStoryChatTokens = false,
+  }) async {
     if (isJustForMarketToken) {
       try {
         expect(prefsRepository.marketToken, isNull);
@@ -150,6 +152,23 @@ class SharedScenarios {
       } catch (e) {
         print(
             '//////// marketToken is NOT null before Failure: //////////\n $e');
+        rethrow;
+      }
+    } else if (isJustForStoryChatTokens) {
+      try {
+        expect(prefsRepository.storiesToken, isNull);
+        debugPrint('storiesToken is Null before');
+      } catch (e) {
+        print(
+            '//////// storiesToken is Not Null before Failure: //////////\n $e');
+        rethrow;
+      }
+      ////////////////////////////
+      try {
+        expect(prefsRepository.chatToken, isNull);
+        debugPrint('chatToken is Null before');
+      } catch (e) {
+        print('//////// chatToken is Not Null before Failure: //////////\n $e');
         rethrow;
       }
     } else {

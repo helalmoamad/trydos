@@ -21,6 +21,14 @@ class GetMainCategoriesEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class GetProductFiltersEvent extends HomeEvent {
+  const GetProductFiltersEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
 class AddCurrentSelectedColorEvent extends HomeEvent {
   final int currentSelectedColor;
   final String productId;
@@ -29,6 +37,14 @@ class AddCurrentSelectedColorEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [currentSelectedColor, productId];
+}
+
+class GetCommentForProductEvent extends HomeEvent {
+  final String productId;
+  const GetCommentForProductEvent({required this.productId});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [productId];
 }
 
 class GetHomeBoutiqesEvent extends HomeEvent {
@@ -120,4 +136,16 @@ class AddSizesFotColorsEvent extends HomeEvent {
       {required this.currentColorName, required this.variation});
   @override
   List<Object?> get props => [currentColorName];
+}
+
+class GetCartItemEvent extends HomeEvent {
+  const GetCartItemEvent();
+  @override
+  List<Object?> get props => [];
+}
+
+class AddItemToCartEvent extends HomeEvent {
+  const AddItemToCartEvent();
+  @override
+  List<Object?> get props => [];
 }

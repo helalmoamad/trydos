@@ -127,7 +127,8 @@ void main() {
             failedMessage: 'Find HomePage failed',
           );
           ////////////////////////////
-          await SharedScenarios.testTokensAreNull(isJustForMarketToken: false);
+          await SharedScenarios.testTokensAreNull(
+              isJustForMarketToken: false, isJustForStoryChatTokens: true);
           ////////////////////////////
         },
       );

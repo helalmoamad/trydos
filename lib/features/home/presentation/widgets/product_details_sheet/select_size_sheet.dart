@@ -36,13 +36,11 @@ class SelectSizeContent extends StatefulWidget {
 }
 
 class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
-  late final Gallery3DController gallery3dControllerForSizes;
 
   List<String> sizes = [];
 
   final CarouselController carouselController = CarouselController();
   late final ValueNotifier<int> currentIndexInSizes;
-  bool initizegallery3dControllerForSizes = false;
 
   @override
   void initState() {
@@ -61,17 +59,9 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
         sizes = state.sizes ?? [];
         print(sizes);
         currentIndexInSizes.value = sizes.length ~/ 2;
-        if (!initizegallery3dControllerForSizes) {
-          gallery3dControllerForSizes = Gallery3DController(
-              itemCount: sizes.length,
-              autoLoop: false,
-              minScale: 0.6,
-              initialIndex: sizes.length ~/ 4,
-              primaryshiftingOffsetDivision: 1,
-              scrollTime: 1);
-          initizegallery3dControllerForSizes = true;
+        if(sizes.length == 0){
+          return Container(color: Colors.white,height: 210,);
         }
-
         return Container(
           decoration: BoxDecoration(
             color: colorScheme.white,

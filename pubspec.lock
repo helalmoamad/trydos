@@ -729,7 +729,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "0726ea227c1f86ffa8f01a24b9f867aa1ce60edd"
+      resolved-ref: "99a87a4c9b5b8ac9bd2433e102b8e4132ac6ea05"
       url: "https://helalmohamad@bitbucket.org/trydos/flutter_gallery_3d-1.1.1.git"
     source: git
     version: "1.1.1"
@@ -916,6 +916,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_xlider:
+    dependency: "direct main"
+    description:
+      name: flutter_xlider
+      sha256: b83da229b8a2153adeefc5d9e08e0060689c8dc2187b30e3502cf67c1a6495be
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.5.0"
   fluttertoast:
     dependency: "direct main"
     description:
