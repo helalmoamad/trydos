@@ -10,14 +10,18 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
+import '../../../data/models/get_product_filters_model.dart';
+
 class FiltersNormalList<T> extends StatefulWidget {
   const FiltersNormalList(
-      {super.key, required this.filterListTitle, required this.isBrandFilter, required this.selectedFilters, required this.filters});
+      {super.key, required this.filterListTitle, required this.isBrandFilter, required this.selectedFilters, required this.filters, this.addItemToAnimatedList, this.removeItemToAnimatedList});
 
   final bool isBrandFilter;
   final String filterListTitle;
   final ValueNotifier<List<int>> selectedFilters;
   final List<T> filters ;
+  final void Function(int index)? addItemToAnimatedList;
+  final void Function(int index , Brand removedItem)? removeItemToAnimatedList;
 
   @override
   State<FiltersNormalList> createState() => _FiltersNormalListState();
@@ -73,9 +77,13 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                             GestureDetector(
                               onTap: () {
                                 if (selected.contains(index)) {
+                                  dynamic removed = widget.filters[index];
+                                  int removedIndex = selected.indexWhere((element) => element == index);
                                   widget.selectedFilters.value.remove(index);
+                                  widget.removeItemToAnimatedList?.call(removedIndex , removed);
                                 } else {
                                   widget.selectedFilters.value.add(index);
+                                  widget.addItemToAnimatedList?.call(widget.selectedFilters.value.length - 1);
                                 }
                                 widget.selectedFilters.notifyListeners();
                               },

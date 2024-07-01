@@ -4,6 +4,7 @@ abstract class PrefsKey {
   static const userChatId = r'__$__userChatId__$__';
   static const sessionId = r'__$__sessionId__$__';
   static const userStoriesId = r'__$__userStoriesId__$__';
+  static const isTimerRunningId = r'__$__isTimerRunning__$__';
 
   static const chatName = r'__$__chatName__$__';
 

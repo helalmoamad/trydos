@@ -46,6 +46,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
   @override
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
+    chatBloc.add(GetContactsEvent());
     super.initState();
   }
 
