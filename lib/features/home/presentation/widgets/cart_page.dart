@@ -11,12 +11,16 @@ import 'package:trydos/common/helper/helper_functions.dart';
 
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_page2.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
+import 'package:trydos/features/story/presentation/widget/try_again.dart';
+import 'package:trydos/routes/router.dart';
 
 class CartPage extends StatefulWidget {
   State<CartPage> createState() => _CartPageState();
@@ -43,12 +47,18 @@ class _CartPageState extends State<CartPage> {
         buildWhen: (previous, current) =>
             previous.getCartItemsStatus != current.getCartItemsStatus,
         builder: (context, state) {
+          if (state.getCartItemsStatus == GetCartItemsStatus.failure) {
+            Center(child: TryAgainWidget(tryAgain: () {
+              BlocProvider.of<HomeBloc>(context).add(GetCartItemEvent());
+            }));
+          }
           if (state.getCartItemsStatus == GetCartItemsStatus.loading ||
-              state.getCartItemsStatus == GetCartItemsStatus.failure) {
-            return Center(
+              state.getCartShippingItemsModel == null) {
+            Center(
               child: TrydosLoader(),
             );
           }
+          int length = state.getCartShippingItemsModel!.data!.cart!.length - 1;
           return Column(
             children: [
               Container(
@@ -71,9 +81,7 @@ class _CartPageState extends State<CartPage> {
                         child: Row(
                           children: [
                             InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
+                              onTap: () {},
                               child: SvgPicture.asset(
                                 AppAssets.backIconArrowSvg,
                                 height: 20,
@@ -107,7 +115,7 @@ class _CartPageState extends State<CartPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SvgPicture.asset(AppAssets.countItemSvg),
-                          Text(" 2 ",
+                          Text(" ${length + 1} ",
                               style: context.textTheme.subtitle1?.mr.copyWith(
                                   fontSize: 13,
                                   color: const Color(0xff5D5C5D),
@@ -122,7 +130,7 @@ class _CartPageState extends State<CartPage> {
                                 height: 1.33),
                           ),
                           Text(
-                            "1150 ",
+                            "${state.getCartShippingItemsModel!.data!.totalCashFormated!.split(" ")[0]} ",
                             style: context.textTheme.subtitle1?.mr.copyWith(
                                 fontSize: 13,
                                 color: const Color(0xff5D5C5D),
@@ -130,7 +138,7 @@ class _CartPageState extends State<CartPage> {
                                 height: 1.33),
                           ),
                           Text(
-                            "AED",
+                            "${state.getCartShippingItemsModel!.data!.totalCashFormated!.split(" ")[1]} ",
                             style: context.textTheme.subtitle1?.la.copyWith(
                                 fontSize: 13,
                                 color: const Color(0xff8D8D8D),
@@ -150,7 +158,6 @@ class _CartPageState extends State<CartPage> {
               Container(
                 color: Color.fromARGB(255, 255, 255, 255),
                 width: 1.sw - 20,
-                height: 700.h,
                 child: Column(
                   children: [
                     Container(
@@ -159,7 +166,7 @@ class _CartPageState extends State<CartPage> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             color: Color(0xffF8F8F8)),
-                        height: 50.h,
+                        height: 48.h,
                         child: Row(
                           children: [
                             Container(
@@ -178,7 +185,7 @@ class _CartPageState extends State<CartPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 SvgPicture.asset(AppAssets.countItemSvg),
-                                Text("  2 ",
+                                Text("  ${length + 1} ",
                                     style: context.textTheme.subtitle1?.mr
                                         .copyWith(
                                             fontSize: 13,
@@ -195,7 +202,7 @@ class _CartPageState extends State<CartPage> {
                                           height: 1.33),
                                 ),
                                 Text(
-                                  "140 ",
+                                  "${state.getCartShippingItemsModel!.data!.totalCashFormated!.split(" ")[0]} ",
                                   style: context.textTheme.subtitle1?.mr
                                       .copyWith(
                                           fontSize: 13,
@@ -204,7 +211,7 @@ class _CartPageState extends State<CartPage> {
                                           height: 1.33),
                                 ),
                                 Text(
-                                  "USD",
+                                  "${state.getCartShippingItemsModel!.data!.totalCashFormated!.split(" ")[1]}",
                                   style: context.textTheme.subtitle1?.la
                                       .copyWith(
                                           fontSize: 13,
@@ -236,23 +243,23 @@ class _CartPageState extends State<CartPage> {
                             },
                             child: Container(
                               margin: EdgeInsets.only(
-                                  bottom: index == 2 //length
+                                  bottom: index == length //length
                                       ? 30
                                       : 0),
                               width: 1.sw,
                               decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(index == 2 //length
-                                        ? 15
-                                        : 0),
+                                borderRadius: BorderRadius.circular(index ==
+                                        state.getCartShippingItemsModel!.data!
+                                            .cart!.length //length
+                                    ? 15
+                                    : 0),
                                 boxShadow: [
                                   BoxShadow(
-                                      offset: Offset(0, index == 2 ? 0 : 10),
-                                      blurRadius: index == 2 ? 0 : 5,
-                                      color: index == 2
-                                          ? Color(0xffFFF4B5)
-                                          : Color(0xffF3F3F3),
-                                      spreadRadius: index == 2 ? 0 : 10),
+                                      offset:
+                                          Offset(0, index == length ? -10 : 10),
+                                      blurRadius: index == length ? 0 : 5,
+                                      color: Color(0xffF3F3F3),
+                                      spreadRadius: index == length ? 0 : 10),
                                 ],
                               ),
                               child: Container(
@@ -305,8 +312,13 @@ class _CartPageState extends State<CartPage> {
                                             alignment: Alignment.centerLeft,
                                             width: 50,
                                             height: 10,
-                                            child: SvgPicture.asset(
-                                              AppAssets.mangoSvg,
+                                            child: SvgPicture.network(
+                                              state
+                                                  .getCartShippingItemsModel!
+                                                  .data!
+                                                  .cart![index]
+                                                  .brand!
+                                                  .image!,
                                               fit: BoxFit.contain,
                                               color: Color(
                                                 0xff1A171B,
@@ -400,13 +412,20 @@ class _CartPageState extends State<CartPage> {
                                                           height: 1.33),
                                                 ),
                                                 Text(
-                                                  state
+                                                  !state
                                                           .getCartShippingItemsModel!
                                                           .data!
                                                           .cart![index]
-                                                          .variations!
-                                                          .color ??
-                                                      "",
+                                                          .variations
+                                                          .isNullOrEmpty
+                                                      ? state
+                                                              .getCartShippingItemsModel!
+                                                              .data!
+                                                              .cart![index]
+                                                              .variations![0]
+                                                              .color ??
+                                                          ""
+                                                      : "",
                                                   style: context
                                                       .textTheme.subtitle1?.ra
                                                       .copyWith(
@@ -450,13 +469,20 @@ class _CartPageState extends State<CartPage> {
                                                           height: 1.33),
                                                 ),
                                                 Text(
-                                                  state
+                                                  !state
                                                           .getCartShippingItemsModel!
                                                           .data!
                                                           .cart![index]
-                                                          .variations!
-                                                          .size ??
-                                                      "",
+                                                          .variations
+                                                          .isNullOrEmpty
+                                                      ? state
+                                                              .getCartShippingItemsModel!
+                                                              .data!
+                                                              .cart![index]
+                                                              .variations![0]
+                                                              .size ??
+                                                          ""
+                                                      : "",
                                                   style: context
                                                       .textTheme.subtitle1?.ra
                                                       .copyWith(
