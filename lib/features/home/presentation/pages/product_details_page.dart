@@ -457,7 +457,20 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   previous.currentSelectedColorForEveryProduct !=
                   current.currentSelectedColorForEveryProduct,
               builder: (context, state) {
+                String productId = widget.productItem.id.toString();
+                int currentSelectedColor =
+                    state.currentSelectedColorForEveryProduct[productId] ??
+                        (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
+
                 return ProductDetailsBottomSheet(
+                  currentColorName:
+                      !widget.productItem.syncColorImages.isNullOrEmpty &&
+                              !widget.productItem.syncColorImages![0].images
+                                  .isNullOrEmpty
+                          ? widget.productItem.colors![currentSelectedColor]
+                                  .color ??
+                              " "
+                          : " ",
                   productItem: widget.productItem,
                   currentColor: state.currentSelectedColorForEveryProduct[
                           widget.productItem.id.toString()] ??

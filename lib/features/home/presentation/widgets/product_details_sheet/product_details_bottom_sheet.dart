@@ -32,9 +32,12 @@ import '../product_listing/product_listing_image_widget.dart';
 class ProductDetailsBottomSheet extends StatefulWidget {
   final productListingModel.Products productItem;
   final int currentColor;
-
+  final String currentColorName;
   const ProductDetailsBottomSheet(
-      {super.key, required this.productItem, required this.currentColor});
+      {super.key,
+      required this.productItem,
+      required this.currentColor,
+      required this.currentColorName});
 
   @override
   State<ProductDetailsBottomSheet> createState() =>
@@ -265,6 +268,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                   onItemChanged: (index) {
                                     currentIndexInSlider = index;
                                     currentImageTab.value = index;
+
                                     homeBloc.add(AddCurrentSelectedColorEvent(
                                         currentSelectedColor: index,
                                         productId:
@@ -446,7 +450,11 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               builder: (context, indices, _) {
                 return indices.isEmpty
                     ? ProductDetailsSheetBottomBar(
-                        onFinishBuying: () {
+                        onFinishBuying: (quantity) {
+                          homeBloc.add(AddItemToCartEvent(
+                              color: widget.currentColorName,
+                              quantity: int.parse(quantity),
+                              id: widget.productItem.id.toString()));
                           setState(() {
                             tag = 'cart';
                           });

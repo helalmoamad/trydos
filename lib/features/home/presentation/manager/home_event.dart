@@ -145,7 +145,29 @@ class GetCartItemEvent extends HomeEvent {
 }
 
 class AddItemToCartEvent extends HomeEvent {
-  const AddItemToCartEvent();
+  final String? id;
+  final String? color;
+  final int? quantity;
+  final String? choice_1;
+  AddItemToCartEvent({
+    this.id,
+    this.quantity,
+    this.color,
+    this.choice_1,
+  });
+  @override
+  List<Object?> get props => [];
+}
+
+class AddCurrentColorSizeEvent extends HomeEvent {
+  final String? choice_1;
+  final String? color;
+  final String? quantity;
+  AddCurrentColorSizeEvent({
+    this.choice_1,
+    this.color,
+    this.quantity,
+  });
   @override
   List<Object?> get props => [];
 }

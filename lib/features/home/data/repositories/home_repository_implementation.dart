@@ -52,14 +52,14 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, GetProductListingWithoutFiltersModel>>
-  getProductsWithoutFilters(Map<String, dynamic> params) {
+      getProductsWithoutFilters(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getProductsWithoutFilters(params));
   }
 
   @override
   Future<Either<Failure, GetProductDetailWithoutRelatedProductsModel>>
-  getProductDetailWithoutSimilarRelatedProducts(String productId) {
+      getProductDetailWithoutSimilarRelatedProducts(String productId) {
     return handlingExceptionRequest(
         tryCall: () =>
             dataSource.getProductDetailWithoutRelatedProducts(productId));
@@ -88,5 +88,11 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   Future<Either<Failure, GetCartShippingItemsModel>> getCartShippingItem() {
     return handlingExceptionRequest(
         tryCall: () => dataSource.GetCartShippingItems());
+  }
+
+  @override
+  Future<Either<Failure, bool>> addItemToCart(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.addItemToCart(params));
   }
 }
