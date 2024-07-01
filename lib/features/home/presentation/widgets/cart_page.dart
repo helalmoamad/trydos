@@ -48,13 +48,13 @@ class _CartPageState extends State<CartPage> {
             previous.getCartItemsStatus != current.getCartItemsStatus,
         builder: (context, state) {
           if (state.getCartItemsStatus == GetCartItemsStatus.failure) {
-            Center(child: TryAgainWidget(tryAgain: () {
+            return Center(child: TryAgainWidget(tryAgain: () {
               BlocProvider.of<HomeBloc>(context).add(GetCartItemEvent());
             }));
           }
-          if (state.getCartItemsStatus == GetCartItemsStatus.loading ||
+          if (state.getCartItemsStatus == GetCartItemsStatus.loading &&
               state.getCartShippingItemsModel == null) {
-            Center(
+            return Center(
               child: TrydosLoader(),
             );
           }
@@ -236,10 +236,17 @@ class _CartPageState extends State<CartPage> {
                         itemCount:
                             state.getCartShippingItemsModel!.data!.cart!.length,
                         itemBuilder: (context, index) {
+                          int quantity = state.getCartShippingItemsModel!.data!
+                              .cart![index].quantity!;
+
                           return InkWell(
                             onTap: () {
                               HelperFunctions.slidingNavigation(
-                                  context, CartPage2(index: index));
+                                  context,
+                                  CartPage2(
+                                    getCartShippingItemsModel:
+                                        state.getCartShippingItemsModel!,
+                                  ));
                             },
                             child: Container(
                               margin: EdgeInsets.only(
@@ -503,8 +510,12 @@ class _CartPageState extends State<CartPage> {
                                       child: Row(
                                         children: [
                                           Text(
-                                            state.getCartShippingItemsModel!
-                                                .data!.cart![index].priceNum
+                                            (state
+                                                        .getCartShippingItemsModel!
+                                                        .data!
+                                                        .cart![index]
+                                                        .priceNum! *
+                                                    quantity)
                                                 .toString(),
                                             style: context
                                                 .textTheme.subtitle1?.ra
@@ -520,12 +531,7 @@ class _CartPageState extends State<CartPage> {
                                             width: 5,
                                           ),
                                           Text(
-                                              state
-                                                  .getCartShippingItemsModel!
-                                                  .data!
-                                                  .cart![index]
-                                                  .offerPriceFormatted!
-                                                  .split(" ")[0],
+                                              "${state.getCartShippingItemsModel!.data!.cart![index].offerPrice! * quantity}",
                                               style: context
                                                   .textTheme.subtitle1?.br
                                                   .copyWith(
