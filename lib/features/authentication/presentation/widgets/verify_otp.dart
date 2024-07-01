@@ -33,7 +33,8 @@ class VerifyOtp extends StatefulWidget {
       required this.navigateToAddName,
       required this.onLoginFailed,
       required this.goBack,
-      required this.phoneNumber})
+      required this.phoneNumber,
+      })
       : super(key: key);
   final String methodIcon;
   final bool fromLogin;
@@ -42,39 +43,33 @@ class VerifyOtp extends StatefulWidget {
   final void Function() goBack;
   final void Function() navigateToAddName;
   final int isVisWhatsApp;
-
   @override
   State<VerifyOtp> createState() => _VerifyOtpState();
 }
 
 class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
-  late ValueNotifier<bool> _enabledResendNotifier;
-  late ValueNotifier<int> checkOtp;
-  int secondsDuration = 120;
-  late CountdownTimerController controller;
-  late int endTime;
+
   late AuthBloc authBloc;
+  CountdownTimerController? countdownTimerController;
 
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
-
-  void onEnd() {
-    controller.disposeTimer();
-
-    if (secondsDuration < 60) {
-      secondsDuration += 15;
-    }
+  int endTime = (DateTime.now().millisecondsSinceEpoch + 1000 * 120);
+  late final ValueNotifier<bool> enabledResendNotifier;
+  late final ValueNotifier<int> checkOtp;
+  void onEnd(){
+    prefsRepository.setTimerForOtpRunning(false);
     checkOtp.value = 0;
-    _enabledResendNotifier.value = true;
+    enabledResendNotifier.value = true;
   }
-
   @override
   void initState() {
-    authBloc = BlocProvider.of<AuthBloc>(context);
-    _enabledResendNotifier = ValueNotifier<bool>(false);
+    enabledResendNotifier = ValueNotifier<bool>(false);
+    if(!(countdownTimerController?.isRunning ?? false)) {
+      countdownTimerController = CountdownTimerController(endTime: endTime, onEnd: onEnd);
+    prefsRepository.setTimerForOtpRunning(true);
+    }
     checkOtp = ValueNotifier<int>(0);
-
-    endTime = DateTime.now().millisecondsSinceEpoch + 1000 * secondsDuration;
-    controller = CountdownTimerController(endTime: endTime, onEnd: onEnd);
+    authBloc = BlocProvider.of<AuthBloc>(context);
     super.initState();
   }
 
@@ -84,8 +79,14 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
+      print(error);
     };
     return BlocListener<AuthBloc, AuthState>(
+      listenWhen: (p,c)=> p.sendOtpStatus != c.sendOtpStatus && c.sendOtpStatus == SendOtpStatus.failure,
+  listener: (context, state) {
+    showMessage(state.sendOtpError.toString());
+  },
+  child: BlocListener<AuthBloc, AuthState>(
         listenWhen: (p, c) =>
             p.verifyOtpSignInStatus != c.verifyOtpSignInStatus,
         listener: (context, state) {
@@ -125,7 +126,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
               checkOtp.value = 2;
             } else if (state.verifyOtpSignUpStatus ==
                 VerifyOtpSignUpStatus.success) {
-              checkOtp.value = 1;
+             checkOtp.value = 1;
               Future.delayed(
                 Duration(milliseconds: 700),
                 () {
@@ -212,7 +213,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                               ),
                               4.verticalSpace,
                               ValueListenableBuilder<bool>(
-                                  valueListenable: _enabledResendNotifier,
+                                  valueListenable: enabledResendNotifier,
                                   builder: (context, resend, _) {
                                     return Column(
                                       crossAxisAlignment:
@@ -244,7 +245,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                             4.horizontalSpace,
                                             ValueListenableBuilder<bool>(
                                                 valueListenable:
-                                                    _enabledResendNotifier,
+                                                    enabledResendNotifier,
                                                 builder: (context,
                                                     enabledResend, _) {
                                                   if (!enabledResend)
@@ -275,9 +276,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                                         1.25),
                                                           );
                                                         },
-                                                        controller: controller,
-                                                        onEnd: onEnd,
-                                                        endTime: endTime,
+                                                        controller: countdownTimerController,
                                                         endWidget:
                                                             const SizedBox(),
                                                       ),
@@ -362,7 +361,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                   Padding(
                     padding: HWEdgeInsets.symmetric(horizontal: 20.0),
                     child: ValueListenableBuilder<bool>(
-                        valueListenable: _enabledResendNotifier,
+                        valueListenable: enabledResendNotifier,
                         builder: (context, isExpired, _) {
                           return ValueListenableBuilder<int>(
                               valueListenable: checkOtp,
@@ -538,7 +537,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                 .please_wait_5_seconds
                                                 .tr());
                                             pasteOtpCode('');
-                                            //checkOtp.value = 2;
+                                            //widget.checkOtp.value = 2;
                                           }
                                         },
                                         controller: form.controllers[5],
@@ -555,7 +554,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                       valueListenable: checkOtp,
                       builder: (context, codeStatus, _) {
                         return ValueListenableBuilder<bool>(
-                            valueListenable: _enabledResendNotifier,
+                            valueListenable: enabledResendNotifier,
                             builder: (context, isExpired, _) {
                               return codeStatus == 2 || isExpired
                                   ? Column(
@@ -583,7 +582,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
               );
             },
           ),
-        ));
+        )),
+);
   }
 
   pasteOtpCode(String text) {
@@ -605,10 +605,9 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
   }
 
   void _onResendSucceed() {
-    endTime = DateTime.now().millisecondsSinceEpoch + 1000 * secondsDuration;
-    controller = CountdownTimerController(endTime: endTime, onEnd: onEnd);
-    controller.start();
-    _enabledResendNotifier.value = false;
+    endTime = DateTime.now().millisecondsSinceEpoch + 1000 * 120;
+    countdownTimerController = CountdownTimerController(endTime: endTime , onEnd: onEnd);
+    enabledResendNotifier.value = false;
     checkOtp.value = 0;
     authBloc.add(SendOtpEvent(
         phone: widget.phoneNumber, isViaWhatsApp: widget.isVisWhatsApp));

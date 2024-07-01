@@ -106,25 +106,26 @@ class Data {
         boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
       );
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-        totalSize: json["total_size"],
-        limit: json["limit"],
-        offset: json["offset"],
-        products: json["products"] == null
-            ? []
-            : List<Products>.from(
-                json["products"]!.map((x) => Products.fromJson(x))),
-        categoryParentParent: json["category_parent_parent"],
-        categoryParent: json["category_parent"],
-        category: json["category"],
-        categorySeoDescription: json["category_seo_description"],
-        categoryTitle: json["category_title"],
-        categoryH1: json["category_h1"],
-        childCategories: json["child_categories"],
-        resultFor: json["result_for"],
-        boutiqueSlug: json["boutique_slug"],
-      );
-
+  factory Data.fromJson(Map<String, dynamic> json) {
+    return Data(
+      totalSize: json["total_size"],
+      limit: json["limit"],
+      offset: json["offset"],
+      products: json["products"] == null
+          ? []
+          : List<Products>.from(
+          json["products"]!.map((x) => Products.fromJson(x))),
+      categoryParentParent: json["category_parent_parent"],
+      categoryParent: json["category_parent"],
+      category: json["category"],
+      categorySeoDescription: json["category_seo_description"],
+      categoryTitle: json["category_title"],
+      categoryH1: json["category_h1"],
+      childCategories: json["child_categories"],
+      resultFor: json["result_for"],
+      boutiqueSlug: json["boutique_slug"],
+    );
+  }
   Map<String, dynamic> toJson() => {
         "total_size": totalSize,
         "limit": limit,
@@ -380,6 +381,7 @@ class Category {
         "icon": icon,
       };
 }
+
 
 class Color {
   final String? name;
