@@ -258,10 +258,9 @@ void main() async {
       options.tracesSampleRate = 1.0;
     },
     appRunner: () => runApp(DefaultAssetBundle(
-      bundle: SentryAssetBundle(),
-      child: TrydosApplication(
-        navKey: navigatorKey,
-      )
-    )),
+        bundle: SentryAssetBundle(),
+        child: TrydosApplication(
+          navKey: navigatorKey,
+        ))),
   );
 }

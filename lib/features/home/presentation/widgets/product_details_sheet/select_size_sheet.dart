@@ -36,14 +36,14 @@ class SelectSizeContent extends StatefulWidget {
 }
 
 class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
-
   List<String> sizes = [];
 
   final CarouselController carouselController = CarouselController();
   late final ValueNotifier<int> currentIndexInSizes;
-
+  late HomeBloc homeBloc;
   @override
   void initState() {
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     currentIndexInSizes = ValueNotifier(0);
 
     super.initState();
@@ -57,10 +57,16 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
           c.currentSelectedColorForEveryProduct,
       builder: (context, state) {
         sizes = state.sizes ?? [];
-        print(sizes);
+
         currentIndexInSizes.value = sizes.length ~/ 2;
-        if(sizes.length == 0){
-          return Container(color: Colors.white,height: 210,);
+        homeBloc
+            .add(AddCurrentColorSizeEvent(choice_1: sizes[sizes.length ~/ 2]));
+
+        if (sizes.length == 0) {
+          return Container(
+            color: Colors.white,
+            height: 210,
+          );
         }
         return Container(
           decoration: BoxDecoration(
@@ -225,6 +231,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                   height: 80,
                                   enableInfiniteScroll: false,
                                   onPageChanged: (index, reason) {
+                                    homeBloc.add(AddCurrentColorSizeEvent(
+                                        choice_1: sizes[index]));
                                     HapticFeedback.lightImpact();
                                     currentIndexInSizes.value = index;
                                     if (sizes[index] == 'S') {

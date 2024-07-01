@@ -29,6 +29,7 @@ enum GetProductDetailWithoutSimilarRelatedProductsStatus {
 enum SelectedVideoStatus { init, loading, success, failure }
 
 enum GetProductFiltersStatus { init, loading, success, failure }
+
 enum GetCommentForProductStatus { init, loading, success, failure }
 
 enum GetMainCategoriesStatus { init, loading, success, failure }
@@ -65,6 +66,7 @@ class HomeState {
     this.selectedCollection,
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
+    this.CurrentColorSizeForCart,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
     this.getProductListingPaginationWithoutFiltersModel = const {},
@@ -103,7 +105,7 @@ class HomeState {
       getProductDetailWithoutRelatedProductsModel;
 
   final StartingSetting? startingSetting;
-
+  Map<String, String>? CurrentColorSizeForCart;
   final Map<String, GetProductDetailWithoutRelatedProductsModel>
       cachedProductWithoutRelatedProductsModel;
 
@@ -117,8 +119,9 @@ class HomeState {
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
       List<String>? sizes,
-        final GetProductFiltersStatus? getProductFiltersStatus,
-        final GetProductFiltersModel? getProductFiltersModel,
+      Map<String, String>? CurrentColorSizeForCart,
+      final GetProductFiltersStatus? getProductFiltersStatus,
+      final GetProductFiltersModel? getProductFiltersModel,
       final Map<String, bool>? reRequestTheseBoutiques,
       final GetCartShippingItemsModel? getCartShippingItemsModel,
       final Map<String, bool>? reRequestTheseProductListingInBoutiques,
@@ -144,8 +147,12 @@ class HomeState {
         getCommentForProductModel:
             getCommentForProductModel ?? this.getCommentForProductModel,
         sizes: sizes ?? this.sizes,
-        getProductFiltersStatus: getProductFiltersStatus ?? this.getProductFiltersStatus,
-        getProductFiltersModel: getProductFiltersModel ?? this.getProductFiltersModel,
+        CurrentColorSizeForCart:
+            CurrentColorSizeForCart ?? this.CurrentColorSizeForCart,
+        getProductFiltersStatus:
+            getProductFiltersStatus ?? this.getProductFiltersStatus,
+        getProductFiltersModel:
+            getProductFiltersModel ?? this.getProductFiltersModel,
         getCartShippingItemsModel:
             getCartShippingItemsModel ?? this.getCartShippingItemsModel,
         getCommentForProductStatus:
