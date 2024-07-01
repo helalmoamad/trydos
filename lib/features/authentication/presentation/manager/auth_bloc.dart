@@ -203,7 +203,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       SendOtpParams(isViaWhatsApp: event.isViaWhatsApp, phone: event.phone),
     );
     response.fold(
-        (l) => emit(state.copyWith(sendOtpStatus: SendOtpStatus.failure)), (r) {
+        (l) => emit(state.copyWith(sendOtpStatus: SendOtpStatus.failure , sendOtpError: 'please wait some seconds and try again')), (r) {
       _prefsRepository.setVerificationId(r.data!.verificationId!);
       emit(state.copyWith(sendOtpStatus: SendOtpStatus.success));
     });

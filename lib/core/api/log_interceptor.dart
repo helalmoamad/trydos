@@ -33,14 +33,14 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n timeout: ${options.connectTimeout! ~/ 1000}s",
       );
     }
-    _prefsRepository.saveRequestsData(
-        options.path,
-        options.data is! FormData ? options.data : {'data': 'formData'},
-        options.headers,
-        null,
-        options.method,
-        options.queryParameters,
-        options.data is! FormData ? options.data : {'data': 'formData'});
+    // _prefsRepository.saveRequestsData(
+    //     options.path,
+    //     options.data is! FormData ? options.data : {'data': 'formData'},
+    //     options.headers,
+    //     null,
+    //     options.method,
+    //     options.queryParameters,
+    //     options.data is! FormData ? options.data : {'data': 'formData'});
 
     handler.next(options);
   }

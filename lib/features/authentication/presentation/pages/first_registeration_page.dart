@@ -2,6 +2,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_countdown_timer/countdown_timer_controller.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -10,6 +11,7 @@ import 'package:trydos/base_page.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
 import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/helper/show_message.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
@@ -23,6 +25,7 @@ import '../widgets/verification_methods.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({Key? key}) : super(key: key);
+
   @override
   State<RegistrationPage> createState() => _RegistrationPageState();
 }
@@ -48,6 +51,7 @@ class _RegistrationPageState extends State<RegistrationPage>
     authBloc = BlocProvider.of<AuthBloc>(context);
     super.initState();
   }
+
 
   @override
   void didChangeDependencies() {
@@ -88,7 +92,7 @@ class _RegistrationPageState extends State<RegistrationPage>
         builder: (ctx, index, child) {
           if (index < 2) {
             FocusScope.of(context).unfocus();
-          } else if(index != 6){
+          } else if (index != 6) {
             focusNode.requestFocus();
           }
           return Scaffold(
@@ -200,9 +204,15 @@ class _RegistrationPageState extends State<RegistrationPage>
                                   onChooseWhatsapp: () {
                                     isVisWhatsApp = 1;
                                     pageContent.value = 4;
-                                    pageController.animateToPage(4,
-                                        duration: Duration(milliseconds: 500),
-                                        curve: Curves.easeInOut);
+                                      pageController.animateToPage(4,
+                                          duration: Duration(milliseconds: 500),
+                                          curve: Curves.easeInOut);
+
+                                    if (prefsRepository.isTimerForOtpRunning ?? false) {
+                                      showMessage(
+                                          'you must wait for some seconds before try again');
+                                      return;
+                                    }
                                     authBloc.add(SendOtpEvent(
                                         phone: phoneNumber, isViaWhatsApp: 1));
                                   },
