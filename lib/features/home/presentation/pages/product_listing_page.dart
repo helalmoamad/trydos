@@ -77,7 +77,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback(postFrameCallback);
+    Timer.periodic(Duration(milliseconds: 100) , postFrameCallback);
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetProductsWithoutFiltersEvent(
@@ -85,6 +85,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
       category: widget.category,
       offset: 1,
     ));
+    homeBloc.add(GetProductFiltersEvent());
     scrollController.addListener(() {
       if (scrollController.position.pixels <= 80) {
         debugPrint(scrollController.position.pixels.toString());
@@ -109,9 +110,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   Key gridViewKeyForRendering = UniqueKey();
 
-  void postFrameCallback(_) {
+  void postFrameCallback(timer) {
     var context = htmlDescriptionKey.currentContext;
-    if (context == null || htmlDescriptionHeight.value != 0) return;
+    if (context == null || htmlDescriptionHeight.value > 0) return;
+    timer.cancel();
     htmlDescriptionHeight.value = context.size!.height;
   }
 
@@ -400,23 +402,20 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     SizedBox(
                                                       height: 5,
                                                     ),
-                                                    Visibility(
-                                                      visible: htmlHeight != -1,
-                                                      child: Html(
-                                                          key: htmlDescriptionKey,
-                                                          shrinkWrap: true,
-                                                          data: widget
-                                                              .boutiqueDescription,
-                                                          style: {
-                                                            "body": Style(
-                                                                margin:
-                                                                    Margins.all(0)),
-                                                            "p": Style(
+                                                    Html(
+                                                        key: htmlDescriptionKey,
+                                                        shrinkWrap: true,
+                                                        data: widget
+                                                            .boutiqueDescription,
+                                                        style: {
+                                                          "body": Style(
                                                               margin:
-                                                                  Margins.all(0),
-                                                            ),
-                                                          }),
-                                                    ),
+                                                                  Margins.all(0)),
+                                                          "p": Style(
+                                                            margin:
+                                                                Margins.all(0),
+                                                          ),
+                                                        }),
                                                     SizedBox(
                                                       height: 10,
                                                     ),
@@ -427,7 +426,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       child: Stack(
                                                         children: [
                                                           Container(
-                                                            height: 135,
+                                                            height: htmlHeight == 0 ? 0 : 135,
                                                             width: 1.sw,
                                                             decoration:
                                                                 BoxDecoration(
@@ -465,7 +464,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 )),
                                                           ),
                                                           Container(
-                                                            height: 135,
+                                                            height: htmlHeight == 0 ? 0 : 135 ,
                                                             width: 1.sw,
                                                             decoration:
                                                                 BoxDecoration(

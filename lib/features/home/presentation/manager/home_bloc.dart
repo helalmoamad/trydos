@@ -582,11 +582,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       reRequestTheseBoutiques: {},
       getMainCategoriesStatus: GetMainCategoriesStatus.init,
       getStartingSettingsStatus: GetStartingSettingsStatus.init,
+      getProductFiltersStatus: GetProductFiltersStatus.loading,
     ).toJson();
   }
 
   FutureOr<void> _onGetProductFiltersEvent(
       GetProductFiltersEvent event, Emitter<HomeState> emit) async {
+    if(state.getProductFiltersStatus == GetProductFiltersStatus.success) return;
     emit(state.copyWith(
         getProductFiltersStatus: GetProductFiltersStatus.loading));
     final response = await getProductFiltersUseCase(NoParams());
