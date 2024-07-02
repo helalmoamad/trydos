@@ -450,7 +450,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                           milliseconds:
                                               focused == index ? 150 : 10),
                                       child: InkWell(
-                                        onTap: () =>
+                                        onTap: () {
                                             HelperFunctions.slidingNavigation(
                                                 context,
                                                 ProductListingPage(
@@ -458,7 +458,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                       widget.boutniqe.slug!,
                                                   category: widget
                                                       .boutniqe
-                                                      .mainCategoriesForProductIds![
+                                                      .childCategoriesForProductIds![
                                                           index]
                                                       .categorySlug,
                                                   boutiqueDescription: widget
@@ -469,7 +469,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                       .filePath!,
                                                   boutiqueIcon: widget
                                                       .boutniqe.icon!.filePath,
-                                                )),
+                                                ));},
                                         child: ProductItemCircle(
                                           index: index,
                                           isFocused: focused == index,

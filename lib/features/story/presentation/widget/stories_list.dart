@@ -130,7 +130,8 @@ class _StoriesListState extends State<StoriesList> {
                                                         } else if (GetIt.I<
                                                                     PrefsRepository>()
                                                                 .myStoriesName ==
-                                                            null) {
+                                                            null  || GetIt.I<
+                                                            PrefsRepository>().myStoriesName == 'No Name') {
                                                           showDialog(
                                                               context: context,
                                                               barrierDismissible:

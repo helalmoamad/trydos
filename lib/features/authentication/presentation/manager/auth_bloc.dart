@@ -281,7 +281,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       try {
         _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-        _prefsRepository.setMyMarketName(r.data!.user!.name.toString());
+        _prefsRepository.setMyMarketName(r.data!.user!.name ?? 'No Name');
         _prefsRepository.setMarketToken(r.data!.token!);
         _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
         _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());

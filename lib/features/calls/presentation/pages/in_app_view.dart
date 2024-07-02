@@ -67,7 +67,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     debugPrint("asdafsd{${widget.type}");
     debugPrint("asdafsd{${widget.action}");
     debugPrint("asdafsd{${widget.auth_token}");
-    Uri baseUrl = Uri.parse('https://webdev.trydos.com');
+    Uri baseUrl = Uri.parse('https://trydos-git-development-yasseromranramaazcoms-projects.vercel.app');
     source = Uri(queryParameters: {
       'uid': widget.uId,
       'authToken': widget.auth_token,
