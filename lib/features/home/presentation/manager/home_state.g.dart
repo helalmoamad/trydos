@@ -41,6 +41,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           : GetProductFiltersModel.fromJson(
               json['getProductFiltersModel'] as Map<String, dynamic>),
       currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
+      productITemForCart:
+          (json['productITemForCart'] as Map<String, dynamic>?)?.map(
+                (k, e) =>
+                    MapEntry(k, Products.fromJson(e as Map<String, dynamic>)),
+              ) ??
+              const {},
       getCartShippingItemsModel: json['getCartShippingItemsModel'] == null
           ? null
           : GetCartShippingItemsModel.fromJson(
@@ -77,6 +83,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : MainCategoriesResponseModel.fromJson(
               json['mainCategoriesResponseModel'] as Map<String, dynamic>),
+      CurrentColorSizeForCart:
+          (json['CurrentColorSizeForCart'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ),
       getCartItemsStatus: $enumDecodeNullable(
               _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
           GetCartItemsStatus.init,
@@ -135,6 +145,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.currentSelectedColorForEveryProduct,
       'getCommentForProductStatus': _$GetCommentForProductStatusEnumMap[
           instance.getCommentForProductStatus]!,
+      'productITemForCart':
+          instance.productITemForCart.map((k, e) => MapEntry(k, e.toJson())),
       'getMainCategoriesStatus':
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
       'getProductFiltersStatus':
@@ -179,6 +191,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getProductDetailWithoutRelatedProductsModel':
           instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
       'startingSetting': instance.startingSetting?.toJson(),
+      'CurrentColorSizeForCart': instance.CurrentColorSizeForCart,
       'cachedProductWithoutRelatedProductsModel': instance
           .cachedProductWithoutRelatedProductsModel
           .map((k, e) => MapEntry(k, e.toJson())),

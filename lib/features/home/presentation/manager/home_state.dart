@@ -58,6 +58,7 @@ class HomeState {
     this.getProductFiltersStatus = GetProductFiltersStatus.init,
     this.getProductFiltersModel,
     this.currentPage = 0,
+    this.productITemForCart = const {},
     this.getCartShippingItemsModel,
     this.reRequestTheseBoutiques = const {},
     this.getCommentForProductModel = const {},
@@ -78,7 +79,7 @@ class HomeState {
   final GetStartingSettingsStatus getStartingSettingsStatus;
   final Map<String, int> currentSelectedColorForEveryProduct;
   final GetCommentForProductStatus getCommentForProductStatus;
-
+  final Map<String, Products> productITemForCart;
   final GetMainCategoriesStatus getMainCategoriesStatus;
   final GetProductFiltersStatus getProductFiltersStatus;
   final GetProductFiltersModel? getProductFiltersModel;
@@ -123,6 +124,7 @@ class HomeState {
       final GetProductFiltersStatus? getProductFiltersStatus,
       final GetProductFiltersModel? getProductFiltersModel,
       final Map<String, bool>? reRequestTheseBoutiques,
+      final Map<String, Products>? productITemForCart,
       final GetCartShippingItemsModel? getCartShippingItemsModel,
       final Map<String, bool>? reRequestTheseProductListingInBoutiques,
       final GetProductListingStatus? getProductListingStatus,
@@ -147,6 +149,7 @@ class HomeState {
         getCommentForProductModel:
             getCommentForProductModel ?? this.getCommentForProductModel,
         sizes: sizes ?? this.sizes,
+        productITemForCart: productITemForCart ?? this.productITemForCart,
         CurrentColorSizeForCart:
             CurrentColorSizeForCart ?? this.CurrentColorSizeForCart,
         getProductFiltersStatus:

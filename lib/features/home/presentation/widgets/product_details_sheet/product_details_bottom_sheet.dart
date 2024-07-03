@@ -457,6 +457,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             .filePath!,
                         onFinishBuying: (quantity) {
                           homeBloc.add(AddItemToCartEvent(
+                              products: widget.productItem,
                               color: widget.currentColorName,
                               quantity: int.parse(quantity),
                               id: widget.productItem.id.toString()));
