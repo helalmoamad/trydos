@@ -68,6 +68,7 @@ class Product {
   final dynamic wholeSaleLink;
   final int? viewsCount;
   final List<DataDescriptor>? descriptors;
+  final List<Label>? labels;
   Product({
     this.id,
     this.description,
@@ -93,6 +94,7 @@ class Product {
     this.hasWholeSale,
     this.wholeSaleLink,
     this.viewsCount,
+    this.labels,
   });
 
   Product copyWith({
@@ -120,6 +122,7 @@ class Product {
     dynamic wholeSaleLink,
     int? viewsCount,
     List<DataDescriptor>? descriptors,
+    List<Label>? labels,
   }) =>
       Product(
         id: id ?? this.id,
@@ -146,44 +149,49 @@ class Product {
         wholeSaleLink: wholeSaleLink ?? this.wholeSaleLink,
         viewsCount: viewsCount ?? this.viewsCount,
         descriptors: descriptors ?? this.descriptors,
+        labels: labels ?? this.labels,
       );
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-      id: json["id"],
-      description: json["description"],
-      model: json["model"],
-      features: json["features"],
-      inStock: json["in_stock"],
-      variation: json["variation"] == null
-          ? []
-          : List<Variation>.from(
-              json["variation"]!.map((x) => Variation.fromJson(x))),
-      choiceOptions: json["choice_options"] == null
-          ? []
-          : List<ChoiceOption>.from(
-              json["choice_options"]!.map((x) => ChoiceOption.fromJson(x))),
-      hasDiscount: json["has_discount"],
-      hasTax: json["has_tax"],
-      deliveryAt: json["delivery_at"],
-      tax: json["tax"],
-      unitPrice: json["unit_price"],
-      currentStock: json["current_stock"],
-      leftStock: json["Left_stock"],
-      reviewsCount: json["reviews_count"],
-      sellerId: json["seller_id"],
-      seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
-      shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
-      isFavSeller: json["is_fav_seller"],
-      reviews: json["reviews"] == null
-          ? []
-          : List<dynamic>.from(json["reviews"]!.map((x) => x)),
-      hasWholeSale: json["has_whole_sale"],
-      wholeSaleLink: json["whole_sale_link"],
-      viewsCount: json["views_count"],
-      descriptors: json["descriptors"] == null
-          ? []
-          : List<DataDescriptor>.from(
-              json["descriptors"]!.map((x) => DataDescriptor.fromJson(x))));
+        id: json["id"],
+        description: json["description"],
+        model: json["model"],
+        features: json["features"],
+        inStock: json["in_stock"],
+        variation: json["variation"] == null
+            ? []
+            : List<Variation>.from(
+                json["variation"]!.map((x) => Variation.fromJson(x))),
+        choiceOptions: json["choice_options"] == null
+            ? []
+            : List<ChoiceOption>.from(
+                json["choice_options"]!.map((x) => ChoiceOption.fromJson(x))),
+        hasDiscount: json["has_discount"],
+        hasTax: json["has_tax"],
+        deliveryAt: json["delivery_at"],
+        tax: json["tax"],
+        unitPrice: json["unit_price"],
+        currentStock: json["current_stock"],
+        leftStock: json["Left_stock"],
+        reviewsCount: json["reviews_count"],
+        sellerId: json["seller_id"],
+        seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
+        shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
+        isFavSeller: json["is_fav_seller"],
+        reviews: json["reviews"] == null
+            ? []
+            : List<dynamic>.from(json["reviews"]!.map((x) => x)),
+        hasWholeSale: json["has_whole_sale"],
+        wholeSaleLink: json["whole_sale_link"],
+        viewsCount: json["views_count"],
+        descriptors: json["descriptors"] == null
+            ? []
+            : List<DataDescriptor>.from(
+                json["descriptors"]!.map((x) => DataDescriptor.fromJson(x))),
+        labels: json["labels"] == null
+            ? []
+            : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
+      );
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -217,6 +225,9 @@ class Product {
         "descriptors": descriptors == null
             ? []
             : List<dynamic>.from(descriptors!.map((x) => x.toJson())),
+        "labels": labels == null
+            ? []
+            : List<dynamic>.from(labels!.map((x) => x.toJson())),
       };
 }
 
@@ -257,6 +268,70 @@ class ChoiceOption {
         "options": options == null
             ? []
             : List<dynamic>.from(options!.map((x) => x.toJson())),
+      };
+}
+
+class Icon {
+  final String? filePath;
+  final String? originalWidth;
+  final String? originalHeight;
+
+  Icon({
+    this.filePath,
+    this.originalWidth,
+    this.originalHeight,
+  });
+
+  Icon copyWith({
+    String? filePath,
+    String? originalWidth,
+    String? originalHeight,
+  }) =>
+      Icon(
+        filePath: filePath ?? this.filePath,
+        originalWidth: originalWidth ?? this.originalWidth,
+        originalHeight: originalHeight ?? this.originalHeight,
+      );
+
+  factory Icon.fromJson(Map<String, dynamic> json) => Icon(
+        filePath: json["file_path"],
+        originalWidth: json["original_width"],
+        originalHeight: json["original_height"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "file_path": filePath,
+        "original_width": originalWidth,
+        "original_height": originalHeight,
+      };
+}
+
+class Label {
+  final String? label;
+  final Icon? icon;
+
+  Label({
+    this.label,
+    this.icon,
+  });
+
+  Label copyWith({
+    String? label,
+    Icon? icon,
+  }) =>
+      Label(
+        label: label ?? this.label,
+        icon: icon ?? this.icon,
+      );
+
+  factory Label.fromJson(Map<String, dynamic> json) => Label(
+        label: json["label"],
+        icon: json["icon"] == null ? null : Icon.fromJson(json["icon"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "label": label,
+        "icon": icon?.toJson(),
       };
 }
 

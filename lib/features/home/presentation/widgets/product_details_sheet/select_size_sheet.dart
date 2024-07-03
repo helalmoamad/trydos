@@ -59,15 +59,17 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
         sizes = state.sizes ?? [];
 
         currentIndexInSizes.value = sizes.length ~/ 2;
-        homeBloc
-            .add(AddCurrentColorSizeEvent(choice_1: sizes[sizes.length ~/ 2]));
-
+        if (sizes.length > 0) {
+          homeBloc.add(
+              AddCurrentColorSizeEvent(choice_1: sizes[sizes.length ~/ 2]));
+        }
         if (sizes.length == 0) {
           return Container(
             color: Colors.white,
             height: 210,
           );
         }
+
         return Container(
           decoration: BoxDecoration(
             color: colorScheme.white,

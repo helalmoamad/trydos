@@ -18,7 +18,7 @@ import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import '../../../../app/svg_network_widget.dart';
 
 class ProductDetailsTitle extends StatelessWidget {
-  final Brand.Brand brand;
+  final Brand.Brand? brand;
 
   final String productName;
   final String thumbnail;
@@ -27,7 +27,7 @@ class ProductDetailsTitle extends StatelessWidget {
   final double orginalHeight;
   ProductDetailsTitle(
       {super.key,
-      required this.brand,
+      this.brand,
       required this.productName,
       required this.thumbnail,
       required this.orginalHeight,
@@ -51,10 +51,12 @@ class ProductDetailsTitle extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SvgNetworkWidget(
-                    svgUrl: brand.image!,
-                    height: 18,
-                  ),
+                  brand != null
+                      ? SvgNetworkWidget(
+                          svgUrl: brand!.image!,
+                          height: 18,
+                        )
+                      : SizedBox.shrink(),
                   state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                           GetProductDetailWithoutSimilarRelatedProductsStatus
                               .loading

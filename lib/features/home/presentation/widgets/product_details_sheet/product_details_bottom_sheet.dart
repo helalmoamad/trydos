@@ -450,8 +450,14 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               builder: (context, indices, _) {
                 return indices.isEmpty
                     ? ProductDetailsSheetBottomBar(
+                        imageUrl: widget
+                            .productItem
+                            .syncColorImages![widget.currentColor]
+                            .images![0]
+                            .filePath!,
                         onFinishBuying: (quantity) {
                           homeBloc.add(AddItemToCartEvent(
+                              products: widget.productItem,
                               color: widget.currentColorName,
                               quantity: int.parse(quantity),
                               id: widget.productItem.id.toString()));

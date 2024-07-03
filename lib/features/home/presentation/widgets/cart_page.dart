@@ -13,10 +13,13 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_page2.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
@@ -30,8 +33,11 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   late HomeBloc homeBloc;
+  late AppBloc appBloc;
   @override
   void initState() {
+    appBloc = BlocProvider.of<AppBloc>(context);
+
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetCartItemEvent());
     homeBloc.add(GetProductFiltersEvent());
@@ -48,13 +54,13 @@ class _CartPageState extends State<CartPage> {
             previous.getCartItemsStatus != current.getCartItemsStatus,
         builder: (context, state) {
           if (state.getCartItemsStatus == GetCartItemsStatus.failure) {
-            Center(child: TryAgainWidget(tryAgain: () {
+            return Center(child: TryAgainWidget(tryAgain: () {
               BlocProvider.of<HomeBloc>(context).add(GetCartItemEvent());
             }));
           }
-          if (state.getCartItemsStatus == GetCartItemsStatus.loading ||
-              state.getCartShippingItemsModel == null) {
-            Center(
+          if (state.getCartShippingItemsModel == null &&
+              state.getCartItemsStatus != GetCartItemsStatus.success) {
+            return Center(
               child: TrydosLoader(),
             );
           }
@@ -81,7 +87,9 @@ class _CartPageState extends State<CartPage> {
                         child: Row(
                           children: [
                             InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                appBloc.add(ChangeBasePage(0));
+                              },
                               child: SvgPicture.asset(
                                 AppAssets.backIconArrowSvg,
                                 height: 20,
@@ -114,7 +122,16 @@ class _CartPageState extends State<CartPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SvgPicture.asset(AppAssets.countItemSvg),
+                          InkWell(
+                              onTap: () {
+                                HelperFunctions.slidingNavigation(
+                                    context,
+                                    CartPage2(
+                                      getCartShippingItemsModel:
+                                          state.getCartShippingItemsModel!,
+                                    ));
+                              },
+                              child: SvgPicture.asset(AppAssets.countItemSvg)),
                           Text(" ${length + 1} ",
                               style: context.textTheme.subtitle1?.mr.copyWith(
                                   fontSize: 13,
@@ -236,10 +253,21 @@ class _CartPageState extends State<CartPage> {
                         itemCount:
                             state.getCartShippingItemsModel!.data!.cart!.length,
                         itemBuilder: (context, index) {
+                          int quantity = state.getCartShippingItemsModel!.data!
+                              .cart![index].quantity!;
+
                           return InkWell(
                             onTap: () {
                               HelperFunctions.slidingNavigation(
-                                  context, CartPage2(index: index));
+                                  context,
+                                  ProductDetailsPage(
+                                    productItem: state.productITemForCart[state
+                                        .getCartShippingItemsModel!
+                                        .data!
+                                        .cart![index]
+                                        .productId
+                                        .toString()]!,
+                                  ));
                             },
                             child: Container(
                               margin: EdgeInsets.only(
@@ -312,18 +340,25 @@ class _CartPageState extends State<CartPage> {
                                             alignment: Alignment.centerLeft,
                                             width: 50,
                                             height: 10,
-                                            child: SvgPicture.network(
-                                              state
-                                                  .getCartShippingItemsModel!
-                                                  .data!
-                                                  .cart![index]
-                                                  .brand!
-                                                  .image!,
-                                              fit: BoxFit.contain,
-                                              color: Color(
-                                                0xff1A171B,
-                                              ),
-                                            ),
+                                            child: state
+                                                        .getCartShippingItemsModel!
+                                                        .data!
+                                                        .cart![index]
+                                                        .brand !=
+                                                    null
+                                                ? SvgPicture.network(
+                                                    state
+                                                        .getCartShippingItemsModel!
+                                                        .data!
+                                                        .cart![index]
+                                                        .brand!
+                                                        .image!,
+                                                    fit: BoxFit.contain,
+                                                    color: Color(
+                                                      0xff1A171B,
+                                                    ),
+                                                  )
+                                                : SizedBox.shrink(),
                                           ),
                                           SizedBox(
                                             height: 2,
@@ -503,8 +538,12 @@ class _CartPageState extends State<CartPage> {
                                       child: Row(
                                         children: [
                                           Text(
-                                            state.getCartShippingItemsModel!
-                                                .data!.cart![index].priceNum
+                                            (state
+                                                        .getCartShippingItemsModel!
+                                                        .data!
+                                                        .cart![index]
+                                                        .priceNum! *
+                                                    quantity)
                                                 .toString(),
                                             style: context
                                                 .textTheme.subtitle1?.ra
@@ -520,12 +559,7 @@ class _CartPageState extends State<CartPage> {
                                             width: 5,
                                           ),
                                           Text(
-                                              state
-                                                  .getCartShippingItemsModel!
-                                                  .data!
-                                                  .cart![index]
-                                                  .offerPriceFormatted!
-                                                  .split(" ")[0],
+                                              "${state.getCartShippingItemsModel!.data!.cart![index].offerPrice! * quantity}",
                                               style: context
                                                   .textTheme.subtitle1?.br
                                                   .copyWith(

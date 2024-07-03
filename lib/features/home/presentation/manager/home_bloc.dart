@@ -17,6 +17,7 @@ import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as product;
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
@@ -41,7 +42,7 @@ import 'dart:convert' as convert;
 
 import 'home_state.dart';
 
-const throttleDuration = Duration(seconds: 2);
+const throttleDuration = Duration(minutes: 2);
 
 EventTransformer<E> throttleDroppable<E>(Duration duration) {
   return (events, mapper) {
@@ -67,29 +68,33 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
 
-    on<AddCurrentColorSizeEvent>(_onAddCurrentSizeColorEvent,
-        transformer: throttleDroppable(throttleDuration));
-    on<AddCurrentSelectedColorEvent>(_onAddCurrentSelectedColorEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<AddCurrentColorSizeEvent>(
+      _onAddCurrentSizeColorEvent,
+    );
+    on<AddCurrentSelectedColorEvent>(
+      _onAddCurrentSelectedColorEvent,
+    );
     on<GetProductFiltersEvent>(_onGetProductFiltersEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetHomeBoutiqesEvent>(_onGetHomeBoutiquesEvent,
         transformer: throttleDroppable(throttleDuration));
-    on<GetCartItemEvent>(_onGetCartItemEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<GetCartItemEvent>(
+      _onGetCartItemEvent,
+    );
 
     on<GetStartingSettingsEvent>(_onGetStartingSettingsEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetMainCategoriesEvent>(_onGetMainCategoriesEvent,
         transformer: throttleDroppable(throttleDuration));
     on<AddItemToCartEvent>(_onAddItemToCartEvent,
-        transformer: throttleDroppable(throttleDuration));
+        transformer: throttleDroppable(Duration(seconds: 5)));
 
     on<GetProductsWithoutFiltersEvent>(_onGetProductsWithoutFiltersEvent,
-        transformer: throttleDroppable(throttleDuration));
-    on<GetStoryForProductEvent>(
-      _onGetStoryEvent,
-    );
+        transformer: throttleDroppable(Duration(seconds: 5)));
+    on<GetStoryForProductEvent>(_onGetStoryEvent,
+        transformer: throttleDroppable(Duration(seconds: 5)));
+    on<AddProductItemForCartEvent>(_onAddProductItemForCartEvent,
+        transformer: throttleDroppable(Duration(seconds: 5)));
     on<AddSizesFotColorsEvent>(
       _onAddSizesFotColorsEvent,
     );
@@ -680,15 +685,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onAddCurrentSizeColorEvent(
       AddCurrentColorSizeEvent event, Emitter<HomeState> emit) async {
-    print(
-        "*************-------------------------------------------------------------------------------------------------------------------");
-
-    print(event.choice_1);
-
     Map<String, String> sizeColor;
 
     sizeColor = {
-      "color": event.color ?? "",
       "size": event.choice_1 ?? "",
     };
     emit(state.copyWith(CurrentColorSizeForCart: sizeColor));
@@ -727,9 +726,29 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       //     getCartShippingItemsModel: getCartShippingItemsModel,
       //   ));
       if (!isFailedTheFirstTime.contains('AddCartItemEvent')) {
-        add(GetCartItemEvent());
+        add(AddItemToCartEvent(
+            products: event.products,
+            choice_1: state.CurrentColorSizeForCart!["size"],
+            color: event.color,
+            id: event.id,
+            quantity: event.quantity));
         isFailedTheFirstTime.add('AddCartItemEvent');
       }
-    }, (r) {});
+    }, (r) {
+      add(GetCartItemEvent());
+      add(AddProductItemForCartEvent(
+          productId: event.id!, product: event.products));
+    });
+  }
+
+  FutureOr<void> _onAddProductItemForCartEvent(
+      AddProductItemForCartEvent event, Emitter<HomeState> emit) async {
+    Map<String, Products> productsForCart = Map.of(state.productITemForCart);
+    if (productsForCart.containsKey(event.productId)) {
+      productsForCart[event.productId] = event.product!;
+    } else {
+      productsForCart.addAll({event.productId: event.product!});
+    }
+    emit(state.copyWith(productITemForCart: productsForCart));
   }
 }
