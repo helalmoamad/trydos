@@ -483,14 +483,17 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                             .id ==
                                                                         widget
                                                                             .chat
-                                                                            .id)
+                                                                            .id,orElse: ()=> Chat(messages: []))
                                                                     .messages!
                                                                     .firstWhere((element) =>
                                                                         element.authMessageStatus!.isDeleted ==
                                                                             0 ||
                                                                         element
                                                                             .authMessageStatus!
-                                                                            .deleteForAll!);
+                                                                            .deleteForAll!,orElse: ()=> Message(id: '-1'));
+                                                                if(lastMessage.id == '-1'){
+                                                                  return SizedBox.shrink();
+                                                                }
                                                                 MessageStatus?
                                                                     status;
                                                                 if (int.tryParse(

@@ -50,11 +50,11 @@ class Data {
   final List<Products>? products;
   final String? categoryParentParent;
   final String? categoryParent;
-  final String? category;
+  final dynamic category;
   final String? categorySeoDescription;
   final String? categoryTitle;
   final String? categoryH1;
-  final String? childCategories;
+  final dynamic childCategories;
   final String? resultFor;
   final String? boutiqueSlug;
 
@@ -114,18 +114,24 @@ class Data {
       products: json["products"] == null
           ? []
           : List<Products>.from(
-          json["products"]!.map((x) => Products.fromJson(x))),
+              json["products"]!.map((x) => Products.fromJson(x))),
       categoryParentParent: json["category_parent_parent"],
       categoryParent: json["category_parent"],
-      category: json["category"],
+      category: json["category"] is String
+          ? json["category"]
+          : Category.fromJson(json["category"]),
       categorySeoDescription: json["category_seo_description"],
       categoryTitle: json["category_title"],
       categoryH1: json["category_h1"],
-      childCategories: json["child_categories"],
+      childCategories: json["child_categories"] is List
+          ? List<Category>.from(
+              json["child_categories"]!.map((x) => Category.fromJson(x)))
+          : json["child_categories"],
       resultFor: json["result_for"],
       boutiqueSlug: json["boutique_slug"],
     );
   }
+
   Map<String, dynamic> toJson() => {
         "total_size": totalSize,
         "limit": limit,
@@ -381,7 +387,6 @@ class Category {
         "icon": icon,
       };
 }
-
 
 class Color {
   final String? name;
