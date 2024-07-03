@@ -35,7 +35,7 @@ class HelperFunctions {
         ? const Color(0xFF191C1D)
         : const Color(0xFFFBFDFD);
     final brightness =
-        theme == ThemeMode.light ? Brightness.dark : Brightness.light;
+    theme == ThemeMode.light ? Brightness.dark : Brightness.light;
 
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
@@ -81,6 +81,7 @@ class HelperFunctions {
   }
 
   static Locale getInitLocale() {
+    return mpaLanguageCodeToLocale[LangCode.ar.name]!;
     final deviceLanguage = WidgetsBinding.instance.window.locale.languageCode;
     debugPrint(deviceLanguage);
     return mpaLanguageCodeToLocale[deviceLanguage] ?? defaultLocal;
@@ -89,7 +90,7 @@ class HelperFunctions {
   static Country getDefaultCountry() {
     final deviceCountryCode = WidgetsBinding.instance.window.locale.countryCode;
     return countries.singleWhere(
-      (element) => element.code == deviceCountryCode,
+          (element) => element.code == deviceCountryCode,
       orElse: () => defaultCountry,
     );
   }
@@ -103,7 +104,7 @@ class HelperFunctions {
         const curve = Curves.ease;
 
         var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
         return SlideTransition(
           position: animation.drive(tween),
@@ -115,7 +116,7 @@ class HelperFunctions {
 
   static Future<List<Map<String, dynamic>>> getContactsFromDevice() async {
     final PermissionStatus permissionStatus =
-        await Permission.contacts.request();
+    await Permission.contacts.request();
     List<Contact> contacts = [];
 
     if (permissionStatus == PermissionStatus.granted) {
@@ -130,7 +131,10 @@ class HelperFunctions {
         });
       }
     }
-    String myPhoneNumber = GetIt.I<PrefsRepository>().myPhoneNumber!;
+    String myPhoneNumber = '+${GetIt
+        .I<PrefsRepository>()
+        .myPhoneNumber!}';
+    print(myPhoneNumber);
     String dialCode = countries
         .firstWhere((element) => myPhoneNumber.startsWith(element.dialCode))
         .dialCode;
@@ -138,15 +142,18 @@ class HelperFunctions {
         ? myPhoneNumber.substring(dialCode.length)
         : myPhoneNumber;
     return myContacts
-        .map((e) => {
-              "mobile_phone": e.phones!.first.value!.contains('+')
-                  ? dialCode + e.phones!.first.value!
-                  : e.phones!.first.value,
-              "name": e.displayName ?? 'No Name',
-            })
+        .map((e) =>
+    {
+      "mobile_phone": !e.phones!.first.value!.contains('+')
+          ? countries.indexWhere((element) =>
+          e.phones!.first.value!.startsWith(element.dialCode.substring(1))) ==
+          -1 ? dialCode + e.phones!.first.value! : '+${e.phones!.first.value}'
+          : e.phones!.first.value,
+      "name": e.displayName ?? 'No Name',
+    })
         .toList()
       ..removeWhere((element) =>
-          element['mobile_phone']?.endsWith(myPhoneNumberWithoutDial) ?? false);
+      element['mobile_phone']?.endsWith(myPhoneNumberWithoutDial) ?? false);
   }
 
   static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
@@ -166,11 +173,18 @@ class HelperFunctions {
   }
 
   static String getTheFirstTwoLettersOfName(String name) {
-    return name.split(' ').length == 2
+    return name
+        .split(' ')
+        .length == 2
         ? name.split(' ')[0][0] + name.split(' ')[1][0]
-        : name.split(' ').first.length > 1
-            ? (name.split(' ')[0][0] + name.split(' ')[0][1])
-            : name.split(' ').first;
+        : name
+        .split(' ')
+        .first
+        .length > 1
+        ? (name.split(' ')[0][0] + name.split(' ')[0][1])
+        : name
+        .split(' ')
+        .first;
   }
 
   static Future<File?> pickDocumentFile() async {
@@ -220,7 +234,7 @@ class HelperFunctions {
 
   static String getTimeInFormat(Duration duration) {
     String? hours =
-        duration.inHours > 0 ? twoDigits(duration.inHours.remainder(60)) : null;
+    duration.inHours > 0 ? twoDigits(duration.inHours.remainder(60)) : null;
     String minutes = twoDigits(duration.inMinutes.remainder(60));
     String seconds = twoDigits(duration.inSeconds.remainder(60));
     return '${hours ?? ''}$minutes:$seconds';
@@ -255,49 +269,49 @@ class HelperFunctions {
             onWillPop: () => Future.value(true),
             child: Platform.isIOS
                 ? CupertinoAlertDialog(
-                    title: MyTextWidget(title,
-                        textDirection: ui.TextDirection.ltr),
-                    content: MyTextWidget(message,
-                        textDirection: ui.TextDirection.ltr),
-                    actions: <Widget>[
-                        Row(
-                          children: [
-                            AppElevatedButton(
-                              onPressed: () => _getFileFromGoogleDrive(),
-                              text: btnLabel,
-                            ),
-                            AppElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              text: 'Not Now',
-                            ),
-                          ],
-                        )
-                      ])
-                : AlertDialog(
-                    title: MyTextWidget(title,
-                        textDirection: ui.TextDirection.ltr),
-                    content: MyTextWidget(message,
-                        textDirection: ui.TextDirection.ltr),
-                    actions: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          AppElevatedButton(
-                            onPressed: () => _getFileFromGoogleDrive(),
-                            text: btnLabel,
-                          ),
-                          AppElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            text: 'Not Now',
-                          ),
-                        ],
+                title: MyTextWidget(title,
+                    textDirection: ui.TextDirection.ltr),
+                content: MyTextWidget(message,
+                    textDirection: ui.TextDirection.ltr),
+                actions: <Widget>[
+                  Row(
+                    children: [
+                      AppElevatedButton(
+                        onPressed: () => _getFileFromGoogleDrive(),
+                        text: btnLabel,
+                      ),
+                      AppElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        text: 'Not Now',
                       ),
                     ],
-                  ));
+                  )
+                ])
+                : AlertDialog(
+              title: MyTextWidget(title,
+                  textDirection: ui.TextDirection.ltr),
+              content: MyTextWidget(message,
+                  textDirection: ui.TextDirection.ltr),
+              actions: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AppElevatedButton(
+                      onPressed: () => _getFileFromGoogleDrive(),
+                      text: btnLabel,
+                    ),
+                    AppElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      text: 'Not Now',
+                    ),
+                  ],
+                ),
+              ],
+            ));
       },
     );
   }
@@ -346,14 +360,16 @@ class HelperFunctions {
         builder: (ctx) {
           return Container(
             height: 250,
-            margin: EdgeInsets.all(20)..copyWith(bottom: 0),
+            margin: EdgeInsets.all(20)
+              ..copyWith(bottom: 0),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(30)),
             child: Column(
               children: [
                 DottedBorder(
                   radius: Radius.circular(15),
                   borderType: BorderType.RRect,
-                  padding: const EdgeInsets.all(10.0)..copyWith(top: 15),
+                  padding: const EdgeInsets.all(10.0)
+                    ..copyWith(top: 15),
                   strokeCap: StrokeCap.round,
                   strokeWidth: 0.5,
                   color: Color(0xff707070),
@@ -412,13 +428,13 @@ class HelperFunctions {
                                         '97%',
                                         style: context.textTheme.bodyText2?.rq
                                             .copyWith(
-                                                height: 1.23,
-                                                color: Color(0xff505050),
-                                                fontSize: 13.sp),
+                                            height: 1.23,
+                                            color: Color(0xff505050),
+                                            fontSize: 13.sp),
                                       ),
                                       Padding(
                                         padding:
-                                            EdgeInsets.symmetric(horizontal: 5),
+                                        EdgeInsets.symmetric(horizontal: 5),
                                         child: SvgPicture.asset(
                                           AppAssets.polyesterSvg,
                                           width: 15,
@@ -430,9 +446,9 @@ class HelperFunctions {
                                       'Casual',
                                       style: context.textTheme.bodyText2?.rq
                                           .copyWith(
-                                              height: 1.23,
-                                              color: Color(0xff8D8D8D),
-                                              fontSize: 13.sp),
+                                          height: 1.23,
+                                          color: Color(0xff8D8D8D),
+                                          fontSize: 13.sp),
                                     )
                                   ],
                                 );
