@@ -197,6 +197,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           valueListenable: clickBackButton,
                           builder: (context, clicked, _) {
                             return InkWell(
+                              key: Key(WidgetsKey.backFromChatKey),
                               onTap: () {
                                 chatBloc.add(ChangeGlobalUsedVariablesInBloc(
                                     currentOpenedChatId: null));

@@ -22,6 +22,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/no_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/configuration/chat_url_routes.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
@@ -201,6 +202,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       iconUrl: AppAssets.archiveSvg,
                     ),
                     SlidableActionWidget(
+                      key: Key(
+                          '${WidgetsKey.deleteChatConversationIconKey}${widget.index}'),
                       text: LocaleKeys.delete.tr(),
                       onTap: () {
                         chatBloc
@@ -478,19 +481,29 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                   ...state
                                                                       .pinnedChats
                                                                 ]
-                                                                    .firstWhere((element) =>
-                                                                        element
-                                                                            .id ==
-                                                                        widget
-                                                                            .chat
-                                                                            .id)
+                                                                    .firstWhere(
+                                                                        (element) =>
+                                                                            element.id ==
+                                                                            widget
+                                                                                .chat.id,
+                                                                        orElse: () =>
+                                                                            Chat(
+                                                                                messages: []))
                                                                     .messages!
-                                                                    .firstWhere((element) =>
-                                                                        element.authMessageStatus!.isDeleted ==
-                                                                            0 ||
-                                                                        element
-                                                                            .authMessageStatus!
-                                                                            .deleteForAll!);
+                                                                    .firstWhere(
+                                                                        (element) =>
+                                                                            element.authMessageStatus!.isDeleted ==
+                                                                                0 ||
+                                                                            element
+                                                                                .authMessageStatus!.deleteForAll!,
+                                                                        orElse: () =>
+                                                                            Message(id: '-1'));
+                                                                if (lastMessage
+                                                                        .id ==
+                                                                    '-1') {
+                                                                  return SizedBox
+                                                                      .shrink();
+                                                                }
                                                                 MessageStatus?
                                                                     status;
                                                                 if (int.tryParse(

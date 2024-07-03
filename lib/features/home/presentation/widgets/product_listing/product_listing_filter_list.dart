@@ -67,6 +67,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
 
   @override
   void initState() {
+
     widget.selectedFiltersNotifier.addListener(() {
       if (widget.selectedFiltersNotifier.value.isEmpty) {
         expandingFiltersStack.value = -1;

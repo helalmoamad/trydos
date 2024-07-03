@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:trydos/common/constant/widgets_key.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
+import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_pages.dart';
 import 'package:trydos/features/chat/presentation/pages/contacts_page.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
@@ -85,7 +86,7 @@ void main() {
       ////////////////////////////
       final Finder contactCardButton = find.byKey(
         Key(
-          '${WidgetsKey.contactCardKey}1',
+          '${WidgetsKey.contactCardKey}0',
         ),
       );
       await Future.delayed(const Duration(seconds: 1));
@@ -134,6 +135,54 @@ void main() {
         failedMessage: 'Find message Sent Arrow failed',
       );
       ////////////////////////////
+      final Finder backFromChatButton =
+          find.byKey(Key(WidgetsKey.backFromChatKey));
+      await Future.delayed(const Duration(seconds: 2));
+      await tester.tap(backFromChatButton);
+      await tester.pumpAndSettle();
+      //////////////////////////////
+      await GlobalTestFunctions.waitFor(tester, find.byType(ChatPageContent));
+      //////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        widgetType: ChatPageContent,
+        successMessage: 'Find ChatPageContent Success',
+        failedMessage: 'Find ChatPageContent failed',
+      );
+      ////////////////////////////
+      await Future.delayed(const Duration(seconds: 2));
+      ////////////////////////////
+      final Finder chatConversationCard =
+          find.byKey(Key('${WidgetsKey.chatConversationCardKey}0'));
+      ////////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: chatConversationCard,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find chatConversationCard  Success',
+        failedMessage: 'Find chatConversationCard failed',
+      );
+      final Finder deleteChatConversationIcon =
+          find.byKey(Key('${WidgetsKey.deleteChatConversationIconKey}0'));
+      ////////////////////////////
+      await tester.dragUntilVisible(
+        deleteChatConversationIcon,
+        chatConversationCard,
+        Offset(300, 0),
+      );
+      ////////////////////////////
+      await Future.delayed(const Duration(seconds: 2));
+      ////////////////////////////
+      await tester.tap(deleteChatConversationIcon);
+      await tester.pumpAndSettle();
+      ////////////////////////////
+      await GlobalTestFunctions.findNoWidget(
+        tester: tester,
+        actual: chatConversationCard,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find chatConversationCard  Success',
+        failedMessage: 'Find chatConversationCard failed',
+      );
     },
   );
 }

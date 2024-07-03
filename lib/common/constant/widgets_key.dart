@@ -31,4 +31,8 @@ class WidgetsKey {
   static const sendMessageInChatButtonKey = 'send_message_inchat_key';
   static const sendMessageTextFieldKey = 'send_message_textfield_key';
   static const messageSentArrowKey = 'message_sent_arrow_key';
+  static const backFromChatKey = 'back_from_chat_key';
+  static const chatConversationCardKey = 'chat_conversation_card_Key';
+  static const deleteChatConversationIconKey =
+      'delete_chat_conversation_icon_Key';
 }

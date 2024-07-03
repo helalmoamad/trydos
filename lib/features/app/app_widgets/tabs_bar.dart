@@ -302,8 +302,8 @@ class _TabsBarState extends State<TabsBar> {
                                                     .data!
                                                     .mainCategories![index];
                                                 return Padding(
-                                                    padding: HWEdgeInsets.only(
-                                                        right: 15.0),
+                                                    padding: HWEdgeInsetsDirectional.only(
+                                                        end: 15.0),
                                                     child: InkWell(
                                                       onTap: () {
                                                         /* appBloc.add(ChangeTab(index));
@@ -342,7 +342,7 @@ class _TabsBarState extends State<TabsBar> {
                                                             svgUrl: mainCategory
                                                                 .icon
                                                                 .toString(),
-                                                            height: 25,
+                                                            height: 20,
                                                             color: state.tabIndex ==
                                                                     index
                                                                 ? Colors.black
