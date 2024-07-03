@@ -17,7 +17,7 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Go to chat section , choose new contact , send text message',
+    'Go to chat section , choose new contact , send text message , back and delete chat',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
