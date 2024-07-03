@@ -28,7 +28,7 @@ enum GetProductDetailWithoutSimilarRelatedProductsStatus {
 
 enum SelectedVideoStatus { init, loading, success, failure }
 
-enum GetProductFiltersStatus { init, loading, success, failure }
+enum GetProductFiltersStatus {loading, success, failure }
 
 enum GetCommentForProductStatus { init, loading, success, failure }
 
@@ -55,7 +55,7 @@ class HomeState {
     this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.startingSetting,
     this.sizes,
-    this.getProductFiltersStatus = GetProductFiltersStatus.init,
+    this.getProductFiltersStatus = GetProductFiltersStatus.loading,
     this.getProductFiltersModel,
     this.currentPage = 0,
     this.productITemForCart = const {},
