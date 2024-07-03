@@ -24,6 +24,7 @@ import 'package:uuid/uuid.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 //import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../app/app_widgets/app_text_field.dart';
@@ -650,6 +651,9 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         padding: HWEdgeInsets.symmetric(
                                             vertical: 7.0),
                                         child: AppTextField(
+                                          key: Key(
+                                            WidgetsKey.sendMessageTextFieldKey,
+                                          ),
                                           controller: form.controllers[0],
                                           onChange: (text) {
                                             _typingTimer.cancel();
@@ -787,6 +791,9 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     } else ...{
                                       InkWell(
+                                        key: Key(
+                                        WidgetsKey.sendMessageInChatButtonKey,
+                                      ),
                                         focusColor: Colors.transparent,
                                         splashColor: Colors.transparent,
                                         onTap: () {

@@ -236,10 +236,11 @@ class Cart {
   final int? customerId;
   final String? cartGroupId;
   final int? productId;
-  final dynamic choices;
-  final Variations? variations;
+  final List<Choice>? choices;
+  final List<Variation>? variations;
   final String? variant;
   final int? availableQuantity;
+  final String? maxAllowedQty;
   final String? vendorName;
   final int? quantity;
   final String? price;
@@ -251,6 +252,7 @@ class Cart {
   final String? slug;
   final String? name;
   final Shop? shop;
+  final Brand? brand;
   final String? thumbnail;
   final DateTime? createdAt;
   final dynamic flashDealDetails;
@@ -265,6 +267,7 @@ class Cart {
     this.variations,
     this.variant,
     this.availableQuantity,
+    this.maxAllowedQty,
     this.vendorName,
     this.quantity,
     this.price,
@@ -276,6 +279,7 @@ class Cart {
     this.slug,
     this.name,
     this.shop,
+    this.brand,
     this.thumbnail,
     this.createdAt,
     this.flashDealDetails,
@@ -287,10 +291,11 @@ class Cart {
     int? customerId,
     String? cartGroupId,
     int? productId,
-    dynamic choices,
-    Variations? variations,
+    List<Choice>? choices,
+    List<Variation>? variations,
     String? variant,
     int? availableQuantity,
+    String? maxAllowedQty,
     String? vendorName,
     int? quantity,
     String? price,
@@ -302,6 +307,7 @@ class Cart {
     String? slug,
     String? name,
     Shop? shop,
+    Brand? brand,
     String? thumbnail,
     DateTime? createdAt,
     dynamic flashDealDetails,
@@ -316,6 +322,7 @@ class Cart {
         variations: variations ?? this.variations,
         variant: variant ?? this.variant,
         availableQuantity: availableQuantity ?? this.availableQuantity,
+        maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
         vendorName: vendorName ?? this.vendorName,
         quantity: quantity ?? this.quantity,
         price: price ?? this.price,
@@ -327,6 +334,7 @@ class Cart {
         slug: slug ?? this.slug,
         name: name ?? this.name,
         shop: shop ?? this.shop,
+        brand: brand ?? this.brand,
         thumbnail: thumbnail ?? this.thumbnail,
         createdAt: createdAt ?? this.createdAt,
         flashDealDetails: flashDealDetails ?? this.flashDealDetails,
@@ -339,12 +347,17 @@ class Cart {
         customerId: json["customer_id"],
         cartGroupId: json["cart_group_id"],
         productId: json["product_id"],
-        choices: json["choices"],
+        choices: json["choices"] == null
+            ? []
+            : List<Choice>.from(
+                json["choices"]!.map((x) => Choice.fromJson(x))),
         variations: json["variations"] == null
-            ? null
-            : Variations.fromJson(json["variations"]),
+            ? []
+            : List<Variation>.from(
+                json["variations"]!.map((x) => Variation.fromJson(x))),
         variant: json["variant"],
         availableQuantity: json["available_quantity"],
+        maxAllowedQty: json["max_allowed_qty"],
         vendorName: json["vendor_name"],
         quantity: json["quantity"],
         price: json["price"],
@@ -356,6 +369,7 @@ class Cart {
         slug: json["slug"],
         name: json["name"],
         shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
+        brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
         thumbnail: json["thumbnail"],
         createdAt: json["created_at"] == null
             ? null
@@ -369,10 +383,15 @@ class Cart {
         "customer_id": customerId,
         "cart_group_id": cartGroupId,
         "product_id": productId,
-        "choices": choices,
-        "variations": variations?.toJson(),
+        "choices": choices == null
+            ? []
+            : List<dynamic>.from(choices!.map((x) => x.toJson())),
+        "variations": variations == null
+            ? []
+            : List<dynamic>.from(variations!.map((x) => x.toJson())),
         "variant": variant,
         "available_quantity": availableQuantity,
+        "max_allowed_qty": maxAllowedQty,
         "vendor_name": vendorName,
         "quantity": quantity,
         "price": price,
@@ -384,6 +403,7 @@ class Cart {
         "slug": slug,
         "name": name,
         "shop": shop?.toJson(),
+        "brand": brand?.toJson(),
         "thumbnail": thumbnail,
         "created_at": createdAt?.toIso8601String(),
         "flash_deal_details": flashDealDetails,
@@ -391,21 +411,56 @@ class Cart {
       };
 }
 
-class ChoicesClass {
+class Brand {
+  final int? id;
+  final String? name;
+  final String? image;
+
+  Brand({
+    this.id,
+    this.name,
+    this.image,
+  });
+
+  Brand copyWith({
+    int? id,
+    String? name,
+    String? image,
+  }) =>
+      Brand(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        image: image ?? this.image,
+      );
+
+  factory Brand.fromJson(Map<String, dynamic> json) => Brand(
+        id: json["id"],
+        name: json["name"],
+        image: json["image"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "image": image,
+      };
+}
+
+class Choice {
   final String? choice1;
 
-  ChoicesClass({
+  Choice({
     this.choice1,
   });
 
-  ChoicesClass copyWith({
+  Choice copyWith({
     String? choice1,
   }) =>
-      ChoicesClass(
+      Choice(
         choice1: choice1 ?? this.choice1,
       );
 
-  factory ChoicesClass.fromJson(Map<String, dynamic> json) => ChoicesClass(
+  factory Choice.fromJson(Map<String, dynamic> json) => Choice(
         choice1: json["choice_1"],
       );
 
@@ -443,25 +498,25 @@ class Shop {
       };
 }
 
-class Variations {
+class Variation {
   final String? size;
   final String? color;
 
-  Variations({
+  Variation({
     this.size,
     this.color,
   });
 
-  Variations copyWith({
+  Variation copyWith({
     String? size,
     String? color,
   }) =>
-      Variations(
+      Variation(
         size: size ?? this.size,
         color: color ?? this.color,
       );
 
-  factory Variations.fromJson(Map<String, dynamic> json) => Variations(
+  factory Variation.fromJson(Map<String, dynamic> json) => Variation(
         size: json["Size"],
         color: json["color"],
       );

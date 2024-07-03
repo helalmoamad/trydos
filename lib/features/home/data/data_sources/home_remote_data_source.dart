@@ -95,13 +95,12 @@ class HomeRemoteDatasource {
 
   Future<GetProductFiltersModel> getProductFilters() {
     PostClient<GetProductFiltersModel> getProductFilters =
-    PostClient<GetProductFiltersModel>(
+        PostClient<GetProductFiltersModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductFiltersModel>(
         endpoint: MarketEndPoints.getProductFiltersEP,
         response: ResponseValue<GetProductFiltersModel>(
-            fromJson: (response) =>
-                GetProductFiltersModel.fromJson(response)),
+            fromJson: (response) => GetProductFiltersModel.fromJson(response)),
       ),
     );
     return getProductFilters();
@@ -148,5 +147,17 @@ class HomeRemoteDatasource {
     );
 
     return getHomeSections();
+  }
+
+  Future<bool> addItemToCart(Map<String, dynamic> params) {
+    PostClient<bool> addItemToCart = PostClient<bool>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<bool>(
+        endpoint: MarketEndPoints.addItemCartItemEP,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return addItemToCart();
   }
 }

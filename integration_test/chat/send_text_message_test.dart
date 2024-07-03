@@ -5,9 +5,9 @@ import 'package:trydos/common/constant/widgets_key.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_pages.dart';
 import 'package:trydos/features/chat/presentation/pages/contacts_page.dart';
+import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart' as app;
-
 import '../shared/shared_scenarios.dart';
 import '../utils/global_test_functions.dart';
 
@@ -16,7 +16,7 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Go to chat section , choose contact and send text message',
+    'Go to chat section , choose new contact , send text message',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
@@ -82,6 +82,57 @@ void main() {
       );
       ////////////////////////////
       await Future.delayed(const Duration(seconds: 3));
+      ////////////////////////////
+      final Finder contactCardButton = find.byKey(
+        Key(
+          '${WidgetsKey.contactCardKey}1',
+        ),
+      );
+      await Future.delayed(const Duration(seconds: 1));
+      await tester.tap(contactCardButton);
+      await tester.pumpAndSettle();
+      //////////////////////////////
+      await GlobalTestFunctions.waitFor(tester, find.byType(SinglePageChat));
+      //////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        widgetType: SinglePageChat,
+        successMessage: 'Find SinglePageChat Success',
+        failedMessage: 'Find SinglePageChat failed',
+      );
+      //////////////////////////
+      final Finder sendMessageTextField =
+          find.byKey(Key(WidgetsKey.sendMessageTextFieldKey));
+      final Finder sendMessageInChatButton =
+          find.byKey(Key(WidgetsKey.sendMessageInChatButtonKey));
+      await tester.enterText(sendMessageTextField, 'test text message');
+      await Future.delayed(const Duration(seconds: 2));
+      await tester.tap(sendMessageInChatButton);
+      await tester.pumpAndSettle();
+      ////////////////////////////
+      final Finder textMessageCard =
+          find.byKey(Key('${WidgetsKey.textMessageCardKey}0'));
+      ////////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: textMessageCard,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find textMessageCard  Success',
+        failedMessage: 'Find textMessageCard failed',
+      );
+      ////////////////////////////
+      final Finder messageSentArrow =
+          find.byKey(Key('${WidgetsKey.messageSentArrowKey}0'));
+      ////////////////////////////
+      await GlobalTestFunctions.waitFor(tester, messageSentArrow);
+      //////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: messageSentArrow,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find message Sent Arrow  Success',
+        failedMessage: 'Find message Sent Arrow failed',
+      );
       ////////////////////////////
     },
   );

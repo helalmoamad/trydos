@@ -14,7 +14,7 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Click on boutique , go to list of products , click on ptoduct , go to product details',
+    'Click on boutique , go to list of products , click on product , go to product details',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();

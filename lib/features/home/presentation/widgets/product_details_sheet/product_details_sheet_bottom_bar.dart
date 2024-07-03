@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -11,6 +12,8 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/notify_for_quantity_available_button.dart';
 
 import '../../../../../common/constant/design/assets_provider.dart';
@@ -41,7 +44,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
   final void Function() clickOnComments;
   final void Function() clickOnShare;
   final void Function() clickOnMoreOptions;
-  final void Function() onFinishBuying;
+  final void Function(String quantity) onFinishBuying;
 
   @override
   State<ProductDetailsSheetBottomBar> createState() =>
@@ -52,9 +55,10 @@ class _ProductDetailsSheetBottomBarState
     extends State<ProductDetailsSheetBottomBar>
     with SingleTickerProviderStateMixin {
   late final AnimationController animationController;
-
+  late HomeBloc homeBloc;
   @override
   void initState() {
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 200));
     animationController.addStatusListener(_updateStatus);
@@ -143,15 +147,21 @@ class _ProductDetailsSheetBottomBarState
                                                       widget
                                                           .addToBagButtonShapeNotifier
                                                           .value++;
-                                                    }else {
+                                                    } else {
                                                       animationController
                                                           .forward();
-                                                      widget.onFinishBuying.call();
-                                                      Future.delayed(Duration(milliseconds: 400) , (){
-                                                        widget.panelController.close();
+                                                      widget.onFinishBuying
+                                                          .call(itemCount
+                                                              .toString());
+                                                      Future.delayed(
+                                                          Duration(
+                                                              milliseconds:
+                                                                  400), () {
+                                                        widget.panelController
+                                                            .close();
                                                       });
                                                     }
-                                                  }else{
+                                                  } else {
                                                     animationController
                                                         .forward();
                                                     widget

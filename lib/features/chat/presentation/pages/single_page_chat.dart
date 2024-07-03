@@ -35,6 +35,7 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/video_message.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -673,7 +674,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                           .isFirstMessage!
                                                                       ? 30.verticalSpace
                                                                       : 10.verticalSpace,
+                                                                  ////////////////
                                                                   GestureDetector(
+                                                                    key: Key(
+                                                                        '${WidgetsKey.textMessageCardKey}$index'),
                                                                     onLongPress:
                                                                         () {
                                                                       if (messages[index]
@@ -743,6 +747,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                           : null,
                                                                       child:
                                                                           getTheMessageWidget(
+                                                                        listIndex:
+                                                                            index,
                                                                         message:
                                                                             messages[index],
                                                                         senderName:
@@ -1361,6 +1367,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   }
 
   getTheMessageWidget({
+    required int listIndex,
     required Message message,
     required String senderName,
     required String receiverName,
@@ -1454,7 +1461,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       if (parentMessage.senderUserId != message.senderUserId) {
         return ReplayMessage(
           watchedAt: messageStatus?.watchedAt,
-          messageDate: parentMessage.createdAt?? DateTime.now(),
+          messageDate: parentMessage.createdAt ?? DateTime.now(),
           createAt: message.createdAt,
           scrollToMessage: () => scrollToIndex(
               messagesIndexes[parentMessage.id.toString()] ?? -1,
@@ -1549,6 +1556,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       switch (message.messageType?.name) {
         case 'TextMessage':
           return TextMessage(
+              index: listIndex,
               receivedAt: messageStatus?.receivedAt,
               createAt: message.createdAt,
               message: message.messageContent!.content.toString(),

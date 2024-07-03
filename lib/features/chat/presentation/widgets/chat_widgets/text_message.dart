@@ -18,6 +18,7 @@ import 'package:trydos/features/authentication/presentation/widgets/phone_form_f
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
+import '../../../../../common/constant/widgets_key.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
@@ -50,8 +51,10 @@ class TextMessage extends StatefulWidget {
     this.createAt,
     this.watchedAt,
     required this.channalId,
+    this.index = 0,
   }) : super(key: key);
   final String message;
+  final int index;
   final String messageId;
   final bool isSent;
   final bool isFirstMessage;
@@ -319,29 +322,61 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                               .withImageShadow
                                                           ? 0.4
                                                           : 1,
-                                                      child: SvgPicture.asset(
-                                                        widget.isRead
-                                                            ? AppAssets
-                                                                .messageReadArrowSvg
-                                                            : widget.isReceived
-                                                                ? AppAssets
-                                                                    .messageDeliveredArrowSvg
-                                                                : (state.currentMessage
-                                                                        .contains(widget
-                                                                            .messageId))
-                                                                    ? timer
-                                                                        ? (state.currentMessage.contains(widget
-                                                                                .messageId))
-                                                                            ? AppAssets
-                                                                                .sandClockSvg
-                                                                            : AppAssets
-                                                                                .messageSentArrowSvg
-                                                                        : ""
-                                                                    : AppAssets
-                                                                        .messageSentArrowSvg,
-                                                        width: 10.sp,
-                                                        height: 10.sp,
-                                                      ))
+                                                      child: widget.isRead
+                                                          ? SvgPicture.asset(
+                                                              AppAssets
+                                                                  .messageReadArrowSvg,
+                                                              width: 10.sp,
+                                                              height: 10.sp,
+                                                            )
+                                                          : widget.isReceived
+                                                              ? SvgPicture
+                                                                  .asset(
+                                                                  AppAssets
+                                                                      .messageDeliveredArrowSvg,
+                                                                  width: 10.sp,
+                                                                  height: 10.sp,
+                                                                )
+                                                              : (state.currentMessage
+                                                                      .contains(
+                                                                          widget
+                                                                              .messageId))
+                                                                  ? timer
+                                                                      ? (state.currentMessage.contains(widget
+                                                                              .messageId))
+                                                                          ? SvgPicture
+                                                                              .asset(
+                                                                              AppAssets.sandClockSvg,
+                                                                              width: 10.sp,
+                                                                              height: 10.sp,
+                                                                            )
+                                                                          : SvgPicture
+                                                                              .asset(
+                                                                              AppAssets.messageSentArrowSvg,
+                                                                              width: 10.sp,
+                                                                              height: 10.sp,
+                                                                            )
+                                                                      : SvgPicture
+                                                                          .asset(
+                                                                          "",
+                                                                          width:
+                                                                              10.sp,
+                                                                          height:
+                                                                              10.sp,
+                                                                        )
+                                                                  : SvgPicture
+                                                                      .asset(
+                                                                      key: Key(
+                                                                        '${WidgetsKey.messageSentArrowKey}${widget.index}',
+                                                                      ),
+                                                                      AppAssets
+                                                                          .messageSentArrowSvg,
+                                                                      width:
+                                                                          10.sp,
+                                                                      height:
+                                                                          10.sp,
+                                                                    ),
+                                                    )
                                             },
                                             if (widget.isForwarded) ...{
                                               10.horizontalSpace,

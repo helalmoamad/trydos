@@ -17,10 +17,12 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 
 class SizesFiltersList extends StatefulWidget {
   const SizesFiltersList({
-    super.key, required this.selectedFilters, required this.sizes,
+    super.key, required this.selectedFilters, required this.sizes, this.addItemToAnimatedList, this.removeItemToAnimatedList,
   });
   final ValueNotifier<List<int>> selectedFilters;
   final List<String> sizes ;
+  final void Function(int index)? addItemToAnimatedList ;
+  final void Function(int removedIndex, String removedItem)? removeItemToAnimatedList ;
   @override
   State<SizesFiltersList> createState() => _SizesFiltersListState();
 }
@@ -84,9 +86,13 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                   GestureDetector(
                                       onTap: () {
                                         if (selected.contains(index)) {
+                                          String removed = widget.sizes[index];
+                                          int removedIndex = selected.indexWhere((element) => element == index);
                                           widget.selectedFilters.value.remove(index);
+                                          widget.removeItemToAnimatedList?.call(removedIndex , removed);
                                         } else {
                                           widget.selectedFilters.value.add(index);
+                                          widget.addItemToAnimatedList?.call(widget.selectedFilters.value.length - 1);
                                         }
                                         widget.selectedFilters.notifyListeners();
                                       },

@@ -30,4 +30,5 @@ abstract class HomeRepository {
       getProductDetailWithoutSimilarRelatedProducts(String productId);
   Future<Either<Failure, GetCommentForProductModel>> geCommentForProduct(
       String productId);
+  Future<Either<Failure, bool>> addItemToCart(Map<String, dynamic> params);
 }

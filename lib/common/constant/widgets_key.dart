@@ -26,4 +26,9 @@ class WidgetsKey {
       'my_contacts_floating_action_button_key';
   static const boutiqueCardKey = 'boutique_card_key';
   static const productInBoutiqueListKey = 'product_in_boutique_list_key';
+  static const contactCardKey = 'contact_card_key';
+  static const textMessageCardKey = 'text_message_key';
+  static const sendMessageInChatButtonKey = 'send_message_inchat_key';
+  static const sendMessageTextFieldKey = 'send_message_textfield_key';
+  static const messageSentArrowKey = 'message_sent_arrow_key';
 }

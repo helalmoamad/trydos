@@ -26,6 +26,8 @@ abstract class PrefsRepository {
 
   List<Chat>? get getTheChatsToEditFromBackground;
 
+  bool? get isTimerForOtpRunning;
+
   bool? get isVerifiedPhone;
 
   String? get myStoriesName;
@@ -44,6 +46,7 @@ abstract class PrefsRepository {
   String? get otpCode;
   int? get getdurtion;
   Future<bool> setVerifiedPhone(bool verifiedPhone);
+  Future<bool> setTimerForOtpRunning(bool isRunning);
   Future<bool> setDuration(int duration);
   Future<bool> setCountryIso(String? countryIso);
 
