@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 abstract class HomeEvent extends Equatable {
   const HomeEvent();
@@ -149,25 +150,31 @@ class AddItemToCartEvent extends HomeEvent {
   final String? color;
   final int? quantity;
   final String? choice_1;
-  AddItemToCartEvent({
-    this.id,
-    this.quantity,
-    this.color,
-    this.choice_1,
-  });
+  final Products products;
+  AddItemToCartEvent(
+      {this.id,
+      this.quantity,
+      this.color,
+      this.choice_1,
+      required this.products});
   @override
   List<Object?> get props => [];
 }
 
 class AddCurrentColorSizeEvent extends HomeEvent {
   final String? choice_1;
-  final String? color;
-  final String? quantity;
+
   AddCurrentColorSizeEvent({
     this.choice_1,
-    this.color,
-    this.quantity,
   });
+  @override
+  List<Object?> get props => [];
+}
+
+class AddProductItemForCartEvent extends HomeEvent {
+  final Products? product;
+  final String productId;
+  AddProductItemForCartEvent({this.product, required this.productId});
   @override
   List<Object?> get props => [];
 }

@@ -7,16 +7,21 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/my_gallery3d_widget.dart';
 
 import '../../../../service/language_service.dart';
 
 class CartPage2 extends StatelessWidget {
-  const CartPage2({Key? key, required this.index}) : super(key: key);
-  final int index;
+  final GetCartShippingItemsModel getCartShippingItemsModel;
+  const CartPage2({Key? key, required this.getCartShippingItemsModel})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    int length = getCartShippingItemsModel.data!.cart!.length - 1;
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
@@ -78,7 +83,7 @@ class CartPage2 extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SvgPicture.asset(AppAssets.countItemSvg),
-                        Text(" 2 ",
+                        Text(" ${length + 1} ",
                             style: context.textTheme.subtitle1?.mr.copyWith(
                                 fontSize: 13,
                                 color: const Color(0xff5D5C5D),
@@ -93,7 +98,7 @@ class CartPage2 extends StatelessWidget {
                               height: 1.33),
                         ),
                         Text(
-                          "1150 ",
+                          "${getCartShippingItemsModel.data!.totalCashFormated!.split(" ")[0]} ",
                           style: context.textTheme.subtitle1?.mr.copyWith(
                               fontSize: 13,
                               color: const Color(0xff5D5C5D),
@@ -101,7 +106,7 @@ class CartPage2 extends StatelessWidget {
                               height: 1.33),
                         ),
                         Text(
-                          "AED",
+                          "${getCartShippingItemsModel.data!.totalCashFormated!.split(" ")[1]}",
                           style: context.textTheme.subtitle1?.la.copyWith(
                               fontSize: 13,
                               color: const Color(0xff8D8D8D),
@@ -151,7 +156,7 @@ class CartPage2 extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SvgPicture.asset(AppAssets.countItemSvg),
-                              Text("  2 ",
+                              Text("  ${length + 1} ",
                                   style: context.textTheme.subtitle1?.mr
                                       .copyWith(
                                           fontSize: 13,
@@ -167,7 +172,7 @@ class CartPage2 extends StatelessWidget {
                                     height: 1.33),
                               ),
                               Text(
-                                "140 ",
+                                "${getCartShippingItemsModel.data!.totalCashFormated!.split(" ")[0]} ",
                                 style: context.textTheme.subtitle1?.mr.copyWith(
                                     fontSize: 13,
                                     color: const Color(0xff5D5C5D),
@@ -175,7 +180,7 @@ class CartPage2 extends StatelessWidget {
                                     height: 1.33),
                               ),
                               Text(
-                                "USD",
+                                "${getCartShippingItemsModel.data!.totalCashFormated!.split(" ")[1]}",
                                 style: context.textTheme.subtitle1?.la.copyWith(
                                     fontSize: 13,
                                     color: const Color(0xff8D8D8D),
@@ -206,7 +211,7 @@ class CartPage2 extends StatelessWidget {
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: EdgeInsets.only(top: 0),
-                          itemCount: 4,
+                          itemCount: length + 1,
                           itemBuilder: (context, indexs) {
                             return Stack(
                               children: [
@@ -219,7 +224,8 @@ class CartPage2 extends StatelessWidget {
                                     withInnerShadow: false,
                                     width: 97.w,
                                     height: 142,
-                                    imageUrl: AppAssets.address2Png,
+                                    imageUrl: getCartShippingItemsModel
+                                        .data!.cart![indexs].thumbnail,
                                     radius: 15,
                                     imageFit: BoxFit.cover,
                                   ),
@@ -238,7 +244,7 @@ class CartPage2 extends StatelessWidget {
                                             BorderRadiusDirectional.circular(
                                                 15)),
                                     child: Text(
-                                      "${index + 1}",
+                                      "${indexs + 1}",
                                       style: context.textTheme.subtitle1?.ra
                                           .copyWith(
                                         decorationColor: Color(0xff8D8D8D),
@@ -264,7 +270,7 @@ class CartPage2 extends StatelessWidget {
                                             bottomRight: Radius.circular(15),
                                             bottomLeft: Radius.circular(15))),
                                     child: Text(
-                                      "Medium 38 \n 70 USD",
+                                      "${!getCartShippingItemsModel.data!.cart![indexs].variations.isNullOrEmpty ? getCartShippingItemsModel.data!.cart![indexs].variations![0].size ?? "" : ""} \n ${getCartShippingItemsModel.data!.cart![indexs].offerPriceFormatted!.split(" ")[0]} ${getCartShippingItemsModel.data!.cart![indexs].offerPriceFormatted!.split(" ")[1]}",
                                       style: context.textTheme.subtitle1?.ra
                                           .copyWith(
                                         decorationColor: Color(0xffFEFEFE),
@@ -301,7 +307,7 @@ class CartPage2 extends StatelessWidget {
                           child: ListView.builder(
                               scrollDirection: Axis.horizontal,
                               padding: EdgeInsets.only(top: 0),
-                              itemCount: 4,
+                              itemCount: length + 1,
                               itemBuilder: (context, indexs) {
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -316,7 +322,8 @@ class CartPage2 extends StatelessWidget {
                                           withInnerShadow: false,
                                           width: 97.w,
                                           height: 142,
-                                          imageUrl: AppAssets.address2Png,
+                                          imageUrl: getCartShippingItemsModel
+                                              .data!.cart![indexs].thumbnail,
                                           radius: 15,
                                           imageFit: BoxFit.cover,
                                         ),
@@ -335,7 +342,7 @@ class CartPage2 extends StatelessWidget {
                                                   BorderRadiusDirectional
                                                       .circular(20)),
                                           child: Text(
-                                            "${index + 1}",
+                                            "${indexs + 1}",
                                             style: context
                                                 .textTheme.subtitle1?.ra
                                                 .copyWith(
@@ -356,7 +363,7 @@ class CartPage2 extends StatelessWidget {
                                       width: 97.w,
                                       height: 45,
                                       child: Text(
-                                        "Medium 38 \n 70 USD",
+                                        "${!getCartShippingItemsModel.data!.cart![indexs].variations.isNullOrEmpty ? getCartShippingItemsModel.data!.cart![indexs].variations![0].size ?? "" : ""} \n ${getCartShippingItemsModel.data!.cart![indexs].offerPriceFormatted!.split(" ")[0]} ${getCartShippingItemsModel.data!.cart![indexs].offerPriceFormatted!.split(" ")[1]}",
                                         style: context.textTheme.subtitle1?.ra
                                             .copyWith(
                                           decorationColor: Color(0xff505050),

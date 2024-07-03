@@ -303,7 +303,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               widget.productItem.thumbnail!.originalHeight!),
                           orginalWidth: double.parse(
                               widget.productItem.thumbnail!.originalWidth!),
-                          brand: widget.productItem.brand!,
+                          brand: widget.productItem.brand,
                           productName: widget.productItem.name ?? "",
                           thumbnail:
                               widget.productItem.thumbnail!.filePath ?? '',
@@ -321,16 +321,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
                         if (!state.cachedProductWithoutRelatedProductsModel
                             .containsKey(widget.productItem.id.toString())) ...{
-                          TrydosLoader()
+                          SizedBox.shrink()
                         } else ...{
                           ProductDetailsDescriptionWidget(
                             description: widget.productItem.details ?? " ",
                           ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          BadgesList(
+                              lable: state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          widget.productItem.id.toString()]!
+                                      .product!
+                                      .labels ??
+                                  []),
                         },
-                        SizedBox(
-                          height: 12,
-                        ),
-                        BadgesList(),
                         SizedBox(
                           height: 15,
                         ),

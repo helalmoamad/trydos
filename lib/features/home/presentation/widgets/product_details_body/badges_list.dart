@@ -4,24 +4,26 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 
 class BadgesList extends StatelessWidget {
-  const BadgesList({super.key});
+  final List<Label>? lable;
+  const BadgesList({super.key, required this.lable});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 14,
       child: ListView.separated(
-          padding: EdgeInsets.only(left: 20),
+          padding: EdgeInsets.only(right: 20, left: 20),
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
             return Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SvgPicture.asset(
-                  AppAssets.qualityBadgeSvg,
+                SvgPicture.network(
+                  lable![index].icon!.filePath!,
                   width: 12,
                   height: 12,
                 ),
@@ -29,7 +31,7 @@ class BadgesList extends StatelessWidget {
                   width: 5,
                 ),
                 MyTextWidget(
-                  'Good Quality Product',
+                  lable![index].label!,
                   style: context.textTheme.caption?.rq
                       .copyWith(height: 1.27, color: Color(0xff8D8D8D)),
                 )
@@ -41,7 +43,7 @@ class BadgesList extends StatelessWidget {
               width: 9,
             );
           },
-          itemCount: 5),
+          itemCount: lable!.length),
     );
   }
 }
