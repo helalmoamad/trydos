@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
@@ -23,12 +25,13 @@ class UpdateUserNameWidget extends StatelessWidget {
   final bool updateForStoriesServer;
   final ValueNotifier<bool> displaySubmit = ValueNotifier(false);
   final TextEditingController controller = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       content: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
+        listener: (ctx, state) {
           if (context.canPop()) {
             Navigator.pop(context);
             showMessage('Name Saved Successfully',
@@ -42,29 +45,42 @@ class UpdateUserNameWidget extends StatelessWidget {
             (!updateForStoriesServer &&
                 p.updateChatUserNameStatus != c.updateChatUserNameStatus &&
                 c.updateChatUserNameStatus == UpdateChatUserNameStatus.success),
-        buildWhen: (p, c) =>
-        (updateForStoriesServer &&
-            p.updateChatUserNameStatus != c.updateStoriesUserStatus) || (!updateForStoriesServer &&
-            p.updateChatUserNameStatus != c.updateStoriesUserStatus),
+        buildWhen: (p, c) {
+          print('kkkkkkkk ${(updateForStoriesServer &&
+              p.updateStoriesUserStatus != c.updateStoriesUserStatus)}');
+          return (updateForStoriesServer &&
+              p.updateStoriesUserStatus != c.updateStoriesUserStatus) ||
+              (!updateForStoriesServer &&
+                  p.updateChatUserNameStatus != c.updateChatUserNameStatus);
+        },
         builder: (context, state) {
-          if (state.updateStoriesUserStatus ==
+          if (updateForStoriesServer && state.updateStoriesUserStatus ==
               UpdateStoriesUserStatus.loading) {
-            return TrydosLoader();
+            return SizedBox(
+                height: 50,
+                child: Center(child: TrydosLoader()));
+          }
+          if (!updateForStoriesServer && state.updateChatUserNameStatus ==
+              UpdateChatUserNameStatus.loading) {
+            return SizedBox(
+                height: 50,
+                child: Center(child: TrydosLoader()));
           }
           return Stack(
             alignment: Alignment.topRight,
             children: [
-              IntrinsicHeight(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    MyTextWidget(
-                      LocaleKeys.insert_name_to_continue.tr(),
-                      style: context.textTheme.subtitle2,
-                    ),
-                    10.verticalSpace,
-                    Padding(
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  MyTextWidget(
+                    LocaleKeys.insert_name_to_continue.tr(),
+                    style: context.textTheme.subtitle2,
+                  ),
+                  10.verticalSpace,
+                  Form(
+                    key: _formKey,
+                    child: Padding(
                         padding: HWEdgeInsets.symmetric(horizontal: 20.0),
                         child: ValueListenableBuilder<bool>(
                             valueListenable: displaySubmit,
@@ -72,7 +88,14 @@ class UpdateUserNameWidget extends StatelessWidget {
                               return NameFormField(
                                 autoFocus: false,
                                 ready: display,
+                                validator: ((value) {
+                                  if (value!.length < 8) {
+                                    return LocaleKeys.must_be_at_least_8_characters
+                                        .tr();
+                                  }
+                                }),
                                 onChange: (String? text) {
+                                  _formKey.currentState!.validate();
                                   displaySubmit.value = text!.length > 8;
                                 },
                                 controller: controller,
@@ -86,6 +109,7 @@ class UpdateUserNameWidget extends StatelessWidget {
                                         )
                                       : InkWell(
                                           onTap: () {
+                                            GetIt.I<PrefsRepository>().removeStoriesName();
                                             BlocProvider.of<AuthBloc>(context)
                                                 .add(UpdateStoriesUserEvent(
                                                     name: controller.text));
@@ -103,8 +127,8 @@ class UpdateUserNameWidget extends StatelessWidget {
                                 ),
                               );
                             })),
-                  ],
-                ),
+                  ),
+                ],
               ),
               Transform.translate(
                   offset: Offset(10, -10),
