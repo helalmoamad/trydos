@@ -167,7 +167,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                           onChange: (String? text) {
                             _formkey.currentState!.validate();
 
-                            displaySubmit.value = text!.length > 8;
+                            displaySubmit.value = text!.length >= 8;
                           },
                           controller: form.controllers[0],
                           suffixIcon: Padding(

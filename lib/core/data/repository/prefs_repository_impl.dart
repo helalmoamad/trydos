@@ -460,6 +460,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> setTimerForOtpRunning(bool isRunning) => _preferences.setBool(PrefsKey.isTimerRunningId, isRunning);
 
+  @override
+  Future<bool> removeStoriesName() => _preferences.remove(PrefsKey.storiesName);
+
 // @override
 // // TODO: implement localMessages
 // List<Map<String,dynamic>> get localMessages {

@@ -112,6 +112,8 @@ abstract class PrefsRepository {
 
   Future<bool> clearUser();
 
+  Future<bool> removeStoriesName();
+
   Future<bool> clearTokensForChatAndStory();
 
   Future<bool> clearTokenForMarket();

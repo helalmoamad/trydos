@@ -59,7 +59,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               const {},
       getCartShippingItemsModel: json['getCartShippingItemsModel'] == null
           ? null
-          : cart.GetCartShippingItemsModel.fromJson(
+          : GetCartShippingItemsModel.fromJson(
               json['getCartShippingItemsModel'] as Map<String, dynamic>),
       reRequestTheseBoutiques:
           (json['reRequestTheseBoutiques'] as Map<String, dynamic>?)?.map(
@@ -89,7 +89,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
             (k, e) => MapEntry(
                 k,
                 (e as List<dynamic>)
-                    .map((e) => cart.Cart.fromJson(e as Map<String, dynamic>))
+                    .map((e) => Cart.fromJson(e as Map<String, dynamic>))
                     .toList()),
           ) ??
           const {},

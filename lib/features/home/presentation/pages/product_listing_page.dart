@@ -334,41 +334,35 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           : null,
                                                     ),
                                                   )),
-                                              ValueListenableBuilder<bool>(
-                                                  valueListenable:
-                                                      filterPageExpanded,
-                                                  builder:
-                                                      (context, expanded, child) {
-                                                    return Padding(
-                                                      padding: EdgeInsetsDirectional
-                                                          .only(
-                                                              end: !expanded
-                                                                  ? 10.0
-                                                                  : 25),
-                                                      child: !expanded
-                                                          ? SvgPicture.asset(
-                                                              AppAssets.shareSvg,
-                                                              width: 20,
-                                                              height: 20,
-                                                              color:
-                                                                  Color(0xff3C3C3C),
-                                                            )
-                                                          : GestureDetector(
-                                                              onTap: () {
-                                                                filterPageExpanded
-                                                                    .value = false;
-                                                              },
-                                                              child:
-                                                                  SvgPicture.asset(
-                                                                AppAssets.closeSvg,
-                                                                width: 15,
-                                                                height: 15,
-                                                                color: Color(
-                                                                    0xffFF5F61),
-                                                              ),
-                                                            ),
-                                                    );
-                                                  }),
+                                              Padding(
+                                                padding: EdgeInsetsDirectional
+                                                    .only(
+                                                        end: !isExpanded
+                                                            ? 10.0
+                                                            : 25),
+                                                child: !isExpanded
+                                                    ? SvgPicture.asset(
+                                                        AppAssets.shareSvg,
+                                                        width: 20,
+                                                        height: 20,
+                                                        color:
+                                                            Color(0xff3C3C3C),
+                                                      )
+                                                    : GestureDetector(
+                                                        onTap: () {
+                                                          filterPageExpanded
+                                                              .value = false;
+                                                        },
+                                                        child:
+                                                            SvgPicture.asset(
+                                                          AppAssets.closeSvg,
+                                                          width: 15,
+                                                          height: 15,
+                                                          color: Color(
+                                                              0xffFF5F61),
+                                                        ),
+                                                      ),
+                                              ),
                                             ],
                                             withShadow: false),
                                       ),
@@ -512,40 +506,36 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 ]),
                                           );
                                         }),
-                                    ValueListenableBuilder<bool>(
-                                        valueListenable: filterPageExpanded,
-                                        builder: (context, isExpanded, child) {
-                                          return ValueListenableBuilder<
-                                                  List<Tuple3<int, int?, double>>>(
-                                              valueListenable:
-                                                  selectedFiltersNotifier,
-                                              builder: (context, filters, _) {
-                                                return SliverAppBar(
-                                                    pinned: isExpanded ? false : true,
-                                                    surfaceTintColor:
-                                                        Colors.transparent,
-                                                    backgroundColor:
-                                                        colorScheme.white,
-                                                    automaticallyImplyLeading:
-                                                        false,
-                                                    titleSpacing: 0,
-                                                    toolbarHeight: isExpanded
-                                                        ? 860
-                                                        : selectedFiltersNotifier
-                                                                .value.isNotEmpty
-                                                            ? 145
-                                                            : 115,
-                                                      title: StackedFiltersList(
-                                                          isExpanded: isExpanded,
-                                                          controller: isExpanded ? scrollController : null,
-                                                          listKey: listKey,
-                                                          selectedFiltersNotifier:
-                                                              selectedFiltersNotifier,
-                                                          onMoveToAnotherFiltersSection:
-                                                              (_) {}));
-                                              });
+                                    ValueListenableBuilder<
+                                            List<Tuple3<int, int?, double>>>(
+                                        valueListenable:
+                                            selectedFiltersNotifier,
+                                        builder: (context, filters, _) {
+                                          return SliverAppBar(
+                                              pinned: isExpanded ? false : true,
+                                              surfaceTintColor:
+                                                  Colors.transparent,
+                                              backgroundColor:
+                                                  colorScheme.white,
+                                              automaticallyImplyLeading:
+                                                  false,
+                                              titleSpacing: 0,
+                                              toolbarHeight: isExpanded
+                                                  ? 860
+                                                  : selectedFiltersNotifier
+                                                          .value.isNotEmpty
+                                                      ? 145
+                                                      : 115,
+                                                title: StackedFiltersList(
+                                                    isExpanded: isExpanded,
+                                                    controller: isExpanded ? scrollController : null,
+                                                    listKey: listKey,
+                                                    selectedFiltersNotifier:
+                                                        selectedFiltersNotifier,
+                                                    onMoveToAnotherFiltersSection:
+                                                        (_) {}));
                                         }),
-                                    SliverPadding(
+                                    isExpanded ? SliverToBoxAdapter() : SliverPadding(
                                       padding: const EdgeInsets.only(top: 10),
                                       sliver: SliverGrid(
                                         key: gridViewKeyForRendering,
