@@ -85,9 +85,11 @@ class _VideoMessageState extends State<VideoMessage> {
     }
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
-      setState(() {
-        timer = true;
-      });
+      if(mounted) {
+        setState(() {
+          timer = true;
+        });
+      }
     });
     isRead = widget.isRead;
     isReceived = widget.isReceived;

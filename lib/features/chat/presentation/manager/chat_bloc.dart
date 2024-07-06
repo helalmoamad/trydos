@@ -1,8 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -14,7 +11,6 @@ import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/chat/data/models/media_count.dart';
 import 'package:trydos/features/chat/domain/use_cases/change_chat_property_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/delete_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_contacts_usecase.dart';
@@ -1265,8 +1261,30 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   @override
   Map<String, dynamic>? toJson(ChatState state) {
+    List<String> failedMessages = List.of(state.currentFailedMessage);
+    List<String> failedMediaMessages = List.of(state.currentFailedMediaMessage);
+    state.chats.forEach((chat) {
+      chat.messages?.forEach((message) {
+        if (int.tryParse(message.id.toString()) == null) {
+          if (message.mediaMessageContent.isNullOrEmpty) {
+            failedMessages.add(message.id.toString());
+          } else {
+            failedMediaMessages.add(message.id.toString());
+          }
+        }
+      });
+    });
+    List<Chat> chats = List.of(state.chats);
+    chats.removeWhere((element) => int.tryParse(element.id.toString()) == null);
+    List<Chat> pinnedChats = List.of(state.pinnedChats);
+    pinnedChats
+        .removeWhere((element) => int.tryParse(element.id.toString()) == null);
     return state
         .copyWith(
+            currentFailedMessage: failedMessages,
+            currentFailedMediaMessage: failedMediaMessages,
+            chats: chats,
+            pinnedChats: pinnedChats,
             receiveMessageStatus: ReceiveMessageStatus.init,
             readMessagesStatus: ResetReadMessagesStatus.init,
             firstRequestForGetChats: true,

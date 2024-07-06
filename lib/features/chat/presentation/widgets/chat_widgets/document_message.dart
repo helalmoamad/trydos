@@ -86,9 +86,11 @@ class _DocumentMessageState extends State<DocumentMessage> {
 
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
-      setState(() {
-        timer = true;
-      });
+      if(mounted) {
+        setState(() {
+          timer = true;
+        });
+      }
     });
     // TODO: implement initState
     super.initState();

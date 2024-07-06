@@ -11,6 +11,7 @@ import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart'
 
 import '../../../../core/error/failures.dart';
 import '../../data/models/get_product_filters_model.dart';
+import '../../data/models/get_product_listing_with_filters_model.dart';
 import '../../data/models/get_story_for_product_model.dart';
 
 abstract class HomeRepository {
@@ -26,6 +27,8 @@ abstract class HomeRepository {
   Future<Either<Failure, GetStoryForProductModel>> getStories(String productId);
   Future<Either<Failure, GetProductListingWithoutFiltersModel>>
       getProductsWithoutFilters(Map<String, dynamic> params);
+  Future<Either<Failure, GetProductListingWithFiltersModel>>
+  getProductsWithFilters(Map<String, dynamic> params);
   Future<Either<Failure, GetProductDetailWithoutRelatedProductsModel>>
       getProductDetailWithoutSimilarRelatedProducts(String productId);
   Future<Either<Failure, GetCommentForProductModel>> geCommentForProduct(

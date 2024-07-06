@@ -27,6 +27,7 @@ import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecas
 import 'package:trydos/features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import '../../../../common/helper/helper_functions.dart';
@@ -53,19 +54,20 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 @LazySingleton()
 class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   HomeBloc(
-      //  this.getHomeSectionsUseCase,
-      this.getMainCategoriesUseCase,
-      this.getStoryUseCase,
-      this.getCartItemUseCase,
-      this.addItemToCartUseCase,
-      this.getCommentForProductUseCase,
-      this.getHomeBoutiqesUseCase,
-      this.getProductFiltersUseCase,
-      this.getWidthAndHeightUseCase,
-      this.getProductDetailWithoutRelatedProductsUseCase,
-      this.getStartingSettingsUseCase,
-      this.getProductsWithoutFiltersUseCase)
-      : super(HomeState()) {
+    //  this.getHomeSectionsUseCase,
+    this.getMainCategoriesUseCase,
+    this.getStoryUseCase,
+    this.getCartItemUseCase,
+    this.addItemToCartUseCase,
+    this.getCommentForProductUseCase,
+    this.getHomeBoutiqesUseCase,
+    this.getProductFiltersUseCase,
+    this.getWidthAndHeightUseCase,
+    this.getProductDetailWithoutRelatedProductsUseCase,
+    this.getStartingSettingsUseCase,
+    this.getProductsWithoutFiltersUseCase,
+    this.getProductsWithFiltersUseCase,
+  ) : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
 
     on<AddCurrentColorSizeEvent>(
@@ -89,6 +91,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddItemToCartEvent>(_onAddItemToCartEvent,
         transformer: throttleDroppable(Duration(seconds: 5)));
 
+    on<GetProductsWithFiltersEvent>(_onGetProductsWithFiltersEvent,
+        transformer: throttleDroppable(throttleDuration));
     on<GetProductsWithoutFiltersEvent>(_onGetProductsWithoutFiltersEvent,
         transformer: throttleDroppable(Duration(seconds: 5)));
     on<GetStoryForProductEvent>(_onGetStoryEvent,
@@ -97,6 +101,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         transformer: throttleDroppable(Duration(seconds: 5)));
     on<AddSizesFotColorsEvent>(
       _onAddSizesFotColorsEvent,
+    );
+    on<ResetChosenFilters>(
+      _onResetChosenFilters,
     );
 
     on<GetProductDatailsWithoutRelatedProductsEvent>(
@@ -117,6 +124,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetStoryForProductUseCase getStoryUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
       getProductDetailWithoutRelatedProductsUseCase;
+  final GetProductsWithFiltersUseCase getProductsWithFiltersUseCase;
 
   final GetMainCategoriesUseCase getMainCategoriesUseCase;
   final GetProductFiltersUseCase getProductFiltersUseCase;
@@ -453,28 +461,21 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         return MapEntry(key, value);
       }
     })));
-    final response = await getProductsWithoutFiltersUseCase(
-        GetProductsWithoutFiltersParams(
-            offset: event.offset,
-            boutiqueSlug: event.boutiqueSlug,
-            attributes: event.attributes,
-            brands: event.brands,
-            category: event.category,
-            limit: event.limit,
-            prices: event.prices,
-            searchText: event.searchText));
+    final response =
+        await getProductsWithoutFiltersUseCase(GetProductsWithoutFiltersParams(
+      offset: event.offset,
+      boutiqueSlug: event.boutiqueSlug,
+      category: event.category,
+      limit: event.limit,
+    ));
 
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetProductsWithoutFiltersEvent')) {
         add(GetProductsWithoutFiltersEvent(
           offset: event.offset,
-          attributes: event.attributes,
-          brands: event.brands,
           boutiqueSlug: event.boutiqueSlug,
           category: event.category,
           limit: event.limit,
-          prices: event.prices,
-          searchText: event.searchText,
         ));
         isFailedTheFirstTime.add('GetProductsWithoutFiltersEvent');
       }
@@ -514,6 +515,47 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           return MapEntry(key, value);
         }
       })));
+    });
+  }
+
+  FutureOr<void> _onGetProductsWithFiltersEvent(
+      GetProductsWithFiltersEvent event, Emitter<HomeState> emit) async {
+    String keyForCacheData = event.boutiqueSlug + (event.category ?? '');
+
+    emit(state.copyWith(
+        getProductsWithFiltersStatus: GetProductsWithFiltersStatus.loading));
+    final response = await getProductsWithFiltersUseCase(
+        GetProductsWithFiltersParams(
+            offset: event.offset,
+            boutiqueSlug: event.boutiqueSlug,
+            attributes: event.attributes,
+            brands: event.brands,
+            category: event.category,
+            limit: event.limit,
+            prices: event.prices,
+            searchText: event.searchText));
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('GetProductsWithFiltersEvent')) {
+        add(GetProductsWithFiltersEvent(
+          offset: event.offset,
+          attributes: event.attributes,
+          brands: event.brands,
+          boutiqueSlug: event.boutiqueSlug,
+          category: event.category,
+          limit: event.limit,
+          prices: event.prices,
+          searchText: event.searchText,
+        ));
+        isFailedTheFirstTime.add('GetProductsWithFiltersEvent');
+      }
+      emit(state.copyWith(
+          getProductsWithFiltersStatus: GetProductsWithFiltersStatus.failure));
+    }, (r) {
+      isFailedTheFirstTime.remove('GetProductsWithFiltersEvent');
+      emit(state.copyWith(
+          getProductsWithFiltersStatus: GetProductsWithFiltersStatus.success,
+          getProductListingWithFiltersModel: r));
     });
   }
 
@@ -582,18 +624,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   @override
   Map<String, dynamic>? toJson(HomeState state) {
     return state.copyWith(
-      currentSelectedColorForEveryProduct: {},
-      reRequestTheseProductListingInBoutiques: {},
-      reRequestTheseBoutiques: {},
-      getMainCategoriesStatus: GetMainCategoriesStatus.init,
-      getStartingSettingsStatus: GetStartingSettingsStatus.init,
-      getProductFiltersStatus: GetProductFiltersStatus.loading,
-    ).toJson();
+        currentSelectedColorForEveryProduct: {},
+        reRequestTheseProductListingInBoutiques: {},
+        reRequestTheseBoutiques: {},
+        getMainCategoriesStatus: GetMainCategoriesStatus.init,
+        getStartingSettingsStatus: GetStartingSettingsStatus.init,
+        getProductFiltersStatus: GetProductFiltersStatus.loading,
+        getProductListingWithFiltersModel: null,
+        getProductsWithFiltersStatus:
+            GetProductsWithFiltersStatus.init).toJson();
   }
 
   FutureOr<void> _onGetProductFiltersEvent(
       GetProductFiltersEvent event, Emitter<HomeState> emit) async {
-    if(state.getProductFiltersStatus == GetProductFiltersStatus.success) return;
     emit(state.copyWith(
         getProductFiltersStatus: GetProductFiltersStatus.loading));
     final response = await getProductFiltersUseCase(NoParams());
@@ -750,5 +793,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       productsForCart.addAll({event.productId: event.product!});
     }
     emit(state.copyWith(productITemForCart: productsForCart));
+  }
+
+  FutureOr<void> _onResetChosenFilters(
+      ResetChosenFilters event, Emitter<HomeState> emit) {
+    emit(state.copyWith(
+        getProductListingWithFiltersModel: null,
+        getProductsWithFiltersStatus: GetProductsWithFiltersStatus.init));
   }
 }

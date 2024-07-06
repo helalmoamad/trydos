@@ -118,7 +118,7 @@ class Data {
 
 class User {
   final int? id;
-  final dynamic name;
+  final String? name;
   final String? phone;
   final int? isPhoneVerified;
   final String? lastOtpIdToken;
@@ -133,7 +133,7 @@ class User {
 
   User copyWith({
     int? id,
-    dynamic name,
+    String? name,
     String? phone,
     int? isPhoneVerified,
     String? lastOtpIdToken,

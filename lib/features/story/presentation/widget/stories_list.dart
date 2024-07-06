@@ -129,9 +129,7 @@ class _StoriesListState extends State<StoriesList> {
                                                               .kRegistrationPage);
                                                         } else if (GetIt.I<
                                                                     PrefsRepository>()
-                                                                .myStoriesName ==
-                                                            null  || GetIt.I<
-                                                            PrefsRepository>().myStoriesName == 'No Name') {
+                                                                .myMarketName == null) {
                                                           showDialog(
                                                               context: context,
                                                               barrierDismissible:
@@ -443,14 +441,15 @@ class _StoriesListState extends State<StoriesList> {
                       case GetStoriesStatus.init:
                         return Container();
                       case GetStoriesStatus.failure:
-                        return Center(
-                          key: Key(WidgetsKey.storiesFailureStatusKey),
-                          child: ElevatedButton(
-                              onPressed: () {
-                                GetIt.I<StoryBloc>().add(GetStoryEvent());
-                              },
-                              child: MyTextWidget(LocaleKeys.try_again.tr())),
-                        );
+                        return SizedBox.shrink();
+                        //   Center(
+                        //   key: Key(WidgetsKey.storiesFailureStatusKey),
+                        //   child: ElevatedButton(
+                        //       onPressed: () {
+                        //         GetIt.I<StoryBloc>().add(GetStoryEvent());
+                        //       },
+                        //       child: MyTextWidget(LocaleKeys.try_again.tr())),
+                        // );
                       case GetStoriesStatus.loading:
                         return SizedBox(
                           width: double.infinity,
