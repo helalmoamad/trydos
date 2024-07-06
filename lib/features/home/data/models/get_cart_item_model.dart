@@ -253,6 +253,7 @@ class Cart {
   final String? name;
   final Shop? shop;
   final Brand? brand;
+  final Boutiques? boutique;
   final String? thumbnail;
   final DateTime? createdAt;
   final dynamic flashDealDetails;
@@ -280,6 +281,7 @@ class Cart {
     this.name,
     this.shop,
     this.brand,
+    this.boutique,
     this.thumbnail,
     this.createdAt,
     this.flashDealDetails,
@@ -308,6 +310,7 @@ class Cart {
     String? name,
     Shop? shop,
     Brand? brand,
+    Boutiques? boutique,
     String? thumbnail,
     DateTime? createdAt,
     dynamic flashDealDetails,
@@ -335,6 +338,7 @@ class Cart {
         name: name ?? this.name,
         shop: shop ?? this.shop,
         brand: brand ?? this.brand,
+        boutique: boutique ?? this.boutique,
         thumbnail: thumbnail ?? this.thumbnail,
         createdAt: createdAt ?? this.createdAt,
         flashDealDetails: flashDealDetails ?? this.flashDealDetails,
@@ -370,6 +374,9 @@ class Cart {
         name: json["name"],
         shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
         brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
+        boutique: json["boutique"] == null
+            ? null
+            : Boutiques.fromJson(json["boutique"]),
         thumbnail: json["thumbnail"],
         createdAt: json["created_at"] == null
             ? null
@@ -404,10 +411,75 @@ class Cart {
         "name": name,
         "shop": shop?.toJson(),
         "brand": brand?.toJson(),
+        "boutique": boutique?.toJson(),
         "thumbnail": thumbnail,
         "created_at": createdAt?.toIso8601String(),
         "flash_deal_details": flashDealDetails,
         "flash_deal_max_allowed_quantity": flashDealMaxAllowedQuantity,
+      };
+}
+
+class Boutiques {
+  final int? id;
+  final Icon? icon;
+
+  Boutiques({
+    this.id,
+    this.icon,
+  });
+
+  Boutiques copyWith({
+    int? id,
+    Icon? icon,
+  }) =>
+      Boutiques(
+        id: id ?? this.id,
+        icon: icon ?? this.icon,
+      );
+
+  factory Boutiques.fromJson(Map<String, dynamic> json) => Boutiques(
+        id: json["id"],
+        icon: json["icon"] == null ? null : Icon.fromJson(json["icon"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "icon": icon?.toJson(),
+      };
+}
+
+class Icon {
+  final String? filePath;
+  final String? originalWidth;
+  final String? originalHeight;
+
+  Icon({
+    this.filePath,
+    this.originalWidth,
+    this.originalHeight,
+  });
+
+  Icon copyWith({
+    String? filePath,
+    String? originalWidth,
+    String? originalHeight,
+  }) =>
+      Icon(
+        filePath: filePath ?? this.filePath,
+        originalWidth: originalWidth ?? this.originalWidth,
+        originalHeight: originalHeight ?? this.originalHeight,
+      );
+
+  factory Icon.fromJson(Map<String, dynamic> json) => Icon(
+        filePath: json["file_path"],
+        originalWidth: json["original_width"],
+        originalHeight: json["original_height"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "file_path": filePath,
+        "original_width": originalWidth,
+        "original_height": originalHeight,
       };
 }
 

@@ -144,11 +144,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
 
                   homeBloc.add(AddSizesFotColorsEvent(
-                      currentColorName: widget
-                              .productItem
-                              .syncColorImages![currentSelectedColor]
-                              .colorName ??
-                          "",
+                      currentColorName:
+                          !widget.productItem.syncColorImages.isNullOrEmpty
+                              ? widget
+                                      .productItem
+                                      .syncColorImages![currentSelectedColor]
+                                      .colorName ??
+                                  ""
+                              : "",
                       variation: state.cachedProductWithoutRelatedProductsModel[
                                   widget.productItem.id.toString()] !=
                               null
@@ -475,8 +478,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   .isNullOrEmpty
                           ? widget.productItem.colors![currentSelectedColor]
                                   .color ??
-                              " "
-                          : " ",
+                              ""
+                          : "",
                   productItem: widget.productItem,
                   currentColor: state.currentSelectedColorForEveryProduct[
                           widget.productItem.id.toString()] ??

@@ -289,7 +289,8 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     if (prefsRepository.isVerifiedPhone != true) {
                       context.go(GRouter
                           .config.applicationRoutes.kRegistrationPagePath);
-                    } else if (prefsRepository.myMarketName == null) {
+                    } else if (prefsRepository.myChatName == null ||
+                        prefsRepository.myChatName == 'No Name') {
                       showDialog(
                           context: context,
                           barrierDismissible: false,
@@ -307,7 +308,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         showMessage(LocaleKeys
                             .please_enable_send_notification_for_this_app
                             .tr());
-                         openAppSettings();
+                        openAppSettings();
                       } else {
                         appBloc.add(ChangeBasePage(2));
                       }
@@ -401,7 +402,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         });
                   },
                   onTap: () {
-                   // if (prefsRepository.chatToken != null) return;
+                    // if (prefsRepository.chatToken != null) return;
                     //appBloc.add(ChangeBasePage(0));
                     context
                         .go(GRouter.config.applicationRoutes.kRegistrationPage);
