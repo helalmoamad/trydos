@@ -175,6 +175,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
 
   FutureOr<void> _onGetMissedCallCountEvent(
       GetMissedCallCountEvent event, Emitter<CallsState> emit) async {
+    if(state.getMissedCallCountStatus == GetMissedCallCountStatus.success) return;
     emit(state.copyWith(
         getMissedCallCountStatus: GetMissedCallCountStatus.loading));
     final missedCallCount = await getMissedCalCountUseCase(NoParams());

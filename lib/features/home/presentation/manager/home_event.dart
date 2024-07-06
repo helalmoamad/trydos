@@ -23,11 +23,13 @@ class GetMainCategoriesEvent extends HomeEvent {
 }
 
 class GetProductFiltersEvent extends HomeEvent {
-  const GetProductFiltersEvent();
+  const GetProductFiltersEvent({this.category , this.boutiqueSlug});
 
+  final String? boutiqueSlug;
+  final String? category;
   @override
   // TODO: implement props
-  List<Object?> get props => [];
+  List<Object?> get props => [category , boutiqueSlug];
 }
 
 class AddCurrentSelectedColorEvent extends HomeEvent {
@@ -78,6 +80,39 @@ class GetProductDatailsWithoutRelatedProductsEvent extends HomeEvent {
 
 class GetProductsWithoutFiltersEvent extends HomeEvent {
   final String? category;
+  final int offset;
+  final int? limit;
+  final String boutiqueSlug;
+  final bool getWithPagination;
+
+  GetProductsWithoutFiltersEvent(
+      {
+      required this.boutiqueSlug,
+      this.getWithPagination = false,
+      required this.offset,
+      this.limit,
+      this.category});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [
+        category,
+        getWithPagination,
+        offset,
+        limit,
+        boutiqueSlug
+      ];
+}
+
+class ResetChosenFilters extends HomeEvent {
+  const ResetChosenFilters();
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+
+}
+class GetProductsWithFiltersEvent extends HomeEvent {
+  final String? category;
   final List<String>? prices;
   final List<int>? brands;
   final List<Map<String, dynamic>>? attributes;
@@ -87,30 +122,30 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
   final String boutiqueSlug;
   final bool getWithPagination;
 
-  GetProductsWithoutFiltersEvent(
+  GetProductsWithFiltersEvent(
       {this.prices,
-      this.brands,
-      this.attributes,
-      required this.boutiqueSlug,
-      this.getWithPagination = false,
-      this.searchText,
-      required this.offset,
-      this.limit,
-      this.category});
+        this.brands,
+        this.attributes,
+        required this.boutiqueSlug,
+        this.getWithPagination = false,
+        this.searchText,
+        required this.offset,
+        this.limit,
+        this.category});
 
   @override
   // TODO: implement props
   List<Object?> get props => [
-        category,
-        prices,
-        brands,
-        attributes,
-        getWithPagination,
-        searchText,
-        offset,
-        limit,
-        boutiqueSlug
-      ];
+    category,
+    prices,
+    brands,
+    attributes,
+    getWithPagination,
+    searchText,
+    offset,
+    limit,
+    boutiqueSlug
+  ];
 }
 
 class GetStoryForProductEvent extends HomeEvent {

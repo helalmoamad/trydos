@@ -309,8 +309,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                             .please_enable_send_notification_for_this_app
                             .tr());
                         openAppSettings();
+                      } else {
+                        appBloc.add(ChangeBasePage(2));
                       }
-                      appBloc.add(ChangeBasePage(2));
                     }
                   },
                   child: Column(
@@ -401,8 +402,8 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         });
                   },
                   onTap: () {
-                    if (prefsRepository.chatToken != null) return;
-                    appBloc.add(ChangeBasePage(0));
+                    // if (prefsRepository.chatToken != null) return;
+                    //appBloc.add(ChangeBasePage(0));
                     context
                         .go(GRouter.config.applicationRoutes.kRegistrationPage);
                   },

@@ -67,7 +67,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
 
   @override
   void initState() {
-
     widget.selectedFiltersNotifier.addListener(() {
       if (widget.selectedFiltersNotifier.value.isEmpty) {
         expandingFiltersStack.value = -1;
@@ -105,14 +104,16 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
-      if (state.getProductFiltersStatus == GetProductFiltersStatus.loading) {
+      if (state.getProductFiltersStatus == GetProductFiltersStatus.loading ||
+          state.getProductsWithFiltersStatus ==
+              GetProductsWithFiltersStatus.loading) {
         return Center(child: TrydosLoader());
       }
-      if (state.getProductFiltersStatus == GetProductFiltersStatus.failure) {
-        return Center(child: TryAgainWidget(tryAgain: () {
-          BlocProvider.of<HomeBloc>(context).add(GetProductFiltersEvent());
-        }));
-      }
+      // if (state.getProductFiltersStatus == GetProductFiltersStatus.failure) {
+      //   return Center(child: TryAgainWidget(tryAgain: () {
+      //     BlocProvider.of<HomeBloc>(context).add(GetProductFiltersEvent());
+      //   }));
+      // }
       Filter filters = state.getProductFiltersModel!.filters!;
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -614,7 +615,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               selectedFilters: selectedFiltersByBrand,
               filterListTitle: 'Filter By Brand',
               isBrandFilter: true,
-              filters: filters.brands ?? [],
+              filters: state.getProductListingWithFiltersModel != null
+                  ? state.getProductListingWithFiltersModel?.data?.brands ?? []
+                  : filters.brands ?? [],
               addItemToAnimatedList: (int index) {
                 listForBrandsKey.currentState!.insertItem(index);
               },
@@ -622,10 +625,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                 listForBrandsKey.currentState!.removeItem(
                     removedIndex,
                     (context, animation) => buildBrandItem(
-                        removedIndex,
-                        removedIndex,
-                        removedItem,
-                        animation));
+                        removedIndex, removedIndex, removedItem, animation));
               },
             ),
             FiltersNormalList(
@@ -635,7 +635,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               filters: [],
             ),
             PriceFilter(
-              pricesFiltersRanges: filters.prices!,
+              pricesFiltersRanges:
+                  state.getProductListingWithFiltersModel != null
+                      ? state.getProductListingWithFiltersModel!.data!.prices!
+                      : filters.prices!,
             ),
             SizesFiltersList(
               selectedFilters: selectedFiltersBySize,
@@ -645,13 +648,14 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               removeItemToAnimatedList: (int removedIndex, String removedItem) {
                 listForSizesKey.currentState!.removeItem(
                     removedIndex,
-                        (context, animation) => buildSizeItem(
-                            removedIndex,
-                        removedIndex,
-                        removedItem,
-                        animation));
+                    (context, animation) => buildSizeItem(
+                        removedIndex, removedIndex, removedItem, animation));
               },
-              sizes: filters.attributes?[0].options ?? [],
+              sizes: state.getProductListingWithFiltersModel != null
+                  ? (state.getProductListingWithFiltersModel!.data
+                          ?.attributes?[0].options ??
+                      [])
+                  : filters.attributes?[0].options ?? [],
             ),
           },
           if (!widget.isExpanded) ...{
@@ -798,8 +802,16 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     return buildBrandItem(
                                                         selected[index],
                                                         index,
-                                                        filters.brands![
-                                                            selected[index]],
+                                                        state.getProductListingWithFiltersModel !=
+                                                                null
+                                                            ? state
+                                                                    .getProductListingWithFiltersModel!
+                                                                    .data!
+                                                                    .brands![
+                                                                selected[index]]
+                                                            : filters.brands![
+                                                                selected[
+                                                                    index]],
                                                         animation);
                                                   },
                                                 ));
@@ -822,9 +834,19 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     return buildSizeItem(
                                                         selected[index],
                                                         index,
-                                                        filters.attributes![0]
-                                                                .options![
-                                                            selected[index]],
+                                                        state.getProductListingWithFiltersModel !=
+                                                                null
+                                                            ? state
+                                                                    .getProductListingWithFiltersModel!
+                                                                    .data!
+                                                                    .attributes![0]
+                                                                    .options![
+                                                                selected[index]]
+                                                            : filters
+                                                                    .attributes![0]
+                                                                    .options![
+                                                                selected[
+                                                                    index]],
                                                         animation);
                                                   },
                                                 ));
@@ -890,6 +912,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     selectedFiltersByBrand.value = [];
                                     selectedFiltersByOffer.value = [];
                                     selectedFiltersBySize.value = [];
+                                    BlocProvider.of<HomeBloc>(context).add(ResetChosenFilters());
                                   },
                                   child: Stack(
                                     children: [

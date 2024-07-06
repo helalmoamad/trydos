@@ -283,7 +283,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       try {
         _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-        _prefsRepository.setMyMarketName(r.data!.user!.name ?? 'No Name');
+        if((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '' ) {
+          _prefsRepository.setMyMarketName(
+              r.data!.user!.name!);
+        }
         _prefsRepository.setMarketToken(r.data!.token!);
         _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
         _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
@@ -339,7 +342,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       print(
           "87777777777777777777777777777777777777777777777777777777${r.data!.user!.name}77777777777777777777777${r.data!.user!.id!}");
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-      _prefsRepository.setMyMarketName(r.data!.user!.name.toString());
+      if((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '' ) {
+        _prefsRepository.setMyMarketName(
+            r.data!.user!.name!);
+      }
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
@@ -412,6 +418,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       emit(state.copyWith(updateNameStatus: UpdateNameStatus.failure));
     }, (r) {
+      add(UpdateChatUserNameEvent(name: event.name));
+      add(UpdateStoriesUserEvent(name: event.name));
       isFailedTheFirstTime.remove('UpdateNameEvent');
       emit(state.copyWith(
         updateNameStatus: UpdateNameStatus.success,
@@ -433,7 +441,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (userInfo) {
       isFailedTheFirstTime.remove('GetCustomerInfoEvent');
       _prefsRepository.setVerifiedPhone(userInfo.isPhoneVerified == 1);
-
+      if((userInfo.name?.replaceAll(' ', '') ?? '') != '' ) {
+        _prefsRepository.setMyMarketName(
+            userInfo.name!);
+        _prefsRepository.setMyChatName(
+            userInfo.name!);
+        _prefsRepository.setMyStoriesName(
+            userInfo.name!);
+      }
       emit(state.copyWith(
           getCustomerInfoStatus: GetCustomerInfoStatus.success,
           marketUser: userInfo));

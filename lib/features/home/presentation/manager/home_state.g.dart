@@ -36,6 +36,16 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               _$GetProductFiltersStatusEnumMap,
               json['getProductFiltersStatus']) ??
           GetProductFiltersStatus.loading,
+      getProductsWithFiltersStatus: $enumDecodeNullable(
+              _$GetProductsWithFiltersStatusEnumMap,
+              json['getProductsWithFiltersStatus']) ??
+          GetProductsWithFiltersStatus.init,
+      getProductListingWithFiltersModel:
+          json['getProductListingWithFiltersModel'] == null
+              ? null
+              : GetProductListingWithFiltersModel.fromJson(
+                  json['getProductListingWithFiltersModel']
+                      as Map<String, dynamic>),
       getProductFiltersModel: json['getProductFiltersModel'] == null
           ? null
           : GetProductFiltersModel.fromJson(
@@ -159,6 +169,10 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
       'getProductFiltersStatus':
           _$GetProductFiltersStatusEnumMap[instance.getProductFiltersStatus]!,
+      'getProductsWithFiltersStatus': _$GetProductsWithFiltersStatusEnumMap[
+          instance.getProductsWithFiltersStatus]!,
+      'getProductListingWithFiltersModel':
+          instance.getProductListingWithFiltersModel?.toJson(),
       'getProductFiltersModel': instance.getProductFiltersModel?.toJson(),
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
@@ -239,6 +253,13 @@ const _$GetProductFiltersStatusEnumMap = {
   GetProductFiltersStatus.loading: 'loading',
   GetProductFiltersStatus.success: 'success',
   GetProductFiltersStatus.failure: 'failure',
+};
+
+const _$GetProductsWithFiltersStatusEnumMap = {
+  GetProductsWithFiltersStatus.init: 'init',
+  GetProductsWithFiltersStatus.loading: 'loading',
+  GetProductsWithFiltersStatus.success: 'success',
+  GetProductsWithFiltersStatus.failure: 'failure',
 };
 
 const _$GetProductListingStatusEnumMap = {
