@@ -289,7 +289,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     if (prefsRepository.isVerifiedPhone != true) {
                       context.go(GRouter
                           .config.applicationRoutes.kRegistrationPagePath);
-                    } else if (prefsRepository.myChatName != null ||
+                    } else if (prefsRepository.myChatName == null ||
                         prefsRepository.myChatName == 'No Name') {
                       showDialog(
                           context: context,
