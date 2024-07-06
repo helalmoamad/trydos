@@ -15,14 +15,15 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart' as filter_products;
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
-import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/data/model/pagination_model.dart';
+import '../../../../generated/locale_keys.g.dart';
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
@@ -85,7 +86,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
       category: widget.category,
       offset: 1,
     ));
-    homeBloc.add(GetProductFiltersEvent());
+    homeBloc.add(GetProductFiltersEvent(
+      boutiqueSlug: widget.boutiqueSlug,
+      category: widget.category,
+    ));
     scrollController.addListener(() {
       if (scrollController.position.pixels <= 80) {
         debugPrint(scrollController.position.pixels.toString());
@@ -173,50 +177,63 @@ class _ProductListingPageState extends State<ProductListingPage> {
                             ?.items) {
                       gridViewKeyForRendering = UniqueKey();
                     }
-                    return p.getProductListingPaginationWithoutFiltersModel[key]
+                    return p.getProductsWithFiltersStatus != c.getProductsWithFiltersStatus || (p.getProductListingPaginationWithoutFiltersModel[key]
                             ?.paginationStatus !=
                         c.getProductListingPaginationWithoutFiltersModel[key]
-                            ?.paginationStatus;
+                            ?.paginationStatus);
                   },
                   builder: (context, state) {
-                    String key = widget.boutiqueSlug + (widget.category ?? '');
-                    if ((state
-                                    .getProductListingPaginationWithoutFiltersModel[
-                                        key]
-                                    ?.paginationStatus ==
-                                PaginationStatus.loading &&
-                            (state
-                                    .getProductListingPaginationWithoutFiltersModel[
-                                        key]
-                                    ?.items
-                                    .isNullOrEmpty ??
-                                true)) ||
-                        (state.getProductListingPaginationWithoutFiltersModel[
-                                key] ==
-                            null)) {
+                    if(state.getProductsWithFiltersStatus == GetProductsWithFiltersStatus.loading){
                       return Center(
                         child: TrydosLoader(),
                       );
                     }
-                    if (state.getProductListingStatus ==
-                            GetProductsWithoutFiltersStatus.failure &&
-                        state
-                            .getProductListingPaginationWithoutFiltersModel[
-                                key]!
-                            .items
-                            .isNullOrEmpty) {
-                      return Center(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              homeBloc.add(GetProductsWithoutFiltersEvent(
-                                boutiqueSlug: widget.boutiqueSlug,
-                                category: widget.category,
-                                offset: 1,
-                              ));
-                            },
-                            child: MyTextWidget(LocaleKeys.try_again.tr())),
-                      );
+                    List<filter_products.Products> products ;
+                    String key = widget.boutiqueSlug + (widget.category ?? '');
+                    if(state.getProductListingWithFiltersModel != null){
+                      products = state.getProductListingWithFiltersModel!.data?.products ?? [];
+                    }else{
+                      if ((state
+                          .getProductListingPaginationWithoutFiltersModel[
+                      key]
+                          ?.paginationStatus ==
+                          PaginationStatus.loading &&
+                          (state
+                              .getProductListingPaginationWithoutFiltersModel[
+                          key]
+                              ?.items
+                              .isNullOrEmpty ??
+                              true)) ||
+                          (state.getProductListingPaginationWithoutFiltersModel[
+                          key] ==
+                              null)) {
+                        return Center(
+                          child: TrydosLoader(),
+                        );
+                      }
+                      products = state
+                          .getProductListingPaginationWithoutFiltersModel[
+                      key]?.items ?? [] ;
                     }
+                    // if (state.getProductListingStatus ==
+                    //         GetProductsWithoutFiltersStatus.failure &&
+                    //     state
+                    //         .getProductListingPaginationWithoutFiltersModel[
+                    //             key]!
+                    //         .items
+                    //         .isNullOrEmpty) {
+                    //   return Center(
+                    //     child: ElevatedButton(
+                    //         onPressed: () {
+                    //           homeBloc.add(GetProductsWithoutFiltersEvent(
+                    //             boutiqueSlug: widget.boutiqueSlug,
+                    //             category: widget.category,
+                    //             offset: 1,
+                    //           ));
+                    //         },
+                    //         child: MyTextWidget(LocaleKeys.try_again.tr())),
+                    //   );
+                    // }
                     return ValueListenableBuilder<Tuple2<int, int>>(
                         valueListenable: setThisEnabledNotifier,
                         builder: (context, slidingMode, _) {
@@ -540,10 +557,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           mainAxisSpacing: 15,
                                         ),
                                         delegate: SliverChildBuilderDelegate(
-                                          childCount: state
-                                              .getProductListingPaginationWithoutFiltersModel[
-                                                  key]!
-                                              .items
+                                          childCount: products
                                               .length,
                                           (BuildContext context, int index) {
                                             return GestureDetector(
@@ -617,18 +631,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     MaterialPageRoute(
                                                         builder: (ctx) =>
                                                             ProductDetailsPage(
-                                                              productItem: state
-                                                                  .getProductListingPaginationWithoutFiltersModel[
-                                                                      key]!
-                                                                  .items[index],
+                                                              productItem: products[index],
                                                             )));
                                               },
                                               child: ProductItem(
                                                 slidingModeItem: slidingMode,
-                                                productItem: state
-                                                    .getProductListingPaginationWithoutFiltersModel[
-                                                        key]!
-                                                    .items[index],
+                                                productItem: products[index],
                                                 itemIndex: index,
                                                 setThisEnabled:
                                                     (int index, int slideMode) {

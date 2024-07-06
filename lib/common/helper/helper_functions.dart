@@ -81,6 +81,7 @@ class HelperFunctions {
   }
 
   static Locale getInitLocale() {
+    return mpaLanguageCodeToLocale[LangCode.ar.name]!;
     final deviceLanguage = WidgetsBinding.instance.window.locale.languageCode;
     debugPrint(deviceLanguage);
     return mpaLanguageCodeToLocale[deviceLanguage] ?? defaultLocal;

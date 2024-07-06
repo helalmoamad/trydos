@@ -45,6 +45,7 @@ abstract class MarketEndPoints {
   static final getMainCategoriesEP = 'mainCategories'.homeScope();
   static final getProductFiltersEP = 'filters'.productsScope();
   static final getProductListingWithoutFiltersEP = 'products'.mobileScope();
+  static final getProductListingWithFiltersEP = 'with_filter'.productsScope();
 }
 
 abstract class MarketUrls {

@@ -96,9 +96,11 @@ class _VoiceMessageState extends State<VoiceMessage> {
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
-      setState(() {
-        timer = true;
-      });
+      if(mounted) {
+        setState(() {
+          timer = true;
+        });
+      }
     });
     // audioPlayer.onDurationChanged.listen((Duration duration) {
     //   debugPrint(duration);
