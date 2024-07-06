@@ -10,6 +10,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
+    as cart;
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
@@ -77,17 +79,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetProductFiltersEvent>(_onGetProductFiltersEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetHomeBoutiqesEvent>(_onGetHomeBoutiquesEvent,
-        transformer: throttleDroppable(throttleDuration));
-    on<GetCartItemEvent>(
-      _onGetCartItemEvent,
-    );
+        transformer: throttleDroppable(Duration(seconds: 5)));
+    on<GetCartItemEvent>(_onGetCartItemEvent,
+        transformer: throttleDroppable(Duration(seconds: 5)));
 
     on<GetStartingSettingsEvent>(_onGetStartingSettingsEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetMainCategoriesEvent>(_onGetMainCategoriesEvent,
         transformer: throttleDroppable(throttleDuration));
     on<AddItemToCartEvent>(_onAddItemToCartEvent,
-        transformer: throttleDroppable(Duration(seconds: 5)));
+        transformer: throttleDroppable(Duration(seconds: 30)));
 
     on<GetProductsWithoutFiltersEvent>(_onGetProductsWithoutFiltersEvent,
         transformer: throttleDroppable(Duration(seconds: 5)));
@@ -593,7 +594,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onGetProductFiltersEvent(
       GetProductFiltersEvent event, Emitter<HomeState> emit) async {
-    if(state.getProductFiltersStatus == GetProductFiltersStatus.success) return;
+    if (state.getProductFiltersStatus == GetProductFiltersStatus.success)
+      return;
     emit(state.copyWith(
         getProductFiltersStatus: GetProductFiltersStatus.loading));
     final response = await getProductFiltersUseCase(NoParams());
@@ -665,6 +667,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onGetCartItemEvent(
       GetCartItemEvent event, Emitter<HomeState> emit) async {
+    Map<String, List<Cart>> cartCollection = {};
+    List<Cart> carts;
     emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.loading));
     final response = await getCartItemUseCase(NoParams());
     response.fold((l) {
@@ -674,10 +678,21 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
       emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
     }, (r) {
+      carts = r.data!.cart!;
+      carts.forEach((element) {
+        if (cartCollection.containsKey(element.boutique!.id.toString())) {
+          cartCollection[element.boutique!.id.toString()]!.add(element);
+        } else {
+          cartCollection.addAll({
+            element.boutique!.id.toString(): [element]
+          });
+        }
+      });
       apisMustNotToRequest.add('GetCartItemEvent');
       isFailedTheFirstTime.remove('GetCartItemEvent');
       emit(state.copyWith(
           getCartShippingItemsModel: r,
+          cartCollection: cartCollection,
           getCartItemsStatus: GetCartItemsStatus.success));
       // add(AddItemToCartEvent());
     });
@@ -712,9 +727,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(state.copyWith(
       getCartShippingItemsModel: getCartShippingItemsModel,
     ));*/
-
     final response = await addItemToCartUseCase(AddITemToCartParams(
-        choice_1: state.CurrentColorSizeForCart!["size"],
+        choice_1: state.CurrentColorSizeForCart != null
+            ? state.CurrentColorSizeForCart!["size"]
+            : "",
         color: event.color,
         id: event.id,
         quantity: event.quantity));

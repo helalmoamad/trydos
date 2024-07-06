@@ -203,7 +203,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       SendOtpParams(isViaWhatsApp: event.isViaWhatsApp, phone: event.phone),
     );
     response.fold(
-        (l) => emit(state.copyWith(sendOtpStatus: SendOtpStatus.failure , sendOtpError: 'please wait some seconds and try again')), (r) {
+        (l) => emit(state.copyWith(
+            sendOtpStatus: SendOtpStatus.failure,
+            sendOtpError: 'please wait some seconds and try again')), (r) {
       _prefsRepository.setVerificationId(r.data!.verificationId!);
       emit(state.copyWith(sendOtpStatus: SendOtpStatus.success));
     });
@@ -441,24 +443,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> _onGetUserCountryEvent(
       GetUserCountryEvent event, Emitter<AuthState> emit) async {
     emit(state.copyWith(
-        getCustomerCountryStatus : GetCustomerCountryStatus.loading
-    ));
+        getCustomerCountryStatus: GetCustomerCountryStatus.loading));
     final response = await getUserCountryUseCase(NoParams());
     response.fold((l) {
       emit(state.copyWith(
-          getCustomerCountryStatus : GetCustomerCountryStatus.failure
-      ));
+          getCustomerCountryStatus: GetCustomerCountryStatus.failure));
       if (!isFailedTheFirstTime.contains('GetUserCountryEvent')) {
         add(GetUserCountryEvent());
         isFailedTheFirstTime.add('GetUserCountryEvent');
       }
     }, (r) {
       isFailedTheFirstTime.remove('GetUserCountryEvent');
-        _prefsRepository.setCountryIso(r.countryCode);
+      _prefsRepository.setCountryIso(r.countryCode);
       emit(state.copyWith(
-           countryName: r.country,
-          getCustomerCountryStatus : GetCustomerCountryStatus.success
-      ));
+          countryName: r.country,
+          getCustomerCountryStatus: GetCustomerCountryStatus.success));
     });
   }
 

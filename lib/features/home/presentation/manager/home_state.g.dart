@@ -49,7 +49,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               const {},
       getCartShippingItemsModel: json['getCartShippingItemsModel'] == null
           ? null
-          : GetCartShippingItemsModel.fromJson(
+          : cart.GetCartShippingItemsModel.fromJson(
               json['getCartShippingItemsModel'] as Map<String, dynamic>),
       reRequestTheseBoutiques:
           (json['reRequestTheseBoutiques'] as Map<String, dynamic>?)?.map(
@@ -75,6 +75,14 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               json['getProductListingStatus']) ??
           GetProductListingStatus.init,
       selectedCollection: (json['selectedCollection'] as num?)?.toInt(),
+      cartCollection: (json['cartCollection'] as Map<String, dynamic>?)?.map(
+            (k, e) => MapEntry(
+                k,
+                (e as List<dynamic>)
+                    .map((e) => cart.Cart.fromJson(e as Map<String, dynamic>))
+                    .toList()),
+          ) ??
+          const {},
       getStoriesForProductStatus: $enumDecodeNullable(
               _$GetStoriesForProductStatusEnumMap,
               json['getStoriesForProductStatus']) ??
@@ -154,6 +162,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getProductFiltersModel': instance.getProductFiltersModel?.toJson(),
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
+      'cartCollection': instance.cartCollection
+          ?.map((k, e) => MapEntry(k, e.map((e) => e.toJson()).toList())),
       'reRequestTheseBoutiques': instance.reRequestTheseBoutiques,
       'reRequestTheseProductListingInBoutiques':
           instance.reRequestTheseProductListingInBoutiques,
