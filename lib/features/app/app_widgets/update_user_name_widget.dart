@@ -46,8 +46,6 @@ class UpdateUserNameWidget extends StatelessWidget {
                 p.updateChatUserNameStatus != c.updateChatUserNameStatus &&
                 c.updateChatUserNameStatus == UpdateChatUserNameStatus.success),
         buildWhen: (p, c) {
-          print('kkkkkkkk ${(updateForStoriesServer &&
-              p.updateStoriesUserStatus != c.updateStoriesUserStatus)}');
           return (updateForStoriesServer &&
               p.updateStoriesUserStatus != c.updateStoriesUserStatus) ||
               (!updateForStoriesServer &&
@@ -86,17 +84,18 @@ class UpdateUserNameWidget extends StatelessWidget {
                             valueListenable: displaySubmit,
                             builder: (context, display, _) {
                               return NameFormField(
-                                autoFocus: false,
-                                ready: display,
                                 validator: ((value) {
                                   if (value!.length < 8) {
-                                    return LocaleKeys.must_be_at_least_8_characters
+                                    return LocaleKeys
+                                        .must_be_at_least_8_characters
                                         .tr();
                                   }
                                 }),
+                                autoFocus: false,
+                                ready: display,
                                 onChange: (String? text) {
                                   _formKey.currentState!.validate();
-                                  displaySubmit.value = text!.length > 8;
+                                  displaySubmit.value = text!.length >= 8;
                                 },
                                 controller: controller,
                                 suffixIcon: Padding(
@@ -112,6 +111,9 @@ class UpdateUserNameWidget extends StatelessWidget {
                                             GetIt.I<PrefsRepository>().removeStoriesName();
                                             BlocProvider.of<AuthBloc>(context)
                                                 .add(UpdateStoriesUserEvent(
+                                                    name: controller.text));
+                                            BlocProvider.of<AuthBloc>(context)
+                                                .add(UpdateChatUserNameEvent(
                                                     name: controller.text));
                                           },
                                           child: Row(
