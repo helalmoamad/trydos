@@ -54,7 +54,7 @@ class _TabsBarState extends State<TabsBar> {
   @override
   void didChangeDependencies() {
     focusNode.addListener(() {
-      if(focusNode.hasFocus){
+      if (focusNode.hasFocus) {
         widget.hideTrendingAndHistory.value = true;
       }
     });
@@ -275,7 +275,9 @@ class _TabsBarState extends State<TabsBar> {
                                       onChanged: (String text) {
                                         widget.buildSearchResult.value =
                                             text.length;
-                                      }, hideTrendingAndHistory: widget.hideTrendingAndHistory,
+                                      },
+                                      hideTrendingAndHistory:
+                                          widget.hideTrendingAndHistory,
                                     );
                                   },
                                 ),
@@ -287,8 +289,10 @@ class _TabsBarState extends State<TabsBar> {
                                       return SizedBox(
                                         width: 1.sw - 50,
                                         child: Row(
-                                            key: Key(WidgetsKey.mainCategoriesTabKey),
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            key: Key(WidgetsKey
+                                                .mainCategoriesTabKey),
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: List.generate(
                                               (homeState
                                                       .mainCategoriesResponseModel
@@ -297,13 +301,15 @@ class _TabsBarState extends State<TabsBar> {
                                                       ?.length ??
                                                   0),
                                               (index) {
-                                                MainCategory mainCategory = homeState
-                                                    .mainCategoriesResponseModel!
-                                                    .data!
-                                                    .mainCategories![index];
+                                                MainCategory mainCategory =
+                                                    homeState
+                                                        .mainCategoriesResponseModel!
+                                                        .data!
+                                                        .mainCategories![index];
                                                 return Padding(
-                                                    padding: HWEdgeInsetsDirectional.only(
-                                                        end: 15.0),
+                                                    padding:
+                                                        HWEdgeInsetsDirectional
+                                                            .only(end: 15.0),
                                                     child: InkWell(
                                                       onTap: () {
                                                         /* appBloc.add(ChangeTab(index));

@@ -39,7 +39,7 @@ class _SplashPageState extends State<SplashPage> {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetMainCategoriesEvent());
-    appBloc.add(ChangeTab(0));
+    appBloc.add(ChangeTab(-1));
 
     BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
 

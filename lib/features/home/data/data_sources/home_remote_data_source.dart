@@ -153,12 +153,12 @@ class HomeRemoteDatasource {
   }
 
   Future<GetHomeBoutiquesModel> getHomeBoutiques(Map<String, dynamic> params) {
-    PostClient<GetHomeBoutiquesModel> getHomeSections =
-        PostClient<GetHomeBoutiquesModel>(
+    GetClient<GetHomeBoutiquesModel> getHomeSections =
+        GetClient<GetHomeBoutiquesModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetHomeBoutiquesModel>(
         endpoint: MarketEndPoints.getHomeBoutiqesEP,
-        data: params,
+        queryParameters: params,
         response: ResponseValue<GetHomeBoutiquesModel>(
             fromJson: (response) => GetHomeBoutiquesModel.fromJson(response)),
       ),
