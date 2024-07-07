@@ -189,7 +189,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       Map<String, dynamic> data =
           convert.jsonDecode(message.data["data"].toString());
       GetIt.I<PrefsRepository>()
-          .setRemovedChatFromBackground(data['channel_id']);
+          .setRemovedChatFromBackground(data['channel_id'].toString());
     } else {
       if (message.data['message'] == null) return;
 
@@ -247,6 +247,7 @@ void main() async {
       .setSessionTimeoutDuration(Duration(seconds: 20));
   String SessionId = Uuid().v4();
   GetIt.I<PrefsRepository>().setSessionId(SessionId);
+  GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   HttpOverrides.global = MyHttpOverrides();

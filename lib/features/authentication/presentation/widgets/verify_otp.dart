@@ -64,7 +64,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
   @override
   void initState() {
     enabledResendNotifier = ValueNotifier<bool>(false);
-    if(!(countdownTimerController?.isRunning ?? false)) {
+    if(countdownTimerController == null) {
       countdownTimerController = CountdownTimerController(endTime: endTime, onEnd: onEnd);
     prefsRepository.setTimerForOtpRunning(true);
     }

@@ -218,7 +218,10 @@ class _ImageMessageState extends State<ImageMessage> {
                                           // _loadingImage.value = 2;
                                           if (file != null) {
                                             widget.imageFile = file;
-                                            setState(() {});
+                                            if(mounted) {
+                                              setState(() {
+                                              });
+                                            }
                                           }
                                         });
                                         return CircularProgressIndicator(
