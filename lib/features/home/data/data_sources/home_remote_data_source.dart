@@ -153,7 +153,7 @@ class HomeRemoteDatasource {
   }
 
   Future<GetHomeBoutiquesModel> getHomeBoutiques(Map<String, dynamic> params) {
-    GetClient<GetHomeBoutiquesModel> getHomeSections =
+    GetClient<GetHomeBoutiquesModel> getHomeBoutiques =
         GetClient<GetHomeBoutiquesModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetHomeBoutiquesModel>(
@@ -164,7 +164,7 @@ class HomeRemoteDatasource {
       ),
     );
 
-    return getHomeSections();
+    return getHomeBoutiques();
   }
 
   Future<bool> addItemToCart(Map<String, dynamic> params) {

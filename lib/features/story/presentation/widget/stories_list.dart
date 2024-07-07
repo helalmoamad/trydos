@@ -138,9 +138,7 @@ class _StoriesListState extends State<StoriesList> {
                                                               builder:
                                                                   (BuildContext
                                                                       context) {
-                                                                return UpdateUserNameWidget(
-                                                                  updateForStoriesServer: true,
-                                                                );
+                                                                return UpdateUserNameWidget();
                                                               });
                                                         } else {
                                                           showDialog(
