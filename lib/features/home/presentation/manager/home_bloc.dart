@@ -385,7 +385,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       for (int i = 0; i < (r.data!.boutiques?.length ?? 0); i++) {
         int index = boutiques
             .indexWhere((element) => element.id == r.data!.boutiques![i].id);
-        if (index == -1) {
+        print(
+            "------------------------*******************************${index}");
+        if (index < 0) {
           boutiques.add(r.data!.boutiques![i]);
         } else {
           boutiques[index] = r.data!.boutiques![i];
@@ -411,14 +413,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                           : 2,
                       hasReachedMax:
                           (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
-                      items: [
-                        ...resetListAfterGetData
-                            ? []
-                            : getHomeBoutiquesPaginationObjectByMainCategory[
-                                    event.categorySlug]!
-                                .items,
-                        ...r.data!.boutiques ?? []
-                      ]));
+                      items: [...resetListAfterGetData ? [] : boutiques]));
             } else {
               return MapEntry(key, value);
             }

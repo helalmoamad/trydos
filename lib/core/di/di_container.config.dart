@@ -121,8 +121,8 @@ import '../../features/home/domain/use_cases/get_main_categories_usecase.dart'
 import '../../features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart'
     as _i49;
 import '../../features/home/domain/use_cases/get_product_filters_usecase.dart'
-    as _i47;
-import '../../features/home/domain/use_cases/get_products_usecase.dart' as _i45;
+    as _i50;
+import '../../features/home/domain/use_cases/get_products_usecase.dart' as _i48;
 import '../../features/home/domain/use_cases/get_products_with_filters_usecase.dart'
     as _i53;
 import '../../features/home/domain/use_cases/get_starting_settings_usecase.dart'
@@ -130,7 +130,7 @@ import '../../features/home/domain/use_cases/get_starting_settings_usecase.dart'
 import '../../features/home/domain/use_cases/get_stories_for_product_usecase.dart'
     as _i52;
 import '../../features/home/domain/use_cases/GetCommentForProductUseCase.dart'
-    as _i50;
+    as _i44;
 import '../../features/home/presentation/manager/home_bloc.dart' as _i77;
 import '../../features/story/data/data_source/story_data_source.dart' as _i11;
 import '../../features/story/data/repository/story_repository_impl.dart'
@@ -251,39 +251,14 @@ Future<_i1.GetIt> $initGetIt(
   gh.factory<_i49.GetProductDetailWithoutRelatedProductsUseCase>(() =>
       _i49.GetProductDetailWithoutRelatedProductsUseCase(
           gh<_i19.HomeRepository>()));
-  gh.factory<_i47.GetProductFiltersUseCase>(
-      () => _i47.GetProductFiltersUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i48.GetStartingSettingsUseCase>(
-      () => _i48.GetStartingSettingsUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i49.GetStoryForProductUseCase>(
-      () => _i49.GetStoryForProductUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i50.GetCommentForProductUseCase>(
-      () => _i50.GetCommentForProductUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i51.GetCartItemUseCase>(
-      () => _i51.GetCartItemUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i52.AddItemToCartUseCase>(
-      () => _i52.AddItemToCartUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i53.GetProductsWithFiltersUseCase>(
-      () => _i53.GetProductsWithFiltersUseCase(gh<_i19.HomeRepository>()));
   gh.factory<_i50.GetProductFiltersUseCase>(
       () => _i50.GetProductFiltersUseCase(gh<_i19.HomeRepository>()));
   gh.factory<_i51.GetStartingSettingsUseCase>(
       () => _i51.GetStartingSettingsUseCase(gh<_i19.HomeRepository>()));
   gh.factory<_i52.GetStoryForProductUseCase>(
       () => _i52.GetStoryForProductUseCase(gh<_i19.HomeRepository>()));
-  gh.lazySingleton<_i53.HomeBloc>(() => _i53.HomeBloc(
-        gh<_i47.GetMainCategoriesUseCase>(),
-        gh<_i52.GetStoryForProductUseCase>(),
-        gh<_i45.GetCartItemUseCase>(),
-        gh<_i43.AddItemToCartUseCase>(),
-        gh<_i44.GetCommentForProductUseCase>(),
-        gh<_i46.GetHomeBoutiqesUseCase>(),
-        gh<_i50.GetProductFiltersUseCase>(),
-        gh<_i25.GetWidthAndHeightUseCase>(),
-        gh<_i49.GetProductDetailWithoutRelatedProductsUseCase>(),
-        gh<_i51.GetStartingSettingsUseCase>(),
-        gh<_i48.GetProductsWithoutFiltersUseCase>(),
-      ));
+  gh.factory<_i53.GetProductsWithFiltersUseCase>(
+      () => _i53.GetProductsWithFiltersUseCase(gh<_i19.HomeRepository>()));
   gh.lazySingleton<_i54.CommonUseRepository>(
       () => _i55.CommonUseRepositoryImpl(gh<_i3.CommonUseRemoteDataSource>()));
   gh.lazySingleton<_i56.CallsRepository>(
@@ -325,17 +300,17 @@ Future<_i1.GetIt> $initGetIt(
   gh.factory<_i76.UploadFileUseCase>(
       () => _i76.UploadFileUseCase(gh<_i58.ChatRepository>()));
   gh.lazySingleton<_i77.HomeBloc>(() => _i77.HomeBloc(
-        gh<_i44.GetMainCategoriesUseCase>(),
-        gh<_i49.GetStoryForProductUseCase>(),
-        gh<_i51.GetCartItemUseCase>(),
-        gh<_i52.AddItemToCartUseCase>(),
-        gh<_i50.GetCommentForProductUseCase>(),
-        gh<_i43.GetHomeBoutiqesUseCase>(),
-        gh<_i47.GetProductFiltersUseCase>(),
+        gh<_i47.GetMainCategoriesUseCase>(),
+        gh<_i52.GetStoryForProductUseCase>(),
+        gh<_i45.GetCartItemUseCase>(),
+        gh<_i43.AddItemToCartUseCase>(),
+        gh<_i44.GetCommentForProductUseCase>(),
+        gh<_i46.GetHomeBoutiqesUseCase>(),
+        gh<_i50.GetProductFiltersUseCase>(),
         gh<_i25.GetWidthAndHeightUseCase>(),
-        gh<_i46.GetProductDetailWithoutRelatedProductsUseCase>(),
-        gh<_i48.GetStartingSettingsUseCase>(),
-        gh<_i45.GetProductsWithoutFiltersUseCase>(),
+        gh<_i49.GetProductDetailWithoutRelatedProductsUseCase>(),
+        gh<_i51.GetStartingSettingsUseCase>(),
+        gh<_i48.GetProductsWithoutFiltersUseCase>(),
         gh<_i53.GetProductsWithFiltersUseCase>(),
       ));
   gh.factory<_i78.AnswerCallUseCase>(
