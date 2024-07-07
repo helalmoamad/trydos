@@ -9,6 +9,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
 
 import '../../../../core/data/model/pagination_model.dart';
+import '../../data/models/get_cart_item_model.dart';
 import '../../data/models/get_product_filters_model.dart';
 import '../../data/models/get_product_listing_with_filters_model.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'

@@ -130,6 +130,7 @@ class _StoriesListState extends State<StoriesList> {
                                                         } else if (GetIt.I<
                                                                     PrefsRepository>()
                                                                 .myMarketName == null) {
+
                                                           showDialog(
                                                               context: context,
                                                               barrierDismissible:
@@ -137,7 +138,9 @@ class _StoriesListState extends State<StoriesList> {
                                                               builder:
                                                                   (BuildContext
                                                                       context) {
-                                                                return UpdateUserNameWidget();
+                                                                return UpdateUserNameWidget(
+                                                                  updateForStoriesServer: true,
+                                                                );
                                                               });
                                                         } else {
                                                           showDialog(
