@@ -11,6 +11,7 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -30,14 +31,15 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
       required this.clickOnMoreOptions,
       required this.panelController,
       required this.currentActiveTab,
-      required this.sizeIsNotAvailableNotifier});
+      required this.sizeIsNotAvailableNotifier,
+      required this.imageUrl});
 
   final ValueNotifier<int> addToBagButtonShapeNotifier;
 
   final ValueNotifier<String?> sizeIsNotAvailableNotifier;
 
   final PanelController panelController;
-
+  final String imageUrl;
   final ValueNotifier<int> currentActiveTab;
 
   final void Function() clickOnFavorite;
@@ -236,19 +238,17 @@ class _ProductDetailsSheetBottomBarState
                                                                                 height: 20,
                                                                                 child: ListView.builder(
                                                                                   itemBuilder: (context, index) {
-                                                                                    return Align(
-                                                                                        widthFactor: 1 - (itemCount / 12 * 0.3),
-                                                                                        child: Container(
+                                                                                    return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: widget.imageUrl, width: 15, imageFit: BoxFit.cover, height: 20)); /*Container(
                                                                                           width: 15,
                                                                                           height: 20,
                                                                                           decoration: BoxDecoration(
                                                                                             image: DecorationImage(
-                                                                                              image: AssetImage(AppAssets.profileJpg),
-                                                                                              fit: BoxFit.cover,
+                                                                                              image: NetworkImage(widget.imageUrl),
+                                                                                              fit: ,
                                                                                             ),
                                                                                             borderRadius: BorderRadius.circular(5.0),
                                                                                           ),
-                                                                                        ));
+                                                                                        ));*/
                                                                                   },
                                                                                   reverse: true,
                                                                                   shrinkWrap: true,

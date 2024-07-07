@@ -52,6 +52,11 @@ class _RegistrationPageState extends State<RegistrationPage>
     super.initState();
   }
 
+  @override
+  void dispose() {
+    prefsRepository.setTimerForOtpRunning(false);
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {

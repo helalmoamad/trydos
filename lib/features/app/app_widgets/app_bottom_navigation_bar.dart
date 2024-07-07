@@ -289,7 +289,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     if (prefsRepository.isVerifiedPhone != true) {
                       context.go(GRouter
                           .config.applicationRoutes.kRegistrationPagePath);
-                    } else if (prefsRepository.myChatName == null || prefsRepository.myChatName == 'No Name') {
+                    } else if (prefsRepository.myMarketName == null) {
                       showDialog(
                           context: context,
                           barrierDismissible: false,
@@ -307,9 +307,10 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         showMessage(LocaleKeys
                             .please_enable_send_notification_for_this_app
                             .tr());
-                        openAppSettings();
+                         openAppSettings();
+                      } else {
+                        appBloc.add(ChangeBasePage(2));
                       }
-                      appBloc.add(ChangeBasePage(2));
                     }
                   },
                   child: Column(
@@ -400,8 +401,8 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         });
                   },
                   onTap: () {
-                    if (prefsRepository.chatToken != null) return;
-                    appBloc.add(ChangeBasePage(0));
+                   // if (prefsRepository.chatToken != null) return;
+                    //appBloc.add(ChangeBasePage(0));
                     context
                         .go(GRouter.config.applicationRoutes.kRegistrationPage);
                   },

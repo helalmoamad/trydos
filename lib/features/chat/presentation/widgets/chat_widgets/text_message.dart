@@ -89,9 +89,11 @@ class _TextMessageState extends ThemeState<TextMessage> {
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
-      setState(() {
-        timer = true;
-      });
+      if(mounted) {
+        setState(() {
+          timer = true;
+        });
+      }
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (mounted) {

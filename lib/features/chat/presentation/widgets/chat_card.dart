@@ -206,8 +206,11 @@ class _ChatCardState extends ThemeState<ChatCard> {
                           '${WidgetsKey.deleteChatConversationIconKey}${widget.index}'),
                       text: LocaleKeys.delete.tr(),
                       onTap: () {
-                        chatBloc
-                            .add(DeleteChatEvent(channelId: widget.chat.id!));
+                        if(double.tryParse(widget.chat.id!) == null){
+                          showMessage('You Can\'t remove this Chat at This Time');
+                          return;
+                        }
+                        chatBloc.add(DeleteChatEvent(channelId: widget.chat.id!));
                       },
                       backgroundColor: const Color(0xffFFE8E8),
                       foregroundColor: const Color(0xffFA6868),
