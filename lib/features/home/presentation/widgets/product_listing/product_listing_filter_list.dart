@@ -13,6 +13,7 @@ import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/price_filter.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/sizes_filters_list.dart';
@@ -35,14 +36,17 @@ class StackedFiltersList extends StatefulWidget {
       required this.selectedFiltersNotifier,
       required this.listKey,
       required this.isExpanded,
-      this.controller});
+      this.controller, required this.boutiqueSlug, this.category, required this.closeFilterPage});
 
+  final void Function() closeFilterPage;
   final void Function(String message) onMoveToAnotherFiltersSection;
   final ValueNotifier<List<Tuple3<int, int?, double>>> selectedFiltersNotifier;
   final GlobalKey<AnimatedListState> listKey;
   final ScrollController? controller;
   final bool isExpanded;
 
+  final String boutiqueSlug;
+  final String? category;
   @override
   _StackedFiltersListState createState() => _StackedFiltersListState();
 }
@@ -68,9 +72,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
   int lastSectionDisplayed = 0;
   int? minPrice;
   int? maxPrice;
+  late HomeBloc homeBloc;
 
   @override
   void initState() {
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     widget.selectedFiltersNotifier.addListener(() {
       if (widget.selectedFiltersNotifier.value.isEmpty) {
         expandingFiltersStack.value = -1;
@@ -120,13 +126,16 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       if (state.getProductFiltersStatus == GetProductFiltersStatus.loading ||
           state.getProductsWithFiltersStatus ==
               GetProductsWithFiltersStatus.loading) {
-        return Center(child: TrydosLoader());
+        return SizedBox.shrink();
       }
       // if (state.getProductFiltersStatus == GetProductFiltersStatus.failure) {
       //   return Center(child: TryAgainWidget(tryAgain: () {
       //     BlocProvider.of<HomeBloc>(context).add(GetProductFiltersEvent());
       //   }));
       // }
+      if(state.getProductFiltersModel?.filters == null){
+        return SizedBox.shrink();
+      }
       Filter filters = state.getProductFiltersModel!.filters!;
       if (lowerAndUpperBound == null) {
         minPrice = filters.prices!.minPrice!;
@@ -151,7 +160,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
         children: [
           if (widget.isExpanded) ...{
             Padding(
-                padding: EdgeInsets.only(left: 25),
+                padding: EdgeInsetsDirectional.only(start: 25),
                 child: Row(
                   children: [
                     FilterSelectedMark(width: 20, height: 20),
@@ -252,7 +261,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               physics: ClampingScrollPhysics(),
                               scrollDirection: Axis.horizontal,
                               shrinkWrap: true,
-                              padding: EdgeInsets.only(left: 5),
+                              padding: EdgeInsetsDirectional.only(start: 5),
                               itemBuilder: (ctx, index) {
                                 if (index & 1 == 0)
                                   return VisibilityDetector(
@@ -311,7 +320,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                   duration: Duration(
                                                       milliseconds: 300),
                                                   margin:
-                                                      EdgeInsets.only(right: 5),
+                                                      EdgeInsetsDirectional.only(end: 5),
                                                   width: currentExpandedIndex ==
                                                           index
                                                       ? (75 + 4 * 55)
@@ -319,12 +328,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                   height: 70.0,
                                                   child: Stack(
                                                     alignment:
-                                                        Alignment.topLeft,
+                                                        AlignmentDirectional.topStart,
                                                     children: [
                                                       ...List.generate(
                                                         4,
                                                         (innerIndex) =>
-                                                            AnimatedPositioned(
+                                                            AnimatedPositionedDirectional(
                                                                 curve: Curves
                                                                     .fastEaseInToSlowEaseOut,
                                                                 duration: Duration(
@@ -336,7 +345,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                     ? (70 - 50)
                                                                     : (70 - 50) /
                                                                         2,
-                                                                right: currentExpandedIndex ==
+                                                                end: currentExpandedIndex ==
                                                                         15 *
                                                                             index
                                                                     ? innerIndex *
@@ -665,6 +674,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               isBrandFilter: false,
               filters: [],
             ),
+            if(filters.prices != null)
             PriceFilter(
               lowerAndUpperBound: lowerAndUpperBound!,
               pricesFiltersRanges:
@@ -672,6 +682,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       ? state.getProductListingWithFiltersModel!.data!.prices!
                       : filters.prices!,
             ),
+            if(!filters.attributes.isNullOrEmpty)
             SizesFiltersList(
               selectedFilters: selectedFiltersBySize,
               addItemToAnimatedList: (int index) {
@@ -685,9 +696,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               },
               sizes: state.getProductListingWithFiltersModel != null
                   ? (state.getProductListingWithFiltersModel!.data
-                          ?.attributes?[0].options ??
+                          ?.attributes![0].options ??
                       [])
-                  : filters.attributes?[0].options ?? [],
+                  : filters.attributes![0].options ?? [],
             ),
           },
           if (!widget.isExpanded) ...{
@@ -899,38 +910,68 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             children: [
                               Expanded(
                                 flex: 5,
-                                child: Stack(
-                                  children: [
-                                    Container(
-                                      height: 65,
-                                      decoration: BoxDecoration(
-                                          color: Color(0xffFF5F61),
-                                          boxShadow: [
-                                            BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.1),
-                                                blurRadius: 6,
-                                                offset: Offset(0, 3)),
-                                            BoxShadow(
-                                                color: Colors.white
-                                                    .withOpacity(0.4),
-                                                blurRadius: 6,
-                                                offset: Offset(0, 3),
-                                                inset: true)
-                                          ],
-                                          borderRadius:
-                                              BorderRadius.circular(20)),
-                                      child: Center(
-                                        child: MyTextWidget(
-                                          'Apply',
-                                          style: textTheme.headline6?.rq
-                                              .copyWith(
-                                                  color: Color(0xffFEFEFE),
-                                                  height: 23 / 18),
-                                        ),
+                                child: GestureDetector(
+                                  onTap: (){
+                                    List<int>? brandsIds ;
+                                    List<Map<String , dynamic>>? attributes;
+                                    if(filters.brands != null){
+                                      brandsIds = [];
+                                      selectedFiltersByBrand.value.forEach((index) {
+                                        brandsIds!.add(filters.brands![index].id!);
+                                      });
+                                    }
+                                    if(!filters.attributes.isNullOrEmpty){
+                                      List<String> options = [];
+                                      attributes = [];
+                                      selectedFiltersBySize.value.forEach((index) {
+                                        options.add(filters.attributes![0].options![index]);
+                                      });
+                                      attributes.add({
+                                        "id" : filters.attributes![0].id,
+                                        "name" : filters.attributes![0].name,
+                                        "options" : options
+                                      });
+                                    }
+                                    widget.closeFilterPage.call();
+                                    homeBloc.add(GetProductsWithFiltersEvent(
+                                      boutiqueSlug: widget.boutiqueSlug,
+                                      category: widget.category,
+                                      brands: brandsIds,
+                                      attributes: attributes,
+
+                                      offset: 1,
+                                    ));
+                                    clearAllFiltersBeforeRequest();
+                                  },
+                                  child: Container(
+                                    height: 65,
+                                    decoration: BoxDecoration(
+                                        color: Color(0xffFF5F61),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: Colors.black
+                                                  .withOpacity(0.1),
+                                              blurRadius: 6,
+                                              offset: Offset(0, 3)),
+                                          BoxShadow(
+                                              color: Colors.white
+                                                  .withOpacity(0.4),
+                                              blurRadius: 6,
+                                              offset: Offset(0, 3),
+                                              inset: true)
+                                        ],
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: Center(
+                                      child: MyTextWidget(
+                                        'Apply',
+                                        style: textTheme.headline6?.rq
+                                            .copyWith(
+                                                color: Color(0xffFEFEFE),
+                                                height: 23 / 18),
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ),
                               SizedBox(
@@ -940,22 +981,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 flex: 2,
                                 child: GestureDetector(
                                   onTap: () {
-                                    lowerAndUpperBound!.value = Tuple2(minPrice!, maxPrice!);
-                                    int length = widget.selectedFiltersNotifier.value.length;
-                                    widget.selectedFiltersNotifier.value = [];
-                                    _clearAllItemsFromAnimatedList(length, widget.listKey);
-                                    length = selectedFiltersByBrand.value.length;
-                                    selectedFiltersByBrand.value = [];
-                                    _clearAllItemsFromAnimatedList(length, listForBrandsKey);
-                                    length = selectedFiltersByOffer.value.length;
-                                    selectedFiltersByOffer.value = [];
-                                    _clearAllItemsFromAnimatedList(length, listForOffersKey);
-                                    length = selectedFiltersBySize.value.length;
-                                    selectedFiltersBySize.value = [];
-                                    _clearAllItemsFromAnimatedList(length, listForSizesKey);
-
-                                    // BlocProvider.of<HomeBloc>(context)
-                                    //     .add(ResetChosenFilters());
+                                    clearAllFiltersBeforeRequest();
+                                    homeBloc.add(GetProductFiltersEvent(
+                                      boutiqueSlug: widget.boutiqueSlug,
+                                      category: widget.category,
+                                    ));
                                   },
                                   child: Stack(
                                     children: [
@@ -1227,6 +1257,22 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
           ),
         ));
   }
+
+  void clearAllFiltersBeforeRequest() {
+    lowerAndUpperBound!.value = Tuple2(minPrice!, maxPrice!);
+    int length = widget.selectedFiltersNotifier.value.length;
+    widget.selectedFiltersNotifier.value = [];
+    _clearAllItemsFromAnimatedList(length, widget.listKey);
+    length = selectedFiltersByBrand.value.length;
+    selectedFiltersByBrand.value = [];
+    _clearAllItemsFromAnimatedList(length, listForBrandsKey);
+    length = selectedFiltersByOffer.value.length;
+    selectedFiltersByOffer.value = [];
+    _clearAllItemsFromAnimatedList(length, listForOffersKey);
+    length = selectedFiltersBySize.value.length;
+    selectedFiltersBySize.value = [];
+    _clearAllItemsFromAnimatedList(length, listForSizesKey);
+  }
 }
 
 class FilterCircleWidget extends StatefulWidget {
@@ -1266,7 +1312,7 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(right: widget.paddingValue),
+      padding: EdgeInsetsDirectional.only(end: widget.paddingValue),
       child: Column(
         children: [
           Column(
@@ -1311,15 +1357,6 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                   style: context.textTheme.caption?.rq.copyWith(
                       color: Color(0xff8E8E8E), letterSpacing: 0, height: 1.25),
                 ),
-                MyTextWidget(
-                  '1100',
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.caption?.rq.copyWith(
-                      color: Color(0xffC4C2C2),
-                      fontSize: 10.sp,
-                      letterSpacing: 0,
-                      height: 1.3),
-                )
               }
             ],
           ),

@@ -111,12 +111,13 @@ class HomeRemoteDatasource {
     return getMainCategories();
   }
 
-  Future<GetProductFiltersModel> getProductFilters() {
+  Future<GetProductFiltersModel> getProductFilters(Map<String , dynamic> params) {
     PostClient<GetProductFiltersModel> getProductFilters =
         PostClient<GetProductFiltersModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductFiltersModel>(
         endpoint: MarketEndPoints.getProductFiltersEP,
+        data: params,
         response: ResponseValue<GetProductFiltersModel>(
             fromJson: (response) => GetProductFiltersModel.fromJson(response)),
       ),

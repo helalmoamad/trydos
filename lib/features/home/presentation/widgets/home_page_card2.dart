@@ -4,15 +4,12 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter/rendering.dart' as rendering;
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -20,10 +17,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
-import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 import 'package:trydos/service/language_service.dart';
 
-import '../../../../service/language_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
 
@@ -83,14 +78,14 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             });
             await GetIt.I<PrefsRepository>().setCurrentEvent(
                 "i loveddsssssssssssssssssssssssssssssssssssssssss you Ahmad in past");
-            HelperFunctions.slidingNavigation(
-                context,
-                ProductListingPage(
-                  boutiqueSlug: widget.boutniqe.slug!,
-                  boutiqueDescription: widget.boutniqe.description!,
-                  boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
-                  boutiqueIcon: widget.boutniqe.icon!.filePath,
-                ));
+              HelperFunctions.slidingNavigation(
+                  context,
+                  ProductListingPage(
+                    boutiqueSlug: widget.boutniqe.slug!,
+                    boutiqueDescription: widget.boutniqe.description!,
+                    boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
+                    boutiqueIcon: widget.boutniqe.icon!.filePath,
+                  ));
           },
           child: Stack(
             alignment: Alignment.bottomCenter,
@@ -373,134 +368,137 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             ],
           ),
         ),
-        ValueListenableBuilder<int>(
-            valueListenable: resizeItems,
-            builder: (context, focused, _) {
-              return GestureDetector(
-                onPanDown: (details) {
-                  print(focused);
-                  HapticFeedback.lightImpact();
-                  resizeItems.value = (details.globalPosition.dx -
-                          40 -
-                          (9 -
-                                  widget.boutniqe.childCategoriesForProductIds!
-                                      .length) /
-                              2 *
-                              (40.w - 5.w)) ~/
-                      35.w;
-                },
-                onPanCancel: () {
-                  resizeItems.value = -1;
-                },
-                onPanEnd: (details) {
-                  resizeItems.value = -1;
-                },
-                onPanUpdate: (details) {
-                  int prev = resizeItems.value;
-                  resizeItems.value = (details.globalPosition.dx -
-                          40 -
-                          (9 -
-                                  widget.boutniqe.childCategoriesForProductIds!
-                                      .length) /
-                              2 *
-                              (40.w - 5.w)) ~/
-                      35.w;
-                  if (prev != resizeItems.value) {
+        Directionality(
+          textDirection: ui.TextDirection.ltr,
+          child: ValueListenableBuilder<int>(
+              valueListenable: resizeItems,
+              builder: (context, focused, _) {
+                return GestureDetector(
+                  onPanDown: (details) {
+                    print(focused);
                     HapticFeedback.lightImpact();
-                  }
-                },
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 10.w,
-                    ),
-                    Transform.translate(
-                      offset: Offset(10, 0),
-                      child: SizedBox(
-                        width: 340.w,
-                        height: focused != -1 ? 100.w : 60.w,
-                        child: Stack(
-                            alignment: Alignment.bottomCenter,
-                            children: List.generate(
-                                min(
-                                    9,
-                                    widget.boutniqe
-                                        .childCategoriesForProductIds!.length),
-                                (index) => AnimatedPositioned(
-                                      left: (9 -
-                                                  widget
-                                                      .boutniqe
-                                                      .childCategoriesForProductIds!
-                                                      .length) /
-                                              2 *
-                                              (40.w - 5.w) +
-                                          (index * (40.w - 5.w) +
-                                              (focused != -1
-                                                  ? index == (focused + 1)
-                                                      ? 20.w
-                                                      : index == focused
-                                                          ? 5.w
-                                                          : index > focused
-                                                              ? 20.w
-                                                              : 0
-                                                  : 0)),
-                                      curve: Curves.fastEaseInToSlowEaseOut,
-                                      bottom: focused == index ? 35.w : 10.w,
-                                      duration: Duration(
-                                          milliseconds:
-                                              focused == index ? 150 : 10),
-                                      child: InkWell(
-                                        onTap: () {
-                                            HelperFunctions.slidingNavigation(
-                                                context,
-                                                ProductListingPage(
-                                                  boutiqueSlug:
-                                                      widget.boutniqe.slug!,
-                                                  category: widget
-                                                      .boutniqe
-                                                      .childCategoriesForProductIds![
-                                                          index]
-                                                      .categorySlug,
-                                                  boutiqueDescription: widget
-                                                      .boutniqe.description!,
-                                                  boutiqueFirstBanner: widget
-                                                      .boutniqe
-                                                      .banners![0]
-                                                      .filePath!,
-                                                  boutiqueIcon: widget
-                                                      .boutniqe.icon!.filePath,
-                                                ));},
-                                        child: ProductItemCircle(
-                                          index: index,
-                                          isFocused: focused == index,
-                                          imageUrl: widget
-                                              .boutniqe
-                                              .childCategoriesForProductIds![
-                                                  index]
-                                              .productThumbnail!,
-                                          name: widget
-                                              .boutniqe
-                                              .childCategoriesForProductIds![
-                                                  index]
-                                              .categoryName!,
-                                          countProducts: widget
-                                              .boutniqe
-                                              .childCategoriesForProductIds![
-                                                  index]
-                                              .countProducts
-                                              .toString(),
-                                        ),
-                                      ),
-                                    ))),
+                    resizeItems.value = (details.globalPosition.dx -
+                            40 -
+                            (9 -
+                                    widget.boutniqe.childCategoriesForProductIds!
+                                        .length) /
+                                2 *
+                                (40.w - 5.w)) ~/
+                        35.w;
+                  },
+                  onPanCancel: () {
+                    resizeItems.value = -1;
+                  },
+                  onPanEnd: (details) {
+                    resizeItems.value = -1;
+                  },
+                  onPanUpdate: (details) {
+                    int prev = resizeItems.value;
+                    resizeItems.value = (details.globalPosition.dx -
+                            40 -
+                            (9 -
+                                    widget.boutniqe.childCategoriesForProductIds!
+                                        .length) /
+                                2 *
+                                (40.w - 5.w)) ~/
+                        35.w;
+                    if (prev != resizeItems.value) {
+                      HapticFeedback.lightImpact();
+                    }
+                  },
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 10.w,
                       ),
-                    ),
-                    SizedBox(
-                      height: 10.w,
-                    )
-                  ],
-                ),
-              );
-            }),
+                      Transform.translate(
+                        offset: Offset(10, 0),
+                        child: SizedBox(
+                          width: 340.w,
+                          height: focused != -1 ? 100.w : 60.w,
+                          child: Stack(
+                              alignment: Alignment.bottomCenter,
+                              children: List.generate(
+                                  min(
+                                      9,
+                                      widget.boutniqe
+                                          .childCategoriesForProductIds!.length),
+                                  (index) => AnimatedPositioned(
+                                        left: (9 -
+                                                    widget
+                                                        .boutniqe
+                                                        .childCategoriesForProductIds!
+                                                        .length) /
+                                                2 *
+                                                (40.w - 5.w) +
+                                            (index * (40.w - 5.w) +
+                                                (focused != -1
+                                                    ? index == (focused + 1)
+                                                        ? 20.w
+                                                        : index == focused
+                                                            ? 5.w
+                                                            : index > focused
+                                                                ? 20.w
+                                                                : 0
+                                                    : 0)),
+                                        curve: Curves.fastEaseInToSlowEaseOut,
+                                        bottom: focused == index ? 35.w : 10.w,
+                                        duration: Duration(
+                                            milliseconds:
+                                                focused == index ? 150 : 10),
+                                        child: InkWell(
+                                          onTap: () {
+                                              HelperFunctions.slidingNavigation(
+                                                  context,
+                                                  ProductListingPage(
+                                                    boutiqueSlug:
+                                                        widget.boutniqe.slug!,
+                                                    category: widget
+                                                        .boutniqe
+                                                        .childCategoriesForProductIds![
+                                                            index]
+                                                        .categorySlug,
+                                                    boutiqueDescription: widget
+                                                        .boutniqe.description!,
+                                                    boutiqueFirstBanner: widget
+                                                        .boutniqe
+                                                        .banners![0]
+                                                        .filePath!,
+                                                    boutiqueIcon: widget
+                                                        .boutniqe.icon!.filePath,
+                                                  ));},
+                                          child: ProductItemCircle(
+                                            index: index,
+                                            isFocused: focused == index,
+                                            imageUrl: widget
+                                                .boutniqe
+                                                .childCategoriesForProductIds![
+                                                    index]
+                                                .productThumbnail!,
+                                            name: widget
+                                                .boutniqe
+                                                .childCategoriesForProductIds![
+                                                    index]
+                                                .categoryName!,
+                                            countProducts: widget
+                                                .boutniqe
+                                                .childCategoriesForProductIds![
+                                                    index]
+                                                .countProducts
+                                                .toString(),
+                                          ),
+                                        ),
+                                      ))),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10.w,
+                      )
+                    ],
+                  ),
+                );
+              }),
+        ),
       ],
     );
   }

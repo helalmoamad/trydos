@@ -19,7 +19,7 @@ abstract class HomeRepository {
   Future<Either<Failure, GetCartShippingItemsModel>> getCartShippingItem();
 
   Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories();
-  Future<Either<Failure, GetProductFiltersModel>> getProductFilters();
+  Future<Either<Failure, GetProductFiltersModel>> getProductFilters(Map<String, dynamic> params);
   /* Future<Either<Failure, HomeSectionResponseModel>> getHomeSections(
       Map<String, dynamic> params);*/
   Future<Either<Failure, GetHomeBoutiquesModel>> getHomeBoutiqes(

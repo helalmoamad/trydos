@@ -83,8 +83,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddCurrentSelectedColorEvent>(
       _onAddCurrentSelectedColorEvent,
     );
-    on<GetProductFiltersEvent>(_onGetProductFiltersEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<GetProductFiltersEvent>(_onGetProductFiltersEvent,);
     on<GetHomeBoutiqesEvent>(_onGetHomeBoutiquesEvent,
         transformer: throttleDroppable(Duration(seconds: 5)));
     on<GetCartItemEvent>(_onGetCartItemEvent,
@@ -390,8 +389,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           boutiques[index] = r.data!.boutiques![i];
         }
       }
-      bool resetListAfterGetData =
-          !(reRequestTheseBoutiques[event.categorySlug] ?? false);
       reRequestTheseBoutiques[event.categorySlug] = true;
       emit(state.copyWith(
           reRequestTheseBoutiques: reRequestTheseBoutiques,
@@ -621,8 +618,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         reRequestTheseProductListingInBoutiques: {},
         reRequestTheseBoutiques: {},
         getMainCategoriesStatus: GetMainCategoriesStatus.init,
+        getProductFiltersStatus: GetProductFiltersStatus.init,
         getStartingSettingsStatus: GetStartingSettingsStatus.init,
-        getProductFiltersStatus: GetProductFiltersStatus.loading,
         getProductListingWithFiltersModel: null,
         getProductsWithFiltersStatus:
             GetProductsWithFiltersStatus.init).toJson();
@@ -632,24 +629,31 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       GetProductFiltersEvent event, Emitter<HomeState> emit) async {
     if (state.getProductFiltersStatus == GetProductFiltersStatus.success)
       return;
-    emit(state.copyWith(
-        getProductFiltersStatus: GetProductFiltersStatus.loading));
-    final response = await getProductFiltersUseCase(NoParams());
-
-    response.fold((l) {
-      if (!isFailedTheFirstTime.contains('GetProductFiltersEvent')) {
-        add(GetMainCategoriesEvent());
-        isFailedTheFirstTime.add('GetProductFiltersEvent');
-      }
+    try {
       emit(state.copyWith(
-          getProductFiltersStatus: GetProductFiltersStatus.failure));
-    }, (r) {
-      apisMustNotToRequest.add('GetProductFiltersEvent');
-      isFailedTheFirstTime.remove('GetProductFiltersEvent');
-      emit(state.copyWith(
-          getProductFiltersModel: r,
-          getProductFiltersStatus: GetProductFiltersStatus.success));
-    });
+          getProductFiltersStatus: GetProductFiltersStatus.loading));
+      final response = await getProductFiltersUseCase(GetProductsFiltersParams(
+          category: event.category,
+          boutiqueSlug: event.boutiqueSlug
+      ));
+      response.fold((l) {
+        if (!isFailedTheFirstTime.contains('GetProductFiltersEvent')) {
+          add(GetMainCategoriesEvent());
+          isFailedTheFirstTime.add('GetProductFiltersEvent');
+        }
+        emit(state.copyWith(
+            getProductFiltersStatus: GetProductFiltersStatus.failure));
+      }, (r) {
+        apisMustNotToRequest.add('GetProductFiltersEvent');
+        isFailedTheFirstTime.remove('GetProductFiltersEvent');
+        emit(state.copyWith(
+            getProductFiltersModel: r,
+            getProductFiltersStatus: GetProductFiltersStatus.success));
+      });
+    }catch(e,st){
+      print(e);
+      print(st);
+    }
   }
 
   FutureOr<void> _onGetCommentForProductEvent(
