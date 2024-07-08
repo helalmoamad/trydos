@@ -23,13 +23,13 @@ class GetMainCategoriesEvent extends HomeEvent {
 }
 
 class GetProductFiltersEvent extends HomeEvent {
-  const GetProductFiltersEvent({this.category , this.boutiqueSlug});
+  const GetProductFiltersEvent({this.category, this.boutiqueSlug});
 
   final String? boutiqueSlug;
   final String? category;
   @override
   // TODO: implement props
-  List<Object?> get props => [category , boutiqueSlug];
+  List<Object?> get props => [category, boutiqueSlug];
 }
 
 class AddCurrentSelectedColorEvent extends HomeEvent {
@@ -86,8 +86,7 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
   final bool getWithPagination;
 
   GetProductsWithoutFiltersEvent(
-      {
-      required this.boutiqueSlug,
+      {required this.boutiqueSlug,
       this.getWithPagination = false,
       required this.offset,
       this.limit,
@@ -95,13 +94,8 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [
-        category,
-        getWithPagination,
-        offset,
-        limit,
-        boutiqueSlug
-      ];
+  List<Object?> get props =>
+      [category, getWithPagination, offset, limit, boutiqueSlug];
 }
 
 class ResetChosenFilters extends HomeEvent {
@@ -109,8 +103,8 @@ class ResetChosenFilters extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [];
-
 }
+
 class GetProductsWithFiltersEvent extends HomeEvent {
   final String? category;
   final List<String>? prices;
@@ -124,28 +118,28 @@ class GetProductsWithFiltersEvent extends HomeEvent {
 
   GetProductsWithFiltersEvent(
       {this.prices,
-        this.brands,
-        this.attributes,
-        required this.boutiqueSlug,
-        this.getWithPagination = false,
-        this.searchText,
-        required this.offset,
-        this.limit,
-        this.category});
+      this.brands,
+      this.attributes,
+      required this.boutiqueSlug,
+      this.getWithPagination = false,
+      this.searchText,
+      required this.offset,
+      this.limit,
+      this.category});
 
   @override
   // TODO: implement props
   List<Object?> get props => [
-    category,
-    prices,
-    brands,
-    attributes,
-    getWithPagination,
-    searchText,
-    offset,
-    limit,
-    boutiqueSlug
-  ];
+        category,
+        prices,
+        brands,
+        attributes,
+        getWithPagination,
+        searchText,
+        offset,
+        limit,
+        boutiqueSlug
+      ];
 }
 
 class GetStoryForProductEvent extends HomeEvent {
@@ -210,6 +204,14 @@ class AddProductItemForCartEvent extends HomeEvent {
   final Products? product;
   final String productId;
   AddProductItemForCartEvent({this.product, required this.productId});
+  @override
+  List<Object?> get props => [];
+}
+
+class RemoveItemFormCartEvent extends HomeEvent {
+  final String boutiqueId;
+  final String itemId;
+  RemoveItemFormCartEvent({required this.itemId, required this.boutiqueId});
   @override
   List<Object?> get props => [];
 }
