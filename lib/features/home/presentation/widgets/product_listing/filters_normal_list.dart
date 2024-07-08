@@ -35,7 +35,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
       return SizedBox.shrink();
     }
     return Padding(
-      padding: const EdgeInsets.only(left: 25.0),
+      padding: const EdgeInsetsDirectional.only(start: 25.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

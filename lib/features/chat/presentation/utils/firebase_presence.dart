@@ -209,8 +209,14 @@ class FirebasePresence {
 
   static Future<void> sendUserTransaction(
       {required String channelId, String? description}) async {
+    print([...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
+        .firstWhere((element) => element.id == channelId || element.localId == channelId).channelMembers.toString());
+    [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
+        .firstWhere((element) => element.id == channelId || element.localId == channelId).channelMembers?.forEach((element) {
+          print(element.user.toString());
+    });
     String friendId = [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
-        .firstWhere((element) => element.id == channelId)
+        .firstWhere((element) => element.id == channelId || element.localId == channelId)
         .channelMembers!
         .firstWhere((element) => element.user!.id != myChatId)
         .user!
@@ -233,7 +239,7 @@ class FirebasePresence {
 
   static void deleteUserTransaction({required String channelId}) {
     String friendId = [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
-        .firstWhere((element) => element.id == channelId)
+        .firstWhere((element) => element.id == channelId || element.localId == channelId)
         .channelMembers!
         .firstWhere((element) => element.userId != myChatId)
         .userId
