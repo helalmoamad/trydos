@@ -35,7 +35,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       getProductFiltersStatus: $enumDecodeNullable(
               _$GetProductFiltersStatusEnumMap,
               json['getProductFiltersStatus']) ??
-          GetProductFiltersStatus.loading,
+          GetProductFiltersStatus.init,
       getProductsWithFiltersStatus: $enumDecodeNullable(
               _$GetProductsWithFiltersStatusEnumMap,
               json['getProductsWithFiltersStatus']) ??
@@ -250,6 +250,7 @@ const _$GetCommentForProductStatusEnumMap = {
 };
 
 const _$GetProductFiltersStatusEnumMap = {
+  GetProductFiltersStatus.init: 'init',
   GetProductFiltersStatus.loading: 'loading',
   GetProductFiltersStatus.success: 'success',
   GetProductFiltersStatus.failure: 'failure',

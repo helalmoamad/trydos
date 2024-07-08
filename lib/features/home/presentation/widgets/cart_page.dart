@@ -43,7 +43,6 @@ class _CartPageState extends State<CartPage> {
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetCartItemEvent());
-    homeBloc.add(GetProductFiltersEvent());
     super.initState();
   }
 

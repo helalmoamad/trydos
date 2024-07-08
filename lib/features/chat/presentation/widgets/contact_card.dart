@@ -67,13 +67,17 @@ class ContactCard extends StatelessWidget {
                 List<Chat> chats = List.of(GetIt.I<ChatBloc>().state.chats);
                 debugPrint(chats.toString());
                 chats.addAll(GetIt.I<ChatBloc>().state.pinnedChats);
+                print('helalllllllllllllllll ${chats.length}');
                 chat = chats.firstWhere((element) => element.channelMembers!
                     .any((element) => element.userId == contact.contactUserId));
                 final preferences = GetIt.I<PrefsRepository>();
                 receiver = chat.channelMembers
                     ?.firstWhere(
                         (element) => element.userId != preferences.myChatId,
-                        orElse: () => ChannelMember())
+                        orElse: () =>ChannelMember(
+                            userId: contact.contactUserId,
+                            user: User(
+                                id: contact.contactUserId, name: contact.name)),)
                     .user;
                 context.go(GRouter
                         .config.applicationRoutes.kSinglePageChatPagePath +

@@ -147,7 +147,7 @@ class ChatPageContentState extends State<ChatPageContent> {
         }
         // todo (future update) here we can return try again if the status failure
         List<Chat> chats = List.of(state.pinnedChats);
-        chats.addAll(state.chats);
+        chats.addAll(List.of(state.chats));
         // todo  (future update) remove this from here handle it in the back of in bloc
 
         chats.removeWhere((element) =>

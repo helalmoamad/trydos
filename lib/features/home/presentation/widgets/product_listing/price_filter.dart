@@ -36,7 +36,7 @@ class _PriceFilterState extends State<PriceFilter> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 30.0, right: 20),
+      padding: const EdgeInsetsDirectional.only(start: 30.0, end: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
