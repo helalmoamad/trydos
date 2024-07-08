@@ -98,8 +98,15 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, GetProductListingWithFiltersModel>> getProductsWithFilters(Map<String, dynamic> params) {
+  Future<Either<Failure, GetProductListingWithFiltersModel>>
+      getProductsWithFilters(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getProductsWithFilters(params));
   }
+
+  @override
+  Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.removeItemToCart(params));
   }
+}
