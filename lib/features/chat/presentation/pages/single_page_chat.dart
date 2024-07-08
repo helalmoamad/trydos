@@ -678,7 +678,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                   ////////////////
                                                                   GestureDetector(
                                                                     key: Key(
-                                                                        '${WidgetsKey.textMessageCardKey}$index'),
+                                                                        '${WidgetsKey.messageCardKey}$index'),
                                                                     onLongPress:
                                                                         () {
                                                                       if (messages[index]
@@ -1507,6 +1507,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         );
       } else {
         return ReplayOnMeMessage(
+            key: Key('${WidgetsKey.replayOnMeMessageKey}$listIndex'),
             messageId: message.parentMessageId!,
             receivedAt: messageStatus?.receivedAt,
             messageDate: parentMessage.createdAt ?? DateTime.now(),
@@ -1557,6 +1558,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       switch (message.messageType?.name) {
         case 'TextMessage':
           return TextMessage(
+              key: Key('${WidgetsKey.textMessageCardKey}$listIndex'),
               index: listIndex,
               receivedAt: messageStatus?.receivedAt,
               createAt: message.createdAt,

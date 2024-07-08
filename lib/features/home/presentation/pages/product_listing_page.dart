@@ -348,46 +348,35 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             : null,
                                                       ),
                                                     )),
-                                                ValueListenableBuilder<bool>(
-                                                    valueListenable:
-                                                        filterPageExpanded,
-                                                    builder: (context, expanded,
-                                                        child) {
-                                                      return Padding(
-                                                        padding:
-                                                            EdgeInsetsDirectional
-                                                                .only(
-                                                                    end: !expanded
-                                                                        ? 10.0
-                                                                        : 25),
-                                                        child: !expanded
-                                                            ? SvgPicture.asset(
-                                                                AppAssets
-                                                                    .shareSvg,
-                                                                width: 20,
-                                                                height: 20,
-                                                                color: Color(
-                                                                    0xff3C3C3C),
-                                                              )
-                                                            : GestureDetector(
-                                                                onTap: () {
-                                                                  filterPageExpanded
-                                                                          .value =
-                                                                      false;
-                                                                },
-                                                                child:
-                                                                    SvgPicture
-                                                                        .asset(
-                                                                  AppAssets
-                                                                      .closeSvg,
-                                                                  width: 15,
-                                                                  height: 15,
-                                                                  color: Color(
-                                                                      0xffFF5F61),
-                                                                ),
-                                                              ),
-                                                      );
-                                                    }),
+                                                Padding(
+                                                  padding: EdgeInsetsDirectional
+                                                      .only(
+                                                          end: !isExpanded
+                                                              ? 10.0
+                                                              : 25),
+                                                  child: !isExpanded
+                                                      ? SvgPicture.asset(
+                                                          AppAssets.shareSvg,
+                                                          width: 20,
+                                                          height: 20,
+                                                          color:
+                                                              Color(0xff3C3C3C),
+                                                        )
+                                                      : GestureDetector(
+                                                          onTap: () {
+                                                            filterPageExpanded
+                                                                .value = false;
+                                                          },
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            AppAssets.closeSvg,
+                                                            width: 15,
+                                                            height: 15,
+                                                            color: Color(
+                                                                0xffFF5F61),
+                                                          ),
+                                                        ),
+                                                ),
                                               ],
                                               withShadow: false),
                                         ),
@@ -556,162 +545,159 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   ]),
                                             );
                                           }),
-                                      ValueListenableBuilder<bool>(
-                                          valueListenable: filterPageExpanded,
-                                          builder:
-                                              (context, isExpanded, child) {
-                                            return ValueListenableBuilder<
-                                                    List<
-                                                        Tuple3<int, int?,
-                                                            double>>>(
-                                                valueListenable:
-                                                    selectedFiltersNotifier,
-                                                builder: (context, filters, _) {
-                                                  return SliverAppBar(
-                                                      pinned: isExpanded
-                                                          ? false
-                                                          : true,
-                                                      surfaceTintColor:
-                                                          Colors.transparent,
-                                                      backgroundColor:
-                                                          colorScheme.white,
-                                                      automaticallyImplyLeading:
-                                                          false,
-                                                      titleSpacing: 0,
-                                                      toolbarHeight: isExpanded
-                                                          ? 860
-                                                          : selectedFiltersNotifier
-                                                                  .value
-                                                                  .isNotEmpty
-                                                              ? 145
-                                                              : 115,
-                                                      title: StackedFiltersList(
-                                                          isExpanded:
-                                                              isExpanded,
-                                                          controller: isExpanded
-                                                              ? scrollController
-                                                              : null,
-                                                          listKey: listKey,
-                                                          selectedFiltersNotifier:
-                                                              selectedFiltersNotifier,
-                                                          onMoveToAnotherFiltersSection:
-                                                              (_) {}));
-                                                });
+                                      ValueListenableBuilder<
+                                              List<Tuple3<int, int?, double>>>(
+                                          valueListenable:
+                                              selectedFiltersNotifier,
+                                          builder: (context, filters, _) {
+                                            return SliverAppBar(
+                                                pinned:
+                                                    isExpanded ? false : true,
+                                                surfaceTintColor:
+                                                    Colors.transparent,
+                                                backgroundColor:
+                                                    colorScheme.white,
+                                                automaticallyImplyLeading:
+                                                    false,
+                                                titleSpacing: 0,
+                                                toolbarHeight: isExpanded
+                                                    ? 860
+                                                    : selectedFiltersNotifier
+                                                            .value.isNotEmpty
+                                                        ? 145
+                                                        : 115,
+                                                title: StackedFiltersList(
+                                                    isExpanded: isExpanded,
+                                                    controller: isExpanded
+                                                        ? scrollController
+                                                        : null,
+                                                    listKey: listKey,
+                                                    selectedFiltersNotifier:
+                                                        selectedFiltersNotifier,
+                                                    onMoveToAnotherFiltersSection:
+                                                        (_) {}));
                                           }),
-                                      SliverPadding(
-                                        padding: const EdgeInsets.only(top: 10),
-                                        sliver: SliverGrid(
-                                          key: gridViewKeyForRendering,
-                                          gridDelegate:
-                                              SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 2,
-                                            childAspectRatio: 200.w / 350,
-                                            crossAxisSpacing: 10,
-                                            mainAxisSpacing: 15,
-                                          ),
-                                          delegate: SliverChildBuilderDelegate(
-                                            childCount: products.length,
-                                            (BuildContext context, int index) {
-                                              return GestureDetector(
-                                                onTap: () async {
-                                                  Future.delayed(
-                                                      Duration(
-                                                          milliseconds: 100),
-                                                      () {
-                                                    print("${prefsRepository.myMarketId.toString()}" +
-                                                        "55555555555555555555555555555555555555555");
-                                                    print("${prefsRepository.myMarketName.toString()}" +
-                                                        "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
-                                                  });
-                                                  await FirebaseAnalytics
-                                                      .instance
-                                                      .logEvent(
-                                                          name:
-                                                              'button_clicked',
-                                                          parameters: {
-                                                        "time_stamp": DateTime
-                                                                .now()
-                                                            .toUtc()
-                                                            .add(Duration(
-                                                                minutes: GetIt.I<
-                                                                            PrefsRepository>()
-                                                                        .getdurtion ??
-                                                                    0))
-                                                            .toString(),
-                                                        "previous_event_button_name":
-                                                            GetIt.I<PrefsRepository>()
-                                                                .currentEvent,
-                                                        "device_language":
-                                                            LanguageService
-                                                                        .languageCode ==
-                                                                    'ar'
-                                                                ? 'ae'
-                                                                : LanguageService
-                                                                    .languageCode,
-                                                        "country_name": GetIt.I<
+                                      isExpanded
+                                          ? SliverToBoxAdapter()
+                                          : SliverPadding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 10),
+                                              sliver: SliverGrid(
+                                                key: gridViewKeyForRendering,
+                                                gridDelegate:
+                                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                                  crossAxisCount: 2,
+                                                  childAspectRatio: 200.w / 350,
+                                                  crossAxisSpacing: 10,
+                                                  mainAxisSpacing: 15,
+                                                ),
+                                                delegate:
+                                                    SliverChildBuilderDelegate(
+                                                  childCount: products.length,
+                                                  (BuildContext context,
+                                                      int index) {
+                                                    return GestureDetector(
+                                                      onTap: () async {
+                                                        Future.delayed(
+                                                            Duration(
+                                                                milliseconds:
+                                                                    100), () {
+                                                          print("${prefsRepository.myMarketId.toString()}" +
+                                                              "55555555555555555555555555555555555555555");
+                                                          print("${prefsRepository.myMarketName.toString()}" +
+                                                              "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
+                                                        });
+                                                        await FirebaseAnalytics
+                                                            .instance
+                                                            .logEvent(
+                                                                name:
+                                                                    'button_clicked',
+                                                                parameters: {
+                                                              "time_stamp": DateTime
+                                                                      .now()
+                                                                  .toUtc()
+                                                                  .add(Duration(
+                                                                      minutes:
+                                                                          GetIt.I<PrefsRepository>().getdurtion ??
+                                                                              0))
+                                                                  .toString(),
+                                                              "previous_event_button_name":
+                                                                  GetIt.I<PrefsRepository>()
+                                                                      .currentEvent,
+                                                              "device_language":
+                                                                  LanguageService
+                                                                              .languageCode ==
+                                                                          'ar'
+                                                                      ? 'ae'
+                                                                      : LanguageService
+                                                                          .languageCode,
+                                                              "country_name":
+                                                                  GetIt.I<PrefsRepository>()
+                                                                      .countryIso,
+                                                              'userID':
+                                                                  prefsRepository
+                                                                      .myMarketId
+                                                                      .toString(),
+                                                              'user_name':
+                                                                  prefsRepository
+                                                                      .myMarketName
+                                                                      .toString(),
+                                                              'clicked_button_name':
+                                                                  'i love you Ahmad',
+                                                              "session_id": GetIt.I<
+                                                                      PrefsRepository>()
+                                                                  .sessionId,
+                                                            });
+                                                        await GetIt.I<
                                                                 PrefsRepository>()
-                                                            .countryIso,
-                                                        'userID':
-                                                            prefsRepository
-                                                                .myMarketId
-                                                                .toString(),
-                                                        'user_name':
-                                                            prefsRepository
-                                                                .myMarketName
-                                                                .toString(),
-                                                        'clicked_button_name':
-                                                            'i love you Ahmad',
-                                                        "session_id": GetIt.I<
-                                                                PrefsRepository>()
-                                                            .sessionId,
-                                                      });
-                                                  await GetIt.I<
-                                                          PrefsRepository>()
-                                                      .setCurrentEvent(
-                                                          "i loveddssssssssssss44444444444444444ssssssssssssss you Ahmad in past");
+                                                            .setCurrentEvent(
+                                                                "i loveddssssssssssss44444444444444444ssssssssssssss you Ahmad in past");
 
-                                                  // pushOverscrollRoute(
-                                                  //     context: context,
-                                                  //     transitionDuration : Duration(milliseconds : 250),
-                                                  //     reverseTransitionDuration : Duration(milliseconds : 400),
-                                                  //     child: ProductDetailsPage(
-                                                  //       productItem: state
-                                                  //           .getProductListingWithoutFiltersModel!
-                                                  //           .data!
-                                                  //           .products![index]
-                                                  //     ),
-                                                  //     workNormally: true,
-                                                  //     withRoundedCorners: true,
-                                                  //     isArabicLanguage: LanguageService.rtl,
-                                                  //     dragToPopDirection: DragToPopDirection.toBottom,
-                                                  //     scrollToPopOption: ScrollToPopOption.start,
-                                                  //     fullscreenDialog: true);
-                                                  Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                          builder: (ctx) =>
-                                                              ProductDetailsPage(
-                                                                productItem:
-                                                                    products[
-                                                                        index],
-                                                              )));
-                                                },
-                                                child: ProductItem(
-                                                  slidingModeItem: slidingMode,
-                                                  productItem: products[index],
-                                                  itemIndex: index,
-                                                  setThisEnabled: (int index,
-                                                      int slideMode) {
-                                                    setThisEnabledNotifier
-                                                            .value =
-                                                        Tuple2(
-                                                            index, slideMode);
+                                                        // pushOverscrollRoute(
+                                                        //     context: context,
+                                                        //     transitionDuration : Duration(milliseconds : 250),
+                                                        //     reverseTransitionDuration : Duration(milliseconds : 400),
+                                                        //     child: ProductDetailsPage(
+                                                        //       productItem: state
+                                                        //           .getProductListingWithoutFiltersModel!
+                                                        //           .data!
+                                                        //           .products![index]
+                                                        //     ),
+                                                        //     workNormally: true,
+                                                        //     withRoundedCorners: true,
+                                                        //     isArabicLanguage: LanguageService.rtl,
+                                                        //     dragToPopDirection: DragToPopDirection.toBottom,
+                                                        //     scrollToPopOption: ScrollToPopOption.start,
+                                                        //     fullscreenDialog: true);
+                                                        Navigator.of(context).push(
+                                                            MaterialPageRoute(
+                                                                builder: (ctx) =>
+                                                                    ProductDetailsPage(
+                                                                      productItem:
+                                                                          products[
+                                                                              index],
+                                                                    )));
+                                                      },
+                                                      child: ProductItem(
+                                                        slidingModeItem:
+                                                            slidingMode,
+                                                        productItem:
+                                                            products[index],
+                                                        itemIndex: index,
+                                                        setThisEnabled:
+                                                            (int index,
+                                                                int slideMode) {
+                                                          setThisEnabledNotifier
+                                                                  .value =
+                                                              Tuple2(index,
+                                                                  slideMode);
+                                                        },
+                                                      ),
+                                                    );
                                                   },
                                                 ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
+                                              ),
+                                            ),
                                     ]);
                               });
                         });

@@ -57,6 +57,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
   final ValueNotifier<List<int>> selectedFiltersByBrand = ValueNotifier([]);
   final ValueNotifier<List<int>> selectedFiltersByOffer = ValueNotifier([]);
   final ValueNotifier<List<int>> selectedFiltersBySize = ValueNotifier([]);
+  ValueNotifier<Tuple2<int, int>>? lowerAndUpperBound;
+
   final GlobalKey<AnimatedListState> listForBrandsKey =
       GlobalKey<AnimatedListState>();
   final GlobalKey<AnimatedListState> listForOffersKey =
@@ -64,6 +66,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
   final GlobalKey<AnimatedListState> listForSizesKey =
       GlobalKey<AnimatedListState>();
   int lastSectionDisplayed = 0;
+  int? minPrice;
+  int? maxPrice;
 
   @override
   void initState() {
@@ -73,7 +77,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       }
       if (selectedFiltersBySize.value.length > 0 ||
           selectedFiltersByBrand.value.length > 0 ||
-          widget.selectedFiltersNotifier.value.length > 0) {
+          widget.selectedFiltersNotifier.value.length > 0 ||
+          (minPrice != null &&
+              (lowerAndUpperBound?.value.item1 != minPrice ||
+                  lowerAndUpperBound?.value.item2 != maxPrice))) {
         displayChosenFilters.value = true;
       } else {
         displayChosenFilters.value = false;
@@ -82,7 +89,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
     selectedFiltersByBrand.addListener(() {
       if (selectedFiltersBySize.value.length > 0 ||
           selectedFiltersByBrand.value.length > 0 ||
-          widget.selectedFiltersNotifier.value.length > 0) {
+          widget.selectedFiltersNotifier.value.length > 0 ||
+          (minPrice != null &&
+              (lowerAndUpperBound?.value.item1 != minPrice ||
+                  lowerAndUpperBound?.value.item2 != maxPrice))) {
         displayChosenFilters.value = true;
       } else {
         displayChosenFilters.value = false;
@@ -91,7 +101,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
     selectedFiltersBySize.addListener(() {
       if (selectedFiltersBySize.value.length > 0 ||
           selectedFiltersByBrand.value.length > 0 ||
-          widget.selectedFiltersNotifier.value.length > 0) {
+          widget.selectedFiltersNotifier.value.length > 0 ||
+          (minPrice != null &&
+              (lowerAndUpperBound?.value.item1 != minPrice ||
+                  lowerAndUpperBound?.value.item2 != maxPrice))) {
         displayChosenFilters.value = true;
       } else {
         displayChosenFilters.value = false;
@@ -115,6 +128,24 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       //   }));
       // }
       Filter filters = state.getProductFiltersModel!.filters!;
+      if (lowerAndUpperBound == null) {
+        minPrice = filters.prices!.minPrice!;
+        maxPrice = filters.prices!.maxPrice!;
+        lowerAndUpperBound = ValueNotifier(
+            Tuple2(filters.prices!.minPrice!, filters.prices!.maxPrice!));
+        lowerAndUpperBound!.addListener(() {
+          if (selectedFiltersBySize.value.length > 0 ||
+              selectedFiltersByBrand.value.length > 0 ||
+              widget.selectedFiltersNotifier.value.length > 0 ||
+              (minPrice != null &&
+                  (lowerAndUpperBound?.value.item1 != minPrice ||
+                      lowerAndUpperBound?.value.item2 != maxPrice))) {
+            displayChosenFilters.value = true;
+          } else {
+            displayChosenFilters.value = false;
+          }
+        });
+      }
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -635,6 +666,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               filters: [],
             ),
             PriceFilter(
+              lowerAndUpperBound: lowerAndUpperBound!,
               pricesFiltersRanges:
                   state.getProductListingWithFiltersModel != null
                       ? state.getProductListingWithFiltersModel!.data!.prices!
@@ -908,11 +940,22 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 flex: 2,
                                 child: GestureDetector(
                                   onTap: () {
+                                    lowerAndUpperBound!.value = Tuple2(minPrice!, maxPrice!);
+                                    int length = widget.selectedFiltersNotifier.value.length;
                                     widget.selectedFiltersNotifier.value = [];
+                                    _clearAllItemsFromAnimatedList(length, widget.listKey);
+                                    length = selectedFiltersByBrand.value.length;
                                     selectedFiltersByBrand.value = [];
+                                    _clearAllItemsFromAnimatedList(length, listForBrandsKey);
+                                    length = selectedFiltersByOffer.value.length;
                                     selectedFiltersByOffer.value = [];
+                                    _clearAllItemsFromAnimatedList(length, listForOffersKey);
+                                    length = selectedFiltersBySize.value.length;
                                     selectedFiltersBySize.value = [];
-                                    BlocProvider.of<HomeBloc>(context).add(ResetChosenFilters());
+                                    _clearAllItemsFromAnimatedList(length, listForSizesKey);
+
+                                    // BlocProvider.of<HomeBloc>(context)
+                                    //     .add(ResetChosenFilters());
                                   },
                                   child: Stack(
                                     children: [
@@ -967,6 +1010,15 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
         ],
       );
     });
+  }
+
+  void _clearAllItemsFromAnimatedList(int length , GlobalKey<AnimatedListState> listKey) {
+    for (var i = 0; i < length; i++) {
+      listKey.currentState!.removeItem(0,
+              (BuildContext context, Animation<double> animation) {
+            return Container();
+          });
+    }
   }
 
   Widget buildBrandItem(int indexInBrandList, int index, Brand item,

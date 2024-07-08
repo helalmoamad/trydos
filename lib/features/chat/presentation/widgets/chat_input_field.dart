@@ -135,6 +135,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                       alignment: Alignment.topCenter,
                       child: state.replyType == 'text'
                           ? Row(
+                              key: Key(WidgetsKey.replayTextKey),
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -792,8 +793,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     } else ...{
                                       InkWell(
                                         key: Key(
-                                        WidgetsKey.sendMessageInChatButtonKey,
-                                      ),
+                                          WidgetsKey.sendMessageInChatButtonKey,
+                                        ),
                                         focusColor: Colors.transparent,
                                         splashColor: Colors.transparent,
                                         onTap: () {
