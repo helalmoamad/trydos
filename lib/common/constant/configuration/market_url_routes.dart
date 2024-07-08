@@ -27,7 +27,7 @@ abstract class MarketEndPoints {
   static final sendOtpEP = 'send_otp'.phoneScope();
   static final getCartItemEP = 'cart_shipping'.cartScope();
   static final addItemCartItemEP = 'add'.cartScope();
-
+  static final removeItemCartItemEP = 'remove'.cartScope();
   static final verifyOtpSignInEP = 'verify_otp_singin'.phoneScope();
   static final verifyOtpSignUpEP = 'verify_otp_signup'.phoneScope();
   static final verifyOtpFromGuestEP = 'verify_otp_from_guest'.phoneScope();
@@ -43,6 +43,9 @@ abstract class MarketEndPoints {
   static String getCommentForProductEP(String productId) =>
       'likesCommentsSharesDetails/$productId'.productScopeWeb();
   static final getMainCategoriesEP = 'mainCategories'.homeScope();
+  static final getMainCategoriesRelatedWithBoutiquesEP =
+      'mainCategoriesRelatedWithBoutique'.homeScope();
+
   static final getProductFiltersEP = 'filters'.productsScope();
   static final getProductListingWithoutFiltersEP = 'products'.mobileScope();
   static final getProductListingWithFiltersEP = 'with_filter'.productsScope();
