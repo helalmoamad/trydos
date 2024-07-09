@@ -16,14 +16,12 @@ class ReplayOnMeMessage extends StatefulWidget {
     required this.messageId,
     required this.messageAnswerId,
     required this.senderAnswerName,
-    required this.replayedName,
-    this.replayedPhoto,
     this.senderAnswerPhoto,
     this.messageAnswer,
     this.answeredFile,
     this.answeredFilePath,
+    this.index = 0,
     required this.isSent,
-    required this.parentSenderId,
     required this.isISentFirstMessage,
     required this.isReplayedMessageRead,
     required this.isReplayedMessageReceived,
@@ -38,6 +36,7 @@ class ReplayOnMeMessage extends StatefulWidget {
     required this.channalId,
   }) : super(key: key);
   final String message;
+  final int index;
   final String channalId;
   final String messageId;
   final String? messageAnswer;
@@ -55,10 +54,7 @@ class ReplayOnMeMessage extends StatefulWidget {
   final bool isAnswerMessageRead;
   final bool isAnswerMessageReceived;
   final bool isReplayedMessageReceived;
-  final int parentSenderId;
-  final String? replayedPhoto;
   final String? senderAnswerPhoto;
-  final String replayedName;
   final String senderAnswerName;
   final void Function() scrollToMessage;
 
@@ -97,17 +93,18 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
               onTap: widget.scrollToMessage,
               child: TextMessage(
                 isreplay: true,
+                index: widget.index,
                 key: key,
                 sendColor: widget.isISentFirstMessage
                     ? const Color(0xffF1FDE3)
                     : const Color(0xffD5F6E6),
                 message: widget.message,
                 withShadow: false,
-                senderId: widget.parentSenderId,
+                senderId: GetIt.I<PrefsRepository>().myChatId!,
                 withImageShadow: false,
                 isReceived: widget.isReplayedMessageRead,
-                userMessageName: widget.replayedName,
-                userMessagePhoto: widget.replayedPhoto,
+                userMessageName: widget.senderAnswerName,
+                userMessagePhoto: widget.senderAnswerPhoto,
                 messageId: widget.messageId,
                 disableMessageAlignment: false,
                 isSent: widget.isISentFirstMessage,
@@ -142,6 +139,7 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                       )
                     : TextMessage(
                         message: widget.messageAnswer!,
+                        index: widget.index,
                         withImageShadow: true,
                         senderId: GetIt.I<PrefsRepository>().myChatId!,
                         isRead: widget.isAnswerMessageRead,

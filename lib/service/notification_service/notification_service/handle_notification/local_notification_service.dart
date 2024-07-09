@@ -64,7 +64,6 @@ class LocalNotificationService {
     chat.Message myMessage =
         chat.Message.fromJson(convert.jsonDecode(message.data['message']));
     String prevMessageId = message.data['prev_message_id'];
-    sendIReceivedTheMessage(myMessage.channelId!);
     String type = myMessage.messageType!.name.toString();
     await _localNotificationPlugin.show(
         0,

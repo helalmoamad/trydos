@@ -83,6 +83,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   @override
   void initState() {
     scrollController.addListener(_getChatsPaginationListener);
+    chatBloc = BlocProvider.of<ChatBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
     callsBloc.add(GetMissedCallCountEvent());
     callsBloc.add(GetMyCallsEvent());
@@ -90,12 +91,12 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
       0,
       ChatPageContent(onSendForwardMessage: widget.onSendForwardMessage),
     );
+    chatBloc.add(GetChatsEvent(limit: 10));
     if (widget.hideCallsAndStories) {
       BlocProvider.of<AppBloc>(context).add(ChangeTabInChat(0));
     }
     saveUserContacts();
 
-    chatBloc = BlocProvider.of<ChatBloc>(context);
     super.initState();
   }
 

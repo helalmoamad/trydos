@@ -89,7 +89,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
-      if(mounted) {
+      if (mounted) {
         setState(() {
           timer = true;
         });
@@ -146,6 +146,9 @@ class _TextMessageState extends ThemeState<TextMessage> {
                       ? 0
                       : 25.w),
               child: SwipeTo(
+                key: Key(
+                  '${WidgetsKey.messageTextSwipeToKey}${widget.index}',
+                ),
                 onLeftSwipe: () {
                   if (widget.senderId == widget._prefsRepository.myChatId) {
                     if ((state.sendMessageStatus == SendMessageStatus.loading &&

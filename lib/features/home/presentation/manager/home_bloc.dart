@@ -186,14 +186,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(
           mainCategoriesResponseModel: r,
           getMainCategoriesStatus: GetMainCategoriesStatus.success));
-      add(GetHomeBoutiqesEvent(
-          offset: "1",
-          categorySlug: GetIt.I<HomeBloc>()
-              .state
-              .mainCategoriesResponseModel!
-              .data!
-              .mainCategories![0]
-              .slug!));
     });
   }
 
@@ -411,14 +403,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                           : 2,
                       hasReachedMax:
                           (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
-                      items: [
-                        ...resetListAfterGetData
-                            ? []
-                            : getHomeBoutiquesPaginationObjectByMainCategory[
-                                    event.categorySlug]!
-                                .items,
-                        ...r.data!.boutiques ?? []
-                      ]));
+                      items: boutiques));
             } else {
               return MapEntry(key, value);
             }

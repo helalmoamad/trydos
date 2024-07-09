@@ -387,7 +387,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             navigatorKey.currentState!.context.widget is! SinglePageChat) {
           navigatorKey.currentState!.context.pop();
         }
-      } else if (event.data['type'] == 'VideoCallEvent') {
+      }
+      else if (event.data['type'] == 'VideoCallEvent') {
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'VideoCallEvent ForeGround Message');
@@ -414,7 +415,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               auth_token: prefsRepository.chatToken!,
               uId: prefsRepository.myChatId!.toString()),
         ));
-      } else if (event.data['type'] == 'VoiceCallEvent') {
+      }
+      else if (event.data['type'] == 'VoiceCallEvent') {
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'VoiceCallEvent ForeGround Message');
@@ -441,7 +443,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               auth_token: prefsRepository.chatToken!,
               uId: prefsRepository.myChatId!.toString()),
         ));
-      } else if (event.data['type'] == 'AnswerCallEvent') {
+      }
+      else if (event.data['type'] == 'AnswerCallEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
         GetIt.I<PrefsRepository>().saveRequestsData(
@@ -461,12 +464,14 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           navigatorKey.currentState!.context.pop();
         }
         callsBloc.add(UserInteractWithCall(rejectIt: false));
-      } else if (event.data['type'] == 'ChannelDeletedEvent') {
+      }
+      else if (event.data['type'] == 'ChannelDeletedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data["data"].toString());
         GetIt.I<ChatBloc>()
             .add(DeleteChatFromNotificationEvent(channelId: data['channelId']));
-      } else if (event.data['type'] == 'UpdatingMessageEvent') {
+      }
+      else if (event.data['type'] == 'UpdatingMessageEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data["data"].toString());
         GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
@@ -482,12 +487,14 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                 ? "message"
                 : "call",
             deleteFromId: data['message']["deleted_by_user_id"] ?? 0));
-      } else if (event.data['type'] == 'ChannelUpdatedEvent') {
+      }
+      else if (event.data['type'] == 'ChannelUpdatedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data["data"].toString());
         GetIt.I<ChatBloc>().add(UpdateChannelObjectFromNotificationEvent(
             chat: Chat.fromJson(data['channel'])));
-      } else if (event.data['type'] == 'ChannelWatchedEvent') {
+      }
+      else if (event.data['type'] == 'ChannelWatchedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
         chatBloc.add(WatchedMessageFromPusherEvent(
@@ -512,6 +519,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         chatBloc.add(AddChannelToChannels(message: message));
         chatBloc.add(ReceiveMessageEvent(
             message: message, prevMessageId: prevMessageId));
+        if (message.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
+          chatBloc.add(
+              NotifyThatIReceivedMessageEvent(channelId: message.channelId!));
+        }
         if (BlocProvider.of<ChatBloc>(context).currentOpenedChatId !=
                 message.channelId &&
             message.channel!.channelMembers!

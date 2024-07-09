@@ -47,7 +47,6 @@ import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
-import '../../../calls/presentation/pages/in_app_view.dart';
 import '../../../calls/presentation/utils/caller_info.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_bloc.dart';
@@ -176,6 +175,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
     });
     return WillPopScope(
       onWillPop: () {
+        BlocProvider.of<AppBloc>(context)
+            .add(RefreshChatInputField(false, 'null', false));
         chatBloc
             .add(ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: null));
         return Future.value(true);
@@ -199,6 +200,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                             return InkWell(
                               key: Key(WidgetsKey.backFromChatKey),
                               onTap: () {
+                                BlocProvider.of<AppBloc>(context).add(
+                                    RefreshChatInputField(
+                                        false, 'null', false));
                                 chatBloc.add(ChangeGlobalUsedVariablesInBloc(
                                     currentOpenedChatId: null));
                                 clickBackButton.value = true;
@@ -348,8 +352,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         return DateTime.tryParse(state
                                                     .userConnectedStatuse) !=
                                                 null
-                                            ? DateTime.tryParse(state
-                                                            .userConnectedStatuse)!
+                                            ? DateTime.parse(state
+                                                            .userConnectedStatuse)
                                                         .subtract(Duration(
                                                             minutes: duration))
                                                         .difference(
@@ -677,8 +681,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                       : 10.verticalSpace,
                                                                   ////////////////
                                                                   GestureDetector(
-                                                                    key: Key(
-                                                                        '${WidgetsKey.messageCardKey}$index'),
                                                                     onLongPress:
                                                                         () {
                                                                       if (messages[index]
@@ -1508,6 +1510,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       } else {
         return ReplayOnMeMessage(
             key: Key('${WidgetsKey.replayOnMeMessageKey}$listIndex'),
+            index: listIndex,
             messageId: message.parentMessageId!,
             receivedAt: messageStatus?.receivedAt,
             messageDate: parentMessage.createdAt ?? DateTime.now(),
@@ -1526,15 +1529,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 parentMessage.senderUserId == _prefsRepository.myChatId,
             isSent: isSentMessage,
             isFirstMessage: message.isFirstMessage!,
-            parentSenderId: parentMessage.senderUserId!,
-            replayedPhoto: parentMessage.senderUserId ==
-                    _prefsRepository.myChatId.toString()
-                ? senderPhoto
-                : receiverPhoto,
-            replayedName: parentMessage.senderUserId ==
-                    _prefsRepository.myChatId.toString()
-                ? senderName
-                : receiverName,
             senderAnswerName: senderName,
             senderAnswerPhoto: senderPhoto,
             isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,

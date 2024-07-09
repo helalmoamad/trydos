@@ -20,9 +20,8 @@ import '../../authentication/presentation/widgets/name_from_field.dart';
 import '../my_text_widget.dart';
 
 class UpdateUserNameWidget extends StatelessWidget {
-  UpdateUserNameWidget({super.key, this.updateForStoriesServer = false});
+  UpdateUserNameWidget({super.key,});
 
-  final bool updateForStoriesServer;
   final ValueNotifier<bool> displaySubmit = ValueNotifier(false);
   final TextEditingController controller = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey();
@@ -39,27 +38,16 @@ class UpdateUserNameWidget extends StatelessWidget {
           }
         },
         listenWhen: (p, c) =>
-            (updateForStoriesServer &&
+            (
                 p.updateStoriesUserStatus != c.updateStoriesUserStatus &&
-                c.updateStoriesUserStatus == UpdateStoriesUserStatus.success) ||
-            (!updateForStoriesServer &&
-                p.updateChatUserNameStatus != c.updateChatUserNameStatus &&
-                c.updateChatUserNameStatus == UpdateChatUserNameStatus.success),
+                c.updateStoriesUserStatus == UpdateStoriesUserStatus.success),
         buildWhen: (p, c) {
-          return (updateForStoriesServer &&
-              p.updateStoriesUserStatus != c.updateStoriesUserStatus) ||
-              (!updateForStoriesServer &&
-                  p.updateChatUserNameStatus != c.updateChatUserNameStatus);
+          return (
+              p.updateStoriesUserStatus != c.updateStoriesUserStatus);
         },
         builder: (context, state) {
-          if (updateForStoriesServer && state.updateStoriesUserStatus ==
+          if (state.updateStoriesUserStatus ==
               UpdateStoriesUserStatus.loading) {
-            return SizedBox(
-                height: 50,
-                child: Center(child: TrydosLoader()));
-          }
-          if (!updateForStoriesServer && state.updateChatUserNameStatus ==
-              UpdateChatUserNameStatus.loading) {
             return SizedBox(
                 height: 50,
                 child: Center(child: TrydosLoader()));
@@ -108,12 +96,8 @@ class UpdateUserNameWidget extends StatelessWidget {
                                         )
                                       : InkWell(
                                           onTap: () {
-                                            GetIt.I<PrefsRepository>().removeStoriesName();
                                             BlocProvider.of<AuthBloc>(context)
                                                 .add(UpdateStoriesUserEvent(
-                                                    name: controller.text));
-                                            BlocProvider.of<AuthBloc>(context)
-                                                .add(UpdateChatUserNameEvent(
                                                     name: controller.text));
                                           },
                                           child: Row(

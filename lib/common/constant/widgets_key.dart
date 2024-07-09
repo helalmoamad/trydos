@@ -37,5 +37,5 @@ class WidgetsKey {
       'delete_chat_conversation_icon_Key';
   static const replayTextKey = 'replay_text_Key';
   static const replayOnMeMessageKey = 'replay_on_me_message_key';
-  static const messageCardKey = 'message_card_key';
+  static const messageTextSwipeToKey = 'message_text_swip_to_key';
 }

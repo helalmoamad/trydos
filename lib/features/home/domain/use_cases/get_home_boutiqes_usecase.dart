@@ -28,5 +28,6 @@ class GetHomeBoutiqesParams {
     required this.categorySlug,
   });
 
-  Map<String, dynamic> get map => {'slug': categorySlug, 'offset': offset};
+  Map<String, dynamic> get map => {'slug': categorySlug, 'offset': offset}
+    ..removeWhere((key, value) => value == null || value == "Empty");
 }

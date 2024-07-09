@@ -48,12 +48,18 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
+    String selectedCategorySlug;
+    homeBloc.add(GetHomeBoutiqesEvent(
+        categorySlug: "Empty", offset: "1", getWithPagination: false));
     scrollController.addListener(() {
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
-      String selectedCategorySlug = homeBloc.state.mainCategoriesResponseModel
-              ?.data?.mainCategories?[currentSelectedMainCategoryTab].slug ??
-          '';
+      if (currentSelectedMainCategoryTab == -1) {
+        selectedCategorySlug = "Empty";
+      } else {
+        selectedCategorySlug = homeBloc.state.mainCategoriesResponseModel?.data
+                ?.mainCategories?[currentSelectedMainCategoryTab].slug ??
+            '';
+      }
       if (selectedCategorySlug == '') return;
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent *
@@ -170,8 +176,11 @@ class _HomePageState extends State<HomePage> {
                     //  print(homeState.getHomeSectionsPaginationObject[0]
                     //    ?.items[0].sections![0].title);
 
-                    String? currentSlug = homeState.mainCategoriesResponseModel
-                        ?.data?.mainCategories?[appState.tabIndex].slug;
+                    String? currentSlug = appState.tabIndex != -1
+                        ? (homeState.mainCategoriesResponseModel?.data
+                                ?.mainCategories?[appState.tabIndex].slug ??
+                            "Empty")
+                        : "Empty";
                     if (currentSlug == null ||
                         homeState.getHomeBoutiquesPaginationObjectByMainCategory[
                                 currentSlug] ==

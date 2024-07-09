@@ -39,7 +39,7 @@ abstract class MarketEndPoints {
   static final getCustomerInfoEP = 'info'.customerScope();
   static final getStartingSettingsEP = 'startingSettings'.homeScope();
   static final getHomeSectionsEP = 'home_sections'.homeScope();
-  static final getHomeBoutiqesEP = 'boutiquesByCategory'.homeScope();
+  static final getHomeBoutiqesEP = 'boutiques'.homeScope();
   static String getCommentForProductEP(String productId) =>
       'likesCommentsSharesDetails/$productId'.productScopeWeb();
   static final getMainCategoriesEP = 'mainCategories'.homeScope();

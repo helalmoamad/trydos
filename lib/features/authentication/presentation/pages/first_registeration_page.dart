@@ -54,6 +54,7 @@ class _RegistrationPageState extends State<RegistrationPage>
 
   @override
   void dispose() {
+    print('ddddddddddddddddd');
     prefsRepository.setTimerForOtpRunning(false);
     super.dispose();
   }
