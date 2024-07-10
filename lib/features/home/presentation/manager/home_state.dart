@@ -71,7 +71,7 @@ class HomeState {
     this.reRequestTheseProductListingInBoutiques = const {},
     this.getProductListingStatus = GetProductListingStatus.init,
     this.selectedCollection,
-    this.cartCollection = const {},
+    this.cartCollection,
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
     this.CurrentColorSizeForCart,

@@ -780,12 +780,22 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       variations: [variation],
       productId: event.products.id,
     );
+    if (state.cartCollection == null) {
+      emit(state
+          .copyWith(cartCollection: {"${event.boutiqueId.toString()}": []}));
+    }
     if (state.cartCollection!.containsKey(event.boutiqueId.toString())) {
       state.cartCollection![event.boutiqueId.toString()]!.add(cart);
     } else {
-      state.cartCollection!.addAll({
-        event.boutiqueId.toString(): [cart]
-      });
+      print(
+          "///////////////-------------------------------------*******************************************");
+      Map<String, List<Cart>> cartMap = {
+        "39": [cart]
+      };
+      Map<String, List<Cart>>? cartCollection = state.cartCollection;
+      cartCollection!.addAll(cartMap);
+      print(
+          "/////////////7777777777777777777//-------------------------------------*******************************************");
     }
 
     emit(state.copyWith(cartCollection: state.cartCollection));
