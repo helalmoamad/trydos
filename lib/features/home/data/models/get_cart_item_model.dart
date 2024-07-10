@@ -237,7 +237,7 @@ class Cart {
   final String? cartGroupId;
   final int? productId;
   final List<Choice>? choices;
-  final List<Variation>? variations;
+  final List<VariationCart>? variations;
   final String? variant;
   final int? availableQuantity;
   final String? maxAllowedQty;
@@ -252,8 +252,8 @@ class Cart {
   final String? slug;
   final String? name;
   final Shop? shop;
-  final Brand? brand;
-  final Boutiques? boutique;
+  final CartBrand? brand;
+  final BoutiquesCart? boutique;
   final String? thumbnail;
   final DateTime? createdAt;
   final dynamic flashDealDetails;
@@ -294,7 +294,7 @@ class Cart {
     String? cartGroupId,
     int? productId,
     List<Choice>? choices,
-    List<Variation>? variations,
+    List<VariationCart>? variations,
     String? variant,
     int? availableQuantity,
     String? maxAllowedQty,
@@ -309,8 +309,8 @@ class Cart {
     String? slug,
     String? name,
     Shop? shop,
-    Brand? brand,
-    Boutiques? boutique,
+    CartBrand? brand,
+    BoutiquesCart? boutique,
     String? thumbnail,
     DateTime? createdAt,
     dynamic flashDealDetails,
@@ -357,8 +357,8 @@ class Cart {
                 json["choices"]!.map((x) => Choice.fromJson(x))),
         variations: json["variations"] == null
             ? []
-            : List<Variation>.from(
-                json["variations"]!.map((x) => Variation.fromJson(x))),
+            : List<VariationCart>.from(
+                json["variations"]!.map((x) => VariationCart.fromJson(x))),
         variant: json["variant"],
         availableQuantity: json["available_quantity"],
         maxAllowedQty: json["max_allowed_qty"],
@@ -373,10 +373,10 @@ class Cart {
         slug: json["slug"],
         name: json["name"],
         shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
-        brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
+        brand: json["brand"] == null ? null : CartBrand.fromJson(json["brand"]),
         boutique: json["boutique"] == null
             ? null
-            : Boutiques.fromJson(json["boutique"]),
+            : BoutiquesCart.fromJson(json["boutique"]),
         thumbnail: json["thumbnail"],
         createdAt: json["created_at"] == null
             ? null
@@ -419,27 +419,27 @@ class Cart {
       };
 }
 
-class Boutiques {
+class BoutiquesCart {
   final int? id;
-  final Icon? icon;
+  final IconCart? icon;
 
-  Boutiques({
+  BoutiquesCart({
     this.id,
     this.icon,
   });
 
-  Boutiques copyWith({
+  BoutiquesCart copyWith({
     int? id,
-    Icon? icon,
+    IconCart? icon,
   }) =>
-      Boutiques(
+      BoutiquesCart(
         id: id ?? this.id,
         icon: icon ?? this.icon,
       );
 
-  factory Boutiques.fromJson(Map<String, dynamic> json) => Boutiques(
+  factory BoutiquesCart.fromJson(Map<String, dynamic> json) => BoutiquesCart(
         id: json["id"],
-        icon: json["icon"] == null ? null : Icon.fromJson(json["icon"]),
+        icon: json["icon"] == null ? null : IconCart.fromJson(json["icon"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -448,29 +448,29 @@ class Boutiques {
       };
 }
 
-class Icon {
+class IconCart {
   final String? filePath;
   final String? originalWidth;
   final String? originalHeight;
 
-  Icon({
+  IconCart({
     this.filePath,
     this.originalWidth,
     this.originalHeight,
   });
 
-  Icon copyWith({
+  IconCart copyWith({
     String? filePath,
     String? originalWidth,
     String? originalHeight,
   }) =>
-      Icon(
+      IconCart(
         filePath: filePath ?? this.filePath,
         originalWidth: originalWidth ?? this.originalWidth,
         originalHeight: originalHeight ?? this.originalHeight,
       );
 
-  factory Icon.fromJson(Map<String, dynamic> json) => Icon(
+  factory IconCart.fromJson(Map<String, dynamic> json) => IconCart(
         filePath: json["file_path"],
         originalWidth: json["original_width"],
         originalHeight: json["original_height"],
@@ -483,29 +483,29 @@ class Icon {
       };
 }
 
-class Brand {
+class CartBrand {
   final int? id;
   final String? name;
   final String? image;
 
-  Brand({
+  CartBrand({
     this.id,
     this.name,
     this.image,
   });
 
-  Brand copyWith({
+  CartBrand copyWith({
     int? id,
     String? name,
     String? image,
   }) =>
-      Brand(
+      CartBrand(
         id: id ?? this.id,
         name: name ?? this.name,
         image: image ?? this.image,
       );
 
-  factory Brand.fromJson(Map<String, dynamic> json) => Brand(
+  factory CartBrand.fromJson(Map<String, dynamic> json) => CartBrand(
         id: json["id"],
         name: json["name"],
         image: json["image"],
@@ -570,25 +570,25 @@ class Shop {
       };
 }
 
-class Variation {
+class VariationCart {
   final String? size;
   final String? color;
 
-  Variation({
+  VariationCart({
     this.size,
     this.color,
   });
 
-  Variation copyWith({
+  VariationCart copyWith({
     String? size,
     String? color,
   }) =>
-      Variation(
+      VariationCart(
         size: size ?? this.size,
         color: color ?? this.color,
       );
 
-  factory Variation.fromJson(Map<String, dynamic> json) => Variation(
+  factory VariationCart.fromJson(Map<String, dynamic> json) => VariationCart(
         size: json["Size"],
         color: json["color"],
       );

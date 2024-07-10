@@ -6,6 +6,7 @@ import 'package:trydos/features/authentication/data/models/login_to_stories_resp
 import 'package:trydos/features/authentication/data/models/send_otp_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_guest_phone_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
+import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
@@ -14,6 +15,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_with_filter
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
+import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 
 import '../../../../core/api/handling_exception.dart';
 import '../../domain/repositories/home_repository.dart';
@@ -74,8 +76,10 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, GetProductFiltersModel>> getProductFilters(Map<String, dynamic> params) {
-    return handlingExceptionRequest(tryCall: ()=> dataSource.getProductFilters(params));
+  Future<Either<Failure, GetProductFiltersModel>> getProductFilters(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getProductFilters(params));
   }
 
   @override
@@ -92,7 +96,8 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, bool>> addItemToCart(Map<String, dynamic> params) {
+  Future<Either<Failure, AddItemToCartModel>> addItemToCart(
+      Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.addItemToCart(params));
   }
@@ -108,5 +113,12 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.removeItemToCart(params));
+  }
+
+  @override
+  Future<Either<Failure, UpdateItemInCartModel>> UpdateItemToCart(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateItemInCart(params));
   }
 }

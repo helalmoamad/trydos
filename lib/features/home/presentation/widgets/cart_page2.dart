@@ -10,7 +10,9 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -36,12 +38,20 @@ class CartPage2 extends StatelessWidget {
       child: Scaffold(
         body: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
-              previous.getCartItemsStatus != current.getCartItemsStatus,
+              previous.getCartItemsStatus != current.getCartItemsStatus ||
+              previous.cartCollection!.values != current.cartCollection!.values,
           builder: (context, state) {
-            if (state.getCartItemsStatus == GetCartItemsStatus.failure) {
+            if (state.getCartItemsStatus == GetCartItemsStatus.failure&&(state.cartCollection == null || state.cartCollection!.isEmpty) ) {
               return Center(child: TryAgainWidget(tryAgain: () {
                 BlocProvider.of<HomeBloc>(context).add(GetCartItemEvent());
               }));
+            }
+            if (state.cartCollection == null || state.cartCollection!.isEmpty) {
+              return Center(
+                child: Container(
+                  child: MyTextWidget("no item in cart"),
+                ),
+              );
             }
             if (state.getCartShippingItemsModel == null &&
                 state.getCartItemsStatus != GetCartItemsStatus.success) {
@@ -123,7 +133,7 @@ class CartPage2 extends StatelessWidget {
                                   height: 1.33),
                             ),
                             Text(
-                              "${getCartShippingItemsModel.data!.totalCashFormated!.split(" ")[0]} ",
+                              "${getCartShippingItemsModel.data != null ? getCartShippingItemsModel.data!.totalCashFormated!.split(" ")[0] : 0} ",
                               style: context.textTheme.subtitle1?.mr.copyWith(
                                   fontSize: 13,
                                   color: const Color(0xff5D5C5D),
@@ -131,7 +141,7 @@ class CartPage2 extends StatelessWidget {
                                   height: 1.33),
                             ),
                             Text(
-                              "${getCartShippingItemsModel.data!.totalCashFormated!.split(" ")[1]}",
+                              "${getCartShippingItemsModel.data != null ? getCartShippingItemsModel.data!.totalCashFormated!.split(" ")[1] : ""}",
                               style: context.textTheme.subtitle1?.la.copyWith(
                                   fontSize: 13,
                                   color: const Color(0xff8D8D8D),
@@ -290,10 +300,73 @@ class CartPage2 extends StatelessWidget {
                                         .cartCollection![count]![indexs]
                                         .quantity!;
                                     return InkWell(
+                                      onLongPress: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: MyTextWidget(
+                                                    "Delete Item From Cart",
+                                                    textDirection:
+                                                        TextDirection.ltr),
+                                                actions: <Widget>[
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      AppElevatedButton(
+                                                        onPressed: () {
+                                                          BlocProvider.of<
+                                                                      HomeBloc>(
+                                                                  context)
+                                                              .add(RemoveItemFormCartEvent(
+                                                                  itemId: state
+                                                                      .cartCollection![
+                                                                          count]![
+                                                                          indexs]
+                                                                      .id
+                                                                      .toString(),
+                                                                  boutiqueId: state
+                                                                      .cartCollection![
+                                                                          count]![
+                                                                          indexs]
+                                                                      .boutique!
+                                                                      .id
+                                                                      .toString()));
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        text: "Yes",
+                                                      ),
+                                                      AppElevatedButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        text: 'Not Now',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              );
+                                            });
+                                      },
                                       onTap: () {
                                         HelperFunctions.slidingNavigation(
                                             context,
                                             ProductDetailsPage(
+                                              boutiqueIcon: state
+                                                  .cartCollection![count]![
+                                                      indexs]
+                                                  .boutique!
+                                                  .icon!
+                                                  .filePath!,
+                                              boutiqueId: state
+                                                  .cartCollection![count]![
+                                                      indexs]
+                                                  .boutique!
+                                                  .id!,
                                               productItem:
                                                   state.productITemForCart[state
                                                       .cartCollection![count]![
@@ -419,11 +492,75 @@ class CartPage2 extends StatelessWidget {
                                               CrossAxisAlignment.center,
                                           children: [
                                             InkWell(
+                                              onLongPress: () {
+                                                showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: MyTextWidget(
+                                                            "Delete Item From Cart",
+                                                            textDirection:
+                                                                TextDirection
+                                                                    .ltr),
+                                                        actions: <Widget>[
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              AppElevatedButton(
+                                                                onPressed: () {
+                                                                  BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(
+                                                                      itemId: state
+                                                                          .cartCollection![
+                                                                              count]![
+                                                                              indexs]
+                                                                          .id
+                                                                          .toString(),
+                                                                      boutiqueId: state
+                                                                          .cartCollection![
+                                                                              count]![
+                                                                              indexs]
+                                                                          .boutique!
+                                                                          .id
+                                                                          .toString()));
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                text: "Yes",
+                                                              ),
+                                                              AppElevatedButton(
+                                                                onPressed: () {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                text: 'Not Now',
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      );
+                                                    });
+                                              },
                                               onTap: () {
                                                 HelperFunctions
                                                     .slidingNavigation(
                                                         context,
                                                         ProductDetailsPage(
+                                                          boutiqueIcon: state
+                                                              .cartCollection![
+                                                                  count]![
+                                                                  indexs]
+                                                              .boutique!
+                                                              .icon!
+                                                              .filePath!,
+                                                          boutiqueId: state
+                                                              .cartCollection![
+                                                                  count]![
+                                                                  indexs]
+                                                              .boutique!
+                                                              .id!,
                                                           productItem: state
                                                                   .productITemForCart[
                                                               state

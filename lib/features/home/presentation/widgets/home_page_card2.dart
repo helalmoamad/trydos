@@ -78,14 +78,15 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             });
             await GetIt.I<PrefsRepository>().setCurrentEvent(
                 "i loveddsssssssssssssssssssssssssssssssssssssssss you Ahmad in past");
-              HelperFunctions.slidingNavigation(
-                  context,
-                  ProductListingPage(
-                    boutiqueSlug: widget.boutniqe.slug!,
-                    boutiqueDescription: widget.boutniqe.description!,
-                    boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
-                    boutiqueIcon: widget.boutniqe.icon!.filePath,
-                  ));
+            HelperFunctions.slidingNavigation(
+                context,
+                ProductListingPage(
+                  boutiqueId: widget.boutniqe.id!,
+                  boutiqueSlug: widget.boutniqe.slug!,
+                  boutiqueDescription: widget.boutniqe.description!,
+                  boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
+                  boutiqueIcon: widget.boutniqe.icon!.filePath!,
+                ));
           },
           child: Stack(
             alignment: Alignment.bottomCenter,
@@ -318,6 +319,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                             HelperFunctions.slidingNavigation(
                                 context,
                                 ProductListingPage(
+                                  boutiqueId: widget.boutniqe.id!,
                                   boutiqueSlug: widget.boutniqe.slug!,
                                   category: widget
                                       .boutniqe
@@ -327,7 +329,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                       widget.boutniqe.description!,
                                   boutiqueFirstBanner:
                                       widget.boutniqe.banners![0].filePath!,
-                                  boutiqueIcon: widget.boutniqe.icon!.filePath,
+                                  boutiqueIcon: widget.boutniqe.icon!.filePath!,
                                 ));
                           },
                           child: SvgNetworkWidget(
@@ -380,8 +382,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     resizeItems.value = (details.globalPosition.dx -
                             40 -
                             (9 -
-                                    widget.boutniqe.childCategoriesForProductIds!
-                                        .length) /
+                                    widget.boutniqe
+                                        .childCategoriesForProductIds!.length) /
                                 2 *
                                 (40.w - 5.w)) ~/
                         35.w;
@@ -397,8 +399,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     resizeItems.value = (details.globalPosition.dx -
                             40 -
                             (9 -
-                                    widget.boutniqe.childCategoriesForProductIds!
-                                        .length) /
+                                    widget.boutniqe
+                                        .childCategoriesForProductIds!.length) /
                                 2 *
                                 (40.w - 5.w)) ~/
                         35.w;
@@ -421,8 +423,10 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                               children: List.generate(
                                   min(
                                       9,
-                                      widget.boutniqe
-                                          .childCategoriesForProductIds!.length),
+                                      widget
+                                          .boutniqe
+                                          .childCategoriesForProductIds!
+                                          .length),
                                   (index) => AnimatedPositioned(
                                         left: (9 -
                                                     widget
@@ -448,9 +452,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                 focused == index ? 150 : 10),
                                         child: InkWell(
                                           onTap: () {
-                                              HelperFunctions.slidingNavigation(
-                                                  context,
-                                                  ProductListingPage(
+                                            HelperFunctions.slidingNavigation(
+                                                context,
+                                                ProductListingPage(
                                                     boutiqueSlug:
                                                         widget.boutniqe.slug!,
                                                     category: widget
@@ -465,8 +469,12 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                         .banners![0]
                                                         .filePath!,
                                                     boutiqueIcon: widget
-                                                        .boutniqe.icon!.filePath,
-                                                  ));},
+                                                        .boutniqe
+                                                        .icon!
+                                                        .filePath!,
+                                                    boutiqueId:
+                                                        widget.boutniqe.id!));
+                                          },
                                           child: ProductItemCircle(
                                             index: index,
                                             isFocused: focused == index,

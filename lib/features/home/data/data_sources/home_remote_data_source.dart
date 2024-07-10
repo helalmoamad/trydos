@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/methods/get.dart';
+import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
@@ -7,6 +8,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
+import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import '../../../../common/constant/configuration/market_url_routes.dart';
 import '../../../../common/constant/configuration/stories_url_routes.dart';
 import '../../../../core/api/client_config.dart';
@@ -111,7 +113,8 @@ class HomeRemoteDatasource {
     return getMainCategories();
   }
 
-  Future<GetProductFiltersModel> getProductFilters(Map<String , dynamic> params) {
+  Future<GetProductFiltersModel> getProductFilters(
+      Map<String, dynamic> params) {
     PostClient<GetProductFiltersModel> getProductFilters =
         PostClient<GetProductFiltersModel>(
       serverName: ServerName.market,
@@ -168,13 +171,15 @@ class HomeRemoteDatasource {
     return getHomeBoutiques();
   }
 
-  Future<bool> addItemToCart(Map<String, dynamic> params) {
-    PostClient<bool> addItemToCart = PostClient<bool>(
+  Future<AddItemToCartModel> addItemToCart(Map<String, dynamic> params) {
+    PostClient<AddItemToCartModel> addItemToCart =
+        PostClient<AddItemToCartModel>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<bool>(
+      requestPrams: RequestConfig<AddItemToCartModel>(
         endpoint: MarketEndPoints.addItemCartItemEP,
         data: params,
-        response: ResponseValue<bool>(returnValueOnSuccess: true),
+        response: ResponseValue<AddItemToCartModel>(
+            fromJson: (response) => AddItemToCartModel.fromJson(response)),
       ),
     );
     return addItemToCart();
@@ -190,5 +195,19 @@ class HomeRemoteDatasource {
       ),
     );
     return removeItemToCart();
+  }
+
+  Future<UpdateItemInCartModel> updateItemInCart(Map<String, dynamic> params) {
+    PostClient<UpdateItemInCartModel> updateItemInCart =
+        PostClient<UpdateItemInCartModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<UpdateItemInCartModel>(
+        endpoint: MarketEndPoints.updateItemCartItemEP,
+        data: params,
+        response: ResponseValue<UpdateItemInCartModel>(
+            fromJson: (response) => UpdateItemInCartModel.fromJson(response)),
+      ),
+    );
+    return updateItemInCart();
   }
 }

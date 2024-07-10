@@ -19,6 +19,7 @@ import 'package:trydos/features/authentication/presentation/pages/login_page.dar
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
+import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_page.dart';
 
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -228,7 +229,12 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
             children: [
               Expanded(
                 child: InkWell(
-                  onTap: () => appBloc.add(ChangeBasePage(0)),
+                  onTap: () {
+                    if (context.canPop()) {
+                      Navigator.of(context).pop();
+                    }
+                    appBloc.add(ChangeBasePage(0));
+                  },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -254,6 +260,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         .config.applicationRoutes.kSharedPreferencePagePath);
                   },
                   onTap: () {
+                    if (context.canPop()) {
+                      Navigator.of(context).pop();
+                    }
                     appBloc.add(ChangeBasePage(1));
                   },
                   child: Column(
@@ -294,8 +303,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           context: context,
                           barrierDismissible: false,
                           builder: (context) {
-                            return UpdateUserNameWidget(
-                            );
+                            return UpdateUserNameWidget();
                           });
                     } else {
                       NotificationSettings settings = await FirebaseMessaging
@@ -308,6 +316,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                             .tr());
                         openAppSettings();
                       } else {
+                        if (context.canPop()) {
+                          Navigator.of(context).pop();
+                        }
                         appBloc.add(ChangeBasePage(2));
                       }
                     }

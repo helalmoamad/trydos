@@ -35,7 +35,7 @@ class TrydosApplication extends StatefulWidget {
 }
 
 final ValueNotifier<bool> denySlidingBackForSlidingUpPanels =
-ValueNotifier(false);
+    ValueNotifier(false);
 
 class _TrydosApplicationState extends State<TrydosApplication>
     with WidgetsBindingObserver {
@@ -75,28 +75,28 @@ class _TrydosApplicationState extends State<TrydosApplication>
             child: Builder(
               builder: (context) {
                 return ValueListenableBuilder<bool>(
-                  valueListenable: denySlidingBackForSlidingUpPanels,
-                  child: MaterialApp.router(
-                    debugShowCheckedModeBanner: false,
-                    locale: context.locale,
-                    theme: AppTheme.light,
-                    supportedLocales: context.supportedLocales,
-                    localizationsDelegates: context.localizationDelegates,
-                    routerConfig: GRouter.router,
-                    builder: (context, child) {
-                      LanguageService(context);
-                      ConnectivityObserver.createInstance(context);
-                      ScreenService(context);
-                      return botToastBuilder(context, child);
-                    },
-                  ),
-                  builder: (context , deny , child) {
-                    return BackGestureWidthTheme(
-                      backGestureWidth: BackGestureWidth.fraction(deny ? 0 : 1),
-                      child: child!,
-                    );
-                  }
-                );
+                    valueListenable: denySlidingBackForSlidingUpPanels,
+                    child: MaterialApp.router(
+                      debugShowCheckedModeBanner: false,
+                      locale: context.locale,
+                      theme: AppTheme.light,
+                      supportedLocales: context.supportedLocales,
+                      localizationsDelegates: context.localizationDelegates,
+                      routerConfig: GRouter.router,
+                      builder: (context, child) {
+                        LanguageService(context);
+                        ConnectivityObserver.createInstance(context);
+                        ScreenService(context);
+                        return botToastBuilder(context, child);
+                      },
+                    ),
+                    builder: (context, deny, child) {
+                      return BackGestureWidthTheme(
+                        backGestureWidth:
+                            BackGestureWidth.fraction(deny ? 0 : 1),
+                        child: child!,
+                      );
+                    });
               },
             ),
           ),

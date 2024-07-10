@@ -830,12 +830,15 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       height: 10,
                                       child: Transform.translate(
                                           offset: Offset(0, 1),
-                                          child: SvgNetworkWidget(
-                                              svgUrl: widget
-                                                  .productItem.category!.icon
-                                                  .toString(),
-                                              width: 10,
-                                              height: 10)),
+                                          child: widget.productItem.category !=
+                                                  null
+                                              ? SvgNetworkWidget(
+                                                  svgUrl: widget.productItem
+                                                      .category!.icon
+                                                      .toString(),
+                                                  width: 10,
+                                                  height: 10)
+                                              : SizedBox.shrink()),
                                     ),
                                     // ListView.separated(
                                     //     itemCount: widget.productItem.categories?.length ?? 0,
@@ -1135,10 +1138,13 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                   (syncColorImageList!.length ~/
                                                       2)) ||
                                           ((gallery3dControllerForCircles
-                                                      ?.currentIndex ??
-                                                  0) >=
-                                              (syncColorImageList!.length ~/ 2) && index >= (syncColorImageList!.length ~/
-                                  2)),
+                                                          ?.currentIndex ??
+                                                      0) >=
+                                                  (syncColorImageList!.length ~/
+                                                      2) &&
+                                              index >=
+                                                  (syncColorImageList!.length ~/
+                                                      2)),
                                       child: ProductListingImageWidget(
                                         orginalHeight: orginalHeigh[index],
                                         orginalWidth: orginalWidth[index],
