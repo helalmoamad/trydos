@@ -23,13 +23,14 @@ class GetMainCategoriesEvent extends HomeEvent {
 }
 
 class GetProductFiltersEvent extends HomeEvent {
-  const GetProductFiltersEvent({this.category, this.boutiqueSlug});
+  const GetProductFiltersEvent({this.category, this.boutiqueSlug , this.forceUpdate = false});
 
   final String? boutiqueSlug;
   final String? category;
+  final bool forceUpdate;
   @override
   // TODO: implement props
-  List<Object?> get props => [category, boutiqueSlug];
+  List<Object?> get props => [category, boutiqueSlug,forceUpdate];
 }
 
 class AddCurrentSelectedColorEvent extends HomeEvent {
@@ -108,7 +109,7 @@ class ResetChosenFilters extends HomeEvent {
 class GetProductsWithFiltersEvent extends HomeEvent {
   final String? category;
   final List<String>? prices;
-  final List<int>? brands;
+  final List<String>? brands;
   final List<Map<String, dynamic>>? attributes;
   final String? searchText;
   final int offset;

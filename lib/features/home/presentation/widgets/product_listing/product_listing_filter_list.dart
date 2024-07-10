@@ -126,7 +126,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       if (state.getProductFiltersStatus == GetProductFiltersStatus.loading ||
           state.getProductsWithFiltersStatus ==
               GetProductsWithFiltersStatus.loading) {
-        return SizedBox.shrink();
+        return Center(child: TrydosLoader());
       }
       // if (state.getProductFiltersStatus == GetProductFiltersStatus.failure) {
       //   return Center(child: TryAgainWidget(tryAgain: () {
@@ -137,7 +137,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
         return SizedBox.shrink();
       }
       Filter filters = state.getProductFiltersModel!.filters!;
-      if (lowerAndUpperBound == null) {
+      if (lowerAndUpperBound == null && filters.prices != null) {
         minPrice = filters.prices!.minPrice!;
         maxPrice = filters.prices!.maxPrice!;
         lowerAndUpperBound = ValueNotifier(
@@ -912,12 +912,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 flex: 5,
                                 child: GestureDetector(
                                   onTap: (){
-                                    List<int>? brandsIds ;
+                                    List<String>? brandsIds ;
                                     List<Map<String , dynamic>>? attributes;
                                     if(filters.brands != null){
                                       brandsIds = [];
                                       selectedFiltersByBrand.value.forEach((index) {
-                                        brandsIds!.add(filters.brands![index].id!);
+                                        brandsIds!.add(filters.brands![index].id.toString());
                                       });
                                     }
                                     if(!filters.attributes.isNullOrEmpty){
@@ -932,13 +932,22 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                         "options" : options
                                       });
                                     }
+                                    List<String>? prices;
+                                    if(lowerAndUpperBound != null){
+                                      if(lowerAndUpperBound!.value.item1 != minPrice && lowerAndUpperBound!.value.item2 != maxPrice) {
+                                        prices = [];
+                                        prices.add('${lowerAndUpperBound!.value
+                                            .item1}-${lowerAndUpperBound!.value
+                                            .item2}');
+                                      }
+                                    }
                                     widget.closeFilterPage.call();
                                     homeBloc.add(GetProductsWithFiltersEvent(
                                       boutiqueSlug: widget.boutiqueSlug,
                                       category: widget.category,
                                       brands: brandsIds,
+                                      prices: prices,
                                       attributes: attributes,
-
                                       offset: 1,
                                     ));
                                     clearAllFiltersBeforeRequest();
@@ -985,6 +994,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     homeBloc.add(GetProductFiltersEvent(
                                       boutiqueSlug: widget.boutiqueSlug,
                                       category: widget.category,
+                                      forceUpdate: true
                                     ));
                                   },
                                   child: Stack(
