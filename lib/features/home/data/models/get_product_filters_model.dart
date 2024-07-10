@@ -23,11 +23,11 @@ class GetProductFiltersModel {
 
   GetProductFiltersModel copyWith({
     String? message,
-    Filter? data,
+    Filter? filters,
   }) =>
       GetProductFiltersModel(
         message: message ?? this.message,
-        filters: data ?? this.filters,
+        filters: filters ?? this.filters,
       );
 
   factory GetProductFiltersModel.fromJson(Map<String, dynamic> json) =>
@@ -68,12 +68,12 @@ class Filter {
     String? boutiqueSlug,
   }) =>
       Filter(
-        brands: brands ?? this.brands,
-        attributes: attributes ?? this.attributes,
-        colors: colors ?? this.colors,
-        prices: prices ?? this.prices,
-        categories: categories ?? this.categories,
-        boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
+        brands: brands ,
+        attributes: attributes ,
+        colors: colors ,
+        prices: prices ,
+        categories: categories ,
+        boutiqueSlug: boutiqueSlug ,
       );
 
   factory Filter.fromJson(Map<String, dynamic> json) {

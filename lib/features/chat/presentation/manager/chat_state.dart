@@ -79,7 +79,6 @@ class ChatState {
   final bool createAnewChat;
   Map<String, List<Message>>? newSortedChatsByDate;
   final bool firstRequestForGetChats;
-
   ChatState({
     this.userConnectedStatuse = " ",
     this.currentFailedMediaMessage = const [],
