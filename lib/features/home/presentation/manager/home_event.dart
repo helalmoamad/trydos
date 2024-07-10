@@ -177,12 +177,20 @@ class GetCartItemEvent extends HomeEvent {
 class AddItemToCartEvent extends HomeEvent {
   final String? id;
   final String? color;
+  final String thumbnail;
   final int? quantity;
+  final String? iconBoutique;
   final String? choice_1;
+  final int? boutiqueId;
+  final String colorName;
   final Products products;
   AddItemToCartEvent(
       {this.id,
       this.quantity,
+      this.iconBoutique,
+      this.boutiqueId,
+      required this.thumbnail,
+      required this.colorName,
       this.color,
       this.choice_1,
       required this.products});
@@ -212,6 +220,20 @@ class RemoveItemFormCartEvent extends HomeEvent {
   final String boutiqueId;
   final String itemId;
   RemoveItemFormCartEvent({required this.itemId, required this.boutiqueId});
+  @override
+  List<Object?> get props => [];
+}
+
+class UpdateItemInCartEvent extends HomeEvent {
+  final String cartId;
+  final int quantity;
+
+  final String boutiqueId;
+  UpdateItemInCartEvent({
+    required this.quantity,
+    required this.cartId,
+    required this.boutiqueId,
+  });
   @override
   List<Object?> get props => [];
 }

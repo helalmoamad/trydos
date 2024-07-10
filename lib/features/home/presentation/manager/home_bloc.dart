@@ -3,6 +3,8 @@ import 'dart:math';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -11,6 +13,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
     as cart;
@@ -19,6 +22,7 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
+import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as product;
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
@@ -34,6 +38,7 @@ import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart'
 import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/remove_item_from_cart_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/helper/helper_functions.dart';
@@ -65,6 +70,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getStoryUseCase,
     this.removeItemToCartUseCase,
     this.getCartItemUseCase,
+    this.updateItemInCartUseCase,
     this.addItemToCartUseCase,
     this.getCommentForProductUseCase,
     this.getHomeBoutiqesUseCase,
@@ -83,7 +89,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddCurrentSelectedColorEvent>(
       _onAddCurrentSelectedColorEvent,
     );
-    on<GetProductFiltersEvent>(_onGetProductFiltersEvent,);
+    on<GetProductFiltersEvent>(
+      _onGetProductFiltersEvent,
+    );
     on<GetHomeBoutiqesEvent>(_onGetHomeBoutiquesEvent,
         transformer: throttleDroppable(Duration(seconds: 5)));
     on<GetCartItemEvent>(_onGetCartItemEvent,
@@ -93,9 +101,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         transformer: throttleDroppable(throttleDuration));
     on<GetMainCategoriesEvent>(_onGetMainCategoriesEvent,
         transformer: throttleDroppable(throttleDuration));
-    on<AddItemToCartEvent>(_onAddItemToCartEvent,
-        transformer: throttleDroppable(Duration(seconds: 30)));
-
+    on<AddItemToCartEvent>(
+      _onAddItemToCartEvent,
+    );
+    on<UpdateItemInCartEvent>(
+      _onUpdateItemInCartEvent,
+    );
     on<GetProductsWithFiltersEvent>(_onGetProductsWithFiltersEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetProductsWithoutFiltersEvent>(_onGetProductsWithoutFiltersEvent,
@@ -137,6 +148,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetProductFiltersUseCase getProductFiltersUseCase;
   final GetProductsWithoutFiltersUseCase getProductsWithoutFiltersUseCase;
   final AddItemToCartUseCase addItemToCartUseCase;
+  final UpdateItemInCartUseCase updateItemInCartUseCase;
 
   //final Smartlook smartLook = Smartlook.instance;
 
@@ -553,11 +565,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       AddSizesFotColorsEvent event, Emitter<HomeState> emit) async {
     ;
     List<String> sizes = [];
+
+    emit(state.copyWith(sizes: sizes));
     if (event.variation != null) {
       event.variation!.forEach((element) {
         if (element.type!.split("-")[0] == event.currentColorName &&
             element.qty != null) {
-          if (element.qty! > 0) {
+          if (element.qty! > 0 && element.type!.split("-").length > 1) {
             sizes.add(element.type!.split("-")[1]);
           }
         }
@@ -633,9 +647,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(
           getProductFiltersStatus: GetProductFiltersStatus.loading));
       final response = await getProductFiltersUseCase(GetProductsFiltersParams(
-          category: event.category,
-          boutiqueSlug: event.boutiqueSlug
-      ));
+          category: event.category, boutiqueSlug: event.boutiqueSlug));
       response.fold((l) {
         if (!isFailedTheFirstTime.contains('GetProductFiltersEvent')) {
           add(GetMainCategoriesEvent());
@@ -650,7 +662,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             getProductFiltersModel: r,
             getProductFiltersStatus: GetProductFiltersStatus.success));
       });
-    }catch(e,st){
+    } catch (e, st) {
       print(e);
       print(st);
     }
@@ -750,6 +762,34 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onAddItemToCartEvent(
       AddItemToCartEvent event, Emitter<HomeState> emit) async {
+    CartBrand brand = CartBrand(image: event.products.brand!.image);
+    VariationCart variation = VariationCart(
+        color: event.colorName, size: state.CurrentColorSizeForCart!["size"]);
+    BoutiquesCart boutiquesCart = BoutiquesCart(
+        icon: IconCart(filePath: event.iconBoutique), id: event.boutiqueId);
+    Cart cart = Cart(
+      thumbnail: event.thumbnail,
+      boutique: boutiquesCart,
+      offerPrice: event.products.offerPrice,
+      offerPriceFormatted: event.products.offerPriceFormatted,
+      name: event.products.name,
+      price: event.products.priceFormatted,
+      priceNum: event.products.price,
+      quantity: event.quantity,
+      brand: brand,
+      variations: [variation],
+      productId: event.products.id,
+    );
+    if (state.cartCollection!.containsKey(event.boutiqueId.toString())) {
+      state.cartCollection![event.boutiqueId.toString()]!.add(cart);
+    } else {
+      state.cartCollection!.addAll({
+        event.boutiqueId.toString(): [cart]
+      });
+    }
+
+    emit(state.copyWith(cartCollection: state.cartCollection));
+
     final response = await addItemToCartUseCase(AddITemToCartParams(
         choice_1: state.CurrentColorSizeForCart != null
             ? state.CurrentColorSizeForCart!["size"]
@@ -761,6 +801,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('AddCartItemEvent')) {
         add(AddItemToCartEvent(
+            colorName: event.colorName,
+            thumbnail: event.thumbnail,
             products: event.products,
             choice_1: state.CurrentColorSizeForCart!["size"],
             color: event.color,
@@ -768,10 +810,23 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             quantity: event.quantity));
         isFailedTheFirstTime.add('AddCartItemEvent');
       }
-    }, (r) {
-      isFailedTheFirstTime.remove('AddCartItemEvent');
+      state.cartCollection![event.boutiqueId.toString()]!.remove(cart);
+      if (state.cartCollection![event.boutiqueId.toString()].isNullOrEmpty) {
+        state.cartCollection!.remove(event.boutiqueId.toString());
+      }
+      emit(state.copyWith(cartCollection: state.cartCollection));
 
-      add(GetCartItemEvent());
+      showMessage(l.message);
+    }, (r) {
+      state.cartCollection![event.boutiqueId.toString()]!.remove(cart);
+      cart = cart.copyWith(id: r.data!.idCart!);
+      state.cartCollection![event.boutiqueId.toString()]!.add(cart);
+      emit(state.copyWith(cartCollection: state.cartCollection));
+      showMessage(r.message!,
+          foreGroundColor: Colors.green,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_SHORT);
+      isFailedTheFirstTime.remove('AddCartItemEvent');
       add(AddProductItemForCartEvent(
           productId: event.id!, product: event.products));
     });
@@ -801,6 +856,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         .firstWhere((element) => element.id.toString() == event.itemId);
 
     state.cartCollection![event.boutiqueId]!.remove(cart);
+    if (state.cartCollection![event.boutiqueId.toString()].isNullOrEmpty) {
+      state.cartCollection!.remove(event.boutiqueId.toString());
+    }
+
     emit(state.copyWith(cartCollection: state.cartCollection));
     final response =
         await removeItemToCartUseCase(RemoveITemToCartParams(id: event.itemId));
@@ -812,8 +871,50 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       showMessage("Item Wan't Deleted");
     }, (r) {
       isFailedTheFirstTime.remove('RemoveCartItemEvent');
-      showMessage("Item Was Deleted Successfly");
-      add(GetCartItemEvent());
+      showMessage("Item Was Deleted Successfly",
+          foreGroundColor: Colors.green,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_SHORT);
+    });
+  }
+
+  FutureOr<void> _onUpdateItemInCartEvent(
+      UpdateItemInCartEvent event, Emitter<HomeState> emit) async {
+    Cart cart = state.cartCollection![event.boutiqueId]!
+        .firstWhere((element) => element.id.toString() == event.cartId);
+    Cart PreCart = cart;
+    cart = cart.copyWith(quantity: event.quantity);
+
+    state.cartCollection![event.boutiqueId] =
+        state.cartCollection![event.boutiqueId]!.map((e) {
+      if (e.id.toString() == event.cartId) {
+        return cart;
+      } else {
+        return e;
+      }
+    }).toList();
+    emit(state.copyWith(cartCollection: state.cartCollection));
+    final response = await updateItemInCartUseCase(
+        UpdateITemInCartParams(id: event.cartId, quantity: event.quantity));
+
+    response.fold((l) {
+      isFailedTheFirstTime.add('UpdateCartItemEvent');
+      state.cartCollection![event.boutiqueId] =
+          state.cartCollection![event.boutiqueId]!.map((e) {
+        if (e.id.toString() == event.cartId) {
+          return PreCart;
+        } else {
+          return e;
+        }
+      }).toList();
+      emit(state.copyWith(cartCollection: state.cartCollection));
+      showMessage(l.message);
+    }, (r) {
+      isFailedTheFirstTime.remove('UpdateCartItemEvent');
+      showMessage(r.message!,
+          foreGroundColor: Colors.green,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_SHORT);
     });
   }
 }

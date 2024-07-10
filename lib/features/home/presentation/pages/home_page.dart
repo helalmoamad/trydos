@@ -48,6 +48,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+
     String selectedCategorySlug;
     homeBloc.add(GetHomeBoutiqesEvent(
         categorySlug: "Empty", offset: "1", getWithPagination: false));

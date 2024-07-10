@@ -39,12 +39,13 @@ final ValueNotifier<String> changeCartCollection = ValueNotifier(" ");
 class _CartPageState extends State<CartPage> {
   late HomeBloc homeBloc;
   late AppBloc appBloc;
+  TextEditingController quantityController = TextEditingController();
   @override
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    homeBloc.add(GetCartItemEvent());
+
     super.initState();
   }
 
@@ -58,7 +59,8 @@ class _CartPageState extends State<CartPage> {
             previous.getCartItemsStatus != current.getCartItemsStatus ||
             previous.cartCollection!.values != current.cartCollection!.values,
         builder: (context, state) {
-          if (state.getCartItemsStatus == GetCartItemsStatus.failure) {
+          if (state.getCartItemsStatus == GetCartItemsStatus.failure &&
+              (state.cartCollection == null || state.cartCollection!.isEmpty)) {
             return Padding(
               padding: EdgeInsets.only(top: 100),
               child: Center(child: TryAgainWidget(tryAgain: () {
@@ -66,10 +68,15 @@ class _CartPageState extends State<CartPage> {
               })),
             );
           }
+          if (state.cartCollection == null || state.cartCollection!.isEmpty) {
+            return Center(
+              child: Container(
+                child: MyTextWidget("no item in cart"),
+              ),
+            );
+          }
           if (state.getCartShippingItemsModel == null &&
-                  state.getCartItemsStatus != GetCartItemsStatus.success ||
-              state.cartCollection == null ||
-              state.cartCollection!.isEmpty) {
+              state.getCartItemsStatus != GetCartItemsStatus.success) {
             return Center(
               child: TrydosLoader(),
             );
@@ -225,10 +232,11 @@ class _CartPageState extends State<CartPage> {
                                       height: 15,
                                       child: SvgPicture.network(
                                         state.cartCollection!.values
-                                            .toList()[index][0]
-                                            .boutique!
-                                            .icon!
-                                            .filePath!,
+                                                .toList()[index][0]
+                                                .boutique!
+                                                .icon!
+                                                .filePath ??
+                                            "",
                                         fit: BoxFit.cover,
                                         color: Color(
                                           0xff1A171B,
@@ -311,6 +319,70 @@ class _CartPageState extends State<CartPage> {
                                     .cartCollection![count]![index].quantity!;
 
                                 return InkWell(
+                                  onDoubleTap: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: MyTextWidget(
+                                                "Change Quatity In Cart",
+                                                textDirection:
+                                                    TextDirection.ltr),
+                                            actions: <Widget>[
+                                              Column(
+                                                children: [
+                                                  TextField(
+                                                    textAlign: TextAlign.center,
+                                                    controller:
+                                                        quantityController,
+                                                    enabled: true,
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      AppElevatedButton(
+                                                        onPressed: () {
+                                                          homeBloc.add(UpdateItemInCartEvent(
+                                                              quantity: int.tryParse(
+                                                                  quantityController
+                                                                      .text)!,
+                                                              cartId: state
+                                                                  .cartCollection![
+                                                                      count]![
+                                                                      index]
+                                                                  .id
+                                                                  .toString(),
+                                                              boutiqueId: state
+                                                                  .cartCollection![
+                                                                      count]![
+                                                                      index]
+                                                                  .boutique!
+                                                                  .id
+                                                                  .toString()));
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        text: "Yes",
+                                                      ),
+                                                      AppElevatedButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        text: 'Not Now',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                  },
                                   onLongPress: () {
                                     showDialog(
                                         context: context,
@@ -363,6 +435,15 @@ class _CartPageState extends State<CartPage> {
                                     HelperFunctions.slidingNavigation(
                                         context,
                                         ProductDetailsPage(
+                                          boutiqueIcon: state
+                                              .cartCollection![count]![index]
+                                              .boutique!
+                                              .icon!
+                                              .filePath!,
+                                          boutiqueId: state
+                                              .cartCollection![count]![index]
+                                              .boutique!
+                                              .id!,
                                           productItem: state.productITemForCart[
                                               state
                                                   .cartCollection![count]![
