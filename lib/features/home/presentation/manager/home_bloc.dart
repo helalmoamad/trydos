@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stream_transform/stream_transform.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
@@ -31,7 +33,9 @@ import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecas
 import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/remove_item_from_cart_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -59,6 +63,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //  this.getHomeSectionsUseCase,
     this.getMainCategoriesUseCase,
     this.getStoryUseCase,
+    this.removeItemToCartUseCase,
     this.getCartItemUseCase,
     this.addItemToCartUseCase,
     this.getCommentForProductUseCase,
@@ -78,8 +83,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddCurrentSelectedColorEvent>(
       _onAddCurrentSelectedColorEvent,
     );
-    on<GetProductFiltersEvent>(_onGetProductFiltersEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<GetProductFiltersEvent>(_onGetProductFiltersEvent,);
     on<GetHomeBoutiqesEvent>(_onGetHomeBoutiquesEvent,
         transformer: throttleDroppable(Duration(seconds: 5)));
     on<GetCartItemEvent>(_onGetCartItemEvent,
@@ -107,6 +111,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onResetChosenFilters,
     );
 
+    on<RemoveItemFormCartEvent>(_onRemoveItemToCartEvent,
+        transformer: throttleDroppable(Duration(seconds: 5)));
     on<GetProductDatailsWithoutRelatedProductsEvent>(
       _onGetProductDatailsWithoutRelatedProductsEvent,
     );
@@ -126,7 +132,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetProductDetailWithoutRelatedProductsUseCase
       getProductDetailWithoutRelatedProductsUseCase;
   final GetProductsWithFiltersUseCase getProductsWithFiltersUseCase;
-
+  final RemoveItemToCartUseCase removeItemToCartUseCase;
   final GetMainCategoriesUseCase getMainCategoriesUseCase;
   final GetProductFiltersUseCase getProductFiltersUseCase;
   final GetProductsWithoutFiltersUseCase getProductsWithoutFiltersUseCase;
@@ -383,8 +389,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           boutiques[index] = r.data!.boutiques![i];
         }
       }
-      bool resetListAfterGetData =
-          !(reRequestTheseBoutiques[event.categorySlug] ?? false);
       reRequestTheseBoutiques[event.categorySlug] = true;
       emit(state.copyWith(
           reRequestTheseBoutiques: reRequestTheseBoutiques,
@@ -614,8 +618,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         reRequestTheseProductListingInBoutiques: {},
         reRequestTheseBoutiques: {},
         getMainCategoriesStatus: GetMainCategoriesStatus.init,
+        getProductFiltersStatus: GetProductFiltersStatus.init,
         getStartingSettingsStatus: GetStartingSettingsStatus.init,
-        getProductFiltersStatus: GetProductFiltersStatus.loading,
         getProductListingWithFiltersModel: null,
         getProductsWithFiltersStatus:
             GetProductsWithFiltersStatus.init).toJson();
@@ -625,24 +629,31 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       GetProductFiltersEvent event, Emitter<HomeState> emit) async {
     if (state.getProductFiltersStatus == GetProductFiltersStatus.success)
       return;
-    emit(state.copyWith(
-        getProductFiltersStatus: GetProductFiltersStatus.loading));
-    final response = await getProductFiltersUseCase(NoParams());
-
-    response.fold((l) {
-      if (!isFailedTheFirstTime.contains('GetProductFiltersEvent')) {
-        add(GetMainCategoriesEvent());
-        isFailedTheFirstTime.add('GetProductFiltersEvent');
-      }
+    try {
       emit(state.copyWith(
-          getProductFiltersStatus: GetProductFiltersStatus.failure));
-    }, (r) {
-      apisMustNotToRequest.add('GetProductFiltersEvent');
-      isFailedTheFirstTime.remove('GetProductFiltersEvent');
-      emit(state.copyWith(
-          getProductFiltersModel: r,
-          getProductFiltersStatus: GetProductFiltersStatus.success));
-    });
+          getProductFiltersStatus: GetProductFiltersStatus.loading));
+      final response = await getProductFiltersUseCase(GetProductsFiltersParams(
+          category: event.category,
+          boutiqueSlug: event.boutiqueSlug
+      ));
+      response.fold((l) {
+        if (!isFailedTheFirstTime.contains('GetProductFiltersEvent')) {
+          add(GetMainCategoriesEvent());
+          isFailedTheFirstTime.add('GetProductFiltersEvent');
+        }
+        emit(state.copyWith(
+            getProductFiltersStatus: GetProductFiltersStatus.failure));
+      }, (r) {
+        apisMustNotToRequest.add('GetProductFiltersEvent');
+        isFailedTheFirstTime.remove('GetProductFiltersEvent');
+        emit(state.copyWith(
+            getProductFiltersModel: r,
+            getProductFiltersStatus: GetProductFiltersStatus.success));
+      });
+    }catch(e,st){
+      print(e);
+      print(st);
+    }
   }
 
   FutureOr<void> _onGetCommentForProductEvent(
@@ -739,23 +750,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onAddItemToCartEvent(
       AddItemToCartEvent event, Emitter<HomeState> emit) async {
-    // List<Cart> carts;
-    // GetCartShippingItemsModel getCartShippingItemsModel =
-    //     state.getCartShippingItemsModel!;
-    // carts = state.getCartShippingItemsModel!.data!.cart ?? [];
-    //  Cart cart;
-    /* cart = Cart(
-        name: "helal",
-        thumbnail: "asset",
-        offerPriceFormatted: "250 #",
-        quantity: 2,
-        priceNum: 233,
-        variations: Variations(color: "dfdaf", size: "34 rw"));
-    carts.add(cart);
-    getCartShippingItemsModel.data!.cart != carts;
-    emit(state.copyWith(
-      getCartShippingItemsModel: getCartShippingItemsModel,
-    ));*/
     final response = await addItemToCartUseCase(AddITemToCartParams(
         choice_1: state.CurrentColorSizeForCart != null
             ? state.CurrentColorSizeForCart!["size"]
@@ -765,11 +759,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         quantity: event.quantity));
 
     response.fold((l) {
-      //carts.remove(cart);
-      //   getCartShippingItemsModel.data!.cart != carts;
-      //   emit(state.copyWith(
-      //     getCartShippingItemsModel: getCartShippingItemsModel,
-      //   ));
       if (!isFailedTheFirstTime.contains('AddCartItemEvent')) {
         add(AddItemToCartEvent(
             products: event.products,
@@ -780,6 +769,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         isFailedTheFirstTime.add('AddCartItemEvent');
       }
     }, (r) {
+      isFailedTheFirstTime.remove('AddCartItemEvent');
+
       add(GetCartItemEvent());
       add(AddProductItemForCartEvent(
           productId: event.id!, product: event.products));
@@ -802,5 +793,27 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(state.copyWith(
         getProductListingWithFiltersModel: null,
         getProductsWithFiltersStatus: GetProductsWithFiltersStatus.init));
+  }
+
+  FutureOr<void> _onRemoveItemToCartEvent(
+      RemoveItemFormCartEvent event, Emitter<HomeState> emit) async {
+    Cart cart = state.cartCollection![event.boutiqueId]!
+        .firstWhere((element) => element.id.toString() == event.itemId);
+
+    state.cartCollection![event.boutiqueId]!.remove(cart);
+    emit(state.copyWith(cartCollection: state.cartCollection));
+    final response =
+        await removeItemToCartUseCase(RemoveITemToCartParams(id: event.itemId));
+
+    response.fold((l) {
+      isFailedTheFirstTime.add('RemoveCartItemEvent');
+      state.cartCollection![event.boutiqueId]!.add(cart);
+      emit(state.copyWith(cartCollection: state.cartCollection));
+      showMessage("Item Wan't Deleted");
+    }, (r) {
+      isFailedTheFirstTime.remove('RemoveCartItemEvent');
+      showMessage("Item Was Deleted Successfly");
+      add(GetCartItemEvent());
+    });
   }
 }

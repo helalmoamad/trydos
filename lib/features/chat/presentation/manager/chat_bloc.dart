@@ -264,6 +264,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               int.tryParse(event.channelId) == null) {
             return r.channel!.copyWith(
                 localId: event.channelId,
+                channelMembers: state.pinnedChats.firstWhere((element) => element.id == event.channelId).channelMembers,
                 messages: e.messages?.map((e) {
                   if (e.localId == event.messageId) {
                     return r.copyWith(localId: e.localId);
@@ -289,6 +290,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               int.tryParse(event.channelId) == null) {
             return r.channel!.copyWith(
                 localId: event.channelId,
+                channelMembers: state.chats.firstWhere((element) => element.id == event.channelId).channelMembers,
                 messages: e.messages?.map((e) {
                   if (e.localId == event.messageId) {
                     return r.copyWith(localId: e.localId);
@@ -1274,17 +1276,17 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         }
       });
     });
-    List<Chat> chats = List.of(state.chats);
-    chats.removeWhere((element) => int.tryParse(element.id.toString()) == null);
-    List<Chat> pinnedChats = List.of(state.pinnedChats);
-    pinnedChats
-        .removeWhere((element) => int.tryParse(element.id.toString()) == null);
+    // List<Chat> chats = List.of(state.chats);
+    // chats.removeWhere((element) => int.tryParse(element.id.toString()) == null);
+    // List<Chat> pinnedChats = List.of(state.pinnedChats);
+    // pinnedChats
+    //     .removeWhere((element) => int.tryParse(element.id.toString()) == null);
     return state
         .copyWith(
             currentFailedMessage: failedMessages,
             currentFailedMediaMessage: failedMediaMessages,
-            chats: chats,
-            pinnedChats: pinnedChats,
+            // chats: chats,
+            // pinnedChats: pinnedChats,
             receiveMessageStatus: ReceiveMessageStatus.init,
             readMessagesStatus: ResetReadMessagesStatus.init,
             firstRequestForGetChats: true,

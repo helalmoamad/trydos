@@ -102,7 +102,7 @@ class HomeRemoteDatasource {
         GetClient<MainCategoriesResponseModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<MainCategoriesResponseModel>(
-        endpoint: MarketEndPoints.getMainCategoriesEP,
+        endpoint: MarketEndPoints.getMainCategoriesRelatedWithBoutiquesEP,
         response: ResponseValue<MainCategoriesResponseModel>(
             fromJson: (response) =>
                 MainCategoriesResponseModel.fromJson(response)),
@@ -111,12 +111,13 @@ class HomeRemoteDatasource {
     return getMainCategories();
   }
 
-  Future<GetProductFiltersModel> getProductFilters() {
+  Future<GetProductFiltersModel> getProductFilters(Map<String , dynamic> params) {
     PostClient<GetProductFiltersModel> getProductFilters =
         PostClient<GetProductFiltersModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductFiltersModel>(
         endpoint: MarketEndPoints.getProductFiltersEP,
+        data: params,
         response: ResponseValue<GetProductFiltersModel>(
             fromJson: (response) => GetProductFiltersModel.fromJson(response)),
       ),
@@ -177,5 +178,17 @@ class HomeRemoteDatasource {
       ),
     );
     return addItemToCart();
+  }
+
+  Future<bool> removeItemToCart(Map<String, dynamic> params) {
+    PostClient<bool> removeItemToCart = PostClient<bool>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<bool>(
+        endpoint: MarketEndPoints.removeItemCartItemEP,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return removeItemToCart();
   }
 }

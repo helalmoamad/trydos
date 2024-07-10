@@ -13,9 +13,11 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
+import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -43,7 +45,6 @@ class _CartPageState extends State<CartPage> {
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetCartItemEvent());
-    homeBloc.add(GetProductFiltersEvent());
     super.initState();
   }
 
@@ -55,7 +56,7 @@ class _CartPageState extends State<CartPage> {
           body: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
             previous.getCartItemsStatus != current.getCartItemsStatus ||
-            previous.cartCollection != current.cartCollection,
+            previous.cartCollection!.values != current.cartCollection!.values,
         builder: (context, state) {
           if (state.getCartItemsStatus == GetCartItemsStatus.failure) {
             return Padding(
@@ -310,6 +311,54 @@ class _CartPageState extends State<CartPage> {
                                     .cartCollection![count]![index].quantity!;
 
                                 return InkWell(
+                                  onLongPress: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: MyTextWidget(
+                                                "Delete Item From Cart",
+                                                textDirection:
+                                                    TextDirection.ltr),
+                                            actions: <Widget>[
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  AppElevatedButton(
+                                                    onPressed: () {
+                                                      homeBloc.add(
+                                                          RemoveItemFormCartEvent(
+                                                              itemId: state
+                                                                  .cartCollection![
+                                                                      count]![
+                                                                      index]
+                                                                  .id
+                                                                  .toString(),
+                                                              boutiqueId: state
+                                                                  .cartCollection![
+                                                                      count]![
+                                                                      index]
+                                                                  .boutique!
+                                                                  .id
+                                                                  .toString()));
+                                                      Navigator.pop(context);
+                                                    },
+                                                    text: "Yes",
+                                                  ),
+                                                  AppElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    text: 'Not Now',
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                  },
                                   onTap: () {
                                     HelperFunctions.slidingNavigation(
                                         context,
