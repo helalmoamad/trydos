@@ -82,8 +82,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
       print(error);
     };
     chatTime = null;
-    if (!(widget.chat.messages?.isEmpty ??
-        true && widget.chat.messages != null)) {
+    print('dwwdw ${widget.chat.messages}');
+    if (!(widget.chat.messages.isNullOrEmpty)) {
       chatTime = widget.chat.messages!
           .firstWhere((element) =>
               element.authMessageStatus!.isDeleted == 0 ||
@@ -147,6 +147,31 @@ class _ChatCardState extends ThemeState<ChatCard> {
         }
       });
     }
+    String messageType = '';
+    bool isDeleteForAll = false;
+    bool deleteFromMyId = false;
+    if (!widget.chat.messages.isNullOrEmpty) {
+      messageType = (widget.chat.messages!
+              .firstWhere((element) =>
+                  element.authMessageStatus!.isDeleted == 0 ||
+                  element.authMessageStatus!.deleteForAll!)
+              .messageType
+              ?.name)
+          .toString();
+      deleteFromMyId = (widget.chat.messages!
+              .firstWhere((element) =>
+                  element.authMessageStatus!.isDeleted == 0 ||
+                  element.authMessageStatus!.deleteForAll!)
+              .deletedByUserId ==
+          _prefsRepository.myChatId!);
+      isDeleteForAll = (widget.chat.messages!
+              .firstWhere((element) =>
+                  element.authMessageStatus!.isDeleted == 0 ||
+                  element.authMessageStatus!.deleteForAll!)
+              .authMessageStatus!
+              .deleteForAll ??
+          false);
+    }
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -203,11 +228,13 @@ class _ChatCardState extends ThemeState<ChatCard> {
                     SlidableActionWidget(
                       text: LocaleKeys.delete.tr(),
                       onTap: () {
-                        if(double.tryParse(widget.chat.id!) == null){
-                          showMessage('You Can\'t remove this Chat at This Time');
+                        if (double.tryParse(widget.chat.id!) == null) {
+                          showMessage(
+                              'You Can\'t remove this Chat at This Time');
                           return;
                         }
-                        chatBloc.add(DeleteChatEvent(channelId: widget.chat.id!));
+                        chatBloc
+                            .add(DeleteChatEvent(channelId: widget.chat.id!));
                       },
                       backgroundColor: const Color(0xffFFE8E8),
                       foregroundColor: const Color(0xffFA6868),
@@ -393,56 +420,13 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                         ,
                                         7.horizontalSpace,
                                       },
-                                      BlocBuilder<ChatBloc, ChatState>(
-                                        builder: (context, state) {
-                                          String messageType = '';
-                                          bool isDeleteForAll = false;
-                                          bool deleteFromMyId = false;
-                                          if (!widget
-                                              .chat.messages.isNullOrEmpty) {
-                                            messageType = (widget.chat.messages!
-                                                    .firstWhere((element) =>
-                                                        element.authMessageStatus!
-                                                                .isDeleted ==
-                                                            0 ||
-                                                        element
-                                                            .authMessageStatus!
-                                                            .deleteForAll!)
-                                                    .messageType
-                                                    ?.name)
-                                                .toString();
-                                            deleteFromMyId = (widget
-                                                    .chat.messages!
-                                                    .firstWhere((element) =>
-                                                        element.authMessageStatus!
-                                                                .isDeleted ==
-                                                            0 ||
-                                                        element
-                                                            .authMessageStatus!
-                                                            .deleteForAll!)
-                                                    .deletedByUserId ==
-                                                _prefsRepository.myChatId!);
-                                            isDeleteForAll = (widget
-                                                    .chat.messages!
-                                                    .firstWhere((element) =>
-                                                        element.authMessageStatus!
-                                                                .isDeleted ==
-                                                            0 ||
-                                                        element
-                                                            .authMessageStatus!
-                                                            .deleteForAll!)
-                                                    .authMessageStatus!
-                                                    .deleteForAll ??
-                                                false);
-                                          }
-                                          return Flexible(
-                                            fit: FlexFit.loose,
-                                            child: SizedBox(
-                                              height: widget.thereActivity
-                                                  ? 33
-                                                  : 51,
-                                              child: (widget.chat.messages
-                                                          ?.isEmpty ??
+                                      Flexible(
+                                        fit: FlexFit.loose,
+                                        child: SizedBox(
+                                          height:
+                                              widget.thereActivity ? 33 : 51,
+                                          child:
+                                              (widget.chat.messages?.isEmpty ??
                                                       true &&
                                                           widget.chat
                                                                   .messages !=
@@ -481,21 +465,28 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                   ...state
                                                                       .pinnedChats
                                                                 ]
-                                                                    .firstWhere((element) =>
-                                                                        element
-                                                                            .id ==
-                                                                        widget
-                                                                            .chat
-                                                                            .id,orElse: ()=> Chat(messages: []))
+                                                                    .firstWhere(
+                                                                        (element) =>
+                                                                            element.id ==
+                                                                            widget
+                                                                                .chat.id,
+                                                                        orElse: () =>
+                                                                            Chat(
+                                                                                messages: []))
                                                                     .messages!
-                                                                    .firstWhere((element) =>
-                                                                        element.authMessageStatus!.isDeleted ==
-                                                                            0 ||
-                                                                        element
-                                                                            .authMessageStatus!
-                                                                            .deleteForAll!,orElse: ()=> Message(id: '-1'));
-                                                                if(lastMessage.id == '-1'){
-                                                                  return SizedBox.shrink();
+                                                                    .firstWhere(
+                                                                        (element) =>
+                                                                            element.authMessageStatus!.isDeleted ==
+                                                                                0 ||
+                                                                            element
+                                                                                .authMessageStatus!.deleteForAll!,
+                                                                        orElse: () =>
+                                                                            Message(id: '-1'));
+                                                                if (lastMessage
+                                                                        .id ==
+                                                                    '-1') {
+                                                                  return SizedBox
+                                                                      .shrink();
                                                                 }
                                                                 MessageStatus?
                                                                     status;
@@ -602,7 +593,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                         },
                                                         Flexible(
                                                           flex: 2,
-                                                          child: MyTextWidget(
+                                                          child: deleteFromMyId && !isDeleteForAll? SizedBox.shrink() : MyTextWidget(
                                                             isDeleteForAll
                                                                 ? deleteFromMyId
                                                                     ? LocaleKeys
@@ -650,9 +641,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                         Spacer()
                                                       ],
                                                     ),
-                                            ),
-                                          );
-                                        },
+                                        ),
                                       ),
                                       28.horizontalSpace,
                                       Row(

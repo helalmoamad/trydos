@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
@@ -7,6 +8,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
+import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
 
 import '../../../../core/error/failures.dart';
@@ -19,7 +21,8 @@ abstract class HomeRepository {
   Future<Either<Failure, GetCartShippingItemsModel>> getCartShippingItem();
 
   Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories();
-  Future<Either<Failure, GetProductFiltersModel>> getProductFilters(Map<String, dynamic> params);
+  Future<Either<Failure, GetProductFiltersModel>> getProductFilters(
+      Map<String, dynamic> params);
   /* Future<Either<Failure, HomeSectionResponseModel>> getHomeSections(
       Map<String, dynamic> params);*/
   Future<Either<Failure, GetHomeBoutiquesModel>> getHomeBoutiqes(
@@ -33,6 +36,9 @@ abstract class HomeRepository {
       getProductDetailWithoutSimilarRelatedProducts(String productId);
   Future<Either<Failure, GetCommentForProductModel>> geCommentForProduct(
       String productId);
-  Future<Either<Failure, bool>> addItemToCart(Map<String, dynamic> params);
+  Future<Either<Failure, AddItemToCartModel>> addItemToCart(
+      Map<String, dynamic> params);
+  Future<Either<Failure, UpdateItemInCartModel>> UpdateItemToCart(
+      Map<String, dynamic> params);
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params);
 }

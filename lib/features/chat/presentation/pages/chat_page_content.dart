@@ -117,7 +117,7 @@ class ChatPageContentState extends State<ChatPageContent> {
           p.deleteChatStatus != c.deleteChatStatus ||
           c.createAnewChat ||
           c.sendMessageStatus == SendMessageStatus.loading ||
-          p.receiveMessageStatus != c.receiveMessageStatus,
+          p.receiveMessageStatus != c.receiveMessageStatus ,
       builder: (context, state) {
         if ((state.getChatsStatus == GetChatsStatus.loading ||
                 state.getChatsStatus == GetChatsStatus.init) &&

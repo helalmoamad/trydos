@@ -48,6 +48,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+
     String selectedCategorySlug;
     homeBloc.add(GetHomeBoutiqesEvent(
         categorySlug: "Empty", offset: "1", getWithPagination: false));
@@ -173,6 +174,7 @@ class _HomePageState extends State<HomePage> {
               builder: (context, appState) {
                 return BlocBuilder<HomeBloc, HomeState>(
                   builder: (context, homeState) {
+                    print('9999999999999999999999999999999');
                     //  print(homeState.getHomeSectionsPaginationObject[0]
                     //    ?.items[0].sections![0].title);
 
@@ -181,7 +183,7 @@ class _HomePageState extends State<HomePage> {
                                 ?.mainCategories?[appState.tabIndex].slug ??
                             "Empty")
                         : "Empty";
-                    if (currentSlug == null ||
+                    if (
                         homeState.getHomeBoutiquesPaginationObjectByMainCategory[
                                 currentSlug] ==
                             null ||
@@ -218,6 +220,11 @@ class _HomePageState extends State<HomePage> {
                           ),
                           childCount: 10);
                     }
+                    print('ccccccccccccccccc ${currentSlug}');
+                    print('ccccccccccccccccc ${homeState
+                        .getHomeBoutiquesPaginationObjectByMainCategory[
+                    currentSlug]!
+                        .items.length}');
                     return sliverListSeparated(
                       key: Key(WidgetsKey.boutiquesSuccessStatusKey),
                       itemBuilder: (_, index) => Padding(

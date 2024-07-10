@@ -54,14 +54,16 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (p, c) =>
           p.currentSelectedColorForEveryProduct !=
-          c.currentSelectedColorForEveryProduct,
+              c.currentSelectedColorForEveryProduct ||
+          p.sizes != c.sizes,
       builder: (context, state) {
-        sizes = state.sizes ?? [];
-
+        sizes = state.sizes ?? [" "];
         currentIndexInSizes.value = sizes.length ~/ 2;
         if (sizes.length > 0) {
           homeBloc.add(
               AddCurrentColorSizeEvent(choice_1: sizes[sizes.length ~/ 2]));
+        } else {
+          homeBloc.add(AddCurrentColorSizeEvent(choice_1: ""));
         }
         if (sizes.length == 0) {
           return Container(

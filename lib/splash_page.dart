@@ -42,7 +42,7 @@ class _SplashPageState extends State<SplashPage> {
     appBloc.add(ChangeTab(-1));
 
     BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
-
+    homeBloc.add(GetCartItemEvent());
     checkAndNavigationCallingPage(context, fromTerminated: true,
         whereToNavigationAfterCheck: () {
       context.go(prefsRepository.marketToken == null

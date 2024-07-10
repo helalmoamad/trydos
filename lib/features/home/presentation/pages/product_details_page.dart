@@ -12,10 +12,14 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/app_widgets/app_bottom_navigation_bar.dart';
 
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_display_pictures_page.dart';
@@ -44,13 +48,15 @@ import '../widgets/product_stories_section/product_stories_card.dart';
 import '../widgets/product_details_body/buyers_camera_shots.dart';
 
 class ProductDetailsPage extends StatefulWidget {
-  ProductDetailsPage({
-    super.key,
-    required this.productItem,
-  });
+  ProductDetailsPage(
+      {super.key,
+      required this.productItem,
+      required this.boutiqueIcon,
+      required this.boutiqueId});
 
   final productListingModel.Products productItem;
-
+  final String boutiqueIcon;
+  final int boutiqueId;
   @override
   State<ProductDetailsPage> createState() => _ProductDetailsPageState();
 }
@@ -472,7 +478,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
 
                 return ProductDetailsBottomSheet(
-                  currentColorName:
+                  currentColornum:
                       !widget.productItem.syncColorImages.isNullOrEmpty &&
                               !widget.productItem.syncColorImages![0].images
                                   .isNullOrEmpty
@@ -480,6 +486,15 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   .color ??
                               ""
                           : "",
+                  boutiqueIcon: widget.boutiqueIcon,
+                  boutiqueId: widget.boutiqueId,
+                  currentColorName: !widget
+                              .productItem.syncColorImages.isNullOrEmpty &&
+                          !widget.productItem.syncColorImages![0].images
+                              .isNullOrEmpty
+                      ? widget.productItem.colors![currentSelectedColor].name ??
+                          ""
+                      : "",
                   productItem: widget.productItem,
                   currentColor: state.currentSelectedColorForEveryProduct[
                           widget.productItem.id.toString()] ??

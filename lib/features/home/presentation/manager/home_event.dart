@@ -23,13 +23,14 @@ class GetMainCategoriesEvent extends HomeEvent {
 }
 
 class GetProductFiltersEvent extends HomeEvent {
-  const GetProductFiltersEvent({this.category, this.boutiqueSlug});
+  const GetProductFiltersEvent({this.category, this.boutiqueSlug , this.forceUpdate = false});
 
   final String? boutiqueSlug;
   final String? category;
+  final bool forceUpdate;
   @override
   // TODO: implement props
-  List<Object?> get props => [category, boutiqueSlug];
+  List<Object?> get props => [category, boutiqueSlug,forceUpdate];
 }
 
 class AddCurrentSelectedColorEvent extends HomeEvent {
@@ -108,7 +109,7 @@ class ResetChosenFilters extends HomeEvent {
 class GetProductsWithFiltersEvent extends HomeEvent {
   final String? category;
   final List<String>? prices;
-  final List<int>? brands;
+  final List<String>? brands;
   final List<Map<String, dynamic>>? attributes;
   final String? searchText;
   final int offset;
@@ -177,12 +178,20 @@ class GetCartItemEvent extends HomeEvent {
 class AddItemToCartEvent extends HomeEvent {
   final String? id;
   final String? color;
+  final String thumbnail;
   final int? quantity;
+  final String? iconBoutique;
   final String? choice_1;
+  final int? boutiqueId;
+  final String colorName;
   final Products products;
   AddItemToCartEvent(
       {this.id,
       this.quantity,
+      this.iconBoutique,
+      this.boutiqueId,
+      required this.thumbnail,
+      required this.colorName,
       this.color,
       this.choice_1,
       required this.products});
@@ -212,6 +221,20 @@ class RemoveItemFormCartEvent extends HomeEvent {
   final String boutiqueId;
   final String itemId;
   RemoveItemFormCartEvent({required this.itemId, required this.boutiqueId});
+  @override
+  List<Object?> get props => [];
+}
+
+class UpdateItemInCartEvent extends HomeEvent {
+  final String cartId;
+  final int quantity;
+
+  final String boutiqueId;
+  UpdateItemInCartEvent({
+    required this.quantity,
+    required this.cartId,
+    required this.boutiqueId,
+  });
   @override
   List<Object?> get props => [];
 }

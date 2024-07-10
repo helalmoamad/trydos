@@ -13,6 +13,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_comments_content.dart';
@@ -32,10 +33,16 @@ import '../product_listing/product_listing_image_widget.dart';
 class ProductDetailsBottomSheet extends StatefulWidget {
   final productListingModel.Products productItem;
   final int currentColor;
+  final int boutiqueId;
+  final String boutiqueIcon;
   final String currentColorName;
+  final String currentColornum;
   const ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
+      required this.boutiqueIcon,
+      required this.currentColornum,
+      required this.boutiqueId,
       required this.currentColor,
       required this.currentColorName});
 
@@ -469,8 +476,13 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         imageUrl: widget.productItem.images![0].filePath!,
                         onFinishBuying: (quantity) {
                           homeBloc.add(AddItemToCartEvent(
+                              colorName: widget.currentColorName,
+                              iconBoutique: widget.boutiqueIcon,
+                              boutiqueId: widget.boutiqueId,
+                              thumbnail:
+                                  widget.productItem.images![0].filePath!,
                               products: widget.productItem,
-                              color: widget.currentColorName,
+                              color: widget.currentColornum,
                               quantity: int.parse(quantity),
                               id: widget.productItem.id.toString()));
                           setState(() {
