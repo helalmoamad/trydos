@@ -478,6 +478,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
 
                 return ProductDetailsBottomSheet(
+                  CurrentQuantity: state.currentQuantityForCart != null
+                      ? state.currentQuantityForCart![
+                              widget.productItem.id.toString()].isNullOrEmpty ?
+                          0:state.currentQuantityForCart![
+                              widget.productItem.id.toString()]![0]
+                      : 0,
                   currentColornum:
                       !widget.productItem.syncColorImages.isNullOrEmpty &&
                               !widget.productItem.syncColorImages![0].images

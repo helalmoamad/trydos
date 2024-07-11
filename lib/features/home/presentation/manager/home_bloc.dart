@@ -89,6 +89,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddCurrentSelectedColorEvent>(
       _onAddCurrentSelectedColorEvent,
     );
+    on<AddQuantityForCartEvent>(
+      _onAddCurrentQuantityForCartEvent,
+    );
+
     on<GetProductFiltersEvent>(
       _onGetProductFiltersEvent,
     );
@@ -852,6 +856,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onAddItemToCartEvent(
       AddItemToCartEvent event, Emitter<HomeState> emit) async {
+    Map<String, List<int>> CurrentQuantity = state.currentQuantityForCart ?? {};
+
+    if (CurrentQuantity.containsKey(event.products.id.toString())) {
+      if (CurrentQuantity[event.products.id.toString()]![0] > 0) {
+        add(UpdateItemInCartEvent(
+            productId: event.products.id.toString(),
+            quantity: event.quantity!,
+            cartId:
+                CurrentQuantity[event.products.id.toString()]![1].toString(),
+            boutiqueId: event.boutiqueId.toString()));
+        return;
+      }
+    }
     CartBrand brand = CartBrand(image: event.products.brand!.image);
     VariationCart variation = VariationCart(
         color: event.colorName, size: state.CurrentColorSizeForCart!["size"]);
@@ -870,12 +887,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       variations: [variation],
       productId: event.products.id,
     );
+    if (state.cartCollection == null) {
+      emit(state
+          .copyWith(cartCollection: {"${event.boutiqueId.toString()}": []}));
+    }
     if (state.cartCollection!.containsKey(event.boutiqueId.toString())) {
       state.cartCollection![event.boutiqueId.toString()]!.add(cart);
     } else {
-      state.cartCollection!.addAll({
+      Map<String, List<Cart>> cartMap = {
         event.boutiqueId.toString(): [cart]
-      });
+      };
+      Map<String, List<Cart>>? cartCollection = state.cartCollection;
+      cartCollection!.addAll(cartMap);
     }
 
     emit(state.copyWith(cartCollection: state.cartCollection));
@@ -908,17 +931,30 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
       showMessage(l.message);
     }, (r) {
-      state.cartCollection![event.boutiqueId.toString()]!.remove(cart);
-      cart = cart.copyWith(id: r.data!.idCart!);
-      state.cartCollection![event.boutiqueId.toString()]!.add(cart);
-      emit(state.copyWith(cartCollection: state.cartCollection));
+      if (r.data!.status != 1) {
+        state.cartCollection![event.boutiqueId.toString()]!.remove(cart);
+        if (state.cartCollection![event.boutiqueId.toString()].isNullOrEmpty) {
+          state.cartCollection!.remove(event.boutiqueId.toString());
+        }
+        emit(state.copyWith(cartCollection: state.cartCollection));
+      } else {
+        add(AddQuantityForCartEvent(
+            cartId: r.data!.idCart!,
+            quantity: event.quantity!,
+            productId: event.products.id.toString()));
+
+        state.cartCollection![event.boutiqueId.toString()]!.remove(cart);
+        cart = cart.copyWith(id: r.data!.idCart!);
+        state.cartCollection![event.boutiqueId.toString()]!.add(cart);
+        emit(state.copyWith(cartCollection: state.cartCollection));
+        add(AddProductItemForCartEvent(
+            productId: event.id!, product: event.products));
+      }
       showMessage(r.message!,
           foreGroundColor: Colors.green,
           showInRelease: true,
           timeShowing: Toast.LENGTH_SHORT);
       isFailedTheFirstTime.remove('AddCartItemEvent');
-      add(AddProductItemForCartEvent(
-          productId: event.id!, product: event.products));
     });
   }
 
@@ -949,10 +985,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     response.fold((l) {
       isFailedTheFirstTime.add('RemoveCartItemEvent');
+      if (state.cartCollection![event.boutiqueId].isNullOrEmpty) {
+        state.cartCollection![event.boutiqueId] = [];
+      }
       state.cartCollection![event.boutiqueId]!.add(cart);
+
       emit(state.copyWith(cartCollection: state.cartCollection));
       showMessage("Item Wan't Deleted");
     }, (r) {
+      add(AddQuantityForCartEvent(
+          cartId: int.tryParse(event.itemId)!,
+          quantity: 0,
+          productId: event.productId));
       isFailedTheFirstTime.remove('RemoveCartItemEvent');
       showMessage("Item Was Deleted Successfly",
           foreGroundColor: Colors.green,
@@ -963,6 +1007,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onUpdateItemInCartEvent(
       UpdateItemInCartEvent event, Emitter<HomeState> emit) async {
+    if (event.quantity == 0) {
+      add(RemoveItemFormCartEvent(
+          itemId: event.cartId,
+          boutiqueId: event.boutiqueId,
+          productId: event.productId));
+      return;
+    }
     Cart cart = state.cartCollection![event.boutiqueId]!
         .firstWhere((element) => element.id.toString() == event.cartId);
     Cart PreCart = cart;
@@ -993,11 +1044,47 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(cartCollection: state.cartCollection));
       showMessage(l.message);
     }, (r) {
-      isFailedTheFirstTime.remove('UpdateCartItemEvent');
-      showMessage(r.message!,
-          foreGroundColor: Colors.green,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_SHORT);
+      if (r.data!.status == 1) {
+        add(AddQuantityForCartEvent(
+            cartId: int.tryParse(event.cartId)!,
+            quantity: event.quantity,
+            productId: event.productId));
+        isFailedTheFirstTime.remove('UpdateCartItemEvent');
+        showMessage(r.message!,
+            foreGroundColor: Colors.green,
+            showInRelease: true,
+            timeShowing: Toast.LENGTH_SHORT);
+      } else {
+        state.cartCollection![event.boutiqueId] =
+            state.cartCollection![event.boutiqueId]!.map((e) {
+          if (e.id.toString() == event.cartId) {
+            return PreCart;
+          } else {
+            return e;
+          }
+        }).toList();
+        emit(state.copyWith(cartCollection: state.cartCollection));
+
+        isFailedTheFirstTime.remove('UpdateCartItemEvent');
+        showMessage(r.message!,
+            foreGroundColor: Colors.green,
+            showInRelease: true,
+            timeShowing: Toast.LENGTH_SHORT);
+      }
     });
+  }
+
+  FutureOr<void> _onAddCurrentQuantityForCartEvent(
+      AddQuantityForCartEvent event, Emitter<HomeState> emit) async {
+    Map<String, List<int>> CurrentQuantity = state.currentQuantityForCart ?? {};
+
+    if (CurrentQuantity.containsKey(event.productId)) {
+      CurrentQuantity[event.productId] = [event.quantity, event.cartId];
+    } else {
+      CurrentQuantity.addAll({
+        event.productId: [event.quantity, event.cartId]
+      });
+    }
+    emit(state.copyWith(currentQuantityForCart: CurrentQuantity));
   }
 }

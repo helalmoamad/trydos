@@ -1,6 +1,7 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -33,6 +34,7 @@ class CartPage2 extends StatelessWidget {
   Widget build(BuildContext context) {
     final ValueNotifier<String> changeCartCollection = ValueNotifier(" ");
     int length = getCartShippingItemsModel.data!.cart!.length - 1;
+    TextEditingController quantityController = TextEditingController();
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
@@ -41,7 +43,16 @@ class CartPage2 extends StatelessWidget {
               previous.getCartItemsStatus != current.getCartItemsStatus ||
               previous.cartCollection!.values != current.cartCollection!.values,
           builder: (context, state) {
-            if (state.getCartItemsStatus == GetCartItemsStatus.failure&&(state.cartCollection == null || state.cartCollection!.isEmpty) ) {
+            int totlaPrice = 0;
+            state.cartCollection!.values.toList().forEach((element) {
+              element.forEach((element) {
+                totlaPrice =
+                    totlaPrice + element.offerPrice! * element.quantity!;
+              });
+            });
+            if (state.getCartItemsStatus == GetCartItemsStatus.failure &&
+                (state.cartCollection == null ||
+                    state.cartCollection!.isEmpty)) {
               return Center(child: TryAgainWidget(tryAgain: () {
                 BlocProvider.of<HomeBloc>(context).add(GetCartItemEvent());
               }));
@@ -133,7 +144,7 @@ class CartPage2 extends StatelessWidget {
                                   height: 1.33),
                             ),
                             Text(
-                              "${getCartShippingItemsModel.data != null ? getCartShippingItemsModel.data!.totalCashFormated!.split(" ")[0] : 0} ",
+                              "${totlaPrice} ",
                               style: context.textTheme.subtitle1?.mr.copyWith(
                                   fontSize: 13,
                                   color: const Color(0xff5D5C5D),
@@ -141,7 +152,7 @@ class CartPage2 extends StatelessWidget {
                                   height: 1.33),
                             ),
                             Text(
-                              "${getCartShippingItemsModel.data != null ? getCartShippingItemsModel.data!.totalCashFormated!.split(" ")[1] : ""}",
+                              "${state.cartCollection != null ? state.cartCollection!.values.first[0].offerPriceFormatted!.split(" ")[1] : ""}",
                               style: context.textTheme.subtitle1?.la.copyWith(
                                   fontSize: 13,
                                   color: const Color(0xff8D8D8D),
@@ -180,7 +191,8 @@ class CartPage2 extends StatelessWidget {
                             state.cartCollection!.values
                                 .toList()[index]
                                 .forEach((element) {
-                              price = price + element.offerPrice!;
+                              price = price +
+                                  element.offerPrice! * element.quantity!;
                             });
 
                             return InkWell(
@@ -197,7 +209,7 @@ class CartPage2 extends StatelessWidget {
                                   height: 48.h,
                                   child: Row(
                                     children: [
-                                      Container(
+                                      /* Container(
                                         width: 93,
                                         height: 15,
                                         child: SvgPicture.network(
@@ -211,7 +223,7 @@ class CartPage2 extends StatelessWidget {
                                             0xff1A171B,
                                           ),
                                         ),
-                                      ),
+                                      ),*/
                                       Spacer(),
                                       Row(
                                         mainAxisAlignment:
@@ -300,6 +312,80 @@ class CartPage2 extends StatelessWidget {
                                         .cartCollection![count]![indexs]
                                         .quantity!;
                                     return InkWell(
+                                      onDoubleTap: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: MyTextWidget(
+                                                    "Change Quatity In Cart",
+                                                    textDirection:
+                                                        TextDirection.ltr),
+                                                actions: <Widget>[
+                                                  SingleChildScrollView(
+                                                    child: Column(
+                                                      children: [
+                                                        TextFormField(
+                                                          inputFormatters: [
+                                                            FilteringTextInputFormatter
+                                                                .digitsOnly
+                                                          ],
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          controller:
+                                                              quantityController,
+                                                          enabled: true,
+                                                          keyboardType:
+                                                              TextInputType
+                                                                  .number,
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            AppElevatedButton(
+                                                              onPressed: () {
+                                                                BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(
+                                                                    productId: state
+                                                                        .cartCollection![count]![
+                                                                            indexs]
+                                                                        .productId
+                                                                        .toString(),
+                                                                    quantity: int.tryParse(
+                                                                        quantityController
+                                                                            .text)!,
+                                                                    cartId: state
+                                                                        .cartCollection![count]![
+                                                                            indexs]
+                                                                        .id
+                                                                        .toString(),
+                                                                    boutiqueId: state
+                                                                        .cartCollection![count]![indexs]
+                                                                        .boutique!
+                                                                        .id
+                                                                        .toString()));
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              text: "Yes",
+                                                            ),
+                                                            AppElevatedButton(
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              text: 'Not Now',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            });
+                                      },
                                       onLongPress: () {
                                         showDialog(
                                             context: context,
@@ -317,23 +403,26 @@ class CartPage2 extends StatelessWidget {
                                                     children: [
                                                       AppElevatedButton(
                                                         onPressed: () {
-                                                          BlocProvider.of<
-                                                                      HomeBloc>(
-                                                                  context)
-                                                              .add(RemoveItemFormCartEvent(
-                                                                  itemId: state
-                                                                      .cartCollection![
-                                                                          count]![
-                                                                          indexs]
-                                                                      .id
-                                                                      .toString(),
-                                                                  boutiqueId: state
-                                                                      .cartCollection![
-                                                                          count]![
-                                                                          indexs]
-                                                                      .boutique!
-                                                                      .id
-                                                                      .toString()));
+                                                          BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(
+                                                              productId: state
+                                                                  .cartCollection![
+                                                                      count]![
+                                                                      indexs]
+                                                                  .productId
+                                                                  .toString(),
+                                                              itemId: state
+                                                                  .cartCollection![
+                                                                      count]![
+                                                                      indexs]
+                                                                  .id
+                                                                  .toString(),
+                                                              boutiqueId: state
+                                                                  .cartCollection![
+                                                                      count]![
+                                                                      indexs]
+                                                                  .boutique!
+                                                                  .id
+                                                                  .toString()));
                                                           Navigator.pop(
                                                               context);
                                                         },
@@ -444,7 +533,7 @@ class CartPage2 extends StatelessWidget {
                                                               Radius.circular(
                                                                   15))),
                                               child: Text(
-                                                "${!state.cartCollection![count]![indexs].variations.isNullOrEmpty ? state.cartCollection![count]![indexs].variations![0].size ?? "" : ""} \n ${state.cartCollection![count]![indexs].offerPriceFormatted!.split(" ")[0]} ${state.cartCollection![count]![indexs].offerPriceFormatted!.split(" ")[1]}",
+                                                "${!state.cartCollection![count]![indexs].variations.isNullOrEmpty ? state.cartCollection![count]![indexs].variations![0].size ?? "" : ""} \n ${state.cartCollection![count]![indexs].offerPrice! * state.cartCollection![count]![indexs].quantity!} ${state.cartCollection![count]![indexs].offerPriceFormatted!.split(" ")[1]}",
                                                 style: context
                                                     .textTheme.subtitle1?.ra
                                                     .copyWith(
@@ -492,6 +581,74 @@ class CartPage2 extends StatelessWidget {
                                               CrossAxisAlignment.center,
                                           children: [
                                             InkWell(
+                                              onDoubleTap: () {
+                                                showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: MyTextWidget(
+                                                            "Change Quatity In Cart",
+                                                            textDirection:
+                                                                TextDirection
+                                                                    .ltr),
+                                                        actions: <Widget>[
+                                                          SingleChildScrollView(
+                                                            child: Column(
+                                                              children: [
+                                                                TextFormField(
+                                                                  inputFormatters: [
+                                                                    FilteringTextInputFormatter
+                                                                        .digitsOnly
+                                                                  ],
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  controller:
+                                                                      quantityController,
+                                                                  enabled: true,
+                                                                  keyboardType:
+                                                                      TextInputType
+                                                                          .number,
+                                                                ),
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: [
+                                                                    AppElevatedButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(
+                                                                            productId:
+                                                                                state.cartCollection![count]![indexs].productId.toString(),
+                                                                            quantity: int.tryParse(quantityController.text)!,
+                                                                            cartId: state.cartCollection![count]![indexs].id.toString(),
+                                                                            boutiqueId: state.cartCollection![count]![indexs].boutique!.id.toString()));
+                                                                        Navigator.pop(
+                                                                            context);
+                                                                      },
+                                                                      text:
+                                                                          "Yes",
+                                                                    ),
+                                                                    AppElevatedButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.pop(
+                                                                            context);
+                                                                      },
+                                                                      text:
+                                                                          'Not Now',
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    });
+                                              },
                                               onLongPress: () {
                                                 showDialog(
                                                     context: context,
@@ -512,6 +669,12 @@ class CartPage2 extends StatelessWidget {
                                                               AppElevatedButton(
                                                                 onPressed: () {
                                                                   BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(
+                                                                      productId: state
+                                                                          .cartCollection![
+                                                                              count]![
+                                                                              indexs]
+                                                                          .productId
+                                                                          .toString(),
                                                                       itemId: state
                                                                           .cartCollection![
                                                                               count]![
@@ -630,7 +793,7 @@ class CartPage2 extends StatelessWidget {
                                               width: 97.w,
                                               height: 45,
                                               child: Text(
-                                                "${!state.cartCollection![count]![indexs].variations.isNullOrEmpty ? state.cartCollection![count]![indexs].variations![0].size ?? "" : ""} \n ${state.cartCollection![count]![indexs].offerPriceFormatted!.split(" ")[0]} ${state.cartCollection![count]![indexs].offerPriceFormatted!.split(" ")[1]}",
+                                                "${!state.cartCollection![count]![indexs].variations.isNullOrEmpty ? state.cartCollection![count]![indexs].variations![0].size ?? "" : ""} \n ${state.cartCollection![count]![indexs].offerPrice! * state.cartCollection![count]![indexs].quantity!} ${state.cartCollection![count]![indexs].offerPriceFormatted!.split(" ")[1]}",
                                                 style: context
                                                     .textTheme.subtitle1?.ra
                                                     .copyWith(

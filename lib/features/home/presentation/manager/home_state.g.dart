@@ -116,6 +116,11 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           (json['CurrentColorSizeForCart'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
+      currentQuantityForCart:
+          (json['currentQuantityForCart'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(
+            k, (e as List<dynamic>).map((e) => (e as num).toInt()).toList()),
+      ),
       getCartItemsStatus: $enumDecodeNullable(
               _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
           GetCartItemsStatus.init,
@@ -233,6 +238,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
       'startingSetting': instance.startingSetting?.toJson(),
       'CurrentColorSizeForCart': instance.CurrentColorSizeForCart,
+      'currentQuantityForCart': instance.currentQuantityForCart,
       'cachedProductWithoutRelatedProductsModel': instance
           .cachedProductWithoutRelatedProductsModel
           .map((k, e) => MapEntry(k, e.toJson())),

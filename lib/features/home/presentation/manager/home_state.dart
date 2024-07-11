@@ -10,6 +10,7 @@ import 'package:trydos/features/home/data/models/get_story_for_product_model.dar
 
 import '../../../../core/data/model/pagination_model.dart';
 import '../../data/models/get_cart_item_model.dart';
+import '../../data/models/get_product_detail_without_related_products_model.dart';
 import '../../data/models/get_product_filters_model.dart';
 import '../../data/models/get_product_listing_with_filters_model.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
@@ -73,6 +74,7 @@ class HomeState {
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
     this.CurrentColorSizeForCart,
+    this.currentQuantityForCart,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
     this.getProductListingPaginationWithoutFiltersModel = const {},
@@ -114,6 +116,7 @@ class HomeState {
 
   final StartingSetting? startingSetting;
   Map<String, String>? CurrentColorSizeForCart;
+  Map<String, List<int>>? currentQuantityForCart;
   final Map<String, GetProductDetailWithoutRelatedProductsModel>
       cachedProductWithoutRelatedProductsModel;
 
@@ -129,6 +132,7 @@ class HomeState {
       getProductListingWithFiltersPaginationModels,
       int? selectedCollection,
       List<String>? sizes,
+      Map<String,  List<int>>? currentQuantityForCart,
       Map<String, List<cart.Cart>>? cartCollection,
       Map<String, String>? CurrentColorSizeForCart,
       final Map<String , GetProductFiltersStatus>? getProductFiltersInEachBoutiqueStatus,
@@ -162,6 +166,8 @@ class HomeState {
         cartCollection: cartCollection ?? this.cartCollection,
         getProductListingWithFiltersPaginationModels:
              getProductListingWithFiltersPaginationModels ?? this.getProductListingWithFiltersPaginationModels,
+        currentQuantityForCart:
+            currentQuantityForCart ?? this.currentQuantityForCart,
         productITemForCart: productITemForCart ?? this.productITemForCart,
         CurrentColorSizeForCart:
             CurrentColorSizeForCart ?? this.CurrentColorSizeForCart,
@@ -212,7 +218,6 @@ class HomeState {
             getProductDetailWithoutRelatedProductsModel ??
                 this.getProductDetailWithoutRelatedProductsModel);
   }
-
 
   factory HomeState.fromJson(Map<String, dynamic> data) =>
       _$HomeStateFromJson(data);
