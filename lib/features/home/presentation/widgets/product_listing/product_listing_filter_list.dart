@@ -12,6 +12,7 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
@@ -36,7 +37,10 @@ class StackedFiltersList extends StatefulWidget {
       required this.selectedFiltersNotifier,
       required this.listKey,
       required this.isExpanded,
-      this.controller, required this.boutiqueSlug, this.category, required this.closeFilterPage});
+      this.controller,
+      required this.boutiqueSlug,
+      this.category,
+      required this.closeFilterPage});
 
   final void Function() closeFilterPage;
   final void Function(String message) onMoveToAnotherFiltersSection;
@@ -47,6 +51,7 @@ class StackedFiltersList extends StatefulWidget {
 
   final String boutiqueSlug;
   final String? category;
+
   @override
   _StackedFiltersListState createState() => _StackedFiltersListState();
 }
@@ -122,10 +127,13 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
 
   @override
   Widget build(BuildContext context) {
+    String key = widget.boutiqueSlug + (widget.category ?? '');
     return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
-      if (state.getProductFiltersStatus == GetProductFiltersStatus.loading ||
-          state.getProductsWithFiltersStatus ==
-              GetProductsWithFiltersStatus.loading) {
+      if (state.getProductFiltersInEachBoutiqueStatus[key] ==
+              GetProductFiltersStatus.loading ||
+          state.getProductListingWithFiltersPaginationModels[key]
+                  ?.paginationStatus ==
+              PaginationStatus.loading) {
         return Center(child: TrydosLoader());
       }
       // if (state.getProductFiltersStatus == GetProductFiltersStatus.failure) {
@@ -133,10 +141,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       //     BlocProvider.of<HomeBloc>(context).add(GetProductFiltersEvent());
       //   }));
       // }
-      if(state.getProductFiltersModel?.filters == null){
+      if (state.getProductFiltersInEachBoutiqueModel[key]?.filters == null) {
         return SizedBox.shrink();
       }
-      Filter filters = state.getProductFiltersModel!.filters!;
+      Filter filters =
+          state.getProductFiltersInEachBoutiqueModel[key]!.filters!;
       if (lowerAndUpperBound == null && filters.prices != null) {
         minPrice = filters.prices!.minPrice!;
         maxPrice = filters.prices!.maxPrice!;
@@ -156,7 +165,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
         });
       }
       return Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
           if (widget.isExpanded) ...{
             Padding(
@@ -203,7 +211,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                           return SizedBox(
                             height: 8,
                             child: ListView.builder(
-                                itemCount: 3,
+                                itemCount: 1,
                                 physics: NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
                                 scrollDirection: Axis.horizontal,
@@ -257,7 +265,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                         child: Expanded(
                           child: ListView.builder(
                               controller: autoScrollController,
-                              itemCount: 3 + (3 - 1),
+                              itemCount: 1, //3 + (3 - 1),
                               physics: ClampingScrollPhysics(),
                               scrollDirection: Axis.horizontal,
                               shrinkWrap: true,
@@ -304,77 +312,204 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                       key: ValueKey(index),
                                       controller: autoScrollController,
                                       index: index,
-                                      child: ListView(
+                                      child: ListView.builder(
                                         scrollDirection: Axis.horizontal,
                                         physics: NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
-                                        children: [
-                                          ValueListenableBuilder<int>(
-                                              valueListenable:
-                                                  expandingFiltersStack,
-                                              builder: (context,
-                                                  currentExpandedIndex, child) {
-                                                return AnimatedContainer(
-                                                  curve: Curves
-                                                      .fastEaseInToSlowEaseOut,
-                                                  duration: Duration(
-                                                      milliseconds: 300),
-                                                  margin:
-                                                      EdgeInsetsDirectional.only(end: 5),
-                                                  width: currentExpandedIndex ==
-                                                          index
-                                                      ? (75 + 4 * 55)
-                                                      : 80.0,
-                                                  height: 70.0,
-                                                  child: Stack(
-                                                    alignment:
-                                                        AlignmentDirectional.topStart,
-                                                    children: [
-                                                      ...List.generate(
-                                                        4,
-                                                        (innerIndex) =>
-                                                            AnimatedPositionedDirectional(
-                                                                curve: Curves
-                                                                    .fastEaseInToSlowEaseOut,
-                                                                duration: Duration(
-                                                                    milliseconds:
-                                                                        300),
-                                                                top: currentExpandedIndex ==
-                                                                        15 *
-                                                                            index
-                                                                    ? (70 - 50)
-                                                                    : (70 - 50) /
-                                                                        2,
-                                                                end: currentExpandedIndex ==
-                                                                        15 *
-                                                                            index
-                                                                    ? innerIndex *
-                                                                        55
-                                                                    : innerIndex >=
-                                                                            (4 -
-                                                                                2)
-                                                                        ? (innerIndex -
-                                                                                1) *
-                                                                            3
-                                                                        : 0,
-                                                                child:
-                                                                    FilterCircleWidget(
-                                                                  width: 50,
-                                                                  height: 50,
-                                                                  withBackGroundShadow:
-                                                                      innerIndex !=
-                                                                          0,
+                                        itemCount:
+                                            filters.categories?.length ?? 0,
+                                        itemBuilder: (ctx, index) {
+                                          if (!filters.categories![index]
+                                              .subCategories.isNullOrEmpty)
+                                            return ValueListenableBuilder<int>(
+                                                valueListenable:
+                                                    expandingFiltersStack,
+                                                builder: (context,
+                                                    currentExpandedIndex,
+                                                    child) {
+                                                  return AnimatedContainer(
+                                                    curve: Curves
+                                                        .fastEaseInToSlowEaseOut,
+                                                    duration: Duration(
+                                                        milliseconds: 300),
+                                                    margin:
+                                                        EdgeInsetsDirectional
+                                                            .only(end: 5),
+                                                    width: currentExpandedIndex ==
+                                                            index
+                                                        ? (75 +
+                                                            filters
+                                                                    .categories![
+                                                                        index]
+                                                                    .subCategories!
+                                                                    .length *
+                                                                55)
+                                                        : 80.0,
+                                                    height: 70.0,
+                                                    child: Stack(
+                                                      alignment:
+                                                          AlignmentDirectional
+                                                              .topStart,
+                                                      children: [
+                                                        ...List.generate(
+                                                          filters
+                                                              .categories![
+                                                                  index]
+                                                              .subCategories!
+                                                              .length,
+                                                          (innerIndex) =>
+                                                              AnimatedPositionedDirectional(
+                                                                  curve: Curves
+                                                                      .fastEaseInToSlowEaseOut,
+                                                                  duration: Duration(
+                                                                      milliseconds:
+                                                                          300),
+                                                                  top: currentExpandedIndex ==
+                                                                          index
+                                                                      ? (70 -
+                                                                          50)
+                                                                      : (70 - 50) /
+                                                                          2,
+                                                                  end: currentExpandedIndex ==
+                                                                          index
+                                                                      ? innerIndex *
+                                                                          55
+                                                                      : innerIndex >=
+                                                                              (filters.categories![index].subCategories!.length -
+                                                                                  2)
+                                                                          ? (innerIndex - 1) *
+                                                                              3
+                                                                          : 0,
+                                                                  child:
+                                                                      FilterCircleWidget(
+                                                                    width: 50,
+                                                                    height: 50,
+                                                                    imageUrl: filters.categories![index].subCategories![innerIndex].icon.toString(),
+                                                                    withBackGroundShadow:
+                                                                        innerIndex !=
+                                                                            0,
+                                                                    addOrRemoveSpecificFilter:
+                                                                        (bool
+                                                                            add) {
+                                                                      if (add) {
+                                                                        widget.selectedFiltersNotifier.value.add(Tuple3(
+                                                                            filters.categories![index].subCategories![innerIndex].id!,
+                                                                            filters.categories![index].id!,
+                                                                            10));
+                                                                        widget
+                                                                            .listKey
+                                                                            .currentState!
+                                                                            .insertItem(selectedFilters.length -
+                                                                                1);
+                                                                        widget
+                                                                            .selectedFiltersNotifier
+                                                                            .notifyListeners();
+                                                                      } else {
+                                                                        final Tuple3<int, int?, double> item = Tuple3(
+                                                                            filters.categories![index].subCategories![innerIndex].id!,
+                                                                            filters.categories![index].id!,
+                                                                            10);
+                                                                        int removedIndex = widget
+                                                                            .selectedFiltersNotifier
+                                                                            .value
+                                                                            .indexWhere((element) =>
+                                                                                element ==
+                                                                                item);
+                                                                        widget
+                                                                            .selectedFiltersNotifier
+                                                                            .value
+                                                                            .removeAt(removedIndex);
+                                                                        widget
+                                                                            .listKey
+                                                                            .currentState!
+                                                                            .removeItem(
+                                                                          removedIndex,
+                                                                          (context, animation) => buildItem(
+                                                                              removedIndex,
+                                                                              item,
+                                                                              animation),
+                                                                        );
+                                                                        widget
+                                                                            .selectedFiltersNotifier
+                                                                            .notifyListeners();
+                                                                      }
+                                                                    },
+                                                                    displayFilterMark: selectedFilters.contains(Tuple3(
+                                                                        filters
+                                                                            .categories![
+                                                                                index]
+                                                                            .subCategories![
+                                                                                innerIndex]
+                                                                            .id!,
+                                                                        filters
+                                                                            .categories![index]
+                                                                            .id!,
+                                                                        10)),
+                                                                    paddingValue:
+                                                                        currentExpandedIndex ==
+                                                                                index
+                                                                            ? 5
+                                                                            : 0,
+                                                                    borderColor:
+                                                                        colorScheme
+                                                                            .white,
+                                                                    isExpanded:
+                                                                        currentExpandedIndex ==
+                                                                            index,
+                                                                  )),
+                                                        ),
+                                                        ValueListenableBuilder<
+                                                                bool>(
+                                                            valueListenable:
+                                                                scaleTheTopItemInFiltersStack,
+                                                            builder: (context,
+                                                                scale, _) {
+                                                              return FilterCircleWidget(
+                                                                  width: 70,
+                                                                  height: 70,
+                                                                  imageUrl: filters.categories![index].icon.toString(),
+                                                                  scale: scale,
+                                                                  paddingValue:
+                                                                      0,
+                                                                  isExpanded:
+                                                                      currentExpandedIndex ==
+                                                                          index,
+                                                                  displayFilterMark: selectedFilters.contains(Tuple3(
+                                                                      filters
+                                                                          .categories![
+                                                                              index]
+                                                                          .id!,
+                                                                      filters
+                                                                          .categories![
+                                                                              index]
+                                                                          .id!,
+                                                                      15)),
                                                                   addOrRemoveSpecificFilter:
                                                                       (bool
                                                                           add) {
                                                                     if (add) {
                                                                       widget.selectedFiltersNotifier.value.add(Tuple3(
-                                                                          15 * index +
-                                                                              innerIndex +
-                                                                              1,
-                                                                          15 *
-                                                                              index,
-                                                                          10));
+                                                                          filters
+                                                                              .categories![
+                                                                                  index]
+                                                                              .id!,
+                                                                          filters
+                                                                              .categories![index]
+                                                                              .id!,
+                                                                          15));
+                                                                      scaleTheTopItemInFiltersStack
+                                                                              .value =
+                                                                          true;
+                                                                      expandingFiltersStack
+                                                                              .value =
+                                                                          index;
+                                                                      Future.delayed(
+                                                                          Duration(
+                                                                              milliseconds: 100),
+                                                                          () {
+                                                                        scaleTheTopItemInFiltersStack.value =
+                                                                            false;
+                                                                      });
                                                                       widget
                                                                           .listKey
                                                                           .currentState!
@@ -384,253 +519,121 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                           .selectedFiltersNotifier
                                                                           .notifyListeners();
                                                                     } else {
-                                                                      final Tuple3<
+                                                                      expandingFiltersStack
+                                                                          .value = -1;
+                                                                      final List<
+                                                                          Tuple3<
                                                                               int,
                                                                               int?,
-                                                                              double>
-                                                                          item =
-                                                                          Tuple3(
-                                                                              15 * index + innerIndex + 1,
-                                                                              15 * index,
-                                                                              10);
-                                                                      int removedIndex = widget
-                                                                          .selectedFiltersNotifier
-                                                                          .value
-                                                                          .indexWhere((element) =>
-                                                                              element ==
-                                                                              item);
-                                                                      widget
-                                                                          .selectedFiltersNotifier
-                                                                          .value
-                                                                          .removeAt(
-                                                                              removedIndex);
-                                                                      widget
-                                                                          .listKey
-                                                                          .currentState!
-                                                                          .removeItem(
-                                                                        removedIndex,
-                                                                        (context, animation) => buildItem(
-                                                                            removedIndex,
-                                                                            item,
-                                                                            animation),
-                                                                      );
-                                                                      widget
-                                                                          .selectedFiltersNotifier
-                                                                          .notifyListeners();
+                                                                              double>> itemToRemove = [];
+                                                                      final indicesToRemove =
+                                                                          [];
+                                                                      for (int i =
+                                                                              0;
+                                                                          i < selectedFilters.length;
+                                                                          i++) {
+                                                                        if (selectedFilters[i].item2 ==
+                                                                            filters.categories![index].id!) {
+                                                                          itemToRemove.add(widget
+                                                                              .selectedFiltersNotifier
+                                                                              .value[i]);
+                                                                          indicesToRemove
+                                                                              .add(i);
+                                                                        }
+                                                                      }
+                                                                      for (int i =
+                                                                              0;
+                                                                          i < itemToRemove.length;
+                                                                          i++) {
+                                                                        widget
+                                                                            .selectedFiltersNotifier
+                                                                            .value
+                                                                            .remove(itemToRemove[i]);
+                                                                        widget
+                                                                            .listKey
+                                                                            .currentState!
+                                                                            .removeItem(
+                                                                          indicesToRemove[i] -
+                                                                              i,
+                                                                          (context, animation) => buildItem(
+                                                                              indicesToRemove[i] - i,
+                                                                              itemToRemove[i],
+                                                                              animation),
+                                                                        );
+                                                                      }
                                                                     }
-                                                                  },
-                                                                  displayFilterMark: selectedFilters.contains(Tuple3(
-                                                                      15 * index +
-                                                                          innerIndex +
-                                                                          1,
-                                                                      15 *
-                                                                          index,
-                                                                      10)),
-                                                                  paddingValue:
-                                                                      currentExpandedIndex ==
-                                                                              15 * index
-                                                                          ? 5
-                                                                          : 0,
-                                                                  borderColor:
-                                                                      colorScheme
-                                                                          .white,
-                                                                  isExpanded:
-                                                                      currentExpandedIndex ==
-                                                                          15 *
-                                                                              index,
-                                                                )),
-                                                      ),
-                                                      ValueListenableBuilder<
-                                                              bool>(
-                                                          valueListenable:
-                                                              scaleTheTopItemInFiltersStack,
-                                                          builder: (context,
-                                                              scale, _) {
-                                                            return FilterCircleWidget(
-                                                                width: 70,
-                                                                height: 70,
-                                                                scale: scale,
-                                                                paddingValue: 0,
-                                                                isExpanded:
-                                                                    currentExpandedIndex ==
-                                                                        15 *
-                                                                            index,
-                                                                displayFilterMark:
-                                                                    selectedFilters.contains(Tuple3(
-                                                                        15 *
-                                                                            index,
-                                                                        15 *
-                                                                            index,
-                                                                        15)),
-                                                                addOrRemoveSpecificFilter:
-                                                                    (bool add) {
-                                                                  if (add) {
-                                                                    widget
-                                                                        .selectedFiltersNotifier
-                                                                        .value
-                                                                        .add(Tuple3(
-                                                                            15 *
-                                                                                index,
-                                                                            15 *
-                                                                                index,
-                                                                            15));
-                                                                    scaleTheTopItemInFiltersStack
-                                                                            .value =
-                                                                        true;
-                                                                    expandingFiltersStack
-                                                                            .value =
-                                                                        15 *
-                                                                            index;
-                                                                    Future.delayed(
-                                                                        Duration(
-                                                                            milliseconds:
-                                                                                100),
-                                                                        () {
-                                                                      scaleTheTopItemInFiltersStack
-                                                                              .value =
-                                                                          false;
-                                                                    });
-                                                                    widget
-                                                                        .listKey
-                                                                        .currentState!
-                                                                        .insertItem(
-                                                                            selectedFilters.length -
-                                                                                1);
                                                                     widget
                                                                         .selectedFiltersNotifier
                                                                         .notifyListeners();
-                                                                  } else {
-                                                                    expandingFiltersStack
-                                                                        .value = -1;
-                                                                    final List<
-                                                                        Tuple3<
-                                                                            int,
-                                                                            int?,
-                                                                            double>> itemToRemove = [];
-                                                                    final indicesToRemove =
-                                                                        [];
-                                                                    for (int i =
-                                                                            0;
-                                                                        i < selectedFilters.length;
-                                                                        i++) {
-                                                                      if (selectedFilters[i]
-                                                                              .item2 ==
-                                                                          15 *
-                                                                              index) {
-                                                                        itemToRemove.add(widget
-                                                                            .selectedFiltersNotifier
-                                                                            .value[i]);
-                                                                        indicesToRemove
-                                                                            .add(i);
-                                                                      }
-                                                                    }
-                                                                    for (int i =
-                                                                            0;
-                                                                        i < itemToRemove.length;
-                                                                        i++) {
-                                                                      widget
-                                                                          .selectedFiltersNotifier
-                                                                          .value
-                                                                          .remove(
-                                                                              itemToRemove[i]);
-                                                                      widget
-                                                                          .listKey
-                                                                          .currentState!
-                                                                          .removeItem(
-                                                                        indicesToRemove[i] -
-                                                                            i,
-                                                                        (context, animation) => buildItem(
-                                                                            indicesToRemove[i] -
-                                                                                i,
-                                                                            itemToRemove[i],
-                                                                            animation),
-                                                                      );
-                                                                    }
-                                                                  }
-                                                                  widget
-                                                                      .selectedFiltersNotifier
-                                                                      .notifyListeners();
-                                                                });
-                                                          }),
-                                                    ],
-                                                  ),
-                                                );
-                                              }),
-                                          ...List.generate(
-                                              10,
-                                              (innerIndex) =>
-                                                  FilterCircleWidget(
-                                                    width: 70,
-                                                    height: 70,
-                                                    displayFilterMark:
-                                                        selectedFilters
-                                                            .contains(Tuple3(
-                                                                15 * index +
-                                                                    innerIndex +
-                                                                    4,
-                                                                null,
-                                                                15)),
-                                                    withBackGroundShadow: true,
-                                                    addOrRemoveSpecificFilter:
-                                                        (bool add) {
-                                                      if (add) {
-                                                        widget
-                                                            .selectedFiltersNotifier
-                                                            .value
-                                                            .add(Tuple3(
-                                                                15 * index +
-                                                                    innerIndex +
-                                                                    4,
-                                                                null,
-                                                                15));
-                                                        widget.listKey
-                                                            .currentState!
-                                                            .insertItem(
-                                                                selectedFilters
-                                                                        .length -
-                                                                    1);
-                                                        widget
-                                                            .selectedFiltersNotifier
-                                                            .notifyListeners();
-                                                      } else {
-                                                        final Tuple3<int, int?,
-                                                                double> item =
-                                                            Tuple3(
-                                                                15 * index +
-                                                                    innerIndex +
-                                                                    4,
-                                                                null,
-                                                                15);
-                                                        int removedIndex = widget
-                                                            .selectedFiltersNotifier
-                                                            .value
-                                                            .indexWhere(
-                                                                (element) =>
-                                                                    element ==
-                                                                    item);
-                                                        widget
-                                                            .selectedFiltersNotifier
-                                                            .value
-                                                            .removeAt(
-                                                                removedIndex);
-                                                        widget.listKey
-                                                            .currentState!
-                                                            .removeItem(
-                                                          removedIndex,
-                                                          (context,
-                                                                  animation) =>
-                                                              buildItem(
-                                                                  removedIndex,
-                                                                  item,
-                                                                  animation),
-                                                        );
-                                                        widget
-                                                            .selectedFiltersNotifier
-                                                            .notifyListeners();
-                                                      }
-                                                    },
-                                                  ))
-                                        ],
+                                                                  });
+                                                            }),
+                                                      ],
+                                                    ),
+                                                  );
+                                                });
+                                          else {
+                                            return FilterCircleWidget(
+                                              width: 70,
+                                              height: 70,
+                                              imageUrl: filters.categories![index].icon.toString(),
+                                              displayFilterMark: selectedFilters
+                                                  .contains(Tuple3(
+                                                      filters.categories![index]
+                                                          .id!,
+                                                      null,
+                                                      15)),
+                                              withBackGroundShadow: true,
+                                              addOrRemoveSpecificFilter:
+                                                  (bool add) {
+                                                if (add) {
+                                                  widget.selectedFiltersNotifier
+                                                      .value
+                                                      .add(Tuple3(
+                                                          filters
+                                                              .categories![
+                                                                  index]
+                                                              .id!,
+                                                          null,
+                                                          15));
+                                                  widget.listKey.currentState!
+                                                      .insertItem(
+                                                          selectedFilters
+                                                                  .length -
+                                                              1);
+                                                  widget.selectedFiltersNotifier
+                                                      .notifyListeners();
+                                                } else {
+                                                  final Tuple3<int, int?,
+                                                          double> item =
+                                                      Tuple3(
+                                                          filters
+                                                              .categories![
+                                                                  index]
+                                                              .id!,
+                                                          null,
+                                                          15);
+                                                  int removedIndex = widget
+                                                      .selectedFiltersNotifier
+                                                      .value
+                                                      .indexWhere((element) =>
+                                                          element == item);
+                                                  widget.selectedFiltersNotifier
+                                                      .value
+                                                      .removeAt(removedIndex);
+                                                  widget.listKey.currentState!
+                                                      .removeItem(
+                                                    removedIndex,
+                                                    (context, animation) =>
+                                                        buildItem(removedIndex,
+                                                            item, animation),
+                                                  );
+                                                  widget.selectedFiltersNotifier
+                                                      .notifyListeners();
+                                                }
+                                              },
+                                            );
+                                          }
+                                        },
                                       ),
                                     ),
                                   );
@@ -655,9 +658,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               selectedFilters: selectedFiltersByBrand,
               filterListTitle: 'Filter By Brand',
               isBrandFilter: true,
-              filters: state.getProductListingWithFiltersModel != null
-                  ? state.getProductListingWithFiltersModel?.data?.brands ?? []
-                  : filters.brands ?? [],
+              filters: filters.brands ?? [],
               addItemToAnimatedList: (int index) {
                 listForBrandsKey.currentState!.insertItem(index);
               },
@@ -674,32 +675,26 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               isBrandFilter: false,
               filters: [],
             ),
-            if(filters.prices != null)
-            PriceFilter(
-              lowerAndUpperBound: lowerAndUpperBound!,
-              pricesFiltersRanges:
-                  state.getProductListingWithFiltersModel != null
-                      ? state.getProductListingWithFiltersModel!.data!.prices!
-                      : filters.prices!,
-            ),
-            if(!filters.attributes.isNullOrEmpty)
-            SizesFiltersList(
-              selectedFilters: selectedFiltersBySize,
-              addItemToAnimatedList: (int index) {
-                listForSizesKey.currentState!.insertItem(index);
-              },
-              removeItemToAnimatedList: (int removedIndex, String removedItem) {
-                listForSizesKey.currentState!.removeItem(
-                    removedIndex,
-                    (context, animation) => buildSizeItem(
-                        removedIndex, removedIndex, removedItem, animation));
-              },
-              sizes: state.getProductListingWithFiltersModel != null
-                  ? (state.getProductListingWithFiltersModel!.data
-                          ?.attributes![0].options ??
-                      [])
-                  : filters.attributes![0].options ?? [],
-            ),
+            if (filters.prices != null)
+              PriceFilter(
+                lowerAndUpperBound: lowerAndUpperBound!,
+                pricesFiltersRanges: filters.prices!,
+              ),
+            if (!filters.attributes.isNullOrEmpty)
+              SizesFiltersList(
+                selectedFilters: selectedFiltersBySize,
+                addItemToAnimatedList: (int index) {
+                  listForSizesKey.currentState!.insertItem(index);
+                },
+                removeItemToAnimatedList:
+                    (int removedIndex, String removedItem) {
+                  listForSizesKey.currentState!.removeItem(
+                      removedIndex,
+                      (context, animation) => buildSizeItem(
+                          removedIndex, removedIndex, removedItem, animation));
+                },
+                sizes: filters.attributes![0].options ?? [],
+              ),
           },
           if (!widget.isExpanded) ...{
             ValueListenableBuilder<List<Tuple3<int, int?, double>>>(
@@ -845,16 +840,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     return buildBrandItem(
                                                         selected[index],
                                                         index,
-                                                        state.getProductListingWithFiltersModel !=
-                                                                null
-                                                            ? state
-                                                                    .getProductListingWithFiltersModel!
-                                                                    .data!
-                                                                    .brands![
-                                                                selected[index]]
-                                                            : filters.brands![
-                                                                selected[
-                                                                    index]],
+                                                        filters.brands![
+                                                            selected[index]],
                                                         animation);
                                                   },
                                                 ));
@@ -877,19 +864,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     return buildSizeItem(
                                                         selected[index],
                                                         index,
-                                                        state.getProductListingWithFiltersModel !=
-                                                                null
-                                                            ? state
-                                                                    .getProductListingWithFiltersModel!
-                                                                    .data!
-                                                                    .attributes![0]
-                                                                    .options![
-                                                                selected[index]]
-                                                            : filters
-                                                                    .attributes![0]
-                                                                    .options![
-                                                                selected[
-                                                                    index]],
+                                                        filters.attributes![0]
+                                                                .options![
+                                                            selected[index]],
                                                         animation);
                                                   },
                                                 ));
@@ -911,34 +888,40 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               Expanded(
                                 flex: 5,
                                 child: GestureDetector(
-                                  onTap: (){
-                                    List<String>? brandsIds ;
-                                    List<Map<String , dynamic>>? attributes;
-                                    if(filters.brands != null){
+                                  onTap: () {
+                                    List<String>? brandsIds;
+                                    List<Map<String, dynamic>>? attributes;
+                                    if (filters.brands != null) {
                                       brandsIds = [];
-                                      selectedFiltersByBrand.value.forEach((index) {
-                                        brandsIds!.add(filters.brands![index].id.toString());
+                                      selectedFiltersByBrand.value
+                                          .forEach((index) {
+                                        brandsIds!.add(filters.brands![index].id
+                                            .toString());
                                       });
                                     }
-                                    if(!filters.attributes.isNullOrEmpty){
+                                    if (!filters.attributes.isNullOrEmpty) {
                                       List<String> options = [];
                                       attributes = [];
-                                      selectedFiltersBySize.value.forEach((index) {
-                                        options.add(filters.attributes![0].options![index]);
+                                      selectedFiltersBySize.value
+                                          .forEach((index) {
+                                        options.add(filters
+                                            .attributes![0].options![index]);
                                       });
                                       attributes.add({
-                                        "id" : filters.attributes![0].id,
-                                        "name" : filters.attributes![0].name,
-                                        "options" : options
+                                        "id": filters.attributes![0].id,
+                                        "name": filters.attributes![0].name,
+                                        "options": options
                                       });
                                     }
                                     List<String>? prices;
-                                    if(lowerAndUpperBound != null){
-                                      if(lowerAndUpperBound!.value.item1 != minPrice && lowerAndUpperBound!.value.item2 != maxPrice) {
+                                    if (lowerAndUpperBound != null) {
+                                      if (lowerAndUpperBound!.value.item1 !=
+                                              minPrice &&
+                                          lowerAndUpperBound!.value.item2 !=
+                                              maxPrice) {
                                         prices = [];
-                                        prices.add('${lowerAndUpperBound!.value
-                                            .item1}-${lowerAndUpperBound!.value
-                                            .item2}');
+                                        prices.add(
+                                            '${lowerAndUpperBound!.value.item1}-${lowerAndUpperBound!.value.item2}');
                                       }
                                     }
                                     widget.closeFilterPage.call();
@@ -958,13 +941,13 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                         color: Color(0xffFF5F61),
                                         boxShadow: [
                                           BoxShadow(
-                                              color: Colors.black
-                                                  .withOpacity(0.1),
+                                              color:
+                                                  Colors.black.withOpacity(0.1),
                                               blurRadius: 6,
                                               offset: Offset(0, 3)),
                                           BoxShadow(
-                                              color: Colors.white
-                                                  .withOpacity(0.4),
+                                              color:
+                                                  Colors.white.withOpacity(0.4),
                                               blurRadius: 6,
                                               offset: Offset(0, 3),
                                               inset: true)
@@ -974,10 +957,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     child: Center(
                                       child: MyTextWidget(
                                         'Apply',
-                                        style: textTheme.headline6?.rq
-                                            .copyWith(
-                                                color: Color(0xffFEFEFE),
-                                                height: 23 / 18),
+                                        style: textTheme.headline6?.rq.copyWith(
+                                            color: Color(0xffFEFEFE),
+                                            height: 23 / 18),
                                       ),
                                     ),
                                   ),
@@ -992,10 +974,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                   onTap: () {
                                     clearAllFiltersBeforeRequest();
                                     homeBloc.add(GetProductFiltersEvent(
-                                      boutiqueSlug: widget.boutiqueSlug,
-                                      category: widget.category,
-                                      forceUpdate: true
-                                    ));
+                                        boutiqueSlug: widget.boutiqueSlug,
+                                        category: widget.category,
+                                        forceUpdate: true));
                                   },
                                   child: Stack(
                                     children: [
@@ -1052,12 +1033,13 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
     });
   }
 
-  void _clearAllItemsFromAnimatedList(int length , GlobalKey<AnimatedListState> listKey) {
+  void _clearAllItemsFromAnimatedList(
+      int length, GlobalKey<AnimatedListState> listKey) {
     for (var i = 0; i < length; i++) {
       listKey.currentState!.removeItem(0,
-              (BuildContext context, Animation<double> animation) {
-            return Container();
-          });
+          (BuildContext context, Animation<double> animation) {
+        return Container();
+      });
     }
   }
 
@@ -1269,7 +1251,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
   }
 
   void clearAllFiltersBeforeRequest() {
-    lowerAndUpperBound!.value = Tuple2(minPrice!, maxPrice!);
+    lowerAndUpperBound?.value = Tuple2(minPrice!, maxPrice!);
     int length = widget.selectedFiltersNotifier.value.length;
     widget.selectedFiltersNotifier.value = [];
     _clearAllItemsFromAnimatedList(length, widget.listKey);
@@ -1289,6 +1271,7 @@ class FilterCircleWidget extends StatefulWidget {
   const FilterCircleWidget(
       {super.key,
       this.isExpanded = true,
+      required this.imageUrl,
       required this.width,
       required this.height,
       required this.addOrRemoveSpecificFilter,
@@ -1313,6 +1296,7 @@ class FilterCircleWidget extends StatefulWidget {
   final bool displayFilterMark;
   final void Function(bool add) addOrRemoveSpecificFilter;
   final void Function()? expandStackedItemsFunction;
+  final String imageUrl;
 
   @override
   State<FilterCircleWidget> createState() => _FilterCircleWidgetState();
@@ -1340,7 +1324,7 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                       scale: widget.scale ? 0.92 : 1,
                       duration: Duration(milliseconds: 100),
                       child: FilterImage(
-                        imageUrl: 'assets/images/details_circle.jpg',
+                        imageUrl: widget.imageUrl,
                         width: widget.width,
                         height: widget.height,
                         borderColor: widget.displayFilterMark

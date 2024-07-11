@@ -99,12 +99,6 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
       [category, getWithPagination, offset, limit, boutiqueSlug];
 }
 
-class ResetChosenFilters extends HomeEvent {
-  const ResetChosenFilters();
-  @override
-  // TODO: implement props
-  List<Object?> get props => [];
-}
 
 class GetProductsWithFiltersEvent extends HomeEvent {
   final String? category;
