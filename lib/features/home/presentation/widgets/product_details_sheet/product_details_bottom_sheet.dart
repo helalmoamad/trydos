@@ -37,9 +37,11 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final String boutiqueIcon;
   final String currentColorName;
   final String currentColornum;
+  final int CurrentQuantity;
   const ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
+      required this.CurrentQuantity,
       required this.boutiqueIcon,
       required this.currentColornum,
       required this.boutiqueId,
@@ -74,6 +76,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
 
   @override
   void initState() {
+    addToBagButtonShapeNotifier.value = widget.CurrentQuantity;
     homeBloc = BlocProvider.of<HomeBloc>(context);
 
     syncColorImageList = widget.productItem.syncColorImages ?? [];
@@ -478,7 +481,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                           homeBloc.add(AddItemToCartEvent(
                               colorName: widget.currentColorName,
                               iconBoutique: widget.boutiqueIcon,
-                              boutiqueId: widget.boutiqueId,
+                              boutiqueId: 46,
                               thumbnail:
                                   widget.productItem.images![0].filePath!,
                               products: widget.productItem,

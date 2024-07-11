@@ -23,14 +23,15 @@ class GetMainCategoriesEvent extends HomeEvent {
 }
 
 class GetProductFiltersEvent extends HomeEvent {
-  const GetProductFiltersEvent({this.category, this.boutiqueSlug , this.forceUpdate = false});
+  const GetProductFiltersEvent(
+      {this.category, this.boutiqueSlug, this.forceUpdate = false});
 
   final String? boutiqueSlug;
   final String? category;
   final bool forceUpdate;
   @override
   // TODO: implement props
-  List<Object?> get props => [category, boutiqueSlug,forceUpdate];
+  List<Object?> get props => [category, boutiqueSlug, forceUpdate];
 }
 
 class AddCurrentSelectedColorEvent extends HomeEvent {
@@ -220,7 +221,12 @@ class AddProductItemForCartEvent extends HomeEvent {
 class RemoveItemFormCartEvent extends HomeEvent {
   final String boutiqueId;
   final String itemId;
-  RemoveItemFormCartEvent({required this.itemId, required this.boutiqueId});
+  final String productId;
+  RemoveItemFormCartEvent({
+    required this.itemId,
+    required this.boutiqueId,
+    required this.productId,
+  });
   @override
   List<Object?> get props => [];
 }
@@ -228,12 +234,27 @@ class RemoveItemFormCartEvent extends HomeEvent {
 class UpdateItemInCartEvent extends HomeEvent {
   final String cartId;
   final int quantity;
-
+  final String productId;
   final String boutiqueId;
   UpdateItemInCartEvent({
     required this.quantity,
     required this.cartId,
+    required this.productId,
     required this.boutiqueId,
+  });
+  @override
+  List<Object?> get props => [];
+}
+
+class AddQuantityForCartEvent extends HomeEvent {
+  final String productId;
+  final int quantity;
+  final int cartId;
+
+  AddQuantityForCartEvent({
+    required this.quantity,
+    required this.productId,
+    required this.cartId,
   });
   @override
   List<Object?> get props => [];

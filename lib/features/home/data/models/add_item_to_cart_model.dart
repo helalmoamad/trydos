@@ -42,23 +42,29 @@ class AddItemToCartModel {
 
 class Data {
   final int? idCart;
+  final int? status;
 
   Data({
     this.idCart,
+    this.status,
   });
 
   Data copyWith({
     int? idCart,
+    int? status,
   }) =>
       Data(
         idCart: idCart ?? this.idCart,
+        status: status ?? this.status,
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         idCart: json["id_cart"],
+        status: json["status"],
       );
 
   Map<String, dynamic> toJson() => {
         "id_cart": idCart,
+        "status": status,
       };
 }

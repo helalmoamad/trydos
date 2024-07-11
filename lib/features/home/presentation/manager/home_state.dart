@@ -75,6 +75,7 @@ class HomeState {
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
     this.CurrentColorSizeForCart,
+    this.currentQuantityForCart,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
     this.getProductListingPaginationWithoutFiltersModel = const {},
@@ -117,6 +118,7 @@ class HomeState {
 
   final StartingSetting? startingSetting;
   Map<String, String>? CurrentColorSizeForCart;
+  Map<String, List<int>>? currentQuantityForCart;
   final Map<String, GetProductDetailWithoutRelatedProductsModel>
       cachedProductWithoutRelatedProductsModel;
 
@@ -133,6 +135,7 @@ class HomeState {
           getProductListingWithFiltersModel,
       int? selectedCollection,
       List<String>? sizes,
+      Map<String,  List<int>>? currentQuantityForCart,
       Map<String, List<cart.Cart>>? cartCollection,
       Map<String, String>? CurrentColorSizeForCart,
       final GetProductFiltersStatus? getProductFiltersStatus,
@@ -155,7 +158,7 @@ class HomeState {
       final Map<String, int>? currentSelectedColorForEveryProduct,
       int? currentPage,
       List<Story>? storiesForProduct,
-        bool changeProductWithFiltersToNull = false,
+      bool changeProductWithFiltersToNull = false,
       final Map<String, PaginationModel<product.Products>>?
           getProductListingPaginationWithoutFiltersModel,
       final Map<String, GetCommentForProductModel>?
@@ -167,7 +170,12 @@ class HomeState {
         cartCollection: cartCollection ?? this.cartCollection,
         getProductsWithFiltersStatus:
             getProductsWithFiltersStatus ?? this.getProductsWithFiltersStatus,
-        getProductListingWithFiltersModel: changeProductWithFiltersToNull ? null : getProductListingWithFiltersModel ?? this.getProductListingWithFiltersModel,
+        currentQuantityForCart:
+            currentQuantityForCart ?? this.currentQuantityForCart,
+        getProductListingWithFiltersModel: changeProductWithFiltersToNull
+            ? null
+            : getProductListingWithFiltersModel ??
+                this.getProductListingWithFiltersModel,
         productITemForCart: productITemForCart ?? this.productITemForCart,
         CurrentColorSizeForCart:
             CurrentColorSizeForCart ?? this.CurrentColorSizeForCart,
@@ -218,7 +226,6 @@ class HomeState {
             getProductDetailWithoutRelatedProductsModel ??
                 this.getProductDetailWithoutRelatedProductsModel);
   }
-
 
   factory HomeState.fromJson(Map<String, dynamic> data) =>
       _$HomeStateFromJson(data);

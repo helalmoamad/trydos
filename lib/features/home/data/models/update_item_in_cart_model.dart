@@ -1,13 +1,12 @@
 // To parse this JSON data, do
 //
 //     final updateItemInCartModel = updateItemInCartModelFromJson(jsonString);
-
 import 'dart:convert';
 
-UpdateItemInCartModel updateItemInCartModelFromJson(String str) =>
+UpdateItemInCartModel addItemToCartModelFromJson(String str) =>
     UpdateItemInCartModel.fromJson(json.decode(str));
 
-String updateItemInCartModelToJson(UpdateItemInCartModel data) =>
+String addItemToCartModelToJson(UpdateItemInCartModel data) =>
     json.encode(data.toJson());
 
 class UpdateItemInCartModel {
@@ -41,24 +40,30 @@ class UpdateItemInCartModel {
 }
 
 class Data {
-  final int? qty;
+  final int? idCart;
+  final int? status;
 
   Data({
-    this.qty,
+    this.idCart,
+    this.status,
   });
 
   Data copyWith({
-    int? qty,
+    int? idCart,
+    int? status,
   }) =>
       Data(
-        qty: qty ?? this.qty,
+        idCart: idCart ?? this.idCart,
+        status: status ?? this.status,
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        qty: json["qty"],
+        idCart: json["id_cart"],
+        status: json["status"],
       );
 
   Map<String, dynamic> toJson() => {
-        "qty": qty,
+        "id_cart": idCart,
+        "status": status,
       };
 }

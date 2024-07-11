@@ -31,7 +31,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           : StartingSetting.fromJson(
               json['startingSetting'] as Map<String, dynamic>),
       sizes:
-          (json['sizes'] as List<dynamic>?)?.map((e) => e as String).toList(),
+          (json['sizes'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+              const [],
       getProductFiltersStatus: $enumDecodeNullable(
               _$GetProductFiltersStatusEnumMap,
               json['getProductFiltersStatus']) ??
@@ -86,13 +87,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           GetProductListingStatus.init,
       selectedCollection: (json['selectedCollection'] as num?)?.toInt(),
       cartCollection: (json['cartCollection'] as Map<String, dynamic>?)?.map(
-            (k, e) => MapEntry(
-                k,
-                (e as List<dynamic>)
-                    .map((e) => Cart.fromJson(e as Map<String, dynamic>))
-                    .toList()),
-          ) ??
-          const {},
+        (k, e) => MapEntry(
+            k,
+            (e as List<dynamic>)
+                .map((e) => Cart.fromJson(e as Map<String, dynamic>))
+                .toList()),
+      ),
       getStoriesForProductStatus: $enumDecodeNullable(
               _$GetStoriesForProductStatusEnumMap,
               json['getStoriesForProductStatus']) ??
@@ -104,6 +104,11 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       CurrentColorSizeForCart:
           (json['CurrentColorSizeForCart'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
+      ),
+      currentQuantityForCart:
+          (json['currentQuantityForCart'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(
+            k, (e as List<dynamic>).map((e) => (e as num).toInt()).toList()),
       ),
       getCartItemsStatus: $enumDecodeNullable(
               _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
@@ -216,6 +221,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
       'startingSetting': instance.startingSetting?.toJson(),
       'CurrentColorSizeForCart': instance.CurrentColorSizeForCart,
+      'currentQuantityForCart': instance.currentQuantityForCart,
       'cachedProductWithoutRelatedProductsModel': instance
           .cachedProductWithoutRelatedProductsModel
           .map((k, e) => MapEntry(k, e.toJson())),
