@@ -1,3 +1,4 @@
+
 import 'dart:convert' as convert;
 import 'dart:developer';
 import 'package:adobe_xd/pinned.dart';
@@ -39,7 +40,6 @@ import 'features/chat/presentation/manager/chat_state.dart';
 import 'features/chat/presentation/utils/firebase_presence.dart';
 import 'features/home/presentation/manager/home_state.dart';
 import 'features/home/presentation/widgets/cart_page.dart';
-
 Widget get logo {
   debugPrint('deblogo');
   return Stack(
