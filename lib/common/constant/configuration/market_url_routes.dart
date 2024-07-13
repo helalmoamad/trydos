@@ -27,6 +27,7 @@ abstract class MarketEndPoints {
   static final sendOtpEP = 'send_otp'.phoneScope();
   static final getCartItemEP = 'cart_shipping'.cartScope();
   static final addItemCartItemEP = 'add'.cartScope();
+  static final updateItemCartItemEP = 'update'.cartScope();
   static final removeItemCartItemEP = 'remove'.cartScope();
   static final verifyOtpSignInEP = 'verify_otp_singin'.phoneScope();
   static final verifyOtpSignUpEP = 'verify_otp_signup'.phoneScope();

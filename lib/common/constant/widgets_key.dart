@@ -38,4 +38,6 @@ class WidgetsKey {
   static const replayTextKey = 'replay_text_Key';
   static const replayOnMeMessageKey = 'replay_on_me_message_key';
   static const messageTextSwipeToKey = 'message_text_swip_to_key';
+  static const deleteMessageKey = 'delete_message_key';
+  static const deleteOnlyMeButtonKey = 'delete_only_me_button_key';
 }

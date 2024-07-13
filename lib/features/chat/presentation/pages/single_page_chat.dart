@@ -349,9 +349,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                   } else {
                                     return BlocBuilder<ChatBloc, ChatState>(
                                       builder: (context, state) {
-                                        return DateTime.tryParse(state
-                                                    .userConnectedStatuse) !=
-                                                null
+                                        return state.userConnectedStatuse != ' ' &&
+                                                DateTime.tryParse(state
+                                                        .userConnectedStatuse) !=
+                                                    null
                                             ? DateTime.parse(state
                                                             .userConnectedStatuse)
                                                         .subtract(Duration(
@@ -863,11 +864,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                               focusedIndex: focusedIndex,
                                                                                                             ),
                                                                                                             MessageActionWidget(
+                                                                                                              key: Key('${WidgetsKey.deleteMessageKey}$index'),
                                                                                                               onTap: () {
                                                                                                                 showDialog(
                                                                                                                   context: context,
                                                                                                                   builder: (context) => AlertDialog(title: Text(LocaleKeys.delete_message.tr()), actions: [
                                                                                                                     MaterialButton(
+                                                                                                                      key: Key('${WidgetsKey.deleteOnlyMeButtonKey}$index'),
                                                                                                                       onPressed: () {
                                                                                                                         callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
                                                                                                                         Navigator.of(context).pop();

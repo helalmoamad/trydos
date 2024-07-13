@@ -30,7 +30,7 @@ enum GetProductDetailWithoutSimilarRelatedProductsStatus {
 
 enum SelectedVideoStatus { init, loading, success, failure }
 
-enum GetProductFiltersStatus { init , loading, success, failure }
+enum GetProductFiltersStatus { init, loading, success, failure }
 
 enum GetCommentForProductStatus { init, loading, success, failure }
 
@@ -58,7 +58,7 @@ class HomeState {
     this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
     this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.startingSetting,
-    this.sizes,
+    this.sizes = const [],
     this.getProductFiltersStatus = GetProductFiltersStatus.init,
     this.getProductsWithFiltersStatus = GetProductsWithFiltersStatus.init,
     this.getProductListingWithFiltersModel,
@@ -155,6 +155,7 @@ class HomeState {
       final Map<String, int>? currentSelectedColorForEveryProduct,
       int? currentPage,
       List<Story>? storiesForProduct,
+        bool changeProductWithFiltersToNull = false,
       final Map<String, PaginationModel<product.Products>>?
           getProductListingPaginationWithoutFiltersModel,
       final Map<String, GetCommentForProductModel>?
@@ -166,7 +167,7 @@ class HomeState {
         cartCollection: cartCollection ?? this.cartCollection,
         getProductsWithFiltersStatus:
             getProductsWithFiltersStatus ?? this.getProductsWithFiltersStatus,
-        getProductListingWithFiltersModel: getProductListingWithFiltersModel,
+        getProductListingWithFiltersModel: changeProductWithFiltersToNull ? null : getProductListingWithFiltersModel ?? this.getProductListingWithFiltersModel,
         productITemForCart: productITemForCart ?? this.productITemForCart,
         CurrentColorSizeForCart:
             CurrentColorSizeForCart ?? this.CurrentColorSizeForCart,
@@ -217,6 +218,7 @@ class HomeState {
             getProductDetailWithoutRelatedProductsModel ??
                 this.getProductDetailWithoutRelatedProductsModel);
   }
+
 
   factory HomeState.fromJson(Map<String, dynamic> data) =>
       _$HomeStateFromJson(data);

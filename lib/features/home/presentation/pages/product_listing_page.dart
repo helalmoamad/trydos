@@ -43,17 +43,20 @@ import '../widgets/product_listing/product_listing_filter_list.dart';
 class ProductListingPage extends StatefulWidget {
   final String boutiqueSlug;
   final String? category;
-  final String? boutiqueIcon;
+  final String boutiqueIcon;
   final String boutiqueDescription;
   final String boutiqueFirstBanner;
+
+  final int boutiqueId;
 
   const ProductListingPage({
     super.key,
     required this.boutiqueSlug,
+    required this.boutiqueId,
     required this.boutiqueDescription,
     required this.boutiqueFirstBanner,
     this.category,
-    this.boutiqueIcon,
+    required this.boutiqueIcon,
   });
 
   @override
@@ -491,11 +494,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             if (p
                                                     .getProductListingPaginationWithoutFiltersModel[
                                                         key]
-                                                    ?.items !=
+                                                    ?.items.length !=
                                                 c
                                                     .getProductListingPaginationWithoutFiltersModel[
                                                         key]
-                                                    ?.items) {
+                                                    ?.items.length) {
                                               gridViewKeyForRendering =
                                                   UniqueKey();
                                             }
@@ -512,6 +515,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         ?.paginationStatus);
                                           },
                                           builder: (context, state) {
+
                                             if (state
                                                     .getProductsWithFiltersStatus ==
                                                 GetProductsWithFiltersStatus
@@ -526,6 +530,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 products;
                                             String key = widget.boutiqueSlug +
                                                 (widget.category ?? '');
+
                                             if (state
                                                     .getProductListingWithFiltersModel !=
                                                 null) {
@@ -534,7 +539,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       .data
                                                       ?.products ??
                                                   [];
-                                            } else {
+                                            }
+                                            else {
                                               if ((state
                                                               .getProductListingPaginationWithoutFiltersModel[
                                                                   key]
@@ -656,6 +662,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             MaterialPageRoute(
                                                                 builder: (ctx) =>
                                                                     ProductDetailsPage(
+                                                                      boutiqueIcon:
+                                                                          widget
+                                                                              .boutiqueIcon,
+                                                                      boutiqueId:
+                                                                          widget
+                                                                              .boutiqueId,
                                                                       productItem:
                                                                           products[
                                                                               index],

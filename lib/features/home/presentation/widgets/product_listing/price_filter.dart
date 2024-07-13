@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -42,6 +43,7 @@ class _PriceFilterState extends State<PriceFilter> {
         children: [
           SizedBox(
             height: 110,
+            width: 1.sw - 50,
             child: Stack(
               alignment: Alignment.bottomCenter,
               children: [
@@ -68,8 +70,9 @@ class _PriceFilterState extends State<PriceFilter> {
                 Container(
                   //color: Colors.white,
                   height: 40,
+                  width: 1.sw - 50,
                   child: FlutterSlider(
-                    minimumDistance: 10,
+                    minimumDistance: min(10 , (widget.pricesFiltersRanges.maxPrice! - widget.pricesFiltersRanges.minPrice!).toDouble()),
                     values: [
                       widget.pricesFiltersRanges.minPrice!.toDouble(),
                       widget.pricesFiltersRanges.maxPrice!.toDouble()

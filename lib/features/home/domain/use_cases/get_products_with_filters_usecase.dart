@@ -28,7 +28,7 @@ class GetProductsWithFiltersUseCase
 class GetProductsWithFiltersParams {
   final String? category;
   final List<String>? prices;
-  final List<int>? brands;
+  final List<String>? brands;
   final List<Map<String, dynamic>>? attributes;
   final String? searchText;
   final int? offset;
@@ -46,12 +46,12 @@ class GetProductsWithFiltersParams {
 
   Map<String, dynamic> get map => {
         "category": category,
-        "prices": prices,
-        "brands": brands,
-        "attributes": attributes,
+        "prices": prices.toString(),
+        "brands": brands.toString(),
+        "attributes": attributes.toString(),
         "search_text": searchText,
         "offset": offset,
         "limit": limit,
         "boutique_slug": boutiqueSlug
-      }..removeWhere((key, value) => value == null);
+      }..removeWhere((key, value) => value == null || value == 'null');
 }

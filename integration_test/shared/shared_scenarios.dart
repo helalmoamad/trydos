@@ -284,4 +284,42 @@ class SharedScenarios {
       failedMessage: 'Find HomePage failed',
     );
   }
+
+  static Future<void> sendMessageInChat({
+    required WidgetTester tester,
+    required int messageNumber,
+  }) async {
+    final Finder sendMessageTextField =
+        find.byKey(Key(WidgetsKey.sendMessageTextFieldKey));
+    final Finder sendMessageInChatButton =
+        find.byKey(Key(WidgetsKey.sendMessageInChatButtonKey));
+    await tester.enterText(sendMessageTextField, 'test text message');
+    await Future.delayed(const Duration(seconds: 2));
+    await tester.tap(sendMessageInChatButton);
+    await tester.pumpAndSettle();
+    ////////////////////////////
+    final Finder textMessage =
+        find.byKey(Key('${WidgetsKey.textMessageCardKey}$messageNumber'));
+    ////////////////////////////
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      actual: textMessage,
+      withDelayAndPumpAndSettle: false,
+      successMessage: 'Find textMessageCard  Success',
+      failedMessage: 'Find textMessageCard failed',
+    );
+    ////////////////////////////
+    final Finder messageSentArrow =
+        find.byKey(Key('${WidgetsKey.messageSentArrowKey}$messageNumber'));
+    ////////////////////////////
+    await GlobalTestFunctions.waitFor(tester, messageSentArrow);
+    //////////////////////////
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      actual: messageSentArrow,
+      withDelayAndPumpAndSettle: false,
+      successMessage: 'Find message Sent Arrow $messageNumber Success',
+      failedMessage: 'Find message Sent Arrow failed',
+    );
+  }
 }

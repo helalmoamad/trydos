@@ -330,33 +330,35 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onSaveContactsEvent(
       SaveContactsEvent event, Emitter<ChatState> emit) async {
-    print('wwwwwww $apisMustNotToRequest');
-    if (apisMustNotToRequest.contains('SaveContactsEvent')) {
-      return;
-    }
-    emit(state.copyWith(saveContactsStatus: SaveContactsStatus.loading));
-    final response =
-        await saveContactsUseCase(SaveContactsParams(contacts: event.contacts));
-    response.fold(
-      (l) {
-        if (!isFailedTheFirstTime.contains('SaveContactsEvent')) {
-          add(SaveContactsEvent());
-          isFailedTheFirstTime.add('SaveContactsEvent');
-        }
-        emit(state.copyWith(saveContactsStatus: SaveContactsStatus.failure));
-      },
-      (r) {
-        apisMustNotToRequest.add('SaveContactsEvent');
-        isFailedTheFirstTime.remove('SaveContactsEvent');
-        emit(
-          state.copyWith(
-            saveContactsStatus: SaveContactsStatus.success,
-          ),
-        );
-        getContactsAfterSavingItAndGettingChannels();
-      },
-    );
+    // print('wwwwwww $apisMustNotToRequest');
+    // if (apisMustNotToRequest.contains('SaveContactsEvent')) {
+    //   return;
+    // }
+    // emit(state.copyWith(saveContactsStatus: SaveContactsStatus.loading));
+    // final response =
+    //     await saveContactsUseCase(SaveContactsParams(contacts: event.contacts));
+    // response.fold(
+    //   (l) {
+    //     if (!isFailedTheFirstTime.contains('SaveContactsEvent')) {
+    //       add(SaveContactsEvent());
+    //       isFailedTheFirstTime.add('SaveContactsEvent');
+    //     }
+    //     emit(state.copyWith(saveContactsStatus: SaveContactsStatus.failure));
+    //   },
+    //   (r) {
+    //     apisMustNotToRequest.add('SaveContactsEvent');
+    //     isFailedTheFirstTime.remove('SaveContactsEvent');
+    //     emit(
+    //       state.copyWith(
+    //         saveContactsStatus: SaveContactsStatus.success,
+    //       ),
+    //     );
+    //     getContactsAfterSavingItAndGettingChannels();
+    //   },
+    // );
   }
+
+
 
   FutureOr<void> _onGetChatsEvent(
       GetChatsEvent event, Emitter<ChatState> emit) async {
@@ -438,7 +440,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   FutureOr<void> _onGetContactsEvent(
       GetContactsEvent event, Emitter<ChatState> emit) async {
     if (apisMustNotToRequest.contains('GetContactsEvent')) return;
-    emit(state.copyWith(getContactsStatus: GetContactsStatus.loading));
+    emit(state.copyWith(getContactsStatus: GetContactsStatus.loading,
+    ));
     final response = await getContactsUseCase(NoParams());
     response.fold(
       (l) {
@@ -480,6 +483,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                     localId: uuid,
                     messages: [],
                     paginationStatus: PaginationStatus.initial,
+                    channelName: contact.name,
                     channelMembers: [
                       ChannelMember(
                           userId: contact.contactUserId,
@@ -1586,6 +1590,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                 ? 1
                 : event.isDelete,
             deleteForAll: event.deleteForAll));
+    if(!event.deleteForAll){
+      chat.messages?.removeAt(index);
+    }
     List<Chat> chats = !fromPinned
         ? state.chats.map((e) {
             if (e.id == event.channelId) {
