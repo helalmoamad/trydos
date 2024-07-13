@@ -12,6 +12,7 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/search/presentation/widgets/search_history.dart';
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/constant/design/constant_design.dart';
 import '../../../common/constant/widgets_key.dart';
@@ -124,6 +125,9 @@ class _TabsBarState extends State<TabsBar> {
                                       p.currentIndex != c.currentIndex,
                                   builder: (context, state) {
                                     return AnimatedSearchBar(
+                                      onFieldSubmitted: (text) => homeBloc.add(
+                                          AddSearchTextToHistoryEvent(
+                                              searchTitle: text)),
                                       width: 1.sw,
                                       height: 40,
                                       onClickClose: () {
@@ -275,6 +279,10 @@ class _TabsBarState extends State<TabsBar> {
                                       onChanged: (String text) {
                                         widget.buildSearchResult.value =
                                             text.length;
+                                        if (text.length > 2) {
+                                          homeBloc.add(GetSearchREsultEvent(
+                                              searchTitle: text));
+                                        }
                                       },
                                       hideTrendingAndHistory:
                                           widget.hideTrendingAndHistory,

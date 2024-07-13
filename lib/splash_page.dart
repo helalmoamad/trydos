@@ -38,7 +38,6 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    homeBloc.add(GetCartItemEvent());
     homeBloc.add(GetMainCategoriesEvent());
     appBloc.add(ChangeTab(-1));
 

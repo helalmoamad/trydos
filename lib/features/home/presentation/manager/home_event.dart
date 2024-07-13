@@ -259,3 +259,32 @@ class AddQuantityForCartEvent extends HomeEvent {
   @override
   List<Object?> get props => [];
 }
+
+class GetSearchREsultEvent extends HomeEvent {
+  final String searchTitle;
+
+  GetSearchREsultEvent({
+    required this.searchTitle,
+  });
+  @override
+  List<Object?> get props => [];
+}
+
+class AddSearchTextToHistoryEvent extends HomeEvent {
+  final String searchTitle;
+
+  AddSearchTextToHistoryEvent({
+    required this.searchTitle,
+  });
+  @override
+  List<Object?> get props => [];
+}
+
+class RemoveSearchTextfromHistoryEvent extends HomeEvent {
+  final String searchTitle;
+  final bool clearAll;
+  RemoveSearchTextfromHistoryEvent(
+      {required this.searchTitle, required this.clearAll});
+  @override
+  List<Object?> get props => [];
+}
