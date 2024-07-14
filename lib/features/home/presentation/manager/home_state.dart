@@ -11,7 +11,6 @@ import 'package:trydos/features/home/data/models/get_story_for_product_model.dar
 
 import '../../../../core/data/model/pagination_model.dart';
 import '../../data/models/get_cart_item_model.dart';
-import '../../data/models/get_product_detail_without_related_products_model.dart';
 import '../../data/models/get_product_filters_model.dart';
 import '../../data/models/get_product_listing_with_filters_model.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
@@ -65,6 +64,7 @@ class HomeState {
     this.searchResultModel,
     this.getProductFiltersInEachBoutiqueStatus = const {},
     this.getProductFiltersInEachBoutiqueModel = const {},
+    this.choosedFiltersInEachBoutiqueModel = const {},
     this.currentPage = 0,
     this.productITemForCart = const {},
     this.getCartShippingItemsModel,
@@ -94,13 +94,11 @@ class HomeState {
   final GetCommentForProductStatus getCommentForProductStatus;
   final Map<String, product.Products> productITemForCart;
   final GetMainCategoriesStatus getMainCategoriesStatus;
-  final Map<String, GetProductFiltersStatus>
-      getProductFiltersInEachBoutiqueStatus;
+  final Map<String , GetProductFiltersStatus> getProductFiltersInEachBoutiqueStatus;
+  final Map<String ,PaginationModel<product.Products>> getProductListingWithFiltersPaginationModels;
+  final Map<String,GetProductFiltersModel> getProductFiltersInEachBoutiqueModel;
+  final Map<String,GetProductFiltersModel?> choosedFiltersInEachBoutiqueModel;
   final GetSearchResultStatus getSearchResultStatus;
-  final Map<String, PaginationModel<product.Products>>
-      getProductListingWithFiltersPaginationModels;
-  final Map<String, GetProductFiltersModel>
-      getProductFiltersInEachBoutiqueModel;
   int? selectedCollection;
   int currentPage;
   List<String>? searchHistory;
@@ -151,10 +149,9 @@ class HomeState {
       Map<String, List<int>>? currentQuantityForCart,
       Map<String, List<cart.Cart>>? cartCollection,
       Map<String, String>? CurrentColorSizeForCart,
-      final Map<String, GetProductFiltersStatus>?
-          getProductFiltersInEachBoutiqueStatus,
-      final Map<String, GetProductFiltersModel>?
-          getProductFiltersInEachBoutiqueModel,
+      final Map<String , GetProductFiltersStatus>? getProductFiltersInEachBoutiqueStatus,
+      final Map<String , GetProductFiltersModel>? getProductFiltersInEachBoutiqueModel,
+        final Map<String,GetProductFiltersModel?>? choosedFiltersInEachBoutiqueModel,
       final Map<String, bool>? reRequestTheseBoutiques,
       final Map<String, product.Products>? productITemForCart,
       final cart.GetCartShippingItemsModel? getCartShippingItemsModel,
@@ -190,10 +187,12 @@ class HomeState {
         productITemForCart: productITemForCart ?? this.productITemForCart,
         CurrentColorSizeForCart:
             CurrentColorSizeForCart ?? this.CurrentColorSizeForCart,
-        getProductFiltersInEachBoutiqueStatus: getProductFiltersInEachBoutiqueStatus ??
-            this.getProductFiltersInEachBoutiqueStatus,
-        getProductFiltersInEachBoutiqueModel: getProductFiltersInEachBoutiqueModel ??
-            this.getProductFiltersInEachBoutiqueModel,
+        getProductFiltersInEachBoutiqueStatus:
+        getProductFiltersInEachBoutiqueStatus ?? this.getProductFiltersInEachBoutiqueStatus,
+        getProductFiltersInEachBoutiqueModel:
+        getProductFiltersInEachBoutiqueModel ?? this.getProductFiltersInEachBoutiqueModel,
+        choosedFiltersInEachBoutiqueModel:
+        choosedFiltersInEachBoutiqueModel ?? this.choosedFiltersInEachBoutiqueModel,
         searchHistory: searchHistory ?? this.searchHistory,
         getCartShippingItemsModel:
             getCartShippingItemsModel ?? this.getCartShippingItemsModel,

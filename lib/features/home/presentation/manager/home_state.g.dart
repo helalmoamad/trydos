@@ -56,6 +56,17 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                     GetProductFiltersModel.fromJson(e as Map<String, dynamic>)),
               ) ??
               const {},
+      choosedFiltersInEachBoutiqueModel:
+          (json['choosedFiltersInEachBoutiqueModel'] as Map<String, dynamic>?)
+                  ?.map(
+                (k, e) => MapEntry(
+                    k,
+                    e == null
+                        ? null
+                        : GetProductFiltersModel.fromJson(
+                            e as Map<String, dynamic>)),
+              ) ??
+              const {},
       currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
       productITemForCart:
           (json['productITemForCart'] as Map<String, dynamic>?)?.map(
@@ -199,8 +210,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getProductFiltersInEachBoutiqueStatus': instance
           .getProductFiltersInEachBoutiqueStatus
           .map((k, e) => MapEntry(k, _$GetProductFiltersStatusEnumMap[e]!)),
-      'getSearchResultStatus':
-          _$GetSearchResultStatusEnumMap[instance.getSearchResultStatus]!,
       'getProductListingWithFiltersPaginationModels': instance
           .getProductListingWithFiltersPaginationModels
           .map((k, e) => MapEntry(
@@ -211,6 +220,11 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getProductFiltersInEachBoutiqueModel': instance
           .getProductFiltersInEachBoutiqueModel
           .map((k, e) => MapEntry(k, e.toJson())),
+      'choosedFiltersInEachBoutiqueModel': instance
+          .choosedFiltersInEachBoutiqueModel
+          .map((k, e) => MapEntry(k, e?.toJson())),
+      'getSearchResultStatus':
+          _$GetSearchResultStatusEnumMap[instance.getSearchResultStatus]!,
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
       'searchHistory': instance.searchHistory,

@@ -6,16 +6,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/price_filter.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/sizes_filters_list.dart';
 import 'package:tuple/tuple.dart';
@@ -23,8 +22,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../../app/my_text_widget.dart';
-import '../../../../story/presentation/widget/try_again.dart';
-import '../../../data/models/get_product_filters_model.dart';
+import '../../../data/models/get_product_filters_model.dart' as filter_model;
 import '../../manager/home_bloc.dart';
 import '../../manager/home_event.dart';
 import '../../manager/home_state.dart';
@@ -74,6 +72,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       GlobalKey<AnimatedListState>();
   final GlobalKey<AnimatedListState> listForSizesKey =
       GlobalKey<AnimatedListState>();
+
   int lastSectionDisplayed = 0;
   int? minPrice;
   int? maxPrice;
@@ -144,7 +143,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       if (state.getProductFiltersInEachBoutiqueModel[key]?.filters == null) {
         return SizedBox.shrink();
       }
-      Filter filters =
+      filter_model.Filter filters =
           state.getProductFiltersInEachBoutiqueModel[key]!.filters!;
       if (lowerAndUpperBound == null && filters.prices != null) {
         minPrice = filters.prices!.minPrice!;
@@ -163,6 +162,26 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
             displayChosenFilters.value = false;
           }
         });
+      }
+      int countOfFilters = 0;
+      List<String> titleOfFilterSection = [];
+      if (!filters.categories.isNullOrEmpty) {
+        countOfFilters++;
+        titleOfFilterSection.add('View By Categories');
+      }
+      if (!filters.brands.isNullOrEmpty) {
+        countOfFilters++;
+        titleOfFilterSection.add('View By Brands');
+      }
+      if (!filters.attributes.isNullOrEmpty) {
+        if (!filters.attributes![0].options.isNullOrEmpty) {
+          countOfFilters++;
+          titleOfFilterSection.add('View By Sizes');
+        }
+      }
+      if (filters.prices != null) {
+        countOfFilters++;
+        titleOfFilterSection.add('View By Price');
       }
       return Column(
         children: [
@@ -211,7 +230,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                           return SizedBox(
                             height: 8,
                             child: ListView.builder(
-                                itemCount: 1,
+                                itemCount: countOfFilters,
                                 physics: NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
                                 scrollDirection: Axis.horizontal,
@@ -227,7 +246,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                           preferPosition:
                                               AutoScrollPosition.begin);
                                       widget.onMoveToAnotherFiltersSection
-                                          .call('Section ${index + 1}');
+                                          .call(titleOfFilterSection[index]);
                                     },
                                     child: Row(
                                       children: [
@@ -265,7 +284,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                         child: Expanded(
                           child: ListView.builder(
                               controller: autoScrollController,
-                              itemCount: 1, //3 + (3 - 1),
+                              itemCount: widget.isExpanded
+                                  ? 1
+                                  : 2 * countOfFilters - 1,
                               physics: ClampingScrollPhysics(),
                               scrollDirection: Axis.horizontal,
                               shrinkWrap: true,
@@ -304,338 +325,368 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                         }
                                         currentActiveSection.value =
                                             sectionIndex - 1;
-                                        widget.onMoveToAnotherFiltersSection
-                                            .call('Section $sectionIndex');
+                                        if (sectionIndex > 0) {
+                                          widget.onMoveToAnotherFiltersSection
+                                              .call(titleOfFilterSection[
+                                                  sectionIndex - 1]);
+                                        }
                                       }
                                     },
-                                    child: AutoScrollTag(
-                                      key: ValueKey(index),
-                                      controller: autoScrollController,
-                                      index: index,
-                                      child: ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        itemCount:
-                                            filters.categories?.length ?? 0,
-                                        itemBuilder: (ctx, index) {
-                                          if (!filters.categories![index]
-                                              .subCategories.isNullOrEmpty)
-                                            return ValueListenableBuilder<int>(
-                                                valueListenable:
-                                                    expandingFiltersStack,
-                                                builder: (context,
-                                                    currentExpandedIndex,
-                                                    child) {
-                                                  return AnimatedContainer(
-                                                    curve: Curves
-                                                        .fastEaseInToSlowEaseOut,
-                                                    duration: Duration(
-                                                        milliseconds: 300),
-                                                    margin:
-                                                        EdgeInsetsDirectional
-                                                            .only(end: 5),
-                                                    width: currentExpandedIndex ==
-                                                            index
-                                                        ? (75 +
-                                                            filters
-                                                                    .categories![
-                                                                        index]
-                                                                    .subCategories!
-                                                                    .length *
-                                                                55)
-                                                        : 80.0,
-                                                    height: 70.0,
-                                                    child: Stack(
-                                                      alignment:
-                                                          AlignmentDirectional
-                                                              .topStart,
-                                                      children: [
-                                                        ...List.generate(
-                                                          filters
-                                                              .categories![
-                                                                  index]
-                                                              .subCategories!
-                                                              .length,
-                                                          (innerIndex) =>
-                                                              AnimatedPositionedDirectional(
-                                                                  curve: Curves
-                                                                      .fastEaseInToSlowEaseOut,
-                                                                  duration: Duration(
-                                                                      milliseconds:
-                                                                          300),
-                                                                  top: currentExpandedIndex ==
-                                                                          index
-                                                                      ? (70 -
-                                                                          50)
-                                                                      : (70 - 50) /
-                                                                          2,
-                                                                  end: currentExpandedIndex ==
-                                                                          index
-                                                                      ? innerIndex *
-                                                                          55
-                                                                      : innerIndex >=
-                                                                              (filters.categories![index].subCategories!.length -
-                                                                                  2)
-                                                                          ? (innerIndex - 1) *
-                                                                              3
-                                                                          : 0,
-                                                                  child:
-                                                                      FilterCircleWidget(
-                                                                    width: 50,
-                                                                    height: 50,
-                                                                    imageUrl: filters.categories![index].subCategories![innerIndex].icon.toString(),
-                                                                    withBackGroundShadow:
-                                                                        innerIndex !=
-                                                                            0,
-                                                                    addOrRemoveSpecificFilter:
-                                                                        (bool
-                                                                            add) {
-                                                                      if (add) {
-                                                                        widget.selectedFiltersNotifier.value.add(Tuple3(
-                                                                            filters.categories![index].subCategories![innerIndex].id!,
-                                                                            filters.categories![index].id!,
-                                                                            10));
-                                                                        widget
-                                                                            .listKey
-                                                                            .currentState!
-                                                                            .insertItem(selectedFilters.length -
-                                                                                1);
-                                                                        widget
-                                                                            .selectedFiltersNotifier
-                                                                            .notifyListeners();
-                                                                      } else {
-                                                                        final Tuple3<int, int?, double> item = Tuple3(
-                                                                            filters.categories![index].subCategories![innerIndex].id!,
-                                                                            filters.categories![index].id!,
-                                                                            10);
-                                                                        int removedIndex = widget
-                                                                            .selectedFiltersNotifier
-                                                                            .value
-                                                                            .indexWhere((element) =>
-                                                                                element ==
-                                                                                item);
-                                                                        widget
-                                                                            .selectedFiltersNotifier
-                                                                            .value
-                                                                            .removeAt(removedIndex);
-                                                                        widget
-                                                                            .listKey
-                                                                            .currentState!
-                                                                            .removeItem(
-                                                                          removedIndex,
-                                                                          (context, animation) => buildItem(
-                                                                              removedIndex,
-                                                                              item,
-                                                                              animation),
-                                                                        );
-                                                                        widget
-                                                                            .selectedFiltersNotifier
-                                                                            .notifyListeners();
-                                                                      }
-                                                                    },
-                                                                    displayFilterMark: selectedFilters.contains(Tuple3(
-                                                                        filters
-                                                                            .categories![
-                                                                                index]
-                                                                            .subCategories![
-                                                                                innerIndex]
-                                                                            .id!,
-                                                                        filters
-                                                                            .categories![index]
-                                                                            .id!,
-                                                                        10)),
-                                                                    paddingValue:
-                                                                        currentExpandedIndex ==
-                                                                                index
-                                                                            ? 5
-                                                                            : 0,
-                                                                    borderColor:
-                                                                        colorScheme
-                                                                            .white,
-                                                                    isExpanded:
-                                                                        currentExpandedIndex ==
-                                                                            index,
-                                                                  )),
-                                                        ),
-                                                        ValueListenableBuilder<
-                                                                bool>(
-                                                            valueListenable:
-                                                                scaleTheTopItemInFiltersStack,
-                                                            builder: (context,
-                                                                scale, _) {
-                                                              return FilterCircleWidget(
-                                                                  width: 70,
-                                                                  height: 70,
-                                                                  imageUrl: filters.categories![index].icon.toString(),
-                                                                  scale: scale,
-                                                                  paddingValue:
-                                                                      0,
-                                                                  isExpanded:
-                                                                      currentExpandedIndex ==
-                                                                          index,
-                                                                  displayFilterMark: selectedFilters.contains(Tuple3(
+                                    child:
+                                        index == 0 &&
+                                                titleOfFilterSection[
+                                                        index ~/ 2] ==
+                                                    'View By Categories'
+                                            ? AutoScrollTag(
+                                                key: ValueKey(index),
+                                                controller:
+                                                    autoScrollController,
+                                                index: index,
+                                                child: ListView.builder(
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  physics:
+                                                      NeverScrollableScrollPhysics(),
+                                                  shrinkWrap: true,
+                                                  itemCount: filters
+                                                          .categories?.length ??
+                                                      0,
+                                                  itemBuilder: (ctx, index) {
+                                                    if (!filters
+                                                        .categories![index]
+                                                        .subCategories
+                                                        .isNullOrEmpty)
+                                                      return ValueListenableBuilder<
+                                                              int>(
+                                                          valueListenable:
+                                                              expandingFiltersStack,
+                                                          builder: (context,
+                                                              currentExpandedIndex,
+                                                              child) {
+                                                            return AnimatedContainer(
+                                                              curve: Curves
+                                                                  .fastEaseInToSlowEaseOut,
+                                                              duration: Duration(
+                                                                  milliseconds:
+                                                                      300),
+                                                              margin:
+                                                                  EdgeInsetsDirectional
+                                                                      .only(
+                                                                          end:
+                                                                              5),
+                                                              width: currentExpandedIndex ==
+                                                                      index
+                                                                  ? (75 +
                                                                       filters
-                                                                          .categories![
-                                                                              index]
-                                                                          .id!,
-                                                                      filters
-                                                                          .categories![
-                                                                              index]
-                                                                          .id!,
-                                                                      15)),
-                                                                  addOrRemoveSpecificFilter:
-                                                                      (bool
-                                                                          add) {
-                                                                    if (add) {
-                                                                      widget.selectedFiltersNotifier.value.add(Tuple3(
-                                                                          filters
-                                                                              .categories![
-                                                                                  index]
-                                                                              .id!,
-                                                                          filters
                                                                               .categories![index]
-                                                                              .id!,
-                                                                          15));
-                                                                      scaleTheTopItemInFiltersStack
-                                                                              .value =
-                                                                          true;
-                                                                      expandingFiltersStack
-                                                                              .value =
-                                                                          index;
-                                                                      Future.delayed(
-                                                                          Duration(
-                                                                              milliseconds: 100),
-                                                                          () {
-                                                                        scaleTheTopItemInFiltersStack.value =
-                                                                            false;
-                                                                      });
-                                                                      widget
-                                                                          .listKey
-                                                                          .currentState!
-                                                                          .insertItem(selectedFilters.length -
-                                                                              1);
-                                                                      widget
-                                                                          .selectedFiltersNotifier
-                                                                          .notifyListeners();
-                                                                    } else {
-                                                                      expandingFiltersStack
-                                                                          .value = -1;
-                                                                      final List<
-                                                                          Tuple3<
-                                                                              int,
-                                                                              int?,
-                                                                              double>> itemToRemove = [];
-                                                                      final indicesToRemove =
-                                                                          [];
-                                                                      for (int i =
-                                                                              0;
-                                                                          i < selectedFilters.length;
-                                                                          i++) {
-                                                                        if (selectedFilters[i].item2 ==
-                                                                            filters.categories![index].id!) {
-                                                                          itemToRemove.add(widget
-                                                                              .selectedFiltersNotifier
-                                                                              .value[i]);
-                                                                          indicesToRemove
-                                                                              .add(i);
-                                                                        }
-                                                                      }
-                                                                      for (int i =
-                                                                              0;
-                                                                          i < itemToRemove.length;
-                                                                          i++) {
-                                                                        widget
-                                                                            .selectedFiltersNotifier
-                                                                            .value
-                                                                            .remove(itemToRemove[i]);
-                                                                        widget
-                                                                            .listKey
-                                                                            .currentState!
-                                                                            .removeItem(
-                                                                          indicesToRemove[i] -
-                                                                              i,
-                                                                          (context, animation) => buildItem(
-                                                                              indicesToRemove[i] - i,
-                                                                              itemToRemove[i],
-                                                                              animation),
-                                                                        );
-                                                                      }
-                                                                    }
-                                                                    widget
-                                                                        .selectedFiltersNotifier
-                                                                        .notifyListeners();
-                                                                  });
-                                                            }),
-                                                      ],
-                                                    ),
-                                                  );
-                                                });
-                                          else {
-                                            return FilterCircleWidget(
-                                              width: 70,
-                                              height: 70,
-                                              imageUrl: filters.categories![index].icon.toString(),
-                                              displayFilterMark: selectedFilters
-                                                  .contains(Tuple3(
-                                                      filters.categories![index]
-                                                          .id!,
-                                                      null,
-                                                      15)),
-                                              withBackGroundShadow: true,
-                                              addOrRemoveSpecificFilter:
-                                                  (bool add) {
-                                                if (add) {
-                                                  widget.selectedFiltersNotifier
-                                                      .value
-                                                      .add(Tuple3(
-                                                          filters
-                                                              .categories![
-                                                                  index]
-                                                              .id!,
-                                                          null,
-                                                          15));
-                                                  widget.listKey.currentState!
-                                                      .insertItem(
-                                                          selectedFilters
-                                                                  .length -
-                                                              1);
-                                                  widget.selectedFiltersNotifier
-                                                      .notifyListeners();
-                                                } else {
-                                                  final Tuple3<int, int?,
-                                                          double> item =
-                                                      Tuple3(
-                                                          filters
-                                                              .categories![
-                                                                  index]
-                                                              .id!,
-                                                          null,
-                                                          15);
-                                                  int removedIndex = widget
-                                                      .selectedFiltersNotifier
-                                                      .value
-                                                      .indexWhere((element) =>
-                                                          element == item);
-                                                  widget.selectedFiltersNotifier
-                                                      .value
-                                                      .removeAt(removedIndex);
-                                                  widget.listKey.currentState!
-                                                      .removeItem(
-                                                    removedIndex,
-                                                    (context, animation) =>
-                                                        buildItem(removedIndex,
-                                                            item, animation),
-                                                  );
-                                                  widget.selectedFiltersNotifier
-                                                      .notifyListeners();
-                                                }
-                                              },
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    ),
+                                                                              .subCategories!
+                                                                              .length *
+                                                                          55)
+                                                                  : 80.0,
+                                                              height: 70.0,
+                                                              child: Stack(
+                                                                alignment:
+                                                                    AlignmentDirectional
+                                                                        .topStart,
+                                                                children: [
+                                                                  ...List
+                                                                      .generate(
+                                                                    filters
+                                                                        .categories![
+                                                                            index]
+                                                                        .subCategories!
+                                                                        .length,
+                                                                    (innerIndex) => AnimatedPositionedDirectional(
+                                                                        curve: Curves.fastEaseInToSlowEaseOut,
+                                                                        duration: Duration(milliseconds: 300),
+                                                                        top: currentExpandedIndex == index ? (70 - 50) : (70 - 50) / 2,
+                                                                        end: currentExpandedIndex == index
+                                                                            ? innerIndex * 55
+                                                                            : innerIndex >= (filters.categories![index].subCategories!.length - 2)
+                                                                                ? (innerIndex - 1) * 3
+                                                                                : 0,
+                                                                        child: FilterCircleWidget(
+                                                                          width:
+                                                                              50,
+                                                                          height:
+                                                                              50,
+                                                                          categoryName: filters
+                                                                              .categories![index]
+                                                                              .subCategories![innerIndex]
+                                                                              .name
+                                                                              .toString(),
+                                                                          imageUrl: filters
+                                                                              .categories![index]
+                                                                              .subCategories![innerIndex]
+                                                                              .icon
+                                                                              .toString(),
+                                                                          withBackGroundShadow:
+                                                                              innerIndex != 0,
+                                                                          addOrRemoveSpecificFilter:
+                                                                              (bool add) {
+                                                                            if (add) {
+                                                                              widget.selectedFiltersNotifier.value.add(Tuple3(filters.categories![index].subCategories![innerIndex].id!, filters.categories![index].id!, 10));
+                                                                              widget.listKey.currentState!.insertItem(selectedFilters.length - 1);
+                                                                              widget.selectedFiltersNotifier.notifyListeners();
+                                                                            } else {
+                                                                              final Tuple3<int, int?, double> item = Tuple3(filters.categories![index].subCategories![innerIndex].id!, filters.categories![index].id!, 10);
+                                                                              int removedIndex = widget.selectedFiltersNotifier.value.indexWhere((element) => element == item);
+                                                                              widget.selectedFiltersNotifier.value.removeAt(removedIndex);
+                                                                              widget.listKey.currentState!.removeItem(
+                                                                                removedIndex,
+                                                                                (context, animation) => buildItem(removedIndex, item, filters.categories![index].subCategories![innerIndex].icon.toString(), filters.categories![index].subCategories![innerIndex].name.toString(), animation),
+                                                                              );
+                                                                              widget.selectedFiltersNotifier.notifyListeners();
+                                                                            }
+                                                                          },
+                                                                          displayFilterMark: selectedFilters.contains(Tuple3(
+                                                                              filters.categories![index].subCategories![innerIndex].id!,
+                                                                              filters.categories![index].id!,
+                                                                              10)),
+                                                                          paddingValue: currentExpandedIndex == index
+                                                                              ? 5
+                                                                              : 0,
+                                                                          borderColor:
+                                                                              colorScheme.white,
+                                                                          isExpanded:
+                                                                              currentExpandedIndex == index,
+                                                                        )),
+                                                                  ),
+                                                                  ValueListenableBuilder<
+                                                                          bool>(
+                                                                      valueListenable:
+                                                                          scaleTheTopItemInFiltersStack,
+                                                                      builder: (context,
+                                                                          scale,
+                                                                          _) {
+                                                                        return FilterCircleWidget(
+                                                                            width:
+                                                                                70,
+                                                                            height:
+                                                                                70,
+                                                                            categoryName: filters.categories![index].name
+                                                                                .toString(),
+                                                                            imageUrl: filters.categories![index].icon
+                                                                                .toString(),
+                                                                            scale:
+                                                                                scale,
+                                                                            paddingValue:
+                                                                                0,
+                                                                            isExpanded: currentExpandedIndex ==
+                                                                                index,
+                                                                            displayFilterMark: selectedFilters.contains(Tuple3(
+                                                                                filters.categories![index].id!,
+                                                                                filters.categories![index].id!,
+                                                                                15)),
+                                                                            addOrRemoveSpecificFilter: (bool add) {
+                                                                              if (add) {
+                                                                                widget.selectedFiltersNotifier.value.add(Tuple3(filters.categories![index].id!, filters.categories![index].id!, 15));
+                                                                                scaleTheTopItemInFiltersStack.value = true;
+                                                                                expandingFiltersStack.value = index;
+                                                                                Future.delayed(Duration(milliseconds: 100), () {
+                                                                                  scaleTheTopItemInFiltersStack.value = false;
+                                                                                });
+                                                                                widget.listKey.currentState!.insertItem(selectedFilters.length - 1);
+                                                                                widget.selectedFiltersNotifier.notifyListeners();
+                                                                              } else {
+                                                                                expandingFiltersStack.value = -1;
+                                                                                final List<Tuple3<int, int?, double>> itemToRemove = [];
+                                                                                final indicesToRemove = [];
+                                                                                for (int i = 0; i < selectedFilters.length; i++) {
+                                                                                  if (selectedFilters[i].item2 == filters.categories![index].id!) {
+                                                                                    itemToRemove.add(widget.selectedFiltersNotifier.value[i]);
+                                                                                    indicesToRemove.add(i);
+                                                                                  }
+                                                                                }
+                                                                                for (int i = 0; i < itemToRemove.length; i++) {
+                                                                                  widget.selectedFiltersNotifier.value.remove(itemToRemove[i]);
+                                                                                  widget.listKey.currentState!.removeItem(
+                                                                                    indicesToRemove[i] - i,
+                                                                                    (context, animation) => buildItem(indicesToRemove[i] - i, itemToRemove[i], filters.categories![index].icon.toString(), filters.categories![index].name.toString(), animation),
+                                                                                  );
+                                                                                }
+                                                                              }
+                                                                              widget.selectedFiltersNotifier.notifyListeners();
+                                                                            });
+                                                                      }),
+                                                                ],
+                                                              ),
+                                                            );
+                                                          });
+                                                    else {
+                                                      return FilterCircleWidget(
+                                                        width: 70,
+                                                        height: 70,
+                                                        imageUrl: filters
+                                                            .categories![index]
+                                                            .icon
+                                                            .toString(),
+                                                        categoryName: filters
+                                                            .categories![index]
+                                                            .name
+                                                            .toString(),
+                                                        displayFilterMark:
+                                                            selectedFilters
+                                                                .contains(Tuple3(
+                                                                    filters
+                                                                        .categories![
+                                                                            index]
+                                                                        .id!,
+                                                                    null,
+                                                                    15)),
+                                                        withBackGroundShadow:
+                                                            true,
+                                                        addOrRemoveSpecificFilter:
+                                                            (bool add) {
+                                                          if (add) {
+                                                            widget
+                                                                .selectedFiltersNotifier
+                                                                .value
+                                                                .add(Tuple3(
+                                                                    filters
+                                                                        .categories![
+                                                                            index]
+                                                                        .id!,
+                                                                    null,
+                                                                    15));
+                                                            widget.listKey
+                                                                .currentState!
+                                                                .insertItem(
+                                                                    selectedFilters
+                                                                            .length -
+                                                                        1);
+                                                            widget
+                                                                .selectedFiltersNotifier
+                                                                .notifyListeners();
+                                                          } else {
+                                                            final Tuple3<
+                                                                    int,
+                                                                    int?,
+                                                                    double>
+                                                                item = Tuple3(
+                                                                    filters
+                                                                        .categories![
+                                                                            index]
+                                                                        .id!,
+                                                                    null,
+                                                                    15);
+                                                            int removedIndex = widget
+                                                                .selectedFiltersNotifier
+                                                                .value
+                                                                .indexWhere(
+                                                                    (element) =>
+                                                                        element ==
+                                                                        item);
+                                                            widget
+                                                                .selectedFiltersNotifier
+                                                                .value
+                                                                .removeAt(
+                                                                    removedIndex);
+                                                            widget.listKey
+                                                                .currentState!
+                                                                .removeItem(
+                                                              removedIndex,
+                                                              (context, animation) => buildItem(
+                                                                  removedIndex,
+                                                                  item,
+                                                                  filters
+                                                                      .categories![
+                                                                          index]
+                                                                      .icon
+                                                                      .toString(),
+                                                                  filters
+                                                                      .categories![
+                                                                          index]
+                                                                      .name
+                                                                      .toString(),
+                                                                  animation),
+                                                            );
+                                                            widget
+                                                                .selectedFiltersNotifier
+                                                                .notifyListeners();
+                                                          }
+                                                        },
+                                                      );
+                                                    }
+                                                  },
+                                                ),
+                                              )
+                                            : index <= 2 &&
+                                                    titleOfFilterSection[
+                                                            index ~/ 2] ==
+                                                        'View By Brands'
+                                                ? FiltersNormalList(
+                                                    hideTitle: true,
+                                                    selectedFilters:
+                                                        selectedFiltersByBrand,
+                                                    filterListTitle:
+                                                        'Filter By Brand',
+                                                    isBrandFilter: true,
+                                                    filters:
+                                                        filters.brands ?? [],
+                                                    addItemToAnimatedList:
+                                                        (int index) {
+                                                      listForBrandsKey
+                                                          .currentState!
+                                                          .insertItem(index);
+                                                    },
+                                                    removeItemToAnimatedList:
+                                                        (int removedIndex,
+                                                            filter_model.Brand
+                                                                removedItem) {
+                                                      listForBrandsKey
+                                                          .currentState!
+                                                          .removeItem(
+                                                              removedIndex,
+                                                              (context,
+                                                                      animation) =>
+                                                                  buildBrandItem(
+                                                                      removedIndex,
+                                                                      removedIndex,
+                                                                      removedItem,
+                                                                      animation));
+                                                    },
+                                                  )
+                                                : index <= 4 &&
+                                                        titleOfFilterSection[
+                                                                index ~/ 2] ==
+                                                            'View By Sizes'
+                                                    ? SizesFiltersList(
+                                                        hideTitle: true,
+                                                        selectedFilters:
+                                                            selectedFiltersBySize,
+                                                        addItemToAnimatedList:
+                                                            (int index) {
+                                                          listForSizesKey
+                                                              .currentState!
+                                                              .insertItem(
+                                                                  index);
+                                                        },
+                                                        removeItemToAnimatedList:
+                                                            (int removedIndex,
+                                                                String
+                                                                    removedItem) {
+                                                          listForSizesKey.currentState!.removeItem(
+                                                              removedIndex,
+                                                              (context,
+                                                                      animation) =>
+                                                                  buildSizeItem(
+                                                                      removedIndex,
+                                                                      removedIndex,
+                                                                      removedItem,
+                                                                      animation));
+                                                        },
+                                                        sizes: filters
+                                                                .attributes![0]
+                                                                .options ??
+                                                            [],
+                                                      )
+                                                    : PriceFilter(
+                                                        lowerAndUpperBound:
+                                                            lowerAndUpperBound!,
+                                                        pricesFiltersRanges:
+                                                            filters.prices!,
+                                                      ),
                                   );
                                 return Container(
                                   margin: EdgeInsets.only(
@@ -662,7 +713,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               addItemToAnimatedList: (int index) {
                 listForBrandsKey.currentState!.insertItem(index);
               },
-              removeItemToAnimatedList: (int removedIndex, Brand removedItem) {
+              removeItemToAnimatedList:
+                  (int removedIndex, filter_model.Brand removedItem) {
                 listForBrandsKey.currentState!.removeItem(
                     removedIndex,
                     (context, animation) => buildBrandItem(
@@ -697,51 +749,316 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               ),
           },
           if (!widget.isExpanded) ...{
-            ValueListenableBuilder<List<Tuple3<int, int?, double>>>(
-                valueListenable: widget.selectedFiltersNotifier,
-                builder: (context, selectedFilters, child) {
-                  return Container(
-                    padding: EdgeInsets.only(
-                        top: selectedFilters.isNotEmpty ? 5 : 0),
-                    color: Color(0xffF8F8F8),
-                    child: Container(
-                      width: 1.sw,
-                      height: selectedFilters.isNotEmpty ? 30 : 0,
-                      margin: EdgeInsets.symmetric(horizontal: 10),
-                      padding: EdgeInsets.only(left: 10),
-                      decoration: BoxDecoration(
-                          color: Color(0xffEFEFEF),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: SizedBox(
-                        height: 15,
-                        child: ListView(
-                            shrinkWrap: true,
-                            physics: ClampingScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            children: [
-                              Center(
-                                  child: FilterSelectedMark(
-                                      width: 15, height: 15)),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              SizedBox(
-                                  height: 28,
-                                  child: AnimatedList(
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.horizontal,
-                                    key: widget.listKey,
-                                    initialItemCount: selectedFilters.length,
-                                    itemBuilder: (ctx, index, animation) {
-                                      return buildItem(index,
-                                          selectedFilters[index], animation);
-                                    },
-                                  )),
-                            ]),
-                      ),
+            BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                filter_model.Filter? filters =
+                    state.choosedFiltersInEachBoutiqueModel[key]?.filters;
+                if (filters == null) {
+                  return SizedBox.shrink();
+                }
+                if (filters.brands.isNullOrEmpty &&
+                    filters.categories.isNullOrEmpty &&
+                    filters.prices == null &&
+                    filters.attributes.isNullOrEmpty) {
+                  return SizedBox.shrink();
+                }
+                return Container(
+                  padding: EdgeInsets.only(top: 5),
+                  color: Color(0xffF8F8F8),
+                  child: Container(
+                    width: 1.sw,
+                    height: 30,
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    padding: EdgeInsets.only(left: 10),
+                    decoration: BoxDecoration(
+                        color: Color(0xffEFEFEF),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: SizedBox(
+                      height: 15,
+                      child: ListView(
+                          shrinkWrap: true,
+                          physics: ClampingScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            Center(
+                                child:
+                                    FilterSelectedMark(width: 15, height: 15)),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            SizedBox(
+                                height: 28,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: filters.categories?.length ?? 0,
+                                  itemBuilder: (ctx, index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        List<String> categories = filters
+                                            .categories!
+                                            .map((e) => e.id.toString())
+                                            .toList();
+                                        List<filter_model.Category>
+                                            newCategories =
+                                            filters.categories ?? [];
+                                        newCategories.removeAt(index);
+                                        categories.removeAt(index);
+                                        BlocProvider.of<HomeBloc>(context).add(
+                                            GetProductsWithFiltersEvent(
+                                                boutiqueSlug:
+                                                    widget.boutiqueSlug,
+                                                category: widget.category,
+                                                offset: 1,
+                                                filtersChoosedByUser: filter_model
+                                                    .GetProductFiltersModel(
+                                                        filters: filters
+                                                            .copyWithSaveOtherField(
+                                                                categories:
+                                                                    newCategories)),
+                                                categories: categories.isEmpty
+                                                    ? null
+                                                    : categories));
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          FilterImage(
+                                            width: filters.categories![index]
+                                                    .isSubCategory
+                                                ? 15
+                                                : 20,
+                                            height: filters.categories![index]
+                                                    .isSubCategory
+                                                ? 15
+                                                : 20,
+                                            imageUrl: filters
+                                                .categories![index].icon
+                                                .toString(),
+                                            withInnerShadow: true,
+                                            withBackGroundShadow: false,
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          MyTextWidget(
+                                            filters.brands![index].name
+                                                .toString(),
+                                            maxLines: 1,
+                                            textAlign: TextAlign.center,
+                                            style: context.textTheme.caption?.rq
+                                                .copyWith(
+                                                    color: Color(0xff8E8E8E),
+                                                    letterSpacing: 0,
+                                                    height: 1.25),
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                )),
+                            SizedBox(
+                                height: 28,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: filters.brands?.length ?? 0,
+                                  itemBuilder: (ctx, index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        List<String> brands = filters.brands!
+                                            .map((e) => e.id.toString())
+                                            .toList();
+                                        List<filter_model.Brand> newBrands =
+                                            filters.brands ?? [];
+                                        newBrands.removeAt(index);
+                                        brands.removeAt(index);
+                                        BlocProvider.of<HomeBloc>(context).add(
+                                            GetProductsWithFiltersEvent(
+                                                boutiqueSlug:
+                                                    widget.boutiqueSlug,
+                                                category: widget.category,
+                                                offset: 1,
+                                                filtersChoosedByUser: filter_model
+                                                    .GetProductFiltersModel(
+                                                        filters: filters
+                                                            .copyWithSaveOtherField(
+                                                                brands:
+                                                                    newBrands)),
+                                                brands: brands.isEmpty
+                                                    ? null
+                                                    : brands));
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          FilterImage(
+                                            width: 20,
+                                            height: 20,
+                                            imageUrl: filters
+                                                .brands![index].image
+                                                .toString(),
+                                            withInnerShadow: true,
+                                            withBackGroundShadow: false,
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          MyTextWidget(
+                                            filters.brands![index].name
+                                                .toString(),
+                                            maxLines: 1,
+                                            textAlign: TextAlign.center,
+                                            style: context.textTheme.caption?.rq
+                                                .copyWith(
+                                                    color: Color(0xff8E8E8E),
+                                                    letterSpacing: 0,
+                                                    height: 1.25),
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                )),
+                            SizedBox(
+                                height: 28,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: filters.attributes.isNullOrEmpty
+                                      ? 0
+                                      : filters
+                                              .attributes![0].options?.length ??
+                                          0,
+                                  itemBuilder: (ctx, index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        int? id = filters.attributes![0].id;
+                                        String? name =
+                                            filters.attributes![0].name;
+                                        List<String>? options =
+                                            filters.attributes![0].options;
+                                        options?.removeAt(index);
+                                        BlocProvider.of<HomeBloc>(context).add(
+                                            GetProductsWithFiltersEvent(
+                                                boutiqueSlug:
+                                                    widget.boutiqueSlug,
+                                                category: widget.category,
+                                                offset: 1,
+                                                filtersChoosedByUser: filter_model
+                                                    .GetProductFiltersModel(
+                                                        filters: filters
+                                                            .copyWithSaveOtherField(
+                                                                attributes:
+                                                                    options.isNullOrEmpty
+                                                                        ? []
+                                                                        : [
+                                                                            filters.attributes![0].copyWith(options: options)
+                                                                          ])),
+                                                attributes: options
+                                                        .isNullOrEmpty
+                                                    ? null
+                                                    : [
+                                                        {
+                                                          "id": id,
+                                                          "name": name,
+                                                          "options": options,
+                                                        }
+                                                      ]));
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          MyTextWidget(
+                                            filters
+                                                .attributes![0].options![index]
+                                                .toString(),
+                                            maxLines: 1,
+                                            textAlign: TextAlign.center,
+                                            style: context.textTheme.caption?.rq
+                                                .copyWith(
+                                                    color: Color(0xff8E8E8E),
+                                                    letterSpacing: 0,
+                                                    height: 1.25),
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                )),
+                            if (filters.prices != null) ...{
+                              GestureDetector(
+                                onTap: () {
+                                  BlocProvider.of<HomeBloc>(context).add(
+                                      GetProductsWithFiltersEvent(
+                                          boutiqueSlug: widget.boutiqueSlug,
+                                          category: widget.category,
+                                          offset: 1,
+                                          filtersChoosedByUser: filter_model
+                                              .GetProductFiltersModel(
+                                            filters:
+                                                filters.copyWithSaveOtherField(
+                                                    prices: null),
+                                          ),
+                                          prices: null));
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    MyTextWidget(
+                                      filters.prices!.minPrice.toString() + '/',
+                                      maxLines: 1,
+                                      textAlign: TextAlign.center,
+                                      style: context.textTheme.caption?.rq
+                                          .copyWith(
+                                              color: Color(0xff8E8E8E),
+                                              letterSpacing: 0,
+                                              height: 1.25),
+                                    ),
+                                    MyTextWidget(
+                                      filters.prices!.maxPrice.toString(),
+                                      maxLines: 1,
+                                      textAlign: TextAlign.center,
+                                      style: context.textTheme.caption?.rq
+                                          .copyWith(
+                                              color: Color(0xff8E8E8E),
+                                              letterSpacing: 0,
+                                              height: 1.25),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            }
+                          ]),
                     ),
-                  );
-                }),
+                  ),
+                );
+              },
+            ),
           },
           if (widget.isExpanded) ...{
             SizedBox(
@@ -786,121 +1103,207 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                   color: Color(0xffEFEFEF),
                                   borderRadius: BorderRadius.circular(10)),
                               child: SizedBox(
-                                height: 15,
-                                child: ListView(
-                                    shrinkWrap: true,
-                                    physics: ClampingScrollPhysics(),
-                                    scrollDirection: Axis.horizontal,
-                                    children: [
-                                      Center(
-                                          child: FilterSelectedMark(
-                                              width: 15, height: 15)),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      ValueListenableBuilder<
-                                              List<Tuple3<int, int?, double>>>(
-                                          valueListenable:
-                                              widget.selectedFiltersNotifier,
-                                          builder: (context, selectedFilters,
-                                              child) {
-                                            return SizedBox(
-                                                height: 28,
-                                                child: AnimatedList(
-                                                  shrinkWrap: true,
-                                                  scrollDirection:
-                                                      Axis.horizontal,
-                                                  key: widget.listKey,
-                                                  initialItemCount:
-                                                      selectedFilters.length,
-                                                  itemBuilder:
-                                                      (ctx, index, animation) {
-                                                    return buildItem(
-                                                        index,
-                                                        selectedFilters[index],
-                                                        animation);
-                                                  },
-                                                ));
-                                          }),
-                                      ValueListenableBuilder<List<int>>(
-                                          valueListenable:
-                                              selectedFiltersByBrand,
-                                          builder: (context, selected, _) {
-                                            return SizedBox(
-                                                height: 28,
-                                                child: AnimatedList(
-                                                  shrinkWrap: true,
-                                                  scrollDirection:
-                                                      Axis.horizontal,
-                                                  key: listForBrandsKey,
-                                                  initialItemCount:
-                                                      selected.length,
-                                                  itemBuilder:
-                                                      (ctx, index, animation) {
-                                                    return buildBrandItem(
-                                                        selected[index],
-                                                        index,
-                                                        filters.brands![
-                                                            selected[index]],
-                                                        animation);
-                                                  },
-                                                ));
-                                          }),
-                                      ValueListenableBuilder<List<int>>(
-                                          valueListenable:
-                                              selectedFiltersBySize,
-                                          builder: (context, selected, _) {
-                                            return SizedBox(
-                                                height: 28,
-                                                child: AnimatedList(
-                                                  shrinkWrap: true,
-                                                  scrollDirection:
-                                                      Axis.horizontal,
-                                                  key: listForSizesKey,
-                                                  initialItemCount:
-                                                      selected.length,
-                                                  itemBuilder:
-                                                      (ctx, index, animation) {
-                                                    return buildSizeItem(
-                                                        selected[index],
-                                                        index,
-                                                        filters.attributes![0]
-                                                                .options![
-                                                            selected[index]],
-                                                        animation);
-                                                  },
-                                                ));
-                                          }),
-                                    ]),
-                              ),
+                                  height: 15,
+                                  child: SizedBox(
+                                    height: 15,
+                                    child: ListView(
+                                        shrinkWrap: true,
+                                        physics: ClampingScrollPhysics(),
+                                        scrollDirection: Axis.horizontal,
+                                        children: [
+                                          Center(
+                                              child: FilterSelectedMark(
+                                                  width: 15, height: 15)),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          ValueListenableBuilder<
+                                                  List<
+                                                      Tuple3<int, int?,
+                                                          double>>>(
+                                              valueListenable: widget
+                                                  .selectedFiltersNotifier,
+                                              builder: (context,
+                                                  selectedFilters, child) {
+                                                return SizedBox(
+                                                    height: 28,
+                                                    child: AnimatedList(
+                                                      shrinkWrap: true,
+                                                      scrollDirection:
+                                                          Axis.horizontal,
+                                                      key: widget.listKey,
+                                                      initialItemCount:
+                                                          selectedFilters
+                                                              .length,
+                                                      itemBuilder: (ctx, index,
+                                                          animation) {
+                                                        filter_model.Category
+                                                            category;
+                                                        if (selectedFilters[
+                                                                    index]
+                                                                .item2 ==
+                                                            null) {
+                                                          category = filters
+                                                              .categories!
+                                                              .firstWhere((element) =>
+                                                                  element.id ==
+                                                                  selectedFilters[
+                                                                          index]
+                                                                      .item1);
+                                                        } else {
+                                                          filter_model.SubCategory sub = filters
+                                                              .categories!
+                                                              .firstWhere((element) =>
+                                                                  element.id ==
+                                                                  selectedFilters[
+                                                                          index]
+                                                                      .item2)
+                                                              .subCategories!
+                                                              .firstWhere((element) =>
+                                                                  element.id ==
+                                                                  selectedFilters[
+                                                                          index]
+                                                                      .item1);
+                                                          category =
+                                                              filter_model
+                                                                  .Category(
+                                                            id: sub.id,
+                                                            name: sub.name,
+                                                            icon: sub.icon,
+                                                          );
+                                                        }
+                                                        return buildItem(
+                                                            index,
+                                                            selectedFilters[
+                                                                index],
+                                                            category.icon
+                                                                .toString(),
+                                                            category.name
+                                                                .toString(),
+                                                            animation);
+                                                      },
+                                                    ));
+                                              }),
+                                          ValueListenableBuilder<List<int>>(
+                                              valueListenable:
+                                                  selectedFiltersByBrand,
+                                              builder: (context, selected, _) {
+                                                return SizedBox(
+                                                    height: 28,
+                                                    child: AnimatedList(
+                                                      shrinkWrap: true,
+                                                      scrollDirection:
+                                                          Axis.horizontal,
+                                                      key: listForBrandsKey,
+                                                      initialItemCount:
+                                                          selected.length,
+                                                      itemBuilder: (ctx, index,
+                                                          animation) {
+                                                        return buildBrandItem(
+                                                            selected[index],
+                                                            index,
+                                                            filters.brands![
+                                                                selected[
+                                                                    index]],
+                                                            animation);
+                                                      },
+                                                    ));
+                                              }),
+                                          ValueListenableBuilder<List<int>>(
+                                              valueListenable:
+                                                  selectedFiltersBySize,
+                                              builder: (context, selected, _) {
+                                                return SizedBox(
+                                                    height: 28,
+                                                    child: AnimatedList(
+                                                      shrinkWrap: true,
+                                                      scrollDirection:
+                                                          Axis.horizontal,
+                                                      key: listForSizesKey,
+                                                      initialItemCount:
+                                                          selected.length,
+                                                      itemBuilder: (ctx, index,
+                                                          animation) {
+                                                        return buildSizeItem(
+                                                            selected[index],
+                                                            index,
+                                                            filters
+                                                                    .attributes![0]
+                                                                    .options![
+                                                                selected[
+                                                                    index]],
+                                                            animation);
+                                                      },
+                                                    ));
+                                              }),
+                                        ]),
+                                  )),
                             ),
                           ],
                         ),
                       ),
-                      if (display) ...{
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Row(
-                            children: [
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Row(
+                          children: [
+                            if (display) ...{
                               Expanded(
                                 flex: 5,
                                 child: GestureDetector(
                                   onTap: () {
                                     List<String>? brandsIds;
+                                    List<String>? categoriesIds;
+                                    List<filter_model.Brand>? brands;
+                                    List<filter_model.Category>? categories;
                                     List<Map<String, dynamic>>? attributes;
                                     if (filters.brands != null) {
                                       brandsIds = [];
+                                      brands = [];
                                       selectedFiltersByBrand.value
                                           .forEach((index) {
                                         brandsIds!.add(filters.brands![index].id
                                             .toString());
+                                        brands!.add(filters.brands![index]);
                                       });
                                     }
+                                    if (!filters.categories.isNullOrEmpty) {
+                                      widget.selectedFiltersNotifier.value
+                                          .forEach((element) {
+                                        categoriesIds = [];
+                                        categories = [];
+                                        categoriesIds!
+                                            .add(element.item1.toString());
+                                        categoriesIds!
+                                            .add(element.item1.toString());
+                                        if (element.item2 == null) {
+                                          categories!.add(filters.categories!
+                                              .firstWhere((category) =>
+                                                  category.id ==
+                                                  element.item1));
+                                        } else {
+                                          filter_model.Category category;
+                                          filter_model.SubCategory sub = filters
+                                              .categories!
+                                              .firstWhere((category) =>
+                                                  category.id == element.item2)
+                                              .subCategories!
+                                              .firstWhere((subcategory) =>
+                                                  subcategory.id ==
+                                                  element.item1);
+                                          category = filter_model.Category(
+                                              id: sub.id,
+                                              name: sub.name,
+                                              icon: sub.icon,
+                                              isSubCategory: true);
+                                          categories!.add(category);
+                                        }
+                                      });
+                                    }
+                                    List<String> options = [];
                                     if (!filters.attributes.isNullOrEmpty) {
-                                      List<String> options = [];
                                       attributes = [];
                                       selectedFiltersBySize.value
                                           .forEach((index) {
@@ -929,8 +1332,43 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                       boutiqueSlug: widget.boutiqueSlug,
                                       category: widget.category,
                                       brands: brandsIds,
+                                      categories: categoriesIds,
                                       prices: prices,
                                       attributes: attributes,
+                                      filtersChoosedByUser:
+                                          filter_model.GetProductFiltersModel(
+                                              filters: filter_model.Filter(
+                                                  brands: brands.isNullOrEmpty
+                                                      ? null
+                                                      : brands,
+                                                  categories:
+                                                      categories.isNullOrEmpty
+                                                          ? null
+                                                          : categories,
+                                                  attributes: options.isEmpty
+                                                      ? null
+                                                      : [
+                                                          filter_model
+                                                              .Attribute(
+                                                            id: filters
+                                                                .attributes![0]
+                                                                .id,
+                                                            name: filters
+                                                                .attributes![0]
+                                                                .name,
+                                                            options: options,
+                                                          ),
+                                                        ],
+                                                  prices: prices.isNullOrEmpty
+                                                      ? null
+                                                      : filter_model.Prices(
+                                                          minPrice: int.parse(
+                                                              prices![0].split(
+                                                                  '-')[0]),
+                                                          maxPrice: int.parse(
+                                                              prices[0].split(
+                                                                  '-')[1]),
+                                                        ))),
                                       offset: 1,
                                     ));
                                     clearAllFiltersBeforeRequest();
@@ -968,62 +1406,60 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               SizedBox(
                                 width: 5,
                               ),
-                              Expanded(
-                                flex: 2,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    clearAllFiltersBeforeRequest();
-                                    homeBloc.add(GetProductFiltersEvent(
-                                        boutiqueSlug: widget.boutiqueSlug,
-                                        category: widget.category,
-                                        forceUpdate: true));
-                                  },
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        height: 65,
-                                        decoration: BoxDecoration(
-                                            color: colorScheme.white,
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.1),
-                                                  blurRadius: 6,
-                                                  offset: Offset(0, 3)),
-                                              BoxShadow(
-                                                  color: Colors.white
-                                                      .withOpacity(0.4),
-                                                  blurRadius: 6,
-                                                  offset: Offset(0, 3),
-                                                  inset: true)
-                                            ],
-                                            border: Border.all(
-                                                color: Color(0xff388CFF))),
-                                        child: Center(
-                                          child: MyTextWidget(
-                                            'Reset',
-                                            style: textTheme.headline6?.rq
-                                                .copyWith(
-                                                    color: Color(0xff388CFF),
-                                                    height: 23 / 18),
-                                          ),
+                            },
+                            Expanded(
+                              flex: 2,
+                              child: GestureDetector(
+                                onTap: () {
+                                  clearAllFiltersBeforeRequest();
+                                  homeBloc.add(GetProductFiltersEvent(
+                                      boutiqueSlug: widget.boutiqueSlug,
+                                      category: widget.category,
+                                      forceUpdate: true));
+                                },
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      height: 65,
+                                      decoration: BoxDecoration(
+                                          color: colorScheme.white,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: Colors.black
+                                                    .withOpacity(0.1),
+                                                blurRadius: 6,
+                                                offset: Offset(0, 3)),
+                                            BoxShadow(
+                                                color: Colors.white
+                                                    .withOpacity(0.4),
+                                                blurRadius: 6,
+                                                offset: Offset(0, 3),
+                                                inset: true)
+                                          ],
+                                          border: Border.all(
+                                              color: Color(0xff388CFF))),
+                                      child: Center(
+                                        child: MyTextWidget(
+                                          'Reset',
+                                          style: textTheme.headline6?.rq
+                                              .copyWith(
+                                                  color: Color(0xff388CFF),
+                                                  height: 23 / 18),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        SizedBox(
-                          height: 20,
-                        )
-                      } else ...{
-                        SizedBox(height: 95)
-                      }
+                      ),
+                      SizedBox(
+                        height: 20,
+                      )
                     ],
                   );
                 })
@@ -1043,8 +1479,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
     }
   }
 
-  Widget buildBrandItem(int indexInBrandList, int index, Brand item,
-      Animation<double> animation) {
+  Widget buildBrandItem(int indexInBrandList, int index,
+      filter_model.Brand item, Animation<double> animation) {
     return AnimatedBuilder(
         animation: animation,
         builder: (context, child) {
@@ -1199,8 +1635,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
         ));
   }
 
-  Widget buildItem(
-      int index, Tuple3<int, int?, double> item, Animation<double> animation) {
+  Widget buildItem(int index, Tuple3<int, int?, double> item, String imageUrl,
+      String name, Animation<double> animation) {
     return AnimatedBuilder(
         animation: animation,
         builder: (context, child) {
@@ -1219,7 +1655,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
             widget.selectedFiltersNotifier.notifyListeners();
             widget.listKey.currentState!.removeItem(
               index,
-              (context, animation) => buildItem(index, item, animation),
+              (context, animation) =>
+                  buildItem(index, item, imageUrl, name, animation),
             );
           },
           child: Row(
@@ -1231,12 +1668,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                   withInnerShadow: true,
                   withBackGroundShadow: true,
                   borderColor: Color(0xffFF5F61),
-                  imageUrl: 'assets/images/details_circle.jpg'),
+                  imageUrl: imageUrl),
               SizedBox(
                 width: 5,
               ),
               MyTextWidget(
-                'T-shirt',
+                name,
                 maxLines: 1,
                 textAlign: TextAlign.center,
                 style: context.textTheme.caption?.rq.copyWith(
@@ -1274,6 +1711,7 @@ class FilterCircleWidget extends StatefulWidget {
       required this.imageUrl,
       required this.width,
       required this.height,
+      required this.categoryName,
       required this.addOrRemoveSpecificFilter,
       this.withBackGroundShadow = true,
       this.paddingValue = 10,
@@ -1297,6 +1735,7 @@ class FilterCircleWidget extends StatefulWidget {
   final void Function(bool add) addOrRemoveSpecificFilter;
   final void Function()? expandStackedItemsFunction;
   final String imageUrl;
+  final String categoryName;
 
   @override
   State<FilterCircleWidget> createState() => _FilterCircleWidgetState();
@@ -1345,7 +1784,7 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
               if (widget.isExpanded) ...{
                 SizedBox(height: 5),
                 MyTextWidget(
-                  'T-shirt',
+                  widget.categoryName,
                   maxLines: 1,
                   textAlign: TextAlign.center,
                   style: context.textTheme.caption?.rq.copyWith(
@@ -1368,10 +1807,12 @@ class FilterImage extends StatelessWidget {
       required this.withInnerShadow,
       required this.withBackGroundShadow,
       this.borderColor,
+      this.isSvg = false,
       required this.imageUrl});
 
   final double width;
   final double height;
+  final bool isSvg;
   final bool withInnerShadow;
   final bool withBackGroundShadow;
   final Color? borderColor;
@@ -1400,14 +1841,16 @@ class FilterImage extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(180.0)),
           child: Stack(
             children: [
-              imageUrl.contains('assets')
-                  ? Image.asset(imageUrl,
-                      width: width, fit: BoxFit.cover, height: height)
-                  : MyCachedNetworkImage(
-                      imageUrl: imageUrl,
-                      width: width,
-                      imageFit: BoxFit.cover,
-                      height: height),
+              isSvg
+                  ? SvgNetworkWidget(svgUrl: imageUrl)
+                  : imageUrl.contains('assets')
+                      ? Image.asset(imageUrl,
+                          width: width, fit: BoxFit.cover, height: height)
+                      : MyCachedNetworkImage(
+                          imageUrl: imageUrl,
+                          width: width,
+                          imageFit: BoxFit.cover,
+                          height: height),
               //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
               Container(
                 width: width,
