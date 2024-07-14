@@ -436,6 +436,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     String keyForCacheData = event.boutiqueSlug + (event.category ?? '');
     Map<String, PaginationModel<product.Products>> getProductsWithoutFilters =
         Map.of(state.getProductListingPaginationWithoutFiltersModel);
+
     Map<String, bool> reRequestTheseProductListingInBoutiques =
         Map.of(state.reRequestTheseProductListingInBoutiques);
     if (getProductsWithoutFilters[keyForCacheData] == null) {
@@ -467,7 +468,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       } else {
         return MapEntry(key, value);
       }
-    })));
+    }),
+    ));
     final response =
         await getProductsWithoutFiltersUseCase(GetProductsWithoutFiltersParams(
       offset: event.offset,
@@ -540,6 +542,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       getProductListingWithFiltersPaginationModels[theKey] =
           PaginationModel.init();
     }
+
+    Map<String, GetProductFiltersModel?> choosedFiltersInEachBoutiqueModel =
+    Map.of(state.choosedFiltersInEachBoutiqueModel);
+
+    if (!choosedFiltersInEachBoutiqueModel.containsKey(theKey)) {
+      choosedFiltersInEachBoutiqueModel[theKey] = null ;
+    }
+
     emit(state.copyWith(getProductListingWithFiltersPaginationModels:
         getProductListingWithFiltersPaginationModels.map((key, value) {
       if (key == theKey) {
@@ -548,7 +558,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       } else {
         return MapEntry(key, value);
       }
-    })));
+    }),
+      choosedFiltersInEachBoutiqueModel:
+      choosedFiltersInEachBoutiqueModel.map((key, value) {
+        if (key == theKey) {
+          return MapEntry(
+              key, event.filtersChoosedByUser
+          );
+        } else {
+          return MapEntry(key, value);
+        }
+      }),
+    ));
 
     final response = await getProductsWithFiltersUseCase(
         GetProductsWithFiltersParams(

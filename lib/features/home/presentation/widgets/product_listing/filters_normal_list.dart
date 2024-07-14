@@ -14,12 +14,13 @@ import '../../../data/models/get_product_filters_model.dart';
 
 class FiltersNormalList<T> extends StatefulWidget {
   const FiltersNormalList(
-      {super.key, required this.filterListTitle, required this.isBrandFilter, required this.selectedFilters, required this.filters, this.addItemToAnimatedList, this.removeItemToAnimatedList});
+      {super.key, required this.filterListTitle, this.hideTitle = false, required this.isBrandFilter, required this.selectedFilters, required this.filters, this.addItemToAnimatedList, this.removeItemToAnimatedList});
 
   final bool isBrandFilter;
   final String filterListTitle;
   final ValueNotifier<List<int>> selectedFilters;
   final List<T> filters ;
+  final bool hideTitle;
   final void Function(int index)? addItemToAnimatedList;
   final void Function(int index , Brand removedItem)? removeItemToAnimatedList;
 
@@ -39,29 +40,31 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              FilterSelectedMark(width: 20, height: 20),
-              SizedBox(
-                width: 10,
-              ),
-              MyTextWidget(
-                widget.filterListTitle,
-                style: context.textTheme.caption?.rq
-                    .copyWith(color: Color(0xff505050), height: 15 / 12),
-              ),
-              SizedBox(
-                width: 5,
-              ),
-              SvgPicture.asset(
-                AppAssets.registerInfoSvg,
-                color: Color(0xffD3D3D3),
-              )
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
+          if(!widget.hideTitle)...{
+            Row(
+              children: [
+                FilterSelectedMark(width: 20, height: 20),
+                SizedBox(
+                  width: 10,
+                ),
+                MyTextWidget(
+                  widget.filterListTitle,
+                  style: context.textTheme.caption?.rq
+                      .copyWith(color: Color(0xff505050), height: 15 / 12),
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                SvgPicture.asset(
+                  AppAssets.registerInfoSvg,
+                  color: Color(0xffD3D3D3),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+          },
           SizedBox(
             height: 105,
             child: ValueListenableBuilder<List<int>>(
@@ -130,15 +133,6 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                   letterSpacing: 0,
                                   height: 1.25),
                             ),
-                            MyTextWidget(
-                              '1100',
-                              textAlign: TextAlign.center,
-                              style: context.textTheme.caption?.rq.copyWith(
-                                  color: Color(0xffC4C2C2),
-                                  fontSize: 10.sp,
-                                  letterSpacing: 0,
-                                  height: 1.3),
-                            )
                           ],
                         );
                       },
@@ -148,7 +142,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                       itemCount: widget.filters.length);
                 }),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: !widget.hideTitle ? 20 : 0),
         ],
       ),
     );

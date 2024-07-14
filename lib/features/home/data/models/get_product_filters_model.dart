@@ -59,6 +59,23 @@ class Filter {
     this.boutiqueSlug,
   });
 
+  Filter copyWithSaveOtherField({
+    List<Brand>? brands,
+    List<Attribute>? attributes,
+    List<Category>? categories,
+    List<String>? colors,
+    Prices? prices,
+    String? boutiqueSlug,
+  }) =>
+      Filter(
+        brands: brands ?? this.brands ,
+        attributes: attributes ?? this.attributes ,
+        colors: colors ?? this.colors ,
+        prices: prices ,
+        categories: categories ?? this.categories ,
+        boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug ,
+      );
+
   Filter copyWith({
     List<Brand>? brands,
     List<Attribute>? attributes,
@@ -282,12 +299,14 @@ class Category {
   final int? id;
   final String? name;
   final String? icon;
+  final bool isSubCategory;
   final List<SubCategory>? subCategories;
 
   Category({
     this.id,
     this.name,
     this.icon,
+    this.isSubCategory = false,
     this.subCategories = const [],
   });
 
