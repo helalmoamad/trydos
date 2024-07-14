@@ -689,32 +689,32 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                               .isDeleted ==
                                                                           1) {
                                                                         /*    showDialog(
-                                                                      context:
-                                                                          context,
-                                                                      builder: (context) => AlertDialog(
-                                                                          title:
-                                                                              Text(" حذف هذه الرسالة  "),
-                                                                          actions: [
-                                                                            MaterialButton(
-                                                                              onPressed: () {
-                                                                                callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
-                                                                                Navigator.of(context).pop();
-                                                                                rebuildMessage.value = -1;
-                                                                              },
-                                                                              child: Text("نعم"),
-                                                                            ),
-                                                                            SizedBox(
-                                                                              width: 20.w,
-                                                                            ),
-                                                                            MaterialButton(
-                                                                                child: Text("إغلاق"),
-                                                                                onPressed: () {
-                                                                                  Navigator.of(context).pop();
-                                                                                  rebuildMessage.value = -1;
-                                                                                })
-                                                                          ]),
-                                                                    );
-                                                                    */
+                                                                  context:
+                                                                      context,
+                                                                  builder: (context) => AlertDialog(
+                                                                      title:
+                                                                          Text(" حذف هذه الرسالة  "),
+                                                                      actions: [
+                                                                        MaterialButton(
+                                                                          onPressed: () {
+                                                                            callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
+                                                                            Navigator.of(context).pop();
+                                                                            rebuildMessage.value = -1;
+                                                                          },
+                                                                          child: Text("نعم"),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          width: 20.w,
+                                                                        ),
+                                                                        MaterialButton(
+                                                                            child: Text("إغلاق"),
+                                                                            onPressed: () {
+                                                                              Navigator.of(context).pop();
+                                                                              rebuildMessage.value = -1;
+                                                                            })
+                                                                      ]),
+                                                                                                                                        );
+                                                                                                                                        */
                                                                         return;
                                                                       }
 

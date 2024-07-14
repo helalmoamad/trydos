@@ -146,9 +146,6 @@ class _TextMessageState extends ThemeState<TextMessage> {
                       ? 0
                       : 25.w),
               child: SwipeTo(
-                key: Key(
-                  '${WidgetsKey.messageTextSwipeToKey}${widget.index}',
-                ),
                 onLeftSwipe: () {
                   if (widget.senderId == widget._prefsRepository.myChatId) {
                     if ((state.sendMessageStatus == SendMessageStatus.loading &&
@@ -213,6 +210,8 @@ class _TextMessageState extends ThemeState<TextMessage> {
                               : Alignment.centerLeft,
                           children: [
                             Container(
+                              key: Key(
+                                  '${WidgetsKey.messageCardKey}${widget.index}'),
                               constraints: BoxConstraints(
                                   minHeight: !widget.withShadow ? 71 : 48),
                               decoration: BoxDecoration(
@@ -347,20 +346,26 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                                           widget
                                                                               .messageId))
                                                                   ? timer
-                                                                      ? (state.currentMessage.contains(widget
-                                                                              .messageId))
-                                                                          ? SvgPicture
-                                                                              .asset(
-                                                                              AppAssets.sandClockSvg,
-                                                                              width: 10.sp,
-                                                                              height: 10.sp,
-                                                                            )
-                                                                          : SvgPicture
-                                                                              .asset(
-                                                                              AppAssets.messageSentArrowSvg,
-                                                                              width: 10.sp,
-                                                                              height: 10.sp,
-                                                                            )
+                                                                      ?
+                                                                      // (state.currentMessage.contains(widget
+                                                                      //         .messageId))
+                                                                      //     ?
+                                                                      SvgPicture
+                                                                          .asset(
+                                                                          AppAssets
+                                                                              .sandClockSvg,
+                                                                          width:
+                                                                              10.sp,
+                                                                          height:
+                                                                              10.sp,
+                                                                        )
+                                                                      // :
+                                                                      // SvgPicture
+                                                                      //     .asset(
+                                                                      //     AppAssets.messageSentArrowSvg,
+                                                                      //     width: 10.sp,
+                                                                      //     height: 10.sp,
+                                                                      //   )
                                                                       : SvgPicture
                                                                           .asset(
                                                                           "",

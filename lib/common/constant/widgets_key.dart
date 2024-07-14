@@ -27,6 +27,7 @@ class WidgetsKey {
   static const boutiqueCardKey = 'boutique_card_key';
   static const productInBoutiqueListKey = 'product_in_boutique_list_key';
   static const contactCardKey = 'contact_card_key';
+  static const messageCardKey = 'message_card_key';
   static const textMessageCardKey = 'text_message_key';
   static const sendMessageInChatButtonKey = 'send_message_inchat_key';
   static const sendMessageTextFieldKey = 'send_message_textfield_key';
@@ -37,7 +38,6 @@ class WidgetsKey {
       'delete_chat_conversation_icon_Key';
   static const replayTextKey = 'replay_text_Key';
   static const replayOnMeMessageKey = 'replay_on_me_message_key';
-  static const messageTextSwipeToKey = 'message_text_swip_to_key';
   static const deleteMessageKey = 'delete_message_key';
   static const deleteOnlyMeButtonKey = 'delete_only_me_button_key';
 }

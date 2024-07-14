@@ -97,6 +97,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
       category: widget.category,
     ));
     scrollController.addListener(() {
+      if(filterPageExpanded.value) return;
       if (scrollController.position.pixels <= 80) {
         debugPrint(scrollController.position.pixels.toString());
         appBloc.add(ShowOrHideBars(true));
@@ -150,7 +151,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   if (notification.metrics.axis == Axis.horizontal)
                     return false;
                   final currentOffset = notification.metrics.pixels;
-                  if (currentOffset >= 50) {
+                  if (currentOffset >= 50 && !filterPageExpanded.value) {
                     displayBoutiqueIconInAppBar.value = true;
                   } else {
                     displayBoutiqueIconInAppBar.value = false;
@@ -184,7 +185,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                 controller: scrollController,
                                 physics: ClampingScrollPhysics(),
                                 slivers: [
-                                  SliverAppBar(
+                                   SliverAppBar(
                                     pinned: true,
                                     backgroundColor: colorScheme.white,
                                     automaticallyImplyLeading: false,
@@ -198,9 +199,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 valueListenable:
                                                     displayBoutiqueIconInAppBar,
                                                 builder: (context, display, _) {
-                                                  return widget.boutiqueIcon !=
-                                                          null
-                                                      ? Visibility(
+                                                  return  Visibility(
                                                           visible: display,
                                                           child: Padding(
                                                             padding:
@@ -211,12 +210,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             child:
                                                                 SvgNetworkWidget(
                                                               svgUrl: widget
-                                                                  .boutiqueIcon!,
+                                                                  .boutiqueIcon,
                                                               height: 20,
                                                             ),
                                                           ),
-                                                        )
-                                                      : SizedBox.shrink();
+                                                        );
                                                 }),
                                             Spacer(),
                                             Padding(
@@ -304,7 +302,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           withShadow: false),
                                     ),
                                   ),
-                                  ValueListenableBuilder<double>(
+                                  isExpanded ? SliverToBoxAdapter() : ValueListenableBuilder<double>(
                                       valueListenable: htmlDescriptionHeight,
                                       builder: (context, htmlHeight, child) {
                                         return SliverAppBar(
@@ -321,11 +319,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     mainAxisSize:
                                                         MainAxisSize.min,
                                                     children: [
-                                                      if (widget.boutiqueIcon !=
-                                                          null)
                                                         SvgNetworkWidget(
                                                           svgUrl: widget
-                                                              .boutiqueIcon!,
+                                                              .boutiqueIcon,
                                                           height: 20,
                                                         ),
                                                       SizedBox(
@@ -455,7 +451,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       valueListenable: selectedFiltersNotifier,
                                       builder: (context, filters, _) {
                                         return SliverAppBar(
-                                            pinned: isExpanded ? false : true,
+                                            pinned: true,
                                             surfaceTintColor:
                                                 Colors.transparent,
                                             backgroundColor: colorScheme.white,
@@ -467,7 +463,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         .value.isNotEmpty
                                                     ? 145
                                                     : 115,
-                                            title: StackedFiltersList(
+                                            flexibleSpace: StackedFiltersList(
                                                 isExpanded: isExpanded,
                                                 closeFilterPage: () {
                                                   filterPageExpanded.value =
@@ -502,9 +498,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               gridViewKeyForRendering =
                                                   UniqueKey();
                                             }
-                                            return p.getProductsWithFiltersStatus !=
+                                            return p.getProductListingWithFiltersPaginationModels[key]?.paginationStatus !=
                                                     c
-                                                        .getProductsWithFiltersStatus ||
+                                                        .getProductListingWithFiltersPaginationModels[key]?.paginationStatus ||
                                                 (p
                                                         .getProductListingPaginationWithoutFiltersModel[
                                                             key]
@@ -515,30 +511,29 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         ?.paginationStatus);
                                           },
                                           builder: (context, state) {
-
+                                            String key = widget.boutiqueSlug +
+                                                (widget.category ?? '');
                                             if (state
-                                                    .getProductsWithFiltersStatus ==
-                                                GetProductsWithFiltersStatus
-                                                    .loading) {
+                                                    .getProductListingWithFiltersPaginationModels[key]?.paginationStatus ==
+                                                PaginationStatus.loading) {
                                               return SliverToBoxAdapter(
                                                 child: Center(
                                                   child: TrydosLoader(),
                                                 ),
                                               );
                                             }
+                                            print('dvdv ${state
+                                                .getProductListingWithFiltersPaginationModels[key]?.items.length}');
+                                            print('dvdv ${state.getProductListingWithFiltersPaginationModels.keys}');
+                                            print('dvdv ${key}');
                                             List<filter_products.Products>
                                                 products;
-                                            String key = widget.boutiqueSlug +
-                                                (widget.category ?? '');
-
                                             if (state
-                                                    .getProductListingWithFiltersModel !=
+                                                    .getProductListingWithFiltersPaginationModels[key] !=
                                                 null) {
                                               products = state
-                                                      .getProductListingWithFiltersModel!
-                                                      .data
-                                                      ?.products ??
-                                                  [];
+                                                      .getProductListingWithFiltersPaginationModels[key]!
+                                                      .items ;
                                             }
                                             else {
                                               if ((state

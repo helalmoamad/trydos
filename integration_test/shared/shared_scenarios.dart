@@ -305,8 +305,8 @@ class SharedScenarios {
       tester: tester,
       actual: textMessage,
       withDelayAndPumpAndSettle: false,
-      successMessage: 'Find textMessageCard  Success',
-      failedMessage: 'Find textMessageCard failed',
+      successMessage: 'Find text Message Card  $messageNumber Success',
+      failedMessage: 'Find text Message Card $messageNumber failed',
     );
     ////////////////////////////
     final Finder messageSentArrow =
