@@ -43,7 +43,9 @@ class SearchChip extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           SizedBox(
             height: 30,
             child: ScrollConfiguration(
@@ -62,7 +64,8 @@ class SearchChip extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                             color: Color(0xffF8F8F8),
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 6 , horizontal: 10),
+                          padding:
+                              EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                           child: Center(
                             child: justLogo
                                 ? SvgPicture.asset(
@@ -70,7 +73,8 @@ class SearchChip extends StatelessWidget {
                                     height: 10,
                                   )
                                 : Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       SvgPicture.asset(
                                         AppAssets.qualityBadgeSvg,

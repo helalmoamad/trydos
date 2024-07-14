@@ -17,10 +17,11 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 
 class SizesFiltersList extends StatefulWidget {
   const SizesFiltersList({
-    super.key, required this.selectedFilters, required this.sizes, this.addItemToAnimatedList, this.removeItemToAnimatedList,
+    super.key, required this.selectedFilters, this.hideTitle = false, required this.sizes, this.addItemToAnimatedList, this.removeItemToAnimatedList,
   });
   final ValueNotifier<List<int>> selectedFilters;
   final List<String> sizes ;
+  final bool hideTitle;
   final void Function(int index)? addItemToAnimatedList ;
   final void Function(int removedIndex, String removedItem)? removeItemToAnimatedList ;
   @override
@@ -44,29 +45,31 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              FilterSelectedMark(width: 20, height: 20),
-              SizedBox(
-                width: 10,
-              ),
-              MyTextWidget(
-                'Filter By Size',
-                style: context.textTheme.caption?.rq
-                    .copyWith(color: Color(0xff505050), height: 15 / 12),
-              ),
-              SizedBox(
-                width: 5,
-              ),
-              SvgPicture.asset(
-                AppAssets.registerInfoSvg,
-                color: Color(0xffD3D3D3),
-              )
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
+          if(!widget.hideTitle)...{
+            Row(
+              children: [
+                FilterSelectedMark(width: 20, height: 20),
+                SizedBox(
+                  width: 10,
+                ),
+                MyTextWidget(
+                  'Filter By Size',
+                  style: context.textTheme.caption?.rq
+                      .copyWith(color: Color(0xff505050), height: 15 / 12),
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                SvgPicture.asset(
+                  AppAssets.registerInfoSvg,
+                  color: Color(0xffD3D3D3),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+          },
           SizedBox(
             height: 70,
             child: ValueListenableBuilder<List<int>>(

@@ -5,7 +5,7 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
-import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
+
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
@@ -210,4 +210,18 @@ class HomeRemoteDatasource {
     );
     return updateItemInCart();
   }
+
+  /* Future<SearchResultModel> getSearchResult(Map<String, dynamic> params) {
+    GetClient<SearchResultModel> getSearchResult = GetClient<SearchResultModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<SearchResultModel>(
+        endpoint: MarketEndPoints.getSearchResultEP,
+        queryParameters: params,
+        response: ResponseValue<SearchResultModel>(
+            fromJson: (response) => SearchResultModel.fromJson(response)),
+      ),
+    );
+
+    return getSearchResult();
+  }*/
 }

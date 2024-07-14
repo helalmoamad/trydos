@@ -5,6 +5,7 @@ import 'package:trydos/features/home/data/models/get_comment_for_product_model.d
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
@@ -41,4 +42,7 @@ abstract class HomeRepository {
   Future<Either<Failure, UpdateItemInCartModel>> UpdateItemToCart(
       Map<String, dynamic> params);
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params);
+
+  /* Future<Either<Failure, SearchResultModel>> getSearchResult(
+      Map<String, dynamic> params);*/
 }

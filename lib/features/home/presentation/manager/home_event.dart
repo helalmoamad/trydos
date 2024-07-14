@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
+import '../../data/models/get_product_filters_model.dart';
+
 abstract class HomeEvent extends Equatable {
   const HomeEvent();
 }
@@ -105,17 +107,21 @@ class GetProductsWithFiltersEvent extends HomeEvent {
   final String? category;
   final List<String>? prices;
   final List<String>? brands;
+  final List<String>? categories;
   final List<Map<String, dynamic>>? attributes;
   final String? searchText;
   final int offset;
   final int? limit;
   final String boutiqueSlug;
   final bool getWithPagination;
+  final GetProductFiltersModel? filtersChoosedByUser;
 
   GetProductsWithFiltersEvent(
       {this.prices,
       this.brands,
       this.attributes,
+      this.categories,
+      this.filtersChoosedByUser,
       required this.boutiqueSlug,
       this.getWithPagination = false,
       this.searchText,
@@ -130,6 +136,7 @@ class GetProductsWithFiltersEvent extends HomeEvent {
         prices,
         brands,
         attributes,
+    categories,
         getWithPagination,
         searchText,
         offset,
@@ -250,6 +257,35 @@ class AddQuantityForCartEvent extends HomeEvent {
     required this.productId,
     required this.cartId,
   });
+  @override
+  List<Object?> get props => [];
+}
+
+class GetSearchREsultEvent extends HomeEvent {
+  final String searchTitle;
+
+  GetSearchREsultEvent({
+    required this.searchTitle,
+  });
+  @override
+  List<Object?> get props => [];
+}
+
+class AddSearchTextToHistoryEvent extends HomeEvent {
+  final String searchTitle;
+
+  AddSearchTextToHistoryEvent({
+    required this.searchTitle,
+  });
+  @override
+  List<Object?> get props => [];
+}
+
+class RemoveSearchTextfromHistoryEvent extends HomeEvent {
+  final String searchTitle;
+  final bool clearAll;
+  RemoveSearchTextfromHistoryEvent(
+      {required this.searchTitle, required this.clearAll});
   @override
   List<Object?> get props => [];
 }
