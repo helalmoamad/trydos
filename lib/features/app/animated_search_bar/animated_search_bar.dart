@@ -15,6 +15,7 @@ class AnimatedSearchBar extends StatefulWidget {
   final onSuffixTap;
   final bool rtl;
   final bool autoFocus;
+  final void Function(String)? onFieldSubmitted;
   final TextStyle? style;
   final bool closeSearchOnSuffixTap;
   final Color? color;
@@ -61,6 +62,7 @@ class AnimatedSearchBar extends StatefulWidget {
     this.rtl = false,
     this.searchDecoration,
     this.onChanged,
+    this.onFieldSubmitted,
     required this.suffixWidget,
     required this.prefixWidget,
     this.height,
@@ -139,7 +141,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
   Widget build(BuildContext context) {
     return BlocListener<AppBloc, AppState>(
       listenWhen: (p, c) =>
-      c.currentIndex == 0 && p.currentIndex != c.currentIndex,
+          c.currentIndex == 0 && p.currentIndex != c.currentIndex,
       listener: (context, state) {
         setState(() {
           toggle = 0;
@@ -149,13 +151,13 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
       },
       child: AnimatedContainer(
         padding: EdgeInsets.only(left: 10, right: 10),
-        duration: Duration(milliseconds: (toggle == 1) ? widget.animationDurationInMilli : 0),
+        duration: Duration(
+            milliseconds: (toggle == 1) ? widget.animationDurationInMilli : 0),
         height: widget.height ?? 48.0,
         width: (toggle == 0) ? 48.0 : widget.width,
         curve: Curves.easeOut,
         child: Stack(
           children: [
-
             ///Using Animated Positioned widget to expand and shrink the widget
             // AnimatedPositioned(
             //   duration: Duration(milliseconds: widget.animationDurationInMilli),
@@ -219,7 +221,9 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
             //   ),
             // ),
             AnimatedPositioned(
-              duration: Duration(milliseconds: (toggle == 1) ? widget.animationDurationInMilli : 0),
+              duration: Duration(
+                  milliseconds:
+                      (toggle == 1) ? widget.animationDurationInMilli : 0),
               left: (toggle == 0) ? 20.0 : 0.0,
               curve: Curves.easeOut,
               top: 0.0,
@@ -235,6 +239,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                       width: widget.width - 60,
                       height: widget.height,
                       child: TextFormField(
+                          onFieldSubmitted: widget.onFieldSubmitted,
                           controller: widget.textController,
                           inputFormatters: widget.inputFormatters,
                           focusNode: focusNode,
@@ -255,38 +260,38 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                     (toggle == 0)
                         ? SizedBox.shrink()
                         : InkWell(
-                      onTap: () {
-                        widget.hideTrendingAndHistory.value = false;
-                        widget.onClickClose.call();
-                        toggle = 0;
+                            onTap: () {
+                              widget.hideTrendingAndHistory.value = false;
+                              widget.onClickClose.call();
+                              toggle = 0;
 
-                        ///if the autoFocus is true, the keyboard will close, automatically
-                        setState(() {
-                          unfocusKeyboard();
-                        });
+                              ///if the autoFocus is true, the keyboard will close, automatically
+                              setState(() {
+                                unfocusKeyboard();
+                              });
 
-                        ///reverse == close
-                        _con.reverse();
-                      },
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 15,
-                          ),
-                          InkWell(
-                            child: SvgPicture.asset(
-                              AppAssets.closeSvg,
-                              height: 15,
-                              width: 15,
-                              color: Color(0xffFF5F61),
+                              ///reverse == close
+                              _con.reverse();
+                            },
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                InkWell(
+                                  child: SvgPicture.asset(
+                                    AppAssets.closeSvg,
+                                    height: 15,
+                                    width: 15,
+                                    color: Color(0xffFF5F61),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 25,
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(
-                            width: 25,
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -296,50 +301,48 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
             toggle != 0
                 ? SizedBox.shrink()
                 : Material(
+                    /// can add custom color or the color will be white
+                    /// toggle button color based on toggle state
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(15.0),
+                    child: GestureDetector(
+                      ///if toggle is 1, which means it's open. so show the back icon, which will close it.
+                      ///if the toggle is 0, which means it's closed, so tapping on it will expand the widget.
+                      ///prefixIcon is of type Icon
+                      child: widget.suffixWidget,
+                      onTap: () {
+                        widget.onSuffixTap.call();
+                        setState(
+                          () {
+                            ///if the search bar is closed
+                            if (toggle == 0) {
+                              toggle = 1;
+                              setState(() {
+                                ///if the autoFocus is true, the keyboard will pop open, automatically
+                                if (widget.autoFocus)
+                                  FocusScope.of(context)
+                                      .requestFocus(focusNode);
+                              });
 
-              /// can add custom color or the color will be white
-              /// toggle button color based on toggle state
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(15.0),
-              child: GestureDetector(
+                              ///forward == expand
+                              _con.forward();
+                            } else {
+                              ///if the search bar is expanded
+                              toggle = 0;
 
-                ///if toggle is 1, which means it's open. so show the back icon, which will close it.
-                ///if the toggle is 0, which means it's closed, so tapping on it will expand the widget.
-                ///prefixIcon is of type Icon
-                child: widget.suffixWidget,
-                onTap: () {
-                  widget.onSuffixTap.call();
-                  setState(
-                        () {
-                      ///if the search bar is closed
-                      if (toggle == 0) {
-                        toggle = 1;
-                        setState(() {
-                          ///if the autoFocus is true, the keyboard will pop open, automatically
-                          if (widget.autoFocus)
-                            FocusScope.of(context)
-                                .requestFocus(focusNode);
-                        });
+                              ///if the autoFocus is true, the keyboard will close, automatically
+                              setState(() {
+                                if (widget.autoFocus) unfocusKeyboard();
+                              });
 
-                        ///forward == expand
-                        _con.forward();
-                      } else {
-                        ///if the search bar is expanded
-                        toggle = 0;
-
-                        ///if the autoFocus is true, the keyboard will close, automatically
-                        setState(() {
-                          if (widget.autoFocus) unfocusKeyboard();
-                        });
-
-                        ///reverse == close
-                        _con.reverse();
-                      }
-                    },
-                  );
-                },
-              ),
-            ),
+                              ///reverse == close
+                              _con.reverse();
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  ),
           ],
         ),
       ),

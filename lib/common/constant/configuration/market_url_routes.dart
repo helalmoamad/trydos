@@ -17,6 +17,7 @@ extension ScopeApi on String {
   String productScopeWeb() => '$_api/${_currentVersion}/web/product/$this';
   String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
   String cartScope() => '$_api/${_currentVersion}/cart/$this';
+  String searchScope() => '$_api/${_currentVersion}/products/$this';
 }
 
 abstract class MarketEndPoints {
@@ -48,6 +49,8 @@ abstract class MarketEndPoints {
       'mainCategoriesRelatedWithBoutique'.homeScope();
 
   static final getProductFiltersEP = 'filters'.productsScope();
+  static final getSearchResultEP = 'search'.searchScope();
+
   static final getProductListingWithoutFiltersEP = 'products'.mobileScope();
   static final getProductListingWithFiltersEP = 'with_filter'.productsScope();
 }

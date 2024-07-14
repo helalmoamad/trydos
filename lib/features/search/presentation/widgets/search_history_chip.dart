@@ -23,7 +23,7 @@ class SearchHistoryChip extends StatelessWidget {
             children: [
               Container(
                 height: 28,
-                padding: EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: 15),
                 decoration: BoxDecoration(
                     color: Color(0xffF8F8F8),
                     borderRadius: BorderRadius.circular(10)),
@@ -36,15 +36,15 @@ class SearchHistoryChip extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                width: 6,
+                width: 5,
               )
             ],
           ),
           GestureDetector(
             onTap: onClickClose,
             child: Container(
-              width : 40,
-              height:40,
+              width: 40,
+              height: 40,
               color: Colors.transparent, // don't remove it
               child: Align(
                 alignment: Alignment.centerRight,

@@ -3,6 +3,7 @@ import 'dart:convert' as convert;
 import 'dart:developer';
 import 'package:adobe_xd/pinned.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -328,7 +329,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     chatBloc = BlocProvider.of<ChatBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+
     callsBloc = BlocProvider.of<CallsBloc>(context);
+    homeBloc.add(GetCartItemEvent());
     if (prefsRepository.chatToken != null) {
       onMessage();
     }
@@ -387,8 +390,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             navigatorKey.currentState!.context.widget is! SinglePageChat) {
           navigatorKey.currentState!.context.pop();
         }
-      }
-      else if (event.data['type'] == 'VideoCallEvent') {
+      } else if (event.data['type'] == 'VideoCallEvent') {
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'VideoCallEvent ForeGround Message');
@@ -415,8 +417,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               auth_token: prefsRepository.chatToken!,
               uId: prefsRepository.myChatId!.toString()),
         ));
-      }
-      else if (event.data['type'] == 'VoiceCallEvent') {
+      } else if (event.data['type'] == 'VoiceCallEvent') {
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'VoiceCallEvent ForeGround Message');
@@ -443,8 +444,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               auth_token: prefsRepository.chatToken!,
               uId: prefsRepository.myChatId!.toString()),
         ));
-      }
-      else if (event.data['type'] == 'AnswerCallEvent') {
+      } else if (event.data['type'] == 'AnswerCallEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
         GetIt.I<PrefsRepository>().saveRequestsData(
@@ -464,14 +464,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           navigatorKey.currentState!.context.pop();
         }
         callsBloc.add(UserInteractWithCall(rejectIt: false));
-      }
-      else if (event.data['type'] == 'ChannelDeletedEvent') {
+      } else if (event.data['type'] == 'ChannelDeletedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data["data"].toString());
         GetIt.I<ChatBloc>()
             .add(DeleteChatFromNotificationEvent(channelId: data['channelId']));
-      }
-      else if (event.data['type'] == 'UpdatingMessageEvent') {
+      } else if (event.data['type'] == 'UpdatingMessageEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data["data"].toString());
         GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
@@ -487,14 +485,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                 ? "message"
                 : "call",
             deleteFromId: data['message']["deleted_by_user_id"] ?? 0));
-      }
-      else if (event.data['type'] == 'ChannelUpdatedEvent') {
+      } else if (event.data['type'] == 'ChannelUpdatedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data["data"].toString());
         GetIt.I<ChatBloc>().add(UpdateChannelObjectFromNotificationEvent(
             chat: Chat.fromJson(data['channel'])));
-      }
-      else if (event.data['type'] == 'ChannelWatchedEvent') {
+      } else if (event.data['type'] == 'ChannelWatchedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
         chatBloc.add(WatchedMessageFromPusherEvent(

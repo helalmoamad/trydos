@@ -209,8 +209,7 @@ class CartPage2 extends StatelessWidget {
                                   height: 48.h,
                                   child: Row(
                                     children: [
-                                      /* Container(
-                                        width: 93,
+                                      Container(
                                         height: 15,
                                         child: SvgPicture.network(
                                           state.cartCollection!.values
@@ -223,7 +222,7 @@ class CartPage2 extends StatelessWidget {
                                             0xff1A171B,
                                           ),
                                         ),
-                                      ),*/
+                                      ),
                                       Spacer(),
                                       Row(
                                         mainAxisAlignment:

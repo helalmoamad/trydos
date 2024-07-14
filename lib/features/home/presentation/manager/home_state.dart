@@ -6,11 +6,13 @@ import 'package:trydos/features/home/data/models/get_comment_for_product_model.d
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
 
 import '../../../../core/data/model/pagination_model.dart';
 import '../../data/models/get_cart_item_model.dart';
 import '../../data/models/get_product_filters_model.dart';
+import '../../data/models/get_product_listing_with_filters_model.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
     as product;
 import '../../data/models/main_categories_response_model.dart';
@@ -35,6 +37,8 @@ enum GetCommentForProductStatus { init, loading, success, failure }
 
 enum GetMainCategoriesStatus { init, loading, success, failure }
 
+enum GetSearchResultStatus { init, loading, success, failure }
+
 enum GetCartItemsStatus { init, loading, success, failure }
 
 enum GetStoriesForProductStatus { init, loading, success, failure }
@@ -42,7 +46,6 @@ enum GetStoriesForProductStatus { init, loading, success, failure }
 enum GetHomeBoutiqesStatus { init, loading, success, failure }
 
 enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
-
 
 enum GetProductListingStatus { init, loading, success, failure }
 
@@ -57,6 +60,8 @@ class HomeState {
     this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.startingSetting,
     this.sizes = const [],
+    this.getSearchResultStatus = GetSearchResultStatus.init,
+    this.searchResultModel,
     this.getProductFiltersInEachBoutiqueStatus = const {},
     this.getProductFiltersInEachBoutiqueModel = const {},
     this.choosedFiltersInEachBoutiqueModel = const {},
@@ -70,10 +75,12 @@ class HomeState {
     this.selectedCollection,
     this.cartCollection = const {},
     this.getProductListingWithFiltersPaginationModels = const {},
+    this.boutiques,
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
     this.CurrentColorSizeForCart,
     this.currentQuantityForCart,
+    this.searchHistory,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
     this.getProductListingPaginationWithoutFiltersModel = const {},
@@ -91,8 +98,10 @@ class HomeState {
   final Map<String ,PaginationModel<product.Products>> getProductListingWithFiltersPaginationModels;
   final Map<String,GetProductFiltersModel> getProductFiltersInEachBoutiqueModel;
   final Map<String,GetProductFiltersModel?> choosedFiltersInEachBoutiqueModel;
+  final GetSearchResultStatus getSearchResultStatus;
   int? selectedCollection;
   int currentPage;
+  List<String>? searchHistory;
   Map<String, List<cart.Cart>>? cartCollection;
   final Map<String, bool> reRequestTheseBoutiques;
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
@@ -105,6 +114,7 @@ class HomeState {
       getHomeBoutiquesPaginationObjectByMainCategory;
   List<Story>? storiesForProduct;
   List<String>? sizes;
+  List<Boutique>? boutiques;
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
   final cart.GetCartShippingItemsModel? getCartShippingItemsModel;
@@ -113,7 +123,7 @@ class HomeState {
   final MainCategoriesResponseModel? mainCategoriesResponseModel;
   final GetProductDetailWithoutRelatedProductsModel?
       getProductDetailWithoutRelatedProductsModel;
-
+  final GetProductListingWithFiltersModel? searchResultModel;
   final StartingSetting? startingSetting;
   Map<String, String>? CurrentColorSizeForCart;
   Map<String, List<int>>? currentQuantityForCart;
@@ -123,16 +133,20 @@ class HomeState {
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
+      final GetSearchResultStatus? getSearchResultStatus,
+      final GetProductListingWithFiltersModel? searchResultModel,
       final GetCommentForProductStatus? getCommentForProductStatus,
       final GetCartItemsStatus? getCartItemsStatus,
       Map<int, int?>? currentStoryInEachCollection,
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
-      final Map<String ,PaginationModel<product.Products>>?
-      getProductListingWithFiltersPaginationModels,
+      List<Boutique>? boutiques,
+      final Map<String, PaginationModel<product.Products>>?
+          getProductListingWithFiltersPaginationModels,
       int? selectedCollection,
       List<String>? sizes,
-      Map<String,  List<int>>? currentQuantityForCart,
+      List<String>? searchHistory,
+      Map<String, List<int>>? currentQuantityForCart,
       Map<String, List<cart.Cart>>? cartCollection,
       Map<String, String>? CurrentColorSizeForCart,
       final Map<String , GetProductFiltersStatus>? getProductFiltersInEachBoutiqueStatus,
@@ -166,7 +180,8 @@ class HomeState {
         sizes: sizes ?? this.sizes,
         cartCollection: cartCollection ?? this.cartCollection,
         getProductListingWithFiltersPaginationModels:
-             getProductListingWithFiltersPaginationModels ?? this.getProductListingWithFiltersPaginationModels,
+            getProductListingWithFiltersPaginationModels ??
+                this.getProductListingWithFiltersPaginationModels,
         currentQuantityForCart:
             currentQuantityForCart ?? this.currentQuantityForCart,
         productITemForCart: productITemForCart ?? this.productITemForCart,
@@ -178,21 +193,20 @@ class HomeState {
         getProductFiltersInEachBoutiqueModel ?? this.getProductFiltersInEachBoutiqueModel,
         choosedFiltersInEachBoutiqueModel:
         choosedFiltersInEachBoutiqueModel ?? this.choosedFiltersInEachBoutiqueModel,
+        searchHistory: searchHistory ?? this.searchHistory,
         getCartShippingItemsModel:
             getCartShippingItemsModel ?? this.getCartShippingItemsModel,
         getCommentForProductStatus:
             getCommentForProductStatus ?? this.getCommentForProductStatus,
         getProductListingStatus:
             getProductListingStatus ?? this.getProductListingStatus,
-        currentSelectedColorForEveryProduct:
-            currentSelectedColorForEveryProduct ??
-                this.currentSelectedColorForEveryProduct,
+        currentSelectedColorForEveryProduct: currentSelectedColorForEveryProduct ??
+            this.currentSelectedColorForEveryProduct,
         getCartItemsStatus: getCartItemsStatus ?? this.getCartItemsStatus,
         reRequestTheseBoutiques:
             reRequestTheseBoutiques ?? this.reRequestTheseBoutiques,
-        reRequestTheseProductListingInBoutiques:
-            reRequestTheseProductListingInBoutiques ??
-                this.reRequestTheseProductListingInBoutiques,
+        reRequestTheseProductListingInBoutiques: reRequestTheseProductListingInBoutiques ??
+            this.reRequestTheseProductListingInBoutiques,
         getStoriesForProductStatus:
             getStoriesForProductStatus ?? this.getStoriesForProductStatus,
         selectedCollection: selectedCollection ?? this.selectedCollection,
@@ -212,14 +226,12 @@ class HomeState {
         mainCategoriesResponseModel:
             mainCategoriesResponseModel ?? this.mainCategoriesResponseModel,
         getProductListingPaginationWithoutFiltersModel:
-            getProductListingPaginationWithoutFiltersModel ??
-                this.getProductListingPaginationWithoutFiltersModel,
-        cachedProductWithoutRelatedProductsModel:
-            cachedProductWithoutRelatedProductsModel ??
-                this.cachedProductWithoutRelatedProductsModel,
-        getProductDetailWithoutRelatedProductsModel:
-            getProductDetailWithoutRelatedProductsModel ??
-                this.getProductDetailWithoutRelatedProductsModel);
+            getProductListingPaginationWithoutFiltersModel ?? this.getProductListingPaginationWithoutFiltersModel,
+        cachedProductWithoutRelatedProductsModel: cachedProductWithoutRelatedProductsModel ?? this.cachedProductWithoutRelatedProductsModel,
+        getProductDetailWithoutRelatedProductsModel: getProductDetailWithoutRelatedProductsModel ?? this.getProductDetailWithoutRelatedProductsModel,
+        boutiques: boutiques ?? this.boutiques,
+        getSearchResultStatus: getSearchResultStatus ?? this.getSearchResultStatus,
+        searchResultModel: searchResultModel ?? this.searchResultModel);
   }
 
   factory HomeState.fromJson(Map<String, dynamic> data) =>

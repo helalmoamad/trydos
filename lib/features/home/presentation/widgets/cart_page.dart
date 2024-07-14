@@ -213,7 +213,9 @@ class _CartPageState extends State<CartPage> {
                     child: Column(
                       children: [
                         Container(
-                          height: 58.h,
+                          height: state.cartCollection!.length < 3
+                              ? (58.h * state.cartCollection!.length)
+                              : 120.h,
                           child: ListView.builder(
                             padding: EdgeInsets.symmetric(vertical: 0),
                             shrinkWrap: false,
@@ -243,7 +245,7 @@ class _CartPageState extends State<CartPage> {
                                     height: 48.h,
                                     child: Row(
                                       children: [
-                                        /*   Container(
+                                        Container(
                                           height: 15,
                                           child: SvgPicture.network(
                                             state.cartCollection!.values
@@ -257,7 +259,7 @@ class _CartPageState extends State<CartPage> {
                                               0xff1A171B,
                                             ),
                                           ),
-                                        ),*/
+                                        ),
                                         Spacer(),
                                         Row(
                                           mainAxisAlignment:
@@ -326,7 +328,10 @@ class _CartPageState extends State<CartPage> {
                                 ),
                                 margin: EdgeInsets.only(top: 10),
                                 width: 420.w,
-                                height: 580.h,
+                                height: state.cartCollection!.length < 3
+                                    ? (580.h -
+                                        state.cartCollection!.length * 48.h)
+                                    : 480.h,
                                 child: ListView.builder(
                                   padding: EdgeInsets.only(top: 0),
                                   itemCount:

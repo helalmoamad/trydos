@@ -36,6 +36,7 @@ import 'package:trydos/features/home/domain/use_cases/get_product_detail_without
 import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
+
 import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/remove_item_from_cart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
@@ -92,9 +93,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddQuantityForCartEvent>(
       _onAddCurrentQuantityForCartEvent,
     );
+    on<GetSearchREsultEvent>(
+      _onGetSearchREsultEventEvent,
+    );
 
     on<GetProductFiltersEvent>(
       _onGetProductFiltersEvent,
+    );
+    on<AddSearchTextToHistoryEvent>(
+      _onAddSearchTextToHistoryEvent,
     );
     on<GetHomeBoutiqesEvent>(_onGetHomeBoutiquesEvent,
         transformer: throttleDroppable(Duration(seconds: 5)));
@@ -115,6 +122,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<UpdateItemInCartEvent>(
       _onUpdateItemInCartEvent,
     );
+    on<RemoveSearchTextfromHistoryEvent>(
+      _onRemoveSearchTextToHistoryEvent,
+    );
+
     on<GetProductsWithoutFiltersEvent>(_onGetProductsWithoutFiltersEvent,
         transformer: throttleDroppable(Duration(seconds: 5)));
     on<GetStoryForProductEvent>(_onGetStoryEvent,
@@ -404,6 +415,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         } else {
           boutiques[index] = r.data!.boutiques![i];
         }
+      }
+      if (event.categorySlug == "Empty") {
+        emit(state.copyWith(boutiques: boutiques));
       }
       reRequestTheseBoutiques[event.categorySlug] = true;
       emit(state.copyWith(
@@ -894,7 +908,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     VariationCart variation = VariationCart(
         color: event.colorName, size: state.CurrentColorSizeForCart!["size"]);
     BoutiquesCart boutiquesCart = BoutiquesCart(
-        icon: IconCart(filePath: event.iconBoutique), id: event.boutiqueId);
+        icon: IconCart(
+            filePath:
+                "https://res.cloudinary.com/dtcmozf4d/image/upload/v1/boutiques/boutiques/icon/2024-07-09-668d640ad81e8.svg"),
+        id: event.boutiqueId);
     Cart cart = Cart(
       thumbnail: event.thumbnail,
       boutique: boutiquesCart,
@@ -1107,5 +1124,49 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       });
     }
     emit(state.copyWith(currentQuantityForCart: CurrentQuantity));
+  }
+
+  FutureOr<void> _onGetSearchREsultEventEvent(
+      GetSearchREsultEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(getSearchResultStatus: GetSearchResultStatus.loading));
+    final response = await getProductsWithFiltersUseCase(
+        GetProductsWithFiltersParams(searchText: event.searchTitle));
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('GetSearchResultEvent')) {
+        add(GetSearchREsultEvent(searchTitle: event.searchTitle));
+        isFailedTheFirstTime.add('GetSearchResultEvent');
+      }
+      emit(
+          state.copyWith(getSearchResultStatus: GetSearchResultStatus.failure));
+    }, (r) {
+      isFailedTheFirstTime.remove('GetSearchResultEvent');
+
+      emit(state.copyWith(
+          searchResultModel: r,
+          getSearchResultStatus: GetSearchResultStatus.success));
+    });
+  }
+
+  FutureOr<void> _onAddSearchTextToHistoryEvent(
+      AddSearchTextToHistoryEvent event, Emitter<HomeState> emit) async {
+    List<String> searchHistory = state.searchHistory ?? [];
+    if (searchHistory.contains(event.searchTitle)) {
+      return;
+    }
+    searchHistory.add(event.searchTitle);
+    emit(state.copyWith(searchHistory: searchHistory));
+  }
+
+  FutureOr<void> _onRemoveSearchTextToHistoryEvent(
+      RemoveSearchTextfromHistoryEvent event, Emitter<HomeState> emit) async {
+    List<String> searchHistory = state.searchHistory ?? [];
+    if (event.clearAll) {
+      List<String> searchHistory = [];
+      emit(state.copyWith(searchHistory: searchHistory));
+      return;
+    }
+    searchHistory.remove(event.searchTitle);
+    emit(state.copyWith(searchHistory: searchHistory));
   }
 }
