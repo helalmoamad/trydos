@@ -13,23 +13,23 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../app/my_text_widget.dart';
 
-class SearchChipBoutique extends StatefulWidget {
+class SearchChipcategory extends StatefulWidget {
   final String title;
-  const SearchChipBoutique({Key? key, required this.title}) : super(key: key);
+  const SearchChipcategory({Key? key, required this.title}) : super(key: key);
 
   @override
-  State<SearchChipBoutique> createState() => _SearchChipBoutiqueState();
+  State<SearchChipcategory> createState() => _SearchChipcategoryState();
 }
 
-class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
+class _SearchChipcategoryState extends State<SearchChipcategory> {
   final ScrollController scrollController = ScrollController();
   late HomeBloc homeBloc;
-  final ValueNotifier<List<int>> selectedBoutique = ValueNotifier([]);
-  List<String> selectedBoutiqueSlugs = [];
+  final ValueNotifier<List<int>> selectedCategory = ValueNotifier([]);
+  List<String> selectedCategorySlugs = [];
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    scrollController.addListener(() {
+    /*scrollController.addListener(() {
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent *
               0.7 *
@@ -44,7 +44,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                 .toString(),
             getWithPagination: true));
       }
-    });
+    });*/
     super.initState();
   }
 
@@ -58,9 +58,9 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
           border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
       child: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
-            previous.boutiques != current.boutiques,
+            previous.categories != current.categories,
         builder: (context, state) {
-          if (state.boutiques.isNullOrEmpty) {
+          if (state.categories.isNullOrEmpty) {
             return SizedBox.shrink();
           }
           return Column(
@@ -103,34 +103,34 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
                             return ValueListenableBuilder(
-                              valueListenable: selectedBoutique,
+                              valueListenable: selectedCategory,
                               builder: (context, value, _) {
                                 return InkWell(
                                   onTap: () {
-                                    if (selectedBoutique.value
+                                    if (selectedCategory.value
                                         .contains(index)) {
-                                      selectedBoutiqueSlugs.remove(
-                                          "${state.boutiques![index].slug ?? ""}");
-                                      selectedBoutique.value.remove(index);
+                                      selectedCategorySlugs.remove(
+                                          "${state.categories![index].slug ?? ""}");
+                                      selectedCategory.value.remove(index);
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
-                                              withBoutique: true,
+                                              withBoutique: false,
                                               withBrand: false,
                                               selectedBoutiqueBrandCategorySlugsForSearch:
-                                                  selectedBoutiqueSlugs));
+                                                  selectedCategorySlugs));
                                     } else {
-                                      selectedBoutique.value.add(index);
-                                      selectedBoutiqueSlugs.add(
-                                          "${state.boutiques![index].slug ?? ""}");
+                                      selectedCategory.value.add(index);
+                                      selectedCategorySlugs.add(
+                                          "${state.categories![index].slug ?? ""}");
 
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
-                                              withBoutique: true,
+                                              withBoutique: false,
                                               withBrand: false,
                                               selectedBoutiqueBrandCategorySlugsForSearch:
-                                                  selectedBoutiqueSlugs));
+                                                  selectedCategorySlugs));
                                     }
-                                    selectedBoutique.notifyListeners();
+                                    selectedCategory.notifyListeners();
                                   },
                                   child: Stack(
                                     children: [
@@ -156,8 +156,8 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                                     CrossAxisAlignment.center,
                                                 children: [
                                                   SvgPicture.network(
-                                                    state.boutiques![index]
-                                                        .icon!.filePath!,
+                                                    state.categories![index]
+                                                        .icon!,
                                                     width: 15,
                                                     height: 15,
                                                   ),
@@ -165,7 +165,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                                     width: 5,
                                                   ),
                                                   MyTextWidget(
-                                                    state.boutiques![index]
+                                                    state.categories![index]
                                                         .name!,
                                                     style: context
                                                         .textTheme.bodyText2?.rq
@@ -193,7 +193,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                               width: 10,
                             );
                           },
-                          itemCount: state.boutiques!.length),
+                          itemCount: state.categories!.length),
                     ],
                   ),
                 ),

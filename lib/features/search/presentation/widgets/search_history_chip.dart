@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/search/presentation/widgets/close_circle.dart';
 
 class SearchHistoryChip extends StatelessWidget {
@@ -21,17 +24,21 @@ class SearchHistoryChip extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                height: 28,
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                decoration: BoxDecoration(
-                    color: Color(0xffF8F8F8),
-                    borderRadius: BorderRadius.circular(10)),
-                child: Center(
-                  child: Text(
-                    text,
-                    style: context.textTheme.bodyText2?.rq
-                        .copyWith(height: 18 / 14, color: Color(0xff8D8D8D)),
+              GestureDetector(
+                onTap: () => BlocProvider.of<HomeBloc>(context)
+                    .add(GetSearchREsultEvent(searchTitle: text)),
+                child: Container(
+                  height: 28,
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  decoration: BoxDecoration(
+                      color: Color(0xffF8F8F8),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Center(
+                    child: Text(
+                      text,
+                      style: context.textTheme.bodyText2?.rq
+                          .copyWith(height: 18 / 14, color: Color(0xff8D8D8D)),
+                    ),
                   ),
                 ),
               ),

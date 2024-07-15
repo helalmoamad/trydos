@@ -64,7 +64,7 @@ class ProductDetailsPage extends StatefulWidget {
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   final ScrollController scrollController = ScrollController();
   late HomeBloc homeBloc;
-
+  final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
   bool enable = true;
   double? valueOnY;
   final PanelController panelControllerForBuyersCameraShots = PanelController();
@@ -476,13 +476,23 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 int currentSelectedColor =
                     state.currentSelectedColorForEveryProduct[productId] ??
                         (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
+                String key = "${productId}" +
+                    "${!widget.productItem.syncColorImages.isNullOrEmpty && !widget.productItem.syncColorImages![0].images.isNullOrEmpty ? widget.productItem.colors![currentSelectedColor].name ?? "" : ""}" +
+                    "${state.CurrentColorSizeForCart != null ? state.CurrentColorSizeForCart!["size"] ?? "" : ""}";
+                addToBagButtonShapeNotifier.value =
+                    state.currentQuantityForCart != null
+                        ? state.currentQuantityForCart![key].isNullOrEmpty
+                            ? 0
+                            : state.currentQuantityForCart![key]![0]
+                        : 0;
 
                 return ProductDetailsBottomSheet(
+                  addToBagButtonShapeNotifier: addToBagButtonShapeNotifier,
+                  sizes: state.sizes ?? [],
                   CurrentQuantity: state.currentQuantityForCart != null
-                      ? state.currentQuantityForCart![
-                              widget.productItem.id.toString()].isNullOrEmpty ?
-                          0:state.currentQuantityForCart![
-                              widget.productItem.id.toString()]![0]
+                      ? state.currentQuantityForCart![key].isNullOrEmpty
+                          ? 0
+                          : state.currentQuantityForCart![key]![0]
                       : 0,
                   currentColornum:
                       !widget.productItem.syncColorImages.isNullOrEmpty &&
@@ -502,9 +512,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ""
                       : "",
                   productItem: widget.productItem,
-                  currentColor: state.currentSelectedColorForEveryProduct[
-                          widget.productItem.id.toString()] ??
-                      widget.productItem.syncColorImages!.length ~/ 4,
+                  currentColor: currentSelectedColor,
                 );
               }),
           SlidingUpPanelForBuyersCameraShots(

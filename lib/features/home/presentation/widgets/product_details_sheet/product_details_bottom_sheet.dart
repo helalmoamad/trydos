@@ -38,11 +38,15 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final String currentColorName;
   final String currentColornum;
   final int CurrentQuantity;
+  final ValueNotifier<int> addToBagButtonShapeNotifier;
+  final List<String> sizes;
   const ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
+      required this.addToBagButtonShapeNotifier,
       required this.CurrentQuantity,
       required this.boutiqueIcon,
+      required this.sizes,
       required this.currentColornum,
       required this.boutiqueId,
       required this.currentColor,
@@ -54,7 +58,6 @@ class ProductDetailsBottomSheet extends StatefulWidget {
 }
 
 class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
-  final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
   final ValueNotifier<List<int>> indicesOfChatCardsToShare = ValueNotifier([]);
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final ValueNotifier<double> workOnBlurNotifier = ValueNotifier(10);
@@ -76,7 +79,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
 
   @override
   void initState() {
-    addToBagButtonShapeNotifier.value = widget.CurrentQuantity;
+    widget.addToBagButtonShapeNotifier.value = widget.CurrentQuantity;
     homeBloc = BlocProvider.of<HomeBloc>(context);
 
     syncColorImageList = widget.productItem.syncColorImages ?? [];
@@ -285,6 +288,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                       changingPagesScrollOffset: 0.1,
                                       isClip: false,
                                       onItemChanged: (index) {
+                                        print(
+                                            "////////////////////////////////////////////////${index}");
                                         currentIndexInSlider = index;
                                         currentImageTab.value = index;
 
@@ -355,7 +360,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             children: [
                               ProductDetailsSheetHeader(
                                 addToBagButtonShapeNotifier:
-                                    addToBagButtonShapeNotifier,
+                                    widget.addToBagButtonShapeNotifier,
                                 price: widget.productItem.priceFormatted ?? '',
                                 offerPrice:
                                     (widget.productItem.offerPrice ?? '')
@@ -411,12 +416,13 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                 )
                               : currentTab == 3
                                   ? SelectSizeContent(
+                                      sizes: widget.sizes,
                                       scrollController: controller,
                                       selectedColor: Colors.blue,
                                       sizeIsNotAvailableNotifier:
                                           sizeIsNotAvailableNotifier,
                                       addToBagButtonShapeNotifier:
-                                          addToBagButtonShapeNotifier,
+                                          widget.addToBagButtonShapeNotifier,
                                     )
                                   : const SizedBox.shrink(),
                         ],
@@ -476,14 +482,29 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               builder: (context, indices, _) {
                 return indices.isEmpty
                     ? ProductDetailsSheetBottomBar(
-                        imageUrl: widget.productItem.images![0].filePath!,
+                        imageUrl:
+                            !widget.productItem.syncColorImages.isNullOrEmpty
+                                ? widget
+                                        .productItem
+                                        .syncColorImages![widget.currentColor]
+                                        .images![0]
+                                        .filePath ??
+                                    ""
+                                : widget
+                                        .productItem
+                                        .images![widget.currentColor]
+                                        .filePath ??
+                                    "",
                         onFinishBuying: (quantity) {
                           homeBloc.add(AddItemToCartEvent(
                               colorName: widget.currentColorName,
                               iconBoutique: widget.boutiqueIcon,
                               boutiqueId: 46,
-                              thumbnail:
-                                  widget.productItem.images![0].filePath!,
+                              thumbnail: widget
+                                  .productItem
+                                  .syncColorImages![widget.currentColor]
+                                  .images![0]
+                                  .filePath!,
                               products: widget.productItem,
                               color: widget.currentColornum,
                               quantity: int.parse(quantity),
@@ -514,7 +535,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         currentActiveTab: currentActiveTab,
                         sizeIsNotAvailableNotifier: sizeIsNotAvailableNotifier,
                         addToBagButtonShapeNotifier:
-                            addToBagButtonShapeNotifier)
+                            widget.addToBagButtonShapeNotifier)
                     : ShareButton(
                         onTap: () {},
                       );
