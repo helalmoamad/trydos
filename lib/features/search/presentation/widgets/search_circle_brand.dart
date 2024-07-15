@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -13,38 +14,23 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../app/my_text_widget.dart';
 
-class SearchChipBoutique extends StatefulWidget {
+class SearchChipBrand extends StatefulWidget {
   final String title;
-  const SearchChipBoutique({Key? key, required this.title}) : super(key: key);
+  const SearchChipBrand({Key? key, required this.title}) : super(key: key);
 
   @override
-  State<SearchChipBoutique> createState() => _SearchChipBoutiqueState();
+  State<SearchChipBrand> createState() => _SearchChipBrandState();
 }
 
-class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
+class _SearchChipBrandState extends State<SearchChipBrand> {
   final ScrollController scrollController = ScrollController();
   late HomeBloc homeBloc;
-  final ValueNotifier<List<int>> selectedBoutique = ValueNotifier([]);
-  List<String> selectedBoutiqueSlugs = [];
+  final ValueNotifier<List<int>> selectedBrand = ValueNotifier([]);
+  List<String> selectedBrandSlugs = [];
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    scrollController.addListener(() {
-      if (scrollController.offset >=
-          (scrollController.position.maxScrollExtent *
-              0.7 *
-              (homeBloc
-                  .state
-                  .getHomeBoutiquesPaginationObjectByMainCategory["Empty"]!
-                  .page))) {
-        homeBloc.add(GetHomeBoutiqesEvent(
-            categorySlug: "Empty",
-            offset: homeBloc.state
-                .getHomeBoutiquesPaginationObjectByMainCategory["Empty"]!.page
-                .toString(),
-            getWithPagination: true));
-      }
-    });
+
     super.initState();
   }
 
@@ -57,10 +43,9 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
       child: BlocBuilder<HomeBloc, HomeState>(
-        buildWhen: (previous, current) =>
-            previous.boutiques != current.boutiques,
+        buildWhen: (previous, current) => previous.brands != current.brands,
         builder: (context, state) {
-          if (state.boutiques.isNullOrEmpty) {
+          if (state.brands.isNullOrEmpty) {
             return SizedBox.shrink();
           }
           return Column(
@@ -103,34 +88,33 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
                             return ValueListenableBuilder(
-                              valueListenable: selectedBoutique,
+                              valueListenable: selectedBrand,
                               builder: (context, value, _) {
                                 return InkWell(
                                   onTap: () {
-                                    if (selectedBoutique.value
-                                        .contains(index)) {
-                                      selectedBoutiqueSlugs.remove(
-                                          "${state.boutiques![index].slug ?? ""}");
-                                      selectedBoutique.value.remove(index);
+                                    if (selectedBrand.value.contains(index)) {
+                                      selectedBrandSlugs.remove(
+                                          "${state.brands![index].slug ?? ""}");
+                                      selectedBrand.value.remove(index);
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
-                                              withBoutique: true,
-                                              withBrand: false,
+                                              withBoutique: false,
+                                              withBrand: true,
                                               selectedBoutiqueBrandCategorySlugsForSearch:
-                                                  selectedBoutiqueSlugs));
+                                                  selectedBrandSlugs));
                                     } else {
-                                      selectedBoutique.value.add(index);
-                                      selectedBoutiqueSlugs.add(
-                                          "${state.boutiques![index].slug ?? ""}");
+                                      selectedBrand.value.add(index);
+                                      selectedBrandSlugs.add(
+                                          "${state.brands![index].slug ?? ""}");
 
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
-                                              withBoutique: true,
-                                              withBrand: false,
+                                              withBoutique: false,
+                                              withBrand: true,
                                               selectedBoutiqueBrandCategorySlugsForSearch:
-                                                  selectedBoutiqueSlugs));
+                                                  selectedBrandSlugs));
                                     }
-                                    selectedBoutique.notifyListeners();
+                                    selectedBrand.notifyListeners();
                                   },
                                   child: Stack(
                                     children: [
@@ -155,25 +139,12 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.center,
                                                 children: [
-                                                  SvgPicture.network(
-                                                    state.boutiques![index]
-                                                        .icon!.filePath!,
+                                                  SvgNetworkWidget(
+                                                    svgUrl: state
+                                                        .brands![index].icon!,
                                                     width: 15,
                                                     height: 15,
                                                   ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  MyTextWidget(
-                                                    state.boutiques![index]
-                                                        .name!,
-                                                    style: context
-                                                        .textTheme.bodyText2?.rq
-                                                        .copyWith(
-                                                            height: 18 / 14,
-                                                            color: Color(
-                                                                0xff8D8D8D)),
-                                                  )
                                                 ],
                                               ),
                                             ),
@@ -193,7 +164,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                               width: 10,
                             );
                           },
-                          itemCount: state.boutiques!.length),
+                          itemCount: state.brands!.length),
                     ],
                   ),
                 ),

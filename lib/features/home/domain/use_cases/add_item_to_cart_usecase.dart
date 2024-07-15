@@ -26,11 +26,14 @@ class AddITemToCartParams {
   int? quantity;
   String? choice_1;
   String? color;
-  AddITemToCartParams({this.choice_1, this.color, this.id, this.quantity});
+  String? image;
+  AddITemToCartParams(
+      {this.choice_1, this.color, this.id, this.quantity, this.image});
   Map<String, dynamic> get map => {
         "id": id,
         "quantity": quantity,
         "choice_1": choice_1,
         "color": color,
+        "image": image
       }..removeWhere((key, value) => value == null || value == "");
 }

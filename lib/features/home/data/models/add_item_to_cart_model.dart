@@ -31,7 +31,9 @@ class AddItemToCartModel {
   factory AddItemToCartModel.fromJson(Map<String, dynamic> json) =>
       AddItemToCartModel(
         message: json["message"],
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        data: json["data"] == null || json["data"] == ""
+            ? null
+            : Data.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {

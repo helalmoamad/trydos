@@ -30,10 +30,13 @@ class _SearchResultState extends ThemeState<SearchResult> {
           p.searchResultModel != c.searchResultModel ||
           p.getSearchResultStatus != c.getSearchResultStatus,
       builder: (context, state) {
-        if (state.getSearchResultStatus != GetSearchResultStatus.success) {
+        if (state.getSearchResultStatus == GetSearchResultStatus.loading) {
           return Center(
             child: TrydosLoader(),
           );
+        }
+        if (state.searchResultModel == null) {
+          return SizedBox.shrink();
         }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

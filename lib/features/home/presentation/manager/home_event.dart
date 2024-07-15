@@ -102,7 +102,6 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
       [category, getWithPagination, offset, limit, boutiqueSlug];
 }
 
-
 class GetProductsWithFiltersEvent extends HomeEvent {
   final String? category;
   final List<String>? prices;
@@ -136,7 +135,7 @@ class GetProductsWithFiltersEvent extends HomeEvent {
         prices,
         brands,
         attributes,
-    categories,
+        categories,
         getWithPagination,
         searchText,
         offset,
@@ -223,9 +222,13 @@ class RemoveItemFormCartEvent extends HomeEvent {
   final String boutiqueId;
   final String itemId;
   final String productId;
+  final String currentSize;
+  final String ColoName;
   RemoveItemFormCartEvent({
     required this.itemId,
     required this.boutiqueId,
+    required this.currentSize,
+    required this.ColoName,
     required this.productId,
   });
   @override
@@ -235,11 +238,15 @@ class RemoveItemFormCartEvent extends HomeEvent {
 class UpdateItemInCartEvent extends HomeEvent {
   final String cartId;
   final int quantity;
+  final String currentSize;
   final String productId;
+  final String colorName;
   final String boutiqueId;
   UpdateItemInCartEvent({
     required this.quantity,
+    required this.colorName,
     required this.cartId,
+    required this.currentSize,
     required this.productId,
     required this.boutiqueId,
   });
@@ -250,13 +257,15 @@ class UpdateItemInCartEvent extends HomeEvent {
 class AddQuantityForCartEvent extends HomeEvent {
   final String productId;
   final int quantity;
+  final String currentSize;
   final int cartId;
-
-  AddQuantityForCartEvent({
-    required this.quantity,
-    required this.productId,
-    required this.cartId,
-  });
+  final String colorName;
+  AddQuantityForCartEvent(
+      {required this.quantity,
+      required this.productId,
+      required this.currentSize,
+      required this.cartId,
+      required this.colorName});
   @override
   List<Object?> get props => [];
 }
@@ -286,6 +295,32 @@ class RemoveSearchTextfromHistoryEvent extends HomeEvent {
   final bool clearAll;
   RemoveSearchTextfromHistoryEvent(
       {required this.searchTitle, required this.clearAll});
+  @override
+  List<Object?> get props => [];
+}
+
+class AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent extends HomeEvent {
+  bool withBoutique;
+
+  bool withBrand;
+  final List<String> selectedBoutiqueBrandCategorySlugsForSearch;
+  AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent({
+    required this.selectedBoutiqueBrandCategorySlugsForSearch,
+    required this.withBoutique,
+    required this.withBrand,
+  });
+  @override
+  List<Object?> get props => [];
+}
+
+class GetBrandEvent extends HomeEvent {
+  GetBrandEvent();
+  @override
+  List<Object?> get props => [];
+}
+
+class GetCategoryEvent extends HomeEvent {
+  GetCategoryEvent();
   @override
   List<Object?> get props => [];
 }

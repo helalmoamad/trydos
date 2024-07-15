@@ -11,6 +11,9 @@ import 'package:trydos/core/utils/form_state_mixin.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/search/presentation/widgets/search_Circle_boutique.dart';
+import 'package:trydos/features/search/presentation/widgets/search_circle_brand.dart';
+import 'package:trydos/features/search/presentation/widgets/search_circle_category.dart';
+
 import 'package:trydos/features/search/presentation/widgets/trendig_section.dart';
 import 'dart:ui' as ui;
 import '../../../../common/constant/design/assets_provider.dart';
@@ -111,9 +114,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   )),
                   ValueListenableBuilder<bool>(
                       valueListenable: widget.hideTrendingAndHistory,
-                      child: SearchChip(
+                      child: SearchChipBrand(
                         title: 'Brands',
-                        justLogo: true,
                       ),
                       builder: (context, hide, child) {
                         return SliverToBoxAdapter(
@@ -125,7 +127,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                       }),
                   ValueListenableBuilder<bool>(
                       valueListenable: widget.hideTrendingAndHistory,
-                      child: SearchChip(
+                      child: SearchChipcategory(
                         title: 'Category',
                       ),
                       builder: (context, hide, child) {
@@ -139,7 +141,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   ValueListenableBuilder<bool>(
                       valueListenable: widget.hideTrendingAndHistory,
                       child: SearchChipBoutique(
-                        title: 'Boutique',
+                        title: "Boutique",
                       ),
                       builder: (context, hide, child) {
                         return SliverToBoxAdapter(
