@@ -103,6 +103,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
                     padding: EdgeInsets.all(8),
                     child: SvgPicture.asset(
                       AppAssets.backIconArrowSvg,
+                      matchTextDirection: true,
                       width: 8.w,
                       color:
                           appBarParams.backIconColor ?? const Color(0xff388CFF),
