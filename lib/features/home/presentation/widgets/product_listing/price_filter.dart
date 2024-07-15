@@ -23,9 +23,11 @@ class PriceFilter extends StatefulWidget {
   const PriceFilter({
     super.key,
     required this.pricesFiltersRanges,
+    this.hideTitle = false,
     required this.lowerAndUpperBound,
   });
 
+  final bool hideTitle;
   final Prices pricesFiltersRanges;
   final ValueNotifier<Tuple2<int, int>> lowerAndUpperBound;
 
@@ -37,12 +39,12 @@ class _PriceFilterState extends State<PriceFilter> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsetsDirectional.only(start: 30.0, end: 20),
+      padding: EdgeInsetsDirectional.only(start: widget.hideTitle ? 0 : 30.0, end: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 110,
+            height: widget.hideTitle ? 80  : 110,
             width: 1.sw - 50,
             child: Stack(
               alignment: Alignment.bottomCenter,
@@ -72,7 +74,7 @@ class _PriceFilterState extends State<PriceFilter> {
                   height: 40,
                   width: 1.sw - 50,
                   child: FlutterSlider(
-                    minimumDistance: min(10 , (widget.pricesFiltersRanges.maxPrice! - widget.pricesFiltersRanges.minPrice!).toDouble()),
+                    minimumDistance: 1,
                     values: [
                       widget.pricesFiltersRanges.minPrice!.toDouble(),
                       widget.pricesFiltersRanges.maxPrice!.toDouble()
@@ -156,7 +158,7 @@ class _PriceFilterState extends State<PriceFilter> {
                     valueListenable: widget.lowerAndUpperBound,
                     builder: (context, filterData, child) {
                       return Positioned(
-                          top: 40,
+                          top: widget.hideTitle ? 10 : 40,
                           left: 0,
                           child: Row(
                             children: [
@@ -184,7 +186,7 @@ class _PriceFilterState extends State<PriceFilter> {
                     builder: (context, filterData, child) {
                       return Positioned(
                           right: 0,
-                          top: 40,
+                          top: widget.hideTitle ? 10 : 40,
                           child: Row(
                             children: [
                               MyTextWidget(
@@ -206,7 +208,7 @@ class _PriceFilterState extends State<PriceFilter> {
                             ],
                           ));
                     }),
-                Positioned(
+                if(!widget.hideTitle) Positioned(
                   top: 0,
                   left: 0,
                   width: 1.sw - 50,

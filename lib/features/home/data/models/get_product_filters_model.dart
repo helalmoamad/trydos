@@ -36,7 +36,8 @@ class GetProductFiltersModel {
         filters: json["data"] == null ? null : Filter.fromJson(json["data"]),
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "message": message,
         "data": filters?.toJson(),
       };
@@ -68,12 +69,12 @@ class Filter {
     String? boutiqueSlug,
   }) =>
       Filter(
-        brands: brands ?? this.brands ,
-        attributes: attributes ?? this.attributes ,
-        colors: colors ?? this.colors ,
-        prices: prices ,
-        categories: categories ?? this.categories ,
-        boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug ,
+        brands: brands ?? this.brands,
+        attributes: attributes ?? this.attributes,
+        colors: colors ?? this.colors,
+        prices: prices,
+        categories: categories ?? this.categories,
+        boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
       );
 
   Filter copyWith({
@@ -85,12 +86,12 @@ class Filter {
     String? boutiqueSlug,
   }) =>
       Filter(
-        brands: brands ,
-        attributes: attributes ,
-        colors: colors ,
-        prices: prices ,
-        categories: categories ,
-        boutiqueSlug: boutiqueSlug ,
+        brands: brands,
+        attributes: attributes,
+        colors: colors,
+        prices: prices,
+        categories: categories,
+        boutiqueSlug: boutiqueSlug,
       );
 
   factory Filter.fromJson(Map<String, dynamic> json) {
@@ -163,7 +164,8 @@ class Attribute {
         options: options ?? this.options,
       );
 
-  factory Attribute.fromJson(Map<String, dynamic> json) => Attribute(
+  factory Attribute.fromJson(Map<String, dynamic> json) =>
+      Attribute(
         id: json["id"],
         name: json["name"],
         options: json["options"] == null
@@ -171,11 +173,12 @@ class Attribute {
             : List<String>.from(json["options"]!.map((x) => x)),
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "id": id,
         "name": name,
         "options":
-            options == null ? [] : List<dynamic>.from(options!.map((x) => x)),
+        options == null ? [] : List<dynamic>.from(options!.map((x) => x)),
       };
 }
 
@@ -201,13 +204,15 @@ class Brand {
         image: image ?? this.image,
       );
 
-  factory Brand.fromJson(Map<String, dynamic> json) => Brand(
+  factory Brand.fromJson(Map<String, dynamic> json) =>
+      Brand(
         id: json["id"],
         name: json["name"],
         image: json["image"],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "id": id,
         "name": name,
         "image": image,
@@ -217,37 +222,45 @@ class Brand {
 class Prices {
   final int? minPrice;
   final int? maxPrice;
+  final String? currencySymbol;
   final List<PriceRange>? priceRanges;
 
   Prices({
     this.minPrice,
     this.maxPrice,
+    this.currencySymbol,
     this.priceRanges,
   });
 
   Prices copyWith({
     int? minPrice,
     int? maxPrice,
+    String? currencySymbol,
     List<PriceRange>? priceRanges,
   }) =>
       Prices(
         minPrice: minPrice ?? this.minPrice,
         maxPrice: maxPrice ?? this.maxPrice,
+        currencySymbol: currencySymbol ?? this.currencySymbol,
         priceRanges: priceRanges ?? this.priceRanges,
       );
 
-  factory Prices.fromJson(Map<String, dynamic> json) => Prices(
+  factory Prices.fromJson(Map<String, dynamic> json) =>
+      Prices(
         minPrice: json["min_price"],
         maxPrice: json["max_price"],
+        currencySymbol: json["currency_symbol"],
         priceRanges: json["priceRanges"] == null
             ? []
             : List<PriceRange>.from(
-                json["priceRanges"]!.map((x) => PriceRange.fromJson(x))),
+            json["priceRanges"]!.map((x) => PriceRange.fromJson(x))),
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "min_price": minPrice,
         "max_price": maxPrice,
+        "currency_symbol": currencySymbol,
         "priceRanges": priceRanges == null
             ? []
             : List<dynamic>.from(priceRanges!.map((x) => x.toJson())),
@@ -280,14 +293,16 @@ class PriceRange {
         count: count ?? this.count,
       );
 
-  factory PriceRange.fromJson(Map<String, dynamic> json) => PriceRange(
+  factory PriceRange.fromJson(Map<String, dynamic> json) =>
+      PriceRange(
         minPrice: json["min_price"],
         maxPrice: json["max_price"],
         text: json["text"],
         count: json["products_count"],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "min_price": minPrice,
         "max_price": maxPrice,
         "text": text,

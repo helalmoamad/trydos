@@ -105,10 +105,6 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
 
 class GetProductsWithFiltersEvent extends HomeEvent {
   final String? category;
-  final List<String>? prices;
-  final List<String>? brands;
-  final List<String>? categories;
-  final List<Map<String, dynamic>>? attributes;
   final String? searchText;
   final int offset;
   final int? limit;
@@ -117,10 +113,7 @@ class GetProductsWithFiltersEvent extends HomeEvent {
   final GetProductFiltersModel? filtersChoosedByUser;
 
   GetProductsWithFiltersEvent(
-      {this.prices,
-      this.brands,
-      this.attributes,
-      this.categories,
+      {
       this.filtersChoosedByUser,
       required this.boutiqueSlug,
       this.getWithPagination = false,
@@ -133,10 +126,6 @@ class GetProductsWithFiltersEvent extends HomeEvent {
   // TODO: implement props
   List<Object?> get props => [
         category,
-        prices,
-        brands,
-        attributes,
-    categories,
         getWithPagination,
         searchText,
         offset,

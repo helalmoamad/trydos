@@ -86,11 +86,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
     Timer.periodic(Duration(milliseconds: 100), postFrameCallback);
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    homeBloc.add(GetProductsWithoutFiltersEvent(
-      boutiqueSlug: widget.boutiqueSlug,
-      category: widget.category,
-      offset: 1,
-    ));
+    homeBloc.add(
+        GetProductsWithoutFiltersEvent(
+            boutiqueSlug:
+            widget.boutiqueSlug,
+            category: widget.category,
+            offset: 1,
+            ));
     homeBloc.add(GetProductFiltersEvent(
       boutiqueSlug: widget.boutiqueSlug,
       category: widget.category,
@@ -134,603 +136,619 @@ class _ProductListingPageState extends State<ProductListingPage> {
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
-            Scaffold(
-              backgroundColor: Color(0xffF8F8F8),
-              bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-                  buildWhen: (p, c) => p.showBars != c.showBars,
-                  builder: (context, state) {
-                    if (state.showBars == true) {
-                      return const AppBottomNavBar();
+            WillPopScope(
+              onWillPop: ()async{
+                if(filterPageExpanded.value){
+                  filterPageExpanded.value = false;
+                  return Future.value(false);
+                }
+                homeBloc.add(GetProductsWithFiltersEvent(
+                  boutiqueSlug: widget.boutiqueSlug,
+                  category: widget.category,
+                  offset: 1,
+                  filtersChoosedByUser: null
+                ));
+                return Future.value(true);
+              },
+              child: Scaffold(
+                backgroundColor: Color(0xffF8F8F8),
+                bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
+                    buildWhen: (p, c) => p.showBars != c.showBars,
+                    builder: (context, state) {
+                      if (state.showBars == true) {
+                        return const AppBottomNavBar();
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    }),
+                body: NotificationListener<ScrollUpdateNotification>(
+                  onNotification: (notification) {
+                    if (notification.metrics.axis == Axis.horizontal)
+                      return false;
+                    final currentOffset = notification.metrics.pixels;
+                    if (currentOffset >= 50 && !filterPageExpanded.value) {
+                      displayBoutiqueIconInAppBar.value = true;
                     } else {
-                      return const SizedBox.shrink();
+                      displayBoutiqueIconInAppBar.value = false;
                     }
-                  }),
-              body: NotificationListener<ScrollUpdateNotification>(
-                onNotification: (notification) {
-                  if (notification.metrics.axis == Axis.horizontal)
-                    return false;
-                  final currentOffset = notification.metrics.pixels;
-                  if (currentOffset >= 50 && !filterPageExpanded.value) {
-                    displayBoutiqueIconInAppBar.value = true;
-                  } else {
-                    displayBoutiqueIconInAppBar.value = false;
-                  }
-                  if (_previousOffset != null) {
-                    final distance = (currentOffset - _previousOffset!).abs();
-                    final time = notification
-                            .dragDetails?.sourceTimeStamp?.inMilliseconds ??
-                        0.000001;
-                    _velocity = distance / time;
-                    if (scrollController.position.pixels <= 80) {
-                      _previousOffset = currentOffset;
-                      return true;
+                    if (_previousOffset != null) {
+                      final distance = (currentOffset - _previousOffset!).abs();
+                      final time = notification
+                              .dragDetails?.sourceTimeStamp?.inMilliseconds ??
+                          0.000001;
+                      _velocity = distance / time;
+                      if (scrollController.position.pixels <= 80) {
+                        _previousOffset = currentOffset;
+                        return true;
+                      }
+                      if (_velocity! <= (1.5e-8) && _velocity! >= (1.42e-8)) {
+                        appBloc.add(ShowOrHideBars(true));
+                      } else {
+                        appBloc.add(ShowOrHideBars(false));
+                      }
                     }
-                    if (_velocity! <= (1.5e-8) && _velocity! >= (1.42e-8)) {
-                      appBloc.add(ShowOrHideBars(true));
-                    } else {
-                      appBloc.add(ShowOrHideBars(false));
-                    }
-                  }
-                  _previousOffset = currentOffset;
-                  return true;
-                },
-                child: ValueListenableBuilder<Tuple2<int, int>>(
-                    valueListenable: setThisEnabledNotifier,
-                    builder: (context, slidingMode, _) {
-                      return ValueListenableBuilder<bool>(
-                          valueListenable: filterPageExpanded,
-                          builder: (context, isExpanded, _) {
-                            return CustomScrollView(
-                                controller: scrollController,
-                                physics: ClampingScrollPhysics(),
-                                slivers: [
-                                  SliverAppBar(
-                                    pinned: true,
-                                    backgroundColor: colorScheme.white,
-                                    automaticallyImplyLeading: false,
-                                    flexibleSpace: TrydosAppBar(
-                                      appBarParams: AppBarParams(
-                                          backgroundColor: colorScheme.white,
-                                          scrolledUnderElevation: 0,
-                                          backIconColor: Colors.black,
-                                          action: [
-                                            ValueListenableBuilder<bool>(
-                                                valueListenable:
-                                                    displayBoutiqueIconInAppBar,
-                                                builder: (context, display, _) {
-                                                  return Visibility(
-                                                    visible: display,
-                                                    child: Padding(
-                                                      padding:
-                                                          EdgeInsetsDirectional
-                                                              .only(
-                                                                  start: 30.w),
-                                                      child: SvgNetworkWidget(
-                                                        svgUrl:
-                                                            widget.boutiqueIcon,
-                                                        height: 20,
+                    _previousOffset = currentOffset;
+                    return true;
+                  },
+                  child: ValueListenableBuilder<Tuple2<int, int>>(
+                      valueListenable: setThisEnabledNotifier,
+                      builder: (context, slidingMode, _) {
+                        return ValueListenableBuilder<bool>(
+                            valueListenable: filterPageExpanded,
+                            builder: (context, isExpanded, _) {
+                              return CustomScrollView(
+                                  controller: scrollController,
+                                  physics: ClampingScrollPhysics(),
+                                  slivers: [
+                                    SliverAppBar(
+                                      pinned: true,
+                                      backgroundColor: colorScheme.white,
+                                      automaticallyImplyLeading: false,
+                                      flexibleSpace: TrydosAppBar(
+                                        appBarParams: AppBarParams(
+                                            backgroundColor: colorScheme.white,
+                                            scrolledUnderElevation: 0,
+                                            backIconColor: Colors.black,
+                                            hasLeading: !isExpanded,
+                                            action: [
+                                              ValueListenableBuilder<bool>(
+                                                  valueListenable:
+                                                      displayBoutiqueIconInAppBar,
+                                                  builder: (context, display, _) {
+                                                    return Visibility(
+                                                      visible: display,
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsetsDirectional
+                                                                .only(
+                                                                    start: 30.w),
+                                                        child: SvgNetworkWidget(
+                                                          svgUrl:
+                                                              widget.boutiqueIcon,
+                                                          height: 20,
+                                                        ),
                                                       ),
-                                                    ),
-                                                  );
-                                                }),
-                                            Spacer(),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsetsDirectional
-                                                      .only(end: 30.0),
-                                              child: SvgPicture.asset(
-                                                AppAssets
-                                                    .searchOutlinedReversedSvg,
-                                                width: 20,
-                                                height: 20,
-                                              ),
-                                            ),
-                                            isExpanded
-                                                ? SizedBox.shrink()
-                                                : Padding(
-                                                    padding:
-                                                        const EdgeInsetsDirectional
-                                                            .only(end: 30.0),
-                                                    child: SvgPicture.asset(
-                                                        AppAssets.sortingSvg,
-                                                        width: 20,
-                                                        height: 20),
-                                                  ),
-                                            Padding(
+                                                    );
+                                                  }),
+                                              Spacer(),
+                                              Padding(
                                                 padding:
                                                     const EdgeInsetsDirectional
                                                         .only(end: 30.0),
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    //scrollController.animateTo(180 + htmlDescriptionHeight.value, duration: Duration(milliseconds: 100), curve: Curves.linear);
-                                                    // Future.delayed(Duration(milliseconds: 200) , (){
-                                                    int length =
-                                                        selectedFiltersNotifier
-                                                            .value.length;
-                                                    selectedFiltersNotifier
-                                                        .value
-                                                        .clear();
-                                                    _clearAllItemsFromAnimatedList(
-                                                        length);
-                                                    selectedFiltersNotifier
-                                                        .notifyListeners();
-                                                    filterPageExpanded.value =
-                                                        true;
-                                                    // scrollController.jumpTo(0);
-                                                    //});
-                                                  },
-                                                  child: SvgPicture.asset(
-                                                    AppAssets.filtersSvg,
-                                                    width: 20,
-                                                    height: 20,
-                                                    color: isExpanded
-                                                        ? Color(0xffFF5F61)
-                                                        : null,
-                                                  ),
-                                                )),
-                                            Padding(
-                                              padding:
-                                                  EdgeInsetsDirectional.only(
-                                                      end: !isExpanded
-                                                          ? 10.0
-                                                          : 25),
-                                              child: !isExpanded
-                                                  ? SvgPicture.asset(
-                                                      AppAssets.shareSvg,
+                                                child: SvgPicture.asset(
+                                                  AppAssets
+                                                      .searchOutlinedReversedSvg,
+                                                  width: 20,
+                                                  height: 20,
+                                                ),
+                                              ),
+                                              isExpanded
+                                                  ? SizedBox.shrink()
+                                                  : Padding(
+                                                      padding:
+                                                          const EdgeInsetsDirectional
+                                                              .only(end: 30.0),
+                                                      child: SvgPicture.asset(
+                                                          AppAssets.sortingSvg,
+                                                          width: 20,
+                                                          height: 20),
+                                                    ),
+                                              Padding(
+                                                  padding:
+                                                      const EdgeInsetsDirectional
+                                                          .only(end: 30.0),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      //scrollController.animateTo(180 + htmlDescriptionHeight.value, duration: Duration(milliseconds: 100), curve: Curves.linear);
+                                                      // Future.delayed(Duration(milliseconds: 200) , (){
+                                                      int length =
+                                                          selectedFiltersNotifier
+                                                              .value.length;
+                                                      selectedFiltersNotifier
+                                                          .value
+                                                          .clear();
+                                                      _clearAllItemsFromAnimatedList(
+                                                          length);
+                                                      selectedFiltersNotifier
+                                                          .notifyListeners();
+                                                      filterPageExpanded.value =
+                                                          true;
+                                                      // scrollController.jumpTo(0);
+                                                      //});
+                                                    },
+                                                    child: SvgPicture.asset(
+                                                      AppAssets.filtersSvg,
                                                       width: 20,
                                                       height: 20,
-                                                      color: Color(0xff3C3C3C),
-                                                    )
-                                                  : GestureDetector(
-                                                      onTap: () {
-                                                        filterPageExpanded
-                                                            .value = false;
-                                                      },
-                                                      child: SvgPicture.asset(
-                                                        AppAssets.closeSvg,
-                                                        width: 15,
-                                                        height: 15,
-                                                        color:
-                                                            Color(0xffFF5F61),
-                                                      ),
+                                                      color: isExpanded
+                                                          ? Color(0xffFF5F61)
+                                                          : null,
                                                     ),
-                                            ),
-                                          ],
-                                          withShadow: false),
+                                                  )),
+                                              Padding(
+                                                padding:
+                                                    EdgeInsetsDirectional.only(
+                                                        end: !isExpanded
+                                                            ? 10.0
+                                                            : 25),
+                                                child: !isExpanded
+                                                    ? SvgPicture.asset(
+                                                        AppAssets.shareSvg,
+                                                        width: 20,
+                                                        height: 20,
+                                                        color: Color(0xff3C3C3C),
+                                                      )
+                                                    : GestureDetector(
+                                                        onTap: () {
+                                                          filterPageExpanded
+                                                              .value = false;
+                                                        },
+                                                        child: SvgPicture.asset(
+                                                          AppAssets.closeSvg,
+                                                          width: 15,
+                                                          height: 15,
+                                                          color:
+                                                              Color(0xffFF5F61),
+                                                        ),
+                                                      ),
+                                              ),
+                                            ],
+                                            withShadow: false),
+                                      ),
                                     ),
-                                  ),
-                                  isExpanded
-                                      ? SliverToBoxAdapter()
-                                      : ValueListenableBuilder<double>(
-                                          valueListenable:
-                                              htmlDescriptionHeight,
-                                          builder:
-                                              (context, htmlHeight, child) {
-                                            return SliverAppBar(
-                                              pinned: false,
-                                              collapsedHeight: 180 + htmlHeight,
-                                              backgroundColor:
-                                                  colorScheme.white,
-                                              automaticallyImplyLeading: false,
-                                              flexibleSpace: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    Column(children: [
-                                                      Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          SvgNetworkWidget(
-                                                            svgUrl: widget
-                                                                .boutiqueIcon,
-                                                            height: 20,
-                                                          ),
-                                                          SizedBox(
-                                                            width: 10,
-                                                          ),
-                                                          SvgPicture.asset(
-                                                            AppAssets
-                                                                .verifiedBadgeSvg,
-                                                            height: 15,
-                                                            width: 15,
-                                                          ),
-                                                          SizedBox(
-                                                            width: 10,
-                                                          ),
-                                                          SvgPicture.asset(
-                                                            AppAssets
-                                                                .starBadgeSvg,
-                                                            height: 15,
-                                                            width: 15,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      SizedBox(
-                                                        height: 5,
-                                                      ),
-                                                      Html(
-                                                          key:
-                                                              htmlDescriptionKey,
-                                                          shrinkWrap: true,
-                                                          data: widget
-                                                              .boutiqueDescription,
-                                                          style: {
-                                                            "body": Style(
-                                                                margin:
-                                                                    Margins.all(
-                                                                        0)),
-                                                            "p": Style(
-                                                              margin:
-                                                                  Margins.all(
-                                                                      0),
-                                                            ),
-                                                          }),
-                                                      SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal:
-                                                                    25.0),
-                                                        child: Stack(
+                                    isExpanded
+                                        ? SliverToBoxAdapter()
+                                        : ValueListenableBuilder<double>(
+                                            valueListenable:
+                                                htmlDescriptionHeight,
+                                            builder:
+                                                (context, htmlHeight, child) {
+                                              return SliverAppBar(
+                                                pinned: false,
+                                                collapsedHeight: 180 + htmlHeight,
+                                                backgroundColor:
+                                                    colorScheme.white,
+                                                automaticallyImplyLeading: false,
+                                                flexibleSpace: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.center,
+                                                    children: [
+                                                      Column(children: [
+                                                        Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
                                                           children: [
-                                                            Container(
-                                                              height:
-                                                                  htmlHeight ==
-                                                                          0
-                                                                      ? 0
-                                                                      : 135,
-                                                              width: 1.sw,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            15.0),
-                                                                border: Border.all(
-                                                                    width: 0.5,
-                                                                    color: const Color(
-                                                                        0xfffafafa)),
-                                                                boxShadow: [
-                                                                  BoxShadow(
-                                                                    color: const Color(
-                                                                        0x33000000),
-                                                                    offset:
-                                                                        Offset(
-                                                                            0,
-                                                                            3),
-                                                                    blurRadius:
-                                                                        10,
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              child: ClipRRect(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              15),
-                                                                  child:
-                                                                      MyCachedNetworkImage(
-                                                                    imageUrl: widget
-                                                                        .boutiqueFirstBanner,
-                                                                    imageFit:
-                                                                        BoxFit
-                                                                            .cover,
-                                                                    width: 1.sw,
-                                                                    height: 135,
-                                                                  )),
+                                                            SvgNetworkWidget(
+                                                              svgUrl: widget
+                                                                  .boutiqueIcon,
+                                                              height: 20,
                                                             ),
-                                                            Container(
-                                                              height:
-                                                                  htmlHeight ==
-                                                                          0
-                                                                      ? 0
-                                                                      : 135,
-                                                              width: 1.sw,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            15.0),
-                                                                boxShadow: [
-                                                                  BoxShadow(
-                                                                      color: Colors
-                                                                          .white
-                                                                          .withOpacity(
-                                                                              0.7),
-                                                                      offset:
-                                                                          Offset(0,
-                                                                              3),
-                                                                      blurRadius:
-                                                                          6,
-                                                                      inset:
-                                                                          true),
-                                                                ],
-                                                              ),
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            SvgPicture.asset(
+                                                              AppAssets
+                                                                  .verifiedBadgeSvg,
+                                                              height: 15,
+                                                              width: 15,
+                                                            ),
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            SvgPicture.asset(
+                                                              AppAssets
+                                                                  .starBadgeSvg,
+                                                              height: 15,
+                                                              width: 15,
                                                             ),
                                                           ],
                                                         ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                    ])
-                                                  ]),
-                                            );
-                                          }),
-                                  ValueListenableBuilder<
-                                          List<Tuple3<int, int?, double>>>(
-                                      valueListenable: selectedFiltersNotifier,
-                                      builder: (context, filters, _) {
-                                        return SliverAppBar(
-                                            pinned: true,
-                                            surfaceTintColor:
-                                                Colors.transparent,
-                                            backgroundColor: colorScheme.white,
-                                            automaticallyImplyLeading: false,
-                                            titleSpacing: 0,
-                                            toolbarHeight: isExpanded
-                                                ? 860
-                                                : selectedFiltersNotifier
-                                                        .value.isNotEmpty
-                                                    ? 145
-                                                    : 145,
-                                            flexibleSpace: StackedFiltersList(
-                                                isExpanded: isExpanded,
-                                                closeFilterPage: () {
-                                                  filterPageExpanded.value =
-                                                      false;
-                                                },
-                                                category: widget.category,
-                                                boutiqueSlug:
-                                                    widget.boutiqueSlug,
-                                                controller: isExpanded
-                                                    ? scrollController
-                                                    : null,
-                                                listKey: listKey,
-                                                selectedFiltersNotifier:
-                                                    selectedFiltersNotifier,
-                                                onMoveToAnotherFiltersSection:
-                                                    (title) {
-                                                  timerForDisplayFilterSectionTitle
-                                                      ?.cancel();
-                                                  showTitleForFilterList.value =
-                                                      title;
-                                                  timerForDisplayFilterSectionTitle =
-                                                      Timer(
-                                                          Duration(seconds: 3),
-                                                          () {
-                                                    showTitleForFilterList
-                                                        .value = null;
-                                                  });
-                                                }));
-                                      }),
-                                  isExpanded
-                                      ? SliverToBoxAdapter()
-                                      : BlocBuilder<HomeBloc, HomeState>(
-                                          buildWhen: (p, c) {
-                                            String key = widget.boutiqueSlug +
-                                                (widget.category ?? '');
-                                            if (p
-                                                    .getProductListingPaginationWithoutFiltersModel[
-                                                        key]
-                                                    ?.items
-                                                    .length !=
-                                                c
-                                                    .getProductListingPaginationWithoutFiltersModel[
-                                                        key]
-                                                    ?.items
-                                                    .length) {
-                                              gridViewKeyForRendering =
-                                                  UniqueKey();
-                                            }
-                                            return p
-                                                        .getProductListingWithFiltersPaginationModels[
-                                                            key]
-                                                        ?.paginationStatus !=
-                                                    c
-                                                        .getProductListingWithFiltersPaginationModels[
-                                                            key]
-                                                        ?.paginationStatus ||
-                                                (p
-                                                        .getProductListingPaginationWithoutFiltersModel[
-                                                            key]
-                                                        ?.paginationStatus !=
-                                                    c
-                                                        .getProductListingPaginationWithoutFiltersModel[
-                                                            key]
-                                                        ?.paginationStatus);
-                                          },
-                                          builder: (context, state) {
-                                            String key = widget.boutiqueSlug +
-                                                (widget.category ?? '');
-                                            if (state
-                                                    .getProductListingWithFiltersPaginationModels[
-                                                        key]
-                                                    ?.paginationStatus ==
-                                                PaginationStatus.loading) {
-                                              return SliverToBoxAdapter(
-                                                child: Center(
-                                                  child: TrydosLoader(),
-                                                ),
+                                                        SizedBox(
+                                                          height: 5,
+                                                        ),
+                                                        Html(
+                                                            key:
+                                                                htmlDescriptionKey,
+                                                            shrinkWrap: true,
+                                                            data: widget
+                                                                .boutiqueDescription,
+                                                            style: {
+                                                              "body": Style(
+                                                                  margin:
+                                                                      Margins.all(
+                                                                          0)),
+                                                              "p": Style(
+                                                                margin:
+                                                                    Margins.all(
+                                                                        0),
+                                                              ),
+                                                            }),
+                                                        SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal:
+                                                                      25.0),
+                                                          child: Stack(
+                                                            children: [
+                                                              Container(
+                                                                height:
+                                                                    htmlHeight ==
+                                                                            0
+                                                                        ? 0
+                                                                        : 135,
+                                                                width: 1.sw,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              15.0),
+                                                                  border: Border.all(
+                                                                      width: 0.5,
+                                                                      color: const Color(
+                                                                          0xfffafafa)),
+                                                                  boxShadow: [
+                                                                    BoxShadow(
+                                                                      color: const Color(
+                                                                          0x33000000),
+                                                                      offset:
+                                                                          Offset(
+                                                                              0,
+                                                                              3),
+                                                                      blurRadius:
+                                                                          10,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                child: ClipRRect(
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(
+                                                                                15),
+                                                                    child:
+                                                                        MyCachedNetworkImage(
+                                                                      imageUrl: widget
+                                                                          .boutiqueFirstBanner,
+                                                                      imageFit:
+                                                                          BoxFit
+                                                                              .cover,
+                                                                      width: 1.sw,
+                                                                      height: 135,
+                                                                    )),
+                                                              ),
+                                                              Container(
+                                                                height:
+                                                                    htmlHeight ==
+                                                                            0
+                                                                        ? 0
+                                                                        : 135,
+                                                                width: 1.sw,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              15.0),
+                                                                  boxShadow: [
+                                                                    BoxShadow(
+                                                                        color: Colors
+                                                                            .white
+                                                                            .withOpacity(
+                                                                                0.7),
+                                                                        offset:
+                                                                            Offset(0,
+                                                                                3),
+                                                                        blurRadius:
+                                                                            6,
+                                                                        inset:
+                                                                            true),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                      ])
+                                                    ]),
                                               );
-                                            }
-                                            print(
-                                                'dvdv ${state.getProductListingWithFiltersPaginationModels[key]?.items.length}');
-                                            print(
-                                                'dvdv ${state.getProductListingWithFiltersPaginationModels.keys}');
-                                            print('dvdv ${key}');
-                                            List<filter_products.Products>
-                                                products;
-                                            if (state.getProductListingWithFiltersPaginationModels[
-                                                    key] !=
-                                                null) {
-                                              products = state
-                                                  .getProductListingWithFiltersPaginationModels[
-                                                      key]!
-                                                  .items;
-                                            } else {
-                                              if ((state
-                                                              .getProductListingPaginationWithoutFiltersModel[
-                                                                  key]
-                                                              ?.paginationStatus ==
-                                                          PaginationStatus
-                                                              .loading &&
-                                                      (state
-                                                              .getProductListingPaginationWithoutFiltersModel[
-                                                                  key]
-                                                              ?.items
-                                                              .isNullOrEmpty ??
-                                                          true)) ||
-                                                  (state.getProductListingPaginationWithoutFiltersModel[
-                                                          key] ==
-                                                      null)) {
+                                            }),
+                                    ValueListenableBuilder<
+                                            List<Tuple3<int, int?, double>>>(
+                                        valueListenable: selectedFiltersNotifier,
+                                        builder: (context, filters, _) {
+                                          return SliverAppBar(
+                                              pinned: true,
+                                              surfaceTintColor:
+                                                  Colors.transparent,
+                                              backgroundColor: colorScheme.white,
+                                              automaticallyImplyLeading: false,
+                                              titleSpacing: 0,
+                                              toolbarHeight: isExpanded
+                                                  ? 860
+                                                  : selectedFiltersNotifier
+                                                          .value.isNotEmpty
+                                                      ? 145
+                                                      : 145,
+                                              flexibleSpace: StackedFiltersList(
+                                                  isExpanded: isExpanded,
+                                                  closeFilterPage: () {
+                                                    filterPageExpanded.value =
+                                                        false;
+                                                  },
+                                                  category: widget.category,
+                                                  boutiqueSlug:
+                                                      widget.boutiqueSlug,
+                                                  controller: isExpanded
+                                                      ? scrollController
+                                                      : null,
+                                                  listKey: listKey,
+                                                  selectedFiltersNotifier:
+                                                      selectedFiltersNotifier,
+                                                  onMoveToAnotherFiltersSection:
+                                                      (title) {
+                                                    timerForDisplayFilterSectionTitle
+                                                        ?.cancel();
+                                                    showTitleForFilterList.value =
+                                                        title;
+                                                    timerForDisplayFilterSectionTitle =
+                                                        Timer(
+                                                            Duration(seconds: 3),
+                                                            () {
+                                                      showTitleForFilterList
+                                                          .value = null;
+                                                    });
+                                                  }));
+                                        }),
+                                    isExpanded
+                                        ? SliverToBoxAdapter()
+                                        : BlocBuilder<HomeBloc, HomeState>(
+                                            buildWhen: (p, c) {
+                                              String key = widget.boutiqueSlug +
+                                                  (widget.category ?? '');
+                                              if (p
+                                                      .getProductListingPaginationWithoutFiltersModel[
+                                                          key]
+                                                      ?.items
+                                                      .length !=
+                                                  c
+                                                      .getProductListingPaginationWithoutFiltersModel[
+                                                          key]
+                                                      ?.items
+                                                      .length) {
+                                                gridViewKeyForRendering =
+                                                    UniqueKey();
+                                              }
+                                              return p
+                                                          .getProductListingWithFiltersPaginationModels[
+                                                              key]
+                                                          ?.paginationStatus !=
+                                                      c
+                                                          .getProductListingWithFiltersPaginationModels[
+                                                              key]
+                                                          ?.paginationStatus ||
+                                                  (p
+                                                          .getProductListingPaginationWithoutFiltersModel[
+                                                              key]
+                                                          ?.paginationStatus !=
+                                                      c
+                                                          .getProductListingPaginationWithoutFiltersModel[
+                                                              key]
+                                                          ?.paginationStatus);
+                                            },
+                                            builder: (context, state) {
+                                              String key = widget.boutiqueSlug +
+                                                  (widget.category ?? '');
+                                              if (state
+                                                      .getProductListingWithFiltersPaginationModels[
+                                                          key]
+                                                      ?.paginationStatus ==
+                                                  PaginationStatus.loading) {
                                                 return SliverToBoxAdapter(
                                                   child: Center(
                                                     child: TrydosLoader(),
                                                   ),
                                                 );
                                               }
-                                              products = state
-                                                      .getProductListingPaginationWithoutFiltersModel[
-                                                          key]
-                                                      ?.items ??
-                                                  [];
-                                            }
-                                            return SliverPadding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 10),
-                                              sliver: SliverGrid(
-                                                key: gridViewKeyForRendering,
-                                                gridDelegate:
-                                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                                  crossAxisCount: 2,
-                                                  childAspectRatio: 200.w / 350,
-                                                  crossAxisSpacing: 10,
-                                                  mainAxisSpacing: 15,
-                                                ),
-                                                delegate:
-                                                    SliverChildBuilderDelegate(
-                                                  childCount: products.length,
-                                                  (BuildContext context,
-                                                      int index) {
-                                                    return GestureDetector(
-                                                      onTap: () async {
-                                                        Future.delayed(
-                                                            Duration(
-                                                                milliseconds:
-                                                                    100), () {
-                                                          print("${prefsRepository.myMarketId.toString()}" +
-                                                              "55555555555555555555555555555555555555555");
-                                                          print("${prefsRepository.myMarketName.toString()}" +
-                                                              "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
-                                                        });
-                                                        await FirebaseAnalytics
-                                                            .instance
-                                                            .logEvent(
-                                                                name:
-                                                                    'button_clicked',
-                                                                parameters: {
-                                                              "time_stamp": DateTime
-                                                                      .now()
-                                                                  .toUtc()
-                                                                  .add(Duration(
-                                                                      minutes:
-                                                                          GetIt.I<PrefsRepository>().getdurtion ??
-                                                                              0))
-                                                                  .toString(),
-                                                              "previous_event_button_name":
-                                                                  GetIt.I<PrefsRepository>()
-                                                                      .currentEvent,
-                                                              "device_language":
-                                                                  LanguageService
-                                                                              .languageCode ==
-                                                                          'ar'
-                                                                      ? 'ae'
-                                                                      : LanguageService
-                                                                          .languageCode,
-                                                              "country_name":
-                                                                  GetIt.I<PrefsRepository>()
-                                                                      .countryIso,
-                                                              'userID':
-                                                                  prefsRepository
-                                                                      .myMarketId
-                                                                      .toString(),
-                                                              'user_name':
-                                                                  prefsRepository
-                                                                      .myMarketName
-                                                                      .toString(),
-                                                              'clicked_button_name':
-                                                                  'i love you Ahmad',
-                                                              "session_id": GetIt.I<
-                                                                      PrefsRepository>()
-                                                                  .sessionId,
-                                                            });
-                                                        await GetIt.I<
-                                                                PrefsRepository>()
-                                                            .setCurrentEvent(
-                                                                "i loveddssssssssssss44444444444444444ssssssssssssss you Ahmad in past");
+                                              print(
+                                                  'dvdv ${state.getProductListingWithFiltersPaginationModels[key]?.items.length}');
+                                              print(
+                                                  'dvdv ${state.getProductListingWithFiltersPaginationModels.keys}');
+                                              print('dvdv ${key}');
+                                              List<filter_products.Products>
+                                                  products;
+                                              if (state.getProductListingWithFiltersPaginationModels[
+                                                      key] !=
+                                                  null) {
+                                                products = state
+                                                    .getProductListingWithFiltersPaginationModels[
+                                                        key]!
+                                                    .items;
+                                              } else {
+                                                if ((state
+                                                                .getProductListingPaginationWithoutFiltersModel[
+                                                                    key]
+                                                                ?.paginationStatus ==
+                                                            PaginationStatus
+                                                                .loading &&
+                                                        (state
+                                                                .getProductListingPaginationWithoutFiltersModel[
+                                                                    key]
+                                                                ?.items
+                                                                .isNullOrEmpty ??
+                                                            true)) ||
+                                                    (state.getProductListingPaginationWithoutFiltersModel[
+                                                            key] ==
+                                                        null)) {
+                                                  return SliverToBoxAdapter(
+                                                    child: Center(
+                                                      child: TrydosLoader(),
+                                                    ),
+                                                  );
+                                                }
+                                                products = state
+                                                        .getProductListingPaginationWithoutFiltersModel[
+                                                            key]
+                                                        ?.items ??
+                                                    [];
+                                              }
+                                              return SliverPadding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 10),
+                                                sliver: SliverGrid(
+                                                  key: gridViewKeyForRendering,
+                                                  gridDelegate:
+                                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount: 2,
+                                                    childAspectRatio: 200.w / 350,
+                                                    crossAxisSpacing: 10,
+                                                    mainAxisSpacing: 15,
+                                                  ),
+                                                  delegate:
+                                                      SliverChildBuilderDelegate(
+                                                    childCount: products.length,
+                                                    (BuildContext context,
+                                                        int index) {
+                                                      return GestureDetector(
+                                                        onTap: () async {
+                                                          Future.delayed(
+                                                              Duration(
+                                                                  milliseconds:
+                                                                      100), () {
+                                                            print("${prefsRepository.myMarketId.toString()}" +
+                                                                "55555555555555555555555555555555555555555");
+                                                            print("${prefsRepository.myMarketName.toString()}" +
+                                                                "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
+                                                          });
+                                                          await FirebaseAnalytics
+                                                              .instance
+                                                              .logEvent(
+                                                                  name:
+                                                                      'button_clicked',
+                                                                  parameters: {
+                                                                "time_stamp": DateTime
+                                                                        .now()
+                                                                    .toUtc()
+                                                                    .add(Duration(
+                                                                        minutes:
+                                                                            GetIt.I<PrefsRepository>().getdurtion ??
+                                                                                0))
+                                                                    .toString(),
+                                                                "previous_event_button_name":
+                                                                    GetIt.I<PrefsRepository>()
+                                                                        .currentEvent,
+                                                                "device_language":
+                                                                    LanguageService
+                                                                                .languageCode ==
+                                                                            'ar'
+                                                                        ? 'ae'
+                                                                        : LanguageService
+                                                                            .languageCode,
+                                                                "country_name":
+                                                                    GetIt.I<PrefsRepository>()
+                                                                        .countryIso,
+                                                                'userID':
+                                                                    prefsRepository
+                                                                        .myMarketId
+                                                                        .toString(),
+                                                                'user_name':
+                                                                    prefsRepository
+                                                                        .myMarketName
+                                                                        .toString(),
+                                                                'clicked_button_name':
+                                                                    'i love you Ahmad',
+                                                                "session_id": GetIt.I<
+                                                                        PrefsRepository>()
+                                                                    .sessionId,
+                                                              });
+                                                          await GetIt.I<
+                                                                  PrefsRepository>()
+                                                              .setCurrentEvent(
+                                                                  "i loveddssssssssssss44444444444444444ssssssssssssss you Ahmad in past");
 
-                                                        // pushOverscrollRoute(
-                                                        //     context: context,
-                                                        //     transitionDuration : Duration(milliseconds : 250),
-                                                        //     reverseTransitionDuration : Duration(milliseconds : 400),
-                                                        //     child: ProductDetailsPage(
-                                                        //       productItem: state
-                                                        //           .getProductListingWithoutFiltersModel!
-                                                        //           .data!
-                                                        //           .products![index]
-                                                        //     ),
-                                                        //     workNormally: true,
-                                                        //     withRoundedCorners: true,
-                                                        //     isArabicLanguage: LanguageService.rtl,
-                                                        //     dragToPopDirection: DragToPopDirection.toBottom,
-                                                        //     scrollToPopOption: ScrollToPopOption.start,
-                                                        //     fullscreenDialog: true);
-                                                        Navigator.of(context).push(
-                                                            MaterialPageRoute(
-                                                                builder: (ctx) =>
-                                                                    ProductDetailsPage(
-                                                                      boutiqueIcon:
-                                                                          widget
-                                                                              .boutiqueIcon,
-                                                                      boutiqueId:
-                                                                          widget
-                                                                              .boutiqueId,
-                                                                      productItem:
-                                                                          products[
-                                                                              index],
-                                                                    )));
-                                                      },
-                                                      child: ProductItem(
-                                                        slidingModeItem:
-                                                            slidingMode,
-                                                        productItem:
-                                                            products[index],
-                                                        itemIndex: index,
-                                                        setThisEnabled:
-                                                            (int index,
-                                                                int slideMode) {
-                                                          setThisEnabledNotifier
-                                                                  .value =
-                                                              Tuple2(index,
-                                                                  slideMode);
+                                                          // pushOverscrollRoute(
+                                                          //     context: context,
+                                                          //     transitionDuration : Duration(milliseconds : 250),
+                                                          //     reverseTransitionDuration : Duration(milliseconds : 400),
+                                                          //     child: ProductDetailsPage(
+                                                          //       productItem: state
+                                                          //           .getProductListingWithoutFiltersModel!
+                                                          //           .data!
+                                                          //           .products![index]
+                                                          //     ),
+                                                          //     workNormally: true,
+                                                          //     withRoundedCorners: true,
+                                                          //     isArabicLanguage: LanguageService.rtl,
+                                                          //     dragToPopDirection: DragToPopDirection.toBottom,
+                                                          //     scrollToPopOption: ScrollToPopOption.start,
+                                                          //     fullscreenDialog: true);
+                                                          Navigator.of(context).push(
+                                                              MaterialPageRoute(
+                                                                  builder: (ctx) =>
+                                                                      ProductDetailsPage(
+                                                                        boutiqueIcon:
+                                                                            widget
+                                                                                .boutiqueIcon,
+                                                                        boutiqueId:
+                                                                            widget
+                                                                                .boutiqueId,
+                                                                        productItem:
+                                                                            products[
+                                                                                index],
+                                                                      )));
                                                         },
-                                                      ),
-                                                    );
-                                                  },
+                                                        child: ProductItem(
+                                                          slidingModeItem:
+                                                              slidingMode,
+                                                          productItem:
+                                                              products[index],
+                                                          itemIndex: index,
+                                                          setThisEnabled:
+                                                              (int index,
+                                                                  int slideMode) {
+                                                            setThisEnabledNotifier
+                                                                    .value =
+                                                                Tuple2(index,
+                                                                    slideMode);
+                                                          },
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
                                                 ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                ]);
-                          });
-                    }),
+                                              );
+                                            },
+                                          ),
+                                  ]);
+                            });
+                      }),
+                ),
               ),
             ),
             Positioned(
