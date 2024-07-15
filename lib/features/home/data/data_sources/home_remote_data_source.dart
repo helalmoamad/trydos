@@ -1,7 +1,9 @@
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/get_brand_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
+import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
@@ -97,6 +99,32 @@ class HomeRemoteDatasource {
     );
 
     return getProductsWithFilters();
+  }
+
+  Future<GetCategoryModel> getCategory() {
+    GetClient<GetCategoryModel> getCategory = GetClient<GetCategoryModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetCategoryModel>(
+        endpoint: MarketEndPoints.getCategoryEP,
+        response: ResponseValue<GetCategoryModel>(
+            fromJson: (response) => GetCategoryModel.fromJson(response)),
+      ),
+    );
+
+    return getCategory();
+  }
+
+  Future<GetBrandModel> getBrand() {
+    GetClient<GetBrandModel> getBrand = GetClient<GetBrandModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetBrandModel>(
+        endpoint: MarketEndPoints.getBrandEP,
+        response: ResponseValue<GetBrandModel>(
+            fromJson: (response) => GetBrandModel.fromJson(response)),
+      ),
+    );
+
+    return getBrand();
   }
 
   Future<MainCategoriesResponseModel> getMainCategories() {

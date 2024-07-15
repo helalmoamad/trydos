@@ -56,7 +56,8 @@ class _TabsBarState extends State<TabsBar> {
   void didChangeDependencies() {
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
-        widget.hideTrendingAndHistory.value = true;
+        widget.hideTrendingAndHistory.value =
+            controller.text.length > 0 ? true : false;
       }
     });
     super.didChangeDependencies();
@@ -125,9 +126,12 @@ class _TabsBarState extends State<TabsBar> {
                                       p.currentIndex != c.currentIndex,
                                   builder: (context, state) {
                                     return AnimatedSearchBar(
-                                      onFieldSubmitted: (text) => homeBloc.add(
-                                          AddSearchTextToHistoryEvent(
-                                              searchTitle: text)),
+                                      onFieldSubmitted: (text) =>
+                                          text.replaceAll(" ", "").length > 2
+                                              ? homeBloc.add(
+                                                  AddSearchTextToHistoryEvent(
+                                                      searchTitle: text))
+                                              : {},
                                       width: 1.sw,
                                       height: 40,
                                       onClickClose: () {
@@ -138,6 +142,7 @@ class _TabsBarState extends State<TabsBar> {
                                       textController: controller,
                                       focusNode: focusNode,
                                       onSuffixTap: () {
+                                        controller.text = "";
                                         Future.delayed(
                                             Duration(milliseconds: 300), () {
                                           appBloc.add(ChangeBasePage(4));

@@ -82,7 +82,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 context,
                 ProductListingPage(
                   boutiqueId: widget.boutniqe.id!,
-                  boutiqueSlug: widget.boutniqe.slug!,
+                  boutiqueSlug: widget.boutniqe.slug ?? "",
                   boutiqueDescription: widget.boutniqe.description!,
                   boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
                   boutiqueIcon: widget.boutniqe.icon!.filePath!,

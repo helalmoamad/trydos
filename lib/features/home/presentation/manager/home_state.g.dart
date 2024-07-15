@@ -68,6 +68,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               ) ??
               const {},
       currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
+      brands: (json['brands'] as List<dynamic>?)
+          ?.map((e) => brand.Brand.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      categories: (json['categories'] as List<dynamic>?)
+          ?.map((e) => category.Category.fromJson(e as Map<String, dynamic>))
+          .toList(),
       productITemForCart:
           (json['productITemForCart'] as Map<String, dynamic>?)?.map(
                 (k, e) =>
@@ -137,6 +143,14 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           (json['CurrentColorSizeForCart'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
+      selectedBoutiqueBrandCategorySlugsForSearch:
+          (json['selectedBoutiqueBrandCategorySlugsForSearch']
+                      as Map<String, dynamic>?)
+                  ?.map(
+                (k, e) => MapEntry(
+                    k, (e as List<dynamic>).map((e) => e as String).toList()),
+              ) ??
+              const {},
       currentQuantityForCart:
           (json['currentQuantityForCart'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(
@@ -228,6 +242,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
       'searchHistory': instance.searchHistory,
+      'selectedBoutiqueBrandCategorySlugsForSearch':
+          instance.selectedBoutiqueBrandCategorySlugsForSearch,
       'cartCollection': instance.cartCollection
           ?.map((k, e) => MapEntry(k, e.map((e) => e.toJson()).toList())),
       'reRequestTheseBoutiques': instance.reRequestTheseBoutiques,
@@ -269,6 +285,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
       'searchResultModel': instance.searchResultModel?.toJson(),
       'startingSetting': instance.startingSetting?.toJson(),
+      'categories': instance.categories?.map((e) => e.toJson()).toList(),
+      'brands': instance.brands?.map((e) => e.toJson()).toList(),
       'CurrentColorSizeForCart': instance.CurrentColorSizeForCart,
       'currentQuantityForCart': instance.currentQuantityForCart,
       'cachedProductWithoutRelatedProductsModel': instance
