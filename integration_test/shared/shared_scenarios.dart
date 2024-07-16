@@ -288,12 +288,13 @@ class SharedScenarios {
   static Future<void> sendMessageInChat({
     required WidgetTester tester,
     required int messageNumber,
+    String text = 'test text message',
   }) async {
     final Finder sendMessageTextField =
         find.byKey(Key(WidgetsKey.sendMessageTextFieldKey));
     final Finder sendMessageInChatButton =
         find.byKey(Key(WidgetsKey.sendMessageInChatButtonKey));
-    await tester.enterText(sendMessageTextField, 'test text message');
+    await tester.enterText(sendMessageTextField, text);
     await Future.delayed(const Duration(seconds: 2));
     await tester.tap(sendMessageInChatButton);
     await tester.pumpAndSettle();

@@ -40,4 +40,6 @@ class WidgetsKey {
   static const replayOnMeMessageKey = 'replay_on_me_message_key';
   static const deleteMessageKey = 'delete_message_key';
   static const deleteOnlyMeButtonKey = 'delete_only_me_button_key';
+  static const forWardMessageKey = 'forWard_message_key';
+  static const forwardedArrowKey = 'forwarded_arrow_key';
 }

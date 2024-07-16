@@ -17,7 +17,7 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Go to chat section , choose new contact , send text message  , replay text message , back and delete chat',
+    'Go to chat section , choose new contact , send text message  , replay text message , forward text message , back and delete chat',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
@@ -105,7 +105,7 @@ void main() {
       await SharedScenarios.sendMessageInChat(tester: tester, messageNumber: 0);
       await tester.pumpAndSettle();
       await Future.delayed(const Duration(seconds: 2));
-      ///////////  Replay   ////////////
+      ///////////  Replay message  ////////////
       final Finder messageCardWidget =
           find.byKey(Key('${WidgetsKey.messageCardKey}0'));
       final Finder replayTextWidget = find.byKey(Key(WidgetsKey.replayTextKey));
@@ -173,6 +173,105 @@ void main() {
         failedMessage: 'Find message Sent Arrow  failed',
       );
 
+      await Future.delayed(const Duration(seconds: 4));
+
+      ///////////  Forward message  ////////////
+      await SharedScenarios.sendMessageInChat(
+          tester: tester, messageNumber: 0, text: 'test ForWard text message');
+      await tester.pumpAndSettle();
+      await Future.delayed(const Duration(seconds: 2));
+
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: messageCardWidget,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find message Card Widget  Success',
+        failedMessage: 'Find message Card Widget  failed',
+      );
+
+      await tester.longPress(messageCardWidget);
+      await tester.pumpAndSettle();
+      ////////////////////////////
+      final Finder forWardMessageWidget =
+          find.byKey(Key('${WidgetsKey.forWardMessageKey}0'));
+
+      await GlobalTestFunctions.waitFor(tester, forWardMessageWidget);
+
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: forWardMessageWidget,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find  forWard Message Widget Success',
+        failedMessage: 'Find  forWard Message Widget failed',
+      );
+
+      Future.delayed(Duration(seconds: 4));
+      await tester.tap(forWardMessageWidget);
+      await tester.pumpAndSettle();
+      //////////////////////////
+      await GlobalTestFunctions.waitFor(tester, find.byType(ChatPageContent));
+      //////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        widgetType: ChatPageContent,
+        successMessage: 'Find ChatPageContent Success',
+        failedMessage: 'Find ChatPageContent failed',
+      );
+      ////////////////////////////
+      await Future.delayed(const Duration(seconds: 2));
+      ////////////////////////////
+      final Finder chatConversationCard =
+          find.byKey(Key('${WidgetsKey.chatConversationCardKey}0'));
+      ////////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: chatConversationCard,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find chatConversationCard  Success',
+        failedMessage: 'Find chatConversationCard failed',
+      );
+      ////////////////////////////////////////
+      await tester.tap(chatConversationCard);
+      await tester.pumpAndSettle();
+      ////////////////////////////
+      final Finder textMessage =
+          find.byKey(Key('${WidgetsKey.textMessageCardKey}0'));
+      ////////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: textMessage,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find text Message Card  Success',
+        failedMessage: 'Find text Message Card  failed',
+      );
+      ////////////////////////////////////////
+      final Finder forwardedArrow =
+          find.byKey(Key('${WidgetsKey.forwardedArrowKey}0'));
+      ////////////////////////////
+      await GlobalTestFunctions.waitFor(tester, forwardedArrow);
+      //////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: forwardedArrow,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find  forwarded Arrow Success',
+        failedMessage: 'Find  forwarded Arrow failed',
+      );
+      ////////////////////////////
+      final Finder messageSentArrow =
+          find.byKey(Key('${WidgetsKey.messageSentArrowKey}0'));
+      ////////////////////////////
+      await GlobalTestFunctions.waitFor(tester, messageSentArrow);
+      //////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: messageSentArrow,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find message Sent Arrow Success',
+        failedMessage: 'Find message Sent Arrow failed',
+      );
+      await Future.delayed(const Duration(seconds: 2));
+
       ///////////  Delete message   ////////////
       // await SharedScenarios.sendMessageInChat(tester: tester, messageNumber: 0);
       // await tester.pumpAndSettle();
@@ -234,6 +333,7 @@ void main() {
       //   successMessage: 'Find secondMessageCardWidget  Success',
       //   failedMessage: 'Find secondMessageCardWidget failed',
       // );
+
       ////////////// Delete conversation  //////////////
       final Finder backFromChatButton =
           find.byKey(Key(WidgetsKey.backFromChatKey));
@@ -251,9 +351,6 @@ void main() {
       );
       ////////////////////////////
       await Future.delayed(const Duration(seconds: 2));
-      ////////////////////////////
-      final Finder chatConversationCard =
-          find.byKey(Key('${WidgetsKey.chatConversationCardKey}0'));
       ////////////////////////////
       await GlobalTestFunctions.findWidget(
         tester: tester,

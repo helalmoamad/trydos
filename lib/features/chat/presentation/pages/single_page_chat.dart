@@ -846,6 +846,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                                                           children: [
                                                                                                             MessageActionWidget(
+                                                                                                              key: Key('${WidgetsKey.forWardMessageKey}$index'),
                                                                                                               onTap: () => forwardMessageMethod(messages.firstWhere((element) => element.id == messageId)),
                                                                                                               iconUrl: AppAssets.goBackIconSvg,
                                                                                                               myIndex: lan ? 0 : 5,

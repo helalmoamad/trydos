@@ -391,6 +391,9 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                             if (widget.isForwarded) ...{
                                               10.horizontalSpace,
                                               SvgPicture.asset(
+                                                key: Key(
+                                                  '${WidgetsKey.forwardedArrowKey}${widget.index}',
+                                                ),
                                                 AppAssets.forwardedSvg,
                                                 width: 10.sp,
                                                 height: 10.sp,
