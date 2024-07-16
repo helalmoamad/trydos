@@ -346,19 +346,20 @@ class CartPage2 extends StatelessWidget {
                                                             AppElevatedButton(
                                                               onPressed: () {
                                                                 BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(
+                                                                    thumbnail:
+                                                                        state.cartCollection![count]![indexs].thumbnail ??
+                                                                            "",
                                                                     currentSize:
                                                                         state.cartCollection![count]![indexs].variations![0].size ??
                                                                             "",
                                                                     colorName:
                                                                         state.cartCollection![count]![indexs].variations![0].color ??
                                                                             "",
-                                                                    productId: state
-                                                                        .cartCollection![count]![
-                                                                            indexs]
-                                                                        .productId
+                                                                    productId: state.cartCollection![count]![indexs].productId
                                                                         .toString(),
-                                                                    quantity: int.tryParse(quantityController
-                                                                        .text)!,
+                                                                    quantity: int.tryParse(
+                                                                        quantityController
+                                                                            .text)!,
                                                                     cartId: state.cartCollection![count]![indexs].id
                                                                         .toString(),
                                                                     boutiqueId: state
@@ -405,6 +406,9 @@ class CartPage2 extends StatelessWidget {
                                                       AppElevatedButton(
                                                         onPressed: () {
                                                           BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(
+                                                              thumbnail:
+                                                                  state.cartCollection![count]![indexs].thumbnail ??
+                                                                      '',
                                                               currentSize:
                                                                   state.cartCollection![count]![indexs].variations![0].size ??
                                                                       "",
@@ -416,10 +420,7 @@ class CartPage2 extends StatelessWidget {
                                                                       indexs]
                                                                   .productId
                                                                   .toString(),
-                                                              itemId: state
-                                                                  .cartCollection![count]![
-                                                                      indexs]
-                                                                  .id
+                                                              itemId: state.cartCollection![count]![indexs].id
                                                                   .toString(),
                                                               boutiqueId: state
                                                                   .cartCollection![count]![indexs]
@@ -623,6 +624,8 @@ class CartPage2 extends StatelessWidget {
                                                                       onPressed:
                                                                           () {
                                                                         BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(
+                                                                            thumbnail: state.cartCollection![count]![indexs].thumbnail ??
+                                                                                "",
                                                                             currentSize: state.cartCollection![count]![indexs].variations![0].size ??
                                                                                 "",
                                                                             colorName: state.cartCollection![count]![indexs].variations![0].color ??
@@ -676,6 +679,9 @@ class CartPage2 extends StatelessWidget {
                                                               AppElevatedButton(
                                                                 onPressed: () {
                                                                   BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(
+                                                                      thumbnail:
+                                                                          state.cartCollection![count]![indexs].thumbnail ??
+                                                                              '',
                                                                       currentSize:
                                                                           state.cartCollection![count]![indexs].variations![0].size ??
                                                                               "",
@@ -687,10 +693,7 @@ class CartPage2 extends StatelessWidget {
                                                                               indexs]
                                                                           .productId
                                                                           .toString(),
-                                                                      itemId: state
-                                                                          .cartCollection![count]![
-                                                                              indexs]
-                                                                          .id
+                                                                      itemId: state.cartCollection![count]![indexs].id
                                                                           .toString(),
                                                                       boutiqueId: state
                                                                           .cartCollection![count]![indexs]

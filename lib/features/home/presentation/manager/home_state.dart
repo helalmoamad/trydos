@@ -87,6 +87,7 @@ class HomeState {
     this.CurrentColorSizeForCart,
     this.selectedBoutiqueBrandCategorySlugsForSearch = const {},
     this.currentQuantityForCart,
+    this.addImagesToProductIdForCart = const {},
     this.searchHistory,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
@@ -113,6 +114,8 @@ class HomeState {
   int currentPage;
   List<String>? searchHistory;
   Map<String, List<String>> selectedBoutiqueBrandCategorySlugsForSearch;
+  Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
+
   Map<String, List<cart.Cart>>? cartCollection;
   final Map<String, bool> reRequestTheseBoutiques;
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
@@ -146,6 +149,7 @@ class HomeState {
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
+      Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
       final GetSearchResultStatus? getSearchResultStatus,
       final GetProductListingWithFiltersModel? searchResultModel,
       final GetCommentForProductStatus? getCommentForProductStatus,
@@ -197,9 +201,12 @@ class HomeState {
         getCommentForProductModel:
             getCommentForProductModel ?? this.getCommentForProductModel,
         sizes: sizes ?? this.sizes,
+        addImagesToProductIdForCart:
+            addImagesToProductIdForCart ?? this.addImagesToProductIdForCart,
         cartCollection: cartCollection ?? this.cartCollection,
-        getProductListingWithFiltersPaginationModels: getProductListingWithFiltersPaginationModels ??
-            this.getProductListingWithFiltersPaginationModels,
+        getProductListingWithFiltersPaginationModels:
+            getProductListingWithFiltersPaginationModels ??
+                this.getProductListingWithFiltersPaginationModels,
         currentQuantityForCart:
             currentQuantityForCart ?? this.currentQuantityForCart,
         productITemForCart: productITemForCart ?? this.productITemForCart,
@@ -245,8 +252,7 @@ class HomeState {
         startingSetting: startingSetting ?? this.startingSetting,
         mainCategoriesResponseModel:
             mainCategoriesResponseModel ?? this.mainCategoriesResponseModel,
-        getProductListingPaginationWithoutFiltersModel:
-            getProductListingPaginationWithoutFiltersModel ?? this.getProductListingPaginationWithoutFiltersModel,
+        getProductListingPaginationWithoutFiltersModel: getProductListingPaginationWithoutFiltersModel ?? this.getProductListingPaginationWithoutFiltersModel,
         cachedProductWithoutRelatedProductsModel: cachedProductWithoutRelatedProductsModel ?? this.cachedProductWithoutRelatedProductsModel,
         getProductDetailWithoutRelatedProductsModel: getProductDetailWithoutRelatedProductsModel ?? this.getProductDetailWithoutRelatedProductsModel,
         boutiques: boutiques ?? this.boutiques,

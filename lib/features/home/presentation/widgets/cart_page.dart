@@ -411,7 +411,7 @@ class _CartPageState extends State<CartPage> {
                                                                                 children: [
                                                                                   AppElevatedButton(
                                                                                     onPressed: () {
-                                                                                      homeBloc.add(UpdateItemInCartEvent(currentSize: state.cartCollection![count]![index].variations![0].size ?? "", colorName: state.cartCollection![count]![index].variations![0].color ?? "", productId: state.cartCollection![count]![index].productId.toString(), quantity: int.tryParse(quantityController.text)!, cartId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
+                                                                                      homeBloc.add(UpdateItemInCartEvent(currentSize: state.cartCollection![count]![index].variations![0].size ?? "", colorName: state.cartCollection![count]![index].variations![0].color ?? "", productId: state.cartCollection![count]![index].productId.toString(), quantity: int.tryParse(quantityController.text)!, thumbnail: state.cartCollection![count]![index].thumbnail ?? "", cartId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
                                                                                       Navigator.pop(context);
                                                                                     },
                                                                                     text: "Yes",
@@ -450,7 +450,7 @@ class _CartPageState extends State<CartPage> {
                                                                           children: [
                                                                             AppElevatedButton(
                                                                               onPressed: () {
-                                                                                homeBloc.add(RemoveItemFormCartEvent(currentSize: state.cartCollection![count]![index].variations![0].size ?? "", ColoName: state.cartCollection![count]![index].variations![0].color ?? "", productId: state.cartCollection![count]![index].productId.toString(), itemId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
+                                                                                homeBloc.add(RemoveItemFormCartEvent(thumbnail: state.cartCollection![count]![index].thumbnail ?? '', currentSize: state.cartCollection![count]![index].variations![0].size ?? "", ColoName: state.cartCollection![count]![index].variations![0].color ?? "", productId: state.cartCollection![count]![index].productId.toString(), itemId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
                                                                                 Navigator.pop(context);
                                                                               },
                                                                               text: "Yes",

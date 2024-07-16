@@ -564,8 +564,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     String theKey = event.boutiqueSlug + (event.category ?? '');
     print('sssss ${event.filtersChoosedByUser?.filters?.colors}');
     Map<String, PaginationModel<product.Products>>
-    getProductListingWithFiltersPaginationModels =
-    Map.of(state.getProductListingWithFiltersPaginationModels);
+        getProductListingWithFiltersPaginationModels =
+        Map.of(state.getProductListingWithFiltersPaginationModels);
 
     if (state.getProductListingWithFiltersPaginationModels[theKey] == null) {
       getProductListingWithFiltersPaginationModels[theKey] =
@@ -581,7 +581,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     choosedFiltersInEachBoutiqueModel[theKey] = event.filtersChoosedByUser;
     emit(state.copyWith(
       getProductListingWithFiltersPaginationModels:
-      getProductListingWithFiltersPaginationModels.map((key, value) {
+          getProductListingWithFiltersPaginationModels.map((key, value) {
         if (key == theKey) {
           return MapEntry(
               key, value.copyWith(paginationStatus: PaginationStatus.loading));
@@ -589,8 +589,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           return MapEntry(key, value);
         }
       }),
-      choosedFiltersInEachBoutiqueModel:
-      choosedFiltersInEachBoutiqueModel,
+      choosedFiltersInEachBoutiqueModel: choosedFiltersInEachBoutiqueModel,
     ));
     try {
       final response = await getProductsWithFiltersUseCase(
@@ -598,20 +597,26 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               offset: event.offset,
               boutiqueSlug: event.boutiqueSlug,
               attributes: choosedFiltersInEachBoutiqueModel[theKey]!
-                  .filters!
-                  .attributes.isNullOrEmpty ? null : [
-                {
-                  "id": choosedFiltersInEachBoutiqueModel[theKey]!
                       .filters!
-                      .attributes![0].id,
-                  "name": choosedFiltersInEachBoutiqueModel[theKey]!
-                      .filters!
-                      .attributes![0].name,
-                  "options": choosedFiltersInEachBoutiqueModel[theKey]!
-                      .filters!
-                      .attributes![0].options,
-                }
-              ],
+                      .attributes
+                      .isNullOrEmpty
+                  ? null
+                  : [
+                      {
+                        "id": choosedFiltersInEachBoutiqueModel[theKey]!
+                            .filters!
+                            .attributes![0]
+                            .id,
+                        "name": choosedFiltersInEachBoutiqueModel[theKey]!
+                            .filters!
+                            .attributes![0]
+                            .name,
+                        "options": choosedFiltersInEachBoutiqueModel[theKey]!
+                            .filters!
+                            .attributes![0]
+                            .options,
+                      }
+                    ],
               brands: choosedFiltersInEachBoutiqueModel[theKey]!
                   .filters!
                   .brands
@@ -630,34 +635,30 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               category: event.category,
               limit: event.limit,
               prices:
-              choosedFiltersInEachBoutiqueModel[theKey]!.filters!.prices !=
-                  null
-                  ? [
-                '${choosedFiltersInEachBoutiqueModel[theKey]!.filters!.prices!
-                    .minPrice}-${choosedFiltersInEachBoutiqueModel[theKey]!
-                    .filters!.prices!.maxPrice}'
-              ]
-                  : null,
+                  choosedFiltersInEachBoutiqueModel[theKey]!.filters!.prices !=
+                          null
+                      ? [
+                          '${choosedFiltersInEachBoutiqueModel[theKey]!.filters!.prices!.minPrice}-${choosedFiltersInEachBoutiqueModel[theKey]!.filters!.prices!.maxPrice}'
+                        ]
+                      : null,
               searchText: event.searchText));
 
       response.fold((l) {
         if (!isFailedTheFirstTime.contains('GetProductsWithFiltersEvent')) {
-          add(
-              GetProductsWithFiltersEvent(
-                offset: event.offset,
-                boutiqueSlug: event.boutiqueSlug,
-                category: event.category,
-                limit: event.limit,
-                filtersChoosedByUser: choosedFiltersInEachBoutiqueModel[theKey],
-                searchText: event.searchText,
-              ));
+          add(GetProductsWithFiltersEvent(
+            offset: event.offset,
+            boutiqueSlug: event.boutiqueSlug,
+            category: event.category,
+            limit: event.limit,
+            filtersChoosedByUser: choosedFiltersInEachBoutiqueModel[theKey],
+            searchText: event.searchText,
+          ));
           isFailedTheFirstTime.add('GetProductsWithFiltersEvent');
         }
         emit(state.copyWith(getProductListingWithFiltersPaginationModels:
-        getProductListingWithFiltersPaginationModels.map((key, value) {
+            getProductListingWithFiltersPaginationModels.map((key, value) {
           if (key == theKey) {
-            return MapEntry(
-                key,
+            return MapEntry(key,
                 value.copyWith(paginationStatus: PaginationStatus.failure));
           } else {
             return MapEntry(key, value);
@@ -667,15 +668,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         isFailedTheFirstTime.remove('GetProductsWithFiltersEvent');
         emit(state.copyWith(
           getProductListingWithFiltersPaginationModels:
-          getProductListingWithFiltersPaginationModels.map((key, value) {
+              getProductListingWithFiltersPaginationModels.map((key, value) {
             if (key == theKey) {
               return MapEntry(
                   key,
                   value.copyWith(
                       paginationStatus: PaginationStatus.success,
                       page: event.getWithPagination ? value.page + 1 : 2,
-                      hasReachedMax: (r.data!.products?.length ?? 0) <
-                          kPageSize,
+                      hasReachedMax:
+                          (r.data!.products?.length ?? 0) < kPageSize,
                       items: event.getWithPagination
                           ? [...value.items, ...r.data!.products ?? []]
                           : r.data!.products));
@@ -684,30 +685,30 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             }
           }),
           getProductFiltersInEachBoutiqueModel:
-          state.getProductFiltersInEachBoutiqueModel.map((key, value) {
+              state.getProductFiltersInEachBoutiqueModel.map((key, value) {
             if (key == theKey) {
               return MapEntry(
                   key,
                   value.copyWith(
                       filters: value.filters?.copyWith(
-                        brands: r.data!.brands,
-                        attributes: r.data!.attributes,
-                        prices: r.data!.prices,
-                        colors: r.data!.colors,
-                        categories: r.data!.categories,
-                      )));
+                    brands: r.data!.brands,
+                    attributes: r.data!.attributes,
+                    prices: r.data!.prices,
+                    colors: r.data!.colors,
+                    categories: r.data!.categories,
+                  )));
             } else {
               return MapEntry(key, value);
             }
           }),
         ));
       });
-    }
-    catch(e,st){
+    } catch (e, st) {
       print(e);
       print(st);
     }
   }
+
   FutureOr<void> _onAddSizesFotColorsEvent(
       AddSizesFotColorsEvent event, Emitter<HomeState> emit) async {
     ;
@@ -946,18 +947,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Map<String, List<int>> CurrentQuantity = state.currentQuantityForCart ?? {};
     String key = "${event.products.id.toString()}" +
         "${event.colorName}" +
-        "${state.CurrentColorSizeForCart!["size"]}";
-    print("*************${key}***********");
-    print(state.CurrentColorSizeForCart!["size"]);
+        "${currentSize}";
 
-    if (CurrentQuantity.containsKey(key)) {
+    if (!CurrentQuantity[key].isNullOrEmpty) {
       if (CurrentQuantity[key]![0] > 0) {
-        print(key);
-        print("************************");
-        print(state.CurrentColorSizeForCart!["size"]);
-        print("****************${CurrentQuantity[key]![0]}********");
-
         add(UpdateItemInCartEvent(
+            thumbnail: event.thumbnail,
             currentSize: currentSize,
             colorName: event.colorName,
             productId: event.products.id.toString(),
@@ -1054,6 +1049,30 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
         emit(state.copyWith(cartCollection: state.cartCollection));
       } else {
+        Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
+            Map.from(state.addImagesToProductIdForCart);
+        if (addImagesToProductIdForCart[event.products.id.toString()] == null) {
+          addImagesToProductIdForCart[event.products.id.toString()] = {};
+        }
+        if (!addImagesToProductIdForCart[event.products.id.toString()]![
+                r.data!.idCart!]
+            .isNullOrEmpty) {
+          for (int i = 0; i < event.quantity!; i++) {
+            addImagesToProductIdForCart[event.products.id.toString()]![
+                    r.data!.idCart!]!
+                .add(event.thumbnail);
+          }
+          ;
+        } else {
+          addImagesToProductIdForCart[event.products.id.toString()]![
+              r.data!.idCart!] = [];
+          for (int i = 0; i < event.quantity!; i++) {
+            addImagesToProductIdForCart[event.products.id.toString()]![
+                    r.data!.idCart!]!
+                .add(event.thumbnail);
+          }
+          ;
+        }
         add(AddQuantityForCartEvent(
             currentSize: currentSize,
             colorName: event.colorName,
@@ -1064,7 +1083,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         state.cartCollection![event.boutiqueId.toString()]!.remove(cart);
         cart = cart.copyWith(id: r.data!.idCart!);
         state.cartCollection![event.boutiqueId.toString()]!.add(cart);
-        emit(state.copyWith(cartCollection: state.cartCollection));
+        emit(state.copyWith(
+            cartCollection: state.cartCollection,
+            addImagesToProductIdForCart: addImagesToProductIdForCart));
         add(AddProductItemForCartEvent(
             productId: event.id!, product: event.products));
       }
@@ -1111,6 +1132,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(cartCollection: state.cartCollection));
       showMessage("Item Wan't Deleted");
     }, (r) {
+      Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
+          Map.from(state.addImagesToProductIdForCart);
+
+      if (!addImagesToProductIdForCart[event.productId]![
+              int.parse(event.itemId)]
+          .isNullOrEmpty) {
+        addImagesToProductIdForCart[event.productId]![int.parse(event.itemId)]!
+            .removeWhere(
+          (element) => element == event.thumbnail,
+        );
+      }
+      emit(state.copyWith(
+          addImagesToProductIdForCart: addImagesToProductIdForCart));
+
       add(AddQuantityForCartEvent(
           currentSize: event.currentSize,
           colorName: event.ColoName,
@@ -1129,6 +1164,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       UpdateItemInCartEvent event, Emitter<HomeState> emit) async {
     if (event.quantity == 0) {
       add(RemoveItemFormCartEvent(
+          thumbnail: event.thumbnail,
           currentSize: event.currentSize,
           ColoName: event.colorName,
           itemId: event.cartId,
@@ -1176,7 +1212,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           }
         }).toList();
 
-        emit(state.copyWith(cartCollection: state.cartCollection));
+        emit(state.copyWith(
+          cartCollection: state.cartCollection,
+        ));
         showMessage(r.message!,
             foreGroundColor: Colors.green,
             showInRelease: true,
@@ -1185,6 +1223,34 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         return;
       }
       if (r.data!.status == 1) {
+        Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
+            Map.from(state.addImagesToProductIdForCart);
+
+        if (!addImagesToProductIdForCart[event.productId]![
+                int.parse(event.cartId)]
+            .isNullOrEmpty) {
+          addImagesToProductIdForCart[event.productId]![
+                  int.parse(event.cartId)]!
+              .removeWhere((element) => element == event.thumbnail);
+          for (int i = 0; i < event.quantity; i++) {
+            addImagesToProductIdForCart[event.productId]![
+                    int.parse(event.cartId)]!
+                .add(event.thumbnail);
+          }
+          ;
+        } else {
+          addImagesToProductIdForCart[event.productId]![
+              int.parse(event.cartId)] = [];
+          for (int i = 0; i < event.quantity; i++) {
+            addImagesToProductIdForCart[event.productId]![
+                    int.parse(event.cartId)]!
+                .add(event.thumbnail);
+          }
+          ;
+        }
+        emit(state.copyWith(
+            addImagesToProductIdForCart: addImagesToProductIdForCart));
+
         add(AddQuantityForCartEvent(
             currentSize: event.currentSize,
             colorName: event.colorName,
@@ -1221,8 +1287,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Map<String, List<int>> CurrentQuantity = state.currentQuantityForCart ?? {};
     String key =
         "${event.productId}" + "${event.colorName}" + "${event.currentSize}";
-    print("${key}" +
-        "8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888");
     if (CurrentQuantity.containsKey(key)) {
       CurrentQuantity[key] = [event.quantity, event.cartId];
     } else {

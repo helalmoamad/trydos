@@ -79,7 +79,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
 
   @override
   void initState() {
-    widget.addToBagButtonShapeNotifier.value = widget.CurrentQuantity;
     homeBloc = BlocProvider.of<HomeBloc>(context);
 
     syncColorImageList = widget.productItem.syncColorImages ?? [];
@@ -288,8 +287,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                       changingPagesScrollOffset: 0.1,
                                       isClip: false,
                                       onItemChanged: (index) {
-                                        print(
-                                            "////////////////////////////////////////////////${index}");
                                         currentIndexInSlider = index;
                                         currentImageTab.value = index;
 
@@ -482,6 +479,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               builder: (context, indices, _) {
                 return indices.isEmpty
                     ? ProductDetailsSheetBottomBar(
+                        productId: widget.productItem.id.toString(),
                         imageUrl:
                             !widget.productItem.syncColorImages.isNullOrEmpty
                                 ? widget
@@ -501,10 +499,13 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               iconBoutique: widget.boutiqueIcon,
                               boutiqueId: 46,
                               thumbnail: widget
-                                  .productItem
-                                  .syncColorImages![widget.currentColor]
-                                  .images![0]
-                                  .filePath!,
+                                      .productItem.syncColorImages.isNullOrEmpty
+                                  ? widget.productItem.images![0].filePath!
+                                  : widget
+                                      .productItem
+                                      .syncColorImages![widget.currentColor]
+                                      .images![0]
+                                      .filePath!,
                               products: widget.productItem,
                               color: widget.currentColornum,
                               quantity: int.parse(quantity),
