@@ -244,7 +244,7 @@ class Cart {
   final String? vendorName;
   final int? quantity;
   final String? price;
-  final int? priceNum;
+  final double? priceNum;
   final int? offerPrice;
   final String? offerPriceFormatted;
   final int? tax;
@@ -301,7 +301,7 @@ class Cart {
     String? vendorName,
     int? quantity,
     String? price,
-    int? priceNum,
+    double? priceNum,
     int? offerPrice,
     String? offerPriceFormatted,
     int? tax,

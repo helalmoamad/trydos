@@ -172,6 +172,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       searchHistory: (json['searchHistory'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      getCurrencyForCountryModel: json['getCurrencyForCountryModel'] == null
+          ? null
+          : GetCurrencyForCountryModel.fromJson(
+              json['getCurrencyForCountryModel'] as Map<String, dynamic>),
       getCartItemsStatus: $enumDecodeNullable(
               _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
           GetCartItemsStatus.init,
@@ -234,6 +238,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.productITemForCart.map((k, e) => MapEntry(k, e.toJson())),
       'getMainCategoriesStatus':
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
+      'getCurrencyForCountryModel':
+          instance.getCurrencyForCountryModel?.toJson(),
       'getProductFiltersInEachBoutiqueStatus': instance
           .getProductFiltersInEachBoutiqueStatus
           .map((k, e) => MapEntry(k, _$GetProductFiltersStatusEnumMap[e]!)),

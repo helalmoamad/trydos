@@ -4,6 +4,7 @@ import 'package:trydos/features/home/data/models/get_brand_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
+import 'package:trydos/features/home/data/models/get_currency_for_country.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
@@ -24,6 +25,7 @@ abstract class HomeRepository {
   Future<Either<Failure, GetCartShippingItemsModel>> getCartShippingItem();
   Future<Either<Failure, GetBrandModel>> getBrand();
   Future<Either<Failure, GetCategoryModel>> getCategory();
+  Future<Either<Failure, GetCurrencyForCountryModel>> getCurrencyForCountry();
 
   Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories();
   Future<Either<Failure, GetProductFiltersModel>> getProductFilters(

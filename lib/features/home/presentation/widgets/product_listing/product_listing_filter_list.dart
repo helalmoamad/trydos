@@ -562,12 +562,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                               prevChoosedFilters = prevChoosedFilters.copyWithSaveOtherField(
                                                                                   categories: prevChoosedFilters.categories.isNullOrEmpty
                                                                                       ? [
-                                                                                    category
-                                                                                  ]
+                                                                                          category
+                                                                                        ]
                                                                                       : [
-                                                                                    ...prevChoosedFilters.categories!,
-                                                                                    category
-                                                                                  ]);
+                                                                                          ...prevChoosedFilters.categories!,
+                                                                                          category
+                                                                                        ]);
                                                                               homeBloc.add(GetProductsWithFiltersEvent(boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: filter_model.GetProductFiltersModel(filters: prevChoosedFilters), category: widget.category, offset: 1));
                                                                               return;
                                                                             }
@@ -630,24 +630,50 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                           true,
                                                       addOrRemoveSpecificFilter:
                                                           (bool add) {
-                                                            if (!widget.isExpanded) {
-                                                              filter_model.Category category = filters.categories![index];
-                                                              filter_model.Filter? prevChoosedFilters = state.choosedFiltersInEachBoutiqueModel[key]?.filters;
-                                                              if (prevChoosedFilters == null) {
-                                                                prevChoosedFilters = filter_model.Filter();
-                                                              }
-                                                              prevChoosedFilters = prevChoosedFilters.copyWithSaveOtherField(
-                                                                  categories: prevChoosedFilters.categories.isNullOrEmpty
-                                                                      ? [
-                                                                    category
-                                                                  ]
-                                                                      : [
-                                                                    ...prevChoosedFilters.categories!,
-                                                                    category
-                                                                  ]);
-                                                              homeBloc.add(GetProductsWithFiltersEvent(boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: filter_model.GetProductFiltersModel(filters: prevChoosedFilters), category: widget.category, offset: 1));
-                                                              return;
-                                                            }
+                                                        if (!widget
+                                                            .isExpanded) {
+                                                          filter_model.Category
+                                                              category =
+                                                              filters.categories![
+                                                                  index];
+                                                          filter_model.Filter?
+                                                              prevChoosedFilters =
+                                                              state
+                                                                  .choosedFiltersInEachBoutiqueModel[
+                                                                      key]
+                                                                  ?.filters;
+                                                          if (prevChoosedFilters ==
+                                                              null) {
+                                                            prevChoosedFilters =
+                                                                filter_model
+                                                                    .Filter();
+                                                          }
+                                                          prevChoosedFilters =
+                                                              prevChoosedFilters
+                                                                  .copyWithSaveOtherField(
+                                                                      categories: prevChoosedFilters
+                                                                              .categories
+                                                                              .isNullOrEmpty
+                                                                          ? [
+                                                                              category
+                                                                            ]
+                                                                          : [
+                                                                              ...prevChoosedFilters.categories!,
+                                                                              category
+                                                                            ]);
+                                                          homeBloc.add(GetProductsWithFiltersEvent(
+                                                              boutiqueSlug: widget
+                                                                  .boutiqueSlug,
+                                                              filtersChoosedByUser:
+                                                                  filter_model
+                                                                      .GetProductFiltersModel(
+                                                                          filters:
+                                                                              prevChoosedFilters),
+                                                              category: widget
+                                                                  .category,
+                                                              offset: 1));
+                                                          return;
+                                                        }
                                                         if (add) {
                                                           widget
                                                               .selectedFiltersNotifier
@@ -726,7 +752,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     hideTitle: true,
                                                     selectedFilters:
                                                         selectedFiltersByBrand,
-                                                    boutiqueSlug: widget.boutiqueSlug,
+                                                    boutiqueSlug:
+                                                        widget.boutiqueSlug,
                                                     category: widget.category,
                                                     filterListTitle:
                                                         'Filter By Brand',
@@ -785,10 +812,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                       removedItem,
                                                                       animation));
                                                         },
-                                          boutiqueSlug: widget.boutiqueSlug,
-                                          category: widget.category,
+                                                        boutiqueSlug:
+                                                            widget.boutiqueSlug,
+                                                        category:
+                                                            widget.category,
                                                         attribute: filters
-                                                                .attributes![0],
+                                                            .attributes![0],
                                                       )
                                                     : index <= 6 &&
                                                             titleOfFilterSection[
@@ -797,8 +826,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                 'View By Colors'
                                                         ? ColorsListFilter(
                                                             hideTitle: true,
-                                          boutiqueSlug: widget.boutiqueSlug,
-                                          category: widget.category,
+                                                            boutiqueSlug: widget
+                                                                .boutiqueSlug,
+                                                            category:
+                                                                widget.category,
                                                             selectedFilters:
                                                                 selectedFiltersByColor,
                                                             colors: filters
@@ -919,8 +950,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                 },
                 boutiqueSlug: widget.boutiqueSlug,
                 category: widget.category,
-                attribute: filters
-                    .attributes![0],
+                attribute: filters.attributes![0],
               ),
           },
           if (!widget.isExpanded) ...{
@@ -980,10 +1010,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 ),
                               ),
                             ),
-                            if(!filters.categories.isNullOrEmpty)...{
+                            if (!filters.categories.isNullOrEmpty) ...{
                               Center(
-                                  child:
-                                  FilterSelectedMark(width: 15, height: 15)),
+                                  child: FilterSelectedMark(
+                                      width: 15, height: 15)),
                               SizedBox(
                                 width: 10,
                               ),
@@ -1061,10 +1091,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     );
                                   },
                                 )),
-                            if(!filters.brands.isNullOrEmpty)...{
+                            if (!filters.brands.isNullOrEmpty) ...{
                               Center(
-                                  child:
-                                  FilterSelectedMark(width: 15, height: 15)),
+                                  child: FilterSelectedMark(
+                                      width: 15, height: 15)),
                               SizedBox(
                                 width: 10,
                               ),
@@ -1130,10 +1160,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     );
                                   },
                                 )),
-                            if(!filters.attributes.isNullOrEmpty)...{
+                            if (!filters.attributes.isNullOrEmpty) ...{
                               Center(
-                                  child:
-                                  FilterSelectedMark(width: 15, height: 15)),
+                                  child: FilterSelectedMark(
+                                      width: 15, height: 15)),
                               SizedBox(
                                 width: 10,
                               ),
@@ -1204,10 +1234,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     );
                                   },
                                 )),
-                            if(!filters.colors.isNullOrEmpty)...{
+                            if (!filters.colors.isNullOrEmpty) ...{
                               Center(
-                                  child:
-                                  FilterSelectedMark(width: 15, height: 15)),
+                                  child: FilterSelectedMark(
+                                      width: 15, height: 15)),
                               SizedBox(
                                 width: 10,
                               ),
@@ -1232,14 +1262,14 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                             offset: 1,
                                             filtersChoosedByUser: filter_model
                                                 .GetProductFiltersModel(
-                                                filters: filters
-                                                    .copyWithSaveOtherField(
-                                                    colors: colors)),
+                                                    filters: filters
+                                                        .copyWithSaveOtherField(
+                                                            colors: colors)),
                                           ));
                                         },
                                         child: Row(
                                           mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                              MainAxisAlignment.center,
                                           children: [
                                             SizedBox(
                                               width: 5,
@@ -1249,8 +1279,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                               height: 20,
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
-                                                color: Color(int.parse('0xff${filters.colors![index].substring(1)}')),
-                                                border: Border.all(color: Color(0xffC4C2C2)),
+                                                color: Color(int.parse(
+                                                    '0xff${filters.colors![index].substring(1)}')),
+                                                border: Border.all(
+                                                    color: Color(0xffC4C2C2)),
                                               ),
                                             ),
                                             SizedBox(
@@ -1263,12 +1295,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                   )),
                             },
                             if (filters.prices != null) ...{
-                                Center(
-                                    child:
-                                    FilterSelectedMark(width: 15, height: 15)),
-                                SizedBox(
-                                  width: 10,
-                                ),
+                              Center(
+                                  child: FilterSelectedMark(
+                                      width: 15, height: 15)),
+                              SizedBox(
+                                width: 10,
+                              ),
                               GestureDetector(
                                 onTap: () {
                                   BlocProvider.of<HomeBloc>(context)
@@ -1396,11 +1428,14 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                   selectedFilters, child) {
                                                 return Row(
                                                   children: [
-                                                    if(selectedFilters.length != 0 )...{
+                                                    if (selectedFilters
+                                                            .length !=
+                                                        0) ...{
                                                       Center(
-                                                          child: FilterSelectedMark(
-                                                              width: 15,
-                                                              height: 15)),
+                                                          child:
+                                                              FilterSelectedMark(
+                                                                  width: 15,
+                                                                  height: 15)),
                                                       SizedBox(
                                                         width: 10,
                                                       ),
@@ -1415,9 +1450,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                           initialItemCount:
                                                               selectedFilters
                                                                   .length,
-                                                          itemBuilder: (ctx, index,
+                                                          itemBuilder: (ctx,
+                                                              index,
                                                               animation) {
-                                                            filter_model.Category
+                                                            filter_model
+                                                                .Category
                                                                 category;
                                                             if (selectedFilters[
                                                                         index]
@@ -1426,7 +1463,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                               category = filters
                                                                   .categories!
                                                                   .firstWhere((element) =>
-                                                                      element.id ==
+                                                                      element
+                                                                          .id ==
                                                                       selectedFilters[
                                                                               index]
                                                                           .item1);
@@ -1434,13 +1472,15 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                               filter_model.SubCategory sub = filters
                                                                   .categories!
                                                                   .firstWhere((element) =>
-                                                                      element.id ==
+                                                                      element
+                                                                          .id ==
                                                                       selectedFilters[
                                                                               index]
                                                                           .item2)
                                                                   .subCategories!
                                                                   .firstWhere((element) =>
-                                                                      element.id ==
+                                                                      element
+                                                                          .id ==
                                                                       selectedFilters[
                                                                               index]
                                                                           .item1);
@@ -1472,11 +1512,13 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                               builder: (context, selected, _) {
                                                 return Row(
                                                   children: [
-                                                    if(selected.length != 0)...{
+                                                    if (selected.length !=
+                                                        0) ...{
                                                       Center(
-                                                          child: FilterSelectedMark(
-                                                              width: 15,
-                                                              height: 15)),
+                                                          child:
+                                                              FilterSelectedMark(
+                                                                  width: 15,
+                                                                  height: 15)),
                                                       SizedBox(
                                                         width: 10,
                                                       ),
@@ -1490,7 +1532,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                           key: listForBrandsKey,
                                                           initialItemCount:
                                                               selected.length,
-                                                          itemBuilder: (ctx, index,
+                                                          itemBuilder: (ctx,
+                                                              index,
                                                               animation) {
                                                             return buildBrandItem(
                                                                 selected[index],
@@ -1510,11 +1553,13 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                               builder: (context, selected, _) {
                                                 return Row(
                                                   children: [
-                                                    if(selected.length != 0)...{
+                                                    if (selected.length !=
+                                                        0) ...{
                                                       Center(
-                                                          child: FilterSelectedMark(
-                                                              width: 15,
-                                                              height: 15)),
+                                                          child:
+                                                              FilterSelectedMark(
+                                                                  width: 15,
+                                                                  height: 15)),
                                                       SizedBox(
                                                         width: 10,
                                                       ),
@@ -1528,13 +1573,15 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                           key: listForSizesKey,
                                                           initialItemCount:
                                                               selected.length,
-                                                          itemBuilder: (ctx, index,
+                                                          itemBuilder: (ctx,
+                                                              index,
                                                               animation) {
                                                             return buildSizeItem(
                                                                 selected[index],
                                                                 index,
                                                                 filters
-                                                                        .attributes![0]
+                                                                        .attributes![
+                                                                            0]
                                                                         .options![
                                                                     selected[
                                                                         index]],
@@ -1550,15 +1597,17 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                               builder: (context, selected, _) {
                                                 return Row(
                                                   children: [
-                                                if(selected.length != 0)...{
-                                                  Center(
-                                                      child: FilterSelectedMark(
-                                                          width: 15,
-                                                          height: 15)),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                },
+                                                    if (selected.length !=
+                                                        0) ...{
+                                                      Center(
+                                                          child:
+                                                              FilterSelectedMark(
+                                                                  width: 15,
+                                                                  height: 15)),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                    },
                                                     SizedBox(
                                                         height: 28,
                                                         child: AnimatedList(
@@ -1568,7 +1617,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                           key: listForColorsKey,
                                                           initialItemCount:
                                                               selected.length,
-                                                          itemBuilder: (ctx, index,
+                                                          itemBuilder: (ctx,
+                                                              index,
                                                               animation) {
                                                             return buildColorItem(
                                                                 selected[index],
@@ -1599,8 +1649,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                               .center,
                                                       children: [
                                                         Center(
-                                                            child: FilterSelectedMark(
-                                                                width: 15, height: 15)),
+                                                            child:
+                                                                FilterSelectedMark(
+                                                                    width: 15,
+                                                                    height:
+                                                                        15)),
                                                         SizedBox(
                                                           width: 10,
                                                         ),

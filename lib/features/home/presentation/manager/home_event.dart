@@ -223,6 +223,13 @@ class AddProductItemForCartEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class GetCurrencyForCountryEvent extends HomeEvent {
+  GetCurrencyForCountryEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class RemoveItemFormCartEvent extends HomeEvent {
   final String boutiqueId;
   final String itemId;

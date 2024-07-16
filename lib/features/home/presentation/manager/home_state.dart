@@ -3,6 +3,7 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
     as cart;
 
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
+import 'package:trydos/features/home/data/models/get_currency_for_country.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_brand_model.dart' as brand;
 import 'package:trydos/features/home/data/models/get_category_model.dart'
@@ -89,6 +90,7 @@ class HomeState {
     this.currentQuantityForCart,
     this.addImagesToProductIdForCart = const {},
     this.searchHistory,
+    this.getCurrencyForCountryModel,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
     this.getProductListingPaginationWithoutFiltersModel = const {},
@@ -102,6 +104,7 @@ class HomeState {
   final GetCommentForProductStatus getCommentForProductStatus;
   final Map<String, product.Products> productITemForCart;
   final GetMainCategoriesStatus getMainCategoriesStatus;
+  final GetCurrencyForCountryModel? getCurrencyForCountryModel;
   final Map<String, GetProductFiltersStatus>
       getProductFiltersInEachBoutiqueStatus;
   final Map<String, PaginationModel<product.Products>>
@@ -151,6 +154,7 @@ class HomeState {
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
       final GetSearchResultStatus? getSearchResultStatus,
+      final GetCurrencyForCountryModel? getCurrencyForCountryModel,
       final GetProductListingWithFiltersModel? searchResultModel,
       final GetCommentForProductStatus? getCommentForProductStatus,
       final GetCartItemsStatus? getCartItemsStatus,
@@ -201,6 +205,8 @@ class HomeState {
         getCommentForProductModel:
             getCommentForProductModel ?? this.getCommentForProductModel,
         sizes: sizes ?? this.sizes,
+        getCurrencyForCountryModel:
+            getCurrencyForCountryModel ?? this.getCurrencyForCountryModel,
         addImagesToProductIdForCart:
             addImagesToProductIdForCart ?? this.addImagesToProductIdForCart,
         cartCollection: cartCollection ?? this.cartCollection,

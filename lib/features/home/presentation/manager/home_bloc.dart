@@ -31,6 +31,7 @@ import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCas
 import 'package:trydos/features/home/domain/use_cases/get_brand_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_category_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_currency_for_country.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_boutiqes_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_sections_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
@@ -83,6 +84,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getWidthAndHeightUseCase,
     this.getProductDetailWithoutRelatedProductsUseCase,
     this.getStartingSettingsUseCase,
+    this.getCurrencyForCountryUseCase,
     this.getProductsWithoutFiltersUseCase,
     this.getProductsWithFiltersUseCase,
   ) : super(HomeState()) {
@@ -97,6 +99,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddQuantityForCartEvent>(
       _onAddCurrentQuantityForCartEvent,
     );
+    on<GetCurrencyForCountryEvent>(_onGetCurrencyForCountryEvent,
+        transformer: throttleDroppable(throttleDuration));
     on<GetSearchREsultEvent>(
       _onGetSearchResultEventEvent,
     );
@@ -164,6 +168,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final GetHomeBoutiqesUseCase getHomeBoutiqesUseCase;
   final GetCartItemUseCase getCartItemUseCase;
+  final GetCurrencyForCountryUseCase getCurrencyForCountryUseCase;
   final GetCommentForProductUseCase getCommentForProductUseCase;
   final GetStoryForProductUseCase getStoryUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
@@ -1388,6 +1393,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }, (r) {
       emit(state.copyWith(
         category: r.data!.categories,
+      ));
+    });
+  }
+
+  Future<void> _onGetCurrencyForCountryEvent(
+      GetCurrencyForCountryEvent event, Emitter<HomeState> emit) async {
+    final response = await getCurrencyForCountryUseCase(NoParams());
+
+    response.fold((l) {
+      add(GetCurrencyForCountryEvent());
+    }, (r) {
+      emit(state.copyWith(
+        getCurrencyForCountryModel: r,
       ));
     });
   }

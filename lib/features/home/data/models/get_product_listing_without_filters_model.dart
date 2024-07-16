@@ -164,7 +164,7 @@ class Products {
   final Brand? brand;
   final List<Color>? colors;
   final List<SyncColorImage>? syncColorImages;
-  final int? price;
+  final double? price;
   final String? priceFormatted;
   final int? offerPrice;
   final String? offerPriceFormatted;
@@ -211,7 +211,7 @@ class Products {
     Brand? brand,
     List<Color>? colors,
     List<SyncColorImage>? syncColorImages,
-    int? price,
+    double? price,
     String? priceFormatted,
     int? offerPrice,
     String? offerPriceFormatted,
