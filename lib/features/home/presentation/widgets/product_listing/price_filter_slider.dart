@@ -39,12 +39,13 @@ class _PriceFilterState extends State<PriceFilter> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsetsDirectional.only(start: widget.hideTitle ? 0 : 30.0, end: 20),
+      padding: EdgeInsetsDirectional.only(
+          start: widget.hideTitle ? 0 : 30.0, end: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: widget.hideTitle ? 80  : 110,
+            height: widget.hideTitle ? 80 : 110,
             width: 1.sw - 50,
             child: Stack(
               alignment: Alignment.bottomCenter,
@@ -208,51 +209,52 @@ class _PriceFilterState extends State<PriceFilter> {
                             ],
                           ));
                     }),
-                if(!widget.hideTitle) Positioned(
-                  top: 0,
-                  left: 0,
-                  width: 1.sw - 50,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          FilterSelectedMark(width: 20, height: 20),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          MyTextWidget(
-                            'Filter By Price',
-                            style: context.textTheme.caption?.rq.copyWith(
-                                color: Color(0xff505050), height: 15 / 12),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          SvgPicture.asset(
-                            AppAssets.registerInfoSvg,
-                            color: Color(0xffD3D3D3),
-                          )
-                        ],
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          widget.lowerAndUpperBound.value = Tuple2(
-                              widget.pricesFiltersRanges.minPrice!,
-                              widget.pricesFiltersRanges.maxPrice!);
-                          setState(() {});
-                        },
-                        child: CloseCircle(
-                          width: 20,
-                          height: 20,
-                          borderColor: Color(0xff707070),
-                          closeSvgColor: Color(0xffFF5F61),
+                if (!widget.hideTitle)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    width: 1.sw - 50,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            FilterSelectedMark(width: 20, height: 20),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            MyTextWidget(
+                              'Filter By Price',
+                              style: context.textTheme.caption?.rq.copyWith(
+                                  color: Color(0xff505050), height: 15 / 12),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            SvgPicture.asset(
+                              AppAssets.registerInfoSvg,
+                              color: Color(0xffD3D3D3),
+                            )
+                          ],
                         ),
-                      )
-                    ],
-                  ),
-                )
+                        GestureDetector(
+                          onTap: () {
+                            widget.lowerAndUpperBound.value = Tuple2(
+                                widget.pricesFiltersRanges.minPrice!,
+                                widget.pricesFiltersRanges.maxPrice!);
+                            setState(() {});
+                          },
+                          child: CloseCircle(
+                            width: 20,
+                            height: 20,
+                            borderColor: Color(0xff707070),
+                            closeSvgColor: Color(0xffFF5F61),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
               ],
             ),
           ),

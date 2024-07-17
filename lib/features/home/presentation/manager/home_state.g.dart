@@ -140,9 +140,26 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
         (k, e) => MapEntry(
             k, (e as List<dynamic>).map((e) => (e as num).toInt()).toList()),
       ),
+      addImagesToProductIdForCart:
+          (json['addImagesToProductIdForCart'] as Map<String, dynamic>?)?.map(
+                (k, e) => MapEntry(
+                    k,
+                    (e as Map<String, dynamic>).map(
+                      (k, e) => MapEntry(
+                          int.parse(k),
+                          (e as List<dynamic>)
+                              .map((e) => e as String)
+                              .toList()),
+                    )),
+              ) ??
+              const {},
       searchHistory: (json['searchHistory'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      getCurrencyForCountryModel: json['getCurrencyForCountryModel'] == null
+          ? null
+          : GetCurrencyForCountryModel.fromJson(
+              json['getCurrencyForCountryModel'] as Map<String, dynamic>),
       getCartItemsStatus: $enumDecodeNullable(
               _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
           GetCartItemsStatus.init,
@@ -205,6 +222,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.productITemForCart.map((k, e) => MapEntry(k, e.toJson())),
       'getMainCategoriesStatus':
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
+      'getCurrencyForCountryModel':
+          instance.getCurrencyForCountryModel?.toJson(),
       'getProductFiltersStatus':
           _$GetProductFiltersStatusEnumMap[instance.getProductFiltersStatus]!,
       'getProductListingWithFiltersPaginationModels':
@@ -221,6 +240,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'searchHistory': instance.searchHistory,
       'selectedBoutiqueBrandCategorySlugsForSearch':
           instance.selectedBoutiqueBrandCategorySlugsForSearch,
+      'addImagesToProductIdForCart': instance.addImagesToProductIdForCart.map(
+          (k, e) => MapEntry(k, e.map((k, e) => MapEntry(k.toString(), e)))),
       'cartCollection': instance.cartCollection
           ?.map((k, e) => MapEntry(k, e.map((e) => e.toJson()).toList())),
       'reRequestTheseBoutiques': instance.reRequestTheseBoutiques,

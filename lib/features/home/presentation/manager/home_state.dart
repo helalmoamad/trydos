@@ -3,6 +3,7 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
     as cart;
 
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
+import 'package:trydos/features/home/data/models/get_currency_for_country.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_brand_model.dart' as brand;
 import 'package:trydos/features/home/data/models/get_category_model.dart'
@@ -88,7 +89,9 @@ class HomeState {
     this.CurrentColorSizeForCart,
     this.selectedBoutiqueBrandCategorySlugsForSearch = const {},
     this.currentQuantityForCart,
+    this.addImagesToProductIdForCart = const {},
     this.searchHistory,
+    this.getCurrencyForCountryModel,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
     this.getProductListingPaginationWithoutFiltersModel = const {},
@@ -102,10 +105,12 @@ class HomeState {
   final GetCommentForProductStatus getCommentForProductStatus;
   final Map<String, product.Products> productITemForCart;
   final GetMainCategoriesStatus getMainCategoriesStatus;
+  final GetCurrencyForCountryModel? getCurrencyForCountryModel;
   final GetProductFiltersStatus
   getProductFiltersStatus;
-  final PaginationModel<product.Products>?
-      getProductListingWithFiltersPaginationModels;
+  final PaginationModel<product.Products>? getProductListingWithFiltersPaginationModels;
+
+
   final get_filters.GetProductFiltersModel?
       getProductFiltersModel;
   final get_filters.GetProductFiltersModel? appliedFiltersByUser;
@@ -115,6 +120,8 @@ class HomeState {
   int currentPage;
   List<String>? searchHistory;
   Map<String, List<String>> selectedBoutiqueBrandCategorySlugsForSearch;
+  Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
+
   Map<String, List<cart.Cart>>? cartCollection;
   final Map<String, bool> reRequestTheseBoutiques;
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
@@ -148,8 +155,10 @@ class HomeState {
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
+      Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
       final GetSearchResultStatus? getSearchResultStatus,
       final get_product_with_filter.GetProductListingWithFiltersModel? searchResultModel,
+      final GetCurrencyForCountryModel? getCurrencyForCountryModel,
       final GetCommentForProductStatus? getCommentForProductStatus,
       final GetCartItemsStatus? getCartItemsStatus,
       Map<int, int?>? currentStoryInEachCollection,
@@ -200,6 +209,10 @@ class HomeState {
         getCommentForProductModel:
             getCommentForProductModel ?? this.getCommentForProductModel,
         sizes: sizes ?? this.sizes,
+        getCurrencyForCountryModel:
+            getCurrencyForCountryModel ?? this.getCurrencyForCountryModel,
+        addImagesToProductIdForCart:
+            addImagesToProductIdForCart ?? this.addImagesToProductIdForCart,
         cartCollection: cartCollection ?? this.cartCollection,
         getProductFiltersStatus: getProductFiltersStatus ?? this.getProductFiltersStatus,
         getProductListingWithFiltersPaginationModels: getProductListingWithFiltersPaginationModels ??
@@ -248,8 +261,7 @@ class HomeState {
         startingSetting: startingSetting ?? this.startingSetting,
         mainCategoriesResponseModel:
             mainCategoriesResponseModel ?? this.mainCategoriesResponseModel,
-        getProductListingPaginationWithoutFiltersModel:
-            getProductListingPaginationWithoutFiltersModel ?? this.getProductListingPaginationWithoutFiltersModel,
+        getProductListingPaginationWithoutFiltersModel: getProductListingPaginationWithoutFiltersModel ?? this.getProductListingPaginationWithoutFiltersModel,
         cachedProductWithoutRelatedProductsModel: cachedProductWithoutRelatedProductsModel ?? this.cachedProductWithoutRelatedProductsModel,
         getProductDetailWithoutRelatedProductsModel: getProductDetailWithoutRelatedProductsModel ?? this.getProductDetailWithoutRelatedProductsModel,
         boutiques: boutiques ?? this.boutiques,

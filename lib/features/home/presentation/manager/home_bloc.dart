@@ -31,6 +31,7 @@ import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCas
 import 'package:trydos/features/home/domain/use_cases/get_brand_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_category_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_currency_for_country.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_boutiqes_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_sections_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
@@ -83,6 +84,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getWidthAndHeightUseCase,
     this.getProductDetailWithoutRelatedProductsUseCase,
     this.getStartingSettingsUseCase,
+    this.getCurrencyForCountryUseCase,
     this.getProductsWithoutFiltersUseCase,
     this.getProductsWithFiltersUseCase,
   ) : super(HomeState()) {
@@ -97,6 +99,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddQuantityForCartEvent>(
       _onAddCurrentQuantityForCartEvent,
     );
+    on<GetCurrencyForCountryEvent>(_onGetCurrencyForCountryEvent,
+        transformer: throttleDroppable(throttleDuration));
     on<GetSearchREsultEvent>(
       _onGetSearchResultEventEvent,
     );
@@ -167,6 +171,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final GetHomeBoutiqesUseCase getHomeBoutiqesUseCase;
   final GetCartItemUseCase getCartItemUseCase;
+  final GetCurrencyForCountryUseCase getCurrencyForCountryUseCase;
   final GetCommentForProductUseCase getCommentForProductUseCase;
   final GetStoryForProductUseCase getStoryUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
@@ -894,18 +899,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Map<String, List<int>> CurrentQuantity = state.currentQuantityForCart ?? {};
     String key = "${event.products.id.toString()}" +
         "${event.colorName}" +
-        "${state.CurrentColorSizeForCart!["size"]}";
-    print("*************${key}***********");
-    print(state.CurrentColorSizeForCart!["size"]);
+        "${currentSize}";
 
-    if (CurrentQuantity.containsKey(key)) {
+    if (!CurrentQuantity[key].isNullOrEmpty) {
       if (CurrentQuantity[key]![0] > 0) {
-        print(key);
-        print("************************");
-        print(state.CurrentColorSizeForCart!["size"]);
-        print("****************${CurrentQuantity[key]![0]}********");
-
         add(UpdateItemInCartEvent(
+            thumbnail: event.thumbnail,
             currentSize: currentSize,
             colorName: event.colorName,
             productId: event.products.id.toString(),
@@ -1002,6 +1001,30 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
         emit(state.copyWith(cartCollection: state.cartCollection));
       } else {
+        Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
+            Map.from(state.addImagesToProductIdForCart);
+        if (addImagesToProductIdForCart[event.products.id.toString()] == null) {
+          addImagesToProductIdForCart[event.products.id.toString()] = {};
+        }
+        if (!addImagesToProductIdForCart[event.products.id.toString()]![
+                r.data!.idCart!]
+            .isNullOrEmpty) {
+          for (int i = 0; i < event.quantity!; i++) {
+            addImagesToProductIdForCart[event.products.id.toString()]![
+                    r.data!.idCart!]!
+                .add(event.thumbnail);
+          }
+          ;
+        } else {
+          addImagesToProductIdForCart[event.products.id.toString()]![
+              r.data!.idCart!] = [];
+          for (int i = 0; i < event.quantity!; i++) {
+            addImagesToProductIdForCart[event.products.id.toString()]![
+                    r.data!.idCart!]!
+                .add(event.thumbnail);
+          }
+          ;
+        }
         add(AddQuantityForCartEvent(
             currentSize: currentSize,
             colorName: event.colorName,
@@ -1012,7 +1035,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         state.cartCollection![event.boutiqueId.toString()]!.remove(cart);
         cart = cart.copyWith(id: r.data!.idCart!);
         state.cartCollection![event.boutiqueId.toString()]!.add(cart);
-        emit(state.copyWith(cartCollection: state.cartCollection));
+        emit(state.copyWith(
+            cartCollection: state.cartCollection,
+            addImagesToProductIdForCart: addImagesToProductIdForCart));
         add(AddProductItemForCartEvent(
             productId: event.id!, product: event.products));
       }
@@ -1059,6 +1084,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(cartCollection: state.cartCollection));
       showMessage("Item Wan't Deleted");
     }, (r) {
+      Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
+          Map.from(state.addImagesToProductIdForCart);
+
+      if (!addImagesToProductIdForCart[event.productId]![
+              int.parse(event.itemId)]
+          .isNullOrEmpty) {
+        addImagesToProductIdForCart[event.productId]![int.parse(event.itemId)]!
+            .removeWhere(
+          (element) => element == event.thumbnail,
+        );
+      }
+      emit(state.copyWith(
+          addImagesToProductIdForCart: addImagesToProductIdForCart));
+
       add(AddQuantityForCartEvent(
           currentSize: event.currentSize,
           colorName: event.ColoName,
@@ -1077,6 +1116,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       UpdateItemInCartEvent event, Emitter<HomeState> emit) async {
     if (event.quantity == 0) {
       add(RemoveItemFormCartEvent(
+          thumbnail: event.thumbnail,
           currentSize: event.currentSize,
           ColoName: event.colorName,
           itemId: event.cartId,
@@ -1124,7 +1164,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           }
         }).toList();
 
-        emit(state.copyWith(cartCollection: state.cartCollection));
+        emit(state.copyWith(
+          cartCollection: state.cartCollection,
+        ));
         showMessage(r.message!,
             foreGroundColor: Colors.green,
             showInRelease: true,
@@ -1133,6 +1175,34 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         return;
       }
       if (r.data!.status == 1) {
+        Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
+            Map.from(state.addImagesToProductIdForCart);
+
+        if (!addImagesToProductIdForCart[event.productId]![
+                int.parse(event.cartId)]
+            .isNullOrEmpty) {
+          addImagesToProductIdForCart[event.productId]![
+                  int.parse(event.cartId)]!
+              .removeWhere((element) => element == event.thumbnail);
+          for (int i = 0; i < event.quantity; i++) {
+            addImagesToProductIdForCart[event.productId]![
+                    int.parse(event.cartId)]!
+                .add(event.thumbnail);
+          }
+          ;
+        } else {
+          addImagesToProductIdForCart[event.productId]![
+              int.parse(event.cartId)] = [];
+          for (int i = 0; i < event.quantity; i++) {
+            addImagesToProductIdForCart[event.productId]![
+                    int.parse(event.cartId)]!
+                .add(event.thumbnail);
+          }
+          ;
+        }
+        emit(state.copyWith(
+            addImagesToProductIdForCart: addImagesToProductIdForCart));
+
         add(AddQuantityForCartEvent(
             currentSize: event.currentSize,
             colorName: event.colorName,
@@ -1169,8 +1239,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Map<String, List<int>> CurrentQuantity = state.currentQuantityForCart ?? {};
     String key =
         "${event.productId}" + "${event.colorName}" + "${event.currentSize}";
-    print("${key}" +
-        "8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888");
     if (CurrentQuantity.containsKey(key)) {
       CurrentQuantity[key] = [event.quantity, event.cartId];
     } else {
@@ -1278,18 +1346,34 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onChangeSelectedFiltersEvent(ChangeSelectedFiltersEvent event, Emitter<HomeState> emit) {
     add(GetProductFiltersEvent(
-      category: event.category,
-      boutiqueSlug: event.boutiqueSlug,
-      filtersChoosedByUser: event.filtersChoosedByUser
+        category: event.category,
+        boutiqueSlug: event.boutiqueSlug,
+        filtersChoosedByUser: event.filtersChoosedByUser
     ));
     Filter filters = event.filtersChoosedByUser?.filters ?? Filter();
     emit(state.copyWith(
-      choosedFiltersByUser: ((filters.colors?.isNotEmpty ??
-          false) || (filters.brands?.isNotEmpty ??
-          false) || (filters.attributes?.isNotEmpty ??
-          false) || (filters.categories?.isNotEmpty ??
-          false) || filters.prices != null) ? event.filtersChoosedByUser : null,
-      getProductListingWithFiltersPaginationModels: event.filtersChoosedByUser == null ? PaginationModel.init() : state.getProductListingWithFiltersPaginationModels
+        choosedFiltersByUser: ((filters.colors?.isNotEmpty ??
+            false) || (filters.brands?.isNotEmpty ??
+            false) || (filters.attributes?.isNotEmpty ??
+            false) || (filters.categories?.isNotEmpty ??
+            false) || filters.prices != null)
+            ? event.filtersChoosedByUser
+            : null,
+        getProductListingWithFiltersPaginationModels: event
+            .filtersChoosedByUser == null ? PaginationModel.init() : state
+            .getProductListingWithFiltersPaginationModels
     ));
+  }
+  Future<void> _onGetCurrencyForCountryEvent(
+      GetCurrencyForCountryEvent event, Emitter<HomeState> emit) async {
+    final response = await getCurrencyForCountryUseCase(NoParams());
+
+    response.fold((l) {
+      add(GetCurrencyForCountryEvent());
+    }, (r) {
+      emit(state.copyWith(
+        getCurrencyForCountryModel: r,
+      ));
+    });
   }
 }
