@@ -118,8 +118,11 @@ class _SearchResultState extends ThemeState<SearchResult> {
                             bottomRight: Radius.circular(5),
                           ),
                           image: DecorationImage(
-                              image: NetworkImage(state.searchResultModel!.data!
-                                  .products![index].images![0].filePath!))),
+                              fit: BoxFit.cover,
+                              image: NetworkImage(
+                                state.searchResultModel!.data!.products![index]
+                                    .images![0].filePath!,
+                              ))),
                     )
                   ],
                 ),

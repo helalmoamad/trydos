@@ -25,10 +25,14 @@ class PriceFilter extends StatefulWidget {
     required this.pricesFiltersRanges,
     this.hideTitle = false,
     required this.lowerAndUpperBound,
+    required this.pricrSymbol,
+    required this.pricrRate,
   });
 
   final bool hideTitle;
   final Prices pricesFiltersRanges;
+  final String pricrSymbol;
+  final double pricrRate;
   final ValueNotifier<Tuple2<double, double>> lowerAndUpperBound;
 
   @override
@@ -77,11 +81,15 @@ class _PriceFilterState extends State<PriceFilter> {
                   child: FlutterSlider(
                     minimumDistance: 1,
                     values: [
-                      widget.pricesFiltersRanges.minPrice!.toDouble(),
-                      widget.pricesFiltersRanges.maxPrice!.toDouble()
+                      widget.pricesFiltersRanges.minPrice! *
+                          widget.pricrRate.toDouble().ceilToDouble(),
+                      widget.pricesFiltersRanges.maxPrice! *
+                          widget.pricrRate.toDouble()
                     ],
                     step: FlutterSliderStep(
-                      step: widget.pricesFiltersRanges.maxPrice! / 100,
+                      step: widget.pricesFiltersRanges.maxPrice! *
+                          widget.pricrRate /
+                          100,
                     ),
                     selectByTap: false,
                     trackBar: FlutterSliderTrackBar(
@@ -105,7 +113,9 @@ class _PriceFilterState extends State<PriceFilter> {
                                 decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: filterData.item2 <
-                                            widget.pricesFiltersRanges.maxPrice!
+                                            widget.pricesFiltersRanges
+                                                    .maxPrice! *
+                                                widget.pricrRate
                                         ? Color(0xffFF5F61)
                                         : Colors.white,
                                     border: Border.all(
@@ -127,7 +137,9 @@ class _PriceFilterState extends State<PriceFilter> {
                                 decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: filterData.item1 >
-                                            widget.pricesFiltersRanges.minPrice!
+                                            widget.pricesFiltersRanges
+                                                    .minPrice! *
+                                                widget.pricrRate
                                         ? Color(0xffFF5F61)
                                         : Colors.white,
                                     border: Border.all(
@@ -141,8 +153,10 @@ class _PriceFilterState extends State<PriceFilter> {
                               );
                             })),
                     rangeSlider: true,
-                    max: widget.pricesFiltersRanges.maxPrice!.toDouble(),
-                    min: widget.pricesFiltersRanges.minPrice!.toDouble(),
+                    max: widget.pricesFiltersRanges.maxPrice! *
+                        widget.pricrRate.toDouble(),
+                    min: widget.pricesFiltersRanges.minPrice! *
+                        widget.pricrRate.toDouble(),
                     handlerAnimation: FlutterSliderHandlerAnimation(
                         scale: 1, duration: Duration(milliseconds: 0)),
                     tooltip: FlutterSliderTooltip(
@@ -167,15 +181,19 @@ class _PriceFilterState extends State<PriceFilter> {
                                 'Min ${filterData.item1} ',
                                 style: textTheme.caption?.rq.copyWith(
                                     color: filterData.item1 >
-                                            widget.pricesFiltersRanges.minPrice!
+                                            widget.pricesFiltersRanges
+                                                    .minPrice! *
+                                                widget.pricrRate
                                         ? Color(0xffFF5F61)
                                         : Color(0xff505050)),
                               ),
                               MyTextWidget(
-                                'USD',
+                                widget.pricrSymbol,
                                 style: textTheme.overline?.lq.copyWith(
                                     color: filterData.item1 >
-                                            widget.pricesFiltersRanges.minPrice!
+                                            widget.pricesFiltersRanges
+                                                    .minPrice! *
+                                                widget.pricrRate
                                         ? Color(0xffFF5F61)
                                         : Color(0xff505050)),
                               ),
@@ -194,15 +212,19 @@ class _PriceFilterState extends State<PriceFilter> {
                                 'Max ${filterData.item2} ',
                                 style: textTheme.caption?.rq.copyWith(
                                     color: filterData.item2 <
-                                            widget.pricesFiltersRanges.maxPrice!
+                                            widget.pricesFiltersRanges
+                                                    .maxPrice! *
+                                                widget.pricrRate
                                         ? Color(0xffFF5F61)
                                         : Color(0xff505050)),
                               ),
                               MyTextWidget(
-                                'USD',
+                                widget.pricrSymbol,
                                 style: textTheme.overline?.lq.copyWith(
                                     color: filterData.item2 <
-                                            widget.pricesFiltersRanges.maxPrice!
+                                            widget.pricesFiltersRanges
+                                                    .maxPrice! *
+                                                widget.pricrRate
                                         ? Color(0xffFF5F61)
                                         : Color(0xff505050)),
                               ),
@@ -241,8 +263,10 @@ class _PriceFilterState extends State<PriceFilter> {
                         GestureDetector(
                           onTap: () {
                             widget.lowerAndUpperBound.value = Tuple2(
-                                widget.pricesFiltersRanges.minPrice!,
-                                widget.pricesFiltersRanges.maxPrice!);
+                                widget.pricesFiltersRanges.minPrice! *
+                                    widget.pricrRate,
+                                widget.pricesFiltersRanges.maxPrice! *
+                                    widget.pricrRate);
                             setState(() {});
                           },
                           child: CloseCircle(

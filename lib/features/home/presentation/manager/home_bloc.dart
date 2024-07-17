@@ -108,9 +108,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetProductFiltersEvent>(
       _onGetProductFiltersEvent,
     );
-    on<ChangeSelectedFiltersEvent>(
-      _onChangeSelectedFiltersEvent
-    );
+    on<ChangeSelectedFiltersEvent>(_onChangeSelectedFiltersEvent);
     on<AddSearchTextToHistoryEvent>(
       _onAddSearchTextToHistoryEvent,
     );
@@ -574,7 +572,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         state.getProductListingWithFiltersPaginationModels ??
             PaginationModel.init();
 
-    GetProductFiltersModel? prevAppliedFiltersByUser, prevChoosedFiltersByUser,appliedFiltersByUser;
+    GetProductFiltersModel? prevAppliedFiltersByUser,
+        prevChoosedFiltersByUser,
+        appliedFiltersByUser;
     prevAppliedFiltersByUser = state.appliedFiltersByUser;
     prevChoosedFiltersByUser = state.choosedFiltersByUser;
     appliedFiltersByUser =
@@ -585,12 +585,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           getProductListingWithFiltersPaginationModels.copyWith(
               paginationStatus: PaginationStatus.loading),
       choosedFiltersByUser: null,
-        resetAppliedFilters: !((appliedFiltersByUser.filters!.colors?.isNotEmpty ??
-            false) || (appliedFiltersByUser.filters!.brands?.isNotEmpty ??
-            false) || (appliedFiltersByUser.filters!.attributes?.isNotEmpty ??
-            false) || (appliedFiltersByUser.filters!.categories?.isNotEmpty ??
-            false) || appliedFiltersByUser.filters!.prices != null),
-      appliedFiltersByUser: appliedFiltersByUser  ,
+      resetAppliedFilters:
+          !((appliedFiltersByUser.filters!.colors?.isNotEmpty ?? false) ||
+              (appliedFiltersByUser.filters!.brands?.isNotEmpty ?? false) ||
+              (appliedFiltersByUser.filters!.attributes?.isNotEmpty ?? false) ||
+              (appliedFiltersByUser.filters!.categories?.isNotEmpty ?? false) ||
+              appliedFiltersByUser.filters!.prices != null),
+      appliedFiltersByUser: appliedFiltersByUser,
     ));
     final response = await getProductsWithFiltersUseCase(
         GetProductsWithFiltersParams(
@@ -637,7 +638,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         isFailedTheFirstTime.add('GetProductsWithFiltersEvent');
       }
       emit(state.copyWith(
-        choosedFiltersByUser: prevChoosedFiltersByUser,
+          choosedFiltersByUser: prevChoosedFiltersByUser,
           getProductListingWithFiltersPaginationModels:
               getProductListingWithFiltersPaginationModels.copyWith(
                   paginationStatus: PaginationStatus.failure),
@@ -752,56 +753,46 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onGetProductFiltersEvent(
       GetProductFiltersEvent event, Emitter<HomeState> emit) async {
-
+    emit(state.copyWith(
+      getProductFiltersStatus: GetProductFiltersStatus.loading,
+      choosedFiltersByUser: event.filtersChoosedByUser,
+      resetAppliedFilters: event.filtersChoosedByUser == null,
+    ));
+    Filter filters = event.filtersChoosedByUser?.filters ?? Filter();
+    final response = await getProductFiltersUseCase(GetProductsFiltersParams(
+      category: event.category,
+      boutiqueSlug: event.boutiqueSlug,
+      attributes: filters.attributes.isNullOrEmpty
+          ? null
+          : [
+              {
+                "id": filters.attributes![0].id,
+                "name": filters.attributes![0].name,
+                "options": filters.attributes![0].options,
+              }
+            ],
+      brands: filters.brands?.map((e) => e.id.toString()).toList(),
+      categories: filters.categories?.map((e) => e.id.toString()).toList(),
+      colors: filters.colors?.map((e) => e.toString()).toList(),
+      prices: filters.prices != null
+          ? ['${filters.prices!.minPrice}-${filters.prices!.maxPrice}']
+          : null,
+    ));
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('GetProductFiltersEvent')) {
+        add(GetMainCategoriesEvent());
+        isFailedTheFirstTime.add('GetProductFiltersEvent');
+      }
       emit(state.copyWith(
-          getProductFiltersStatus: GetProductFiltersStatus.loading,
-          choosedFiltersByUser: event.filtersChoosedByUser,
-          resetAppliedFilters : event.filtersChoosedByUser == null,
-      ));
-      Filter filters = event.filtersChoosedByUser?.filters ?? Filter();
-      final response = await getProductFiltersUseCase(GetProductsFiltersParams(
-          category: event.category, boutiqueSlug: event.boutiqueSlug,
-        attributes: filters.attributes.isNullOrEmpty
-            ? null
-            : [
-          {
-            "id": filters.attributes![0].id,
-            "name": filters.attributes![0].name,
-            "options":
-            filters.attributes![0].options,
-          }
-        ],
-        brands: filters.brands
-            ?.map((e) => e.id.toString())
-            .toList(),
-        categories: filters.categories
-            ?.map((e) => e.id.toString())
-            .toList(),
-        colors: filters.colors
-            ?.map((e) => e.toString())
-            .toList(),
-        prices: filters.prices != null
-            ? [
-          '${filters.prices!.minPrice}-${filters.prices!.maxPrice}'
-        ]
-            : null,
-      ));
-      response.fold((l) {
-        if (!isFailedTheFirstTime.contains('GetProductFiltersEvent')) {
-          add(GetMainCategoriesEvent());
-          isFailedTheFirstTime.add('GetProductFiltersEvent');
-        }
-        emit(state.copyWith(
-            getProductFiltersStatus: GetProductFiltersStatus.failure));
-      }, (r) {
-        apisMustNotToRequest.add('GetProductFiltersEvent');
-        isFailedTheFirstTime.remove('GetProductFiltersEvent');
-        emit(state.copyWith(
+          getProductFiltersStatus: GetProductFiltersStatus.failure));
+    }, (r) {
+      apisMustNotToRequest.add('GetProductFiltersEvent');
+      isFailedTheFirstTime.remove('GetProductFiltersEvent');
+      emit(state.copyWith(
           getProductFiltersStatus: GetProductFiltersStatus.success,
           getProductFiltersModel: r,
-            choosedFiltersByUser : event.filtersChoosedByUser
-        ));
-      });
+          choosedFiltersByUser: event.filtersChoosedByUser));
+    });
   }
 
   FutureOr<void> _onGetCommentForProductEvent(
@@ -1051,7 +1042,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onAddProductItemForCartEvent(
       AddProductItemForCartEvent event, Emitter<HomeState> emit) async {
-    Map<String, Products> productsForCart = Map.of(state.productITemForCart);
+    Map<String, Products> productsForCart =
+        Map.of(state.productITemForCart ?? {});
     if (productsForCart.containsKey(event.productId)) {
       productsForCart[event.productId] = event.product!;
     } else {
@@ -1344,26 +1336,27 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
 
-  FutureOr<void> _onChangeSelectedFiltersEvent(ChangeSelectedFiltersEvent event, Emitter<HomeState> emit) {
+  FutureOr<void> _onChangeSelectedFiltersEvent(
+      ChangeSelectedFiltersEvent event, Emitter<HomeState> emit) {
     add(GetProductFiltersEvent(
         category: event.category,
         boutiqueSlug: event.boutiqueSlug,
-        filtersChoosedByUser: event.filtersChoosedByUser
-    ));
+        filtersChoosedByUser: event.filtersChoosedByUser));
     Filter filters = event.filtersChoosedByUser?.filters ?? Filter();
     emit(state.copyWith(
-        choosedFiltersByUser: ((filters.colors?.isNotEmpty ??
-            false) || (filters.brands?.isNotEmpty ??
-            false) || (filters.attributes?.isNotEmpty ??
-            false) || (filters.categories?.isNotEmpty ??
-            false) || filters.prices != null)
+        choosedFiltersByUser: ((filters.colors?.isNotEmpty ?? false) ||
+                (filters.brands?.isNotEmpty ?? false) ||
+                (filters.attributes?.isNotEmpty ?? false) ||
+                (filters.categories?.isNotEmpty ?? false) ||
+                filters.prices != null)
             ? event.filtersChoosedByUser
             : null,
-        getProductListingWithFiltersPaginationModels: event
-            .filtersChoosedByUser == null ? PaginationModel.init() : state
-            .getProductListingWithFiltersPaginationModels
-    ));
+        getProductListingWithFiltersPaginationModels:
+            event.filtersChoosedByUser == null
+                ? PaginationModel.init()
+                : state.getProductListingWithFiltersPaginationModels));
   }
+
   Future<void> _onGetCurrencyForCountryEvent(
       GetCurrencyForCountryEvent event, Emitter<HomeState> emit) async {
     final response = await getCurrencyForCountryUseCase(NoParams());

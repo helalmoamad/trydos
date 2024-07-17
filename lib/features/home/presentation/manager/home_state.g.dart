@@ -219,7 +219,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getCommentForProductStatus': _$GetCommentForProductStatusEnumMap[
           instance.getCommentForProductStatus]!,
       'productITemForCart':
-          instance.productITemForCart.map((k, e) => MapEntry(k, e.toJson())),
+          instance.productITemForCart?.map((k, e) => MapEntry(k, e.toJson())),
       'getMainCategoriesStatus':
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
       'getCurrencyForCountryModel':

@@ -248,7 +248,7 @@ class Cart {
   final double? offerPrice;
   final String? offerPriceFormatted;
   final int? tax;
-  final int? discount;
+  final double? discount;
   final String? slug;
   final String? name;
   final Shop? shop;
@@ -305,7 +305,7 @@ class Cart {
     double? offerPrice,
     String? offerPriceFormatted,
     int? tax,
-    int? discount,
+    double? discount,
     String? slug,
     String? name,
     Shop? shop,
@@ -369,7 +369,7 @@ class Cart {
         offerPrice: json["offer_price"]?.toDouble(),
         offerPriceFormatted: json["offer_price_formatted"],
         tax: json["tax"],
-        discount: json["discount"],
+        discount: json["discount"]?.toDouble(),
         slug: json["slug"],
         name: json["name"],
         shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
