@@ -16,15 +16,12 @@ import '../../manager/home_event.dart';
 
 class ColorsListFilter extends StatefulWidget {
   const ColorsListFilter(
-      {super.key , this.hideTitle = false , required this.selectedFilters, required this.colors, this.addItemToAnimatedList, this.removeItemToAnimatedList, required this.boutiqueSlug, this.category});
+      {super.key , this.hideTitle = false , required this.colors, required this.boutiqueSlug, this.category});
 
-  final ValueNotifier<List<int>> selectedFilters;
   final List<String> colors ;
   final bool hideTitle;
   final String boutiqueSlug;
   final String? category;
-  final void Function(int index)? addItemToAnimatedList;
-  final void Function(int index , String removedItem)? removeItemToAnimatedList;
 
   @override
   State<ColorsListFilter> createState() => _ColorsListFilterState();
@@ -69,63 +66,74 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
           },
           SizedBox(
             height: 105,
-            child: ValueListenableBuilder<List<int>>(
-                valueListenable: widget.selectedFilters,
-                builder: (context, selected, child) {
-                  return ListView.separated(
+            child: ListView.separated(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (ctx, index) {
+                        HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
+                        bool isSelected = widget.hideTitle
+                            ? false
+                            : (homeBloc
+                            .state.choosedFiltersByUser?.filters?.colors
+                            ?.any((element) =>
+                        element ==
+                            widget.colors[index]) ??
+                            false);
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             GestureDetector(
                               onTap: () {
-                                if (widget.hideTitle) {
-                                  String keyOfChoosedFilters =
-                                      widget.boutiqueSlug +
-                                          (widget.category ?? '');
-                                  String color = widget.colors[index];
-                                  Filter? prevChoosedFilters =
-                                      BlocProvider.of<HomeBloc>(context)
-                                          .state
-                                          .choosedFiltersInEachBoutiqueModel[
-                                      keyOfChoosedFilters]
-                                          ?.filters;
-                                  if (prevChoosedFilters == null) {
-                                    prevChoosedFilters = Filter();
+                                String color = widget.colors[index];
+                                Filter? prevChoosedOrAppliedFilterToAddToIt =
+                                widget.hideTitle
+                                    ? homeBloc
+                                    .state.appliedFiltersByUser?.filters
+                                    : homeBloc
+                                    .state.choosedFiltersByUser?.filters;
+                                if (widget.hideTitle || !isSelected) {
+                                  if (prevChoosedOrAppliedFilterToAddToIt == null) {
+                                    prevChoosedOrAppliedFilterToAddToIt = Filter();
                                   }
-                                  prevChoosedFilters =
-                                      prevChoosedFilters.copyWithSaveOtherField(
-                                          colors:  prevChoosedFilters
+                                  prevChoosedOrAppliedFilterToAddToIt =
+                                      prevChoosedOrAppliedFilterToAddToIt
+                                          .copyWithSaveOtherField(
+                                          colors:  prevChoosedOrAppliedFilterToAddToIt
                                               .colors.isNullOrEmpty
                                               ? [color]
                                               : [
-                                            ...prevChoosedFilters
+                                            ...prevChoosedOrAppliedFilterToAddToIt
                                                 .colors!,
                                             color
                                           ]);
-                                  BlocProvider.of<HomeBloc>(context).add(
-                                      GetProductsWithFiltersEvent(
-                                          boutiqueSlug: widget.boutiqueSlug,
-                                          filtersChoosedByUser:
-                                          GetProductFiltersModel(
-                                              filters:
-                                              prevChoosedFilters),
-                                          category: widget.category,
-                                          offset: 1));
-                                  return;
-                                }
-                                if (selected.contains(index)) {
-                                  String removed = widget.colors[index];
-                                  int removedIndex = selected.indexWhere((element) => element == index);
-                                  widget.selectedFilters.value.remove(index);
-                                  widget.removeItemToAnimatedList?.call(removedIndex , removed);
+                                  if (widget.hideTitle) {
+                                    homeBloc.add(GetProductsWithFiltersEvent(
+                                        boutiqueSlug: widget.boutiqueSlug,
+                                        filtersAppliedByUser: GetProductFiltersModel(
+                                            filters:
+                                            prevChoosedOrAppliedFilterToAddToIt),
+                                        category: widget.category,
+                                        offset: 1));
+                                  } else {
+                                    homeBloc.add(ChangeSelectedFiltersEvent(
+                                      filtersChoosedByUser: GetProductFiltersModel(
+                                          filters:
+                                          prevChoosedOrAppliedFilterToAddToIt),
+                                    ));
+                                  }
                                 } else {
-                                  widget.selectedFilters.value.add(index);
-                                  widget.addItemToAnimatedList?.call(widget.selectedFilters.value.length - 1);
+                                    prevChoosedOrAppliedFilterToAddToIt!.colors!
+                                        .removeWhere(((element) => element ==
+                                        widget.colors[index]));
+                                    homeBloc
+                                        .add(
+                                        ChangeSelectedFiltersEvent(
+                                          category: widget.category,
+                                          boutiqueSlug: widget.boutiqueSlug,
+                                          filtersChoosedByUser: GetProductFiltersModel(
+                                              filters: prevChoosedOrAppliedFilterToAddToIt),
+                                        ));
                                 }
-                                widget.selectedFilters.notifyListeners();
                               },
                               child: Stack(
                                 children: [
@@ -146,7 +154,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                     ),
                                   ),
                                   Visibility(
-                                      visible: selected.contains(index),
+                                      visible: isSelected,
                                       child: FilterSelectedMark(
                                           width: 20, height: 20))
                                 ],
@@ -158,8 +166,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                       separatorBuilder: (ctx, index) => SizedBox(
                         width: 10,
                       ),
-                      itemCount: widget.colors.length);
-                }),
+                      itemCount: widget.colors.length)
           ),
           SizedBox(height: !widget.hideTitle ? 20 : 0),
         ],

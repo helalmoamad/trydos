@@ -112,7 +112,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       Padding(
                         padding: const EdgeInsetsDirectional.only(end: 10.0),
                         child: SvgPicture.asset(AppAssets.bagsSvg),
-                      )
+                      ),
+                      LanguageService.rtl ? Spacer() : SizedBox.shrink() ,
                     ],
                     withShadow: false),
               ),

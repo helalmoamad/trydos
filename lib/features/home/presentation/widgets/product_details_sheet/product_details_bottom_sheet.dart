@@ -107,7 +107,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         ? 0.55
                         : 0.4,
                 initialIndex: widget.currentColor,
-                primaryshiftingOffsetDivision: (syncColorImageList.length) == 4
+                primaryshiftingOffsetDivision:
+                (syncColorImageList.length) == 4
                     ? 4.5
                     : (syncColorImageList.length) <= 8
                         ? 1.6
@@ -167,19 +168,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                 offsetOfColorsGallerySlider =
                                     renderBox.localToGlobal(Offset.zero);
                               }
-                              if (currentPosition.dy > (288.h + 70.w + 10.h)) {
-                                if (currentPosition.dy <=
-                                        (288.h + 70.w + 30.h + 125 + 100) &&
-                                    currentPosition.dy >=
-                                        (288.h + 70.w + 30.h + 125)) {
-                                  userWantToScrollHorizontally = true;
-                                }
-                              } else if (currentPosition.dx >=
+                               if (currentPosition.dx >=
                                       offsetOfColorsGallerySlider!.dx &&
                                   currentPosition.dx <=
-                                      (offsetOfColorsGallerySlider!.dx + 200) &&
-                                  currentPosition.dy <= (288.h + 70.w + 10.h) &&
-                                  currentPosition.dy >= (288.h + 10.h)) {
+                                      (offsetOfColorsGallerySlider!.dx + 200) && currentPosition.dy >= (288.h + (35.w + 10.h)) && currentPosition.dy <= (288.h + (70.w + 70.w + 10.h))) {
                                 userWantToScrollHorizontally = true;
                               }
                               return userWantToScrollHorizontally;
@@ -232,7 +224,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             }
                           : null,
                       panelBuilder: (controller) => Column(
-                        mainAxisSize: MainAxisSize.min,
+                        //mainAxisSize: MainAxisSize.min,
                         children: [
                           if (currentTab == 3) ...{
                             SizedBox(
@@ -263,91 +255,96 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             Material(
                               color: Colors.transparent,
                               child: gallery3dControllerForCircles != null
-                                  ? Gallery3D(
-                                      key: colorsGallerySliderKey,
-                                      // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
-                                      controller:
-                                          gallery3dControllerForCircles!,
-                                      denyScrolling: false,
-                                      width: 200,
-                                      stopScrollingOnEdges:
-                                          (double primaryDelta) {
-                                        return (primaryDelta <= 0 &&
-                                                gallery3dControllerForCircles!
-                                                        .currentIndex ==
-                                                    (syncColorImageList
-                                                                .length ~/
-                                                            2 -
-                                                        1)) ||
-                                            (primaryDelta >= 0 &&
-                                                gallery3dControllerForCircles!
-                                                        .currentIndex ==
-                                                    0);
-                                      },
-                                      changingPagesScrollOffset: 0.1,
-                                      isClip: false,
-                                      onItemChanged: (index) {
-                                        currentIndexInSlider = index;
-                                        currentImageTab.value = index;
-
-                                        homeBloc.add(
-                                            AddCurrentSelectedColorEvent(
-                                                currentSelectedColor: index,
-                                                productId: widget.productItem.id
-                                                    .toString()));
-                                      },
-                                      onClickItem: (index) {},
-                                      itemConfig: GalleryItemConfig(
-                                          width: 70.w,
-                                          height: 70.w,
-                                          radius: 180,
-                                          isShowTransformMask: false,
-                                          shadows: const [
-                                            BoxShadow(
-                                              color: Color(0x19000000),
-                                              offset: Offset(0, 3),
-                                              blurRadius: 6,
-                                            ),
-                                          ]),
-                                      itemBuilder: (context, index) {
-                                        return Visibility(
-                                          visible: ((gallery3dControllerForCircles
-                                                              ?.currentIndex ??
-                                                          0) <
+                                  ? Directionality(
+                                textDirection: TextDirection.ltr,
+                                    child: Gallery3D(
+                                        key: colorsGallerySliderKey,
+                                        // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
+                                        controller:
+                                            gallery3dControllerForCircles!,
+                                        denyScrolling: false,
+                                        width: 200,
+                                        stopScrollingOnEdges:
+                                            (double primaryDelta) {
+                                          return (primaryDelta <= 0 &&
+                                                  gallery3dControllerForCircles!
+                                                          .currentIndex ==
                                                       (syncColorImageList
-                                                              .length ~/
-                                                          2) &&
-                                                  index <
-                                                      (syncColorImageList
-                                                              .length ~/
-                                                          2)) ||
-                                              ((gallery3dControllerForCircles
-                                                              ?.currentIndex ??
-                                                          0) >=
-                                                      (syncColorImageList
-                                                              .length ~/
-                                                          2) &&
-                                                  index >=
-                                                      (syncColorImageList
-                                                              .length ~/
-                                                          2)),
-                                          child: ProductListingImageWidget(
-                                            orginalHeight:
-                                                orginalHeight![index],
-                                            orginalWidth: orginalWidth![index],
+                                                                  .length ~/
+                                                              2 -
+                                                          1)) ||
+                                              (primaryDelta >= 0 &&
+                                                  gallery3dControllerForCircles!
+                                                          .currentIndex ==
+                                                      0);
+                                        },
+                                        changingPagesScrollOffset: 0.1,
+                                        isClip: false,
+                                        onItemChanged: (index) {
+                                          print(
+                                              "////////////////////////////////////////////////${index}");
+                                          currentIndexInSlider = index;
+                                          currentImageTab.value = index;
+                                          homeBloc.add(
+                                              AddCurrentSelectedColorEvent(
+                                                  currentSelectedColor:  index % (syncColorImageList
+                                                      .length ~/ 2),
+                                                  productId: widget.productItem.id
+                                                      .toString()));
+                                        },
+                                        onClickItem: (index) {},
+                                        itemConfig: GalleryItemConfig(
                                             width: 70.w,
                                             height: 70.w,
-                                            imageUrl: images[index],
-                                            innerShadowYOffset: 4,
-                                            borderColor: index ==
-                                                    currentIndexInSlider
-                                                ? Color(int.parse(
-                                                    '0xff${widget.productItem.colors![currentIndexInSlider % widget.productItem.colors!.length].color!.substring(1)}'))
-                                                : Colors.white,
-                                            circleShape: true,
-                                          ),
-                                        );
-                                      })
+                                            radius: 180,
+                                            isShowTransformMask: false,
+                                            shadows: const [
+                                              BoxShadow(
+                                                color: Color(0x19000000),
+                                                offset: Offset(0, 3),
+                                                blurRadius: 6,
+                                              ),
+                                            ]),
+                                        itemBuilder: (context, index) {
+                                          return Visibility(
+                                            visible: ((gallery3dControllerForCircles
+                                                                ?.currentIndex ??
+                                                            0) <
+                                                        (syncColorImageList
+                                                                .length ~/
+                                                            2) &&
+                                                    index <
+                                                        (syncColorImageList
+                                                                .length ~/
+                                                            2)) ||
+                                                ((gallery3dControllerForCircles
+                                                                ?.currentIndex ??
+                                                            0) >=
+                                                        (syncColorImageList
+                                                                .length ~/
+                                                            2) &&
+                                                    index >=
+                                                        (syncColorImageList
+                                                                .length ~/
+                                                            2)),
+                                            child: ProductListingImageWidget(
+                                              orginalHeight:
+                                                  orginalHeight![index],
+                                              orginalWidth: orginalWidth![index],
+                                              width: 70.w,
+                                              height: 70.w,
+                                              imageUrl: images[index],
+                                              innerShadowYOffset: 4,
+                                              borderColor: index ==
+                                                      currentIndexInSlider
+                                                  ? Color(int.parse(
+                                                      '0xff${widget.productItem.colors![currentIndexInSlider % widget.productItem.colors!.length].color!.substring(1)}'))
+                                                  : Colors.white,
+                                              circleShape: true,
+                                            ),
+                                          );
+                                        }),
+                                  )
                                   : SizedBox.shrink(),
                             ),
                             10.verticalSpace,

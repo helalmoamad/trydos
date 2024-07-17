@@ -212,8 +212,8 @@ class Brand {
 }
 
 class Prices {
-  final int? minPrice;
-  final int? maxPrice;
+  final double? minPrice;
+  final double? maxPrice;
   final String? currencySymbol;
   final List<PriceRange>? priceRanges;
 
@@ -225,8 +225,8 @@ class Prices {
   });
 
   Prices copyWith({
-    int? minPrice,
-    int? maxPrice,
+    double? minPrice,
+    double? maxPrice,
     String? currencySymbol,
     List<PriceRange>? priceRanges,
   }) =>
@@ -237,9 +237,10 @@ class Prices {
         priceRanges: priceRanges ?? this.priceRanges,
       );
 
-  factory Prices.fromJson(Map<String, dynamic> json) => Prices(
-        minPrice: json["min_price"],
-        maxPrice: json["max_price"],
+  factory Prices.fromJson(Map<String, dynamic> json) =>
+      Prices(
+        minPrice: json["min_price"].toDouble(),
+        maxPrice: json["max_price"].toDouble(),
         currencySymbol: json["currency_symbol"],
         priceRanges: json["priceRanges"] == null
             ? []
@@ -258,8 +259,8 @@ class Prices {
 }
 
 class PriceRange {
-  final int? minPrice;
-  final int? maxPrice;
+  final double? minPrice;
+  final double? maxPrice;
   final String? text;
   final int? count;
 
@@ -271,8 +272,8 @@ class PriceRange {
   });
 
   PriceRange copyWith({
-    int? minPrice,
-    int? maxPrice,
+    double? minPrice,
+    double? maxPrice,
     String? text,
     int? count,
   }) =>
@@ -283,9 +284,10 @@ class PriceRange {
         count: count ?? this.count,
       );
 
-  factory PriceRange.fromJson(Map<String, dynamic> json) => PriceRange(
-        minPrice: json["min_price"],
-        maxPrice: json["max_price"],
+  factory PriceRange.fromJson(Map<String, dynamic> json) =>
+      PriceRange(
+        minPrice: json["min_price"]?.toDouble(),
+        maxPrice: json["max_price"]?.toDouble(),
         text: json["text"],
         count: json["products_count"],
       );

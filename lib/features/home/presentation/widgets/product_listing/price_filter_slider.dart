@@ -29,7 +29,7 @@ class PriceFilter extends StatefulWidget {
 
   final bool hideTitle;
   final Prices pricesFiltersRanges;
-  final ValueNotifier<Tuple2<int, int>> lowerAndUpperBound;
+  final ValueNotifier<Tuple2<double, double>> lowerAndUpperBound;
 
   @override
   State<PriceFilter> createState() => _PriceFilterState();
@@ -98,7 +98,7 @@ class _PriceFilterState extends State<PriceFilter> {
                     centeredOrigin: false,
                     rightHandler: FlutterSliderHandler(
                         decoration: BoxDecoration(),
-                        child: ValueListenableBuilder<Tuple2<int, int>>(
+                        child: ValueListenableBuilder<Tuple2<double, double>>(
                             valueListenable: widget.lowerAndUpperBound,
                             builder: (context, filterData, child) {
                               return Container(
@@ -120,7 +120,7 @@ class _PriceFilterState extends State<PriceFilter> {
                             })),
                     handler: FlutterSliderHandler(
                         decoration: BoxDecoration(),
-                        child: ValueListenableBuilder<Tuple2<int, int>>(
+                        child: ValueListenableBuilder<Tuple2<double, double>>(
                             valueListenable: widget.lowerAndUpperBound,
                             builder: (context, filterData, child) {
                               return Container(
@@ -149,13 +149,13 @@ class _PriceFilterState extends State<PriceFilter> {
                         alwaysShowTooltip: false,
                         disabled: true,
                         disableAnimation: true),
-                    onDragging: (handlerIndex, lowerValue, upperValue) {
+                    onDragCompleted: (handlerIndex, lowerValue, upperValue) {
                       widget.lowerAndUpperBound.value =
-                          Tuple2(lowerValue.toInt(), upperValue.toInt());
+                          Tuple2(lowerValue.toDouble(), upperValue.toDouble());
                     },
                   ),
                 ),
-                ValueListenableBuilder<Tuple2<int, int>>(
+                ValueListenableBuilder<Tuple2<double, double>>(
                     valueListenable: widget.lowerAndUpperBound,
                     builder: (context, filterData, child) {
                       return Positioned(
@@ -182,7 +182,7 @@ class _PriceFilterState extends State<PriceFilter> {
                             ],
                           ));
                     }),
-                ValueListenableBuilder<Tuple2<int, int>>(
+                ValueListenableBuilder<Tuple2<double, double>>(
                     valueListenable: widget.lowerAndUpperBound,
                     builder: (context, filterData, child) {
                       return Positioned(

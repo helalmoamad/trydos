@@ -38,35 +38,24 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           GetSearchResultStatus.init,
       searchResultModel: json['searchResultModel'] == null
           ? null
-          : GetProductListingWithFiltersModel.fromJson(
+          : get_product_with_filter.GetProductListingWithFiltersModel.fromJson(
               json['searchResultModel'] as Map<String, dynamic>),
-      getProductFiltersInEachBoutiqueStatus:
-          (json['getProductFiltersInEachBoutiqueStatus']
-                      as Map<String, dynamic>?)
-                  ?.map(
-                (k, e) => MapEntry(
-                    k, $enumDecode(_$GetProductFiltersStatusEnumMap, e)),
-              ) ??
-              const {},
-      getProductFiltersInEachBoutiqueModel:
-          (json['getProductFiltersInEachBoutiqueModel']
-                      as Map<String, dynamic>?)
-                  ?.map(
-                (k, e) => MapEntry(k,
-                    GetProductFiltersModel.fromJson(e as Map<String, dynamic>)),
-              ) ??
-              const {},
-      choosedFiltersInEachBoutiqueModel:
-          (json['choosedFiltersInEachBoutiqueModel'] as Map<String, dynamic>?)
-                  ?.map(
-                (k, e) => MapEntry(
-                    k,
-                    e == null
-                        ? null
-                        : GetProductFiltersModel.fromJson(
-                            e as Map<String, dynamic>)),
-              ) ??
-              const {},
+      getProductFiltersStatus: $enumDecodeNullable(
+              _$GetProductFiltersStatusEnumMap,
+              json['getProductFiltersStatus']) ??
+          GetProductFiltersStatus.init,
+      getProductFiltersModel: json['getProductFiltersModel'] == null
+          ? null
+          : get_filters.GetProductFiltersModel.fromJson(
+              json['getProductFiltersModel'] as Map<String, dynamic>),
+      choosedFiltersByUser: json['choosedFiltersByUser'] == null
+          ? null
+          : get_filters.GetProductFiltersModel.fromJson(
+              json['choosedFiltersByUser'] as Map<String, dynamic>),
+      appliedFiltersByUser: json['appliedFiltersByUser'] == null
+          ? null
+          : get_filters.GetProductFiltersModel.fromJson(
+              json['appliedFiltersByUser'] as Map<String, dynamic>),
       currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
       brands: (json['brands'] as List<dynamic>?)
           ?.map((e) => brand.Brand.fromJson(e as Map<String, dynamic>))
@@ -117,17 +106,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ) ??
           const {},
       getProductListingWithFiltersPaginationModels:
-          (json['getProductListingWithFiltersPaginationModels']
-                      as Map<String, dynamic>?)
-                  ?.map(
-                (k, e) => MapEntry(
-                    k,
-                    PaginationModel<Products>.fromJson(
-                        e as Map<String, dynamic>,
-                        (value) =>
-                            Products.fromJson(value as Map<String, dynamic>))),
-              ) ??
-              const {},
+          json['getProductListingWithFiltersPaginationModels'] == null
+              ? null
+              : PaginationModel<Products>.fromJson(
+                  json['getProductListingWithFiltersPaginationModels']
+                      as Map<String, dynamic>,
+                  (value) => Products.fromJson(value as Map<String, dynamic>)),
       boutiques: (json['boutiques'] as List<dynamic>?)
           ?.map((e) => Boutique.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -240,22 +224,15 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
       'getCurrencyForCountryModel':
           instance.getCurrencyForCountryModel?.toJson(),
-      'getProductFiltersInEachBoutiqueStatus': instance
-          .getProductFiltersInEachBoutiqueStatus
-          .map((k, e) => MapEntry(k, _$GetProductFiltersStatusEnumMap[e]!)),
-      'getProductListingWithFiltersPaginationModels': instance
-          .getProductListingWithFiltersPaginationModels
-          .map((k, e) => MapEntry(
-              k,
-              e.toJson(
-                (value) => value.toJson(),
-              ))),
-      'getProductFiltersInEachBoutiqueModel': instance
-          .getProductFiltersInEachBoutiqueModel
-          .map((k, e) => MapEntry(k, e.toJson())),
-      'choosedFiltersInEachBoutiqueModel': instance
-          .choosedFiltersInEachBoutiqueModel
-          .map((k, e) => MapEntry(k, e?.toJson())),
+      'getProductFiltersStatus':
+          _$GetProductFiltersStatusEnumMap[instance.getProductFiltersStatus]!,
+      'getProductListingWithFiltersPaginationModels':
+          instance.getProductListingWithFiltersPaginationModels?.toJson(
+        (value) => value.toJson(),
+      ),
+      'getProductFiltersModel': instance.getProductFiltersModel?.toJson(),
+      'appliedFiltersByUser': instance.appliedFiltersByUser?.toJson(),
+      'choosedFiltersByUser': instance.choosedFiltersByUser?.toJson(),
       'getSearchResultStatus':
           _$GetSearchResultStatusEnumMap[instance.getSearchResultStatus]!,
       'selectedCollection': instance.selectedCollection,

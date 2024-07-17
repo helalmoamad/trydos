@@ -460,9 +460,9 @@ class Shop {
 
 class Variation {
   final String? type;
-  final int? price;
+  final double? price;
   final String? priceFormated;
-  final int? offerPrice;
+  final double? offerPrice;
   final String? offerPriceFormated;
   final String? sku;
   final int? qty;
@@ -479,9 +479,9 @@ class Variation {
 
   Variation copyWith({
     String? type,
-    int? price,
+    double? price,
     String? priceFormated,
-    int? offerPrice,
+    double? offerPrice,
     String? offerPriceFormated,
     String? sku,
     int? qty,
@@ -498,9 +498,9 @@ class Variation {
 
   factory Variation.fromJson(Map<String, dynamic> json) => Variation(
         type: json["type"],
-        price: json["price"],
+        price: json["price"]?.toDouble(),
         priceFormated: json["price_formated"],
-        offerPrice: json["offer_price"],
+        offerPrice: json["offer_price"]?.toDouble(),
         offerPriceFormated: json["offer_price_formated"],
         sku: json["sku"],
         qty: json["qty"],
