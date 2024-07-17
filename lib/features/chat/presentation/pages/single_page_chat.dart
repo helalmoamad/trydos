@@ -315,6 +315,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             InkWell(
+                              key: Key(WidgetsKey.goToProfileButtonKey),
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (_) => ProfilePage(

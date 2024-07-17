@@ -42,4 +42,6 @@ class WidgetsKey {
   static const deleteOnlyMeButtonKey = 'delete_only_me_button_key';
   static const forWardMessageKey = 'forWard_message_key';
   static const forwardedArrowKey = 'forwarded_arrow_key';
+  static const goToProfileButtonKey = 'go_to_profile_button_key';
+  static const backFromProfileKey = 'back_from_profile_key';
 }

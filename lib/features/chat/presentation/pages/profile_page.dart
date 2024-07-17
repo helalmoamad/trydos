@@ -25,6 +25,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../common/helper/show_message.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
@@ -537,6 +538,9 @@ class _ProfilePageState extends State<ProfilePage> {
             Padding(
               padding: EdgeInsetsDirectional.fromSTEB(20.w, 15.h, 20.w, 0),
               child: InkWell(
+                key: Key(
+                  WidgetsKey.backFromProfileKey,
+                ),
                 onTap: () {
                   Navigator.pop(context);
                 },
