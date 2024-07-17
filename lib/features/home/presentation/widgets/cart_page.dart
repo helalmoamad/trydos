@@ -91,7 +91,7 @@ class _CartPageState extends State<CartPage> {
                 );
               }
               count = state.cartCollection!.keys.first;
-              int totlaPrice = 0;
+              double totlaPrice = 0;
               state.cartCollection!.values.toList().forEach((element) {
                 element.forEach((element) {
                   totlaPrice =
@@ -225,7 +225,7 @@ class _CartPageState extends State<CartPage> {
                               shrinkWrap: true,
                               itemCount: state.cartCollection!.length,
                               itemBuilder: (context, index) {
-                                int price = 0;
+                                double price = 0;
                                 state.cartCollection!.values
                                     .toList()[index]
                                     .forEach((element) {

@@ -887,7 +887,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                             Row(
                               children: [
                                 MyTextWidget(
-                                  widget.productItem.price.toString(),
+                                  widget.productItem.price!.toStringAsFixed(2).toString(),
                                   style: textTheme.caption?.lq.copyWith(
                                     color: Color(0xff3c3c3c),
                                     decoration: TextDecoration.lineThrough,
@@ -898,7 +898,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                   width: 2,
                                 ),
                                 MyTextWidget(
-                                  widget.productItem.offerPrice.toString(),
+                                  widget.productItem.offerPrice!.toStringAsFixed(2).toString(),
                                   style: textTheme.caption?.bq.copyWith(
                                     color: Color(0xff3c3c3c),
                                     height: 0,
@@ -907,15 +907,15 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                 SizedBox(
                                   width: 2,
                                 ),
-                                MyTextWidget(
-                                  widget.productItem.priceFormatted!
-                                      .split(" ")
-                                      .toList()[1],
-                                  style: textTheme.overline?.lq.copyWith(
-                                    color: Color(0xff5D5D5D),
-                                    height: 0,
-                                  ),
-                                ),
+                                // MyTextWidget(
+                                //   widget.productItem.priceFormatted!
+                                //       .split(" ")
+                                //       .toList()[1],
+                                //   style: textTheme.overline?.lq.copyWith(
+                                //     color: Color(0xff5D5D5D),
+                                //     height: 0,
+                                //   ),
+                                // ),
                               ],
                             ),
                             Row(

@@ -43,7 +43,7 @@ class CartPage2 extends StatelessWidget {
               previous.getCartItemsStatus != current.getCartItemsStatus ||
               previous.cartCollection!.values != current.cartCollection!.values,
           builder: (context, state) {
-            int totlaPrice = 0;
+            double totlaPrice = 0;
             state.cartCollection!.values.toList().forEach((element) {
               element.forEach((element) {
                 totlaPrice =
@@ -187,7 +187,7 @@ class CartPage2 extends StatelessWidget {
                           shrinkWrap: false,
                           itemCount: state.cartCollection!.length,
                           itemBuilder: (context, index) {
-                            int price = 0;
+                            double price = 0;
                             state.cartCollection!.values
                                 .toList()[index]
                                 .forEach((element) {

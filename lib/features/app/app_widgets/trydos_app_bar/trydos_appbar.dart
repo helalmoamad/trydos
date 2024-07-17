@@ -39,7 +39,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
             leading: LanguageService.rtl ? null : leadingAppBar(context),
             actions: [
               LanguageService.rtl ? leadingAppBar(context) : SizedBox.shrink(),
-              ...appBarParams.action ?? []
+              ...appBarParams.action ?? [],
             ],
             centerTitle: appBarParams.centerTitle,
             elevation: appBarParams.elevation,

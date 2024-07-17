@@ -15,8 +15,8 @@ import 'package:trydos/features/home/data/models/get_story_for_product_model.dar
 
 import '../../../../core/data/model/pagination_model.dart';
 import '../../data/models/get_cart_item_model.dart';
-import '../../data/models/get_product_filters_model.dart';
-import '../../data/models/get_product_listing_with_filters_model.dart';
+import '../../data/models/get_product_filters_model.dart' as get_filters;
+import '../../data/models/get_product_listing_with_filters_model.dart' as get_product_with_filter;
 import '../../data/models/get_product_listing_without_filters_model.dart'
     as product;
 import '../../data/models/main_categories_response_model.dart';
@@ -66,9 +66,10 @@ class HomeState {
     this.sizes = const [],
     this.getSearchResultStatus = GetSearchResultStatus.init,
     this.searchResultModel,
-    this.getProductFiltersInEachBoutiqueStatus = const {},
-    this.getProductFiltersInEachBoutiqueModel = const {},
-    this.choosedFiltersInEachBoutiqueModel = const {},
+    this.getProductFiltersStatus = GetProductFiltersStatus.init,
+    this.getProductFiltersModel ,
+    this.choosedFiltersByUser ,
+    this.appliedFiltersByUser ,
     this.currentPage = 0,
     this.brands,
     this.categories,
@@ -80,7 +81,7 @@ class HomeState {
     this.getProductListingStatus = GetProductListingStatus.init,
     this.selectedCollection,
     this.cartCollection = const {},
-    this.getProductListingWithFiltersPaginationModels = const {},
+    this.getProductListingWithFiltersPaginationModels ,
     this.boutiques,
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
@@ -101,13 +102,14 @@ class HomeState {
   final GetCommentForProductStatus getCommentForProductStatus;
   final Map<String, product.Products> productITemForCart;
   final GetMainCategoriesStatus getMainCategoriesStatus;
-  final Map<String, GetProductFiltersStatus>
-      getProductFiltersInEachBoutiqueStatus;
-  final Map<String, PaginationModel<product.Products>>
+  final GetProductFiltersStatus
+  getProductFiltersStatus;
+  final PaginationModel<product.Products>?
       getProductListingWithFiltersPaginationModels;
-  final Map<String, GetProductFiltersModel>
-      getProductFiltersInEachBoutiqueModel;
-  final Map<String, GetProductFiltersModel?> choosedFiltersInEachBoutiqueModel;
+  final get_filters.GetProductFiltersModel?
+      getProductFiltersModel;
+  final get_filters.GetProductFiltersModel? appliedFiltersByUser;
+  final get_filters.GetProductFiltersModel? choosedFiltersByUser;
   final GetSearchResultStatus getSearchResultStatus;
   int? selectedCollection;
   int currentPage;
@@ -134,7 +136,7 @@ class HomeState {
   final MainCategoriesResponseModel? mainCategoriesResponseModel;
   final GetProductDetailWithoutRelatedProductsModel?
       getProductDetailWithoutRelatedProductsModel;
-  final GetProductListingWithFiltersModel? searchResultModel;
+  final get_product_with_filter.GetProductListingWithFiltersModel? searchResultModel;
   final StartingSetting? startingSetting;
   List<category.Category>? categories;
   List<brand.Brand>? brands;
@@ -147,7 +149,7 @@ class HomeState {
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       final GetSearchResultStatus? getSearchResultStatus,
-      final GetProductListingWithFiltersModel? searchResultModel,
+      final get_product_with_filter.GetProductListingWithFiltersModel? searchResultModel,
       final GetCommentForProductStatus? getCommentForProductStatus,
       final GetCartItemsStatus? getCartItemsStatus,
       Map<int, int?>? currentStoryInEachCollection,
@@ -155,8 +157,6 @@ class HomeState {
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
       List<Boutique>? boutiques,
-      final Map<String, PaginationModel<product.Products>>?
-          getProductListingWithFiltersPaginationModels,
       int? selectedCollection,
       List<String>? sizes,
       List<String>? searchHistory,
@@ -165,12 +165,6 @@ class HomeState {
       Map<String, List<int>>? currentQuantityForCart,
       Map<String, List<cart.Cart>>? cartCollection,
       Map<String, String>? CurrentColorSizeForCart,
-      final Map<String, GetProductFiltersStatus>?
-          getProductFiltersInEachBoutiqueStatus,
-      final Map<String, GetProductFiltersModel>?
-          getProductFiltersInEachBoutiqueModel,
-      final Map<String, GetProductFiltersModel?>?
-          choosedFiltersInEachBoutiqueModel,
       final Map<String, bool>? reRequestTheseBoutiques,
       final Map<String, product.Products>? productITemForCart,
       final cart.GetCartShippingItemsModel? getCartShippingItemsModel,
@@ -188,7 +182,16 @@ class HomeState {
           getProductDetailWithoutSimilarRelatedProductsStatus,
       final Map<String, int>? currentSelectedColorForEveryProduct,
       int? currentPage,
+         bool resetAppliedFilters = false,
       List<Story>? storiesForProduct,
+        final GetProductFiltersStatus?
+        getProductFiltersStatus,
+        final PaginationModel<product.Products>?
+        getProductListingWithFiltersPaginationModels,
+        final get_filters.GetProductFiltersModel?
+        getProductFiltersModel,
+        final get_filters.GetProductFiltersModel? appliedFiltersByUser,
+        final get_filters.GetProductFiltersModel? choosedFiltersByUser,
       final Map<String, PaginationModel<product.Products>>?
           getProductListingPaginationWithoutFiltersModel,
       final Map<String, GetCommentForProductModel>?
@@ -198,6 +201,7 @@ class HomeState {
             getCommentForProductModel ?? this.getCommentForProductModel,
         sizes: sizes ?? this.sizes,
         cartCollection: cartCollection ?? this.cartCollection,
+        getProductFiltersStatus: getProductFiltersStatus ?? this.getProductFiltersStatus,
         getProductListingWithFiltersPaginationModels: getProductListingWithFiltersPaginationModels ??
             this.getProductListingWithFiltersPaginationModels,
         currentQuantityForCart:
@@ -207,12 +211,11 @@ class HomeState {
         brands: brands ?? this.brands,
         CurrentColorSizeForCart:
             CurrentColorSizeForCart ?? this.CurrentColorSizeForCart,
-        getProductFiltersInEachBoutiqueStatus: getProductFiltersInEachBoutiqueStatus ??
-            this.getProductFiltersInEachBoutiqueStatus,
-        getProductFiltersInEachBoutiqueModel: getProductFiltersInEachBoutiqueModel ??
-            this.getProductFiltersInEachBoutiqueModel,
-        choosedFiltersInEachBoutiqueModel: choosedFiltersInEachBoutiqueModel ??
-            this.choosedFiltersInEachBoutiqueModel,
+        choosedFiltersByUser: choosedFiltersByUser ,
+        appliedFiltersByUser: resetAppliedFilters ? null : appliedFiltersByUser ??
+            this.appliedFiltersByUser,
+        getProductFiltersModel: getProductFiltersModel ??
+            this.getProductFiltersModel,
         searchHistory: searchHistory ?? this.searchHistory,
         getCartShippingItemsModel:
             getCartShippingItemsModel ?? this.getCartShippingItemsModel,

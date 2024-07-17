@@ -121,7 +121,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                         width: 5,
                       ),
                       MyTextWidget(
-                        widget.offerPrice,
+                        double.parse(widget.offerPrice).toStringAsFixed(2),
                         style: textTheme.headline3?.bq.copyWith(
                           color: Color(0xff505050),
                           height: 0,
@@ -130,14 +130,14 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                       SizedBox(
                         width: 4,
                       ),
-                      MyTextWidget(
-                        widget.price.split(" ").toList()[1],
-                        style: textTheme.caption?.rq.copyWith(
-                          fontSize: 18,
-                          color: Color(0xffC4C2C2),
-                          height: 0,
-                        ),
-                      ),
+                      // MyTextWidget(
+                      //   widget.price.split(" ").toList()[1],
+                      //   style: textTheme.caption?.rq.copyWith(
+                      //     fontSize: 18,
+                      //     color: Color(0xffC4C2C2),
+                      //     height: 0,
+                      //   ),
+                      // ),
                       SizedBox(
                         width: 5,
                       ),
@@ -156,13 +156,13 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      MyTextWidget(
-                                        widget.price.split(" ").toList()[1],
-                                        style: textTheme.caption?.rq.copyWith(
-                                          color: Color(0xffC4C2C2),
-                                          height: 0,
-                                        ),
-                                      ),
+                                      // MyTextWidget(
+                                      //   widget.price.split(" ").toList()[1],
+                                      //   style: textTheme.caption?.rq.copyWith(
+                                      //     color: Color(0xffC4C2C2),
+                                      //     height: 0,
+                                      //   ),
+                                      // ),
                                     ],
                                   )
                                 : const SizedBox.shrink();

@@ -73,11 +73,13 @@ class Category {
   final String? name;
   final String? slug;
   final String? icon;
+  final bool isSubCategory;
   final List<dynamic>? subCategory;
 
   Category({
     this.id,
     this.name,
+    this.isSubCategory = false,
     this.slug,
     this.icon,
     this.subCategory,
