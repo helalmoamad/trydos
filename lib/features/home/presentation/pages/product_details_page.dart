@@ -112,7 +112,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       Padding(
                         padding: const EdgeInsetsDirectional.only(end: 10.0),
                         child: SvgPicture.asset(AppAssets.bagsSvg),
-                      )
+                      ),
+                      LanguageService.rtl ? Spacer() : SizedBox.shrink() ,
                     ],
                     withShadow: false),
               ),
@@ -479,12 +480,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 String key = "${productId}" +
                     "${!widget.productItem.syncColorImages.isNullOrEmpty && !widget.productItem.syncColorImages![0].images.isNullOrEmpty ? widget.productItem.colors![currentSelectedColor].name ?? "" : ""}" +
                     "${state.CurrentColorSizeForCart != null ? state.CurrentColorSizeForCart!["size"] ?? "" : ""}";
-                addToBagButtonShapeNotifier.value =
-                    state.currentQuantityForCart != null
-                        ? state.currentQuantityForCart![key].isNullOrEmpty
-                            ? 0
-                            : state.currentQuantityForCart![key]![0]
-                        : 0;
 
                 return ProductDetailsBottomSheet(
                   addToBagButtonShapeNotifier: addToBagButtonShapeNotifier,

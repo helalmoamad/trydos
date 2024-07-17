@@ -29,7 +29,7 @@ class PriceFilter extends StatefulWidget {
 
   final bool hideTitle;
   final Prices pricesFiltersRanges;
-  final ValueNotifier<Tuple2<int, int>> lowerAndUpperBound;
+  final ValueNotifier<Tuple2<double, double>> lowerAndUpperBound;
 
   @override
   State<PriceFilter> createState() => _PriceFilterState();
@@ -39,12 +39,13 @@ class _PriceFilterState extends State<PriceFilter> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsetsDirectional.only(start: widget.hideTitle ? 0 : 30.0, end: 20),
+      padding: EdgeInsetsDirectional.only(
+          start: widget.hideTitle ? 0 : 30.0, end: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: widget.hideTitle ? 80  : 110,
+            height: widget.hideTitle ? 80 : 110,
             width: 1.sw - 50,
             child: Stack(
               alignment: Alignment.bottomCenter,
@@ -97,7 +98,7 @@ class _PriceFilterState extends State<PriceFilter> {
                     centeredOrigin: false,
                     rightHandler: FlutterSliderHandler(
                         decoration: BoxDecoration(),
-                        child: ValueListenableBuilder<Tuple2<int, int>>(
+                        child: ValueListenableBuilder<Tuple2<double, double>>(
                             valueListenable: widget.lowerAndUpperBound,
                             builder: (context, filterData, child) {
                               return Container(
@@ -119,7 +120,7 @@ class _PriceFilterState extends State<PriceFilter> {
                             })),
                     handler: FlutterSliderHandler(
                         decoration: BoxDecoration(),
-                        child: ValueListenableBuilder<Tuple2<int, int>>(
+                        child: ValueListenableBuilder<Tuple2<double, double>>(
                             valueListenable: widget.lowerAndUpperBound,
                             builder: (context, filterData, child) {
                               return Container(
@@ -148,13 +149,13 @@ class _PriceFilterState extends State<PriceFilter> {
                         alwaysShowTooltip: false,
                         disabled: true,
                         disableAnimation: true),
-                    onDragging: (handlerIndex, lowerValue, upperValue) {
+                    onDragCompleted: (handlerIndex, lowerValue, upperValue) {
                       widget.lowerAndUpperBound.value =
-                          Tuple2(lowerValue.toInt(), upperValue.toInt());
+                          Tuple2(lowerValue.toDouble(), upperValue.toDouble());
                     },
                   ),
                 ),
-                ValueListenableBuilder<Tuple2<int, int>>(
+                ValueListenableBuilder<Tuple2<double, double>>(
                     valueListenable: widget.lowerAndUpperBound,
                     builder: (context, filterData, child) {
                       return Positioned(
@@ -181,7 +182,7 @@ class _PriceFilterState extends State<PriceFilter> {
                             ],
                           ));
                     }),
-                ValueListenableBuilder<Tuple2<int, int>>(
+                ValueListenableBuilder<Tuple2<double, double>>(
                     valueListenable: widget.lowerAndUpperBound,
                     builder: (context, filterData, child) {
                       return Positioned(
@@ -208,51 +209,52 @@ class _PriceFilterState extends State<PriceFilter> {
                             ],
                           ));
                     }),
-                if(!widget.hideTitle) Positioned(
-                  top: 0,
-                  left: 0,
-                  width: 1.sw - 50,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          FilterSelectedMark(width: 20, height: 20),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          MyTextWidget(
-                            'Filter By Price',
-                            style: context.textTheme.caption?.rq.copyWith(
-                                color: Color(0xff505050), height: 15 / 12),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          SvgPicture.asset(
-                            AppAssets.registerInfoSvg,
-                            color: Color(0xffD3D3D3),
-                          )
-                        ],
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          widget.lowerAndUpperBound.value = Tuple2(
-                              widget.pricesFiltersRanges.minPrice!,
-                              widget.pricesFiltersRanges.maxPrice!);
-                          setState(() {});
-                        },
-                        child: CloseCircle(
-                          width: 20,
-                          height: 20,
-                          borderColor: Color(0xff707070),
-                          closeSvgColor: Color(0xffFF5F61),
+                if (!widget.hideTitle)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    width: 1.sw - 50,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            FilterSelectedMark(width: 20, height: 20),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            MyTextWidget(
+                              'Filter By Price',
+                              style: context.textTheme.caption?.rq.copyWith(
+                                  color: Color(0xff505050), height: 15 / 12),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            SvgPicture.asset(
+                              AppAssets.registerInfoSvg,
+                              color: Color(0xffD3D3D3),
+                            )
+                          ],
                         ),
-                      )
-                    ],
-                  ),
-                )
+                        GestureDetector(
+                          onTap: () {
+                            widget.lowerAndUpperBound.value = Tuple2(
+                                widget.pricesFiltersRanges.minPrice!,
+                                widget.pricesFiltersRanges.maxPrice!);
+                            setState(() {});
+                          },
+                          child: CloseCircle(
+                            width: 20,
+                            height: 20,
+                            borderColor: Color(0xff707070),
+                            closeSvgColor: Color(0xffFF5F61),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
               ],
             ),
           ),

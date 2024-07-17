@@ -244,8 +244,8 @@ class Cart {
   final String? vendorName;
   final int? quantity;
   final String? price;
-  final int? priceNum;
-  final int? offerPrice;
+  final double? priceNum;
+  final double? offerPrice;
   final String? offerPriceFormatted;
   final int? tax;
   final int? discount;
@@ -301,8 +301,8 @@ class Cart {
     String? vendorName,
     int? quantity,
     String? price,
-    int? priceNum,
-    int? offerPrice,
+    double? priceNum,
+    double? offerPrice,
     String? offerPriceFormatted,
     int? tax,
     int? discount,
@@ -364,9 +364,9 @@ class Cart {
         maxAllowedQty: json["max_allowed_qty"],
         vendorName: json["vendor_name"],
         quantity: json["quantity"],
-        price: json["price"],
-        priceNum: json["price_num"],
-        offerPrice: json["offer_price"],
+        price: json["price"].toString(),
+        priceNum: json["price_num"]?.toDouble(),
+        offerPrice: json["offer_price"]?.toDouble(),
         offerPriceFormatted: json["offer_price_formatted"],
         tax: json["tax"],
         discount: json["discount"],

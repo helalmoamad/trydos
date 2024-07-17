@@ -42,6 +42,7 @@ abstract class MarketEndPoints {
   static final getStartingSettingsEP = 'startingSettings'.homeScope();
   static final getHomeSectionsEP = 'home_sections'.homeScope();
   static final getBrandEP = 'brands'.homeScope();
+  static final getCurrencyEP = 'currency'.homeScope();
 
   static final getCategoryEP = 'categories'.homeScope();
 

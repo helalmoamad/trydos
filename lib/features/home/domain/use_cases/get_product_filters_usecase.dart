@@ -24,14 +24,32 @@ class GetProductsFiltersParams {
   final int? offset;
   final int? limit;
   final String? boutiqueSlug;
+  final List<String>? prices;
+  final List<String>? brands;
+  final List<String>? colors;
+  final List<String>? categories;
+  final List<Map<String, dynamic>>? attributes;
 
   GetProductsFiltersParams(
-      {this.boutiqueSlug, this.offset, this.limit, this.category});
+      {this.boutiqueSlug,
+      this.offset,
+      this.prices,
+      this.brands,
+      this.attributes,
+      this.categories,
+      this.colors,
+      this.limit,
+      this.category});
 
   Map<String, dynamic> get map => {
         "category": category,
         "offset": offset,
         "limit": limit,
+        "prices": prices.toString(),
+        "brands": brands.toString(),
+        "attributes": attributes.toString(),
+        "categories": categories.toString(),
+        "colors": colors.toString(),
         "boutique_slug": boutiqueSlug
       };
 }

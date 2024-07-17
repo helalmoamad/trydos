@@ -164,9 +164,9 @@ class Products {
   final Brand? brand;
   final List<Color>? colors;
   final List<SyncColorImage>? syncColorImages;
-  final int? price;
+  final double? price;
   final String? priceFormatted;
-  final int? offerPrice;
+  final double? offerPrice;
   final String? offerPriceFormatted;
   final bool? isFavourite;
   final bool? inStock;
@@ -211,9 +211,9 @@ class Products {
     Brand? brand,
     List<Color>? colors,
     List<SyncColorImage>? syncColorImages,
-    int? price,
+    double? price,
     String? priceFormatted,
-    int? offerPrice,
+    double? offerPrice,
     String? offerPriceFormatted,
     bool? isFavourite,
     bool? inStock,
@@ -274,9 +274,9 @@ class Products {
             ? []
             : List<SyncColorImage>.from(json["sync_color_images"]!
                 .map((x) => SyncColorImage.fromJson(x))),
-        price: json["price"],
+        price: json["price"].toDouble(),
         priceFormatted: json["price_formatted"],
-        offerPrice: json["offer_price"],
+        offerPrice: json["offer_price"].toDouble(),
         offerPriceFormatted: json["offer_price_formatted"],
         isFavourite: json["is_favourite"],
         inStock: json["in_stock"],

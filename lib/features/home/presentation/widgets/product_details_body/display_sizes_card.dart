@@ -128,17 +128,13 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
   @override
   void initState() {
     sizes = [];
-    if (widget.variation != null) {
+    if (widget.variation != null && !widget.productItem.colors.isNullOrEmpty) {
       widget.variation!.forEach((element) {
         if (element.type!.split("-")[0] ==
                 widget
                     .productItem.colors![widget.currentColorForProduct].name &&
             element.qty != null) {
           if (element.qty! > 0) {
-            print("-----------type----${element.type!.split("-")[0]}" +
-                "----------cu--${widget.productItem.colors![widget.currentColorForProduct].name}" +
-                "---type----${element.type!.split("-")[1]}" +
-                "----------cusizw--${element.qty}");
             sizes!.add(element.type!.split("-")[1]);
           }
         }

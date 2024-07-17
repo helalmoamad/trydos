@@ -25,7 +25,7 @@ import '../../features/authentication/data/repositories/auth_repository_impl.dar
 import '../../features/authentication/domain/repositories/auth_repository.dart'
     as _i21;
 import '../../features/authentication/domain/use_cases/create_user_usecase.dart'
-    as _i65;
+    as _i67;
 import '../../features/authentication/domain/use_cases/delete_fcm_usecase.dart'
     as _i28;
 import '../../features/authentication/domain/use_cases/get_customer_info_usecase.dart'
@@ -57,52 +57,52 @@ import '../../features/authentication/domain/use_cases/verify_otp_signin_usecase
 import '../../features/authentication/domain/use_cases/verify_otp_signup_usecase.dart'
     as _i42;
 import '../../features/authentication/presentation/manager/auth_bloc.dart'
-    as _i93;
+    as _i94;
 import '../../features/calls/data/data_source/calls_remote_data_source_model.dart'
     as _i7;
 import '../../features/calls/data/repositories/calls_repository_impl.dart'
-    as _i61;
-import '../../features/calls/domain/repositories/calls_repository.dart' as _i60;
-import '../../features/calls/domain/useCase/answer_call_usecase.dart' as _i81;
-import '../../features/calls/domain/useCase/delete_Message.dart' as _i82;
+    as _i63;
+import '../../features/calls/domain/repositories/calls_repository.dart' as _i62;
+import '../../features/calls/domain/useCase/answer_call_usecase.dart' as _i83;
+import '../../features/calls/domain/useCase/delete_Message.dart' as _i84;
 import '../../features/calls/domain/useCase/get_agora_token_use_case.dart'
-    as _i83;
-import '../../features/calls/domain/useCase/get_missed_call_count.dart' as _i84;
-import '../../features/calls/domain/useCase/get_my_calls.dart' as _i85;
-import '../../features/calls/domain/useCase/make_call_usecase.dart' as _i86;
-import '../../features/calls/domain/useCase/reject_call_usecase.dart' as _i87;
-import '../../features/calls/domain/useCase/watch_missed_call.dart' as _i88;
-import '../../features/calls/presentation/bloc/calls_bloc.dart' as _i92;
+    as _i85;
+import '../../features/calls/domain/useCase/get_missed_call_count.dart' as _i86;
+import '../../features/calls/domain/useCase/get_my_calls.dart' as _i87;
+import '../../features/calls/domain/useCase/make_call_usecase.dart' as _i88;
+import '../../features/calls/domain/useCase/reject_call_usecase.dart' as _i89;
+import '../../features/calls/domain/useCase/watch_missed_call.dart' as _i90;
+import '../../features/calls/presentation/bloc/calls_bloc.dart' as _i93;
 import '../../features/chat/data/data_sources/chat_remote_datasource.dart'
     as _i8;
 import '../../features/chat/data/repositories/chat_repository_impl.dart'
-    as _i63;
-import '../../features/chat/domain/repositories/chat_repository.dart' as _i62;
+    as _i65;
+import '../../features/chat/domain/repositories/chat_repository.dart' as _i64;
 import '../../features/chat/domain/use_cases/change_chat_property_usecase.dart'
-    as _i66;
-import '../../features/chat/domain/use_cases/delete_chat_usecase.dart' as _i67;
-import '../../features/chat/domain/use_cases/get_contacts_usecase.dart' as _i68;
-import '../../features/chat/domain/use_cases/get_date_time.dart' as _i69;
+    as _i68;
+import '../../features/chat/domain/use_cases/delete_chat_usecase.dart' as _i69;
+import '../../features/chat/domain/use_cases/get_contacts_usecase.dart' as _i70;
+import '../../features/chat/domain/use_cases/get_date_time.dart' as _i71;
 import '../../features/chat/domain/use_cases/get_image_width_and_height_usecase.dart'
-    as _i70;
-import '../../features/chat/domain/use_cases/get_media_count_usecase.dart'
-    as _i71;
-import '../../features/chat/domain/use_cases/get_messages_between_usecase.dart'
     as _i72;
-import '../../features/chat/domain/use_cases/get_messages_for_chat_usecase.dart'
+import '../../features/chat/domain/use_cases/get_media_count_usecase.dart'
     as _i73;
-import '../../features/chat/domain/use_cases/get_my_chats_usecase.dart' as _i74;
-import '../../features/chat/domain/use_cases/read_all_messages_usecase.dart'
+import '../../features/chat/domain/use_cases/get_messages_between_usecase.dart'
+    as _i74;
+import '../../features/chat/domain/use_cases/get_messages_for_chat_usecase.dart'
     as _i75;
-import '../../features/chat/domain/use_cases/receive_message_usecase.dart'
-    as _i76;
-import '../../features/chat/domain/use_cases/save_contacts_usecase.dart'
+import '../../features/chat/domain/use_cases/get_my_chats_usecase.dart' as _i76;
+import '../../features/chat/domain/use_cases/read_all_messages_usecase.dart'
     as _i77;
-import '../../features/chat/domain/use_cases/send_error_to_server_usecase.dart'
+import '../../features/chat/domain/use_cases/receive_message_usecase.dart'
     as _i78;
-import '../../features/chat/domain/use_cases/send_message_usecase.dart' as _i79;
-import '../../features/chat/domain/use_cases/upload_file_usecase.dart' as _i80;
-import '../../features/chat/presentation/manager/chat_bloc.dart' as _i91;
+import '../../features/chat/domain/use_cases/save_contacts_usecase.dart'
+    as _i79;
+import '../../features/chat/domain/use_cases/send_error_to_server_usecase.dart'
+    as _i80;
+import '../../features/chat/domain/use_cases/send_message_usecase.dart' as _i81;
+import '../../features/chat/domain/use_cases/upload_file_usecase.dart' as _i82;
+import '../../features/chat/presentation/manager/chat_bloc.dart' as _i92;
 import '../../features/chat/presentation/manager/preload_bloc/preloading_videos_bloc.dart'
     as _i9;
 import '../../features/home/data/data_sources/home_remote_data_source.dart'
@@ -112,32 +112,34 @@ import '../../features/home/data/repositories/home_repository_implementation.dar
 import '../../features/home/domain/repositories/home_repository.dart' as _i19;
 import '../../features/home/domain/use_cases/add_item_to_cart_usecase.dart'
     as _i43;
-import '../../features/home/domain/use_cases/get_brand_usecase.dart' as _i56;
+import '../../features/home/domain/use_cases/get_brand_usecase.dart' as _i45;
 import '../../features/home/domain/use_cases/get_cart_item_usecase.dart'
-    as _i45;
-import '../../features/home/domain/use_cases/get_category_usecase.dart' as _i57;
-import '../../features/home/domain/use_cases/get_home_boutiqes_usecase.dart'
     as _i46;
+import '../../features/home/domain/use_cases/get_category_usecase.dart' as _i47;
+import '../../features/home/domain/use_cases/get_currency_for_country.dart'
+    as _i58;
+import '../../features/home/domain/use_cases/get_home_boutiqes_usecase.dart'
+    as _i48;
 import '../../features/home/domain/use_cases/get_main_categories_usecase.dart'
-    as _i47;
-import '../../features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart'
     as _i49;
-import '../../features/home/domain/use_cases/get_product_filters_usecase.dart'
-    as _i50;
-import '../../features/home/domain/use_cases/get_products_usecase.dart' as _i48;
-import '../../features/home/domain/use_cases/get_products_with_filters_usecase.dart'
-    as _i53;
-import '../../features/home/domain/use_cases/get_starting_settings_usecase.dart'
-    as _i51;
-import '../../features/home/domain/use_cases/get_stories_for_product_usecase.dart'
+import '../../features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart'
     as _i52;
+import '../../features/home/domain/use_cases/get_product_filters_usecase.dart'
+    as _i53;
+import '../../features/home/domain/use_cases/get_products_usecase.dart' as _i50;
+import '../../features/home/domain/use_cases/get_products_with_filters_usecase.dart'
+    as _i51;
+import '../../features/home/domain/use_cases/get_starting_settings_usecase.dart'
+    as _i54;
+import '../../features/home/domain/use_cases/get_stories_for_product_usecase.dart'
+    as _i55;
 import '../../features/home/domain/use_cases/GetCommentForProductUseCase.dart'
     as _i44;
 import '../../features/home/domain/use_cases/remove_item_from_cart_usecase.dart'
-    as _i54;
+    as _i56;
 import '../../features/home/domain/use_cases/update_item_from_cart_usecase.dart'
-    as _i55;
-import '../../features/home/presentation/manager/home_bloc.dart' as _i89;
+    as _i57;
+import '../../features/home/presentation/manager/home_bloc.dart' as _i61;
 import '../../features/story/data/data_source/story_data_source.dart' as _i11;
 import '../../features/story/data/repository/story_repository_impl.dart'
     as _i18;
@@ -150,13 +152,13 @@ import '../../features/story/domain/useCases/get_width_and_height_usecase.dart'
 import '../../features/story/domain/useCases/increase_viewers_usecase.dart'
     as _i26;
 import '../../features/story/domain/useCases/upload_story_usecase.dart' as _i27;
-import '../../features/story/presentation/bloc/story_bloc.dart' as _i90;
+import '../../features/story/presentation/bloc/story_bloc.dart' as _i91;
 import '../data/data_source/common_use_repo_data_source.dart' as _i3;
-import '../data/repository/common_use_repository_impl.dart' as _i59;
-import '../domin/repositories/common_use_repository.dart' as _i58;
+import '../data/repository/common_use_repository_impl.dart' as _i60;
+import '../domin/repositories/common_use_repository.dart' as _i59;
 import '../domin/repositories/prefs_repository.dart' as _i14;
-import '../domin/usecases/upload_file_cloudinary_usecase.dart' as _i64;
-import 'di_container.dart' as _i94;
+import '../domin/usecases/upload_file_cloudinary_usecase.dart' as _i66;
+import 'di_container.dart' as _i95;
 
 // initializes the registration of main-scope dependencies inside of GetIt
 Future<_i1.GetIt> $initGetIt(
@@ -246,146 +248,149 @@ Future<_i1.GetIt> $initGetIt(
       () => _i43.AddItemToCartUseCase(gh<_i19.HomeRepository>()));
   gh.factory<_i44.GetCommentForProductUseCase>(
       () => _i44.GetCommentForProductUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i45.GetCartItemUseCase>(
-      () => _i45.GetCartItemUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i46.GetHomeBoutiqesUseCase>(
-      () => _i46.GetHomeBoutiqesUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i47.GetMainCategoriesUseCase>(
-      () => _i47.GetMainCategoriesUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i48.GetProductsWithoutFiltersUseCase>(
-      () => _i48.GetProductsWithoutFiltersUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i49.GetProductDetailWithoutRelatedProductsUseCase>(() =>
-      _i49.GetProductDetailWithoutRelatedProductsUseCase(
+  gh.factory<_i45.GetBrandUseCase>(
+      () => _i45.GetBrandUseCase(gh<_i19.HomeRepository>()));
+  gh.factory<_i46.GetCartItemUseCase>(
+      () => _i46.GetCartItemUseCase(gh<_i19.HomeRepository>()));
+  gh.factory<_i47.GetCategoryUseCase>(
+      () => _i47.GetCategoryUseCase(gh<_i19.HomeRepository>()));
+  gh.factory<_i48.GetHomeBoutiqesUseCase>(
+      () => _i48.GetHomeBoutiqesUseCase(gh<_i19.HomeRepository>()));
+  gh.factory<_i49.GetMainCategoriesUseCase>(
+      () => _i49.GetMainCategoriesUseCase(gh<_i19.HomeRepository>()));
+  gh.factory<_i50.GetProductsWithoutFiltersUseCase>(
+      () => _i50.GetProductsWithoutFiltersUseCase(gh<_i19.HomeRepository>()));
+  gh.factory<_i51.GetProductsWithFiltersUseCase>(
+      () => _i51.GetProductsWithFiltersUseCase(gh<_i19.HomeRepository>()));
+  gh.factory<_i52.GetProductDetailWithoutRelatedProductsUseCase>(() =>
+      _i52.GetProductDetailWithoutRelatedProductsUseCase(
           gh<_i19.HomeRepository>()));
-  gh.factory<_i50.GetProductFiltersUseCase>(
-      () => _i50.GetProductFiltersUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i51.GetStartingSettingsUseCase>(
-      () => _i51.GetStartingSettingsUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i52.GetStoryForProductUseCase>(
-      () => _i52.GetStoryForProductUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i53.GetProductsWithFiltersUseCase>(
-      () => _i53.GetProductsWithFiltersUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i54.RemoveItemToCartUseCase>(
-      () => _i54.RemoveItemToCartUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i55.UpdateItemInCartUseCase>(
-      () => _i55.UpdateItemInCartUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i56.GetBrandUseCase>(
-      () => _i56.GetBrandUseCase(gh<_i19.HomeRepository>()));
-  gh.factory<_i57.GetCategoryUseCase>(
-      () => _i57.GetCategoryUseCase(gh<_i19.HomeRepository>()));
-  gh.lazySingleton<_i58.CommonUseRepository>(
-      () => _i59.CommonUseRepositoryImpl(gh<_i3.CommonUseRemoteDataSource>()));
-  gh.lazySingleton<_i60.CallsRepository>(
-      () => _i61.CallsRepositoryImpl(gh<_i7.CallsRemoteDataSource>()));
-  gh.lazySingleton<_i62.ChatRepository>(
-      () => _i63.ChatRepositoryImpl(gh<_i8.ChatRemoteDataSource>()));
-  gh.factory<_i64.UploadFileCloudinaryUseCase>(
-      () => _i64.UploadFileCloudinaryUseCase(gh<_i58.CommonUseRepository>()));
-  gh.factory<_i65.CreateUserUseCase>(
-      () => _i65.CreateUserUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i66.ChangeChatPropertyUseCase>(
-      () => _i66.ChangeChatPropertyUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i67.DeleteChatUseCase>(
-      () => _i67.DeleteChatUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i68.GetContactsUseCase>(
-      () => _i68.GetContactsUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i69.GetDateTimeUseCase>(
-      () => _i69.GetDateTimeUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i70.GetWidthAndHeightUseCase>(
-      () => _i70.GetWidthAndHeightUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i71.GetMediaCountUseCase>(
-      () => _i71.GetMediaCountUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i72.GetMessagesBetweenUseCase>(
-      () => _i72.GetMessagesBetweenUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i73.GetMessagesForChatUseCase>(
-      () => _i73.GetMessagesForChatUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i74.GetMyChatsUseCase>(
-      () => _i74.GetMyChatsUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i75.ReadAllMessagesUseCase>(
-      () => _i75.ReadAllMessagesUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i76.ReceiveMessageUseCase>(
-      () => _i76.ReceiveMessageUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i77.SaveContactsUseCase>(
-      () => _i77.SaveContactsUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i78.SendErrorToServerUseCase>(
-      () => _i78.SendErrorToServerUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i79.SendMessageUseCase>(
-      () => _i79.SendMessageUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i80.UploadFileUseCase>(
-      () => _i80.UploadFileUseCase(gh<_i62.ChatRepository>()));
-  gh.factory<_i81.AnswerCallUseCase>(
-      () => _i81.AnswerCallUseCase(gh<_i60.CallsRepository>()));
-  gh.factory<_i82.DeleteMessageUseCase>(
-      () => _i82.DeleteMessageUseCase(gh<_i60.CallsRepository>()));
-  gh.factory<_i83.GetAgoraTokenUseCase>(
-      () => _i83.GetAgoraTokenUseCase(gh<_i60.CallsRepository>()));
-  gh.factory<_i84.GetMissedCalCountUseCase>(
-      () => _i84.GetMissedCalCountUseCase(gh<_i60.CallsRepository>()));
-  gh.factory<_i85.GetMyCallsUseCase>(
-      () => _i85.GetMyCallsUseCase(gh<_i60.CallsRepository>()));
-  gh.factory<_i86.MakeCallUseCase>(
-      () => _i86.MakeCallUseCase(gh<_i60.CallsRepository>()));
-  gh.factory<_i87.RejectCallUseCase>(
-      () => _i87.RejectCallUseCase(gh<_i60.CallsRepository>()));
-  gh.factory<_i88.WatchMissedCallUseCase>(
-      () => _i88.WatchMissedCallUseCase(gh<_i60.CallsRepository>()));
-  gh.lazySingleton<_i89.HomeBloc>(() => _i89.HomeBloc(
-        gh<_i47.GetMainCategoriesUseCase>(),
-        gh<_i52.GetStoryForProductUseCase>(),
-        gh<_i54.RemoveItemToCartUseCase>(),
-        gh<_i45.GetCartItemUseCase>(),
-        gh<_i56.GetBrandUseCase>(),
-        gh<_i57.GetCategoryUseCase>(),
-        gh<_i55.UpdateItemInCartUseCase>(),
+  gh.factory<_i53.GetProductFiltersUseCase>(
+      () => _i53.GetProductFiltersUseCase(gh<_i19.HomeRepository>()));
+  gh.factory<_i54.GetStartingSettingsUseCase>(
+      () => _i54.GetStartingSettingsUseCase(gh<_i19.HomeRepository>()));
+  gh.factory<_i55.GetStoryForProductUseCase>(
+      () => _i55.GetStoryForProductUseCase(gh<_i19.HomeRepository>()));
+  gh.factory<_i56.RemoveItemToCartUseCase>(
+      () => _i56.RemoveItemToCartUseCase(gh<_i19.HomeRepository>()));
+  gh.factory<_i57.UpdateItemInCartUseCase>(
+      () => _i57.UpdateItemInCartUseCase(gh<_i19.HomeRepository>()));
+  gh.factory<_i58.GetCurrencyForCountryUseCase>(
+      () => _i58.GetCurrencyForCountryUseCase(gh<_i19.HomeRepository>()));
+  gh.lazySingleton<_i59.CommonUseRepository>(
+      () => _i60.CommonUseRepositoryImpl(gh<_i3.CommonUseRemoteDataSource>()));
+  gh.lazySingleton<_i61.HomeBloc>(() => _i61.HomeBloc(
+        gh<_i49.GetMainCategoriesUseCase>(),
+        gh<_i55.GetStoryForProductUseCase>(),
+        gh<_i56.RemoveItemToCartUseCase>(),
+        gh<_i46.GetCartItemUseCase>(),
+        gh<_i45.GetBrandUseCase>(),
+        gh<_i47.GetCategoryUseCase>(),
+        gh<_i57.UpdateItemInCartUseCase>(),
         gh<_i43.AddItemToCartUseCase>(),
         gh<_i44.GetCommentForProductUseCase>(),
-        gh<_i46.GetHomeBoutiqesUseCase>(),
-        gh<_i50.GetProductFiltersUseCase>(),
+        gh<_i48.GetHomeBoutiqesUseCase>(),
+        gh<_i53.GetProductFiltersUseCase>(),
         gh<_i25.GetWidthAndHeightUseCase>(),
-        gh<_i49.GetProductDetailWithoutRelatedProductsUseCase>(),
-        gh<_i51.GetStartingSettingsUseCase>(),
-        gh<_i48.GetProductsWithoutFiltersUseCase>(),
-        gh<_i53.GetProductsWithFiltersUseCase>(),
+        gh<_i52.GetProductDetailWithoutRelatedProductsUseCase>(),
+        gh<_i54.GetStartingSettingsUseCase>(),
+        gh<_i58.GetCurrencyForCountryUseCase>(),
+        gh<_i50.GetProductsWithoutFiltersUseCase>(),
+        gh<_i51.GetProductsWithFiltersUseCase>(),
       ));
-  gh.lazySingleton<_i90.StoryBloc>(() => _i90.StoryBloc(
-        gh<_i64.UploadFileCloudinaryUseCase>(),
+  gh.lazySingleton<_i62.CallsRepository>(
+      () => _i63.CallsRepositoryImpl(gh<_i7.CallsRemoteDataSource>()));
+  gh.lazySingleton<_i64.ChatRepository>(
+      () => _i65.ChatRepositoryImpl(gh<_i8.ChatRemoteDataSource>()));
+  gh.factory<_i66.UploadFileCloudinaryUseCase>(
+      () => _i66.UploadFileCloudinaryUseCase(gh<_i59.CommonUseRepository>()));
+  gh.factory<_i67.CreateUserUseCase>(
+      () => _i67.CreateUserUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i68.ChangeChatPropertyUseCase>(
+      () => _i68.ChangeChatPropertyUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i69.DeleteChatUseCase>(
+      () => _i69.DeleteChatUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i70.GetContactsUseCase>(
+      () => _i70.GetContactsUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i71.GetDateTimeUseCase>(
+      () => _i71.GetDateTimeUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i72.GetWidthAndHeightUseCase>(
+      () => _i72.GetWidthAndHeightUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i73.GetMediaCountUseCase>(
+      () => _i73.GetMediaCountUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i74.GetMessagesBetweenUseCase>(
+      () => _i74.GetMessagesBetweenUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i75.GetMessagesForChatUseCase>(
+      () => _i75.GetMessagesForChatUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i76.GetMyChatsUseCase>(
+      () => _i76.GetMyChatsUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i77.ReadAllMessagesUseCase>(
+      () => _i77.ReadAllMessagesUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i78.ReceiveMessageUseCase>(
+      () => _i78.ReceiveMessageUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i79.SaveContactsUseCase>(
+      () => _i79.SaveContactsUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i80.SendErrorToServerUseCase>(
+      () => _i80.SendErrorToServerUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i81.SendMessageUseCase>(
+      () => _i81.SendMessageUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i82.UploadFileUseCase>(
+      () => _i82.UploadFileUseCase(gh<_i64.ChatRepository>()));
+  gh.factory<_i83.AnswerCallUseCase>(
+      () => _i83.AnswerCallUseCase(gh<_i62.CallsRepository>()));
+  gh.factory<_i84.DeleteMessageUseCase>(
+      () => _i84.DeleteMessageUseCase(gh<_i62.CallsRepository>()));
+  gh.factory<_i85.GetAgoraTokenUseCase>(
+      () => _i85.GetAgoraTokenUseCase(gh<_i62.CallsRepository>()));
+  gh.factory<_i86.GetMissedCalCountUseCase>(
+      () => _i86.GetMissedCalCountUseCase(gh<_i62.CallsRepository>()));
+  gh.factory<_i87.GetMyCallsUseCase>(
+      () => _i87.GetMyCallsUseCase(gh<_i62.CallsRepository>()));
+  gh.factory<_i88.MakeCallUseCase>(
+      () => _i88.MakeCallUseCase(gh<_i62.CallsRepository>()));
+  gh.factory<_i89.RejectCallUseCase>(
+      () => _i89.RejectCallUseCase(gh<_i62.CallsRepository>()));
+  gh.factory<_i90.WatchMissedCallUseCase>(
+      () => _i90.WatchMissedCallUseCase(gh<_i62.CallsRepository>()));
+  gh.lazySingleton<_i91.StoryBloc>(() => _i91.StoryBloc(
+        gh<_i66.UploadFileCloudinaryUseCase>(),
         gh<_i24.GetStoryUseCase>(),
         gh<_i25.GetWidthAndHeightUseCase>(),
         gh<_i27.UploadStoryUseCase>(),
         gh<_i26.IncreaseViewersUseCase>(),
         gh<_i23.AddStoryToOurServerUseCase>(),
       ));
-  gh.lazySingleton<_i91.ChatBloc>(() => _i91.ChatBloc(
-        gh<_i68.GetContactsUseCase>(),
-        gh<_i74.GetMyChatsUseCase>(),
-        gh<_i77.SaveContactsUseCase>(),
-        gh<_i79.SendMessageUseCase>(),
-        gh<_i72.GetMessagesBetweenUseCase>(),
-        gh<_i64.UploadFileCloudinaryUseCase>(),
-        gh<_i73.GetMessagesForChatUseCase>(),
-        gh<_i67.DeleteChatUseCase>(),
-        gh<_i66.ChangeChatPropertyUseCase>(),
-        gh<_i80.UploadFileUseCase>(),
-        gh<_i75.ReadAllMessagesUseCase>(),
-        gh<_i76.ReceiveMessageUseCase>(),
-        gh<_i71.GetMediaCountUseCase>(),
-        gh<_i69.GetDateTimeUseCase>(),
-        gh<_i78.SendErrorToServerUseCase>(),
+  gh.lazySingleton<_i92.ChatBloc>(() => _i92.ChatBloc(
+        gh<_i70.GetContactsUseCase>(),
+        gh<_i76.GetMyChatsUseCase>(),
+        gh<_i79.SaveContactsUseCase>(),
+        gh<_i81.SendMessageUseCase>(),
+        gh<_i74.GetMessagesBetweenUseCase>(),
+        gh<_i66.UploadFileCloudinaryUseCase>(),
+        gh<_i75.GetMessagesForChatUseCase>(),
+        gh<_i69.DeleteChatUseCase>(),
+        gh<_i68.ChangeChatPropertyUseCase>(),
+        gh<_i82.UploadFileUseCase>(),
+        gh<_i77.ReadAllMessagesUseCase>(),
+        gh<_i78.ReceiveMessageUseCase>(),
+        gh<_i73.GetMediaCountUseCase>(),
+        gh<_i71.GetDateTimeUseCase>(),
+        gh<_i80.SendErrorToServerUseCase>(),
       ));
-  gh.lazySingleton<_i92.CallsBloc>(() => _i92.CallsBloc(
-        gh<_i87.RejectCallUseCase>(),
-        gh<_i86.MakeCallUseCase>(),
-        gh<_i85.GetMyCallsUseCase>(),
-        gh<_i88.WatchMissedCallUseCase>(),
-        gh<_i81.AnswerCallUseCase>(),
-        gh<_i84.GetMissedCalCountUseCase>(),
-        gh<_i83.GetAgoraTokenUseCase>(),
-        gh<_i82.DeleteMessageUseCase>(),
+  gh.lazySingleton<_i93.CallsBloc>(() => _i93.CallsBloc(
+        gh<_i89.RejectCallUseCase>(),
+        gh<_i88.MakeCallUseCase>(),
+        gh<_i87.GetMyCallsUseCase>(),
+        gh<_i90.WatchMissedCallUseCase>(),
+        gh<_i83.AnswerCallUseCase>(),
+        gh<_i86.GetMissedCalCountUseCase>(),
+        gh<_i85.GetAgoraTokenUseCase>(),
+        gh<_i84.DeleteMessageUseCase>(),
       ));
-  gh.lazySingleton<_i93.AuthBloc>(() => _i93.AuthBloc(
+  gh.lazySingleton<_i94.AuthBloc>(() => _i94.AuthBloc(
         gh<_i39.UpdateStoriesUserUseCase>(),
         gh<_i37.UpdateChatUserNameUseCase>(),
-        gh<_i65.CreateUserUseCase>(),
+        gh<_i67.CreateUserUseCase>(),
         gh<_i31.LoginToChatUseCase>(),
         gh<_i32.LoginToMarketUseCase>(),
         gh<_i33.LoginToStoriesUseCase>(),
@@ -402,4 +407,4 @@ Future<_i1.GetIt> $initGetIt(
   return getIt;
 }
 
-class _$AppModule extends _i94.AppModule {}
+class _$AppModule extends _i95.AppModule {}

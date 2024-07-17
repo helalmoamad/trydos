@@ -24,25 +24,17 @@ import '../../manager/home_event.dart';
 class SizesFiltersList extends StatefulWidget {
   const SizesFiltersList({
     super.key,
-    required this.selectedFilters,
     this.hideTitle = false,
     required this.attribute,
-    this.addItemToAnimatedList,
-    this.removeItemToAnimatedList,
     required this.boutiqueSlug,
     this.category,
   });
-
-  final ValueNotifier<List<int>> selectedFilters;
   final Attribute attribute;
 
   final bool hideTitle;
   final String boutiqueSlug;
   final String? category;
-  final void Function(int index)? addItemToAnimatedList;
 
-  final void Function(int removedIndex, String removedItem)?
-      removeItemToAnimatedList;
 
   @override
   State<SizesFiltersList> createState() => _SizesFiltersListState();
@@ -93,132 +85,131 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
           },
           SizedBox(
             height: 70,
-            child: ValueListenableBuilder<List<int>>(
-                valueListenable: widget.selectedFilters,
-                builder: (context, selected, child) {
-                  return ValueListenableBuilder<int>(
-                      valueListenable: currentIndexInSizes,
-                      builder: (context, currentIndex, _) {
-                        return ListView.separated(
-                          itemCount: widget.attribute.options?.length ?? 0,
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          separatorBuilder: (ctx, index) => SizedBox(
-                            width: 10,
+            child: ValueListenableBuilder<int>(
+                valueListenable: currentIndexInSizes,
+                builder: (context, currentIndex, _) {
+                  return ListView.separated(
+                    itemCount: widget.attribute.options?.length ?? 0,
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    separatorBuilder: (ctx, index) => SizedBox(
+                      width: 10,
+                    ),
+                    itemBuilder: (ctx, index) {
+                      HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
+                      bool isSelected = widget.hideTitle
+                          ? false
+                          : ((homeBloc.state.choosedFiltersByUser?.filters?.attributes?.isNullOrEmpty ?? true) ? false :
+                           homeBloc.state.choosedFiltersByUser!.filters!.attributes![0].options?.any((element) =>
+                      element == widget.attribute.options?[index]) ?? false);
+                      return Stack(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Filter? prevChoosedOrAppliedFilterToAddToIt =
+                              widget.hideTitle
+                                  ? homeBloc
+                                  .state.appliedFiltersByUser?.filters
+                                  : homeBloc
+                                  .state.choosedFiltersByUser?.filters;
+                              if (widget.hideTitle || !isSelected) {
+                                String size =
+                                widget.attribute.options![index];
+                                if (prevChoosedOrAppliedFilterToAddToIt == null) {
+                                  prevChoosedOrAppliedFilterToAddToIt = Filter();
+                                }
+                                prevChoosedOrAppliedFilterToAddToIt =
+                                    prevChoosedOrAppliedFilterToAddToIt
+                                        .copyWithSaveOtherField(
+                                      attributes: prevChoosedOrAppliedFilterToAddToIt
+                                          .attributes.isNullOrEmpty
+                                          ? [
+                                        Attribute(
+                                            id: widget.attribute.id,
+                                            name:
+                                            widget.attribute.name,
+                                            options: [size])
+                                      ]
+                                          : [
+                                        prevChoosedOrAppliedFilterToAddToIt
+                                            .attributes![0]
+                                            .copyWith(options: [
+                                          ...prevChoosedOrAppliedFilterToAddToIt
+                                              .attributes![0]
+                                              .options ??
+                                              [],
+                                          size
+                                        ])
+                                      ],);
+                                if (widget.hideTitle) {
+                                  homeBloc.add(GetProductsWithFiltersEvent(
+                                      boutiqueSlug: widget.boutiqueSlug,
+                                      filtersAppliedByUser: GetProductFiltersModel(
+                                          filters:
+                                          prevChoosedOrAppliedFilterToAddToIt),
+                                      category: widget.category,
+                                      offset: 1));
+                                } else {
+                                  homeBloc.add(ChangeSelectedFiltersEvent(
+                                    filtersChoosedByUser: GetProductFiltersModel(
+                                        filters:
+                                        prevChoosedOrAppliedFilterToAddToIt),
+                                  ));
+                                }
+                              } else {
+                                  prevChoosedOrAppliedFilterToAddToIt!.attributes![0].options!
+                                      .removeWhere(((element) => element ==
+                                      widget.attribute.options![index]));
+                                  homeBloc
+                                      .add(
+                                      ChangeSelectedFiltersEvent(
+                                        category: widget.category,
+                                        boutiqueSlug: widget.boutiqueSlug,
+                                        filtersChoosedByUser: GetProductFiltersModel(
+                                            filters: prevChoosedOrAppliedFilterToAddToIt),
+                                      ));
+                              }
+                            },
+                            child: Container(
+                              height: 70,
+                              width: 70,
+                              child: DottedBorder(
+                                  radius: Radius.circular(180),
+                                  borderType: BorderType.RRect,
+                                  strokeCap: StrokeCap.round,
+                                  strokeWidth: 0.5,
+                                  color: Color(0xff6B6B6B),
+                                  dashPattern: [3, 3],
+                                  child: Center(
+                                    child: Text(
+                                      widget.attribute.options![index],
+                                      overflow: TextOverflow.ellipsis,
+                                      style:
+                                          // index == currentIndex
+                                          //     ? textTheme.bodyText2?.bq.copyWith(
+                                          //   height: 1.3,
+                                          //   fontSize: 15.sp,
+                                          //   color: const Color(0xff5D5C5D),
+                                          // )
+                                          //     :
+                                          textTheme.bodyText2?.mq
+                                              .copyWith(
+                                        height: 1.3,
+                                        fontSize: 15.sp,
+                                        color: const Color(0xff5D5C5D),
+                                      ),
+                                    ),
+                                  )),
+                            ),
                           ),
-                          itemBuilder: (ctx, index) {
-                            return Stack(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    if (selected.contains(index)) {
-                                      String removed =
-                                          widget.attribute.options![index];
-                                      int removedIndex = selected.indexWhere(
-                                          (element) => element == index);
-                                      widget.selectedFilters.value
-                                          .remove(index);
-                                      widget.removeItemToAnimatedList
-                                          ?.call(removedIndex, removed);
-                                    } else {
-                                      if (widget.hideTitle) {
-                                        String keyOfChoosedFilters =
-                                            widget.boutiqueSlug +
-                                                (widget.category ?? '');
-                                        String size =
-                                            widget.attribute.options![index];
-                                        Filter? prevChoosedFilters = BlocProvider
-                                                .of<HomeBloc>(context)
-                                            .state
-                                            .choosedFiltersInEachBoutiqueModel[
-                                                keyOfChoosedFilters]
-                                            ?.filters;
-                                        if (prevChoosedFilters == null) {
-                                          prevChoosedFilters = Filter();
-                                        }
-                                        prevChoosedFilters =
-                                            prevChoosedFilters.copyWith(
-                                          attributes: prevChoosedFilters
-                                                  .attributes.isNullOrEmpty
-                                              ? [
-                                                  Attribute(
-                                                      id: widget.attribute.id,
-                                                      name:
-                                                          widget.attribute.name,
-                                                      options: [size])
-                                                ]
-                                              : [
-                                                  prevChoosedFilters
-                                                      .attributes![0]
-                                                      .copyWith(options: [
-                                                    ...prevChoosedFilters
-                                                            .attributes![0]
-                                                            .options ??
-                                                        [],
-                                                    size
-                                                  ])
-                                                ],
-                                        );
-                                        BlocProvider.of<HomeBloc>(context).add(
-                                            GetProductsWithFiltersEvent(
-                                                boutiqueSlug:
-                                                    widget.boutiqueSlug,
-                                                filtersChoosedByUser:
-                                                    GetProductFiltersModel(
-                                                        filters:
-                                                            prevChoosedFilters),
-                                                category: widget.category,
-                                                offset: 1));
-                                        return;
-                                      }
-                                      widget.selectedFilters.value.add(index);
-                                      widget.addItemToAnimatedList?.call(
-                                          widget.selectedFilters.value.length -
-                                              1);
-                                    }
-                                    widget.selectedFilters.notifyListeners();
-                                  },
-                                  child: Container(
-                                    height: 70,
-                                    width: 70,
-                                    child: DottedBorder(
-                                        radius: Radius.circular(180),
-                                        borderType: BorderType.RRect,
-                                        strokeCap: StrokeCap.round,
-                                        strokeWidth: 0.5,
-                                        color: Color(0xff6B6B6B),
-                                        dashPattern: [3, 3],
-                                        child: Center(
-                                          child: Text(
-                                            widget.attribute.options![index],
-                                            overflow: TextOverflow.ellipsis,
-                                            style:
-                                                // index == currentIndex
-                                                //     ? textTheme.bodyText2?.bq.copyWith(
-                                                //   height: 1.3,
-                                                //   fontSize: 15.sp,
-                                                //   color: const Color(0xff5D5C5D),
-                                                // )
-                                                //     :
-                                                textTheme.bodyText2?.mq
-                                                    .copyWith(
-                                              height: 1.3,
-                                              fontSize: 15.sp,
-                                              color: const Color(0xff5D5C5D),
-                                            ),
-                                          ),
-                                        )),
-                                  ),
-                                ),
-                                Visibility(
-                                    visible: selected.contains(index),
-                                    child: FilterSelectedMark(
-                                        width: 20, height: 20))
-                              ],
-                            );
-                          },
-                        );
-                      });
+                          Visibility(
+                              visible: isSelected,
+                              child: FilterSelectedMark(
+                                  width: 20, height: 20))
+                        ],
+                      );
+                    },
+                  );
                 }),
           ),
         ],
