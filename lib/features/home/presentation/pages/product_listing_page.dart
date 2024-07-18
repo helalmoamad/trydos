@@ -112,8 +112,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     homeBloc.add(ChangeSelectedFiltersEvent(
         boutiqueSlug: widget.boutiqueSlug,
         category: widget.category,
-        filtersChoosedByUser: null
-    ));
+        filtersChoosedByUser: null));
     appBloc.add(ShowOrHideBars(true));
     scrollController.dispose();
     super.dispose();
@@ -476,7 +475,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             titleSpacing: 0,
                                             toolbarHeight: isExpanded
                                                 ? 860
-                                                : state.appliedFiltersByUser != null
+                                                : state.appliedFiltersByUser !=
+                                                        null
                                                     ? 145
                                                     : 145,
                                             flexibleSpace: StackedFiltersList(

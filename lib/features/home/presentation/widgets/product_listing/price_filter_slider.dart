@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
@@ -14,28 +15,44 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../../../search/presentation/widgets/close_circle.dart';
+import '../../manager/home_bloc.dart';
 
 class PriceFilter extends StatefulWidget {
   const PriceFilter({
     super.key,
     required this.pricesFiltersRanges,
     this.hideTitle = false,
-    required this.lowerAndUpperBound,
+    required this.pricrSymbol,
+    required this.pricrRate,
+    required this.boutiqueSlug,
+    this.category,
   });
 
   final bool hideTitle;
   final Prices pricesFiltersRanges;
-  final ValueNotifier<Tuple2<double, double>> lowerAndUpperBound;
+  final String pricrSymbol;
+  final double pricrRate;
+  final String boutiqueSlug;
+  final String? category;
 
   @override
   State<PriceFilter> createState() => _PriceFilterState();
 }
 
 class _PriceFilterState extends State<PriceFilter> {
+  late final HomeBloc homeBloc;
+
+  @override
+  void initState() {
+    homeBloc = BlocProvider.of<HomeBloc>(context);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -58,14 +75,15 @@ class _PriceFilterState extends State<PriceFilter> {
                         points: List.generate(
                             widget.pricesFiltersRanges.priceRanges?.length ??
                                 0 + 1,
-                            (index) => Offset(
-                                index *
-                                    (1.sw - 50) /
-                                    widget.pricesFiltersRanges.priceRanges!
-                                        .length,
-                                index == 0
-                                    ? 0
-                                    : -widget.pricesFiltersRanges
+                                (index) =>
+                                Offset(
+                                    index *
+                                        (1.sw - 50) /
+                                        widget.pricesFiltersRanges.priceRanges!
+                                            .length,
+                                    index == 0
+                                        ? 0
+                                        : -widget.pricesFiltersRanges
                                         .priceRanges![index - 1].count!
                                         .toDouble()))),
                   ),
@@ -77,11 +95,15 @@ class _PriceFilterState extends State<PriceFilter> {
                   child: FlutterSlider(
                     minimumDistance: 1,
                     values: [
-                      widget.pricesFiltersRanges.minPrice!.toDouble(),
-                      widget.pricesFiltersRanges.maxPrice!.toDouble()
+                      (widget.pricesFiltersRanges.minPrice! *
+                          widget.pricrRate.toDouble()),
+                      widget.pricesFiltersRanges.maxPrice! *
+                          widget.pricrRate.toDouble()
                     ],
                     step: FlutterSliderStep(
-                      step: widget.pricesFiltersRanges.maxPrice! / 100,
+                      step: widget.pricesFiltersRanges.maxPrice! *
+                          widget.pricrRate /
+                          100,
                     ),
                     selectByTap: false,
                     trackBar: FlutterSliderTrackBar(
@@ -98,51 +120,60 @@ class _PriceFilterState extends State<PriceFilter> {
                     centeredOrigin: false,
                     rightHandler: FlutterSliderHandler(
                         decoration: BoxDecoration(),
-                        child: ValueListenableBuilder<Tuple2<double, double>>(
-                            valueListenable: widget.lowerAndUpperBound,
-                            builder: (context, filterData, child) {
-                              return Container(
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: filterData.item2 <
-                                            widget.pricesFiltersRanges.maxPrice!
-                                        ? Color(0xffFF5F61)
-                                        : Colors.white,
-                                    border: Border.all(
-                                        width: 0.5, color: Color(0xffC4C2C2)),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          blurRadius: 3,
-                                          offset: Offset(0, 3),
-                                          color: Colors.black.withOpacity(0.05))
-                                    ]),
-                              );
-                            })),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:
+                              // homeBloc.state.choosedFiltersByUser
+                              //     ?.filters?.prices !=
+                              //     null &&
+                              //     homeBloc.state.choosedFiltersByUser
+                              //     !.filters!.prices!.maxPrice! <
+                              //         widget.pricesFiltersRanges.maxPrice! *
+                              //             widget.pricrRate
+                              //     ? Color(0xffFF5F61)
+                              //     :
+                              Colors.white,
+                              border: Border.all(
+                                  width: 0.5, color: Color(0xffC4C2C2)),
+                              boxShadow: [
+                                BoxShadow(
+                                    blurRadius: 3,
+                                    offset: Offset(0, 3),
+                                    color: Colors.black.withOpacity(0.05))
+                              ]),
+                        )),
                     handler: FlutterSliderHandler(
                         decoration: BoxDecoration(),
-                        child: ValueListenableBuilder<Tuple2<double, double>>(
-                            valueListenable: widget.lowerAndUpperBound,
-                            builder: (context, filterData, child) {
-                              return Container(
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: filterData.item1 >
-                                            widget.pricesFiltersRanges.minPrice!
-                                        ? Color(0xffFF5F61)
-                                        : Colors.white,
-                                    border: Border.all(
-                                        width: 0.5, color: Color(0xffC4C2C2)),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          blurRadius: 3,
-                                          offset: Offset(0, 3),
-                                          color: Colors.black.withOpacity(0.05))
-                                    ]),
-                              );
-                            })),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:
+                              // homeBloc.state.choosedFiltersByUser
+                              //     ?.filters?.prices !=
+                              //     null &&
+                              //     homeBloc.state.choosedFiltersByUser
+                              //     !.filters!.prices!.minPrice! >
+                              //         widget.pricesFiltersRanges
+                              //             .minPrice! *
+                              //             widget.pricrRate
+                              //     ? Color(0xffFF5F61)
+                              //     :
+                              Colors.white,
+                              border: Border.all(
+                                  width: 0.5, color: Color(0xffC4C2C2)),
+                              boxShadow: [
+                                BoxShadow(
+                                    blurRadius: 3,
+                                    offset: Offset(0, 3),
+                                    color: Colors.black.withOpacity(0.05))
+                              ]),
+                        )),
                     rangeSlider: true,
-                    max: widget.pricesFiltersRanges.maxPrice!.toDouble(),
-                    min: widget.pricesFiltersRanges.minPrice!.toDouble(),
+                    max: widget.pricesFiltersRanges.maxPrice! *
+                        widget.pricrRate.toDouble(),
+                    min: widget.pricesFiltersRanges.minPrice! *
+                        widget.pricrRate.toDouble(),
                     handlerAnimation: FlutterSliderHandlerAnimation(
                         scale: 1, duration: Duration(milliseconds: 0)),
                     tooltip: FlutterSliderTooltip(
@@ -150,65 +181,116 @@ class _PriceFilterState extends State<PriceFilter> {
                         disabled: true,
                         disableAnimation: true),
                     onDragCompleted: (handlerIndex, lowerValue, upperValue) {
-                      widget.lowerAndUpperBound.value =
-                          Tuple2(lowerValue.toDouble(), upperValue.toDouble());
+                      homeBloc.add(GetProductFiltersEvent(
+                          boutiqueSlug: widget.boutiqueSlug,
+                          category: widget.category,
+                          filtersChoosedByUser: GetProductFiltersModel(
+                            filters: homeBloc.state.choosedFiltersByUser?.filters == null  ? Filter(
+                              prices: Prices(
+                                  minPrice: (lowerValue / widget.pricrRate.toDouble()),
+                                  maxPrice: (upperValue / widget.pricrRate.toDouble()),
+                                  currencySymbol: widget.pricrSymbol
+                              )
+                            ): homeBloc.state.choosedFiltersByUser!.filters!.copyWithSaveOtherField(
+                              prices: Prices(
+                                minPrice: (lowerValue / widget.pricrRate.toDouble()),
+                                maxPrice: (upperValue / widget.pricrRate.toDouble()),
+                                currencySymbol: widget.pricrSymbol
+                              )
+                            )
+                          )
+                      ));
                     },
                   ),
                 ),
-                ValueListenableBuilder<Tuple2<double, double>>(
-                    valueListenable: widget.lowerAndUpperBound,
-                    builder: (context, filterData, child) {
-                      return Positioned(
-                          top: widget.hideTitle ? 10 : 40,
-                          left: 0,
-                          child: Row(
-                            children: [
-                              MyTextWidget(
-                                'Min ${filterData.item1} ',
-                                style: textTheme.caption?.rq.copyWith(
-                                    color: filterData.item1 >
-                                            widget.pricesFiltersRanges.minPrice!
-                                        ? Color(0xffFF5F61)
-                                        : Color(0xff505050)),
-                              ),
-                              MyTextWidget(
-                                'USD',
-                                style: textTheme.overline?.lq.copyWith(
-                                    color: filterData.item1 >
-                                            widget.pricesFiltersRanges.minPrice!
-                                        ? Color(0xffFF5F61)
-                                        : Color(0xff505050)),
-                              ),
-                            ],
-                          ));
-                    }),
-                ValueListenableBuilder<Tuple2<double, double>>(
-                    valueListenable: widget.lowerAndUpperBound,
-                    builder: (context, filterData, child) {
-                      return Positioned(
-                          right: 0,
-                          top: widget.hideTitle ? 10 : 40,
-                          child: Row(
-                            children: [
-                              MyTextWidget(
-                                'Max ${filterData.item2} ',
-                                style: textTheme.caption?.rq.copyWith(
-                                    color: filterData.item2 <
-                                            widget.pricesFiltersRanges.maxPrice!
-                                        ? Color(0xffFF5F61)
-                                        : Color(0xff505050)),
-                              ),
-                              MyTextWidget(
-                                'USD',
-                                style: textTheme.overline?.lq.copyWith(
-                                    color: filterData.item2 <
-                                            widget.pricesFiltersRanges.maxPrice!
-                                        ? Color(0xffFF5F61)
-                                        : Color(0xff505050)),
-                              ),
-                            ],
-                          ));
-                    }),
+                Positioned(
+                    top: widget.hideTitle ? 10 : 40,
+                    left: 0,
+                    child: Row(
+                      children: [
+                        MyTextWidget(
+                          'Min ${homeBloc.state.choosedFiltersByUser
+                              ?.filters?.prices !=
+                              null
+                              ?
+                          homeBloc.state.choosedFiltersByUser
+                          !.filters!.prices!.minPrice!.toStringAsFixed(2)
+                              : (widget.pricesFiltersRanges.minPrice!  *
+                widget.pricrRate).toStringAsFixed(2)} ',
+                          style: textTheme.caption?.rq.copyWith(
+                              color:
+                              // homeBloc.state.choosedFiltersByUser
+                              //     ?.filters?.prices !=
+                              //     null &&
+                              //     homeBloc.state.choosedFiltersByUser
+                              //     !.filters!.prices!.minPrice! >
+                              //     widget.pricesFiltersRanges
+                              //         .minPrice! *
+                              //         widget.pricrRate
+                              //     ? Color(0xffFF5F61)
+                              //     :
+                              Color(0xff505050)),
+                        ),
+                        MyTextWidget(
+                          widget.pricrSymbol,
+                          style: textTheme.overline?.lq.copyWith(
+                              color:
+                              // homeBloc.state.choosedFiltersByUser
+                              //     ?.filters?.prices !=
+                              //     null &&
+                              //     homeBloc.state.choosedFiltersByUser
+                              //     !.filters!.prices!.minPrice! >
+                              //     widget.pricesFiltersRanges
+                              //         .minPrice! *
+                              //         widget.pricrRate
+                              //     ? Color(0xffFF5F61)
+                              //     :
+                              Color(0xff505050)),
+                        ),
+                      ],
+                    )),
+                Positioned(
+                    right: 0,
+                    top: widget.hideTitle ? 10 : 40,
+                    child: Row(
+                      children: [
+                        MyTextWidget(
+                          'Max ${homeBloc.state.choosedFiltersByUser
+                              ?.filters?.prices !=
+                              null
+                              ?
+                          homeBloc.state.choosedFiltersByUser
+                          !.filters!.prices!.maxPrice!.toStringAsFixed(2)
+                              : (widget.pricesFiltersRanges.maxPrice!  *
+                              widget.pricrRate).toStringAsFixed(2)} ',
+                          style: textTheme.caption?.rq.copyWith(
+                              color: homeBloc.state.choosedFiltersByUser
+                                  ?.filters?.prices !=
+                                  null &&
+                                  homeBloc.state.choosedFiltersByUser
+                                  !.filters!.prices!.maxPrice! <
+                                  widget.pricesFiltersRanges
+                                      .maxPrice! *
+                                      widget.pricrRate
+                                  ? Color(0xffFF5F61)
+                                  : Color(0xff505050)),
+                        ),
+                        MyTextWidget(
+                          widget.pricrSymbol,
+                          style: textTheme.overline?.lq.copyWith(
+                              color: homeBloc.state.choosedFiltersByUser
+                                  ?.filters?.prices !=
+                                  null &&
+                                  homeBloc.state.choosedFiltersByUser
+                                  !.filters!.prices!.maxPrice! <
+                                  widget.pricesFiltersRanges
+                                      .maxPrice! *
+                                      widget.pricrRate
+                                  ? Color(0xffFF5F61)
+                                  : Color(0xff505050)),
+                        ),
+                      ],
+                    )),
                 if (!widget.hideTitle)
                   Positioned(
                     top: 0,
@@ -240,9 +322,15 @@ class _PriceFilterState extends State<PriceFilter> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            widget.lowerAndUpperBound.value = Tuple2(
-                                widget.pricesFiltersRanges.minPrice!,
-                                widget.pricesFiltersRanges.maxPrice!);
+                            homeBloc.add(GetProductFiltersEvent(
+                                boutiqueSlug: widget.boutiqueSlug,
+                                category: widget.category,
+                                filtersChoosedByUser: GetProductFiltersModel(
+                                    filters: homeBloc.state.choosedFiltersByUser?.filters?.copyWithSaveOtherField(
+                                        prices: null
+                                    )
+                                )
+                            ));
                             setState(() {});
                           },
                           child: CloseCircle(
@@ -284,7 +372,8 @@ class RPSCustomPainter extends CustomPainter {
       for (var point in points.skip(1)) {
         path.lineTo(point.dx, point.dy);
       }
-      path.close(); // Connect the last point to the first point to close the polygon
+      path
+          .close(); // Connect the last point to the first point to close the polygon
     }
     canvas.drawPath(path, paint);
   }

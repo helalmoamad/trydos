@@ -18,6 +18,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
+import 'package:trydos/features/home/presentation/widgets/product_listing/price_filter_ranges.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/price_filter_slider.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/sizes_filters_list.dart';
 import 'package:tuple/tuple.dart';
@@ -59,12 +60,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
   final ValueNotifier<int> expandingFiltersStack = ValueNotifier(-1);
   final ValueNotifier<int> currentActiveSection = ValueNotifier(0);
   late AutoScrollController autoScrollController;
-  ValueNotifier<Tuple2<double, double>>? lowerAndUpperBound;
 
   int lastSectionDisplayed = 0;
   double? minPrice;
   double? maxPrice;
-  String? currencySymbol;
+  double exchangeRate = 0.0;
+  String currencySymbol = '';
   late HomeBloc homeBloc;
   bool isExpanded = false;
 
@@ -99,12 +100,15 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       }
       filter_model.Filter filters = state.getProductFiltersModel!.filters!;
       filter_model.Filter? choosedFilters = state.choosedFiltersByUser?.filters;
-      if (lowerAndUpperBound == null && filters.prices != null) {
-        currencySymbol = filters.prices!.currencySymbol!;
-        minPrice = filters.prices!.minPrice!;
-        maxPrice = filters.prices!.maxPrice!;
-        lowerAndUpperBound = ValueNotifier(
-            Tuple2(filters.prices!.minPrice!, filters.prices!.maxPrice!));
+      if (filters.prices != null) {
+        exchangeRate =
+            state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ?? 1;
+        currencySymbol =
+            state.getCurrencyForCountryModel?.data?.currency?.symbol ?? '\$';
+        minPrice = filters.prices!.minPrice! *
+            exchangeRate;
+        maxPrice = filters.prices!.maxPrice! *
+            exchangeRate;
       }
       int countOfFilters = 0;
       List<String> titleOfFilterSection = [];
@@ -363,193 +367,134 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     .topStart,
                                                 children: [
                                                   ...List.generate(
-                                                      filters
-                                                          .categories![
-                                                      index]
-                                                          .subCategories!
-                                                          .length,
-                                                          (innerIndex) =>
-                                                          AnimatedPositionedDirectional(
-                                                              curve: Curves
-                                                                  .fastEaseInToSlowEaseOut,
-                                                              duration: Duration(
-                                                                  milliseconds:
-                                                                  300),
-                                                              top: currentExpandedIndex ==
-                                                                  index
-                                                                  ? (70 -
-                                                                  50)
-                                                                  : (70 - 50) /
-                                                                  2,
-                                                              end: currentExpandedIndex ==
-                                                                  index
-                                                                  ? innerIndex *
-                                                                  55
-                                                                  : innerIndex >=
-                                                                  (filters
+                                                    filters
+                                                        .categories![
+                                                    index]
+                                                        .subCategories!
+                                                        .length,
+                                                        (innerIndex) =>
+                                                        AnimatedPositionedDirectional(
+                                                            curve: Curves
+                                                                .fastEaseInToSlowEaseOut,
+                                                            duration: Duration(
+                                                                milliseconds:
+                                                                300),
+                                                            top: currentExpandedIndex ==
+                                                                index
+                                                                ? (70 -
+                                                                50)
+                                                                : (70 - 50) /
+                                                                2,
+                                                            end: currentExpandedIndex ==
+                                                                index
+                                                                ? innerIndex *
+                                                                55
+                                                                : innerIndex >=
+                                                                (filters
+                                                                    .categories![index]
+                                                                    .subCategories!
+                                                                    .length - 2)
+                                                                ? (innerIndex -
+                                                                1) * 3
+                                                                : 0,
+                                                            child: FilterCircleWidget(
+                                                              width:
+                                                              50,
+                                                              height:
+                                                              50,
+                                                              categoryName: filters
+                                                                  .categories![index]
+                                                                  .subCategories![innerIndex]
+                                                                  .name
+                                                                  .toString(),
+                                                              imageUrl: filters
+                                                                  .categories![index]
+                                                                  .subCategories![innerIndex]
+                                                                  .icon
+                                                                  .toString(),
+                                                              withBackGroundShadow:
+                                                              innerIndex !=
+                                                                  0,
+                                                              displayFilterMark: !isExpanded
+                                                                  ? false
+                                                                  : ((choosedFilters
+                                                                  ?.categories
+                                                                  ?.isNullOrEmpty ??
+                                                                  true)
+                                                                  ? false
+                                                                  : choosedFilters!
+                                                                  .categories!
+                                                                  .any((
+                                                                  element) =>
+                                                              element.id ==
+                                                                  filters
                                                                       .categories![index]
-                                                                      .subCategories!
-                                                                      .length -
-                                                                      2)
-                                                                  ? (innerIndex -
-                                                                  1) * 3
-                                                                  : 0,
-                                                              child: FilterCircleWidget(
-                                                                width:
-                                                                50,
-                                                                height:
-                                                                50,
-                                                                categoryName: filters
-                                                                    .categories![index]
-                                                                    .subCategories![innerIndex]
-                                                                    .name
-                                                                    .toString(),
-                                                                imageUrl: filters
-                                                                    .categories![index]
-                                                                    .subCategories![innerIndex]
-                                                                    .icon
-                                                                    .toString(),
-                                                                withBackGroundShadow:
-                                                                innerIndex !=
-                                                                    0,
-                                                                displayFilterMark: !isExpanded
-                                                                    ? false
-                                                                    : ((choosedFilters
-                                                                    ?.categories
-                                                                    ?.isNullOrEmpty ??
-                                                                    true)
-                                                                    ? false
-                                                                    : choosedFilters!
-                                                                    .categories!
-                                                                    .any((
-                                                                    element) =>
-                                                                element.id ==
-                                                                    filters
+                                                                      .subCategories![innerIndex]
+                                                                      .id)),
+                                                              addOrRemoveSpecificFilter:
+                                                                  (bool
+                                                              add) {
+                                                                filter_model
+                                                                    .Filter?
+                                                                prevChoosedOrAppliedFilterToAddToIt =
+                                                                !isExpanded
+                                                                    ? state
+                                                                    .appliedFiltersByUser
+                                                                    ?.filters
+                                                                    : state
+                                                                    .choosedFiltersByUser
+                                                                    ?.filters;
+                                                                filter_model
+                                                                    .Category category = filter_model
+                                                                    .Category(
+                                                                    isSubCategory: true,
+                                                                    id: filters
                                                                         .categories![index]
                                                                         .subCategories![innerIndex]
-                                                                        .id)),
-                                                                addOrRemoveSpecificFilter:
-                                                                    (bool
-                                                                add) {
-                                                                  filter_model
-                                                                      .Filter?
-                                                                  prevChoosedOrAppliedFilterToAddToIt =
-                                                                  !isExpanded
-                                                                      ? state
-                                                                      .appliedFiltersByUser
-                                                                      ?.filters
-                                                                      : state
-                                                                      .choosedFiltersByUser
-                                                                      ?.filters;
-                                                                  filter_model
-                                                                      .Category category = filter_model
-                                                                      .Category(
-                                                                      isSubCategory: true,
-                                                                      id: filters
-                                                                          .categories![index]
-                                                                          .subCategories![innerIndex]
-                                                                          .id,
-                                                                      name: filters
-                                                                          .categories![index]
-                                                                          .subCategories![innerIndex]
-                                                                          .name,
-                                                                      icon: filters
-                                                                          .categories![index]
-                                                                          .subCategories![innerIndex]
-                                                                          .icon);
-                                                                  if (!isExpanded ||
-                                                                      add) {
-                                                                    if (prevChoosedOrAppliedFilterToAddToIt ==
-                                                                        null) {
-                                                                      prevChoosedOrAppliedFilterToAddToIt =
-                                                                          filter_model
-                                                                              .Filter();
-                                                                    }
+                                                                        .id,
+                                                                    name: filters
+                                                                        .categories![index]
+                                                                        .subCategories![innerIndex]
+                                                                        .name,
+                                                                    icon: filters
+                                                                        .categories![index]
+                                                                        .subCategories![innerIndex]
+                                                                        .icon);
+                                                                if (!isExpanded ||
+                                                                    add) {
+                                                                  if (prevChoosedOrAppliedFilterToAddToIt ==
+                                                                      null) {
                                                                     prevChoosedOrAppliedFilterToAddToIt =
-                                                                        prevChoosedOrAppliedFilterToAddToIt
-                                                                            .copyWithSaveOtherField(
-                                                                            categories: prevChoosedOrAppliedFilterToAddToIt
-                                                                                .categories
-                                                                                .isNullOrEmpty
-                                                                                ? [
-                                                                              category
-                                                                            ]
-                                                                                : [
-                                                                              ...prevChoosedOrAppliedFilterToAddToIt
-                                                                                  .categories!,
-                                                                              category
-                                                                            ]);
-                                                                    if (!isExpanded) {
-                                                                      homeBloc
-                                                                          .add(
-                                                                          GetProductsWithFiltersEvent(
-                                                                              boutiqueSlug: widget
-                                                                                  .boutiqueSlug,
-                                                                              filtersAppliedByUser: filter_model
-                                                                                  .GetProductFiltersModel(
-                                                                                  filters: prevChoosedOrAppliedFilterToAddToIt),
-                                                                              category: widget
-                                                                                  .category,
-                                                                              offset: 1));
-                                                                    } else {
-                                                                      homeBloc
-                                                                          .add(
-                                                                          ChangeSelectedFiltersEvent(
-                                                                            category: widget
-                                                                                .category,
+                                                                        filter_model
+                                                                            .Filter();
+                                                                  }
+                                                                  prevChoosedOrAppliedFilterToAddToIt =
+                                                                      prevChoosedOrAppliedFilterToAddToIt
+                                                                          .copyWithSaveOtherField(
+                                                                          categories: prevChoosedOrAppliedFilterToAddToIt
+                                                                              .categories
+                                                                              .isNullOrEmpty
+                                                                              ? [
+                                                                            category
+                                                                          ]
+                                                                              : [
+                                                                            ...prevChoosedOrAppliedFilterToAddToIt
+                                                                                .categories!,
+                                                                            category
+                                                                          ]);
+                                                                  if (!isExpanded) {
+                                                                    homeBloc
+                                                                        .add(
+                                                                        GetProductsWithFiltersEvent(
                                                                             boutiqueSlug: widget
                                                                                 .boutiqueSlug,
-                                                                            filtersChoosedByUser: filter_model
+                                                                            filtersAppliedByUser: filter_model
                                                                                 .GetProductFiltersModel(
                                                                                 filters: prevChoosedOrAppliedFilterToAddToIt),
-                                                                          ));
-                                                                    }
-                                                                    return;
+                                                                            category: widget
+                                                                                .category,
+                                                                            offset: 1));
                                                                   } else {
-                                                                    prevChoosedOrAppliedFilterToAddToIt!
-                                                                        .categories!
-                                                                        .removeWhere(
-                                                                        ((
-                                                                            element) =>
-                                                                        element
-                                                                            .id ==
-                                                                            filters
-                                                                                .categories![index]
-                                                                                .subCategories![innerIndex]
-                                                                                .id));
-                                                                    bool
-                                                                    mustDeleteParentCategory =
-                                                                    !prevChoosedOrAppliedFilterToAddToIt
-                                                                        .categories!
-                                                                        .any(((
-                                                                        element) =>
-                                                                        filters
-                                                                            .categories![index]
-                                                                            .subCategories!
-                                                                            .any((
-                                                                            sub) =>
-                                                                        sub
-                                                                            .id ==
-                                                                            element
-                                                                                .id)));
-                                                                    if (mustDeleteParentCategory) {
-                                                                      prevChoosedOrAppliedFilterToAddToIt
-                                                                          .categories!
-                                                                          .removeWhere(
-                                                                          ((
-                                                                              element) =>
-                                                                          element
-                                                                              .id ==
-                                                                              filters
-                                                                                  .categories![index]
-                                                                                  .id));
-                                                                    }
-                                                                    prevChoosedOrAppliedFilterToAddToIt =
-                                                                        prevChoosedOrAppliedFilterToAddToIt
-                                                                            .copyWithSaveOtherField(
-                                                                          categories: prevChoosedOrAppliedFilterToAddToIt
-                                                                              .categories,
-                                                                        );
                                                                     homeBloc
                                                                         .add(
                                                                         ChangeSelectedFiltersEvent(
@@ -562,18 +507,73 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                               filters: prevChoosedOrAppliedFilterToAddToIt),
                                                                         ));
                                                                   }
-                                                                },
-                                                                paddingValue: currentExpandedIndex ==
-                                                                    index
-                                                                    ? 5
-                                                                    : 0,
-                                                                borderColor:
-                                                                colorScheme
-                                                                    .white,
-                                                                isExpanded:
-                                                                currentExpandedIndex ==
-                                                                    index,
-                                                              )),
+                                                                  return;
+                                                                } else {
+                                                                  prevChoosedOrAppliedFilterToAddToIt!
+                                                                      .categories!
+                                                                      .removeWhere(
+                                                                      ((
+                                                                          element) =>
+                                                                      element
+                                                                          .id ==
+                                                                          filters
+                                                                              .categories![index]
+                                                                              .subCategories![innerIndex]
+                                                                              .id));
+                                                                  bool
+                                                                  mustDeleteParentCategory =
+                                                                  !prevChoosedOrAppliedFilterToAddToIt
+                                                                      .categories!
+                                                                      .any(((
+                                                                      element) =>
+                                                                      filters
+                                                                          .categories![index]
+                                                                          .subCategories!
+                                                                          .any((
+                                                                          sub) =>
+                                                                      sub.id ==
+                                                                          element
+                                                                              .id)));
+                                                                  if (mustDeleteParentCategory) {
+                                                                    prevChoosedOrAppliedFilterToAddToIt
+                                                                        .categories!
+                                                                        .removeWhere(
+                                                                        ((
+                                                                            element) =>
+                                                                        element
+                                                                            .id ==
+                                                                            filters
+                                                                                .categories![index]
+                                                                                .id));
+                                                                  }
+                                                                  prevChoosedOrAppliedFilterToAddToIt =
+                                                                      prevChoosedOrAppliedFilterToAddToIt
+                                                                          .copyWithSaveOtherField(
+                                                                        categories: prevChoosedOrAppliedFilterToAddToIt
+                                                                            .categories,
+                                                                      );
+                                                                  homeBloc.add(
+                                                                      ChangeSelectedFiltersEvent(
+                                                                        category: widget
+                                                                            .category,
+                                                                        boutiqueSlug: widget
+                                                                            .boutiqueSlug,
+                                                                        filtersChoosedByUser: filter_model
+                                                                            .GetProductFiltersModel(
+                                                                            filters: prevChoosedOrAppliedFilterToAddToIt),
+                                                                      ));
+                                                                }
+                                                              },
+                                                              paddingValue: currentExpandedIndex ==
+                                                                  index
+                                                                  ? 5
+                                                                  : 0,
+                                                              borderColor:
+                                                              colorScheme.white,
+                                                              isExpanded:
+                                                              currentExpandedIndex ==
+                                                                  index,
+                                                            )),
                                                   ),
                                                   ValueListenableBuilder<
                                                       bool>(
@@ -899,12 +899,13 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                   filters.colors ??
                                       [],
                                 )
-                                    : PriceFilter(
-                                  hideTitle: true,
-                                  lowerAndUpperBound:
-                                  lowerAndUpperBound!,
-                                  pricesFiltersRanges:
-                                  filters.prices!,
+                                    : PriceFiltersRangesList(
+                                  exchangeRate: exchangeRate,
+                                  boutiqueSlug: widget.boutiqueSlug,
+                                  currencySymbol: currencySymbol,
+                                  category: widget.category,
+                                  priceRanges:
+                                  filters.prices?.priceRanges ?? [],
                                 ),
                               ),
                             );
@@ -952,7 +953,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
             ),
             if (filters.prices != null)
               PriceFilter(
-                lowerAndUpperBound: lowerAndUpperBound!,
+                pricrRate: exchangeRate,
+                boutiqueSlug: widget.boutiqueSlug,
+                category: widget.category,
+                pricrSymbol:
+                currencySymbol,
                 pricesFiltersRanges: filters.prices!,
               ),
             if (!filters.attributes.isNullOrEmpty)
@@ -985,14 +990,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
             ),
             Column(
               children: [
-                ValueListenableBuilder<Tuple2<double, double>>(
-                    valueListenable: lowerAndUpperBound ??
-                        ValueNotifier(Tuple2(-1, -1)),
-                    builder: (context, choosedPrice, _) {
-                      return Container(
+                Container(
                         width: 1.sw,
-                        height: state.choosedFiltersByUser != null ||
-                            lowerAndUpperBound != null ? 55 : 0,
+                        height: state.choosedFiltersByUser != null ?  55
+                            : 0,
                         margin: EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
                             color: colorScheme.white,
@@ -1018,8 +1019,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             ),
                             Container(
                               width: 1.sw,
-                              height: state.choosedFiltersByUser != null ||
-                                  lowerAndUpperBound != null ? 30 : 0,
+                              height: state.choosedFiltersByUser != null
+                                  ? 30
+                                  : 0,
                               padding: EdgeInsets.only(left: 10),
                               decoration: BoxDecoration(
                                   color: Color(0xffEFEFEF),
@@ -1030,9 +1032,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             ),
                           ],
                         ),
-                      );
-                    }
-                ),
+                      ),
                 SizedBox(
                   height: 10,
                 ),
@@ -1095,17 +1095,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     []);
                               }
                               filter_model.Prices? prices;
-                              if (lowerAndUpperBound != null) {
-                                if (lowerAndUpperBound!.value.item1 !=
-                                    minPrice &&
-                                    lowerAndUpperBound!.value.item2 !=
-                                        maxPrice) {
-                                  prices = filter_model.Prices(
-                                      maxPrice: lowerAndUpperBound!.value.item2,
-                                      minPrice: lowerAndUpperBound!.value.item1,
-                                      currencySymbol: currencySymbol);
+                              if (state.choosedFiltersByUser?.filters?.prices != null) {
+                                  prices = state.choosedFiltersByUser!.filters!.prices;
                                 }
-                              }
                               widget.closeFilterPage.call();
                               homeBloc.add(GetProductsWithFiltersEvent(
                                 boutiqueSlug: widget.boutiqueSlug,
@@ -1240,8 +1232,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
         if (filters.brands.isNullOrEmpty &&
             filters.categories.isNullOrEmpty &&
             filters.prices == null &&
-            lowerAndUpperBound?.value.item1 == minPrice &&
-            lowerAndUpperBound?.value.item2 == maxPrice &&
             filters.colors.isNullOrEmpty &&
             filters.attributes.isNullOrEmpty) {
           return SizedBox.shrink();
@@ -1567,9 +1557,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                         },
                       )),
                 },
-                if (filters.prices != null ||
-                    lowerAndUpperBound?.value.item1 != minPrice ||
-                    lowerAndUpperBound?.value.item2 != minPrice) ...{
+                if (filters.prices != null) ...{
                   Center(child: FilterSelectedMark(width: 15, height: 15)),
                   SizedBox(
                     width: 10,
@@ -1602,9 +1590,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                           width: 5,
                         ),
                         MyTextWidget(
-                          '${filters.prices != null ? filters.prices!
-                              .currencySymbol.toString() : currencySymbol}' +
-                              ' ',
+                          '${currencySymbol} ',
                           maxLines: 1,
                           textAlign: TextAlign.center,
                           style: context.textTheme.caption?.rq.copyWith(
@@ -1613,9 +1599,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               height: 1.25),
                         ),
                         MyTextWidget(
-                          '${filters.prices != null ? filters.prices!.minPrice
-                              .toString() : lowerAndUpperBound!.value.item1}' +
-                              '/',
+                          '${(filters.prices!.minPrice! * exchangeRate).toStringAsFixed(2)
+                              .toString()} / ',
                           maxLines: 1,
                           textAlign: TextAlign.center,
                           style: context.textTheme.caption?.rq.copyWith(
@@ -1624,8 +1609,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               height: 1.25),
                         ),
                         MyTextWidget(
-                          '${filters.prices != null ? filters.prices!.maxPrice
-                              .toString() : lowerAndUpperBound!.value.item2}',
+                          '${(filters.prices!.maxPrice! * exchangeRate).toStringAsFixed(2)
+                              .toString()}',
                           maxLines: 1,
                           textAlign: TextAlign.center,
                           style: context.textTheme.caption?.rq.copyWith(

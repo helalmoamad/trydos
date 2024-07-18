@@ -36,7 +36,8 @@ class CartPage extends StatefulWidget {
   const CartPage();
 }
 
-final ValueNotifier<bool> changeCartCollection = ValueNotifier(false);
+final ValueNotifier<bool> changeCartCollection = ValueNotifier(true);
+final ValueNotifier<bool> changeCartCollections = ValueNotifier(false);
 
 class _CartPageState extends State<CartPage> {
   late HomeBloc homeBloc;
@@ -47,6 +48,7 @@ class _CartPageState extends State<CartPage> {
 
   @override
   void initState() {
+    changeCartCollection.value = true;
     appBloc = BlocProvider.of<AppBloc>(context);
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -64,7 +66,9 @@ class _CartPageState extends State<CartPage> {
             buildWhen: (previous, current) =>
                 previous.getCartItemsStatus != current.getCartItemsStatus ||
                 previous.cartCollection!.values !=
-                    current.cartCollection!.values,
+                    current.cartCollection!.values ||
+                previous.getCurrencyForCountryModel !=
+                    current.getCurrencyForCountryModel,
             builder: (context, state) {
               if (state.getCartItemsStatus == GetCartItemsStatus.failure &&
                   (state.cartCollection == null ||
@@ -98,11 +102,12 @@ class _CartPageState extends State<CartPage> {
                       totlaPrice + element.offerPrice! * element.quantity!;
                 });
               });
-
+              totlaPrice = totlaPrice *
+                  state.getCurrencyForCountryModel!.data!.currency!
+                      .exchangeRate!;
               return ValueListenableBuilder<bool>(
-                  valueListenable: changeCartCollection,
+                  valueListenable: changeCartCollections,
                   builder: (context, visible, _child) {
-                    print(count);
                     return Column(
                       children: [
                         Container(
@@ -189,7 +194,7 @@ class _CartPageState extends State<CartPage> {
                                               height: 1.33),
                                     ),
                                     Text(
-                                      "${totlaPrice} ",
+                                      "${totlaPrice.toStringAsFixed(2)} ",
                                       style: context.textTheme.subtitle1?.mr
                                           .copyWith(
                                               fontSize: 13,
@@ -198,7 +203,7 @@ class _CartPageState extends State<CartPage> {
                                               height: 1.33),
                                     ),
                                     Text(
-                                      "${state.cartCollection != null ? state.cartCollection!.values.first[0].offerPriceFormatted!.split(" ")[1] : ""} ",
+                                      "${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""} ",
                                       style: context.textTheme.subtitle1?.la
                                           .copyWith(
                                               fontSize: 13,
@@ -232,7 +237,9 @@ class _CartPageState extends State<CartPage> {
                                   price = price +
                                       element.offerPrice! * element.quantity!;
                                 });
-
+                                price = price *
+                                    state.getCurrencyForCountryModel!.data!
+                                        .currency!.exchangeRate!;
                                 return Column(
                                   children: [
                                     InkWell(
@@ -240,7 +247,8 @@ class _CartPageState extends State<CartPage> {
                                         indexs = index;
                                         count = state.cartCollection!.keys
                                             .toList()[index];
-
+                                        changeCartCollections.value =
+                                            !changeCartCollections.value;
                                         changeCartCollection.value =
                                             !changeCartCollection.value;
                                       },
@@ -302,7 +310,7 @@ class _CartPageState extends State<CartPage> {
                                                             height: 1.33),
                                                   ),
                                                   Text(
-                                                    " ${price}",
+                                                    " ${price.toStringAsFixed(2)}",
                                                     style: context
                                                         .textTheme.subtitle1?.mr
                                                         .copyWith(
@@ -313,7 +321,7 @@ class _CartPageState extends State<CartPage> {
                                                             height: 1.33),
                                                   ),
                                                   Text(
-                                                    " ${state.getCartShippingItemsModel!.data!.totalCashFormated!.split(" ")[1]}",
+                                                    " ${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""}",
                                                     style: context
                                                         .textTheme.subtitle1?.la
                                                         .copyWith(
@@ -411,7 +419,7 @@ class _CartPageState extends State<CartPage> {
                                                                                 children: [
                                                                                   AppElevatedButton(
                                                                                     onPressed: () {
-                                                                                      homeBloc.add(UpdateItemInCartEvent(currentSize: state.cartCollection![count]![index].variations![0].size ?? "", colorName: state.cartCollection![count]![index].variations![0].color ?? "", productId: state.cartCollection![count]![index].productId.toString(), quantity: int.tryParse(quantityController.text)!, thumbnail: state.cartCollection![count]![index].thumbnail ?? "", cartId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
+                                                                                      homeBloc.add(UpdateItemInCartEvent(currentSize: !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].size ?? "" : "", colorName: !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].color ?? "" : "", productId: state.cartCollection![count]![index].productId.toString(), quantity: int.tryParse(quantityController.text)!, image: state.cartCollection![count]![index].image ?? "", cartId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
                                                                                       Navigator.pop(context);
                                                                                     },
                                                                                     text: "Yes",
@@ -450,7 +458,7 @@ class _CartPageState extends State<CartPage> {
                                                                           children: [
                                                                             AppElevatedButton(
                                                                               onPressed: () {
-                                                                                homeBloc.add(RemoveItemFormCartEvent(thumbnail: state.cartCollection![count]![index].thumbnail ?? '', currentSize: state.cartCollection![count]![index].variations![0].size ?? "", ColoName: state.cartCollection![count]![index].variations![0].color ?? "", productId: state.cartCollection![count]![index].productId.toString(), itemId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
+                                                                                homeBloc.add(RemoveItemFormCartEvent(image: state.cartCollection![count]![index].image ?? '', currentSize: !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].size ?? "" : "", ColoName: !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].color ?? "" : "", productId: state.cartCollection![count]![index].productId.toString(), itemId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
                                                                                 Navigator.pop(context);
                                                                               },
                                                                               text: "Yes",
@@ -481,7 +489,7 @@ class _CartPageState extends State<CartPage> {
                                                                             .cartCollection![count]![index]
                                                                             .boutique!
                                                                             .id!,
-                                                                        productItem: state.productITemForCart[state
+                                                                        productItem: state.productITemForCart![state
                                                                             .cartCollection![count]![index]
                                                                             .productId
                                                                             .toString()]!,
@@ -566,7 +574,7 @@ class _CartPageState extends State<CartPage> {
                                                                               BoxFit.cover,
                                                                           imageUrl: state
                                                                               .cartCollection![count]![index]
-                                                                              .thumbnail,
+                                                                              .image,
                                                                           width:
                                                                               110.w,
                                                                           height:
@@ -723,7 +731,7 @@ class _CartPageState extends State<CartPage> {
                                                                           Row(
                                                                         children: [
                                                                           Text(
-                                                                            (state.cartCollection![count]![index].priceNum! * quantity).toString(),
+                                                                            (state.cartCollection![count]![index].price! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2),
                                                                             style: context.textTheme.subtitle1?.ra.copyWith(
                                                                                 decorationColor: Color(0xffC4C2C2),
                                                                                 fontSize: 18,
@@ -735,7 +743,7 @@ class _CartPageState extends State<CartPage> {
                                                                                 5,
                                                                           ),
                                                                           Text(
-                                                                              "${state.cartCollection![count]![index].offerPrice! * quantity}",
+                                                                              "${(state.cartCollection![count]![index].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2)}",
                                                                               style: context.textTheme.subtitle1?.br.copyWith(
                                                                                 decorationColor: Color(0xff505050),
                                                                                 fontSize: 18,
@@ -750,10 +758,8 @@ class _CartPageState extends State<CartPage> {
                                                                     Positioned(
                                                                       child:
                                                                           Text(
-                                                                        state
-                                                                            .cartCollection![count]![index]
-                                                                            .offerPriceFormatted!
-                                                                            .split(" ")[1],
+                                                                        state.getCurrencyForCountryModel!.data!.currency!.symbol ??
+                                                                            "",
                                                                         style: context
                                                                             .textTheme
                                                                             .subtitle1

@@ -300,7 +300,7 @@ class _TabsBarState extends State<TabsBar> {
                                   builder: (context, state) {
                                     if (state.currentIndex != 4) {
                                       return SizedBox(
-                                        width: 1.sw - 50,
+                                        width: 1.sw ,
                                         child: Row(
                                             key: Key(WidgetsKey
                                                 .mainCategoriesTabKey),
