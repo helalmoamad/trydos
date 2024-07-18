@@ -419,7 +419,7 @@ class _CartPageState extends State<CartPage> {
                                                                                 children: [
                                                                                   AppElevatedButton(
                                                                                     onPressed: () {
-                                                                                      homeBloc.add(UpdateItemInCartEvent(currentSize: state.cartCollection![count]![index].variations![0].size ?? "", colorName: state.cartCollection![count]![index].variations![0].color ?? "", productId: state.cartCollection![count]![index].productId.toString(), quantity: int.tryParse(quantityController.text)!, thumbnail: state.cartCollection![count]![index].thumbnail ?? "", cartId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
+                                                                                      homeBloc.add(UpdateItemInCartEvent(currentSize: !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].size ?? "" : "", colorName: !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].color ?? "" : "", productId: state.cartCollection![count]![index].productId.toString(), quantity: int.tryParse(quantityController.text)!, image: state.cartCollection![count]![index].image ?? "", cartId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
                                                                                       Navigator.pop(context);
                                                                                     },
                                                                                     text: "Yes",
@@ -458,7 +458,7 @@ class _CartPageState extends State<CartPage> {
                                                                           children: [
                                                                             AppElevatedButton(
                                                                               onPressed: () {
-                                                                                homeBloc.add(RemoveItemFormCartEvent(thumbnail: state.cartCollection![count]![index].thumbnail ?? '', currentSize: state.cartCollection![count]![index].variations![0].size ?? "", ColoName: state.cartCollection![count]![index].variations![0].color ?? "", productId: state.cartCollection![count]![index].productId.toString(), itemId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
+                                                                                homeBloc.add(RemoveItemFormCartEvent(image: state.cartCollection![count]![index].image ?? '', currentSize: !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].size ?? "" : "", ColoName: !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].color ?? "" : "", productId: state.cartCollection![count]![index].productId.toString(), itemId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
                                                                                 Navigator.pop(context);
                                                                               },
                                                                               text: "Yes",
@@ -574,7 +574,7 @@ class _CartPageState extends State<CartPage> {
                                                                               BoxFit.cover,
                                                                           imageUrl: state
                                                                               .cartCollection![count]![index]
-                                                                              .thumbnail,
+                                                                              .image,
                                                                           width:
                                                                               110.w,
                                                                           height:
@@ -731,7 +731,7 @@ class _CartPageState extends State<CartPage> {
                                                                           Row(
                                                                         children: [
                                                                           Text(
-                                                                            (state.cartCollection![count]![index].priceNum ?? 0 * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2),
+                                                                            (state.cartCollection![count]![index].price! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2),
                                                                             style: context.textTheme.subtitle1?.ra.copyWith(
                                                                                 decorationColor: Color(0xffC4C2C2),
                                                                                 fontSize: 18,

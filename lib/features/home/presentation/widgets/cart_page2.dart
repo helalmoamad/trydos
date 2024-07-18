@@ -41,7 +41,10 @@ class CartPage2 extends StatelessWidget {
         body: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.getCartItemsStatus != current.getCartItemsStatus ||
-              previous.cartCollection!.values != current.cartCollection!.values|| previous.getCurrencyForCountryModel!= current.getCurrencyForCountryModel,
+              previous.cartCollection!.values !=
+                  current.cartCollection!.values ||
+              previous.getCurrencyForCountryModel !=
+                  current.getCurrencyForCountryModel,
           builder: (context, state) {
             double totlaPrice = 0;
             state.cartCollection!.values.toList().forEach((element) {
@@ -350,27 +353,29 @@ class CartPage2 extends StatelessWidget {
                                                             AppElevatedButton(
                                                               onPressed: () {
                                                                 BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(
-                                                                    thumbnail:
-                                                                        state.cartCollection![count]![indexs].thumbnail ??
+                                                                    image:
+                                                                        state.cartCollection![count]![indexs].image ??
                                                                             "",
-                                                                    currentSize:
-                                                                        state.cartCollection![count]![indexs].variations![0].size ??
-                                                                            "",
-                                                                    colorName:
-                                                                        state.cartCollection![count]![indexs].variations![0].color ??
-                                                                            "",
-                                                                    productId: state.cartCollection![count]![indexs].productId
+                                                                    currentSize: !state.cartCollection![count]![indexs].variations.isNullOrEmpty
+                                                                        ? state.cartCollection![count]![indexs].variations![0].size ??
+                                                                            ""
+                                                                        : "",
+                                                                    colorName: !state
+                                                                            .cartCollection![count]![
+                                                                                indexs]
+                                                                            .variations
+                                                                            .isNullOrEmpty
+                                                                        ? state.cartCollection![count]![indexs].variations![0].color ??
+                                                                            ""
+                                                                        : "",
+                                                                    productId: state
+                                                                        .cartCollection![count]![
+                                                                            indexs]
+                                                                        .productId
                                                                         .toString(),
-                                                                    quantity: int.tryParse(
-                                                                        quantityController
-                                                                            .text)!,
-                                                                    cartId: state.cartCollection![count]![indexs].id
-                                                                        .toString(),
-                                                                    boutiqueId: state
-                                                                        .cartCollection![count]![indexs]
-                                                                        .boutique!
-                                                                        .id
-                                                                        .toString()));
+                                                                    quantity: int.tryParse(quantityController.text)!,
+                                                                    cartId: state.cartCollection![count]![indexs].id.toString(),
+                                                                    boutiqueId: state.cartCollection![count]![indexs].boutique!.id.toString()));
                                                                 Navigator.pop(
                                                                     context);
                                                               },
@@ -410,27 +415,28 @@ class CartPage2 extends StatelessWidget {
                                                       AppElevatedButton(
                                                         onPressed: () {
                                                           BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(
-                                                              thumbnail:
-                                                                  state.cartCollection![count]![indexs].thumbnail ??
-                                                                      '',
-                                                              currentSize:
-                                                                  state.cartCollection![count]![indexs].variations![0].size ??
-                                                                      "",
-                                                              ColoName:
-                                                                  state.cartCollection![count]![indexs].variations![0].color ??
-                                                                      "",
-                                                              productId: state
-                                                                  .cartCollection![count]![
-                                                                      indexs]
-                                                                  .productId
-                                                                  .toString(),
-                                                              itemId: state.cartCollection![count]![indexs].id
-                                                                  .toString(),
-                                                              boutiqueId: state
-                                                                  .cartCollection![count]![indexs]
-                                                                  .boutique!
-                                                                  .id
-                                                                  .toString()));
+                                                              image: state
+                                                                      .cartCollection![count]![
+                                                                          indexs]
+                                                                      .image ??
+                                                                  '',
+                                                              currentSize: !state
+                                                                      .cartCollection![count]![
+                                                                          indexs]
+                                                                      .variations
+                                                                      .isNullOrEmpty
+                                                                  ? state.cartCollection![count]![indexs].variations![0].size ??
+                                                                      ""
+                                                                  : "",
+                                                              ColoName: !state
+                                                                      .cartCollection![count]![indexs]
+                                                                      .variations
+                                                                      .isNullOrEmpty
+                                                                  ? state.cartCollection![count]![indexs].variations![0].color ?? ""
+                                                                  : "",
+                                                              productId: state.cartCollection![count]![indexs].productId.toString(),
+                                                              itemId: state.cartCollection![count]![indexs].id.toString(),
+                                                              boutiqueId: state.cartCollection![count]![indexs].boutique!.id.toString()));
                                                           Navigator.pop(
                                                               context);
                                                         },
@@ -489,7 +495,7 @@ class CartPage2 extends StatelessWidget {
                                               imageUrl: state
                                                   .cartCollection![count]![
                                                       indexs]
-                                                  .thumbnail,
+                                                  .image,
                                               radius: 15,
                                               imageFit: BoxFit.cover,
                                             ),
@@ -631,14 +637,13 @@ class CartPage2 extends StatelessWidget {
                                                                       onPressed:
                                                                           () {
                                                                         BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(
-                                                                            thumbnail: state.cartCollection![count]![indexs].thumbnail ??
+                                                                            image: state.cartCollection![count]![indexs].image ??
                                                                                 "",
-                                                                            currentSize: state.cartCollection![count]![indexs].variations![0].size ??
-                                                                                "",
-                                                                            colorName: state.cartCollection![count]![indexs].variations![0].color ??
-                                                                                "",
-                                                                            productId:
-                                                                                state.cartCollection![count]![indexs].productId.toString(),
+                                                                            currentSize: !state.cartCollection![count]![indexs].variations.isNullOrEmpty
+                                                                                ? state.cartCollection![count]![indexs].variations![0].size ?? ""
+                                                                                : "",
+                                                                            colorName: !state.cartCollection![count]![indexs].variations.isNullOrEmpty ? state.cartCollection![count]![indexs].variations![0].color ?? "" : "",
+                                                                            productId: state.cartCollection![count]![indexs].productId.toString(),
                                                                             quantity: int.tryParse(quantityController.text)!,
                                                                             cartId: state.cartCollection![count]![indexs].id.toString(),
                                                                             boutiqueId: state.cartCollection![count]![indexs].boutique!.id.toString()));
@@ -686,20 +691,20 @@ class CartPage2 extends StatelessWidget {
                                                               AppElevatedButton(
                                                                 onPressed: () {
                                                                   BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(
-                                                                      thumbnail:
-                                                                          state.cartCollection![count]![indexs].thumbnail ??
+                                                                      image:
+                                                                          state.cartCollection![count]![indexs].image ??
                                                                               '',
-                                                                      currentSize:
-                                                                          state.cartCollection![count]![indexs].variations![0].size ??
-                                                                              "",
-                                                                      ColoName:
-                                                                          state.cartCollection![count]![indexs].variations![0].color ??
-                                                                              "",
-                                                                      productId: state
-                                                                          .cartCollection![count]![
-                                                                              indexs]
-                                                                          .productId
-                                                                          .toString(),
+                                                                      currentSize: !state.cartCollection![count]![indexs].variations.isNullOrEmpty
+                                                                          ? state.cartCollection![count]![indexs].variations![0].size ??
+                                                                              ""
+                                                                          : "",
+                                                                      ColoName: !state.cartCollection![count]![indexs].variations.isNullOrEmpty
+                                                                          ? state.cartCollection![count]![indexs].variations![0].color ??
+                                                                              ""
+                                                                          : "",
+                                                                      productId:
+                                                                          state.cartCollection![count]![indexs].productId
+                                                                              .toString(),
                                                                       itemId: state.cartCollection![count]![indexs].id
                                                                           .toString(),
                                                                       boutiqueId: state
@@ -767,7 +772,7 @@ class CartPage2 extends StatelessWidget {
                                                     imageUrl: state
                                                         .cartCollection![
                                                             count]![indexs]
-                                                        .thumbnail,
+                                                        .image,
                                                     radius: 15,
                                                     imageFit: BoxFit.cover,
                                                   ),

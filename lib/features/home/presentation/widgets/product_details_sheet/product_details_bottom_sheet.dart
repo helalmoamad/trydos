@@ -527,7 +527,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               colorName: widget.currentColorName,
                               iconBoutique: widget.boutiqueIcon,
                               boutiqueId: 46,
-                              thumbnail: widget
+                              image: widget
                                       .productItem.syncColorImages.isNullOrEmpty
                                   ? widget.productItem.images![0].filePath!
                                   : widget

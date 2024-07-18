@@ -895,7 +895,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     if (!CurrentQuantity[key].isNullOrEmpty) {
       if (CurrentQuantity[key]![0] > 0) {
         add(UpdateItemInCartEvent(
-            thumbnail: event.thumbnail,
+            image: event.image,
             currentSize: currentSize,
             colorName: event.colorName,
             productId: event.products.id.toString(),
@@ -915,13 +915,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 "https://res.cloudinary.com/dtcmozf4d/image/upload/v1/boutiques/boutiques/icon/2024-07-09-668d640ad81e8.svg"),
         id: event.boutiqueId);
     Cart cart = Cart(
-      thumbnail: event.thumbnail,
+      image: event.image,
       boutique: boutiquesCart,
       offerPrice: event.products.offerPrice,
       offerPriceFormatted: event.products.offerPriceFormatted,
       name: event.products.name,
-      price: event.products.priceFormatted,
-      priceNum: event.products.price,
+      price: event.products.price,
       quantity: event.quantity,
       brand: brand,
       variations: [variation],
@@ -944,7 +943,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(state.copyWith(cartCollection: state.cartCollection));
 
     final response = await addItemToCartUseCase(AddITemToCartParams(
-        image: event.thumbnail.split("/").last,
+        image: event.image.split("/").last,
         choice_1: state.CurrentColorSizeForCart != null
             ? state.CurrentColorSizeForCart!["size"]
             : "",
@@ -956,7 +955,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       if (!isFailedTheFirstTime.contains('AddCartItemEvent')) {
         add(AddItemToCartEvent(
             colorName: event.colorName,
-            thumbnail: event.thumbnail,
+            image: event.image,
             products: event.products,
             choice_1: state.CurrentColorSizeForCart!["size"],
             color: event.color,
@@ -1003,7 +1002,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           for (int i = 0; i < event.quantity!; i++) {
             addImagesToProductIdForCart[event.products.id.toString()]![
                     r.data!.idCart!]!
-                .add(event.thumbnail);
+                .add(event.image);
           }
           ;
         } else {
@@ -1012,7 +1011,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           for (int i = 0; i < event.quantity!; i++) {
             addImagesToProductIdForCart[event.products.id.toString()]![
                     r.data!.idCart!]!
-                .add(event.thumbnail);
+                .add(event.image);
           }
           ;
         }
@@ -1084,7 +1083,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           .isNullOrEmpty) {
         addImagesToProductIdForCart[event.productId]![int.parse(event.itemId)]!
             .removeWhere(
-          (element) => element == event.thumbnail,
+          (element) => element == event.image,
         );
       }
       emit(state.copyWith(
@@ -1108,7 +1107,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       UpdateItemInCartEvent event, Emitter<HomeState> emit) async {
     if (event.quantity == 0) {
       add(RemoveItemFormCartEvent(
-          thumbnail: event.thumbnail,
+          image: event.image,
           currentSize: event.currentSize,
           ColoName: event.colorName,
           itemId: event.cartId,
@@ -1175,11 +1174,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             .isNullOrEmpty) {
           addImagesToProductIdForCart[event.productId]![
                   int.parse(event.cartId)]!
-              .removeWhere((element) => element == event.thumbnail);
+              .removeWhere((element) => element == event.image);
           for (int i = 0; i < event.quantity; i++) {
             addImagesToProductIdForCart[event.productId]![
                     int.parse(event.cartId)]!
-                .add(event.thumbnail);
+                .add(event.image);
           }
           ;
         } else {
@@ -1188,7 +1187,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           for (int i = 0; i < event.quantity; i++) {
             addImagesToProductIdForCart[event.productId]![
                     int.parse(event.cartId)]!
-                .add(event.thumbnail);
+                .add(event.image);
           }
           ;
         }
