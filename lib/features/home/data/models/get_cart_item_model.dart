@@ -235,6 +235,7 @@ class Cart {
   final int? id;
   final int? customerId;
   final String? cartGroupId;
+  final String? image;
   final int? productId;
   final List<Choice>? choices;
   final List<VariationCart>? variations;
@@ -243,8 +244,8 @@ class Cart {
   final String? maxAllowedQty;
   final String? vendorName;
   final int? quantity;
-  final String? price;
-  final double? priceNum;
+  final double? price;
+
   final double? offerPrice;
   final String? offerPriceFormatted;
   final int? tax;
@@ -264,6 +265,7 @@ class Cart {
     this.customerId,
     this.cartGroupId,
     this.productId,
+    this.image,
     this.choices,
     this.variations,
     this.variant,
@@ -272,7 +274,6 @@ class Cart {
     this.vendorName,
     this.quantity,
     this.price,
-    this.priceNum,
     this.offerPrice,
     this.offerPriceFormatted,
     this.tax,
@@ -298,10 +299,10 @@ class Cart {
     String? variant,
     int? availableQuantity,
     String? maxAllowedQty,
+    String? image,
     String? vendorName,
     int? quantity,
-    String? price,
-    double? priceNum,
+    double? price,
     double? offerPrice,
     String? offerPriceFormatted,
     int? tax,
@@ -322,6 +323,7 @@ class Cart {
         cartGroupId: cartGroupId ?? this.cartGroupId,
         productId: productId ?? this.productId,
         choices: choices ?? this.choices,
+        image: image ?? this.image,
         variations: variations ?? this.variations,
         variant: variant ?? this.variant,
         availableQuantity: availableQuantity ?? this.availableQuantity,
@@ -329,7 +331,6 @@ class Cart {
         vendorName: vendorName ?? this.vendorName,
         quantity: quantity ?? this.quantity,
         price: price ?? this.price,
-        priceNum: priceNum ?? this.priceNum,
         offerPrice: offerPrice ?? this.offerPrice,
         offerPriceFormatted: offerPriceFormatted ?? this.offerPriceFormatted,
         tax: tax ?? this.tax,
@@ -364,8 +365,8 @@ class Cart {
         maxAllowedQty: json["max_allowed_qty"],
         vendorName: json["vendor_name"],
         quantity: json["quantity"],
-        price: json["price"].toString(),
-        priceNum: json["price_num"]?.toDouble(),
+        image: json["image"],
+        price: json["price"].toDouble(),
         offerPrice: json["offer_price"]?.toDouble(),
         offerPriceFormatted: json["offer_price_formatted"],
         tax: json["tax"],
@@ -387,6 +388,7 @@ class Cart {
 
   Map<String, dynamic> toJson() => {
         "id": id,
+        "image": image,
         "customer_id": customerId,
         "cart_group_id": cartGroupId,
         "product_id": productId,
@@ -402,7 +404,6 @@ class Cart {
         "vendor_name": vendorName,
         "quantity": quantity,
         "price": price,
-        "price_num": priceNum,
         "offer_price": offerPrice,
         "offer_price_formatted": offerPriceFormatted,
         "tax": tax,

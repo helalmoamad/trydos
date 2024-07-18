@@ -125,7 +125,7 @@ class ChangeSelectedFiltersEvent extends HomeEvent {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [filtersChoosedByUser , boutiqueSlug , category];
+  List<Object?> get props => [filtersChoosedByUser, boutiqueSlug, category];
 }
 
 class GetProductsWithFiltersEvent extends HomeEvent {
@@ -199,7 +199,7 @@ class GetCartItemEvent extends HomeEvent {
 class AddItemToCartEvent extends HomeEvent {
   final String? id;
   final String? color;
-  final String thumbnail;
+  final String image;
   final int? quantity;
   final String? iconBoutique;
   final String? choice_1;
@@ -212,7 +212,7 @@ class AddItemToCartEvent extends HomeEvent {
       this.quantity,
       this.iconBoutique,
       this.boutiqueId,
-      required this.thumbnail,
+      required this.image,
       required this.colorName,
       this.color,
       this.choice_1,
@@ -256,11 +256,11 @@ class RemoveItemFormCartEvent extends HomeEvent {
   final String productId;
   final String currentSize;
   final String ColoName;
-  final String thumbnail;
+  final String image;
   RemoveItemFormCartEvent({
     required this.itemId,
     required this.boutiqueId,
-    required this.thumbnail,
+    required this.image,
     required this.currentSize,
     required this.ColoName,
     required this.productId,
@@ -276,14 +276,14 @@ class UpdateItemInCartEvent extends HomeEvent {
   final String currentSize;
   final String productId;
   final String colorName;
-  final String thumbnail;
+  final String image;
   final String boutiqueId;
 
   UpdateItemInCartEvent({
     required this.quantity,
     required this.colorName,
     required this.cartId,
-    required this.thumbnail,
+    required this.image,
     required this.currentSize,
     required this.productId,
     required this.boutiqueId,
