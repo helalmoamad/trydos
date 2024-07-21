@@ -17,7 +17,16 @@ import '../../../../common/constant/design/assets_provider.dart';
 
 class SearchHistory extends StatefulWidget {
   List<String> items;
-  SearchHistory({super.key, required this.items});
+  final ValueNotifier<int> buildSearchResult;
+  final ValueNotifier<bool> hideTrendingAndHistory;
+  final TextEditingController controller;
+
+  SearchHistory(
+      {super.key,
+      required this.items,
+      required this.buildSearchResult,
+      required this.hideTrendingAndHistory,
+      required this.controller});
 
   @override
   State<SearchHistory> createState() => _SearchHistoryState();
@@ -132,11 +141,21 @@ class _SearchHistoryState extends State<SearchHistory> {
                             decoration: BoxDecoration(
                                 color: Color(0xffF8F8F8),
                                 borderRadius: BorderRadius.circular(10)),
-                            child: MyTextWidget(
-                              _items[index],
-                              textAlign: TextAlign.start,
-                              style: context.textTheme.bodyText2?.rq.copyWith(
-                                  height: 18 / 14, color: Color(0xff8D8D8D)),
+                            child: InkWell(
+                              onTap: () {
+                                widget.controller.text = _items[index];
+                                widget.buildSearchResult.value = 1;
+                                widget.hideTrendingAndHistory.value = false;
+                                BlocProvider.of<HomeBloc>(context).add(
+                                    GetSearchREsultEvent(
+                                        searchTitle: _items[index]));
+                              },
+                              child: MyTextWidget(
+                                _items[index],
+                                textAlign: TextAlign.start,
+                                style: context.textTheme.bodyText2?.rq.copyWith(
+                                    height: 18 / 14, color: Color(0xff8D8D8D)),
+                              ),
                             ),
                           ),
                           itemCount: _items.length,
@@ -166,6 +185,9 @@ class _SearchHistoryState extends State<SearchHistory> {
           );
         },
         child: SearchHistoryChip(
+          controller: widget.controller,
+          buildSearchResult: widget.buildSearchResult,
+          hideTrendingAndHistory: widget.hideTrendingAndHistory,
           text: text,
           onClickClose: () {
             final removedItem = _items[index];

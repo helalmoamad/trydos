@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_brand_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_category_model.dart';
@@ -267,5 +268,19 @@ class HomeRemoteDatasource {
     );
 
     return getCurrencyForCountry();
+  }
+
+  Future<GetAllowedCountriesModel> getAllowedCountries() {
+    GetClient<GetAllowedCountriesModel> verifyOtpSignIn =
+        GetClient<GetAllowedCountriesModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetAllowedCountriesModel>(
+        endpoint: MarketEndPoints.getAllowesdCountriesEP,
+        response: ResponseValue<GetAllowedCountriesModel>(
+            fromJson: (response) =>
+                GetAllowedCountriesModel.fromJson(response)),
+      ),
+    );
+    return verifyOtpSignIn();
   }
 }

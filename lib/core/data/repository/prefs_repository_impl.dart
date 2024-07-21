@@ -17,6 +17,12 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   String? get chatToken => _preferences.getString(PrefsKey.chatToken);
+  @override
+  Future<bool> setUserCountryIso(String? countryIso) =>
+      _preferences.setString(PrefsKey.currentCountry, countryIso!);
+
+  @override
+  String? get userCountryIso => _preferences.getString(PrefsKey.currentCountry);
 
   @override
   String? get marketToken => _preferences.getString(PrefsKey.marketToken);
@@ -455,10 +461,12 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  bool? get isTimerForOtpRunning => _preferences.getBool(PrefsKey.isTimerRunningId);
+  bool? get isTimerForOtpRunning =>
+      _preferences.getBool(PrefsKey.isTimerRunningId);
 
   @override
-  Future<bool> setTimerForOtpRunning(bool isRunning) => _preferences.setBool(PrefsKey.isTimerRunningId, isRunning);
+  Future<bool> setTimerForOtpRunning(bool isRunning) =>
+      _preferences.setBool(PrefsKey.isTimerRunningId, isRunning);
 
   @override
   Future<bool> removeStoriesName() => _preferences.remove(PrefsKey.storiesName);

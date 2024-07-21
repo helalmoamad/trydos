@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -139,10 +140,11 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.center,
                                                 children: [
-                                                  SvgNetworkWidget(
-                                                    svgUrl: state
+                                                  MyCachedNetworkImage(
+                                                    imageUrl: state
                                                         .brands![index].icon!,
-                                                    width: 15,
+                                                    imageFit: BoxFit.cover,
+                                                    width: 30,
                                                     height: 15,
                                                   ),
                                                 ],

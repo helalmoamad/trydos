@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -31,8 +32,92 @@ class _SearchResultState extends ThemeState<SearchResult> {
           p.getSearchResultStatus != c.getSearchResultStatus,
       builder: (context, state) {
         if (state.getSearchResultStatus == GetSearchResultStatus.loading) {
-          return Center(
-            child: TrydosLoader(),
+          return Column(
+            children: [
+              SizedBox(
+                height: 15,
+              ),
+              Padding(
+                padding: const EdgeInsetsDirectional.only(start: 20.0),
+                child: MyTextWidget(
+                  'find Product',
+                  style: textTheme.caption?.rq
+                      .copyWith(height: 15 / 12, color: Color(0xff505050)),
+                ),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              ScrollConfiguration(
+                behavior: CupertinoScrollBehavior(),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  physics: ClampingScrollPhysics(),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  itemBuilder: (ctx, index) => Stack(
+                    alignment: Alignment.centerLeft,
+                    children: [
+                      InkWell(
+                        child: Container(
+                            height: 50,
+                            width: 1.sw,
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                                color: Color(0xffF8F8F8),
+                                borderRadius: BorderRadius.circular(15)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 35,
+                                ),
+                                Flexible(
+                                  child: Shimmer.fromColors(
+                                    baseColor: Colors.grey[100]!,
+                                    highlightColor: Colors.grey[100]!,
+                                    child: Container(
+                                      width: 300.0,
+                                      height: 200.0,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                              ],
+                            )),
+                      ),
+                      Container(
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.grey[100]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: Container(
+                            width: 300.0,
+                            height: 200.0,
+                            color: Color(0xffF8F8F8),
+                          ),
+                        ),
+                        height: 50,
+                        width: 35,
+                        decoration: BoxDecoration(
+                          border:
+                              Border.all(color: Color(0xff388CFF), width: 0.3),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(15),
+                            topRight: Radius.circular(5),
+                            bottomLeft: Radius.circular(15),
+                            bottomRight: Radius.circular(5),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  itemCount: 5,
+                  separatorBuilder: (ctx, index) => SizedBox(
+                    height: 5,
+                  ),
+                ),
+              ),
+            ],
           );
         }
         if (state.searchResultModel == null) {
