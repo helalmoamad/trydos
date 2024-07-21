@@ -58,15 +58,14 @@ showMessage(
   if (kDebugMode || showInRelease) {
     Fluttertoast.cancel().then((value) => Fluttertoast.showToast(
           msg: message,
-          backgroundColor: Colors.white,
+          backgroundColor: backGroundColor ?? Colors.white,
           textColor: foreGroundColor ?? Colors.red,
           fontSize: 16,
           toastLength: timeShowing,
-          gravity: ToastGravity.BOTTOM,
+          gravity: ToastGravity.TOP,
         ));
   }
 }
-
 
 Future<void> callInProgressDialog(BuildContext context) async {
   await showDialog<String>(
@@ -74,33 +73,33 @@ Future<void> callInProgressDialog(BuildContext context) async {
       barrierColor: Colors.white.withOpacity(0),
       barrierDismissible: false,
       builder: (BuildContext context) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-        child: IntrinsicHeight(
-          child: AlertDialog(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(18.0))),
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const MyTextWidget(
-                  'The call is being set up...',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    letterSpacing: 0.5,
-                  ),
+            filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+            child: IntrinsicHeight(
+              child: AlertDialog(
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(18.0))),
+                content: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const MyTextWidget(
+                      'The call is being set up...',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    TrydosLoader()
+                  ],
                 ),
-                SizedBox(
-                  height: 15,
-                ),
-                TrydosLoader()
-              ],
+              ),
             ),
-          ),
-        ),
-      ));
+          ));
 }

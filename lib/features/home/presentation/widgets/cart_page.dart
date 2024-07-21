@@ -20,6 +20,7 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -42,7 +43,7 @@ final ValueNotifier<bool> changeCartCollections = ValueNotifier(false);
 class _CartPageState extends State<CartPage> {
   late HomeBloc homeBloc;
   late AppBloc appBloc;
-  String count = "";
+  String keyFirst = "";
   int indexs = 0;
   TextEditingController quantityController = TextEditingController();
 
@@ -94,7 +95,7 @@ class _CartPageState extends State<CartPage> {
                   child: TrydosLoader(),
                 );
               }
-              count = state.cartCollection!.keys.first;
+              keyFirst = state.cartCollection!.keys.first;
               double totlaPrice = 0;
               state.cartCollection!.values.toList().forEach((element) {
                 element.forEach((element) {
@@ -224,12 +225,17 @@ class _CartPageState extends State<CartPage> {
                         Container(
                           color: Color.fromARGB(255, 255, 255, 255),
                           child: Container(
-                            height: 650.h,
+                            height: 648.h,
                             child: ListView.builder(
                               padding: EdgeInsets.symmetric(vertical: 0),
                               shrinkWrap: true,
                               itemCount: state.cartCollection!.length,
                               itemBuilder: (context, index) {
+                                print("object6${state.cartCollection!.values.toList()[index][0].boutique!.icon!.filePath}" +
+                                    "*************************************************");
+                                print("object6${state.cartCollection!.values.toList()[index][0].boutique!.id}" +
+                                    "*************************************************");
+
                                 double price = 0;
                                 state.cartCollection!.values
                                     .toList()[index]
@@ -245,7 +251,7 @@ class _CartPageState extends State<CartPage> {
                                     InkWell(
                                       onTap: () {
                                         indexs = index;
-                                        count = state.cartCollection!.keys
+                                        keyFirst = state.cartCollection!.keys
                                             .toList()[index];
                                         changeCartCollections.value =
                                             !changeCartCollections.value;
@@ -266,18 +272,16 @@ class _CartPageState extends State<CartPage> {
                                           child: Row(
                                             children: [
                                               Container(
-                                                height: 15,
-                                                child: SvgPicture.network(
-                                                  state.cartCollection!.values
+                                                width: 40,
+                                                child: SvgNetworkWidget(
+                                                  svgUrl: state.cartCollection!
+                                                          .values
                                                           .toList()[index][0]
                                                           .boutique!
                                                           .icon!
                                                           .filePath ??
                                                       "",
-                                                  fit: BoxFit.cover,
-                                                  color: Color(
-                                                    0xff1A171B,
-                                                  ),
+                                                  height: 30,
                                                 ),
                                               ),
                                               Spacer(),
@@ -345,7 +349,6 @@ class _CartPageState extends State<CartPage> {
                                                 changeCartCollection,
                                             builder:
                                                 (context, visible, _child) {
-                                              print(count);
                                               return !visible
                                                   ? SizedBox.shrink()
                                                   : Container(
@@ -361,13 +364,13 @@ class _CartPageState extends State<CartPage> {
                                                       width: 420.w,
                                                       height: state
                                                                   .cartCollection![
-                                                                      count]!
+                                                                      keyFirst]!
                                                                   .length <
                                                               3
                                                           ? (150.h +
                                                               state
                                                                       .cartCollection![
-                                                                          count]!
+                                                                          keyFirst]!
                                                                       .length *
                                                                   2 *
                                                                   58.h)
@@ -378,13 +381,14 @@ class _CartPageState extends State<CartPage> {
                                                                 top: 0),
                                                         itemCount: state
                                                             .cartCollection![
-                                                                count]!
+                                                                keyFirst]!
                                                             .length,
                                                         itemBuilder:
                                                             (context, index) {
                                                           int quantity = state
                                                               .cartCollection![
-                                                                  count]![index]
+                                                                  keyFirst]![
+                                                                  index]
                                                               .quantity!;
 
                                                           return InkWell(
@@ -419,7 +423,7 @@ class _CartPageState extends State<CartPage> {
                                                                                 children: [
                                                                                   AppElevatedButton(
                                                                                     onPressed: () {
-                                                                                      homeBloc.add(UpdateItemInCartEvent(currentSize: !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].size ?? "" : "", colorName: !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].color ?? "" : "", productId: state.cartCollection![count]![index].productId.toString(), quantity: int.tryParse(quantityController.text)!, image: state.cartCollection![count]![index].image ?? "", cartId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
+                                                                                      homeBloc.add(UpdateItemInCartEvent(currentSize: !state.cartCollection![keyFirst]![index].variations.isNullOrEmpty ? state.cartCollection![keyFirst]![index].variations![0].size ?? "" : "", colorName: !state.cartCollection![keyFirst]![index].variations.isNullOrEmpty ? state.cartCollection![keyFirst]![index].variations![0].color ?? "" : "", productId: state.cartCollection![keyFirst]![index].productId.toString(), quantity: int.tryParse(quantityController.text)!, image: state.cartCollection![keyFirst]![index].image ?? "", cartId: state.cartCollection![keyFirst]![index].id.toString(), boutiqueId: state.cartCollection![keyFirst]![index].boutique!.id.toString()));
                                                                                       Navigator.pop(context);
                                                                                     },
                                                                                     text: "Yes",
@@ -458,7 +462,7 @@ class _CartPageState extends State<CartPage> {
                                                                           children: [
                                                                             AppElevatedButton(
                                                                               onPressed: () {
-                                                                                homeBloc.add(RemoveItemFormCartEvent(image: state.cartCollection![count]![index].image ?? '', currentSize: !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].size ?? "" : "", ColoName: !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].color ?? "" : "", productId: state.cartCollection![count]![index].productId.toString(), itemId: state.cartCollection![count]![index].id.toString(), boutiqueId: state.cartCollection![count]![index].boutique!.id.toString()));
+                                                                                homeBloc.add(RemoveItemFormCartEvent(image: state.cartCollection![keyFirst]![index].image ?? '', currentSize: !state.cartCollection![keyFirst]![index].variations.isNullOrEmpty ? state.cartCollection![keyFirst]![index].variations![0].size ?? "" : "", ColoName: !state.cartCollection![keyFirst]![index].variations.isNullOrEmpty ? state.cartCollection![keyFirst]![index].variations![0].color ?? "" : "", productId: state.cartCollection![keyFirst]![index].productId.toString(), itemId: state.cartCollection![keyFirst]![index].id.toString(), boutiqueId: state.cartCollection![keyFirst]![index].boutique!.id.toString()));
                                                                                 Navigator.pop(context);
                                                                               },
                                                                               text: "Yes",
@@ -481,16 +485,16 @@ class _CartPageState extends State<CartPage> {
                                                                       context,
                                                                       ProductDetailsPage(
                                                                         boutiqueIcon: state
-                                                                            .cartCollection![count]![index]
+                                                                            .cartCollection![keyFirst]![index]
                                                                             .boutique!
                                                                             .icon!
                                                                             .filePath!,
                                                                         boutiqueId: state
-                                                                            .cartCollection![count]![index]
+                                                                            .cartCollection![keyFirst]![index]
                                                                             .boutique!
                                                                             .id!,
                                                                         productItem: state.productITemForCart![state
-                                                                            .cartCollection![count]![index]
+                                                                            .cartCollection![keyFirst]![index]
                                                                             .productId
                                                                             .toString()]!,
                                                                       ));
@@ -499,7 +503,7 @@ class _CartPageState extends State<CartPage> {
                                                               margin: EdgeInsets
                                                                   .only(
                                                                       bottom: index ==
-                                                                              state.cartCollection![count]!.length - 1 //length
+                                                                              state.cartCollection![keyFirst]!.length - 1 //length
                                                                           ? 30
                                                                           : 0),
                                                               width: 1.sw,
@@ -517,14 +521,14 @@ class _CartPageState extends State<CartPage> {
                                                                           0,
                                                                           index == 0
                                                                               ? 0
-                                                                              : index == state.cartCollection![count]!.length - 1
+                                                                              : index == state.cartCollection![keyFirst]!.length - 1
                                                                                   ? -10
                                                                                   : 10),
-                                                                      blurRadius: index == state.cartCollection![count]!.length - 1 ? 0 : 5,
+                                                                      blurRadius: index == state.cartCollection![keyFirst]!.length - 1 ? 0 : 5,
                                                                       color: Color(0xffF3F3F3),
                                                                       spreadRadius: index == 0
                                                                           ? 5
-                                                                          : index == state.cartCollection![count]!.length - 1
+                                                                          : index == state.cartCollection![keyFirst]!.length - 1
                                                                               ? 0
                                                                               : 10),
                                                                 ],
@@ -573,7 +577,7 @@ class _CartPageState extends State<CartPage> {
                                                                           imageFit:
                                                                               BoxFit.cover,
                                                                           imageUrl: state
-                                                                              .cartCollection![count]![index]
+                                                                              .cartCollection![keyFirst]![index]
                                                                               .image,
                                                                           width:
                                                                               110.w,
@@ -602,9 +606,9 @@ class _CartPageState extends State<CartPage> {
                                                                                 50,
                                                                             height:
                                                                                 10,
-                                                                            child: state.cartCollection![count]![index].brand != null
+                                                                            child: state.cartCollection![keyFirst]![index].brand != null
                                                                                 ? SvgPicture.network(
-                                                                                    state.cartCollection![count]![index].brand!.image!,
+                                                                                    state.cartCollection![keyFirst]![index].brand!.image!,
                                                                                     fit: BoxFit.contain,
                                                                                     color: Color(
                                                                                       0xff1A171B,
@@ -624,7 +628,7 @@ class _CartPageState extends State<CartPage> {
                                                                             height:
                                                                                 16,
                                                                             child:
-                                                                                Text(state.cartCollection![count]![index].name ?? "", style: context.textTheme.subtitle1?.ra.copyWith(fontSize: 12, color: const Color(0xff505050), letterSpacing: 0.18, height: 1.33)),
+                                                                                Text(state.cartCollection![keyFirst]![index].name ?? "", style: context.textTheme.subtitle1?.ra.copyWith(fontSize: 12, color: const Color(0xff505050), letterSpacing: 0.18, height: 1.33)),
                                                                           ),
                                                                           SizedBox(
                                                                             height:
@@ -646,7 +650,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     width: 5,
                                                                                   ),
                                                                                   Text(
-                                                                                    " Composed Of ${state.cartCollection![count]![index].quantity} Piece",
+                                                                                    " Composed Of ${state.cartCollection![keyFirst]![index].quantity} Piece",
                                                                                     style: context.textTheme.subtitle1?.la.copyWith(fontWeight: FontWeight.w100, fontSize: 12, color: const Color(0xff707070), letterSpacing: 0.18, height: 1.33),
                                                                                   ),
                                                                                 ],
@@ -676,7 +680,7 @@ class _CartPageState extends State<CartPage> {
                                                                                   style: context.textTheme.subtitle1?.la.copyWith(fontWeight: FontWeight.normal, fontSize: 12, color: const Color(0xff505050), letterSpacing: 0.18, height: 1.33),
                                                                                 ),
                                                                                 Text(
-                                                                                  !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].color ?? "" : "",
+                                                                                  !state.cartCollection![keyFirst]![index].variations.isNullOrEmpty ? state.cartCollection![keyFirst]![index].variations![0].color ?? "" : "",
                                                                                   style: context.textTheme.subtitle1?.ra.copyWith(
                                                                                     fontSize: 13,
                                                                                     color: const Color((0xff505050)),
@@ -712,7 +716,7 @@ class _CartPageState extends State<CartPage> {
                                                                                   style: context.textTheme.subtitle1?.la.copyWith(fontWeight: FontWeight.normal, fontSize: 12, color: const Color(0xff505050), letterSpacing: 0.18, height: 1.33),
                                                                                 ),
                                                                                 Text(
-                                                                                  !state.cartCollection![count]![index].variations.isNullOrEmpty ? state.cartCollection![count]![index].variations![0].size ?? "" : "",
+                                                                                  !state.cartCollection![keyFirst]![index].variations.isNullOrEmpty ? state.cartCollection![keyFirst]![index].variations![0].size ?? "" : "",
                                                                                   style: context.textTheme.subtitle1?.ra.copyWith(
                                                                                     fontSize: 13,
                                                                                     color: const Color((0xff505050)),
@@ -731,7 +735,7 @@ class _CartPageState extends State<CartPage> {
                                                                           Row(
                                                                         children: [
                                                                           Text(
-                                                                            (state.cartCollection![count]![index].price! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2),
+                                                                            (state.cartCollection![keyFirst]![index].price! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2),
                                                                             style: context.textTheme.subtitle1?.ra.copyWith(
                                                                                 decorationColor: Color(0xffC4C2C2),
                                                                                 fontSize: 18,
@@ -743,39 +747,32 @@ class _CartPageState extends State<CartPage> {
                                                                                 5,
                                                                           ),
                                                                           Text(
-                                                                              "${(state.cartCollection![count]![index].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2)}",
+                                                                              "${(state.cartCollection![keyFirst]![index].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2)} ",
                                                                               style: context.textTheme.subtitle1?.br.copyWith(
                                                                                 decorationColor: Color(0xff505050),
                                                                                 fontSize: 18,
                                                                                 color: Color(0xff505050),
                                                                               )),
+                                                                          Positioned(
+                                                                            child:
+                                                                                Text(
+                                                                              state.getCurrencyForCountryModel!.data!.currency!.symbol ?? "",
+                                                                              style: context.textTheme.subtitle1?.ra.copyWith(
+                                                                                decorationColor: Color(0xffc4c2c2),
+                                                                                fontSize: 9,
+                                                                                color: Color(0xffc4c2c2),
+                                                                              ),
+                                                                            ),
+                                                                            bottom:
+                                                                                28,
+                                                                            right:
+                                                                                10,
+                                                                          )
                                                                         ],
                                                                       ),
                                                                       bottom:
-                                                                          25,
-                                                                      right: 30,
-                                                                    ),
-                                                                    Positioned(
-                                                                      child:
-                                                                          Text(
-                                                                        state.getCurrencyForCountryModel!.data!.currency!.symbol ??
-                                                                            "",
-                                                                        style: context
-                                                                            .textTheme
-                                                                            .subtitle1
-                                                                            ?.ra
-                                                                            .copyWith(
-                                                                          decorationColor:
-                                                                              Color(0xffc4c2c2),
-                                                                          fontSize:
-                                                                              9,
-                                                                          color:
-                                                                              Color(0xffc4c2c2),
-                                                                        ),
-                                                                      ),
-                                                                      bottom:
-                                                                          28,
-                                                                      right: 20,
+                                                                          15,
+                                                                      right: 10,
                                                                     ),
                                                                     Positioned(
                                                                       child:

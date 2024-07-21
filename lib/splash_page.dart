@@ -38,7 +38,10 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    authBloc = BlocProvider.of<AuthBloc>(context);
+
     homeBloc.add(GetMainCategoriesEvent());
+
     appBloc.add(ChangeTab(-1));
 
     BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());

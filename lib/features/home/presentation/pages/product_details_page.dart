@@ -113,7 +113,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         padding: const EdgeInsetsDirectional.only(end: 10.0),
                         child: SvgPicture.asset(AppAssets.bagsSvg),
                       ),
-                      LanguageService.rtl ? Spacer() : SizedBox.shrink() ,
+                      LanguageService.rtl ? Spacer() : SizedBox.shrink(),
                     ],
                     withShadow: false),
               ),
@@ -127,7 +127,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     p.currentSelectedColorForEveryProduct !=
                         c.currentSelectedColorForEveryProduct ||
                     p.cachedProductWithoutRelatedProductsModel !=
-                        c.cachedProductWithoutRelatedProductsModel,
+                        c.cachedProductWithoutRelatedProductsModel ||
+                    p.sizes != c.sizes,
                 builder: (context, state) {
                   String productId = widget.productItem.id.toString();
                   /*     if (state

@@ -35,7 +35,9 @@ class SearchPage extends StatefulWidget {
   const SearchPage(
       {super.key,
       required this.buildSearchResult,
-      required this.hideTrendingAndHistory});
+      required this.hideTrendingAndHistory,
+      required this.controller});
+  final TextEditingController controller;
 
   final ValueNotifier<int> buildSearchResult;
   final ValueNotifier<bool> hideTrendingAndHistory;
@@ -83,6 +85,11 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                     valueListenable:
                                         widget.hideTrendingAndHistory,
                                     child: SearchHistory(
+                                      controller: widget.controller,
+                                      buildSearchResult:
+                                          widget.buildSearchResult,
+                                      hideTrendingAndHistory:
+                                          widget.hideTrendingAndHistory,
                                       items: state.searchHistory ?? [],
                                     ),
                                     builder: (context, hide, child) {

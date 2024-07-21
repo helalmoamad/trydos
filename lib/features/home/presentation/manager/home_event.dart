@@ -201,7 +201,7 @@ class AddItemToCartEvent extends HomeEvent {
   final String? color;
   final String image;
   final int? quantity;
-  final String? iconBoutique;
+  final String? boutiqueIcon;
   final String? choice_1;
   final int? boutiqueId;
   final String colorName;
@@ -210,7 +210,7 @@ class AddItemToCartEvent extends HomeEvent {
   AddItemToCartEvent(
       {this.id,
       this.quantity,
-      this.iconBoutique,
+      this.boutiqueIcon,
       this.boutiqueId,
       required this.image,
       required this.colorName,
@@ -369,6 +369,13 @@ class GetBrandEvent extends HomeEvent {
 
 class GetCategoryEvent extends HomeEvent {
   GetCategoryEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class GetAllowedCountriesEvent extends HomeEvent {
+  GetAllowedCountriesEvent();
 
   @override
   List<Object?> get props => [];

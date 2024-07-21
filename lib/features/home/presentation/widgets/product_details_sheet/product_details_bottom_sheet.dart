@@ -525,8 +525,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         onFinishBuying: (quantity) {
                           homeBloc.add(AddItemToCartEvent(
                               colorName: widget.currentColorName,
-                              iconBoutique: widget.boutiqueIcon,
-                              boutiqueId: 46,
+                              boutiqueIcon: widget.boutiqueIcon,
+                              boutiqueId: widget.boutiqueId,
                               image: widget
                                       .productItem.syncColorImages.isNullOrEmpty
                                   ? widget.productItem.images![0].filePath!
