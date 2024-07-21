@@ -9,7 +9,7 @@ extension ScopeApi on String {
   String authFirebaseScope() => '$_api/${_currentVersion}/auth/firebase/$this';
 
   String authScope() => '$_api/${_currentVersion}/auth/$this';
-
+  String countryScope() => '$_api/${_currentVersion}/$this';
   String customerScope() => '$_api/${_currentVersion}/customer/$this';
   String productsScope() => '$_api/${_currentVersion}/mobile/products/$this';
   String productScope() => '$_api/${_currentVersion}/mobile/product/$this';
@@ -37,6 +37,7 @@ abstract class MarketEndPoints {
   static final registerEP = 'register'.authScope();
   static final registerGuestEP = 'register-guest'.authScope();
   static final loginEP = 'login'.phoneScope();
+  static final getAllowesdCountriesEP = "countries".countryScope();
   static final updateNameEP = 'update-name'.customerScope();
   static final getCustomerInfoEP = 'info'.customerScope();
   static final getStartingSettingsEP = 'startingSettings'.homeScope();

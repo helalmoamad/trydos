@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,8 +9,17 @@ import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/search/presentation/widgets/close_circle.dart';
 
 class SearchHistoryChip extends StatelessWidget {
+  final ValueNotifier<int> buildSearchResult;
+  final ValueNotifier<bool> hideTrendingAndHistory;
+  final TextEditingController controller;
+
   const SearchHistoryChip(
-      {super.key, required this.text, required this.onClickClose});
+      {super.key,
+      required this.text,
+      required this.onClickClose,
+      required this.buildSearchResult,
+      required this.hideTrendingAndHistory,
+      required this.controller});
 
   final String text;
   final void Function() onClickClose;
@@ -25,11 +35,16 @@ class SearchHistoryChip extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               GestureDetector(
-                onTap: () => BlocProvider.of<HomeBloc>(context)
-                    .add(GetSearchREsultEvent(searchTitle: text)),
+                onTap: () {
+                  controller.text = text;
+                  buildSearchResult.value = 1;
+                  hideTrendingAndHistory.value = false;
+                  BlocProvider.of<HomeBloc>(context)
+                      .add(GetSearchREsultEvent(searchTitle: text));
+                },
                 child: Container(
                   height: 28,
-                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
                       color: Color(0xffF8F8F8),
                       borderRadius: BorderRadius.circular(10)),
@@ -50,8 +65,8 @@ class SearchHistoryChip extends StatelessWidget {
           GestureDetector(
             onTap: onClickClose,
             child: Container(
-              width: 40,
-              height: 40,
+              width: 12,
+              height: 12,
               color: Colors.transparent, // don't remove it
               child: Align(
                 alignment: Alignment.centerRight,

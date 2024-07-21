@@ -7,6 +7,7 @@ import 'package:trydos/features/authentication/data/models/send_otp_response_mod
 import 'package:trydos/features/authentication/data/models/verify_guest_phone_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_brand_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_category_model.dart';
@@ -147,4 +148,10 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getSearchResult(params));
   */
+
+  @override
+  Future<Either<Failure, GetAllowedCountriesModel>> getAllowCountries() {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getAllowedCountries());
+  }
 }

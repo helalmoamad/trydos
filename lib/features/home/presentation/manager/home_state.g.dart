@@ -65,10 +65,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           .toList(),
       productITemForCart:
           (json['productITemForCart'] as Map<String, dynamic>?)?.map(
-                (k, e) =>
-                    MapEntry(k, Products.fromJson(e as Map<String, dynamic>)),
-              ) ??
-              const {},
+        (k, e) => MapEntry(k, Products.fromJson(e as Map<String, dynamic>)),
+      ),
       getCartShippingItemsModel: json['getCartShippingItemsModel'] == null
           ? null
           : GetCartShippingItemsModel.fromJson(
@@ -156,6 +154,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       searchHistory: (json['searchHistory'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      getAllowedCountriesModel: json['getAllowedCountriesModel'] == null
+          ? null
+          : GetAllowedCountriesModel.fromJson(
+              json['getAllowedCountriesModel'] as Map<String, dynamic>),
       getCurrencyForCountryModel: json['getCurrencyForCountryModel'] == null
           ? null
           : GetCurrencyForCountryModel.fromJson(
@@ -230,6 +232,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getProductListingWithFiltersPaginationModels?.toJson(
         (value) => value.toJson(),
       ),
+      'getAllowedCountriesModel': instance.getAllowedCountriesModel?.toJson(),
       'getProductFiltersModel': instance.getProductFiltersModel?.toJson(),
       'appliedFiltersByUser': instance.appliedFiltersByUser?.toJson(),
       'choosedFiltersByUser': instance.choosedFiltersByUser?.toJson(),

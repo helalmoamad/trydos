@@ -28,6 +28,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_brand_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_category_usecase.dart';
@@ -81,6 +82,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getCommentForProductUseCase,
     this.getHomeBoutiqesUseCase,
     this.getProductFiltersUseCase,
+    this.getAllowedCountryUseCase,
     this.getWidthAndHeightUseCase,
     this.getProductDetailWithoutRelatedProductsUseCase,
     this.getStartingSettingsUseCase,
@@ -124,6 +126,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent>(
       _onAddSelectedBoutiqueSlugsForSearchEvent,
     );
+    on<GetAllowedCountriesEvent>(_onGetAllowedCountriesEvent,
+        transformer: throttleDroppable(throttleDuration));
 
     on<GetStartingSettingsEvent>(_onGetStartingSettingsEvent,
         transformer: throttleDroppable(throttleDuration));
@@ -175,6 +179,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetProductDetailWithoutRelatedProductsUseCase
       getProductDetailWithoutRelatedProductsUseCase;
   final GetBrandUseCase getBrandUseCase;
+
   final GetCategoryUseCase getCategoryUseCase;
   final GetProductsWithFiltersUseCase getProductsWithFiltersUseCase;
   final RemoveItemToCartUseCase removeItemToCartUseCase;
@@ -183,6 +188,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetProductsWithoutFiltersUseCase getProductsWithoutFiltersUseCase;
   final AddItemToCartUseCase addItemToCartUseCase;
   final UpdateItemInCartUseCase updateItemInCartUseCase;
+  final GetAllowedCountryUseCase getAllowedCountryUseCase;
 
   //final Smartlook smartLook = Smartlook.instance;
 
@@ -696,12 +702,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       Emitter<HomeState> emit) async {
     //  if (state.cachedProductWithoutRelatedProductsModel
     //      .containsKey(event.productId)) return;
-    if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-            GetProductDetailWithoutSimilarRelatedProductsStatus.success &&
-        state.cachedProductWithoutRelatedProductsModel[event.productId!] !=
-            null) {
-      return;
-    }
+
     emit(state.copyWith(
         getProductDetailWithoutSimilarRelatedProductsStatus:
             GetProductDetailWithoutSimilarRelatedProductsStatus.loading));
@@ -910,10 +911,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     VariationCart variation = VariationCart(
         color: event.colorName, size: state.CurrentColorSizeForCart!["size"]);
     BoutiquesCart boutiquesCart = BoutiquesCart(
-        icon: IconCart(
-            filePath:
-                "https://res.cloudinary.com/dtcmozf4d/image/upload/v1/boutiques/boutiques/icon/2024-07-09-668d640ad81e8.svg"),
-        id: event.boutiqueId);
+        icon: IconCart(filePath: event.boutiqueIcon), id: event.boutiqueId);
     Cart cart = Cart(
       image: event.image,
       boutique: boutiquesCart,
@@ -969,7 +967,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
       emit(state.copyWith(cartCollection: state.cartCollection));
 
-      showMessage(l.message);
+      showMessage(
+        l.message,
+        foreGroundColor: Colors.white,
+        backGroundColor: Colors.black,
+      );
     }, (r) {
       if (r.data == null || r.data == "") {
         state.cartCollection![event.boutiqueId.toString()]!.remove(cart);
@@ -978,7 +980,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
         emit(state.copyWith(cartCollection: state.cartCollection));
         showMessage(r.message!,
-            foreGroundColor: Colors.green,
+            foreGroundColor: Colors.white,
+            backGroundColor: Colors.black,
             showInRelease: true,
             timeShowing: Toast.LENGTH_SHORT);
         isFailedTheFirstTime.remove('AddCartItemEvent');
@@ -1032,7 +1035,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             productId: event.id!, product: event.products));
       }
       showMessage(r.message!,
-          foreGroundColor: Colors.green,
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
           showInRelease: true,
           timeShowing: Toast.LENGTH_SHORT);
       isFailedTheFirstTime.remove('AddCartItemEvent');
@@ -1073,7 +1077,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       state.cartCollection![event.boutiqueId]!.add(cart);
 
       emit(state.copyWith(cartCollection: state.cartCollection));
-      showMessage("Item Wan't Deleted");
+      showMessage(
+        "Item Wan't Deleted",
+        foreGroundColor: Colors.white,
+        backGroundColor: Colors.black,
+      );
     }, (r) {
       Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
           Map.from(state.addImagesToProductIdForCart);
@@ -1096,10 +1104,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           quantity: 0,
           productId: event.productId));
       isFailedTheFirstTime.remove('RemoveCartItemEvent');
-      showMessage("Item Was Deleted Successfly",
-          foreGroundColor: Colors.green,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_SHORT);
+
+      showMessage(
+        "Item Was Deleted successfuly",
+        foreGroundColor: Colors.white,
+        backGroundColor: Colors.black,
+      );
     });
   }
 
@@ -1143,7 +1153,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
       }).toList();
       emit(state.copyWith(cartCollection: state.cartCollection));
-      showMessage(l.message);
+      showMessage(
+        l.message,
+        foreGroundColor: Colors.white,
+        backGroundColor: Colors.black,
+      );
     }, (r) {
       if (r.data == null || r.data == "") {
         state.cartCollection![event.boutiqueId] =
@@ -1159,7 +1173,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           cartCollection: state.cartCollection,
         ));
         showMessage(r.message!,
-            foreGroundColor: Colors.green,
+            foreGroundColor: Colors.white,
+            backGroundColor: Colors.black,
             showInRelease: true,
             timeShowing: Toast.LENGTH_SHORT);
         isFailedTheFirstTime.remove('AddCartItemEvent');
@@ -1202,7 +1217,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             productId: event.productId));
         isFailedTheFirstTime.remove('UpdateCartItemEvent');
         showMessage(r.message!,
-            foreGroundColor: Colors.green,
+            foreGroundColor: Colors.white,
+            backGroundColor: Colors.black,
             showInRelease: true,
             timeShowing: Toast.LENGTH_SHORT);
       } else {
@@ -1218,7 +1234,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
         isFailedTheFirstTime.remove('UpdateCartItemEvent');
         showMessage(r.message!,
-            foreGroundColor: Colors.green,
+            foreGroundColor: Colors.white,
+            backGroundColor: Colors.black,
             showInRelease: true,
             timeShowing: Toast.LENGTH_SHORT);
       }
@@ -1365,6 +1382,23 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }, (r) {
       emit(state.copyWith(
         getCurrencyForCountryModel: r,
+      ));
+    });
+  }
+
+  FutureOr<void> _onGetAllowedCountriesEvent(
+      GetAllowedCountriesEvent event, Emitter<HomeState> emit) async {
+    final response = await getAllowedCountryUseCase(NoParams());
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('GetAllowCountryEvent')) {
+        add(GetAllowedCountriesEvent());
+        isFailedTheFirstTime.add('GetAllowCountryEvent');
+      }
+    }, (r) {
+      isFailedTheFirstTime.remove('GetAllowCountryEvent');
+
+      emit(state.copyWith(
+        getAllowedCountriesModel: r,
       ));
     });
   }

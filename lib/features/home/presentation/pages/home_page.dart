@@ -17,6 +17,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
@@ -49,7 +50,9 @@ class _HomePageState extends State<HomePage> {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetCartItemEvent());
+
     String selectedCategorySlug;
+    homeBloc.add(GetCurrencyForCountryEvent());
     homeBloc.add(GetHomeBoutiqesEvent(
         categorySlug: "Empty", offset: "1", getWithPagination: false));
     homeBloc.add(GetBrandEvent());

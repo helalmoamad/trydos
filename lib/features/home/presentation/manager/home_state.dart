@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
     as cart;
 
@@ -92,6 +93,7 @@ class HomeState {
     this.currentQuantityForCart,
     this.addImagesToProductIdForCart = const {},
     this.searchHistory,
+    this.getAllowedCountriesModel,
     this.getCurrencyForCountryModel,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
@@ -110,7 +112,7 @@ class HomeState {
   final GetProductFiltersStatus getProductFiltersStatus;
   final PaginationModel<product.Products>?
       getProductListingWithFiltersPaginationModels;
-
+  final GetAllowedCountriesModel? getAllowedCountriesModel;
   final get_filters.GetProductFiltersModel? getProductFiltersModel;
   final get_filters.GetProductFiltersModel? appliedFiltersByUser;
   final get_filters.GetProductFiltersModel? choosedFiltersByUser;
@@ -133,6 +135,7 @@ class HomeState {
       getHomeBoutiquesPaginationObjectByMainCategory;
   List<Story>? storiesForProduct;
   List<String>? sizes;
+
   List<Boutique>? boutiques;
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
@@ -159,6 +162,7 @@ class HomeState {
       final GetSearchResultStatus? getSearchResultStatus,
       final get_product_with_filter.GetProductListingWithFiltersModel?
           searchResultModel,
+      final GetAllowedCountriesModel? getAllowedCountriesModel,
       final GetCurrencyForCountryModel? getCurrencyForCountryModel,
       final GetCommentForProductStatus? getCommentForProductStatus,
       final GetCartItemsStatus? getCartItemsStatus,
@@ -272,6 +276,7 @@ class HomeState {
             getProductDetailWithoutRelatedProductsModel ??
                 this.getProductDetailWithoutRelatedProductsModel,
         boutiques: boutiques ?? this.boutiques,
+        getAllowedCountriesModel: getAllowedCountriesModel ?? this.getAllowedCountriesModel,
         getSearchResultStatus: getSearchResultStatus ?? this.getSearchResultStatus,
         searchResultModel: searchResultModel ?? this.searchResultModel,
         selectedBoutiqueBrandCategorySlugsForSearch: selectedBoutiqueBrandCategorySlugsForSearch ?? this.selectedBoutiqueBrandCategorySlugsForSearch);

@@ -30,9 +30,11 @@ class TabsBar extends StatefulWidget {
     Key? key,
     required this.buildSearchResult,
     required this.hideTrendingAndHistory,
+    required this.controller,
   }) : super(key: key);
   final ValueNotifier<int> buildSearchResult;
   final ValueNotifier<bool> hideTrendingAndHistory;
+  final TextEditingController controller;
 
   @override
   State<TabsBar> createState() => _TabsBarState();
@@ -41,7 +43,6 @@ class TabsBar extends StatefulWidget {
 class _TabsBarState extends State<TabsBar> {
   late AppBloc appBloc;
   late HomeBloc homeBloc;
-  final TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
@@ -57,7 +58,7 @@ class _TabsBarState extends State<TabsBar> {
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         widget.hideTrendingAndHistory.value =
-            controller.text.length > 0 ? true : false;
+            widget.controller.text.length > 0 ? true : false;
       }
     });
     super.didChangeDependencies();
@@ -139,10 +140,10 @@ class _TabsBarState extends State<TabsBar> {
                                         appBloc.add(
                                             HideBottomNavigationBar(false));
                                       },
-                                      textController: controller,
+                                      textController: widget.controller,
                                       focusNode: focusNode,
                                       onSuffixTap: () {
-                                        controller.text = "";
+                                        widget.controller.text = "";
                                         Future.delayed(
                                             Duration(milliseconds: 300), () {
                                           appBloc.add(ChangeBasePage(4));
@@ -300,7 +301,7 @@ class _TabsBarState extends State<TabsBar> {
                                   builder: (context, state) {
                                     if (state.currentIndex != 4) {
                                       return SizedBox(
-                                        width: 1.sw ,
+                                        width: 1.sw,
                                         child: Row(
                                             key: Key(WidgetsKey
                                                 .mainCategoriesTabKey),

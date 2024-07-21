@@ -7,6 +7,8 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
+import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_user_country_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/register_guest_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/send_otp_usecase.dart';
@@ -16,6 +18,7 @@ import 'package:trydos/features/authentication/domain/use_cases/update_name_usec
 import 'package:trydos/features/authentication/domain/use_cases/update_stories_user_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_guest_phone_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_signin_usecase.dart';
+import 'package:trydos/features/calls/data/models/agora_token_remote_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
@@ -101,6 +104,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final CreateUserUseCase createUserUseCase;
   final StoreFcmUseCase storeFcmUseCase;
   final SendOtpUseCase sendOtpUseCase;
+
   final VerifyOtpSignInUseCase verifyOtpSignInUseCase;
   final VerifyOtpSignUpUseCase verifyOtpSignUpUseCase;
   final VerifyGuestPhoneUseCase verifyGuestPhoneUseCase;
@@ -452,8 +456,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onGetUserCountryEvent(
       GetUserCountryEvent event, Emitter<AuthState> emit) async {
-    emit(state.copyWith(
-        getCustomerCountryStatus: GetCustomerCountryStatus.loading));
     final response = await getUserCountryUseCase(NoParams());
     response.fold((l) {
       emit(state.copyWith(
@@ -465,6 +467,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       isFailedTheFirstTime.remove('GetUserCountryEvent');
       _prefsRepository.setCountryIso(r.countryCode);
+      _prefsRepository.setUserCountryIso(r.countryCode);
       emit(state.copyWith(
           countryName: r.country,
           getCustomerCountryStatus: GetCustomerCountryStatus.success));
