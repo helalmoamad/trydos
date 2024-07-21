@@ -31,6 +31,7 @@ import '../../manager/home_bloc.dart';
 import '../../manager/home_event.dart';
 import '../../manager/home_state.dart';
 import 'color_list_filter.dart';
+import 'filters_loding_list.dart';
 import 'filters_normal_list.dart';
 
 class StackedFiltersList extends StatefulWidget {
@@ -88,7 +89,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
           state.getProductListingWithFiltersPaginationModels
               ?.paginationStatus ==
               PaginationStatus.loading) {
-        return Center(child: TrydosLoader());
+        return FiltersLoadingListPage(countOfListInPage: isExpanded ? 6 : 1,);
       }
       // if (state.getProductFiltersStatus == GetProductFiltersStatus.failure) {
       //   return Center(child: TryAgainWidget(tryAgain: () {
