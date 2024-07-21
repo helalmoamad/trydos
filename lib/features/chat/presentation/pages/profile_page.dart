@@ -355,6 +355,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           5.horizontalSpace,
                                           MyTextWidget(
+                                            key: Key(WidgetsKey
+                                                .imageCountInEachChatKey),
                                             state.imageCountInEachChat
                                                 .toString(),
                                             style: textTheme.caption?.lr
@@ -374,6 +376,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           5.horizontalSpace,
                                           MyTextWidget(
+                                            key: Key(WidgetsKey
+                                                .videoCountInEachChatKey),
                                             state.videoCountInEachChat
                                                 .toString(),
                                             style: textTheme.caption?.lr
@@ -393,6 +397,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           5.horizontalSpace,
                                           MyTextWidget(
+                                            key: Key(WidgetsKey
+                                                .fileCountInEachChatKey),
                                             state.fileCountInEachChat
                                                 .toString(),
                                             style: textTheme.caption?.lr

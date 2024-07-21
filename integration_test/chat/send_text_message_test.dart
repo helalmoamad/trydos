@@ -6,7 +6,6 @@ import 'package:trydos/features/authentication/presentation/pages/login_successf
 import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_pages.dart';
 import 'package:trydos/features/chat/presentation/pages/contacts_page.dart';
-import 'package:trydos/features/chat/presentation/pages/profile_page.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart' as app;
@@ -18,7 +17,7 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Go to chat section , choose new contact , send text message , show profile for the user , replay text message , forward text message , back and delete chat',
+    'Go to chat section , choose new contact , send text message , replay text message , forward text message , back and delete chat',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
@@ -107,41 +106,6 @@ void main() {
       await tester.pumpAndSettle();
       await Future.delayed(const Duration(seconds: 2));
 
-      /////////// show profile for the user ///////////
-      final Finder goToProfileButton = find.byKey(
-        Key(
-          WidgetsKey.goToProfileButtonKey,
-        ),
-      );
-      await Future.delayed(const Duration(seconds: 1));
-      await tester.tap(goToProfileButton);
-      await tester.pumpAndSettle();
-      //////////////////////////////
-      await GlobalTestFunctions.waitFor(tester, find.byType(ProfilePage));
-      //////////////////////////
-      await GlobalTestFunctions.findWidget(
-        tester: tester,
-        widgetType: ProfilePage,
-        successMessage: 'Find ProfilePage Success',
-        failedMessage: 'Find ProfilePage failed',
-      );
-      //////////////////////////
-      await Future.delayed(const Duration(seconds: 5));
-      final Finder backFromProfile = find.byKey(
-        Key(
-          WidgetsKey.backFromProfileKey,
-        ),
-      );
-      await tester.tap(backFromProfile);
-      await tester.pumpAndSettle();
-      //////////////////////////
-      await GlobalTestFunctions.findWidget(
-        tester: tester,
-        widgetType: SinglePageChat,
-        successMessage: 'Find SinglePageChat Success',
-        failedMessage: 'Find SinglePageChat failed',
-      );
-      //////////////////////////
       ///////////  Replay message  ////////////
       final Finder messageCardWidget =
           find.byKey(Key('${WidgetsKey.messageCardKey}0'));

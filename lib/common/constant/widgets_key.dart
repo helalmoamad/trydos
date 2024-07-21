@@ -44,4 +44,7 @@ class WidgetsKey {
   static const forwardedArrowKey = 'forwarded_arrow_key';
   static const goToProfileButtonKey = 'go_to_profile_button_key';
   static const backFromProfileKey = 'back_from_profile_key';
+  static const imageCountInEachChatKey = 'image_count_in_each_chat_key';
+  static const videoCountInEachChatKey = 'video_count_in_each_chat_key';
+  static const fileCountInEachChatKey = 'file_count_in_each_chat_key';
 }
