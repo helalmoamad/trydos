@@ -81,7 +81,6 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             HelperFunctions.slidingNavigation(
                 context,
                 ProductListingPage(
-                  boutiqueId: widget.boutniqe.id!,
                   boutiqueSlug: widget.boutniqe.slug ?? "",
                   boutiqueDescription: widget.boutniqe.description!,
                   boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
@@ -319,7 +318,6 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                             HelperFunctions.slidingNavigation(
                                 context,
                                 ProductListingPage(
-                                  boutiqueId: widget.boutniqe.id!,
                                   boutiqueSlug: widget.boutniqe.slug!,
                                   category: widget
                                       .boutniqe
@@ -455,25 +453,22 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                             HelperFunctions.slidingNavigation(
                                                 context,
                                                 ProductListingPage(
-                                                    boutiqueSlug:
-                                                        widget.boutniqe.slug!,
-                                                    category: widget
-                                                        .boutniqe
-                                                        .childCategoriesForProductIds![
-                                                            index]
-                                                        .categorySlug,
-                                                    boutiqueDescription: widget
-                                                        .boutniqe.description!,
-                                                    boutiqueFirstBanner: widget
-                                                        .boutniqe
-                                                        .banners![0]
-                                                        .filePath!,
-                                                    boutiqueIcon: widget
-                                                        .boutniqe
-                                                        .icon!
-                                                        .filePath!,
-                                                    boutiqueId:
-                                                        widget.boutniqe.id!));
+                                                  boutiqueSlug:
+                                                      widget.boutniqe.slug!,
+                                                  category: widget
+                                                      .boutniqe
+                                                      .childCategoriesForProductIds![
+                                                          index]
+                                                      .categorySlug,
+                                                  boutiqueDescription: widget
+                                                      .boutniqe.description!,
+                                                  boutiqueFirstBanner: widget
+                                                      .boutniqe
+                                                      .banners![0]
+                                                      .filePath!,
+                                                  boutiqueIcon: widget
+                                                      .boutniqe.icon!.filePath!,
+                                                ));
                                           },
                                           child: ProductItemCircle(
                                             index: index,

@@ -18,7 +18,6 @@ class _CountryDropdownState extends State<CountryDropdown> {
   String? selectedCountry;
   @override
   void initState() {
-    _prefsRepository.setCountryIso("");
     super.initState();
   }
 
@@ -39,7 +38,7 @@ class _CountryDropdownState extends State<CountryDropdown> {
           onChanged: (String? newValue) {
             setState(() {
               selectedCountry = newValue;
-              _prefsRepository.setCountryIso(newValue);
+              _prefsRepository.setUserChoosedCountryIso(newValue);
             });
           },
           buttonHeight: 40,

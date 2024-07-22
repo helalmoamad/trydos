@@ -10,12 +10,13 @@ abstract class PrefsRepository {
   String? get marketToken;
   String? get storiesToken;
   String? get countryIso;
-  String? get userCountryIso;
+  String? get userChoosedCountryIso;
   int? get fcmTokenId;
   String? get serverTime;
   int? get myChatId;
 
   int? get myStoriesId;
+  int? get userCountryIsAvailable;
 
   String? get myMarketId;
 
@@ -50,13 +51,13 @@ abstract class PrefsRepository {
   Future<bool> setTimerForOtpRunning(bool isRunning);
   Future<bool> setDuration(int duration);
   Future<bool> setCountryIso(String? countryIso);
-  Future<bool> setUserCountryIso(String? countryIso);
+  Future<bool> setUserChoosedCountryIso(String? countryIso);
 
   Future<bool> setVerificationId(String verificationId);
   Future<bool> setSessionId(String sessionId);
 
   Future<bool> setOtpCode(String otpToken);
-
+  Future<bool> setUserCountryIsAvailable(int userCountryAvailable);
   Future<bool> setChatToken(String token);
 
   Future<bool> setMarketToken(String token);

@@ -322,6 +322,20 @@ class GetSearchREsultEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class GetSearchListingResultEvent extends HomeEvent {
+  final String searchTitle;
+  final String boutiqueSlug;
+  final String CategorySlug;
+  GetSearchListingResultEvent({
+    required this.boutiqueSlug,
+    required this.CategorySlug,
+    required this.searchTitle,
+  });
+
+  @override
+  List<Object?> get props => [];
+}
+
 class AddSearchTextToHistoryEvent extends HomeEvent {
   final String searchTitle;
 

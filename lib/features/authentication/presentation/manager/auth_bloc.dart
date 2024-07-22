@@ -467,7 +467,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       isFailedTheFirstTime.remove('GetUserCountryEvent');
       _prefsRepository.setCountryIso(r.countryCode);
-      _prefsRepository.setUserCountryIso(r.countryCode);
+
       emit(state.copyWith(
           countryName: r.country,
           getCustomerCountryStatus: GetCustomerCountryStatus.success));

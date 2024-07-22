@@ -154,8 +154,6 @@ class _SearchResultState extends ThemeState<SearchResult> {
                         HelperFunctions.slidingNavigation(
                             context,
                             ProductDetailsPage(
-                              boutiqueIcon: "",
-                              boutiqueId: 39,
                               productItem: state
                                   .searchResultModel!.data!.products![index],
                             ));

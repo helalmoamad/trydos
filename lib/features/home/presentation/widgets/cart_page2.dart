@@ -451,8 +451,6 @@ class CartPage2 extends StatelessWidget {
                                                                         .slidingNavigation(
                                                                             context,
                                                                             ProductDetailsPage(
-                                                                              boutiqueIcon: state.cartCollection![keyFirst]![indexs].boutique!.icon!.filePath!,
-                                                                              boutiqueId: state.cartCollection![keyFirst]![indexs].boutique!.id!,
                                                                               productItem: state.productITemForCart![state.cartCollection![keyFirst]![indexs].productId.toString()]!,
                                                                             ));
                                                                   },
@@ -673,8 +671,6 @@ class CartPage2 extends StatelessWidget {
                                                                                 HelperFunctions.slidingNavigation(
                                                                                     context,
                                                                                     ProductDetailsPage(
-                                                                                      boutiqueIcon: state.cartCollection![keyFirst]![indexs].boutique!.icon!.filePath!,
-                                                                                      boutiqueId: state.cartCollection![keyFirst]![indexs].boutique!.id!,
                                                                                       productItem: state.productITemForCart![state.cartCollection![keyFirst]![indexs].productId.toString()]!,
                                                                                     ));
                                                                               },

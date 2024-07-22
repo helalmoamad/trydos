@@ -231,11 +231,6 @@ class _CartPageState extends State<CartPage> {
                               shrinkWrap: true,
                               itemCount: state.cartCollection!.length,
                               itemBuilder: (context, index) {
-                                print("object6${state.cartCollection!.values.toList()[index][0].boutique!.icon!.filePath}" +
-                                    "*************************************************");
-                                print("object6${state.cartCollection!.values.toList()[index][0].boutique!.id}" +
-                                    "*************************************************");
-
                                 double price = 0;
                                 state.cartCollection!.values
                                     .toList()[index]
@@ -484,15 +479,6 @@ class _CartPageState extends State<CartPage> {
                                                                   .slidingNavigation(
                                                                       context,
                                                                       ProductDetailsPage(
-                                                                        boutiqueIcon: state
-                                                                            .cartCollection![keyFirst]![index]
-                                                                            .boutique!
-                                                                            .icon!
-                                                                            .filePath!,
-                                                                        boutiqueId: state
-                                                                            .cartCollection![keyFirst]![index]
-                                                                            .boutique!
-                                                                            .id!,
                                                                         productItem: state.productITemForCart![state
                                                                             .cartCollection![keyFirst]![index]
                                                                             .productId
@@ -753,20 +739,15 @@ class _CartPageState extends State<CartPage> {
                                                                                 fontSize: 18,
                                                                                 color: Color(0xff505050),
                                                                               )),
-                                                                          Positioned(
-                                                                            child:
-                                                                                Text(
-                                                                              state.getCurrencyForCountryModel!.data!.currency!.symbol ?? "",
-                                                                              style: context.textTheme.subtitle1?.ra.copyWith(
-                                                                                decorationColor: Color(0xffc4c2c2),
-                                                                                fontSize: 9,
-                                                                                color: Color(0xffc4c2c2),
-                                                                              ),
+                                                                          Text(
+                                                                            state.getCurrencyForCountryModel!.data!.currency!.symbol ??
+                                                                                "",
+                                                                            style:
+                                                                                context.textTheme.subtitle1?.ra.copyWith(
+                                                                              decorationColor: Color(0xffc4c2c2),
+                                                                              fontSize: 9,
+                                                                              color: Color(0xffc4c2c2),
                                                                             ),
-                                                                            bottom:
-                                                                                28,
-                                                                            right:
-                                                                                10,
                                                                           )
                                                                         ],
                                                                       ),

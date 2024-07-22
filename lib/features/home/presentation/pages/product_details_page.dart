@@ -48,15 +48,13 @@ import '../widgets/product_stories_section/product_stories_card.dart';
 import '../widgets/product_details_body/buyers_camera_shots.dart';
 
 class ProductDetailsPage extends StatefulWidget {
-  ProductDetailsPage(
-      {super.key,
-      required this.productItem,
-      required this.boutiqueIcon,
-      required this.boutiqueId});
+  ProductDetailsPage({
+    super.key,
+    required this.productItem,
+  });
 
   final productListingModel.Products productItem;
-  final String boutiqueIcon;
-  final int boutiqueId;
+
   @override
   State<ProductDetailsPage> createState() => _ProductDetailsPageState();
 }
@@ -472,7 +470,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (previous, current) =>
                   previous.currentSelectedColorForEveryProduct !=
-                  current.currentSelectedColorForEveryProduct,
+                      current.currentSelectedColorForEveryProduct ||
+                  previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                      current
+                          .getProductDetailWithoutSimilarRelatedProductsStatus,
               builder: (context, state) {
                 String productId = widget.productItem.id.toString();
                 int currentSelectedColor =
@@ -498,8 +499,28 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   .color ??
                               ""
                           : "",
-                  boutiqueIcon: widget.boutiqueIcon,
-                  boutiqueId: widget.boutiqueId,
+                  boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[
+                              widget.productItem.id.toString()] !=
+                          null
+                      ? state
+                              .cachedProductWithoutRelatedProductsModel[
+                                  widget.productItem.id.toString()]!
+                              .product!
+                              .boutique!
+                              .icon!
+                              .filePath ??
+                          ""
+                      : "",
+                  boutiqueId: state.cachedProductWithoutRelatedProductsModel[
+                              widget.productItem.id.toString()] !=
+                          null
+                      ? state
+                          .cachedProductWithoutRelatedProductsModel[
+                              widget.productItem.id.toString()]!
+                          .product!
+                          .boutique!
+                          .id!
+                      : 0,
                   currentColorName: !widget
                               .productItem.syncColorImages.isNullOrEmpty &&
                           !widget.productItem.syncColorImages![0].images

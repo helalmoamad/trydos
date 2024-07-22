@@ -136,6 +136,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddItemToCartEvent>(
       _onAddItemToCartEvent,
     );
+    on<GetSearchListingResultEvent>(
+      _onGetSearchListingResultEventEvent,
+    );
 
     on<GetProductsWithFiltersEvent>(
       _onGetProductsWithFiltersEvent,
@@ -1269,6 +1272,32 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             searchText: event.searchTitle,
             boutiqueSlugs:
                 state.selectedBoutiqueBrandCategorySlugsForSearch["boutique"]));
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('GetSearchResultEvent')) {
+        add(GetSearchREsultEvent(searchTitle: event.searchTitle));
+        isFailedTheFirstTime.add('GetSearchResultEvent');
+      }
+      emit(
+          state.copyWith(getSearchResultStatus: GetSearchResultStatus.failure));
+    }, (r) {
+      isFailedTheFirstTime.remove('GetSearchResultEvent');
+
+      emit(state.copyWith(
+          searchResultModel: r,
+          getSearchResultStatus: GetSearchResultStatus.success));
+    });
+  }
+
+  FutureOr<void> _onGetSearchListingResultEventEvent(
+      GetSearchListingResultEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(getSearchResultStatus: GetSearchResultStatus.loading));
+    final response =
+        await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
+      categorySlugs: event.CategorySlug != "" ? [event.CategorySlug] : [],
+      searchText: event.searchTitle,
+      boutiqueSlugs: event.boutiqueSlug != "" ? [event.boutiqueSlug] : [],
+    ));
 
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetSearchResultEvent')) {
