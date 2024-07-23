@@ -125,8 +125,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     p.currentSelectedColorForEveryProduct !=
                         c.currentSelectedColorForEveryProduct ||
                     p.cachedProductWithoutRelatedProductsModel !=
-                        c.cachedProductWithoutRelatedProductsModel ||
-                    p.sizes != c.sizes,
+                        c.cachedProductWithoutRelatedProductsModel,
                 builder: (context, state) {
                   String productId = widget.productItem.id.toString();
                   /*     if (state
@@ -469,8 +468,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               )),
           BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (previous, current) =>
-                  previous.currentSelectedColorForEveryProduct !=
-                      current.currentSelectedColorForEveryProduct ||
+                  previous.currentSelectedColorForEveryProduct[
+                          widget.productItem.id.toString()] !=
+                      current.currentSelectedColorForEveryProduct[
+                          widget.productItem.id.toString()] ||
                   previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
                       current
                           .getProductDetailWithoutSimilarRelatedProductsStatus,
@@ -479,18 +480,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 int currentSelectedColor =
                     state.currentSelectedColorForEveryProduct[productId] ??
                         (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
-                String key = "${productId}" +
-                    "${!widget.productItem.syncColorImages.isNullOrEmpty && !widget.productItem.syncColorImages![0].images.isNullOrEmpty ? widget.productItem.colors![currentSelectedColor].name ?? "" : ""}" +
-                    "${state.CurrentColorSizeForCart != null ? state.CurrentColorSizeForCart!["size"] ?? "" : ""}";
-
                 return ProductDetailsBottomSheet(
+                  currentSize: state.CurrentColorSizeForCart != null
+                      ? state.CurrentColorSizeForCart!["size"] ?? ""
+                      : "",
                   addToBagButtonShapeNotifier: addToBagButtonShapeNotifier,
                   sizes: state.sizes ?? [],
-                  CurrentQuantity: state.currentQuantityForCart != null
-                      ? state.currentQuantityForCart![key].isNullOrEmpty
-                          ? 0
-                          : state.currentQuantityForCart![key]![0]
-                      : 0,
                   currentColornum:
                       !widget.productItem.syncColorImages.isNullOrEmpty &&
                               !widget.productItem.syncColorImages![0].images
@@ -503,23 +498,37 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               widget.productItem.id.toString()] !=
                           null
                       ? state
-                              .cachedProductWithoutRelatedProductsModel[
-                                  widget.productItem.id.toString()]!
-                              .product!
-                              .boutique!
-                              .icon!
-                              .filePath ??
-                          ""
+                                  .cachedProductWithoutRelatedProductsModel[
+                                      widget.productItem.id.toString()]!
+                                  .product!
+                                  .boutique !=
+                              null
+                          ? state
+                                  .cachedProductWithoutRelatedProductsModel[
+                                      widget.productItem.id.toString()]!
+                                  .product!
+                                  .boutique!
+                                  .icon!
+                                  .filePath ??
+                              ""
+                          : ""
                       : "",
                   boutiqueId: state.cachedProductWithoutRelatedProductsModel[
                               widget.productItem.id.toString()] !=
                           null
                       ? state
-                          .cachedProductWithoutRelatedProductsModel[
-                              widget.productItem.id.toString()]!
-                          .product!
-                          .boutique!
-                          .id!
+                                  .cachedProductWithoutRelatedProductsModel[
+                                      widget.productItem.id.toString()]!
+                                  .product!
+                                  .boutique !=
+                              null
+                          ? state
+                              .cachedProductWithoutRelatedProductsModel[
+                                  widget.productItem.id.toString()]!
+                              .product!
+                              .boutique!
+                              .id!
+                          : 0
                       : 0,
                   currentColorName: !widget
                               .productItem.syncColorImages.isNullOrEmpty &&

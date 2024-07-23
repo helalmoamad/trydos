@@ -44,6 +44,7 @@ import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_
 import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/remove_item_from_cart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/helper/helper_functions.dart';
@@ -98,6 +99,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddCurrentSelectedColorEvent>(
       _onAddCurrentSelectedColorEvent,
     );
+    on<UpdateListOfItemForAddToCartEvent>(
+      _onUpdateListOfItemForAddToCartEvent,
+    );
+
     on<AddQuantityForCartEvent>(
       _onAddCurrentQuantityForCartEvent,
     );
@@ -135,6 +140,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         transformer: throttleDroppable(throttleDuration));
     on<AddItemToCartEvent>(
       _onAddItemToCartEvent,
+    );
+
+    on<AddMultiItemsToCartEvent>(
+      _onAddMultiItemsToCartEvent,
     );
     on<GetSearchListingResultEvent>(
       _onGetSearchListingResultEventEvent,
@@ -748,6 +757,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       currentSelectedColorForEveryProduct: {},
       reRequestTheseProductListingInBoutiques: {},
       reRequestTheseBoutiques: {},
+      ListitemForAddToCart: [],
       getMainCategoriesStatus: GetMainCategoriesStatus.init,
       getProductDetailWithoutSimilarRelatedProductsStatus:
           GetProductDetailWithoutSimilarRelatedProductsStatus.init,
@@ -890,7 +900,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onAddItemToCartEvent(
       AddItemToCartEvent event, Emitter<HomeState> emit) async {
-    String currentSize = state.CurrentColorSizeForCart!["size"] ?? "";
+    String currentSize = event.choice_1!;
     Map<String, List<int>> CurrentQuantity = state.currentQuantityForCart ?? {};
     String key = "${event.products.id.toString()}" +
         "${event.colorName}" +
@@ -911,8 +921,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
     CartBrand brand = CartBrand(
         image: event.products.brand != null ? event.products.brand!.image : "");
-    VariationCart variation = VariationCart(
-        color: event.colorName, size: state.CurrentColorSizeForCart!["size"]);
+    VariationCart variation =
+        VariationCart(color: event.colorName, size: event.choice_1);
     BoutiquesCart boutiquesCart = BoutiquesCart(
         icon: IconCart(filePath: event.boutiqueIcon), id: event.boutiqueId);
     Cart cart = Cart(
@@ -945,11 +955,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     final response = await addItemToCartUseCase(AddITemToCartParams(
         image: event.image.split("/").last,
-        choice_1: state.CurrentColorSizeForCart != null
-            ? state.CurrentColorSizeForCart!["size"]
-            : "",
+        choice_1: event.choice_1,
         color: event.color,
-        id: event.id,
+        id: event.products.id.toString(),
         quantity: event.quantity));
 
     response.fold((l) {
@@ -958,9 +966,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             colorName: event.colorName,
             image: event.image,
             products: event.products,
-            choice_1: state.CurrentColorSizeForCart!["size"],
+            choice_1: event.choice_1,
             color: event.color,
-            id: event.id,
             quantity: event.quantity));
         isFailedTheFirstTime.add('AddCartItemEvent');
       }
@@ -1035,7 +1042,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             cartCollection: state.cartCollection,
             addImagesToProductIdForCart: addImagesToProductIdForCart));
         add(AddProductItemForCartEvent(
-            productId: event.id!, product: event.products));
+            productId: event.products.id.toString(), product: event.products));
       }
       showMessage(r.message!,
           foreGroundColor: Colors.white,
@@ -1250,7 +1257,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Map<String, List<int>> CurrentQuantity = state.currentQuantityForCart ?? {};
     String key =
         "${event.productId}" + "${event.colorName}" + "${event.currentSize}";
-    if (CurrentQuantity.containsKey(key)) {
+    if (!CurrentQuantity[key].isNullOrEmpty) {
       CurrentQuantity[key] = [event.quantity, event.cartId];
     } else {
       CurrentQuantity.addAll({
@@ -1402,6 +1409,24 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 : state.getProductListingWithFiltersPaginationModels));
   }
 
+  FutureOr<void> _onAddMultiItemsToCartEvent(
+      AddMultiItemsToCartEvent event, Emitter<HomeState> emit) {
+    state.ListitemForAddToCart!.forEach((element) {
+      if (element.quantity! > 0) {
+        add(AddItemToCartEvent(
+            image: element.images!,
+            color: element.colorNum,
+            colorName: element.colorName!,
+            products: event.products,
+            boutiqueIcon: event.boutiqueIcon,
+            boutiqueId: event.boutiqueId,
+            choice_1: element.size,
+            quantity: element.quantity));
+      }
+      emit(state.copyWith(ListitemForAddToCart: []));
+    });
+  }
+
   Future<void> _onGetCurrencyForCountryEvent(
       GetCurrencyForCountryEvent event, Emitter<HomeState> emit) async {
     final response = await getCurrencyForCountryUseCase(NoParams());
@@ -1430,5 +1455,77 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         getAllowedCountriesModel: r,
       ));
     });
+  }
+
+  FutureOr<void> _onUpdateListOfItemForAddToCartEvent(
+      UpdateListOfItemForAddToCartEvent event, Emitter<HomeState> emit) async {
+    ImageForAddToCart imageForAddToCart = ImageForAddToCart(
+        colorNum: event.imageForAddToCart.colorNum,
+        colorName: event.imageForAddToCart.colorName,
+        quantity: event.imageForAddToCart.quantity,
+        images: event.imageForAddToCart.images,
+        size: state.CurrentColorSizeForCart != null
+            ? state.CurrentColorSizeForCart!["size"]
+            : "");
+    List<ImageForAddToCart>? ListitemForAddToCart =
+        state.ListitemForAddToCart ?? [];
+    if (event.operation == "+") {
+      if (ListitemForAddToCart.isNullOrEmpty) {
+        ListitemForAddToCart.addAll([imageForAddToCart]);
+        emit(state.copyWith(ListitemForAddToCart: ListitemForAddToCart));
+        return;
+      }
+      ListitemForAddToCart.forEach((element) {
+        if (element.images == imageForAddToCart.images &&
+            element.colorName == imageForAddToCart.colorName &&
+            element.size == imageForAddToCart.size) {
+          element.quantity = element.quantity! + 1;
+          ListitemForAddToCart!.addAll([
+            ImageForAddToCart(
+                isDuplicate: true,
+                quantity: 0,
+                size: element.size,
+                colorName: element.colorName,
+                images: element.images)
+          ]);
+        } else {
+          if (!ListitemForAddToCart!.any((element) =>
+              (element.images == imageForAddToCart.images &&
+                  element.colorName == imageForAddToCart.colorName &&
+                  element.size == imageForAddToCart.size))) {
+            print(element.images == imageForAddToCart.images);
+            print(element.colorName == imageForAddToCart.colorName);
+
+            print(element.size == imageForAddToCart.size);
+
+            ListitemForAddToCart!.add(imageForAddToCart);
+          }
+        }
+      });
+    } else {
+      if (ListitemForAddToCart.last.isDuplicate == true) {
+        ImageForAddToCart itemLast = ListitemForAddToCart.last;
+
+        if (itemLast.isDuplicate == true) {
+          ListitemForAddToCart = ListitemForAddToCart.map((e) {
+            if (e.quantity! > 0 &&
+                e.colorName == itemLast.colorName &&
+                e.size == itemLast.size &&
+                e.images == itemLast.images) {
+              return ImageForAddToCart(
+                  colorName: itemLast.colorName,
+                  images: e.images,
+                  quantity: e.quantity! - 1,
+                  size: itemLast.size);
+            }
+            return e;
+          }).toList();
+          ListitemForAddToCart.removeLast();
+        }
+      } else {
+        ListitemForAddToCart.removeLast();
+      }
+    }
+    emit(state.copyWith(ListitemForAddToCart: ListitemForAddToCart));
   }
 }

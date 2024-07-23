@@ -10,9 +10,11 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -32,6 +34,9 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
       required this.clickOnMoreOptions,
       required this.panelController,
       required this.productId,
+      required this.colorName,
+      required this.colorNum,
+      required this.Size,
       required this.currentActiveTab,
       required this.sizeIsNotAvailableNotifier,
       required this.imageUrl});
@@ -43,6 +48,9 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
   final PanelController panelController;
   final String imageUrl;
   final String productId;
+  final String colorName;
+  final String colorNum;
+  final String Size;
   final ValueNotifier<int> currentActiveTab;
 
   final void Function() clickOnFavorite;
@@ -90,7 +98,10 @@ class _ProductDetailsSheetBottomBarState
       child: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
             previous.addImagesToProductIdForCart !=
-            current.addImagesToProductIdForCart,
+                current.addImagesToProductIdForCart ||
+            previous.currentSelectedColorForEveryProduct[widget.productId] !=
+                current.currentSelectedColorForEveryProduct[widget.productId] ||
+            previous.ListitemForAddToCart != current.ListitemForAddToCart,
         builder: (context, state) {
           print(state.addImagesToProductIdForCart[widget.productId]);
           List<String> allimages = [];
@@ -132,6 +143,13 @@ class _ProductDetailsSheetBottomBarState
                                         valueListenable:
                                             widget.addToBagButtonShapeNotifier,
                                         builder: (context, itemCount, _) {
+                                          ImageForAddToCart imageForAddToCart =
+                                              ImageForAddToCart(
+                                            colorNum: widget.colorNum,
+                                            quantity: 1,
+                                            images: widget.imageUrl,
+                                            colorName: widget.colorName,
+                                          );
                                           return AnimatedSwitcher(
                                             duration:
                                                 Duration(milliseconds: 300),
@@ -168,6 +186,13 @@ class _ProductDetailsSheetBottomBarState
                                                             widget
                                                                 .addToBagButtonShapeNotifier
                                                                 .value--;
+                                                            homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                                                                productId: widget
+                                                                    .productId,
+                                                                imageForAddToCart:
+                                                                    imageForAddToCart,
+                                                                operation:
+                                                                    "-"));
                                                           } else if (details
                                                                   .localPosition
                                                                   .dx >=
@@ -177,6 +202,13 @@ class _ProductDetailsSheetBottomBarState
                                                             widget
                                                                 .addToBagButtonShapeNotifier
                                                                 .value++;
+                                                            homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                                                                productId: widget
+                                                                    .productId,
+                                                                imageForAddToCart:
+                                                                    imageForAddToCart,
+                                                                operation:
+                                                                    "+"));
                                                           } else {
                                                             animationController
                                                                 .forward();
@@ -203,6 +235,12 @@ class _ProductDetailsSheetBottomBarState
                                                           widget
                                                               .addToBagButtonShapeNotifier
                                                               .value++;
+                                                          homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                                                              productId: widget
+                                                                  .productId,
+                                                              imageForAddToCart:
+                                                                  imageForAddToCart,
+                                                              operation: "+"));
                                                         }
                                                       }
                                                     },
@@ -265,7 +303,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                           height: 20,
                                                                                           child: ListView.builder(
                                                                                             itemBuilder: (context, index) {
-                                                                                              return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: widget.imageUrl, width: 15, imageFit: BoxFit.cover, height: 20)); /*Container(
+                                                                                              return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: state.ListitemForAddToCart != null ? state.ListitemForAddToCart![index].images! : "", width: 15, imageFit: BoxFit.cover, height: 20)); /*Container(
                                                                                                 width: 15,
                                                                                                 height: 20,
                                                                                                 decoration: BoxDecoration(
@@ -280,7 +318,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                             reverse: true,
                                                                                             shrinkWrap: true,
                                                                                             scrollDirection: Axis.horizontal,
-                                                                                            itemCount: itemCount,
+                                                                                            itemCount: state.ListitemForAddToCart != null ? state.ListitemForAddToCart!.length : 0,
                                                                                           ),
                                                                                         )),
                                                                                         Spacer()
@@ -521,4 +559,22 @@ class BarWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+class ImageForAddToCart {
+  final String? colorName;
+  final String? images;
+  int? quantity;
+  final String? size;
+  final String? colorNum;
+  bool isDuplicate;
+
+  ImageForAddToCart({
+    this.colorName,
+    this.colorNum,
+    this.images,
+    this.quantity,
+    this.isDuplicate = false,
+    this.size,
+  });
 }

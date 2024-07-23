@@ -127,23 +127,44 @@ class _TabsBarState extends State<TabsBar> {
                                       p.currentIndex != c.currentIndex,
                                   builder: (context, state) {
                                     return AnimatedSearchBar(
-                                      onFieldSubmitted: (text) =>
-                                          text.replaceAll(" ", "").length > 2
-                                              ? homeBloc.add(
-                                                  AddSearchTextToHistoryEvent(
-                                                      searchTitle: text))
-                                              : {},
+                                      onFieldSubmitted: (text) {
+                                        if (text.replaceAll(" ", "").length >
+                                            2) {
+                                          widget.buildSearchResult.value =
+                                              text.length;
+                                          widget.hideTrendingAndHistory.value =
+                                              true;
+
+                                          homeBloc.add(
+                                              AddSearchTextToHistoryEvent(
+                                                  searchTitle: text));
+                                        } else {
+                                          widget.buildSearchResult.value = 0;
+                                          widget.hideTrendingAndHistory.value =
+                                              false;
+                                        }
+                                      },
                                       width: 1.sw,
                                       height: 40,
                                       onClickClose: () {
-                                        appBloc.add(ChangeBasePage(0));
-                                        appBloc.add(
-                                            HideBottomNavigationBar(false));
+                                        if (widget.controller.text.length > 0) {
+                                          widget.buildSearchResult.value = 0;
+                                          widget.controller.clear();
+                                          widget.hideTrendingAndHistory.value =
+                                              false;
+                                        } else {
+                                          appBloc.add(ChangeBasePage(0));
+                                          appBloc.add(
+                                              HideBottomNavigationBar(false));
+                                        }
                                       },
                                       textController: widget.controller,
                                       focusNode: focusNode,
                                       onSuffixTap: () {
-                                        widget.controller.text = "";
+                                        widget.controller.clear();
+                                        widget.buildSearchResult.value = 0;
+                                        widget.hideTrendingAndHistory.value =
+                                            false;
                                         Future.delayed(
                                             Duration(milliseconds: 300), () {
                                           appBloc.add(ChangeBasePage(4));
@@ -283,11 +304,12 @@ class _TabsBarState extends State<TabsBar> {
                                                     context.colorScheme.hint),
                                       ),
                                       onChanged: (String text) {
-                                        widget.buildSearchResult.value =
-                                            text.length;
+                                        widget.buildSearchResult.value = 0;
                                         if (text.length > 2) {
                                           homeBloc.add(GetSearchREsultEvent(
                                               searchTitle: text));
+                                          widget.buildSearchResult.value =
+                                              text.length;
                                         }
                                       },
                                       hideTrendingAndHistory:

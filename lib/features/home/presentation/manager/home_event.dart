@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 
 import '../../data/models/get_product_filters_model.dart';
 
@@ -197,7 +198,6 @@ class GetCartItemEvent extends HomeEvent {
 }
 
 class AddItemToCartEvent extends HomeEvent {
-  final String? id;
   final String? color;
   final String image;
   final int? quantity;
@@ -208,8 +208,7 @@ class AddItemToCartEvent extends HomeEvent {
   final Products products;
 
   AddItemToCartEvent(
-      {this.id,
-      this.quantity,
+      {this.quantity,
       this.boutiqueIcon,
       this.boutiqueId,
       required this.image,
@@ -217,6 +216,22 @@ class AddItemToCartEvent extends HomeEvent {
       this.color,
       this.choice_1,
       required this.products});
+
+  @override
+  List<Object?> get props => [];
+}
+
+class AddMultiItemsToCartEvent extends HomeEvent {
+  final String? id;
+
+  final String? boutiqueIcon;
+
+  final int? boutiqueId;
+
+  final Products products;
+
+  AddMultiItemsToCartEvent(
+      {this.id, this.boutiqueIcon, this.boutiqueId, required this.products});
 
   @override
   List<Object?> get props => [];
@@ -390,6 +405,20 @@ class GetCategoryEvent extends HomeEvent {
 
 class GetAllowedCountriesEvent extends HomeEvent {
   GetAllowedCountriesEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class UpdateListOfItemForAddToCartEvent extends HomeEvent {
+  final ImageForAddToCart imageForAddToCart;
+  final String operation;
+  final String productId;
+  UpdateListOfItemForAddToCartEvent({
+    required this.imageForAddToCart,
+    required this.operation,
+    required this.productId,
+  });
 
   @override
   List<Object?> get props => [];

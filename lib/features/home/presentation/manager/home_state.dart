@@ -14,6 +14,7 @@ import 'package:trydos/features/home/data/models/get_product_detail_without_rela
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 
 import '../../../../core/data/model/pagination_model.dart';
 import '../../data/models/get_cart_item_model.dart';
@@ -95,6 +96,7 @@ class HomeState {
     this.searchHistory,
     this.getAllowedCountriesModel,
     this.getCurrencyForCountryModel,
+    this.ListitemForAddToCart,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
     this.getProductListingPaginationWithoutFiltersModel = const {},
@@ -108,6 +110,7 @@ class HomeState {
   final GetCommentForProductStatus getCommentForProductStatus;
   final Map<String, product.Products>? productITemForCart;
   final GetMainCategoriesStatus getMainCategoriesStatus;
+  final List<ImageForAddToCart>? ListitemForAddToCart;
   final GetCurrencyForCountryModel? getCurrencyForCountryModel;
   final GetProductFiltersStatus getProductFiltersStatus;
   final PaginationModel<product.Products>?
@@ -162,6 +165,7 @@ class HomeState {
       final GetSearchResultStatus? getSearchResultStatus,
       final get_product_with_filter.GetProductListingWithFiltersModel?
           searchResultModel,
+      final List<ImageForAddToCart>? ListitemForAddToCart,
       final GetAllowedCountriesModel? getAllowedCountriesModel,
       final GetCurrencyForCountryModel? getCurrencyForCountryModel,
       final GetCommentForProductStatus? getCommentForProductStatus,
@@ -212,6 +216,7 @@ class HomeState {
         getCommentForProductModel:
             getCommentForProductModel ?? this.getCommentForProductModel,
         sizes: sizes ?? this.sizes,
+        ListitemForAddToCart: ListitemForAddToCart ?? this.ListitemForAddToCart,
         getCurrencyForCountryModel:
             getCurrencyForCountryModel ?? this.getCurrencyForCountryModel,
         addImagesToProductIdForCart:

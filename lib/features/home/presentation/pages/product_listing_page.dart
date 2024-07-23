@@ -218,10 +218,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                         width: 1.sw - 10,
                                         height: 40,
                                         onClickClose: () {
-                                          searchVisible.value = !search;
-                                          appBloc.add(ChangeBasePage(0));
-                                          appBloc.add(
-                                              HideBottomNavigationBar(false));
+                                          if (controller.text.length > 0) {
+                                            controller.clear();
+                                          } else {
+                                            searchVisible.value = !search;
+                                            appBloc.add(ChangeBasePage(0));
+                                            appBloc.add(
+                                                HideBottomNavigationBar(false));
+                                          }
                                         },
                                         textController: controller,
                                         focusNode: focusNode,
@@ -452,9 +456,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             width: 1.sw - 10,
                                                             height: 40,
                                                             onClickClose: () {
-                                                              searchVisible
-                                                                      .value =
-                                                                  false;
+                                                              if (controller
+                                                                      .text
+                                                                      .length >
+                                                                  0) {
+                                                                controller
+                                                                    .clear();
+                                                              } else {
+                                                                searchVisible
+                                                                        .value =
+                                                                    false;
+                                                              }
                                                             },
                                                             textController:
                                                                 controller,
