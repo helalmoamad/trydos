@@ -14,6 +14,7 @@ import 'package:trydos/features/home/data/models/get_product_detail_without_rela
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 
 import '../../../../core/data/model/pagination_model.dart';
 import '../../data/models/get_cart_item_model.dart';
@@ -76,6 +77,7 @@ class HomeState {
     this.currentPage = 0,
     this.brands,
     this.categories,
+    this.productStatus,
     this.productITemForCart,
     this.getCartShippingItemsModel,
     this.reRequestTheseBoutiques = const {},
@@ -95,6 +97,7 @@ class HomeState {
     this.searchHistory,
     this.getAllowedCountriesModel,
     this.getCurrencyForCountryModel,
+    this.ListitemForAddToCart,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
     this.getProductListingPaginationWithoutFiltersModel = const {},
@@ -108,6 +111,7 @@ class HomeState {
   final GetCommentForProductStatus getCommentForProductStatus;
   final Map<String, product.Products>? productITemForCart;
   final GetMainCategoriesStatus getMainCategoriesStatus;
+  final List<ImageForAddToCart>? ListitemForAddToCart;
   final GetCurrencyForCountryModel? getCurrencyForCountryModel;
   final GetProductFiltersStatus getProductFiltersStatus;
   final PaginationModel<product.Products>?
@@ -122,12 +126,14 @@ class HomeState {
   List<String>? searchHistory;
   Map<String, List<String>> selectedBoutiqueBrandCategorySlugsForSearch;
   Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
-
+  Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
+      productStatus;
   Map<String, List<cart.Cart>>? cartCollection;
   final Map<String, bool> reRequestTheseBoutiques;
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
+
   final GetCartItemsStatus getCartItemsStatus;
   final GetProductListingStatus getProductListingStatus;
   GetStoriesForProductStatus getStoriesForProductStatus;
@@ -162,6 +168,7 @@ class HomeState {
       final GetSearchResultStatus? getSearchResultStatus,
       final get_product_with_filter.GetProductListingWithFiltersModel?
           searchResultModel,
+      final List<ImageForAddToCart>? ListitemForAddToCart,
       final GetAllowedCountriesModel? getAllowedCountriesModel,
       final GetCurrencyForCountryModel? getCurrencyForCountryModel,
       final GetCommentForProductStatus? getCommentForProductStatus,
@@ -174,6 +181,8 @@ class HomeState {
       int? selectedCollection,
       List<String>? sizes,
       List<String>? searchHistory,
+      Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
+          productStatus,
       List<brand.Brand>? brands,
       List<category.Category>? category,
       Map<String, List<int>>? currentQuantityForCart,
@@ -212,6 +221,7 @@ class HomeState {
         getCommentForProductModel:
             getCommentForProductModel ?? this.getCommentForProductModel,
         sizes: sizes ?? this.sizes,
+        ListitemForAddToCart: ListitemForAddToCart ?? this.ListitemForAddToCart,
         getCurrencyForCountryModel:
             getCurrencyForCountryModel ?? this.getCurrencyForCountryModel,
         addImagesToProductIdForCart:
@@ -276,6 +286,7 @@ class HomeState {
             getProductDetailWithoutRelatedProductsModel ??
                 this.getProductDetailWithoutRelatedProductsModel,
         boutiques: boutiques ?? this.boutiques,
+        productStatus: productStatus ?? this.productStatus,
         getAllowedCountriesModel: getAllowedCountriesModel ?? this.getAllowedCountriesModel,
         getSearchResultStatus: getSearchResultStatus ?? this.getSearchResultStatus,
         searchResultModel: searchResultModel ?? this.searchResultModel,

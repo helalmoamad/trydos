@@ -142,7 +142,7 @@ class Data {
         "category_parent_parent": categoryParentParent,
         "category_parent": categoryParent,
         "category": category,
-        "category_seo_description": categorySeoDescription,
+        "category_seo_description": categorySeoDescription ?? {},
         "category_title": categoryTitle,
         "category_h1": categoryH1,
         "child_categories": childCategories,

@@ -59,7 +59,6 @@ class ProductDetailsChipWidget extends StatelessWidget {
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
-                      print(descriptor!.descriptors![index].descriptor!.icon!);
                       return Directionality(
                         textDirection: TextDirection.ltr,
                         child: Row(

@@ -5,7 +5,8 @@
 import 'dart:convert';
 
 import 'get_product_filters_model.dart' as filters;
-import 'get_product_listing_without_filters_model.dart' as product_without_filters;
+import 'get_product_listing_without_filters_model.dart'
+    as product_without_filters;
 
 GetProductListingWithFiltersModel getProductListingWithFiltersModelFromJson(
         String str) =>
@@ -81,14 +82,6 @@ class Data {
     List<String>? colors,
     List<filters.Category>? categories,
     filters.Prices? prices,
-    String? categoryParentParent,
-    String? categoryParent,
-    String? category,
-    String? categorySeoDescription,
-    String? categoryTitle,
-    String? categoryH1,
-    String? childCategories,
-    String? resultFor,
     String? boutiqueSlug,
   }) =>
       Data(
@@ -114,7 +107,8 @@ class Data {
               json["products"]!.map((x) => product_without_filters.Products.fromJson(x))),
       brands: json["brands"] == null
           ? []
-          : List<filters.Brand>.from(json["brands"]!.map((x) => filters.Brand.fromJson(x))),
+          : List<filters.Brand>.from(
+              json["brands"]!.map((x) => filters.Brand.fromJson(x))),
       attributes: json["attributes"] == null
           ? []
           : List<filters.Attribute>.from(
@@ -126,7 +120,9 @@ class Data {
       colors: json["colors"] == null
           ? []
           : List<String>.from(json["colors"]!.map((x) => x)),
-      prices: json["prices"] == null ? null : filters.Prices.fromJson(json["prices"]),
+      prices: json["prices"] == null
+          ? null
+          : filters.Prices.fromJson(json["prices"]),
       boutiqueSlug: json["boutique_slug"],
     );
   }
@@ -144,7 +140,7 @@ class Data {
         "attributes": attributes == null
             ? []
             : List<dynamic>.from(attributes!.map((x) => x.toJson())),
-    "categories": categories == null
+        "categories": categories == null
             ? []
             : List<dynamic>.from(categories!.map((x) => x.toJson())),
         "colors":

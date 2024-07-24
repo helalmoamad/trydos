@@ -1,6 +1,6 @@
 // DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
 
-abstract class  LocaleKeys {
+abstract class LocaleKeys {
   static const typing = 'typing';
   static const recording = 'recording';
   static const sending_file = 'sending_file';
@@ -8,7 +8,8 @@ abstract class  LocaleKeys {
   static const sending_video = 'sending_video';
   static const gallery = 'gallery';
   static const camera = 'camera';
-  static const choose_photo_or_video_from_gallery_or_camera = 'choose_photo_or_video_from_gallery_or_camera';
+  static const choose_photo_or_video_from_gallery_or_camera =
+      'choose_photo_or_video_from_gallery_or_camera';
   static const welcome_page_description = 'welcome_page_description';
   static const why_we_know_you_label = 'why_we_know_you_label';
   static const i_have_account = 'i_have_account';
@@ -21,19 +22,22 @@ abstract class  LocaleKeys {
   static const preson = 'preson';
   static const search = 'search';
   static const video = 'video';
+  static const find_products = 'find_products';
   static const call = 'call';
   static const media_files = 'media_files';
   static const never = 'never';
   static const save_to_gallery = 'save_to_gallery';
   static const contacts_list = 'contacts_list';
-  static const search_chat_contact_startNewChat = 'search_chat_contact_startNewChat';
+  static const search_chat_contact_startNewChat =
+      'search_chat_contact_startNewChat';
   static const agree_continue = 'agree_continue';
   static const trems_of_services = 'trems_of_services';
   static const to = 'to';
   static const tap = 'tap';
   static const to_accept_trydos = 'to_accept_trydos';
   static const phone_numbber = 'phone_numbber';
-  static const enter_your_phonenumber_registered_with_us = 'enter_your_phonenumber_registered_with_us';
+  static const enter_your_phonenumber_registered_with_us =
+      'enter_your_phonenumber_registered_with_us';
   static const your_Privacy = 'your_Privacy';
   static const whatsApp = 'whatsApp';
   static const sms = 'sms';
@@ -46,7 +50,8 @@ abstract class  LocaleKeys {
   static const change_method = 'change_method';
   static const the_code_sent_has_expired = 'the_code_sent_has_expired';
   static const enter_correct_code = 'enter_correct_code';
-  static const please_enter_the_verification_cod = 'please_enter_the_verification_cod';
+  static const please_enter_the_verification_cod =
+      'please_enter_the_verification_cod';
   static const didnt_receive_code = 'didnt_receive_code';
   static const cancel = 'cancel';
   static const you_can_login_now = 'you_can_login_now';
@@ -63,7 +68,8 @@ abstract class  LocaleKeys {
   static const try_direct_online_shopping = 'try_direct_online_shopping';
   static const hello = 'hello';
   static const enjoy_with_our_services = 'enjoy_with_our_services';
-  static const sorry_this_number_is_not_registered_with_us = 'sorry_this_number_is_not_registered_with_us';
+  static const sorry_this_number_is_not_registered_with_us =
+      'sorry_this_number_is_not_registered_with_us';
   static const register_create_new_account = 'register_create_new_account';
   static const create_new_account_continue = 'create_new_account_continue';
   static const skip_for_now = 'skip_for_now';
@@ -71,12 +77,14 @@ abstract class  LocaleKeys {
   static const we_recommend = 'we_recommend';
   static const no_error_message = 'no_error_message';
   static const failed_to_save_name = 'failed_to_save_name';
-  static const the_number_verifieds_successfully = 'the_number_verifieds_successfully';
+  static const the_number_verifieds_successfully =
+      'the_number_verifieds_successfully';
   static const last_step = 'last_step';
   static const trydos = 'trydos';
   static const enter_your_name = 'enter_your_name';
   static const the_method_of_receiving = 'the_method_of_receiving';
-  static const please_correct_code_sent_to_your_phone = 'please_correct_code_sent_to_your_phone';
+  static const please_correct_code_sent_to_your_phone =
+      'please_correct_code_sent_to_your_phone';
   static const please_wait_5_seconds = 'please_wait_5_seconds';
   static const login_continue = 'login_continue';
   static const this_message_has_been_deleted = 'this_message_has_been_deleted';
@@ -87,7 +95,8 @@ abstract class  LocaleKeys {
   static const uk = 'uk';
   static const try_again = 'try_again';
   static const trye = 'trye';
-  static const please_enable_send_notification_for_this_app = 'please_enable_send_notification_for_this_app';
+  static const please_enable_send_notification_for_this_app =
+      'please_enable_send_notification_for_this_app';
   static const no_num = 'no_num';
   static const user = 'user';
   static const in_another_call = 'in_another_call';
@@ -139,5 +148,4 @@ abstract class  LocaleKeys {
   static const must_be_at_least_8_characters = 'must_be_at_least_8_characters';
   static const read_more = 'read_more';
   static const read_less = 'read_less';
-
 }
