@@ -137,6 +137,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       }
       if ((autoScrollController.offset >=
           autoScrollController.position.maxScrollExtent - 400)) {
+        debugPrint('///////////// _loadMoreMessages ///////////////////');
         _loadMoreMessages();
       }
     });
@@ -612,6 +613,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                   : SizedBox.shrink(),
                                               Flexible(
                                                   child: ListView.builder(
+                                                      key: Key(
+                                                        WidgetsKey
+                                                            .messagesListKey,
+                                                      ),
                                                       physics:
                                                           const ClampingScrollPhysics(),
                                                       shrinkWrap: true,
@@ -683,6 +688,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                       : 10.verticalSpace,
                                                                   ////////////////
                                                                   GestureDetector(
+                                                                    key: Key(
+                                                                        '${WidgetsKey.messagesListCardKey}$index'),
                                                                     onLongPress:
                                                                         () {
                                                                       if (messages[index]

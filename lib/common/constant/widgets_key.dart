@@ -47,4 +47,6 @@ class WidgetsKey {
   static const imageCountInEachChatKey = 'image_count_in_each_chat_key';
   static const videoCountInEachChatKey = 'video_count_in_each_chat_key';
   static const fileCountInEachChatKey = 'file_count_in_each_chat_key';
+  static const messagesListKey = 'messages_list_key';
+  static const messagesListCardKey = 'messages_list_card_key';
 }
