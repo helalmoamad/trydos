@@ -38,16 +38,17 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final String boutiqueIcon;
   final String currentColorName;
   final String currentColornum;
-  final int CurrentQuantity;
+  final String currentSize;
+
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final List<String> sizes;
   const ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
       required this.addToBagButtonShapeNotifier,
-      required this.CurrentQuantity,
       required this.boutiqueIcon,
       required this.sizes,
+      required this.currentSize,
       required this.currentColornum,
       required this.boutiqueId,
       required this.currentColor,
@@ -285,8 +286,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           changingPagesScrollOffset: 0.1,
                                           isClip: false,
                                           onItemChanged: (index) {
-                                            print(
-                                                "////////////////////////////////////////////////${index}");
                                             currentIndexInSlider = index;
                                             currentImageTab.value = index;
                                             homeBloc.add(
@@ -342,6 +341,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                     orginalWidth![index],
                                                 width: 70.w,
                                                 height: 70.w,
+                                                imageWidth: 70,
+                                                imageHeight: 70,
                                                 imageUrl: images[index],
                                                 innerShadowYOffset: 4,
                                                 borderColor: index ==
@@ -373,6 +374,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                               .currency!
                                               .symbol ??
                                           "",
+                                      decimalPoint: state.startingSetting?.decimalPointSetting ?? 2,
                                       addToBagButtonShapeNotifier:
                                           widget.addToBagButtonShapeNotifier,
                                       price: (widget.productItem.price! *
@@ -381,7 +383,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .data!
                                                   .currency!
                                                   .exchangeRate!)
-                                          .toStringAsFixed(2),
+                                          .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2),
                                       offerPrice: (widget
                                                   .productItem.offerPrice! *
                                               state
@@ -389,7 +391,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .data!
                                                   .currency!
                                                   .exchangeRate!)
-                                          .toStringAsFixed(2),
+                                          .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2),
                                     );
                                   }),
                               currentTab != -1
@@ -508,6 +510,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               builder: (context, indices, _) {
                 return indices.isEmpty
                     ? ProductDetailsSheetBottomBar(
+                        colorNum: widget.currentColornum,
+                        Size: widget.currentSize,
+                        colorName: widget.currentColorName,
                         productId: widget.productItem.id.toString(),
                         imageUrl:
                             !widget.productItem.syncColorImages.isNullOrEmpty
@@ -523,21 +528,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                         .filePath ??
                                     "",
                         onFinishBuying: (quantity) {
-                          homeBloc.add(AddItemToCartEvent(
-                              colorName: widget.currentColorName,
+                          homeBloc.add(AddMultiItemsToCartEvent(
                               boutiqueIcon: widget.boutiqueIcon,
                               boutiqueId: widget.boutiqueId,
-                              image: widget
-                                      .productItem.syncColorImages.isNullOrEmpty
-                                  ? widget.productItem.images![0].filePath!
-                                  : widget
-                                      .productItem
-                                      .syncColorImages![widget.currentColor]
-                                      .images![0]
-                                      .filePath!,
                               products: widget.productItem,
-                              color: widget.currentColornum,
-                              quantity: int.parse(quantity),
                               id: widget.productItem.id.toString()));
                           setState(() {
                             tag = 'cart';

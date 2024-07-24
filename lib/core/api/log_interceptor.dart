@@ -70,6 +70,14 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n Data: ${response.data}",
       );
     }
+    _prefsRepository.saveRequestsData(
+        response.requestOptions.path,
+        response.data,
+        response.headers.map,
+        response.statusCode,
+        response.requestOptions.method,
+        response.requestOptions.queryParameters,
+        response.requestOptions.data);
     handler.next(response);
   }
 
@@ -87,21 +95,18 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     }
     _prefsRepository.saveRequestsData(
         err.requestOptions.path,
-        err.response?.data ?? {'error': err.error.toString()},
+        {'error': err.error.toString()},
         err.response?.headers.map ?? {},
         err.response?.statusCode,
         err.requestOptions.method,
         err.requestOptions.queryParameters,
-        err.response?.data ?? {});
+        err.requestOptions.data);
 
     // GetIt.I<Dio>().post('${ChatUrls.baseUrl}/${ChatEndPoints.createBugEP}', data: {
     //   "user_id": _prefsRepository.myChatId,
     //   "title": "request error",
     //   "description": err.toString()
     // });
-
-    final data = err.response?.data;
-    if (data != null) {}
 
     handler.next(err);
   }

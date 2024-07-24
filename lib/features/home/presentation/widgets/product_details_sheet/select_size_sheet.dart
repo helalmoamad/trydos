@@ -46,9 +46,6 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     if (widget.sizes.length > 0) {
-      print(
-          "************${widget.sizes[widget.sizes.length ~/ 2]}**********************************************************************************************");
-
       homeBloc.add(AddCurrentColorSizeEvent(
           choice_1: widget.sizes[widget.sizes.length ~/ 2]));
     } else {

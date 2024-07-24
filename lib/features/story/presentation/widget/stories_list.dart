@@ -6,10 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:ui' as ui;
 import 'package:go_router/go_router.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
@@ -22,6 +24,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 //import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
@@ -129,8 +132,8 @@ class _StoriesListState extends State<StoriesList> {
                                                               .kRegistrationPage);
                                                         } else if (GetIt.I<
                                                                     PrefsRepository>()
-                                                                .myMarketName == null) {
-
+                                                                .myMarketName ==
+                                                            null) {
                                                           showDialog(
                                                               context: context,
                                                               barrierDismissible:
@@ -443,34 +446,62 @@ class _StoriesListState extends State<StoriesList> {
                         return Container();
                       case GetStoriesStatus.failure:
                         return SizedBox.shrink();
-                        //   Center(
-                        //   key: Key(WidgetsKey.storiesFailureStatusKey),
-                        //   child: ElevatedButton(
-                        //       onPressed: () {
-                        //         GetIt.I<StoryBloc>().add(GetStoryEvent());
-                        //       },
-                        //       child: MyTextWidget(LocaleKeys.try_again.tr())),
-                        // );
+                      //   Center(
+                      //   key: Key(WidgetsKey.storiesFailureStatusKey),
+                      //   child: ElevatedButton(
+                      //       onPressed: () {
+                      //         GetIt.I<StoryBloc>().add(GetStoryEvent());
+                      //       },
+                      //       child: MyTextWidget(LocaleKeys.try_again.tr())),
+                      // );
                       case GetStoriesStatus.loading:
-                        return SizedBox(
-                          width: double.infinity,
-                          height: 220,
-                          child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) => Padding(
-                                  padding: EdgeInsetsDirectional.only(
-                                      start: 10, top: 35, bottom: 30),
-                                  child: TrydosShimmerLoading(
-                                    width: 100,
-                                    height: 150,
-                                    logoTextHeight: 14,
-                                    logoTextWidth: 48.w,
-                                  )),
-                              separatorBuilder: (context, index) => SizedBox(
-                                    width: 5,
-                                  ),
-                              itemCount: 7),
-                        );
+                        return Shimmer.fromColors(
+                            baseColor: Colors.grey.shade300,
+                            highlightColor: Colors.grey.shade100,
+                            enabled: true,
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 220,
+                              child: ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) => Padding(
+                                      padding: EdgeInsetsDirectional.only(
+                                          start: 10, top: 35, bottom: 30),
+                                      child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            Container(
+                                                width: 100,
+                                                height: 150,
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(20.0),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: const Color(0xff000000)
+                                                          .withOpacity(0.4),
+                                                      offset: Offset(0, 3),
+                                                      blurRadius: 6,
+                                                    )
+                                                  ],)
+                                            ),
+                                            Positioned(
+                                                left: 0,
+                                                top: 0,
+                                                child: CircleAvatar(
+                                                  radius: 15,
+                                                )),
+                                            SvgPicture.asset(
+                                              AppAssets.storyFilmSvg,
+                                              width: 20,
+                                              height: 20,
+                                            ),
+                                          ])),
+                                  separatorBuilder: (context, index) =>
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                  itemCount: 7),
+                            ));
                     }
                   }();
                 }),

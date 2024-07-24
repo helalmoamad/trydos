@@ -135,6 +135,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
           .getRange(images.length ~/ 4 - 1, images.length ~/ 4 + 2)
           .toList();
       threeImages.add(threeImages.removeAt(0));
+
       copyOfImages.removeRange(images.length ~/ 4 - 1, images.length ~/ 4 + 2);
       copyOfImages.addAll(copyOfImages.getRange(0, images.length ~/ 4 - 1));
       copyOfImages.removeRange(0, images.length ~/ 4 - 1);
@@ -459,7 +460,9 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                         }),
                                   } else
                                     const SizedBox.shrink(),
-                                  if (slideModeIndex == 1) ...{
+                                  if (slideModeIndex == 1 &&
+                                      gallery3dControllerForCircles !=
+                                          null) ...{
                                     ValueListenableBuilder<
                                             Tuple2<List<String>, List<String>>>(
                                         valueListenable: threeColorsSlider,
@@ -471,7 +474,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                               gallery3dController:
                                                   gallery3dControllerForColors,
                                               gallery3dControllerForCircles:
-                                                  gallery3dControllerForCircles!,
+                                                  gallery3dControllerForCircles,
                                               stopScrollingOnEdges:
                                                   (double primaryDelta) {
                                                 return (primaryDelta <= 0 &&
@@ -578,9 +581,12 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       valueListenable: currentColorIndex,
                                       builder: (context, currentIndex, _) {
                                         return MyTextWidget(
-                                          syncColorImageList![currentIndex]
-                                              .colorName
-                                              .toString(),
+                                          syncColorImageList.isNullOrEmpty
+                                              ? ""
+                                              : syncColorImageList![
+                                                      currentIndex]
+                                                  .colorName
+                                                  .toString(),
                                           textAlign: TextAlign.center,
                                           style: textTheme.caption?.mq.copyWith(
                                             color: Color(int.parse(
@@ -879,9 +885,9 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                       height: 10,
                     ),
                     SizedBox(
-                      width: 200,
+                      width: 225,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        padding: const EdgeInsets.only(left: 20, right: 22),
                         child: BlocBuilder<HomeBloc, HomeState>(
                             buildWhen: (previous, current) =>
                                 previous.getCurrencyForCountryModel !=
@@ -889,7 +895,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                             builder: (context, state) {
                               return Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceAround,
                                 children: [
                                   Row(
                                     children: [
@@ -900,7 +906,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                     .data!
                                                     .currency!
                                                     .exchangeRate!)
-                                            .toStringAsFixed(2)
+                                            .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)
                                             .toString(),
                                         style: textTheme.caption?.lq.copyWith(
                                           color: Color(0xff3c3c3c),
@@ -919,7 +925,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                     .data!
                                                     .currency!
                                                     .exchangeRate!)
-                                            .toStringAsFixed(2)
+                                            .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)
                                             .toString(),
                                         style: textTheme.caption?.bq.copyWith(
                                           color: Color(0xff3c3c3c),
@@ -947,7 +953,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                         ),
                                       ),
                                       const SizedBox(
-                                        width: 5,
+                                        width: 2,
                                       ),
                                       SvgPicture.asset(
                                         AppAssets.bagSvg,

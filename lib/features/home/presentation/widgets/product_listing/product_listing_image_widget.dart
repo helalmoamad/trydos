@@ -7,6 +7,8 @@ class ProductListingImageWidget extends StatelessWidget {
     super.key,
     this.width,
     this.height,
+    this.imageHeight,
+    this.imageWidth,
     this.orginalHeight,
     this.orginalWidth,
     required this.innerShadowYOffset,
@@ -16,6 +18,8 @@ class ProductListingImageWidget extends StatelessWidget {
     required this.imageUrl,
   });
 
+  final double? imageWidth;
+  final double? imageHeight;
   final double? width;
   final double? height;
   final bool circleShape;
@@ -57,6 +61,8 @@ class ProductListingImageWidget extends StatelessWidget {
                   : MyCachedNetworkImage(
                       imageUrl: imageUrl,
                       width: width!,
+                      imageHeight: imageHeight,
+                      imageWidth: imageWidth,
                       imageFit: BoxFit.cover,
                       height: height!),
               //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),

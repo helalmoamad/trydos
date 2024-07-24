@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
 
 class MyGallery3DWidget extends StatefulWidget {
@@ -69,7 +70,12 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
         },
         itemBuilder: (context, index) {
           leftItemIndex = (widget.gallery3dController.currentIndex - 1) < 0
-              ? ((widget.gallery3dControllerForCircles!.itemCount) ~/ 2 - 1)
+              ? ((widget.gallery3dControllerForCircles != null
+                          ? 0
+                          : widget.gallery3dControllerForCircles?.itemCount ??
+                              0) ~/
+                      2 -
+                  1)
               : (widget.gallery3dController.currentIndex - 1);
 
           rightItemIndex = (widget.gallery3dController.currentIndex + 1) >
@@ -90,12 +96,14 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
                                     2 -
                                 1) &&
                         index == rightItemIndex)),
-            child: ProductListingImageWidget(
-                innerShadowYOffset: 3,
-                circleShape: false,
-                width: widget.itemWidth,
-                height: widget.itemHeight,
-                imageUrl: widget.threeImages[index]),
+            child: widget.threeImages.isNullOrEmpty
+                ? SizedBox.shrink()
+                : ProductListingImageWidget(
+                    innerShadowYOffset: 3,
+                    circleShape: false,
+                    width: widget.itemWidth,
+                    height: widget.itemHeight,
+                    imageUrl: widget.threeImages[index]),
           );
         });
   }

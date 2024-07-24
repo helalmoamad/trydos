@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../core/utils/theme_state.dart';
 import '../../../home/presentation/manager/home_bloc.dart';
@@ -40,7 +42,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
               Padding(
                 padding: const EdgeInsetsDirectional.only(start: 20.0),
                 child: MyTextWidget(
-                  'find Product',
+                  LocaleKeys.find_products.tr(),
                   style: textTheme.caption?.rq
                       .copyWith(height: 15 / 12, color: Color(0xff505050)),
                 ),
@@ -73,7 +75,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                                 ),
                                 Flexible(
                                   child: Shimmer.fromColors(
-                                    baseColor: Colors.grey[100]!,
+                                    baseColor: Colors.grey[200]!,
                                     highlightColor: Colors.grey[100]!,
                                     child: Container(
                                       width: 300.0,
@@ -88,7 +90,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                       ),
                       Container(
                         child: Shimmer.fromColors(
-                          baseColor: Colors.grey[100]!,
+                          baseColor: Colors.grey[200]!,
                           highlightColor: Colors.grey[100]!,
                           child: Container(
                             width: 300.0,
@@ -132,7 +134,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
             Padding(
               padding: const EdgeInsetsDirectional.only(start: 20.0),
               child: MyTextWidget(
-                'find Product',
+                LocaleKeys.find_products.tr(),
                 style: textTheme.caption?.rq
                     .copyWith(height: 15 / 12, color: Color(0xff505050)),
               ),
@@ -154,8 +156,6 @@ class _SearchResultState extends ThemeState<SearchResult> {
                         HelperFunctions.slidingNavigation(
                             context,
                             ProductDetailsPage(
-                              boutiqueIcon: "",
-                              boutiqueId: 39,
                               productItem: state
                                   .searchResultModel!.data!.products![index],
                             ));

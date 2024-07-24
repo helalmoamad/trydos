@@ -195,7 +195,7 @@ class _CartPageState extends State<CartPage> {
                                               height: 1.33),
                                     ),
                                     Text(
-                                      "${totlaPrice.toStringAsFixed(2)} ",
+                                      "${totlaPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                       style: context.textTheme.subtitle1?.mr
                                           .copyWith(
                                               fontSize: 13,
@@ -231,11 +231,6 @@ class _CartPageState extends State<CartPage> {
                               shrinkWrap: true,
                               itemCount: state.cartCollection!.length,
                               itemBuilder: (context, index) {
-                                print("object6${state.cartCollection!.values.toList()[index][0].boutique!.icon!.filePath}" +
-                                    "*************************************************");
-                                print("object6${state.cartCollection!.values.toList()[index][0].boutique!.id}" +
-                                    "*************************************************");
-
                                 double price = 0;
                                 state.cartCollection!.values
                                     .toList()[index]
@@ -314,7 +309,7 @@ class _CartPageState extends State<CartPage> {
                                                             height: 1.33),
                                                   ),
                                                   Text(
-                                                    " ${price.toStringAsFixed(2)}",
+                                                    " ${price.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}",
                                                     style: context
                                                         .textTheme.subtitle1?.mr
                                                         .copyWith(
@@ -484,15 +479,6 @@ class _CartPageState extends State<CartPage> {
                                                                   .slidingNavigation(
                                                                       context,
                                                                       ProductDetailsPage(
-                                                                        boutiqueIcon: state
-                                                                            .cartCollection![keyFirst]![index]
-                                                                            .boutique!
-                                                                            .icon!
-                                                                            .filePath!,
-                                                                        boutiqueId: state
-                                                                            .cartCollection![keyFirst]![index]
-                                                                            .boutique!
-                                                                            .id!,
                                                                         productItem: state.productITemForCart![state
                                                                             .cartCollection![keyFirst]![index]
                                                                             .productId
@@ -735,7 +721,7 @@ class _CartPageState extends State<CartPage> {
                                                                           Row(
                                                                         children: [
                                                                           Text(
-                                                                            (state.cartCollection![keyFirst]![index].price! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2),
+                                                                            (state.cartCollection![keyFirst]![index].price! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2),
                                                                             style: context.textTheme.subtitle1?.ra.copyWith(
                                                                                 decorationColor: Color(0xffC4C2C2),
                                                                                 fontSize: 18,
@@ -747,26 +733,21 @@ class _CartPageState extends State<CartPage> {
                                                                                 5,
                                                                           ),
                                                                           Text(
-                                                                              "${(state.cartCollection![keyFirst]![index].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2)} ",
+                                                                              "${(state.cartCollection![keyFirst]![index].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                                                               style: context.textTheme.subtitle1?.br.copyWith(
                                                                                 decorationColor: Color(0xff505050),
                                                                                 fontSize: 18,
                                                                                 color: Color(0xff505050),
                                                                               )),
-                                                                          Positioned(
-                                                                            child:
-                                                                                Text(
-                                                                              state.getCurrencyForCountryModel!.data!.currency!.symbol ?? "",
-                                                                              style: context.textTheme.subtitle1?.ra.copyWith(
-                                                                                decorationColor: Color(0xffc4c2c2),
-                                                                                fontSize: 9,
-                                                                                color: Color(0xffc4c2c2),
-                                                                              ),
+                                                                          Text(
+                                                                            state.getCurrencyForCountryModel!.data!.currency!.symbol ??
+                                                                                "",
+                                                                            style:
+                                                                                context.textTheme.subtitle1?.ra.copyWith(
+                                                                              decorationColor: Color(0xffc4c2c2),
+                                                                              fontSize: 9,
+                                                                              color: Color(0xffc4c2c2),
                                                                             ),
-                                                                            bottom:
-                                                                                28,
-                                                                            right:
-                                                                                10,
                                                                           )
                                                                         ],
                                                                       ),

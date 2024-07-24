@@ -20,7 +20,9 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
     }
     if (serverName != ServerName.cloudinary) {
       headers = client.options.headers
-        ..['country'] = GetIt.I<PrefsRepository>().countryIso;
+        ..['country'] = GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
+            ? GetIt.I<PrefsRepository>().userChoosedCountryIso
+            : GetIt.I<PrefsRepository>().countryIso;
       headers = client.options.headers
         ..['lang'] = LanguageService.languageCode == 'ar'
             ? 'ae'

@@ -613,23 +613,22 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                       return BlocBuilder<AuthBloc, AuthState>(
                           buildWhen: (p, c) =>
                               p.getCustomerCountryStatus !=
-                                  c.getCustomerCountryStatus &&
-                              _prefsRepository.userCountryIso == null,
+                              c.getCustomerCountryStatus,
                           builder: (context, authstate) {
-                            if (_prefsRepository.userCountryIso == null ||
-                                homestate.getAllowedCountriesModel == null ||
+                            if (homestate.getAllowedCountriesModel == null ||
                                 homestate.getAllowedCountriesModel!.data!
                                     .countries.isNullOrEmpty) {
                               return Center(
                                 child: TrydosLoader(),
                               );
                             }
-                            visibleCountries.value = homestate
-                                .getAllowedCountriesModel!.data!.countries!
-                                .any((element) {
-                              return element.iso ==
-                                  _prefsRepository.countryIso!;
-                            });
+                            visibleCountries.value = (homestate
+                                    .getAllowedCountriesModel!.data!.countries!
+                                    .any((element) {
+                                  return element.iso ==
+                                      _prefsRepository.countryIso!;
+                                }) ||
+                                _prefsRepository.userCountryIsAvailable == 1);
                             return ValueListenableBuilder<bool>(
                                 valueListenable: visibleCountries,
                                 builder: (context, visible, _) {
@@ -682,11 +681,19 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                 ElevatedButton(
                                                   onPressed: () {
                                                     if (_prefsRepository
-                                                            .countryIso !=
-                                                        "") {
+                                                            .userChoosedCountryIso !=
+                                                        null) {
+                                                      print("${_prefsRepository.userChoosedCountryIso}" +
+                                                          "-------------------------------------------------");
                                                       visibleCountries.value =
                                                           !visible;
+                                                      _prefsRepository
+                                                          .setUserCountryIsAvailable(
+                                                              1);
                                                     } else {
+                                                      print("88888888888888" +
+                                                          "-------------------------------------------------");
+
                                                       showMessage(
                                                           "you have to choose a country",
                                                           backGroundColor:

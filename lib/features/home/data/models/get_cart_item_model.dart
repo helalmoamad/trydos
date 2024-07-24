@@ -41,30 +41,30 @@ class GetCartShippingItemsModel {
 }
 
 class Data {
-  final int? subTotal;
+  final double? subTotal;
   final String? subTotalFormated;
-  final int? totalTax;
+  final double? totalTax;
   final String? totalTaxFormated;
-  final int? totalDiscountOnProduct;
+  final double? totalDiscountOnProduct;
   final String? totalDiscountOnProductFormated;
-  final int? totalShippingCost;
+  final double? totalShippingCost;
   final String? totalShippingCostFormated;
-  final int? couponDiscount;
+  final double? couponDiscount;
   final String? couponDiscountFormated;
-  final int? codCost;
+  final double? codCost;
   final String? codCostFormated;
   final bool? hasCod;
-  final int? limitFree;
+  final double? limitFree;
   final String? limitFreeFormated;
-  final int? estimatedTax;
+  final double? estimatedTax;
   final String? estimatedTaxFormated;
-  final int? total;
+  final double? total;
   final String? totalFormated;
-  final int? restForFreeShipping;
+  final double? restForFreeShipping;
   final String? restForFreeShippingFormatted;
   final bool? showMessageResetForShippingFree;
   final List<String>? availablePaymentMethod;
-  final int? totalCash;
+  final double? totalCash;
   final String? totalCashFormated;
   final List<Cart>? cart;
 
@@ -98,30 +98,30 @@ class Data {
   });
 
   Data copyWith({
-    int? subTotal,
+    double? subTotal,
     String? subTotalFormated,
-    int? totalTax,
+    double? totalTax,
     String? totalTaxFormated,
-    int? totalDiscountOnProduct,
+    double? totalDiscountOnProduct,
     String? totalDiscountOnProductFormated,
-    int? totalShippingCost,
+    double? totalShippingCost,
     String? totalShippingCostFormated,
-    int? couponDiscount,
+    double? couponDiscount,
     String? couponDiscountFormated,
-    int? codCost,
+    double? codCost,
     String? codCostFormated,
     bool? hasCod,
-    int? limitFree,
+    double? limitFree,
     String? limitFreeFormated,
-    int? estimatedTax,
+    double? estimatedTax,
     String? estimatedTaxFormated,
-    int? total,
+    double? total,
     String? totalFormated,
-    int? restForFreeShipping,
+    double? restForFreeShipping,
     String? restForFreeShippingFormatted,
     bool? showMessageResetForShippingFree,
     List<String>? availablePaymentMethod,
-    int? totalCash,
+    double? totalCash,
     String? totalCashFormated,
     List<Cart>? cart,
   }) =>
@@ -162,27 +162,27 @@ class Data {
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        subTotal: json["sub_total"],
+        subTotal: json["sub_total"].toDouble(),
         subTotalFormated: json["sub_total_formated"],
-        totalTax: json["total_tax"],
+        totalTax: json["total_tax"].toDouble(),
         totalTaxFormated: json["total_tax_formated"],
-        totalDiscountOnProduct: json["total_discount_on_product"],
+        totalDiscountOnProduct: json["total_discount_on_product"].toDouble(),
         totalDiscountOnProductFormated:
             json["total_discount_on_product_formated"],
-        totalShippingCost: json["total_shipping_cost"],
+        totalShippingCost: json["total_shipping_cost"].toDouble(),
         totalShippingCostFormated: json["total_shipping_cost_formated"],
-        couponDiscount: json["coupon_discount"],
+        couponDiscount: json["coupon_discount"].toDouble(),
         couponDiscountFormated: json["coupon_discount_formated"],
-        codCost: json["cod_cost"],
+        codCost: json["cod_cost"].toDouble(),
         codCostFormated: json["cod_cost_formated"],
         hasCod: json["has_cod"],
-        limitFree: json["limitFree"],
+        limitFree: json["limitFree"].toDouble(),
         limitFreeFormated: json["limitFree_formated"],
-        estimatedTax: json["estimated_tax"],
+        estimatedTax: json["estimated_tax"].toDouble(),
         estimatedTaxFormated: json["estimated_tax_formated"],
-        total: json["total"],
+        total: json["total"].toDouble(),
         totalFormated: json["total_formated"],
-        restForFreeShipping: json["rest_for_free_shipping"],
+        restForFreeShipping: json["rest_for_free_shipping"].toDouble(),
         restForFreeShippingFormatted: json["rest_for_free_shipping_formatted"],
         showMessageResetForShippingFree:
             json["show_message_reset_for_shipping_free"],
@@ -190,7 +190,7 @@ class Data {
             ? []
             : List<String>.from(
                 json["available_payment_method"]!.map((x) => x)),
-        totalCash: json["total_cash"],
+        totalCash: json["total_cash"].toDouble(),
         totalCashFormated: json["total_cash_formated"],
         cart: json["cart"] == null
             ? []

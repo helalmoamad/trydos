@@ -5,7 +5,8 @@
 import 'dart:convert';
 
 import 'get_product_filters_model.dart' as filters;
-import 'get_product_listing_without_filters_model.dart' as product_without_filters;
+import 'get_product_listing_without_filters_model.dart'
+    as product_without_filters;
 
 GetProductListingWithFiltersModel getProductListingWithFiltersModelFromJson(
         String str) =>
@@ -56,14 +57,6 @@ class Data {
   final List<String>? colors;
   final List<filters.Category>? categories;
   final filters.Prices? prices;
-  final String? categoryParentParent;
-  final String? categoryParent;
-  final dynamic category;
-  final String? categorySeoDescription;
-  final String? categoryTitle;
-  final String? categoryH1;
-  final dynamic childCategories;
-  final String? resultFor;
   final String? boutiqueSlug;
 
   Data({
@@ -71,19 +64,11 @@ class Data {
     this.limit,
     this.offset,
     this.products,
-    this.categoryParentParent,
-    this.categoryParent,
-    this.category,
-    this.categorySeoDescription,
-    this.categoryTitle,
-    this.categoryH1,
-    this.childCategories,
     this.brands,
     this.attributes,
     this.categories,
     this.colors,
     this.prices,
-    this.resultFor,
     this.boutiqueSlug,
   });
 
@@ -97,14 +82,6 @@ class Data {
     List<String>? colors,
     List<filters.Category>? categories,
     filters.Prices? prices,
-    String? categoryParentParent,
-    String? categoryParent,
-    String? category,
-    String? categorySeoDescription,
-    String? categoryTitle,
-    String? categoryH1,
-    String? childCategories,
-    String? resultFor,
     String? boutiqueSlug,
   }) =>
       Data(
@@ -112,20 +89,10 @@ class Data {
         limit: limit ?? this.limit,
         offset: offset ?? this.offset,
         products: products ?? this.products,
-        categoryParentParent: categoryParentParent ?? this.categoryParentParent,
-        categoryParent: categoryParent ?? this.categoryParent,
-        category: category ?? this.category,
-        categories: categories ?? categories,
-        categorySeoDescription:
-            categorySeoDescription ?? this.categorySeoDescription,
-        categoryTitle: categoryTitle ?? this.categoryTitle,
-        categoryH1: categoryH1 ?? this.categoryH1,
-        childCategories: childCategories ?? this.childCategories,
         brands: brands ?? brands ,
         attributes: attributes ?? attributes,
         colors: colors ?? this.colors,
         prices: prices ?? prices,
-        resultFor: resultFor ?? this.resultFor,
         boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
       );
 
@@ -138,21 +105,10 @@ class Data {
           ? []
           : List<product_without_filters.Products>.from(
               json["products"]!.map((x) => product_without_filters.Products.fromJson(x))),
-      categoryParentParent: json["category_parent_parent"],
-      categoryParent: json["category_parent"],
-      category: json["category"] is String
-          ? json["category"]
-          : Category.fromJson(json["category"]),
-      categorySeoDescription: json["category_seo_description"],
-      categoryTitle: json["category_title"],
-      categoryH1: json["category_h1"],
-      childCategories: json["child_categories"] is List
-          ? List<Category>.from(
-              json["child_categories"]!.map((x) => Category.fromJson(x)))
-          : json["child_categories"],
       brands: json["brands"] == null
           ? []
-          : List<filters.Brand>.from(json["brands"]!.map((x) => filters.Brand.fromJson(x))),
+          : List<filters.Brand>.from(
+              json["brands"]!.map((x) => filters.Brand.fromJson(x))),
       attributes: json["attributes"] == null
           ? []
           : List<filters.Attribute>.from(
@@ -164,8 +120,9 @@ class Data {
       colors: json["colors"] == null
           ? []
           : List<String>.from(json["colors"]!.map((x) => x)),
-      prices: json["prices"] == null ? null : filters.Prices.fromJson(json["prices"]),
-      resultFor: json["result_for"],
+      prices: json["prices"] == null
+          ? null
+          : filters.Prices.fromJson(json["prices"]),
       boutiqueSlug: json["boutique_slug"],
     );
   }
@@ -177,26 +134,18 @@ class Data {
         "products": products == null
             ? []
             : List<dynamic>.from(products!.map((x) => x.toJson())),
-        "category_parent_parent": categoryParentParent,
-        "category_parent": categoryParent,
-        "category": category,
-        "category_seo_description": categorySeoDescription,
-        "category_title": categoryTitle,
-        "category_h1": categoryH1,
-        "child_categories": childCategories,
         "brands": brands == null
             ? []
             : List<dynamic>.from(brands!.map((x) => x.toJson())),
         "attributes": attributes == null
             ? []
             : List<dynamic>.from(attributes!.map((x) => x.toJson())),
-    "categories": categories == null
+        "categories": categories == null
             ? []
             : List<dynamic>.from(categories!.map((x) => x.toJson())),
         "colors":
             colors == null ? [] : List<dynamic>.from(colors!.map((x) => x)),
         "prices": prices?.toJson(),
-        "result_for": resultFor,
         "boutique_slug": boutiqueSlug,
       };
 }
