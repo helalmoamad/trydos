@@ -342,6 +342,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                     orginalWidth![index],
                                                 width: 70.w,
                                                 height: 70.w,
+                                                imageWidth: 70,
+                                                imageHeight: 70,
                                                 imageUrl: images[index],
                                                 innerShadowYOffset: 4,
                                                 borderColor: index ==

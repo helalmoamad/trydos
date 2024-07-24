@@ -18,6 +18,8 @@ class MyCachedNetworkImage extends StatelessWidget {
       this.ordinalHeight,
       this.ordinalwidth,
       this.logoTextHeight,
+        this.imageWidth,
+        this.imageHeight,
       required this.imageFit,
       this.imageBuilder,
       this.imageColor,
@@ -37,6 +39,8 @@ class MyCachedNetworkImage extends StatelessWidget {
   final String imageUrl;
   final double width;
   final double? logoTextWidth;
+  final double? imageWidth;
+  final double? imageHeight;
   final double height;
   final double? ordinalHeight;
   final double? ordinalwidth;
@@ -77,10 +81,10 @@ class MyCachedNetworkImage extends StatelessWidget {
       print(
           "000000000000000000555555555555555555555----------------------------------------${ordinalHeight}--------------------${ordinalwidth}");
       url = ordinalwidth! >= ordinalHeight!
-          ? list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1]
-          : list[0] + 'upload/c_scale,w_${2 * width.toInt()}' + list[1];
+          ? list[0] + 'upload/c_scale,h_${2 * (imageHeight ?? height).toInt()}' + list[1]
+          : list[0] + 'upload/c_scale,w_${2 * (imageWidth ?? width).toInt()}' + list[1];
     } else {
-      url = list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1];
+      url = list[0] + 'upload/c_scale,h_${2 * (imageHeight ?? height).toInt()}' + list[1];
     }
 
     return ValueListenableBuilder<int>(
@@ -105,9 +109,9 @@ class MyCachedNetworkImage extends StatelessWidget {
                   imageUrl: url,
                   key: ValueKey(url),
                   fit: imageFit,
-                  width: width,
+                  width:  width,
                   color: imageColor,
-                  height: height,
+                  height:  height,
                   cacheManager: CustomCacheManager(),
                   progressIndicatorBuilder: (context, _, progress) {
                     callWhenLoadingImage?.call();

@@ -61,6 +61,7 @@ class _ProductDetailsSheetBottomBarState
     with SingleTickerProviderStateMixin {
   late final AnimationController animationController;
   late HomeBloc homeBloc;
+
   @override
   void initState() {
     widget.addToBagButtonShapeNotifier.value = 0;
@@ -265,7 +266,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                           height: 20,
                                                                                           child: ListView.builder(
                                                                                             itemBuilder: (context, index) {
-                                                                                              return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: widget.imageUrl, width: 15, imageFit: BoxFit.cover, height: 20)); /*Container(
+                                                                                              return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: widget.imageUrl, width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
                                                                                                 width: 15,
                                                                                                 height: 20,
                                                                                                 decoration: BoxDecoration(
@@ -291,7 +292,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                         height: 20,
                                                                                         child: ListView.builder(
                                                                                           itemBuilder: (context, index) {
-                                                                                            return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: allimages[index], width: 15, imageFit: BoxFit.cover, height: 20)); /*Container(
+                                                                                            return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: allimages[index], width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
                                                                                                 width: 15,
                                                                                                 height: 20,
                                                                                                 decoration: BoxDecoration(

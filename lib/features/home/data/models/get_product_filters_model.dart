@@ -304,6 +304,7 @@ class Category {
   final int? id;
   final String? name;
   final String? icon;
+  final String? slug;
   final bool isSubCategory;
   final List<SubCategory>? subCategories;
 
@@ -311,6 +312,7 @@ class Category {
     this.id,
     this.name,
     this.icon,
+    this.slug,
     this.isSubCategory = false,
     this.subCategories = const [],
   });
@@ -319,12 +321,14 @@ class Category {
     int? id,
     String? name,
     String? icon,
+    String? slug,
     List<SubCategory>? subCategories,
   }) =>
       Category(
         id: id ?? this.id,
         name: name ?? this.name,
         icon: icon ?? this.icon,
+        slug: slug ?? this.slug,
         subCategories: subCategories ?? this.subCategories,
       );
 
@@ -332,6 +336,7 @@ class Category {
         id: json["id"],
         name: json["name"],
         icon: json["icon"],
+    slug: json["slug"],
         subCategories: json["category_sub"] == null
             ? []
             : List<SubCategory>.from(
@@ -343,6 +348,7 @@ class Category {
       "id": id,
       "name": name,
       "icon": icon,
+      "slug": slug,
       "category_sub": subCategories.isNullOrEmpty
           ? []
           : List<SubCategory>.from(subCategories!.map((x) => x.toJson())),
@@ -354,28 +360,33 @@ class SubCategory {
   final int? id;
   final String? name;
   final String? icon;
+  final String? slug;
 
   SubCategory({
     this.id,
     this.name,
     this.icon,
+    this.slug,
   });
 
   SubCategory copyWith({
     int? id,
     String? name,
     String? icon,
+    String? slug,
   }) =>
       SubCategory(
         id: id ?? this.id,
         name: name ?? this.name,
         icon: icon ?? this.icon,
+        slug: slug ?? this.slug,
       );
 
   factory SubCategory.fromJson(Map<String, dynamic> json) => SubCategory(
         id: json["id"],
         name: json["name"],
         icon: json["icon"],
+    slug: json["slug"],
       );
 
   Map<String, dynamic> toJson() {
@@ -383,6 +394,7 @@ class SubCategory {
       "id": id,
       "name": name,
       "icon": icon,
+      "slug": slug,
     };
   }
 }

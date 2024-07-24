@@ -19,14 +19,12 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/animated_search_bar/animated_search_bar.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/authentication/presentation/widgets/pin_item.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as filter_products;
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/search/presentation/pages/search_listing_page.dart';
-import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
 import '../../../../common/constant/design/assets_provider.dart';
@@ -38,7 +36,6 @@ import '../../../app/blocs/app_bloc/app_state.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
-import '../../data/models/get_product_filters_model.dart';
 import '../manager/home_bloc.dart';
 import '../widgets/product_listing/product_item.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
@@ -756,40 +753,42 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     : null,
                                                               ),
                                                             )),
-                                                        Padding(
-                                                          padding: EdgeInsetsDirectional
-                                                              .only(
-                                                                  end:
-                                                                      !isExpanded
-                                                                          ? 10.0
-                                                                          : 25),
-                                                          child: !isExpanded
-                                                              ? SvgPicture
+                                                        GestureDetector(
+                                                            onTap: () {
+                                                              if(isExpanded)
+                                                              filterPageExpanded
+                                                                  .value =
+                                                              false;
+                                                            },
+                                                          child: Row(
+                                                            children:[
+                                                              !isExpanded
+                                                                  ? SvgPicture
                                                                   .asset(
+                                                                AppAssets
+                                                                    .shareSvg,
+                                                                width: 20,
+                                                                height: 20,
+                                                                color: Color(
+                                                                    0xff3C3C3C),
+                                                              )
+                                                                  : GestureDetector(
+                                                                child:
+                                                                SvgPicture
+                                                                    .asset(
                                                                   AppAssets
-                                                                      .shareSvg,
-                                                                  width: 20,
-                                                                  height: 20,
+                                                                      .closeSvg,
+                                                                  width: 15,
+                                                                  height: 15,
                                                                   color: Color(
-                                                                      0xff3C3C3C),
-                                                                )
-                                                              : GestureDetector(
-                                                                  onTap: () {
-                                                                    filterPageExpanded
-                                                                            .value =
-                                                                        false;
-                                                                  },
-                                                                  child:
-                                                                      SvgPicture
-                                                                          .asset(
-                                                                    AppAssets
-                                                                        .closeSvg,
-                                                                    width: 15,
-                                                                    height: 15,
-                                                                    color: Color(
-                                                                        0xffFF5F61),
-                                                                  ),
+                                                                      0xffFF5F61),
                                                                 ),
+                                                              ),
+                                                              SizedBox(width: !isExpanded
+                                                                  ? 10.0
+                                                                  : 25)
+                                                            ]
+                                                          )
                                                         ),
                                                       ],
                                                       withShadow: false),
