@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -212,13 +213,60 @@ class _HomePageState extends State<HomePage> {
                           key: Key(WidgetsKey.boutiquesFailureStatusKey),
                           itemBuilder: (_, index) => Padding(
                               padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                              child: TrydosShimmerLoading(
-                                  width: 1.sw,
-                                  logoTextWidth: 70.w,
-                                  height: 235,
-                                  logoTextHeight: 20)
-                              //HomePageCard(showWhite: index % 2 == 0),
-                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20.0),
+                                child: Shimmer.fromColors(
+                                    baseColor: Colors.grey.shade300,
+                                    highlightColor: Colors.grey.shade100,
+                                    enabled: true,
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        Container(
+                                            width: 1.sw,
+                                            height: 235,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                              BorderRadius.circular(20.0),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: const Color(0xff000000)
+                                                      .withOpacity(0.4),
+                                                  offset: Offset(0, 3),
+                                                  blurRadius: 6,
+                                                )
+                                              ],
+                                            )),
+                                        Container(
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 20),
+                                            width: 1.sw,
+                                            height: 135,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                              BorderRadius.circular(20.0),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: const Color(0xff000000)
+                                                      .withOpacity(0.6),
+                                                  offset: Offset(0, 3),
+                                                  blurRadius: 6,
+                                                )
+                                              ],
+                                            )),
+                                        Positioned(
+                                          bottom: 30,
+                                          child: Row(
+                                            children: List.generate(
+                                                5, (index) => CircleAvatar(
+                                              radius: 20,
+                                            )),
+                                          ),
+                                        )
+                                      ],
+                                    )),
+                              )),
+                          //HomePageCard(showWhite: index % 2 == 0),
                           separator: SizedBox(
                             height: 20,
                           ),

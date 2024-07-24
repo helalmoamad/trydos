@@ -33,6 +33,7 @@ class PriceFilter extends StatefulWidget {
     required this.lowerAndUpperBound,
     required this.boutiqueSlug,
     this.category,
+    required this.decimalPoint,
   });
 
   final bool hideTitle;
@@ -42,6 +43,7 @@ class PriceFilter extends StatefulWidget {
   final String boutiqueSlug;
   final String? category;
   final ValueNotifier<Tuple2<double, double>> lowerAndUpperBound;
+  final int decimalPoint;
 
   @override
   State<PriceFilter> createState() => _PriceFilterState();
@@ -196,7 +198,7 @@ class _PriceFilterState extends State<PriceFilter> {
                           return Row(
                             children: [
                               MyTextWidget(
-                                'Min ${filterData.item1.toStringAsFixed(2)} ',
+                                'Min ${filterData.item1.toStringAsFixed(widget.decimalPoint)} ',
                                 style: textTheme.caption?.rq.copyWith(
                                     color: filterData.item1 >
                                             (widget.pricesFiltersRanges
@@ -227,7 +229,7 @@ class _PriceFilterState extends State<PriceFilter> {
                           return Row(
                             children: [
                               MyTextWidget(
-                                'Max ${filterData.item2.toStringAsFixed(2)} ',
+                                'Max ${filterData.item2.toStringAsFixed(widget.decimalPoint)} ',
                                 style: textTheme.caption?.rq.copyWith(
                                     color: filterData.item2 <
                                             widget.pricesFiltersRanges

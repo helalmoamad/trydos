@@ -374,6 +374,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                               .currency!
                                               .symbol ??
                                           "",
+                                      decimalPoint: state.startingSetting?.decimalPointSetting ?? 2,
                                       addToBagButtonShapeNotifier:
                                           widget.addToBagButtonShapeNotifier,
                                       price: (widget.productItem.price! *
@@ -382,7 +383,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .data!
                                                   .currency!
                                                   .exchangeRate!)
-                                          .toStringAsFixed(2),
+                                          .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2),
                                       offerPrice: (widget
                                                   .productItem.offerPrice! *
                                               state
@@ -390,7 +391,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .data!
                                                   .currency!
                                                   .exchangeRate!)
-                                          .toStringAsFixed(2),
+                                          .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2),
                                     );
                                   }),
                               currentTab != -1

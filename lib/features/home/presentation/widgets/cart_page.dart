@@ -195,7 +195,7 @@ class _CartPageState extends State<CartPage> {
                                               height: 1.33),
                                     ),
                                     Text(
-                                      "${totlaPrice.toStringAsFixed(2)} ",
+                                      "${totlaPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                       style: context.textTheme.subtitle1?.mr
                                           .copyWith(
                                               fontSize: 13,
@@ -309,7 +309,7 @@ class _CartPageState extends State<CartPage> {
                                                             height: 1.33),
                                                   ),
                                                   Text(
-                                                    " ${price.toStringAsFixed(2)}",
+                                                    " ${price.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}",
                                                     style: context
                                                         .textTheme.subtitle1?.mr
                                                         .copyWith(
@@ -721,7 +721,7 @@ class _CartPageState extends State<CartPage> {
                                                                           Row(
                                                                         children: [
                                                                           Text(
-                                                                            (state.cartCollection![keyFirst]![index].price! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2),
+                                                                            (state.cartCollection![keyFirst]![index].price! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2),
                                                                             style: context.textTheme.subtitle1?.ra.copyWith(
                                                                                 decorationColor: Color(0xffC4C2C2),
                                                                                 fontSize: 18,
@@ -733,7 +733,7 @@ class _CartPageState extends State<CartPage> {
                                                                                 5,
                                                                           ),
                                                                           Text(
-                                                                              "${(state.cartCollection![keyFirst]![index].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2)} ",
+                                                                              "${(state.cartCollection![keyFirst]![index].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                                                               style: context.textTheme.subtitle1?.br.copyWith(
                                                                                 decorationColor: Color(0xff505050),
                                                                                 fontSize: 18,

@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get_it/get_it.dart';
+import 'dart:ui' as ui;
 import 'package:local_hero/local_hero.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
@@ -289,10 +289,6 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                           (timeStamp) {
                                                     prevModeForRunHero = 1;
                                                   });
-                                                  print(
-                                                      'aaa ${widget.scrollController.position.pixels}');
-                                                  print(
-                                                      'bbb ${(1.sh - renderBox!.localToGlobal(Offset.zero).dy + 150 - renderBox!.size.height)}');
                                                   if (widget.scrollController
                                                           .position.pixels <
                                                       (1.sh -
@@ -355,60 +351,52 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                         : Material(
                                                             color: Colors
                                                                 .transparent,
-                                                            child: Gallery3D(
-                                                                // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
-                                                                controller:
-                                                                    gallery3dControllerForCircles!,
-                                                                denyScrolling:
-                                                                    true,
-                                                                width: 200,
-                                                                stopScrollingOnEdges:
-                                                                    (double
-                                                                        primaryDelta) {
-                                                                  return (primaryDelta <=
-                                                                              0 &&
-                                                                          gallery3dControllerForCircles!.currentIndex ==
-                                                                              (syncColorImageList!.length ~/ 2 -
-                                                                                  1)) ||
-                                                                      (primaryDelta >=
-                                                                              0 &&
-                                                                          gallery3dControllerForCircles!.currentIndex ==
-                                                                              0);
-                                                                },
-                                                                height: null,
-                                                                changingPagesScrollOffset:
-                                                                    0.1,
-                                                                isClip: false,
-                                                                onItemChanged:
-                                                                    (index) {
-                                                                  currentIndexInSlider =
-                                                                      index;
-                                                                },
-                                                                onClickItem:
-                                                                    (index) {
-                                                                  WidgetsBinding
-                                                                      .instance
-                                                                      .addPostFrameCallback(
-                                                                          (timeStamp) {
-                                                                    prevModeForRunHero =
-                                                                        1;
-                                                                  });
-                                                                  displayMode
-                                                                      .value = 1;
-                                                                  if (widget
-                                                                          .scrollController
-                                                                          .position
-                                                                          .pixels <
-                                                                      (1.sh -
-                                                                          renderBox!
-                                                                              .localToGlobal(Offset
-                                                                                  .zero)
-                                                                              .dy +
-                                                                          150 -
-                                                                          renderBox!
-                                                                              .size
-                                                                              .height)) {
-                                                                    widget.scrollController.animateTo(
+                                                            child: Directionality(
+                                                              textDirection: ui.TextDirection.ltr,
+                                                              child: Gallery3D(
+                                                                  // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
+                                                                  controller:
+                                                                      gallery3dControllerForCircles!,
+                                                                  denyScrolling:
+                                                                      true,
+                                                                  width: 200,
+                                                                  stopScrollingOnEdges:
+                                                                      (double
+                                                                          primaryDelta) {
+                                                                    return (primaryDelta <=
+                                                                                0 &&
+                                                                            gallery3dControllerForCircles!.currentIndex ==
+                                                                                (syncColorImageList!.length ~/ 2 -
+                                                                                    1)) ||
+                                                                        (primaryDelta >=
+                                                                                0 &&
+                                                                            gallery3dControllerForCircles!.currentIndex ==
+                                                                                0);
+                                                                  },
+                                                                  height: null,
+                                                                  changingPagesScrollOffset:
+                                                                      0.1,
+                                                                  isClip: false,
+                                                                  onItemChanged:
+                                                                      (index) {
+                                                                    currentIndexInSlider =
+                                                                        index;
+                                                                  },
+                                                                  onClickItem:
+                                                                      (index) {
+                                                                    WidgetsBinding
+                                                                        .instance
+                                                                        .addPostFrameCallback(
+                                                                            (timeStamp) {
+                                                                      prevModeForRunHero =
+                                                                          1;
+                                                                    });
+                                                                    displayMode
+                                                                        .value = 1;
+                                                                    if (widget
+                                                                            .scrollController
+                                                                            .position
+                                                                            .pixels <
                                                                         (1.sh -
                                                                             renderBox!
                                                                                 .localToGlobal(Offset
@@ -416,63 +404,74 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                                 .dy +
                                                                             150 -
                                                                             renderBox!
-                                                                                .size.height),
-                                                                        curve: Curves
-                                                                            .fastEaseInToSlowEaseOut,
-                                                                        duration:
-                                                                            const Duration(milliseconds: 300));
-                                                                  }
-                                                                },
-                                                                itemConfig: const GalleryItemConfig(
-                                                                    width: 40,
-                                                                    height: 40,
-                                                                    radius: 180,
-                                                                    isShowTransformMask:
-                                                                        false,
-                                                                    shadows: [
-                                                                      BoxShadow(
-                                                                        color: Color(
-                                                                            0x19000000),
-                                                                        offset: Offset(
-                                                                            0,
-                                                                            3),
-                                                                        blurRadius:
-                                                                            6,
-                                                                      ),
-                                                                    ]),
-                                                                itemBuilder:
-                                                                    (context,
-                                                                        index) {
-                                                                  return Visibility(
-                                                                    visible: ((gallery3dControllerForCircles?.currentIndex ?? 0) < (syncColorImageList!.length ~/ 2) &&
-                                                                            index <
-                                                                                (syncColorImageList!.length ~/
-                                                                                    2)) ||
-                                                                        (gallery3dControllerForCircles?.currentIndex ??
-                                                                                0) >=
-                                                                            (syncColorImageList!.length ~/
-                                                                                2),
-                                                                    child:
-                                                                        ProductListingImageWidget(
+                                                                                .size
+                                                                                .height)) {
+                                                                      widget.scrollController.animateTo(
+                                                                          (1.sh -
+                                                                              renderBox!
+                                                                                  .localToGlobal(Offset
+                                                                                      .zero)
+                                                                                  .dy +
+                                                                              150 -
+                                                                              renderBox!
+                                                                                  .size.height),
+                                                                          curve: Curves
+                                                                              .fastEaseInToSlowEaseOut,
+                                                                          duration:
+                                                                              const Duration(milliseconds: 300));
+                                                                    }
+                                                                  },
+                                                                  itemConfig: const GalleryItemConfig(
                                                                       width: 40,
-                                                                      height:
-                                                                          40,
-                                                                      imageUrl:
-                                                                          images[
-                                                                              index],
-                                                                      innerShadowYOffset:
-                                                                          4,
-                                                                      borderColor: index ==
-                                                                              currentIndexInSlider
-                                                                          ? Color(int.parse(
-                                                                              '0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}'))
-                                                                          : Colors
-                                                                              .white,
-                                                                      circleShape:
-                                                                          true,
-                                                                    ),
-                                                                  );
-                                                                }),
+                                                                      height: 40,
+                                                                      radius: 180,
+                                                                      isShowTransformMask:
+                                                                          false,
+                                                                      shadows: [
+                                                                        BoxShadow(
+                                                                          color: Color(
+                                                                              0x19000000),
+                                                                          offset: Offset(
+                                                                              0,
+                                                                              3),
+                                                                          blurRadius:
+                                                                              6,
+                                                                        ),
+                                                                      ]),
+                                                                  itemBuilder:
+                                                                      (context,
+                                                                          index) {
+                                                                    return Visibility(
+                                                                      visible: ((gallery3dControllerForCircles?.currentIndex ?? 0) < (syncColorImageList!.length ~/ 2) &&
+                                                                              index <
+                                                                                  (syncColorImageList!.length ~/
+                                                                                      2)) ||
+                                                                          (gallery3dControllerForCircles?.currentIndex ??
+                                                                                  0) >=
+                                                                              (syncColorImageList!.length ~/
+                                                                                  2),
+                                                                      child:
+                                                                          ProductListingImageWidget(
+                                                                        width: 40,
+                                                                        height:
+                                                                            40,
+                                                                        imageUrl:
+                                                                            images[
+                                                                                index],
+                                                                        innerShadowYOffset:
+                                                                            4,
+                                                                        borderColor: index ==
+                                                                                currentIndexInSlider
+                                                                            ? Color(int.parse(
+                                                                                '0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}'))
+                                                                            : Colors
+                                                                                .white,
+                                                                        circleShape:
+                                                                            true,
+                                                                      ),
+                                                                    );
+                                                                  }),
+                                                            ),
                                                           ),
                                               ),
                                             )

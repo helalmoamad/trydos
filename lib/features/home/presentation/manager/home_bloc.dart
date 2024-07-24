@@ -814,20 +814,22 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   @override
   Map<String, dynamic>? toJson(HomeState state) {
-    return state.copyWith(
-      currentSelectedColorForEveryProduct: {},
-      reRequestTheseProductListingInBoutiques: {},
-      reRequestTheseBoutiques: {},
-      appliedFiltersByUser: null,
-      resetAppliedFilters: true,
-      choosedFiltersByUser: null,
-      productStatus: {},
-      ListitemForAddToCart: [],
-      getMainCategoriesStatus: GetMainCategoriesStatus.init,
-      getProductDetailWithoutSimilarRelatedProductsStatus:
-          GetProductDetailWithoutSimilarRelatedProductsStatus.init,
-      getStartingSettingsStatus: GetStartingSettingsStatus.init,
-    ).toJson();
+    return state
+        .copyWith(
+          currentSelectedColorForEveryProduct: {},
+          reRequestTheseProductListingInBoutiques: {},
+          reRequestTheseBoutiques: {},
+          appliedFiltersByUser: null,
+          resetAppliedFilters: true,
+          choosedFiltersByUser: null,
+          productStatus: {},
+          ListitemForAddToCart: [],
+          getMainCategoriesStatus: GetMainCategoriesStatus.init,
+          getProductDetailWithoutSimilarRelatedProductsStatus:
+              GetProductDetailWithoutSimilarRelatedProductsStatus.init,
+          getStartingSettingsStatus: GetStartingSettingsStatus.init,
+        )
+        .toJson();
   }
 
   FutureOr<void> _onGetProductFiltersEvent(
@@ -1522,10 +1524,22 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onChangeSelectedFiltersEvent(
       ChangeSelectedFiltersEvent event, Emitter<HomeState> emit) {
+    bool makeChoosedFiltersNull = false;
+    if (event.filtersChoosedByUser?.filters != null) {
+      if (event.filtersChoosedByUser!.filters!.colors.isNullOrEmpty &&
+          event.filtersChoosedByUser!.filters!.brands.isNullOrEmpty &&
+          event.filtersChoosedByUser!.filters!.attributes.isNullOrEmpty &&
+          event.filtersChoosedByUser!.filters!.categories.isNullOrEmpty &&
+          event.filtersChoosedByUser!.filters!.prices == null
+      ) {
+        makeChoosedFiltersNull = true;
+      }
+    }
     add(GetProductFiltersEvent(
         category: event.category,
         boutiqueSlug: event.boutiqueSlug,
-        filtersChoosedByUser: event.filtersChoosedByUser));
+        filtersChoosedByUser:
+            makeChoosedFiltersNull ? null : event.filtersChoosedByUser));
     filters_model.Filter filters =
         event.filtersChoosedByUser?.filters ?? filters_model.Filter();
     emit(state.copyWith(

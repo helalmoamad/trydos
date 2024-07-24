@@ -20,6 +20,7 @@ class PriceFiltersRangesList extends StatefulWidget {
     required this.currencySymbol,
     required this.priceRanges,
     required this.exchangeRate,
+    required this.decimalPoint,
   });
 
   final String boutiqueSlug;
@@ -27,7 +28,7 @@ class PriceFiltersRangesList extends StatefulWidget {
   final double exchangeRate;
   final List<PriceRange> priceRanges;
   final String? category;
-
+  final int decimalPoint;
   @override
   State<PriceFiltersRangesList> createState() => _PriceFiltersRangesListState();
 }
@@ -112,7 +113,7 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                         dashPattern: [3, 3],
                         child: Center(
                           child: Text(
-                            '${(widget.priceRanges[index].minPrice! * widget.exchangeRate).toStringAsFixed(2)} - ${(widget.priceRanges[index].maxPrice! * widget.exchangeRate).toStringAsFixed(2)} ${widget.currencySymbol}',
+                            '${(widget.priceRanges[index].minPrice! * widget.exchangeRate).toStringAsFixed(widget.decimalPoint)} - ${(widget.priceRanges[index].maxPrice! * widget.exchangeRate).toStringAsFixed(2)} ${widget.currencySymbol}',
                             overflow: TextOverflow.ellipsis,
                             textDirection: TextDirection.ltr,
                             style: textTheme.bodyText2?.mq.copyWith(

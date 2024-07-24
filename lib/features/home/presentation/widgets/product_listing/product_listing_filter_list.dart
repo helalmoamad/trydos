@@ -760,6 +760,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     : PriceFiltersRangesList(
                                                         exchangeRate:
                                                             exchangeRate,
+                                                        decimalPoint: state.startingSetting?.decimalPointSetting ?? 2,
                                                         boutiqueSlug:
                                                             widget.boutiqueSlug,
                                                         currencySymbol:
@@ -818,6 +819,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
             if (filters.prices != null)
               PriceFilter(
                 lowerAndUpperBound: lowerAndUpperPrices!,
+                decimalPoint: state.startingSetting?.decimalPointSetting ?? 2,
                 pricrRate: exchangeRate,
                 boutiqueSlug: widget.boutiqueSlug,
                 category: widget.category,
@@ -911,185 +913,204 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                 SizedBox(
                   height: 10,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
-                    children: [
-                      if (state.choosedFiltersByUser != null ||
-                          (lowerAndUpperPrices != null &&
-                              (lowerAndUpperPrices!.value.item1 > minPrice!||
-                                  lowerAndUpperPrices!.value.item2 < maxPrice!))) ...{
-                        Expanded(
-                          flex: 5,
-                          child: GestureDetector(
-                            onTap: () {
-                              List<filter_model.Brand>? brands = [
-                                ...state.appliedFiltersByUser?.filters
-                                        ?.brands ??
-                                    [],
-                                ...state.choosedFiltersByUser?.filters
-                                        ?.brands ??
-                                    []
-                              ];
-                              List<filter_model.Category>? categories = [
-                                ...state.appliedFiltersByUser?.filters
-                                        ?.categories ??
-                                    [],
-                                ...state.choosedFiltersByUser?.filters
-                                        ?.categories ??
-                                    []
-                              ];
-                              List<String>? colors = [
-                                ...state.appliedFiltersByUser?.filters
-                                        ?.colors ??
-                                    [],
-                                ...state.choosedFiltersByUser?.filters
-                                        ?.colors ??
-                                    []
-                              ];
-                              List<String> options = [];
-                              int? id;
-                              String? name;
-                              if (!(state.appliedFiltersByUser?.filters
-                                      ?.attributes?.isNullOrEmpty ??
-                                  true)) {
-                                id = state.appliedFiltersByUser!.filters!
-                                    .attributes![0].id;
-                                name = state.appliedFiltersByUser!.filters!
-                                    .attributes![0].name;
-                                options.addAll(state.appliedFiltersByUser!
-                                        .filters!.attributes![0].options ??
-                                    []);
-                              }
-                              if (!(state.choosedFiltersByUser?.filters
-                                      ?.attributes?.isNullOrEmpty ??
-                                  true)) {
-                                id = state.choosedFiltersByUser!.filters!
-                                    .attributes![0].id;
-                                name = state.choosedFiltersByUser!.filters!
-                                    .attributes![0].name;
-                                options.addAll(state.choosedFiltersByUser!
-                                        .filters!.attributes![0].options ??
-                                    []);
-                              }
-                              filter_model.Prices? prices;
-                              if ((lowerAndUpperPrices != null &&
+                ValueListenableBuilder<Tuple2<double , double>>(
+                    valueListenable: lowerAndUpperPrices ?? ValueNotifier(Tuple2(-1,-1)),
+                    builder: (context , _ , __) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Row(
+                        children: [
+                          if (state.choosedFiltersByUser != null ||
+                              (lowerAndUpperPrices != null &&
                                   (lowerAndUpperPrices!.value.item1 > minPrice!||
-                                      lowerAndUpperPrices!.value.item2 < maxPrice!))) {
-                                prices = filter_model.Prices(
-                                  minPrice: lowerAndUpperPrices!.value.item1 /
-                                      exchangeRate,
-                                  maxPrice: lowerAndUpperPrices!.value.item2 /
-                                      exchangeRate,
-                                );
-                              }
-                              widget.closeFilterPage.call();
-                              homeBloc.add(GetProductsWithFiltersEvent(
-                                boutiqueSlug: widget.boutiqueSlug,
-                                category: widget.category,
-                                filtersAppliedByUser:
-                                    filter_model.GetProductFiltersModel(
-                                        filters: filter_model.Filter(
-                                            brands: brands,
-                                            categories: categories,
-                                            attributes: options.isEmpty
-                                                ? null
-                                                : [
-                                                    filter_model.Attribute(
-                                                      id: id,
-                                                      name: name,
-                                                      options: options,
-                                                    ),
-                                                  ],
-                                            colors: colors,
-                                            prices: prices)),
-                                offset: 1,
-                              ));
-                            },
-                            child: Container(
-                              height: 65,
-                              decoration: BoxDecoration(
-                                  color: Color(0xffFF5F61),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 6,
-                                        offset: Offset(0, 3)),
-                                    BoxShadow(
-                                        color: Colors.white.withOpacity(0.4),
-                                        blurRadius: 6,
-                                        offset: Offset(0, 3),
-                                        inset: true)
-                                  ],
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: Center(
-                                child: MyTextWidget(
-                                  'Apply',
-                                  style: textTheme.headline6?.rq.copyWith(
-                                      color: Color(0xffFEFEFE),
-                                      height: 23 / 18),
+                                      lowerAndUpperPrices!.value.item2 < maxPrice!))) ...{
+                            Expanded(
+                              flex: 5,
+                              child: GestureDetector(
+                                onTap: () {
+                                  List<filter_model.Brand>? brands = [
+                                    ...state.appliedFiltersByUser?.filters
+                                            ?.brands ??
+                                        [],
+                                    ...state.choosedFiltersByUser?.filters
+                                            ?.brands ??
+                                        []
+                                  ];
+                                  List<filter_model.Category>? categories = [
+                                    ...state.appliedFiltersByUser?.filters
+                                            ?.categories ??
+                                        [],
+                                    ...state.choosedFiltersByUser?.filters
+                                            ?.categories ??
+                                        []
+                                  ];
+                                  List<String>? colors = [
+                                    ...state.appliedFiltersByUser?.filters
+                                            ?.colors ??
+                                        [],
+                                    ...state.choosedFiltersByUser?.filters
+                                            ?.colors ??
+                                        []
+                                  ];
+                                  List<String> options = [];
+                                  int? id;
+                                  String? name;
+                                  if (!(state.appliedFiltersByUser?.filters
+                                          ?.attributes?.isNullOrEmpty ??
+                                      true)) {
+                                    id = state.appliedFiltersByUser!.filters!
+                                        .attributes![0].id;
+                                    name = state.appliedFiltersByUser!.filters!
+                                        .attributes![0].name;
+                                    options.addAll(state.appliedFiltersByUser!
+                                            .filters!.attributes![0].options ??
+                                        []);
+                                  }
+                                  if (!(state.choosedFiltersByUser?.filters
+                                          ?.attributes?.isNullOrEmpty ??
+                                      true)) {
+                                    id = state.choosedFiltersByUser!.filters!
+                                        .attributes![0].id;
+                                    name = state.choosedFiltersByUser!.filters!
+                                        .attributes![0].name;
+                                    options.addAll(state.choosedFiltersByUser!
+                                            .filters!.attributes![0].options ??
+                                        []);
+                                  }
+                                  filter_model.Prices? prices;
+                                  if ((lowerAndUpperPrices != null &&
+                                      (lowerAndUpperPrices!.value.item1 > minPrice!||
+                                          lowerAndUpperPrices!.value.item2 < maxPrice!))) {
+                                    prices = filter_model.Prices(
+                                      minPrice: lowerAndUpperPrices!.value.item1 /
+                                          exchangeRate,
+                                      maxPrice: lowerAndUpperPrices!.value.item2 /
+                                          exchangeRate,
+                                    );
+                                  }
+                                  widget.closeFilterPage.call();
+                                  homeBloc.add(GetProductsWithFiltersEvent(
+                                    boutiqueSlug: widget.boutiqueSlug,
+                                    category: widget.category,
+                                    filtersAppliedByUser:
+                                        filter_model.GetProductFiltersModel(
+                                            filters: filter_model.Filter(
+                                                brands: brands,
+                                                categories: categories,
+                                                attributes: options.isEmpty
+                                                    ? null
+                                                    : [
+                                                        filter_model.Attribute(
+                                                          id: id,
+                                                          name: name,
+                                                          options: options,
+                                                        ),
+                                                      ],
+                                                colors: colors,
+                                                prices: prices)),
+                                    offset: 1,
+                                  ));
+                                },
+                                child: Container(
+                                  height: 65,
+                                  decoration: BoxDecoration(
+                                      color: Color(0xffFF5F61),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Colors.black.withOpacity(0.1),
+                                            blurRadius: 6,
+                                            offset: Offset(0, 3)),
+                                        BoxShadow(
+                                            color: Colors.white.withOpacity(0.4),
+                                            blurRadius: 6,
+                                            offset: Offset(0, 3),
+                                            inset: true)
+                                      ],
+                                      borderRadius: BorderRadius.circular(20)),
+                                  child: Center(
+                                    child: MyTextWidget(
+                                      'Apply',
+                                      style: textTheme.headline6?.rq.copyWith(
+                                          color: Color(0xffFEFEFE),
+                                          height: 23 / 18),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                      },
-                      BlocBuilder<HomeBloc, HomeState>(
-                        builder: (context, state) {
-                          if (state.choosedFiltersByUser == null) {
-                            return SizedBox.shrink();
-                          }
-                          return Expanded(
-                            flex: 2,
-                            child: GestureDetector(
-                              onTap: () {
-                                homeBloc.add(ChangeSelectedFiltersEvent(
-                                    boutiqueSlug: widget.boutiqueSlug,
-                                    category: widget.category,
-                                    filtersChoosedByUser: null));
-                              },
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    height: 65,
-                                    decoration: BoxDecoration(
-                                        color: colorScheme.white,
-                                        borderRadius: BorderRadius.circular(20),
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.1),
-                                              blurRadius: 6,
-                                              offset: Offset(0, 3)),
-                                          BoxShadow(
-                                              color:
-                                                  Colors.white.withOpacity(0.4),
-                                              blurRadius: 6,
-                                              offset: Offset(0, 3),
-                                              inset: true)
+                            SizedBox(
+                              width: 5,
+                            ),
+                          },
+                          ValueListenableBuilder<Tuple2<double , double>>(
+                              valueListenable: lowerAndUpperPrices ?? ValueNotifier(Tuple2(-1,-1)),
+                              builder: (context , _ , __) {
+                              return BlocBuilder<HomeBloc, HomeState>(
+                                builder: (context, state) {
+                                  if (state.choosedFiltersByUser == null && lowerAndUpperPrices == null || ( lowerAndUpperPrices != null &&
+                                      (lowerAndUpperPrices!.value.item1 == minPrice! &&
+                                          lowerAndUpperPrices!.value.item2 == maxPrice!))) {
+                                    return SizedBox.shrink();
+                                  }
+                                  return Expanded(
+                                    flex: 2,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        if(lowerAndUpperPrices != null){
+                                          lowerAndUpperPrices!.value = Tuple2(minPrice!, maxPrice!);
+                                        }
+                                        if (state.choosedFiltersByUser != null) {
+                                          homeBloc.add(
+                                              ChangeSelectedFiltersEvent(
+                                                  boutiqueSlug: widget
+                                                      .boutiqueSlug,
+                                                  category: widget.category,
+                                                  filtersChoosedByUser: null));
+                                        }
+                                      },
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            height: 65,
+                                            decoration: BoxDecoration(
+                                                color: colorScheme.white,
+                                                borderRadius: BorderRadius.circular(20),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                      color:
+                                                          Colors.black.withOpacity(0.1),
+                                                      blurRadius: 6,
+                                                      offset: Offset(0, 3)),
+                                                  BoxShadow(
+                                                      color:
+                                                          Colors.white.withOpacity(0.4),
+                                                      blurRadius: 6,
+                                                      offset: Offset(0, 3),
+                                                      inset: true)
+                                                ],
+                                                border: Border.all(
+                                                    color: Color(0xff388CFF))),
+                                            child: Center(
+                                              child: MyTextWidget(
+                                                'Reset',
+                                                style: textTheme.headline6?.rq.copyWith(
+                                                    color: Color(0xff388CFF),
+                                                    height: 23 / 18),
+                                              ),
+                                            ),
+                                          ),
                                         ],
-                                        border: Border.all(
-                                            color: Color(0xff388CFF))),
-                                    child: Center(
-                                      child: MyTextWidget(
-                                        'Reset',
-                                        style: textTheme.headline6?.rq.copyWith(
-                                            color: Color(0xff388CFF),
-                                            height: 23 / 18),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+                                  );
+                                },
+                              );
+                            }
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    );
+                  }
                 ),
                 SizedBox(
                   height: 20,
@@ -1487,8 +1508,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                         ),
                         MyTextWidget(
                           filters?.prices != null
-                              ? '${(filters!.prices!.minPrice! * exchangeRate).toStringAsFixed(2).toString()} / '
-                              : '${lowerAndUpperPrices!.value.item1.toStringAsFixed(2)} / ',
+                              ? '${(filters!.prices!.minPrice! * exchangeRate).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2).toString()} / '
+                              : '${lowerAndUpperPrices!.value.item1.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} / ',
                           maxLines: 1,
                           textAlign: TextAlign.center,
                           style: context.textTheme.caption?.rq.copyWith(
@@ -1498,8 +1519,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                         ),
                         MyTextWidget(
                           filters?.prices != null
-                              ? '${(filters!.prices!.maxPrice! * exchangeRate).toStringAsFixed(2)}'
-                              : '${lowerAndUpperPrices!.value.item2.toStringAsFixed(2)}',
+                              ? '${(filters!.prices!.maxPrice! * exchangeRate).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}'
+                              : '${lowerAndUpperPrices!.value.item2.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}',
                           maxLines: 1,
                           textAlign: TextAlign.center,
                           style: context.textTheme.caption?.rq.copyWith(

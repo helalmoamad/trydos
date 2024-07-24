@@ -162,11 +162,11 @@ class Data {
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        subTotal: json["sub_total"],
+        subTotal: json["sub_total"].toDouble(),
         subTotalFormated: json["sub_total_formated"],
         totalTax: json["total_tax"].toDouble(),
         totalTaxFormated: json["total_tax_formated"],
-        totalDiscountOnProduct: json["total_discount_on_product"],
+        totalDiscountOnProduct: json["total_discount_on_product"].toDouble(),
         totalDiscountOnProductFormated:
             json["total_discount_on_product_formated"],
         totalShippingCost: json["total_shipping_cost"].toDouble(),
@@ -182,7 +182,7 @@ class Data {
         estimatedTaxFormated: json["estimated_tax_formated"],
         total: json["total"].toDouble(),
         totalFormated: json["total_formated"],
-        restForFreeShipping: json["rest_for_free_shipping"],
+        restForFreeShipping: json["rest_for_free_shipping"].toDouble(),
         restForFreeShippingFormatted: json["rest_for_free_shipping_formatted"],
         showMessageResetForShippingFree:
             json["show_message_reset_for_shipping_free"],
