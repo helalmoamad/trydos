@@ -77,6 +77,7 @@ class HomeState {
     this.currentPage = 0,
     this.brands,
     this.categories,
+    this.productStatus,
     this.productITemForCart,
     this.getCartShippingItemsModel,
     this.reRequestTheseBoutiques = const {},
@@ -125,12 +126,14 @@ class HomeState {
   List<String>? searchHistory;
   Map<String, List<String>> selectedBoutiqueBrandCategorySlugsForSearch;
   Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
-
+  Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
+      productStatus;
   Map<String, List<cart.Cart>>? cartCollection;
   final Map<String, bool> reRequestTheseBoutiques;
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
+
   final GetCartItemsStatus getCartItemsStatus;
   final GetProductListingStatus getProductListingStatus;
   GetStoriesForProductStatus getStoriesForProductStatus;
@@ -178,6 +181,8 @@ class HomeState {
       int? selectedCollection,
       List<String>? sizes,
       List<String>? searchHistory,
+      Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
+          productStatus,
       List<brand.Brand>? brands,
       List<category.Category>? category,
       Map<String, List<int>>? currentQuantityForCart,
@@ -281,6 +286,7 @@ class HomeState {
             getProductDetailWithoutRelatedProductsModel ??
                 this.getProductDetailWithoutRelatedProductsModel,
         boutiques: boutiques ?? this.boutiques,
+        productStatus: productStatus ?? this.productStatus,
         getAllowedCountriesModel: getAllowedCountriesModel ?? this.getAllowedCountriesModel,
         getSearchResultStatus: getSearchResultStatus ?? this.getSearchResultStatus,
         searchResultModel: searchResultModel ?? this.searchResultModel,

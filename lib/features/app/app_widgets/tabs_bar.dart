@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -12,6 +13,7 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/pages/product_listing_search.dart';
 import 'package:trydos/features/search/presentation/widgets/search_history.dart';
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/constant/design/constant_design.dart';
@@ -138,6 +140,9 @@ class _TabsBarState extends State<TabsBar> {
                                           homeBloc.add(
                                               AddSearchTextToHistoryEvent(
                                                   searchTitle: text));
+                                          HelperFunctions.slidingNavigation(
+                                              context,
+                                              ProductListingSearchPage());
                                         } else {
                                           widget.buildSearchResult.value = 0;
                                           widget.hideTrendingAndHistory.value =

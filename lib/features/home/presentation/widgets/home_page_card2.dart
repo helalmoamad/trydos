@@ -81,6 +81,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             HelperFunctions.slidingNavigation(
                 context,
                 ProductListingPage(
+                  boutniqe: widget.boutniqe,
+                  withSlidingImages: widget.withSlidingImages,
                   boutiqueSlug: widget.boutniqe.slug ?? "",
                   boutiqueDescription: widget.boutniqe.description!,
                   boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
@@ -196,8 +198,10 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 itemCount: widget.boutniqe.banners!.length,
                                 itemBuilder: (context, index, _) {
                                   return Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 10.0, top: 10, bottom: 10),
+                                    padding: EdgeInsets.only(
+                                        right: index == 0 ? 0 : 10,
+                                        top: 10,
+                                        bottom: 10),
                                     child: Stack(
                                       children: [
                                         Container(
@@ -249,13 +253,17 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                   );
                                 },
                                 options: CarouselOptions(
+                                  autoPlay: true,
+                                  autoPlayInterval: Duration(seconds: 6),
+                                  autoPlayAnimationDuration:
+                                      Duration(seconds: 1),
                                   initialPage: 0,
                                   onPageChanged: (int index, _) {
                                     changeBackgroundBlurImage.value = index;
                                   },
                                   height: 155,
                                   enableInfiniteScroll: false,
-                                  viewportFraction: 0.95,
+                                  viewportFraction: 0.90,
                                 )))
                         : Stack(
                             children: [
@@ -318,6 +326,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                             HelperFunctions.slidingNavigation(
                                 context,
                                 ProductListingPage(
+                                  boutniqe: widget.boutniqe,
+                                  withSlidingImages: widget.withSlidingImages,
                                   boutiqueSlug: widget.boutniqe.slug!,
                                   category: widget
                                       .boutniqe
@@ -453,6 +463,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                             HelperFunctions.slidingNavigation(
                                                 context,
                                                 ProductListingPage(
+                                                  boutniqe: widget.boutniqe,
+                                                  withSlidingImages:
+                                                      widget.withSlidingImages,
                                                   boutiqueSlug:
                                                       widget.boutniqe.slug!,
                                                   category: widget

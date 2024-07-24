@@ -714,6 +714,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       Emitter<HomeState> emit) async {
     //  if (state.cachedProductWithoutRelatedProductsModel
     //      .containsKey(event.productId)) return;
+    Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>
+        productStatus = Map.from(state.productStatus ?? {});
+    if (productStatus[event.productId] != null) {
+      if (productStatus[event.productId] ==
+              GetProductDetailWithoutSimilarRelatedProductsStatus.success &&
+          state.cachedProductWithoutRelatedProductsModel[event.productId] !=
+              null) {
+        if (state.cachedProductWithoutRelatedProductsModel[event.productId]!
+                .product !=
+            null) {
+          return;
+        }
+      }
+    }
 
     emit(state.copyWith(
         getProductDetailWithoutSimilarRelatedProductsStatus:
@@ -733,6 +747,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           getProductDetailWithoutSimilarRelatedProductsStatus:
               GetProductDetailWithoutSimilarRelatedProductsStatus.failure));
     }, (r) {
+      productStatus.addAll({
+        event.productId!:
+            GetProductDetailWithoutSimilarRelatedProductsStatus.success
+      });
       apisMustNotToRequest.add('GetProductDatailsWithoutRelatedProductsEvent');
       isFailedTheFirstTime
           .remove('GetProductDatailsWithoutRelatedProductsEvent');
@@ -742,7 +760,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(
           cachedProductWithoutRelatedProductsModel: newCached,
           getProductDetailWithoutSimilarRelatedProductsStatus:
-              GetProductDetailWithoutSimilarRelatedProductsStatus.success));
+              GetProductDetailWithoutSimilarRelatedProductsStatus.success,
+          productStatus: productStatus));
     });
   }
 
@@ -757,6 +776,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       currentSelectedColorForEveryProduct: {},
       reRequestTheseProductListingInBoutiques: {},
       reRequestTheseBoutiques: {},
+      productStatus: {},
       ListitemForAddToCart: [],
       getMainCategoriesStatus: GetMainCategoriesStatus.init,
       getProductDetailWithoutSimilarRelatedProductsStatus:

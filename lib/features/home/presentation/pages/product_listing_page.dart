@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
@@ -25,6 +26,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/features/home/presentation/pages/product_listing_search.dart';
 import 'package:trydos/features/search/presentation/pages/search_listing_page.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/language_service.dart';
@@ -38,6 +40,7 @@ import '../../../app/blocs/app_bloc/app_state.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
+import '../../data/models/get_home_boutiqes_model.dart';
 import '../../data/models/get_product_filters_model.dart';
 import '../manager/home_bloc.dart';
 import '../widgets/product_listing/product_item.dart';
@@ -52,11 +55,15 @@ class ProductListingPage extends StatefulWidget {
   final String boutiqueIcon;
   final String boutiqueDescription;
   final String boutiqueFirstBanner;
+  final bool withSlidingImages;
+  final Boutique boutniqe;
 
   const ProductListingPage({
     super.key,
     required this.boutiqueSlug,
     required this.boutiqueDescription,
+    this.withSlidingImages = false,
+    required this.boutniqe,
     required this.boutiqueFirstBanner,
     this.category,
     required this.boutiqueIcon,
@@ -214,7 +221,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                               return !search
                                   ? Column(children: [
                                       AnimatedSearchBar(
-                                        onFieldSubmitted: (text) {},
+                                        onFieldSubmitted: (text) {
+                                          if (text.length > 2) {
+                                            HelperFunctions.slidingNavigation(
+                                                context,
+                                                ProductListingSearchPage());
+                                          }
+                                        },
                                         width: 1.sw - 10,
                                         height: 40,
                                         onClickClose: () {
@@ -878,49 +891,106 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           height:
                                                                               10,
                                                                         ),
-                                                                        Padding(
-                                                                          padding: const EdgeInsets
-                                                                              .symmetric(
-                                                                              horizontal: 25.0),
-                                                                          child:
-                                                                              Stack(
-                                                                            children: [
-                                                                              Container(
-                                                                                height: htmlHeight == 0 ? 0 : 135,
-                                                                                width: 1.sw,
-                                                                                decoration: BoxDecoration(
-                                                                                  borderRadius: BorderRadius.circular(15.0),
-                                                                                  border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
-                                                                                  boxShadow: [
-                                                                                    BoxShadow(
-                                                                                      color: const Color(0x33000000),
-                                                                                      offset: Offset(0, 3),
-                                                                                      blurRadius: 10,
+                                                                        widget.withSlidingImages
+                                                                            ? Container(
+                                                                                height: 135,
+                                                                                //color: Colors.red,
+                                                                                child: CarouselSlider.builder(
+                                                                                    itemCount: widget.boutniqe.banners!.length,
+                                                                                    itemBuilder: (context, index, _) {
+                                                                                      return Padding(
+                                                                                        padding: EdgeInsets.only(
+                                                                                          right: 10,
+                                                                                          left: 10,
+                                                                                        ),
+                                                                                        child: Stack(
+                                                                                          children: [
+                                                                                            Container(
+                                                                                              height: 135,
+                                                                                              width: 1.sw,
+                                                                                              decoration: BoxDecoration(
+                                                                                                borderRadius: BorderRadius.circular(15.0),
+                                                                                                border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
+                                                                                                boxShadow: [
+                                                                                                  BoxShadow(
+                                                                                                    color: const Color(0x33000000),
+                                                                                                    offset: Offset(0, 3),
+                                                                                                    blurRadius: 10,
+                                                                                                  ),
+                                                                                                ],
+                                                                                              ),
+                                                                                              child: ClipRRect(
+                                                                                                  borderRadius: BorderRadius.circular(15),
+                                                                                                  child: MyCachedNetworkImage(
+                                                                                                    imageUrl: widget.boutniqe.banners![index].filePath!,
+                                                                                                    imageFit: BoxFit.cover,
+                                                                                                    width: 1.sw,
+                                                                                                    height: 155,
+                                                                                                  )),
+                                                                                            ),
+                                                                                            Container(
+                                                                                              height: 155,
+                                                                                              width: 1.sw,
+                                                                                              decoration: BoxDecoration(
+                                                                                                borderRadius: BorderRadius.circular(15.0),
+                                                                                                boxShadow: [
+                                                                                                  BoxShadow(color: Colors.white.withOpacity(0.7), offset: Offset(0, 3), blurRadius: 6, inset: true),
+                                                                                                ],
+                                                                                              ),
+                                                                                            ),
+                                                                                          ],
+                                                                                        ),
+                                                                                      );
+                                                                                    },
+                                                                                    options: CarouselOptions(
+                                                                                      autoPlay: true,
+                                                                                      autoPlayInterval: Duration(seconds: 6),
+                                                                                      autoPlayAnimationDuration: Duration(seconds: 1),
+                                                                                      initialPage: 0,
+                                                                                      height: 155,
+                                                                                      enableInfiniteScroll: false,
+                                                                                      viewportFraction: 0.85,
+                                                                                    )))
+                                                                            : Padding(
+                                                                                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                                                                child: Stack(
+                                                                                  children: [
+                                                                                    Container(
+                                                                                      height: htmlHeight == 0 ? 0 : 135,
+                                                                                      width: 1.sw,
+                                                                                      decoration: BoxDecoration(
+                                                                                        borderRadius: BorderRadius.circular(15.0),
+                                                                                        border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
+                                                                                        boxShadow: [
+                                                                                          BoxShadow(
+                                                                                            color: const Color(0x33000000),
+                                                                                            offset: Offset(0, 3),
+                                                                                            blurRadius: 10,
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                      child: ClipRRect(
+                                                                                          borderRadius: BorderRadius.circular(15),
+                                                                                          child: MyCachedNetworkImage(
+                                                                                            imageUrl: widget.boutiqueFirstBanner,
+                                                                                            imageFit: BoxFit.cover,
+                                                                                            width: 1.sw,
+                                                                                            height: 135,
+                                                                                          )),
+                                                                                    ),
+                                                                                    Container(
+                                                                                      height: htmlHeight == 0 ? 0 : 135,
+                                                                                      width: 1.sw,
+                                                                                      decoration: BoxDecoration(
+                                                                                        borderRadius: BorderRadius.circular(15.0),
+                                                                                        boxShadow: [
+                                                                                          BoxShadow(color: Colors.white.withOpacity(0.7), offset: Offset(0, 3), blurRadius: 6, inset: true),
+                                                                                        ],
+                                                                                      ),
                                                                                     ),
                                                                                   ],
                                                                                 ),
-                                                                                child: ClipRRect(
-                                                                                    borderRadius: BorderRadius.circular(15),
-                                                                                    child: MyCachedNetworkImage(
-                                                                                      imageUrl: widget.boutiqueFirstBanner,
-                                                                                      imageFit: BoxFit.cover,
-                                                                                      width: 1.sw,
-                                                                                      height: 135,
-                                                                                    )),
                                                                               ),
-                                                                              Container(
-                                                                                height: htmlHeight == 0 ? 0 : 135,
-                                                                                width: 1.sw,
-                                                                                decoration: BoxDecoration(
-                                                                                  borderRadius: BorderRadius.circular(15.0),
-                                                                                  boxShadow: [
-                                                                                    BoxShadow(color: Colors.white.withOpacity(0.7), offset: Offset(0, 3), blurRadius: 6, inset: true),
-                                                                                  ],
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
                                                                         SizedBox(
                                                                           height:
                                                                               10,
