@@ -57,14 +57,6 @@ class Data {
   final List<String>? colors;
   final List<filters.Category>? categories;
   final filters.Prices? prices;
-  final String? categoryParentParent;
-  final String? categoryParent;
-  final dynamic category;
-  final String? categorySeoDescription;
-  final String? categoryTitle;
-  final String? categoryH1;
-  final dynamic childCategories;
-  final String? resultFor;
   final String? boutiqueSlug;
 
   Data({
@@ -72,19 +64,11 @@ class Data {
     this.limit,
     this.offset,
     this.products,
-    this.categoryParentParent,
-    this.categoryParent,
-    this.category,
-    this.categorySeoDescription,
-    this.categoryTitle,
-    this.categoryH1,
-    this.childCategories,
     this.brands,
     this.attributes,
     this.categories,
     this.colors,
     this.prices,
-    this.resultFor,
     this.boutiqueSlug,
   });
 
@@ -98,14 +82,6 @@ class Data {
     List<String>? colors,
     List<filters.Category>? categories,
     filters.Prices? prices,
-    String? categoryParentParent,
-    String? categoryParent,
-    String? category,
-    String? categorySeoDescription,
-    String? categoryTitle,
-    String? categoryH1,
-    String? childCategories,
-    String? resultFor,
     String? boutiqueSlug,
   }) =>
       Data(
@@ -113,20 +89,10 @@ class Data {
         limit: limit ?? this.limit,
         offset: offset ?? this.offset,
         products: products ?? this.products,
-        categoryParentParent: categoryParentParent ?? this.categoryParentParent,
-        categoryParent: categoryParent ?? this.categoryParent,
-        category: category ?? this.category,
-        categories: categories ?? categories,
-        categorySeoDescription:
-            categorySeoDescription ?? this.categorySeoDescription,
-        categoryTitle: categoryTitle ?? this.categoryTitle,
-        categoryH1: categoryH1 ?? this.categoryH1,
-        childCategories: childCategories ?? this.childCategories,
-        brands: brands ?? brands,
+        brands: brands ?? brands ,
         attributes: attributes ?? attributes,
         colors: colors ?? this.colors,
         prices: prices ?? prices,
-        resultFor: resultFor ?? this.resultFor,
         boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
       );
 
@@ -137,20 +103,8 @@ class Data {
       offset: json["offset"],
       products: json["products"] == null
           ? []
-          : List<product_without_filters.Products>.from(json["products"]!
-              .map((x) => product_without_filters.Products.fromJson(x))),
-      categoryParentParent: json["category_parent_parent"],
-      categoryParent: json["category_parent"],
-      category: json["category"] is String
-          ? json["category"]
-          : Category.fromJson(json["category"] ?? {}),
-      categorySeoDescription: json["category_seo_description"],
-      categoryTitle: json["category_title"],
-      categoryH1: json["category_h1"],
-      childCategories: json["child_categories"] is List
-          ? List<Category>.from(
-              json["child_categories"]!.map((x) => Category.fromJson(x)))
-          : json["child_categories"],
+          : List<product_without_filters.Products>.from(
+              json["products"]!.map((x) => product_without_filters.Products.fromJson(x))),
       brands: json["brands"] == null
           ? []
           : List<filters.Brand>.from(
@@ -169,7 +123,6 @@ class Data {
       prices: json["prices"] == null
           ? null
           : filters.Prices.fromJson(json["prices"]),
-      resultFor: json["result_for"],
       boutiqueSlug: json["boutique_slug"],
     );
   }
@@ -181,13 +134,6 @@ class Data {
         "products": products == null
             ? []
             : List<dynamic>.from(products!.map((x) => x.toJson())),
-        "category_parent_parent": categoryParentParent,
-        "category_parent": categoryParent,
-        "category": category,
-        "category_seo_description": categorySeoDescription,
-        "category_title": categoryTitle,
-        "category_h1": categoryH1,
-        "child_categories": childCategories,
         "brands": brands == null
             ? []
             : List<dynamic>.from(brands!.map((x) => x.toJson())),
@@ -200,7 +146,6 @@ class Data {
         "colors":
             colors == null ? [] : List<dynamic>.from(colors!.map((x) => x)),
         "prices": prices?.toJson(),
-        "result_for": resultFor,
         "boutique_slug": boutiqueSlug,
       };
 }

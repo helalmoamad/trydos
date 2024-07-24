@@ -906,7 +906,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                     .data!
                                                     .currency!
                                                     .exchangeRate!)
-                                            .toStringAsFixed(2)
+                                            .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)
                                             .toString(),
                                         style: textTheme.caption?.lq.copyWith(
                                           color: Color(0xff3c3c3c),
@@ -925,7 +925,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                     .data!
                                                     .currency!
                                                     .exchangeRate!)
-                                            .toStringAsFixed(2)
+                                            .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)
                                             .toString(),
                                         style: textTheme.caption?.bq.copyWith(
                                           color: Color(0xff3c3c3c),

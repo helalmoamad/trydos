@@ -9,6 +9,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trydos/common/constant/design/constant_design.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -20,7 +21,6 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/animated_search_bar/animated_search_bar.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/authentication/presentation/widgets/pin_item.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as filter_products;
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -28,7 +28,6 @@ import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_search.dart';
 import 'package:trydos/features/search/presentation/pages/search_listing_page.dart';
-import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
 import '../../../../common/constant/design/assets_provider.dart';
@@ -41,7 +40,6 @@ import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
 import '../../data/models/get_home_boutiqes_model.dart';
-import '../../data/models/get_product_filters_model.dart';
 import '../manager/home_bloc.dart';
 import '../widgets/product_listing/product_item.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
@@ -781,16 +779,20 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     : null,
                                                               ),
                                                             )),
-                                                        Padding(
-                                                          padding: EdgeInsetsDirectional
-                                                              .only(
-                                                                  end:
-                                                                      !isExpanded
-                                                                          ? 10.0
-                                                                          : 25),
-                                                          child: !isExpanded
-                                                              ? SvgPicture
-                                                                  .asset(
+                                                        GestureDetector(
+                                                            onTap: () {
+                                                              if(isExpanded)
+                                                              filterPageExpanded
+                                                                  .value =
+                                                              false;
+                                                            },
+                                                          child: SizedBox(
+                                                            height: 30,
+                                                            child: Row(
+                                                              children:[
+                                                                !isExpanded
+                                                                    ? SvgPicture
+                                                                    .asset(
                                                                   AppAssets
                                                                       .shareSvg,
                                                                   width: 20,
@@ -798,15 +800,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   color: Color(
                                                                       0xff3C3C3C),
                                                                 )
-                                                              : GestureDetector(
-                                                                  onTap: () {
-                                                                    filterPageExpanded
-                                                                            .value =
-                                                                        false;
-                                                                  },
+                                                                    : GestureDetector(
                                                                   child:
-                                                                      SvgPicture
-                                                                          .asset(
+                                                                  SvgPicture
+                                                                      .asset(
                                                                     AppAssets
                                                                         .closeSvg,
                                                                     width: 15,
@@ -815,6 +812,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         0xffFF5F61),
                                                                   ),
                                                                 ),
+                                                                SizedBox(width: !isExpanded
+                                                                    ? 10.0
+                                                                    : 25)
+                                                              ]
+                                                            ),
+                                                          )
                                                         ),
                                                       ],
                                                       withShadow: false),
@@ -1014,10 +1017,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           ? 860
                                                           : state.appliedFiltersByUser !=
                                                                   null
-                                                              ? 145
-                                                              : 145,
+                                                              ? (state.getProductListingWithFiltersPaginationModels?.items.length ?? 1 ) == 1 ? 0 : 145
+                                                              : 115,
                                                       flexibleSpace:
-                                                          StackedFiltersList(
+                                                      (state.getProductListingWithFiltersPaginationModels?.items.length ?? 1 ) == 1 ? SizedBox.shrink() : StackedFiltersList(
                                                               filterPageExpanded:
                                                                   filterPageExpanded,
                                                               closeFilterPage:
@@ -1133,10 +1136,89 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               (state.getProductListingPaginationWithoutFiltersModel[
                                                                       key] ==
                                                                   null)) {
-                                                            return SliverToBoxAdapter(
-                                                              child: Center(
-                                                                child:
-                                                                    TrydosLoader(),
+                                                            return SliverPadding(
+                                                              padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  top: 10),
+                                                              sliver: SliverGrid(
+                                                                key:
+                                                                gridViewKeyForRendering,
+                                                                gridDelegate:
+                                                                SliverGridDelegateWithFixedCrossAxisCount(
+                                                                  crossAxisCount: 2,
+                                                                  childAspectRatio:
+                                                                  200.w / 350,
+                                                                  crossAxisSpacing:
+                                                                  10,
+                                                                  mainAxisSpacing:
+                                                                  15,
+                                                                ),
+                                                                delegate:
+                                                                SliverChildBuilderDelegate(
+                                                                  childCount:
+                                                                  8,
+                                                                      (BuildContext
+                                                                  context,
+                                                                      int index) {
+                                                                    return ClipRRect(
+                                                                      borderRadius: BorderRadius.circular(20.0),
+                                                                      child: Shimmer.fromColors(
+                                                                          baseColor: Colors.grey.shade300,
+                                                                          highlightColor: Colors.grey.shade100,
+                                                                          enabled: true,
+                                                                          child: Stack(
+                                                                            children: [
+                                                                              Container(
+                                                                                  decoration: BoxDecoration(
+                                                                                    borderRadius:
+                                                                                    BorderRadius.circular(20.0),
+                                                                                    boxShadow: [
+                                                                                      BoxShadow(
+                                                                                        color: const Color(0xff000000)
+                                                                                            .withOpacity(0.4),
+                                                                                        offset: Offset(0, 3),
+                                                                                        blurRadius: 6,
+                                                                                      )
+                                                                                    ],
+                                                                                  )),
+                                                                              Container(
+                                                                                  height: 275,
+                                                                                  decoration: BoxDecoration(
+                                                                                    borderRadius:
+                                                                                    BorderRadius.circular(20.0),
+                                                                                    boxShadow: [
+                                                                                      BoxShadow(
+                                                                                        color: const Color(0xff000000)
+                                                                                            .withOpacity(0.6),
+                                                                                        offset: Offset(0, 3),
+                                                                                        blurRadius: 6,
+                                                                                      )
+                                                                                    ],
+                                                                                  )),
+                                                                              Positioned(
+                                                                                bottom: 70,
+                                                                                left: 60.w ,
+                                                                                child: SizedBox(
+                                                                                  width: 100.w,
+                                                                                  child: Stack(
+                                                                                    alignment: Alignment.center,
+                                                                                    children: List.generate(
+                                                                                        5, (index) => Positioned(
+                                                                                      left: index == 0 ? 0 : index == 2 ? 15 : null,
+                                                                                      right: index == 1 ? 0 : index == 3 ? 15 : null,
+                                                                                      child: CircleAvatar(
+                                                                                        radius: index == 4 ? 20 : index < 2 ? 12 : 15 ,
+                                                                                      ),
+                                                                                    )),
+                                                                                  ),
+                                                                                ),
+                                                                              )
+                                                                            ],
+                                                                          )),
+                                                                    );
+                                                                  },
+                                                                ),
                                                               ),
                                                             );
                                                           }

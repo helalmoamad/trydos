@@ -15,6 +15,7 @@ class ProductDetailsSheetHeader extends StatefulWidget {
   final String price;
   final String offerPrice;
   final String priceSymbol;
+  final int decimalPoint;
 
   const ProductDetailsSheetHeader({
     super.key,
@@ -22,6 +23,7 @@ class ProductDetailsSheetHeader extends StatefulWidget {
     required this.priceSymbol,
     required this.offerPrice,
     required this.price,
+    required this.decimalPoint,
   });
 
   final ValueNotifier<int> addToBagButtonShapeNotifier;
@@ -122,7 +124,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                         width: 5,
                       ),
                       MyTextWidget(
-                        double.parse(widget.offerPrice).toStringAsFixed(2),
+                        double.parse(widget.offerPrice).toStringAsFixed(widget.decimalPoint),
                         style: textTheme.headline3?.bq.copyWith(
                           color: Color(0xff505050),
                           height: 0,

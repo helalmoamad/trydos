@@ -158,7 +158,7 @@ class CartPage2 extends StatelessWidget {
                                             height: 1.33),
                                   ),
                                   Text(
-                                    "${totlaPrice.toStringAsFixed(2)} ",
+                                    "${totlaPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                     style: context.textTheme.subtitle1?.mr
                                         .copyWith(
                                             fontSize: 13,
@@ -279,7 +279,7 @@ class CartPage2 extends StatelessWidget {
                                                               height: 1.33),
                                                     ),
                                                     Text(
-                                                      " ${price.toStringAsFixed(2)}",
+                                                      " ${price.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}",
                                                       style: context.textTheme
                                                           .subtitle1?.mr
                                                           .copyWith(
@@ -528,7 +528,7 @@ class CartPage2 extends StatelessWidget {
                                                                           child:
                                                                               Text(
                                                                             '''${!state.cartCollection![keyFirst]![indexs].variations.isNullOrEmpty ? state.cartCollection![keyFirst]![indexs].variations![0].size ?? "" : ""} \n '''
-                                                                            '''${(state.cartCollection![keyFirst]![indexs].offerPrice! * state.cartCollection![keyFirst]![indexs].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2)} '''
+                                                                            '''${(state.cartCollection![keyFirst]![indexs].offerPrice! * state.cartCollection![keyFirst]![indexs].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} '''
                                                                             '''${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""}''',
                                                                             style:
                                                                                 context.textTheme.subtitle1?.ra.copyWith(
@@ -715,7 +715,7 @@ class CartPage2 extends StatelessWidget {
                                                                               height: 45,
                                                                               child: Text(
                                                                                 '''${!state.cartCollection![keyFirst]![indexs].variations.isNullOrEmpty ? state.cartCollection![keyFirst]![indexs].variations![0].size ?? "" : ""} \n '''
-                                                                                '''${(state.cartCollection![keyFirst]![indexs].offerPrice! * state.cartCollection![keyFirst]![indexs].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(2)} '''
+                                                                                '''${(state.cartCollection![keyFirst]![indexs].offerPrice! * state.cartCollection![keyFirst]![indexs].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} '''
                                                                                 '''${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""}''',
                                                                                 style: context.textTheme.subtitle1?.ra.copyWith(
                                                                                   decorationColor: Color(0xff505050),
