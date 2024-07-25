@@ -110,7 +110,7 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                     if (selectedCategory.value
                                         .contains(index)) {
                                       selectedCategorySlugs.remove(
-                                          "${state.categories![index].slug ?? ""}");
+                                          '"${state.categories![index].slug ?? ""}"');
                                       selectedCategory.value.remove(index);
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
@@ -121,7 +121,7 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                     } else {
                                       selectedCategory.value.add(index);
                                       selectedCategorySlugs.add(
-                                          "${state.categories![index].slug ?? ""}");
+                                          '"${state.categories![index].slug ?? ""}"');
 
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(

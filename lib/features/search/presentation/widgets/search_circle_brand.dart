@@ -95,7 +95,7 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                   onTap: () {
                                     if (selectedBrand.value.contains(index)) {
                                       selectedBrandSlugs.remove(
-                                          "${state.brands![index].slug ?? ""}");
+                                          '"${state.brands![index].slug ?? ""}"');
                                       selectedBrand.value.remove(index);
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
@@ -106,7 +106,7 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                     } else {
                                       selectedBrand.value.add(index);
                                       selectedBrandSlugs.add(
-                                          "${state.brands![index].slug ?? ""}");
+                                          '"${state.brands![index].slug ?? ""}"');
 
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
@@ -140,10 +140,9 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.center,
                                                 children: [
-                                                  MyCachedNetworkImage(
-                                                    imageUrl: state
+                                                  SvgNetworkWidget(
+                                                    svgUrl: state
                                                         .brands![index].icon!,
-                                                    imageFit: BoxFit.cover,
                                                     width: 30,
                                                     height: 15,
                                                   ),

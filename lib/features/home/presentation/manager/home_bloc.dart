@@ -822,6 +822,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           appliedFiltersByUser: null,
           resetAppliedFilters: true,
           choosedFiltersByUser: null,
+          selectedBoutiqueBrandCategorySlugsForSearch: {},
           productStatus: {},
           ListitemForAddToCart: [],
           getMainCategoriesStatus: GetMainCategoriesStatus.init,
@@ -1435,9 +1436,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(state.copyWith(getSearchResultStatus: GetSearchResultStatus.loading));
     final response =
         await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
-      categorySlugs: event.CategorySlug != "" ? [event.CategorySlug] : [],
+      categorySlugs:
+          event.CategorySlug != "" ? ['"${event.CategorySlug}"'] : [],
       searchText: event.searchTitle,
-      boutiqueSlugs: event.boutiqueSlug != "" ? [event.boutiqueSlug] : [],
+      boutiqueSlugs:
+          event.boutiqueSlug != "" ? ['"${event.boutiqueSlug}"'] : [],
     ));
 
     response.fold((l) {
@@ -1483,6 +1486,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       Emitter<HomeState> emit) async {
     Map<String, List<String>>? selectedBoutiqueBrandCategorySlugsForSearch =
         state.selectedBoutiqueBrandCategorySlugsForSearch;
+    if (selectedBoutiqueBrandCategorySlugsForSearch["boutique"].isNullOrEmpty) {
+      selectedBoutiqueBrandCategorySlugsForSearch["boutique"] = [];
+    }
+    if (selectedBoutiqueBrandCategorySlugsForSearch["brand"].isNullOrEmpty) {
+      selectedBoutiqueBrandCategorySlugsForSearch["brand"] = [];
+    }
+    if (selectedBoutiqueBrandCategorySlugsForSearch["category"].isNullOrEmpty) {
+      selectedBoutiqueBrandCategorySlugsForSearch["category"] = [];
+    }
     event.withBoutique
         ? selectedBoutiqueBrandCategorySlugsForSearch["boutique"] =
             event.selectedBoutiqueBrandCategorySlugsForSearch
@@ -1530,8 +1542,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           event.filtersChoosedByUser!.filters!.brands.isNullOrEmpty &&
           event.filtersChoosedByUser!.filters!.attributes.isNullOrEmpty &&
           event.filtersChoosedByUser!.filters!.categories.isNullOrEmpty &&
-          event.filtersChoosedByUser!.filters!.prices == null
-      ) {
+          event.filtersChoosedByUser!.filters!.prices == null) {
         makeChoosedFiltersNull = true;
       }
     }

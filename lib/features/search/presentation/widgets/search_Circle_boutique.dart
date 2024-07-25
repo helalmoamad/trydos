@@ -110,7 +110,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                     if (selectedBoutique.value
                                         .contains(index)) {
                                       selectedBoutiqueSlugs.remove(
-                                          "${state.boutiques![index].slug ?? ""}");
+                                          '"${state.boutiques![index].slug ?? ""}"');
                                       selectedBoutique.value.remove(index);
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
@@ -121,7 +121,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                     } else {
                                       selectedBoutique.value.add(index);
                                       selectedBoutiqueSlugs.add(
-                                          "${state.boutiques![index].slug ?? ""}");
+                                          '"${state.boutiques![index].slug ?? ""}"');
 
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
