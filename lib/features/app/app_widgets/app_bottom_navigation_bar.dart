@@ -2,6 +2,7 @@ import 'package:adobe_xd/adobe_xd.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,6 +16,7 @@ import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
+import 'package:trydos/features/app/language_dropdown.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
@@ -358,53 +360,75 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           return AlertDialog(
                             content: MyTextWidget('Dev tools'),
                             actions: [
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) => FeedBackScreen(
-                                                    showRequests: true,
-                                                  )));
-                                    },
-                                    child: MyTextWidget('requests'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) =>
-                                                  SharedPreferencePage()));
-                                    },
-                                    child: MyTextWidget('shared preferences'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) => FeedBackScreen(
-                                                    showRequests: false,
-                                                  )));
-                                    },
-                                    child: MyTextWidget('flutter errors'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) =>
-                                                  FilesExistPage()));
-                                    },
-                                    child: MyTextWidget('files exists'),
-                                  ),
-                                ],
+                              Container(
+                                width: 300,
+                                height: 200,
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                        left: 10,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            FeedBackScreen(
+                                                              showRequests:
+                                                                  true,
+                                                            )));
+                                              },
+                                              child: MyTextWidget('requests'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            SharedPreferencePage()));
+                                              },
+                                              child: MyTextWidget(
+                                                  'shared preferences'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            FeedBackScreen(
+                                                              showRequests:
+                                                                  false,
+                                                            )));
+                                              },
+                                              child: MyTextWidget(
+                                                  'flutter errors'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            FilesExistPage()));
+                                              },
+                                              child:
+                                                  MyTextWidget('files exists'),
+                                            ),
+                                          ],
+                                        )),
+                                    Positioned(
+                                      child: LanguageDropdown(),
+                                      bottom: 40,
+                                      right: 5,
+                                    )
+                                  ],
+                                ),
                               )
                             ],
                           );

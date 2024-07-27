@@ -21,35 +21,52 @@ class GetProductFiltersUseCase
 
 class GetProductsFiltersParams {
   final String? category;
-  final int? offset;
-  final int? limit;
-  final String? boutiqueSlug;
   final List<String>? prices;
   final List<String>? brands;
   final List<String>? colors;
   final List<String>? categories;
   final List<Map<String, dynamic>>? attributes;
-
+  final String? searchText;
+  final int? offset;
+  final int? limit;
+  final String? boutiqueSlug;
+  final List<String>? boutiqueSlugs;
+  final List<String>? categorySlugs;
+  final List<String>? brandSlugs;
   GetProductsFiltersParams(
-      {this.boutiqueSlug,
-      this.offset,
-      this.prices,
+      {this.prices,
       this.brands,
+      this.boutiqueSlugs,
       this.attributes,
       this.categories,
       this.colors,
+      this.boutiqueSlug,
+      this.searchText,
+      this.offset,
       this.limit,
+      this.brandSlugs,
+      this.categorySlugs,
       this.category});
 
   Map<String, dynamic> get map => {
         "category": category,
-        "offset": offset,
-        "limit": limit,
         "prices": prices.toString(),
         "brands": brands.toString(),
         "attributes": attributes.toString(),
         "categories": categories.toString(),
         "colors": colors.toString(),
-        "boutique_slug": boutiqueSlug
-      };
+        "search_text": searchText,
+        "offset": offset,
+        "limit": limit,
+        "boutique_slug": boutiqueSlug,
+        "boutique_slugs": boutiqueSlugs.toString(),
+        "category_slugs": categorySlugs.toString(),
+        "brand_slugs": brandSlugs.toString()
+      }..removeWhere((key, value) =>
+          value == null ||
+          value == 'null' ||
+          value == [].toString() ||
+          value == [''].toString() ||
+          value == ['null'].toString() ||
+          value == "");
 }

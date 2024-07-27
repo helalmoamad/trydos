@@ -840,9 +840,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                           child: widget.productItem.category !=
                                                   null
                                               ? SvgNetworkWidget(
-                                                  svgUrl: widget.productItem
-                                                      .category!.icon
-                                                      .toString(),
+                                                  svgUrl: widget.productItem.category!.mostViewedProductThumbnail!.filePath.toString(),
                                                   width: 10,
                                                   height: 10)
                                               : SizedBox.shrink()),

@@ -550,6 +550,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   @override
   Widget build(BuildContext context) {
+    print("${_prefsRepository.language}" +
+        "5555555555555555555555555555555555555555555555555555555555555");
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
@@ -616,6 +618,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                               c.getCustomerCountryStatus,
                           builder: (context, authstate) {
                             if (homestate.getAllowedCountriesModel == null ||
+                                _prefsRepository.countryIso == null ||
                                 homestate.getAllowedCountriesModel!.data!
                                     .countries.isNullOrEmpty) {
                               return Center(
