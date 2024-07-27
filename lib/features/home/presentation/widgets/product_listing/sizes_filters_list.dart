@@ -28,7 +28,7 @@ class SizesFiltersList extends StatefulWidget {
     required this.attribute,
     required this.boutiqueSlug,
     this.category,
-    required this.searchText,
+     this.searchText,
     required this.fromSearch,
   });
   final Attribute attribute;

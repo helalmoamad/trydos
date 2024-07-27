@@ -6,6 +6,8 @@ import 'dart:convert';
 
 import 'package:trydos/core/utils/extensions/list.dart';
 
+import 'get_category_model.dart';
+
 GetProductFiltersModel getProductFiltersModelFromJson(String str) =>
     GetProductFiltersModel.fromJson(json.decode(str));
 
@@ -28,6 +30,15 @@ class GetProductFiltersModel {
       GetProductFiltersModel(
         message: message ?? this.message,
         filters: filters ?? this.filters,
+      );
+
+  GetProductFiltersModel copyWithSendValue({
+    String? message,
+    Filter? filters,
+  }) =>
+      GetProductFiltersModel(
+        message: message ,
+        filters: filters
       );
 
   factory GetProductFiltersModel.fromJson(Map<String, dynamic> json) =>
@@ -94,12 +105,6 @@ class Filter {
       );
 
   factory Filter.fromJson(Map<String, dynamic> json) {
-    try {
-      List<Category>.from(json["categories"]!.map((x) => Category.fromJson(x)));
-    } catch (e, st) {
-      print(e);
-      print(st);
-    }
     return Filter(
       brands: json["brands"] == null
           ? []
@@ -302,103 +307,4 @@ class PriceRange {
         "text": text,
         "products_count": count,
       };
-}
-
-class Category {
-  final int? id;
-  final String? name;
-  final String? icon;
-  final String? slug;
-  final bool isSubCategory;
-  final List<SubCategory>? subCategories;
-
-  Category({
-    this.id,
-    this.name,
-    this.icon,
-    this.slug,
-    this.isSubCategory = false,
-    this.subCategories = const [],
-  });
-
-  Category copyWith({
-    int? id,
-    String? name,
-    String? icon,
-    String? slug,
-    List<SubCategory>? subCategories,
-  }) =>
-      Category(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        icon: icon ?? this.icon,
-        slug: slug ?? this.slug,
-        subCategories: subCategories ?? this.subCategories,
-      );
-
-  factory Category.fromJson(Map<String, dynamic> json) => Category(
-        id: json["id"],
-        name: json["name"],
-        icon: json["icon"],
-        slug: json["slug"],
-        subCategories: json["category_sub"] == null
-            ? []
-            : List<SubCategory>.from(
-                json["category_sub"]!.map((x) => SubCategory.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "name": name,
-      "icon": icon,
-      "slug": slug,
-      "category_sub": subCategories.isNullOrEmpty
-          ? []
-          : List<SubCategory>.from(subCategories!.map((x) => x.toJson())),
-    };
-  }
-}
-
-class SubCategory {
-  final int? id;
-  final String? name;
-  final String? icon;
-  final String? slug;
-
-  SubCategory({
-    this.id,
-    this.name,
-    this.icon,
-    this.slug,
-  });
-
-  SubCategory copyWith({
-    int? id,
-    String? name,
-    String? icon,
-    String? slug,
-  }) =>
-      SubCategory(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        icon: icon ?? this.icon,
-        slug: slug ?? this.slug,
-      );
-
-  factory SubCategory.fromJson(Map<String, dynamic> json) => SubCategory(
-        id: json["id"],
-        name: json["name"],
-        icon: json["icon"],
-        slug: json["slug"],
-      );
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "name": name,
-      "icon": icon,
-      "slug": slug,
-    };
-  }
 }

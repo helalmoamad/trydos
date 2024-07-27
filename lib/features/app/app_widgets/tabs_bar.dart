@@ -398,7 +398,7 @@ class _TabsBarState extends State<TabsBar> {
                                                         children: [
                                                           SvgNetworkWidget(
                                                             svgUrl: mainCategory
-                                                                .icon
+                                                                .flatPhotoPath!.filePath
                                                                 .toString(),
                                                             height: 20,
                                                             color: state.tabIndex ==

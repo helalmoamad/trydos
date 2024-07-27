@@ -16,6 +16,7 @@ import '../../../app/my_text_widget.dart';
 class SearchChipcategory extends StatefulWidget {
   final String title;
   final ValueNotifier<List<int>> selectedCategory;
+
   const SearchChipcategory(
       {Key? key, required this.title, required this.selectedCategory})
       : super(key: key);
@@ -29,6 +30,7 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
   late HomeBloc homeBloc;
 
   List<String> selectedCategorySlugs = [];
+
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -186,8 +188,10 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                                     CrossAxisAlignment.center,
                                                 children: [
                                                   SvgPicture.network(
-                                                    state.categories![index]
-                                                        .icon!,
+                                                    state
+                                                        .categories![index]
+                                                        .mostViewedProductThumbnail!
+                                                        .filePath!,
                                                     width: 15,
                                                     height: 15,
                                                   ),

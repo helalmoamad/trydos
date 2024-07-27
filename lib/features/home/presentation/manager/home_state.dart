@@ -197,6 +197,7 @@ class HomeState {
       final Map<String, int>? currentSelectedColorForEveryProduct,
       int? currentPage,
       bool resetAppliedFilters = false,
+      bool resetGetProductFiltersModel = false,
       List<Story>? storiesForProduct,
       final GetProductFiltersStatus? getProductFiltersStatus,
       final PaginationModel<product.Products>?
@@ -234,7 +235,7 @@ class HomeState {
         appliedFiltersByUser: resetAppliedFilters
             ? null
             : appliedFiltersByUser ?? this.appliedFiltersByUser,
-        getProductFiltersModel:
+        getProductFiltersModel: resetGetProductFiltersModel ? null :
             getProductFiltersModel ?? this.getProductFiltersModel,
         searchHistory: searchHistory ?? this.searchHistory,
         getCartShippingItemsModel:

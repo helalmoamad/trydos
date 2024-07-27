@@ -23,7 +23,7 @@ class FiltersNormalList<T> extends StatefulWidget {
       this.hideTitle = false,
       required this.isBrandFilter,
       required this.filters,
-      required this.searchText,
+      this.searchText,
       required this.fromSearch,
       required this.boutiqueSlug,
       this.category});

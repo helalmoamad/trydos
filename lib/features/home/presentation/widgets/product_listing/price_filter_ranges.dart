@@ -20,7 +20,7 @@ class PriceFiltersRangesList extends StatefulWidget {
     required this.currencySymbol,
     required this.priceRanges,
     required this.exchangeRate,
-    required this.searchText,
+     this.searchText,
     required this.fromSearch,
     required this.decimalPoint,
   });

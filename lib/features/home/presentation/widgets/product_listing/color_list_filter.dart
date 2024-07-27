@@ -17,7 +17,7 @@ class ColorsListFilter extends StatefulWidget {
   const ColorsListFilter(
       {super.key,
       this.hideTitle = false,
-      required this.searchText,
+       this.searchText,
       required this.colors,
       required this.fromSearch,
       required this.boutiqueSlug,

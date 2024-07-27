@@ -63,20 +63,14 @@ class _SearchListingPageState extends ThemeState<SearchListingPage> {
         appBloc.add(ChangeBasePage(0));
         appBloc.add(HideBottomNavigationBar(false));
       },
-      child: Scaffold(
-        backgroundColor: colorScheme.white,
-        body: SafeArea(
-            child: CustomScrollView(
-                physics: const ClampingScrollPhysics(),
-                controller: scrollController,
-                scrollBehavior: const CupertinoScrollBehavior(),
-                slivers: [
-              SliverToBoxAdapter(child: 10.verticalSpace),
-              SliverToBoxAdapter(
-                child: SearchResult(),
-              ),
-            ])),
-      ),
+      child: SliverMainAxisGroup(
+        slivers: [
+          SliverToBoxAdapter(child: 10.verticalSpace),
+          SliverToBoxAdapter(
+            child: SearchResult(),
+          ),
+        ],
+      )
     );
   }
 
