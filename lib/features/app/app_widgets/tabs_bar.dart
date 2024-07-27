@@ -13,6 +13,7 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_search.dart';
 import 'package:trydos/features/search/presentation/widgets/search_history.dart';
 import '../../../common/constant/design/assets_provider.dart';
@@ -142,7 +143,13 @@ class _TabsBarState extends State<TabsBar> {
                                                   searchTitle: text));
                                           HelperFunctions.slidingNavigation(
                                               context,
-                                              ProductListingSearchPage());
+                                              ProductListingPage(
+                                                searchText: text,
+                                                boutiqueIcon: "",
+                                                fromSearch: true,
+                                                withSlidingImages: false,
+                                                boutiqueSlug: '',
+                                              ));
                                         } else {
                                           widget.buildSearchResult.value = 0;
                                           widget.hideTrendingAndHistory.value =
@@ -311,8 +318,12 @@ class _TabsBarState extends State<TabsBar> {
                                       onChanged: (String text) {
                                         widget.buildSearchResult.value = 0;
                                         if (text.length > 2) {
-                                          homeBloc.add(GetSearchREsultEvent(
-                                              searchTitle: text));
+                                          homeBloc.add(
+                                              GetProductsWithFiltersEvent(
+                                                  offset: 1,
+                                                  getWithPagination: false,
+                                                  fromSearch: true,
+                                                  searchText: text));
                                           widget.buildSearchResult.value =
                                               text.length;
                                         }
@@ -387,7 +398,7 @@ class _TabsBarState extends State<TabsBar> {
                                                         children: [
                                                           SvgNetworkWidget(
                                                             svgUrl: mainCategory
-                                                                .icon
+                                                                .flatPhotoPath!.filePath
                                                                 .toString(),
                                                             height: 20,
                                                             color: state.tabIndex ==

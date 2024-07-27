@@ -7,6 +7,8 @@ abstract class PrefsKey {
   static const sessionId = r'__$__sessionId__$__';
   static const userStoriesId = r'__$__userStoriesId__$__';
   static const isTimerRunningId = r'__$__isTimerRunning__$__';
+  static const userCountryIsAvailable = r'__$__UserCountryIsAvailable__$__';
+  static const language = r'__$__language__$__';
 
   static const chatName = r'__$__chatName__$__';
 

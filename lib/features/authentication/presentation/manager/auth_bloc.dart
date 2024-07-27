@@ -82,12 +82,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<StoreFcmTokenEvent>(_onStoreFcmTokenEvent,
         transformer: throttleDroppable(throttleDuration));
     on<SendOtpEvent>(_onSendOtpEvent);
-    on<VerifyOtpSignInEvent>(_onVerifyOtpSignInEvent,
-        transformer: throttleDroppable(throttleDuration));
-    on<VerifyOtpSignUpEvent>(_onVerifyOtpSignUpEvent,
-        transformer: throttleDroppable(throttleDuration));
-    on<VerifyGuestPhoneEvent>(_onVerifyGuestPhoneEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<VerifyOtpSignInEvent>(_onVerifyOtpSignInEvent);
+    on<VerifyOtpSignUpEvent>(_onVerifyOtpSignUpEvent);
+    on<VerifyGuestPhoneEvent>(_onVerifyGuestPhoneEvent,);
     on<RegisterGuestEvent>(_onRegisterGuestEvent,
         transformer: throttleDroppable(throttleDuration));
     on<UpdateNameEvent>(_onUpdateNameEvent,
@@ -202,6 +199,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onSendOtpEvent(
       SendOtpEvent event, Emitter<AuthState> emit) async {
+    _prefsRepository.clearVerificationId();
     emit(state.copyWith(sendOtpStatus: SendOtpStatus.loading));
     final response = await sendOtpUseCase(
       SendOtpParams(isViaWhatsApp: event.isViaWhatsApp, phone: event.phone),

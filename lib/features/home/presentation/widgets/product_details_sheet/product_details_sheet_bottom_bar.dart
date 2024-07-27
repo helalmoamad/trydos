@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -36,7 +37,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
       required this.productId,
       required this.colorName,
       required this.colorNum,
-      required this.Size,
+      required this.size,
       required this.currentActiveTab,
       required this.sizeIsNotAvailableNotifier,
       required this.imageUrl});
@@ -50,7 +51,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
   final String productId;
   final String colorName;
   final String colorNum;
-  final String Size;
+  final String size;
   final ValueNotifier<int> currentActiveTab;
 
   final void Function() clickOnFavorite;
@@ -102,6 +103,7 @@ class _ProductDetailsSheetBottomBarState
                 current.addImagesToProductIdForCart ||
             previous.currentSelectedColorForEveryProduct[widget.productId] !=
                 current.currentSelectedColorForEveryProduct[widget.productId] ||
+            previous.productStatus != current.productStatus ||
             previous.ListitemForAddToCart != current.ListitemForAddToCart,
         builder: (context, state) {
           print(state.addImagesToProductIdForCart[widget.productId]);
@@ -169,11 +171,23 @@ class _ProductDetailsSheetBottomBarState
                                             child: selectedSizeByUser == null
                                                 ? GestureDetector(
                                                     onTapDown: (details) {
-                                                      if (currentTab != 3) {
-                                                        widget.panelController
-                                                            .open();
-                                                        widget.currentActiveTab
-                                                            .value = 3;
+                                                      if (currentTab != 3 &&
+                                                          state.productStatus !=
+                                                              null) {
+                                                        print(
+                                                            "11111111${state.productStatus![widget.productId]}1111111111111111111");
+
+                                                        if (state.productStatus![
+                                                                widget
+                                                                    .productId] ==
+                                                            GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                                .success) {
+                                                          widget.panelController
+                                                              .open();
+                                                          widget
+                                                              .currentActiveTab
+                                                              .value = 3;
+                                                        }
                                                       } else {
                                                         HapticFeedback
                                                             .lightImpact();
@@ -304,7 +318,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                           height: 20,
                                                                                           child: ListView.builder(
                                                                                             itemBuilder: (context, index) {
-                                                                                              return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: widget.imageUrl, width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
+                                                                                              return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: state.ListitemForAddToCart != null ? state.ListitemForAddToCart![index].images! : "", width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
                                                                                                 width: 15,
                                                                                                 height: 20,
                                                                                                 decoration: BoxDecoration(
@@ -578,4 +592,35 @@ class ImageForAddToCart {
     this.isDuplicate = false,
     this.size,
   });
+
+  ImageForAddToCart copyWith(
+          {final String? colorName,
+          final String? images,
+          int? quantity,
+          final String? size,
+          final String? colorNum,
+          bool? isDuplicate}) =>
+      ImageForAddToCart(
+          colorName: colorName ?? this.colorNum,
+          images: images ?? this.images,
+          quantity: quantity ?? this.quantity,
+          size: size ?? this.size,
+          colorNum: colorName ?? this.colorName);
+
+  factory ImageForAddToCart.fromJson(Map<String, dynamic> json) =>
+      ImageForAddToCart(
+        colorName: json["colorName"],
+        images: json["images"],
+        size: json["size"],
+        quantity: json["quantity"],
+        colorNum: json["colorNum"]?.toDouble(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "colorName": colorName,
+        "images": images,
+        "size": size,
+        "quantity": quantity,
+        "colorNum": colorNum,
+      };
 }

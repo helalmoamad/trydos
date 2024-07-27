@@ -33,13 +33,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       sizes:
           (json['sizes'] as List<dynamic>?)?.map((e) => e as String).toList() ??
               const [],
-      getSearchResultStatus: $enumDecodeNullable(
-              _$GetSearchResultStatusEnumMap, json['getSearchResultStatus']) ??
-          GetSearchResultStatus.init,
-      searchResultModel: json['searchResultModel'] == null
-          ? null
-          : get_product_with_filter.GetProductListingWithFiltersModel.fromJson(
-              json['searchResultModel'] as Map<String, dynamic>),
       getProductFiltersStatus: $enumDecodeNullable(
               _$GetProductFiltersStatusEnumMap,
               json['getProductFiltersStatus']) ??
@@ -63,6 +56,13 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       categories: (json['categories'] as List<dynamic>?)
           ?.map((e) => category.Category.fromJson(e as Map<String, dynamic>))
           .toList(),
+      productStatus: (json['productStatus'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(
+            k,
+            $enumDecode(
+                _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap,
+                e)),
+      ),
       productITemForCart:
           (json['productITemForCart'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, Products.fromJson(e as Map<String, dynamic>)),
@@ -162,6 +162,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : GetCurrencyForCountryModel.fromJson(
               json['getCurrencyForCountryModel'] as Map<String, dynamic>),
+      ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
+          ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
+          .toList(),
       getCartItemsStatus: $enumDecodeNullable(
               _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
           GetCartItemsStatus.init,
@@ -224,6 +227,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.productITemForCart?.map((k, e) => MapEntry(k, e.toJson())),
       'getMainCategoriesStatus':
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
+      'ListitemForAddToCart':
+          instance.ListitemForAddToCart?.map((e) => e.toJson()).toList(),
       'getCurrencyForCountryModel':
           instance.getCurrencyForCountryModel?.toJson(),
       'getProductFiltersStatus':
@@ -236,8 +241,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getProductFiltersModel': instance.getProductFiltersModel?.toJson(),
       'appliedFiltersByUser': instance.appliedFiltersByUser?.toJson(),
       'choosedFiltersByUser': instance.choosedFiltersByUser?.toJson(),
-      'getSearchResultStatus':
-          _$GetSearchResultStatusEnumMap[instance.getSearchResultStatus]!,
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
       'searchHistory': instance.searchHistory,
@@ -245,6 +248,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.selectedBoutiqueBrandCategorySlugsForSearch,
       'addImagesToProductIdForCart': instance.addImagesToProductIdForCart.map(
           (k, e) => MapEntry(k, e.map((k, e) => MapEntry(k.toString(), e)))),
+      'productStatus': instance.productStatus?.map((k, e) => MapEntry(
+          k, _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap[e]!)),
       'cartCollection': instance.cartCollection
           ?.map((k, e) => MapEntry(k, e.map((e) => e.toJson()).toList())),
       'reRequestTheseBoutiques': instance.reRequestTheseBoutiques,
@@ -284,7 +289,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.mainCategoriesResponseModel?.toJson(),
       'getProductDetailWithoutRelatedProductsModel':
           instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
-      'searchResultModel': instance.searchResultModel?.toJson(),
       'startingSetting': instance.startingSetting?.toJson(),
       'categories': instance.categories?.map((e) => e.toJson()).toList(),
       'brands': instance.brands?.map((e) => e.toJson()).toList(),
@@ -321,13 +325,6 @@ const _$GetCommentForProductStatusEnumMap = {
   GetCommentForProductStatus.loading: 'loading',
   GetCommentForProductStatus.success: 'success',
   GetCommentForProductStatus.failure: 'failure',
-};
-
-const _$GetSearchResultStatusEnumMap = {
-  GetSearchResultStatus.init: 'init',
-  GetSearchResultStatus.loading: 'loading',
-  GetSearchResultStatus.success: 'success',
-  GetSearchResultStatus.failure: 'failure',
 };
 
 const _$GetProductFiltersStatusEnumMap = {

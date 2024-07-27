@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'get_category_model.dart';
+
 GetProductListingWithoutFiltersModel
     getProductListingWithoutFiltersModelFromJson(String str) =>
         GetProductListingWithoutFiltersModel.fromJson(json.decode(str));
@@ -48,13 +50,6 @@ class Data {
   final int? limit;
   final int? offset;
   final List<Products>? products;
-  final String? categoryParentParent;
-  final String? categoryParent;
-  final dynamic category;
-  final String? categorySeoDescription;
-  final String? categoryTitle;
-  final String? categoryH1;
-  final dynamic childCategories;
   final String? resultFor;
   final String? boutiqueSlug;
 
@@ -63,13 +58,6 @@ class Data {
     this.limit,
     this.offset,
     this.products,
-    this.categoryParentParent,
-    this.categoryParent,
-    this.category,
-    this.categorySeoDescription,
-    this.categoryTitle,
-    this.categoryH1,
-    this.childCategories,
     this.resultFor,
     this.boutiqueSlug,
   });
@@ -79,13 +67,6 @@ class Data {
     int? limit,
     int? offset,
     List<Products>? products,
-    String? categoryParentParent,
-    String? categoryParent,
-    String? category,
-    String? categorySeoDescription,
-    String? categoryTitle,
-    String? categoryH1,
-    String? childCategories,
     String? resultFor,
     String? boutiqueSlug,
   }) =>
@@ -94,14 +75,6 @@ class Data {
         limit: limit ?? this.limit,
         offset: offset ?? this.offset,
         products: products ?? this.products,
-        categoryParentParent: categoryParentParent ?? this.categoryParentParent,
-        categoryParent: categoryParent ?? this.categoryParent,
-        category: category ?? this.category,
-        categorySeoDescription:
-            categorySeoDescription ?? this.categorySeoDescription,
-        categoryTitle: categoryTitle ?? this.categoryTitle,
-        categoryH1: categoryH1 ?? this.categoryH1,
-        childCategories: childCategories ?? this.childCategories,
         resultFor: resultFor ?? this.resultFor,
         boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
       );
@@ -115,18 +88,6 @@ class Data {
           ? []
           : List<Products>.from(
               json["products"]!.map((x) => Products.fromJson(x))),
-      categoryParentParent: json["category_parent_parent"],
-      categoryParent: json["category_parent"],
-      category: json["category"] is String
-          ? json["category"]
-          : Category.fromJson(json["category"]),
-      categorySeoDescription: json["category_seo_description"],
-      categoryTitle: json["category_title"],
-      categoryH1: json["category_h1"],
-      childCategories: json["child_categories"] is List
-          ? List<Category>.from(
-              json["child_categories"]!.map((x) => Category.fromJson(x)))
-          : json["child_categories"],
       resultFor: json["result_for"],
       boutiqueSlug: json["boutique_slug"],
     );
@@ -139,13 +100,6 @@ class Data {
         "products": products == null
             ? []
             : List<dynamic>.from(products!.map((x) => x.toJson())),
-        "category_parent_parent": categoryParentParent,
-        "category_parent": categoryParent,
-        "category": category,
-        "category_seo_description": categorySeoDescription ?? {},
-        "category_title": categoryTitle,
-        "category_h1": categoryH1,
-        "child_categories": childCategories,
         "result_for": resultFor,
         "boutique_slug": boutiqueSlug,
       };
@@ -353,40 +307,6 @@ class Brand {
       };
 }
 
-class Category {
-  final int? id;
-  final String? name;
-  final String? icon;
-
-  Category({
-    this.id,
-    this.name,
-    this.icon,
-  });
-
-  Category copyWith({
-    int? id,
-    String? name,
-    String? icon,
-  }) =>
-      Category(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        icon: icon ?? this.icon,
-      );
-
-  factory Category.fromJson(Map<String, dynamic> json) => Category(
-        id: json["id"],
-        name: json["name"],
-        icon: json["icon"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "icon": icon,
-      };
-}
 
 class Color {
   final String? name;

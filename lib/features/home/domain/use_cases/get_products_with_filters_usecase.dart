@@ -65,5 +65,10 @@ class GetProductsWithFiltersParams {
         "category_slugs": categorySlugs.toString(),
         "brand_slugs": brandSlugs.toString()
       }..removeWhere((key, value) =>
-          value == null || value == 'null' || value == [].toString());
+          value == null ||
+          value == 'null' ||
+          value == [''].toString() ||
+          value == [].toString() ||
+          value == ['null'].toString() ||
+          value == "");
 }

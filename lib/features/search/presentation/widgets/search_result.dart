@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
@@ -30,10 +31,12 @@ class _SearchResultState extends ThemeState<SearchResult> {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (p, c) =>
-          p.searchResultModel != c.searchResultModel ||
-          p.getSearchResultStatus != c.getSearchResultStatus,
+          p.getProductListingWithFiltersPaginationModels !=
+          c.getProductListingWithFiltersPaginationModels,
       builder: (context, state) {
-        if (state.getSearchResultStatus == GetSearchResultStatus.loading) {
+        if (state.getProductListingWithFiltersPaginationModels
+                ?.paginationStatus !=
+            PaginationStatus.success) {
           return Column(
             children: [
               SizedBox(
@@ -122,7 +125,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
             ],
           );
         }
-        if (state.searchResultModel == null) {
+        if (state.getProductListingWithFiltersPaginationModels == null) {
           return SizedBox.shrink();
         }
         return Column(
@@ -157,7 +160,8 @@ class _SearchResultState extends ThemeState<SearchResult> {
                             context,
                             ProductDetailsPage(
                               productItem: state
-                                  .searchResultModel!.data!.products![index],
+                                  .getProductListingWithFiltersPaginationModels!
+                                  .items[index],
                             ));
                       },
                       child: Container(
@@ -175,8 +179,10 @@ class _SearchResultState extends ThemeState<SearchResult> {
                               ),
                               Flexible(
                                 child: MyTextWidget(
-                                  state.searchResultModel!.data!
-                                      .products![index].name!,
+                                  state
+                                      .getProductListingWithFiltersPaginationModels!
+                                      .items[index]
+                                      .name!,
                                   textAlign: TextAlign.start,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
@@ -205,13 +211,17 @@ class _SearchResultState extends ThemeState<SearchResult> {
                           image: DecorationImage(
                               fit: BoxFit.cover,
                               image: NetworkImage(
-                                state.searchResultModel!.data!.products![index]
-                                    .images![0].filePath!,
+                                state
+                                    .getProductListingWithFiltersPaginationModels!
+                                    .items[index]
+                                    .images![0]
+                                    .filePath!,
                               ))),
                     )
                   ],
                 ),
-                itemCount: state.searchResultModel!.data!.products!.length,
+                itemCount: state
+                    .getProductListingWithFiltersPaginationModels!.items.length,
                 separatorBuilder: (ctx, index) => SizedBox(
                   height: 5,
                 ),

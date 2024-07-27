@@ -87,6 +87,7 @@ class _TrydosApplicationState extends State<TrydosApplication>
                         LanguageService(context);
                         ConnectivityObserver.createInstance(context);
                         ScreenService(context);
+
                         return botToastBuilder(context, child);
                       },
                     ),
