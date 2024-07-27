@@ -30,6 +30,15 @@ class GetProductFiltersModel {
         filters: filters ?? this.filters,
       );
 
+  GetProductFiltersModel copyWithSendValue({
+    String? message,
+    Filter? filters,
+  }) =>
+      GetProductFiltersModel(
+        message: message ,
+        filters: filters
+      );
+
   factory GetProductFiltersModel.fromJson(Map<String, dynamic> json) =>
       GetProductFiltersModel(
         message: json["message"],

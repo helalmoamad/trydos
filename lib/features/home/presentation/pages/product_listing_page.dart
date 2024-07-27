@@ -1015,12 +1015,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       titleSpacing: 0,
                                                       toolbarHeight: isExpanded
                                                           ? 860
-                                                          : state.appliedFiltersByUser !=
+                                                          : state.getProductFiltersModel?.filters == null ? 35 : state.appliedFiltersByUser !=
                                                                   null
-                                                              ? (state.getProductListingWithFiltersPaginationModels?.items.length ?? 1 ) == 1 ? 0 : 145
+                                                              ? (state.getProductListingWithFiltersPaginationModels?.items.length ?? 1 ) == 1 ? 35 : 145
                                                               : 115,
                                                       flexibleSpace:
-                                                      (state.getProductListingWithFiltersPaginationModels?.items.length ?? 1 ) == 1 ? SizedBox.shrink() : StackedFiltersList(
+                                                      StackedFiltersList(
                                                               filterPageExpanded:
                                                                   filterPageExpanded,
                                                               closeFilterPage:
@@ -1029,6 +1029,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         .value =
                                                                     false;
                                                               },
+                                                          displayAppliedFiltersOnly : (state.getProductListingWithFiltersPaginationModels?.items.length ?? 1 ) == 1,
                                                               category: widget
                                                                   .category,
                                                               boutiqueSlug: widget
