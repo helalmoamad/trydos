@@ -1,4 +1,4 @@
-import 'dart:async';
+/*import 'dart:async';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 
@@ -218,3 +218,4 @@ class _ProductListingSearchPageState extends State<ProductListingSearchPage> {
         }));
   }
 }
+*/

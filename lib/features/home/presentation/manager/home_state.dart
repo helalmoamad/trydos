@@ -45,8 +45,6 @@ enum GetCommentForProductStatus { init, loading, success, failure }
 
 enum GetMainCategoriesStatus { init, loading, success, failure }
 
-enum GetSearchResultStatus { init, loading, success, failure }
-
 enum GetCartItemsStatus { init, loading, success, failure }
 
 enum GetStoriesForProductStatus { init, loading, success, failure }
@@ -68,8 +66,6 @@ class HomeState {
     this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.startingSetting,
     this.sizes = const [],
-    this.getSearchResultStatus = GetSearchResultStatus.init,
-    this.searchResultModel,
     this.getProductFiltersStatus = GetProductFiltersStatus.init,
     this.getProductFiltersModel,
     this.choosedFiltersByUser,
@@ -120,7 +116,6 @@ class HomeState {
   final get_filters.GetProductFiltersModel? getProductFiltersModel;
   final get_filters.GetProductFiltersModel? appliedFiltersByUser;
   final get_filters.GetProductFiltersModel? choosedFiltersByUser;
-  final GetSearchResultStatus getSearchResultStatus;
   int? selectedCollection;
   int currentPage;
   List<String>? searchHistory;
@@ -151,8 +146,7 @@ class HomeState {
   final MainCategoriesResponseModel? mainCategoriesResponseModel;
   final GetProductDetailWithoutRelatedProductsModel?
       getProductDetailWithoutRelatedProductsModel;
-  final get_product_with_filter.GetProductListingWithFiltersModel?
-      searchResultModel;
+
   final StartingSetting? startingSetting;
   List<category.Category>? categories;
   List<brand.Brand>? brands;
@@ -165,9 +159,6 @@ class HomeState {
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
-      final GetSearchResultStatus? getSearchResultStatus,
-      final get_product_with_filter.GetProductListingWithFiltersModel?
-          searchResultModel,
       final List<ImageForAddToCart>? ListitemForAddToCart,
       final GetAllowedCountriesModel? getAllowedCountriesModel,
       final GetCurrencyForCountryModel? getCurrencyForCountryModel,
@@ -288,8 +279,6 @@ class HomeState {
         boutiques: boutiques ?? this.boutiques,
         productStatus: productStatus ?? this.productStatus,
         getAllowedCountriesModel: getAllowedCountriesModel ?? this.getAllowedCountriesModel,
-        getSearchResultStatus: getSearchResultStatus ?? this.getSearchResultStatus,
-        searchResultModel: searchResultModel ?? this.searchResultModel,
         selectedBoutiqueBrandCategorySlugsForSearch: selectedBoutiqueBrandCategorySlugsForSearch ?? this.selectedBoutiqueBrandCategorySlugsForSearch);
   }
 

@@ -20,6 +20,8 @@ class PriceFiltersRangesList extends StatefulWidget {
     required this.currencySymbol,
     required this.priceRanges,
     required this.exchangeRate,
+    required this.searchText,
+    required this.fromSearch,
     required this.decimalPoint,
   });
 
@@ -28,6 +30,8 @@ class PriceFiltersRangesList extends StatefulWidget {
   final double exchangeRate;
   final List<PriceRange> priceRanges;
   final String? category;
+  final bool fromSearch;
+  final String? searchText;
   final int decimalPoint;
   @override
   State<PriceFiltersRangesList> createState() => _PriceFiltersRangesListState();
@@ -94,6 +98,8 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                               .copyWithSaveOtherField(prices: null);
                     }
                     homeBloc.add(GetProductsWithFiltersEvent(
+                        fromSearch: widget.fromSearch,
+                        searchText: widget.searchText,
                         boutiqueSlug: widget.boutiqueSlug,
                         filtersAppliedByUser: GetProductFiltersModel(
                             filters: prevChoosedOrAppliedFilterToAddToIt),

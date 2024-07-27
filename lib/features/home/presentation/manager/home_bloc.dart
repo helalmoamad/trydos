@@ -109,9 +109,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     on<GetCurrencyForCountryEvent>(_onGetCurrencyForCountryEvent,
         transformer: throttleDroppable(throttleDuration));
-    on<GetSearchREsultEvent>(
+    /* on<GetSearchREsultEvent>(
       _onGetSearchResultEventEvent,
-    );
+    );*/
 
     on<GetProductFiltersEvent>(
       _onGetProductFiltersEvent,
@@ -614,32 +614,54 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     ));
     final response = await getProductsWithFiltersUseCase(
         GetProductsWithFiltersParams(
+            brandSlugs: event.fromSearch ?? false
+                ? [
+                    ...state.selectedBoutiqueBrandCategorySlugsForSearch[
+                            "brand"] ??
+                        [],
+                    ...appliedFiltersByUser.filters!.brands
+                            ?.map((e) => '"${e.slug.toString()}"')
+                            .toList() ??
+                        []
+                  ]
+                : appliedFiltersByUser.filters!.brands
+                    ?.map((e) => '"${e.slug.toString()}"')
+                    .toList(),
+            categorySlugs: event.fromSearch ?? false
+                ? [
+                    ...state.selectedBoutiqueBrandCategorySlugsForSearch[
+                            "category"] ??
+                        [],
+                    ...appliedFiltersByUser.filters!.categories
+                            ?.map((e) => '"${e.slug.toString()}"')
+                            .toList() ??
+                        []
+                  ]
+                : appliedFiltersByUser.filters!.categories
+                    ?.map((e) => '"${e.slug.toString()}"')
+                    .toList(),
+            boutiqueSlugs: event.fromSearch ?? false
+                ? state.selectedBoutiqueBrandCategorySlugsForSearch["boutique"]
+                : ['"${event.boutiqueSlug}"'],
             offset: event.offset,
-            boutiqueSlug: event.boutiqueSlug,
             attributes: appliedFiltersByUser.filters!.attributes.isNullOrEmpty
                 ? null
                 : [
                     {
-                      "id": appliedFiltersByUser.filters!.attributes![0].id,
-                      "name": appliedFiltersByUser.filters!.attributes![0].name,
-                      "options":
+                      '"id"': appliedFiltersByUser.filters!.attributes![0].id,
+                      '"name"':
+                          appliedFiltersByUser.filters!.attributes![0].name,
+                      '"options"':
                           appliedFiltersByUser.filters!.attributes![0].options,
                     }
                   ],
-            brands: appliedFiltersByUser.filters!.brands
-                ?.map((e) => e.id.toString())
-                .toList(),
-            categories: appliedFiltersByUser.filters!.categories
-                ?.map((e) => e.slug.toString())
-                .toList(),
             colors: appliedFiltersByUser.filters!.colors
-                ?.map((e) => e.toString())
+                ?.map((e) => '"${e.toString()}"')
                 .toList(),
-            category: event.category,
             limit: event.limit,
             prices: appliedFiltersByUser.filters!.prices != null
                 ? [
-                    '${appliedFiltersByUser.filters!.prices!.minPrice}-${appliedFiltersByUser.filters!.prices!.maxPrice}'
+                    '"${appliedFiltersByUser.filters!.prices!.minPrice}-${appliedFiltersByUser.filters!.prices!.maxPrice}"'
                   ]
                 : null,
             searchText: event.searchText));
@@ -880,22 +902,43 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       print(st);
     }
     final response = await getProductFiltersUseCase(GetProductsFiltersParams(
-      category: event.category,
-      boutiqueSlug: event.boutiqueSlug,
+      searchText: event.searchText,
+      brandSlugs: event.fromSearch ?? false
+          ? [
+              ...state.selectedBoutiqueBrandCategorySlugsForSearch["brand"] ??
+                  [],
+              ...filters.brands
+                      ?.map((e) => '"${e.slug.toString()}"')
+                      .toList() ??
+                  []
+            ]
+          : filters.brands?.map((e) => '"${e.slug.toString()}"').toList(),
+      categorySlugs: event.fromSearch ?? false
+          ? [
+              ...state.selectedBoutiqueBrandCategorySlugsForSearch[
+                      "category"] ??
+                  [],
+              ...filters.categories
+                      ?.map((e) => '"${e.slug.toString()}"')
+                      .toList() ??
+                  []
+            ]
+          : filters.categories?.map((e) => '"${e.slug.toString()}"').toList(),
+      boutiqueSlugs: event.fromSearch ?? false
+          ? state.selectedBoutiqueBrandCategorySlugsForSearch["boutique"]
+          : ['"${event.boutiqueSlug}"'],
       attributes: filters.attributes.isNullOrEmpty
           ? null
           : [
               {
-                "id": filters.attributes![0].id,
-                "name": filters.attributes![0].name,
-                "options": filters.attributes![0].options,
+                '"id"': filters.attributes![0].id,
+                '"name"': filters.attributes![0].name,
+                '"options"': filters.attributes![0].options,
               }
             ],
-      brands: filters.brands?.map((e) => e.id.toString()).toList(),
-      categories: filters.categories?.map((e) => e.slug.toString()).toList(),
-      colors: filters.colors?.map((e) => e.toString()).toList(),
+      colors: filters.colors?.map((e) => '"${e.toString()}"').toList(),
       prices: filters.prices != null
-          ? ['${filters.prices!.minPrice}-${filters.prices!.maxPrice}']
+          ? ['"${filters.prices!.minPrice}-${filters.prices!.maxPrice}"']
           : null,
     ));
     response.fold((l) {
@@ -1402,7 +1445,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(state.copyWith(currentQuantityForCart: CurrentQuantity));
   }
 
-  FutureOr<void> _onGetSearchResultEventEvent(
+  /* FutureOr<void> _onGetSearchResultEventEvent(
       GetSearchREsultEvent event, Emitter<HomeState> emit) async {
     emit(state.copyWith(getSearchResultStatus: GetSearchResultStatus.loading));
     final response = await getProductsWithFiltersUseCase(
@@ -1417,7 +1460,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetSearchResultEvent')) {
-        add(GetSearchREsultEvent(searchTitle: event.searchTitle));
+     add(GetSearchREsultEvent(searchTitle: event.searchTitle));
         isFailedTheFirstTime.add('GetSearchResultEvent');
       }
       emit(
@@ -1429,11 +1472,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           searchResultModel: r,
           getSearchResultStatus: GetSearchResultStatus.success));
     });
-  }
+  }*/
 
   FutureOr<void> _onGetSearchListingResultEventEvent(
       GetSearchListingResultEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(getSearchResultStatus: GetSearchResultStatus.loading));
     final response =
         await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
       categorySlugs:
@@ -1445,17 +1487,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetSearchResultEvent')) {
-        add(GetSearchREsultEvent(searchTitle: event.searchTitle));
+        // add(GetSearchREsultEvent(searchTitle: event.searchTitle));
         isFailedTheFirstTime.add('GetSearchResultEvent');
       }
-      emit(
-          state.copyWith(getSearchResultStatus: GetSearchResultStatus.failure));
     }, (r) {
       isFailedTheFirstTime.remove('GetSearchResultEvent');
-
-      emit(state.copyWith(
-          searchResultModel: r,
-          getSearchResultStatus: GetSearchResultStatus.success));
     });
   }
 
@@ -1485,7 +1521,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent event,
       Emitter<HomeState> emit) async {
     Map<String, List<String>>? selectedBoutiqueBrandCategorySlugsForSearch =
-        state.selectedBoutiqueBrandCategorySlugsForSearch;
+        Map<String, List<String>>.from(
+            state.selectedBoutiqueBrandCategorySlugsForSearch);
     if (selectedBoutiqueBrandCategorySlugsForSearch["boutique"].isNullOrEmpty) {
       selectedBoutiqueBrandCategorySlugsForSearch["boutique"] = [];
     }
@@ -1536,6 +1573,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onChangeSelectedFiltersEvent(
       ChangeSelectedFiltersEvent event, Emitter<HomeState> emit) {
+    print("11111111111111111111111111111111111111111");
     bool makeChoosedFiltersNull = false;
     if (event.filtersChoosedByUser?.filters != null) {
       if (event.filtersChoosedByUser!.filters!.colors.isNullOrEmpty &&

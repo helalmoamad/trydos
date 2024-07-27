@@ -1,33 +1,30 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
+
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/utils/form_state_mixin.dart';
-import 'package:trydos/core/utils/form_utils.dart';
+
+import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/search/presentation/widgets/search_Circle_boutique.dart';
 import 'package:trydos/features/search/presentation/widgets/search_circle_brand.dart';
 import 'package:trydos/features/search/presentation/widgets/search_circle_category.dart';
 
 import 'package:trydos/features/search/presentation/widgets/trendig_section.dart';
-import 'dart:ui' as ui;
-import '../../../../common/constant/design/assets_provider.dart';
-import '../../../../core/utils/responsive_padding.dart';
+
 import '../../../../core/utils/theme_state.dart';
-import '../../../../generated/locale_keys.g.dart';
-import '../../../app/app_widgets/app_text_field.dart';
-import '../../../app/app_widgets/tabs_bar.dart';
+
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
-import '../../../app/blocs/app_bloc/app_state.dart';
+
 import '../../../home/presentation/manager/home_bloc.dart';
-import '../widgets/close_circle.dart';
-import '../widgets/search_chip.dart';
+
 import '../widgets/search_history.dart';
 import '../widgets/search_result.dart';
 
@@ -48,10 +45,18 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends ThemeState<SearchPage> {
   final ScrollController scrollController = ScrollController();
+  final ValueNotifier<bool> hideAppleyResetButtom = ValueNotifier(true);
+  final ValueNotifier<List<int>> selectBoutiqueSearch = ValueNotifier([]);
+  final ValueNotifier<List<int>> selectBrandSearch = ValueNotifier([]);
+
+  final ValueNotifier<List<int>> selectCategorySearch = ValueNotifier([]);
+
   late final AppBloc appBloc;
+  late final HomeBloc homeBloc;
   @override
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
   }
 
@@ -67,8 +72,15 @@ class _SearchPageState extends ThemeState<SearchPage> {
         backgroundColor: colorScheme.white,
         body: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
-              previous.searchHistory != current.searchHistory,
+              previous.searchHistory != current.searchHistory ||
+              previous.selectedBoutiqueBrandCategorySlugsForSearch.values !=
+                  current.selectedBoutiqueBrandCategorySlugsForSearch.values,
           builder: (context, state) {
+            hideAppleyResetButtom.value = state
+                .selectedBoutiqueBrandCategorySlugsForSearch.values
+                .toList()
+                .any((element) => !element.isEmpty);
+
             return SafeArea(
                 child: CustomScrollView(
                     physics: const ClampingScrollPhysics(),
@@ -117,11 +129,12 @@ class _SearchPageState extends ThemeState<SearchPage> {
                       }),
                   SliverToBoxAdapter(
                       child: SizedBox(
-                    height: 1.sh - 450,
+                    height: 1.sh - 500,
                   )),
                   ValueListenableBuilder<bool>(
                       valueListenable: widget.hideTrendingAndHistory,
                       child: SearchChipBrand(
+                        selectedBrand: selectBrandSearch,
                         title: 'Brands',
                       ),
                       builder: (context, hide, child) {
@@ -135,6 +148,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   ValueListenableBuilder<bool>(
                       valueListenable: widget.hideTrendingAndHistory,
                       child: SearchChipcategory(
+                        selectedCategory: selectCategorySearch,
                         title: 'Category',
                       ),
                       builder: (context, hide, child) {
@@ -148,12 +162,117 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   ValueListenableBuilder<bool>(
                       valueListenable: widget.hideTrendingAndHistory,
                       child: SearchChipBoutique(
+                        selectedBoutique: selectBoutiqueSearch,
                         title: "Boutique",
                       ),
                       builder: (context, hide, child) {
                         return SliverToBoxAdapter(
                           child: Visibility(
                             visible: !hide,
+                            child: child!,
+                          ),
+                        );
+                      }),
+                  ValueListenableBuilder<bool>(
+                      valueListenable: hideAppleyResetButtom,
+                      child: Container(
+                        margin: EdgeInsets.only(
+                            bottom: !hideAppleyResetButtom.value ? 0 : 30),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                homeBloc.add(GetProductsWithFiltersEvent(
+                                    offset: 1,
+                                    getWithPagination: false,
+                                    fromSearch: true,
+                                    searchText: widget.controller.text));
+                                HelperFunctions.slidingNavigation(
+                                    context,
+                                    ProductListingPage(
+                                      searchText: widget.controller.text,
+                                      boutiqueIcon: "",
+                                      fromSearch: true,
+                                      withSlidingImages: false,
+                                      boutiqueSlug: '',
+                                    ));
+                              },
+                              child: Container(
+                                width: 200,
+                                height: 65,
+                                decoration: BoxDecoration(
+                                    color: Color(0xffFF5F61),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 6,
+                                          offset: Offset(0, 3)),
+                                      BoxShadow(
+                                        color: Colors.white.withOpacity(0.4),
+                                        blurRadius: 6,
+                                        offset: Offset(0, 3),
+                                      )
+                                    ],
+                                    borderRadius: BorderRadius.circular(20)),
+                                child: Center(
+                                  child: MyTextWidget(
+                                    'Apply',
+                                    style: textTheme.headline6?.rq.copyWith(
+                                        color: Color(0xffFEFEFE),
+                                        height: 23 / 18),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Stack(
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    selectBoutiqueSearch.value = [];
+                                    selectBrandSearch.value = [];
+                                    selectCategorySearch.value = [];
+                                  },
+                                  child: Container(
+                                    width: 150,
+                                    height: 65,
+                                    decoration: BoxDecoration(
+                                        color: colorScheme.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.1),
+                                              blurRadius: 6,
+                                              offset: Offset(0, 3)),
+                                          BoxShadow(
+                                            color:
+                                                Colors.white.withOpacity(0.4),
+                                            blurRadius: 6,
+                                            offset: Offset(0, 3),
+                                          )
+                                        ],
+                                        border: Border.all(
+                                            color: Color(0xff388CFF))),
+                                    child: Center(
+                                      child: MyTextWidget(
+                                        'Reset',
+                                        style: textTheme.headline6?.rq.copyWith(
+                                            color: Color(0xff388CFF),
+                                            height: 23 / 18),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      builder: (context, hide, child) {
+                        return SliverToBoxAdapter(
+                          child: Visibility(
+                            visible: hide,
                             child: child!,
                           ),
                         );

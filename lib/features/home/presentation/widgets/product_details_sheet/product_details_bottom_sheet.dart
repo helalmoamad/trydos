@@ -374,7 +374,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                               .currency!
                                               .symbol ??
                                           "",
-                                      decimalPoint: state.startingSetting?.decimalPointSetting ?? 2,
+                                      decimalPoint: state.startingSetting
+                                              ?.decimalPointSetting ??
+                                          2,
                                       addToBagButtonShapeNotifier:
                                           widget.addToBagButtonShapeNotifier,
                                       price: (widget.productItem.price! *
@@ -383,7 +385,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .data!
                                                   .currency!
                                                   .exchangeRate!)
-                                          .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2),
+                                          .toStringAsFixed(state.startingSetting
+                                                  ?.decimalPointSetting ??
+                                              2),
                                       offerPrice: (widget
                                                   .productItem.offerPrice! *
                                               state
@@ -391,7 +395,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .data!
                                                   .currency!
                                                   .exchangeRate!)
-                                          .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2),
+                                          .toStringAsFixed(state.startingSetting
+                                                  ?.decimalPointSetting ??
+                                              2),
                                     );
                                   }),
                               currentTab != -1
@@ -511,7 +517,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                 return indices.isEmpty
                     ? ProductDetailsSheetBottomBar(
                         colorNum: widget.currentColornum,
-                        Size: widget.currentSize,
+                        size: widget.currentSize,
                         colorName: widget.currentColorName,
                         productId: widget.productItem.id.toString(),
                         imageUrl:

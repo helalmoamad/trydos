@@ -17,7 +17,10 @@ import '../../../app/my_text_widget.dart';
 
 class SearchChipBrand extends StatefulWidget {
   final String title;
-  const SearchChipBrand({Key? key, required this.title}) : super(key: key);
+  final ValueNotifier<List<int>> selectedBrand;
+  const SearchChipBrand(
+      {Key? key, required this.title, required this.selectedBrand})
+      : super(key: key);
 
   @override
   State<SearchChipBrand> createState() => _SearchChipBrandState();
@@ -26,7 +29,7 @@ class SearchChipBrand extends StatefulWidget {
 class _SearchChipBrandState extends State<SearchChipBrand> {
   final ScrollController scrollController = ScrollController();
   late HomeBloc homeBloc;
-  final ValueNotifier<List<int>> selectedBrand = ValueNotifier([]);
+
   List<String> selectedBrandSlugs = [];
   @override
   void initState() {
@@ -44,11 +47,25 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
       child: BlocBuilder<HomeBloc, HomeState>(
-        buildWhen: (previous, current) => previous.brands != current.brands,
+        buildWhen: (previous, current) =>
+            previous.brands != current.brands ||
+            previous.selectedBoutiqueBrandCategorySlugsForSearch["brand"] !=
+                current.selectedBoutiqueBrandCategorySlugsForSearch["brand"],
         builder: (context, state) {
           if (state.brands.isNullOrEmpty) {
             return SizedBox.shrink();
           }
+          /*  selectedBrandSlugs =
+              state.selectedBoutiqueBrandCategorySlugsForSearch["brand"] ?? [];
+
+          selectedBrandSlugs.forEach((e) {
+            if (state.brands!.any((element) => '"${element.slug}"' == e)) {
+              selectedBrand.value.add(state.brands!.indexOf(state.brands!
+                  .firstWhere((element) => '"${element.slug}"' == e)));
+            }
+          });
+
+          selectedBrand.value.removeWhere((element) => element == -1);*/
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -89,14 +106,24 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
                             return ValueListenableBuilder(
-                              valueListenable: selectedBrand,
+                              valueListenable: widget.selectedBrand,
                               builder: (context, value, _) {
+                                if (value.isNullOrEmpty) {
+                                  selectedBrandSlugs = [];
+                                  homeBloc.add(
+                                      AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
+                                          withBoutique: false,
+                                          withBrand: true,
+                                          selectedBoutiqueBrandCategorySlugsForSearch:
+                                              selectedBrandSlugs));
+                                }
                                 return InkWell(
                                   onTap: () {
-                                    if (selectedBrand.value.contains(index)) {
+                                    if (widget.selectedBrand.value
+                                        .contains(index)) {
                                       selectedBrandSlugs.remove(
                                           '"${state.brands![index].slug ?? ""}"');
-                                      selectedBrand.value.remove(index);
+                                      widget.selectedBrand.value.remove(index);
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
                                               withBoutique: false,
@@ -104,7 +131,7 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                               selectedBoutiqueBrandCategorySlugsForSearch:
                                                   selectedBrandSlugs));
                                     } else {
-                                      selectedBrand.value.add(index);
+                                      widget.selectedBrand.value.add(index);
                                       selectedBrandSlugs.add(
                                           '"${state.brands![index].slug ?? ""}"');
 
@@ -115,7 +142,7 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                               selectedBoutiqueBrandCategorySlugsForSearch:
                                                   selectedBrandSlugs));
                                     }
-                                    selectedBrand.notifyListeners();
+                                    widget.selectedBrand.notifyListeners();
                                   },
                                   child: Stack(
                                     children: [

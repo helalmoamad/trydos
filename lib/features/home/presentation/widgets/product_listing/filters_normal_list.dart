@@ -23,13 +23,16 @@ class FiltersNormalList<T> extends StatefulWidget {
       this.hideTitle = false,
       required this.isBrandFilter,
       required this.filters,
+      required this.searchText,
+      required this.fromSearch,
       required this.boutiqueSlug,
       this.category});
 
   final bool isBrandFilter;
   final String filterListTitle;
   final List<T> filters;
-
+  final bool fromSearch;
+  final String? searchText;
   final bool hideTitle;
   final String boutiqueSlug;
   final String? category;
@@ -96,12 +99,10 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Filter? prevChoosedOrAppliedFilterToAddToIt =
-                            widget.hideTitle
-                                ? homeBloc
-                                .state.appliedFiltersByUser?.filters
-                                : homeBloc
-                                .state.choosedFiltersByUser?.filters;
+                            Filter? prevChoosedOrAppliedFilterToAddToIt = widget
+                                    .hideTitle
+                                ? homeBloc.state.appliedFiltersByUser?.filters
+                                : homeBloc.state.choosedFiltersByUser?.filters;
                             if (widget.hideTitle || !isSelected) {
                               dynamic item = widget.filters[index];
                               if (prevChoosedOrAppliedFilterToAddToIt == null) {
@@ -123,6 +124,8 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                                     ]);
                               if (widget.hideTitle) {
                                 homeBloc.add(GetProductsWithFiltersEvent(
+                                    fromSearch: widget.fromSearch,
+                                    searchText: widget.searchText,
                                     boutiqueSlug: widget.boutiqueSlug,
                                     filtersAppliedByUser: GetProductFiltersModel(
                                         filters:
@@ -137,18 +140,18 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                 ));
                               }
                             } else {
-                              if(widget.isBrandFilter) {
+                              if (widget.isBrandFilter) {
                                 prevChoosedOrAppliedFilterToAddToIt!.brands!
-                                    .removeWhere(((element) => element.id ==
-                                    widget.filters[index].id));
-                                homeBloc
-                                    .add(
-                                    ChangeSelectedFiltersEvent(
-                                      category: widget.category,
-                                      boutiqueSlug: widget.boutiqueSlug,
-                                      filtersChoosedByUser: GetProductFiltersModel(
-                                          filters: prevChoosedOrAppliedFilterToAddToIt),
-                                    ));
+                                    .removeWhere(((element) =>
+                                        element.id ==
+                                        widget.filters[index].id));
+                                homeBloc.add(ChangeSelectedFiltersEvent(
+                                  category: widget.category,
+                                  boutiqueSlug: widget.boutiqueSlug,
+                                  filtersChoosedByUser: GetProductFiltersModel(
+                                      filters:
+                                          prevChoosedOrAppliedFilterToAddToIt),
+                                ));
                               }
                             }
                           },

@@ -179,34 +179,40 @@ class Attribute {
 class Brand {
   final int? id;
   final String? name;
+  final String? slug;
   final String? image;
 
   Brand({
     this.id,
     this.name,
+    this.slug,
     this.image,
   });
 
   Brand copyWith({
     int? id,
     String? name,
-    String? image,
+    String? slug,
+    String? icon,
   }) =>
       Brand(
         id: id ?? this.id,
         name: name ?? this.name,
-        image: image ?? this.image,
+        slug: slug ?? this.slug,
+        image: icon ?? this.image,
       );
 
   factory Brand.fromJson(Map<String, dynamic> json) => Brand(
         id: json["id"],
         name: json["name"],
+        slug: json["slug"],
         image: json["image"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
+        "slug": slug,
         "image": image,
       };
 }
@@ -237,8 +243,7 @@ class Prices {
         priceRanges: priceRanges ?? this.priceRanges,
       );
 
-  factory Prices.fromJson(Map<String, dynamic> json) =>
-      Prices(
+  factory Prices.fromJson(Map<String, dynamic> json) => Prices(
         minPrice: json["min_price"].toDouble(),
         maxPrice: json["max_price"].toDouble(),
         currencySymbol: json["currency_symbol"],
@@ -284,8 +289,7 @@ class PriceRange {
         count: count ?? this.count,
       );
 
-  factory PriceRange.fromJson(Map<String, dynamic> json) =>
-      PriceRange(
+  factory PriceRange.fromJson(Map<String, dynamic> json) => PriceRange(
         minPrice: json["min_price"]?.toDouble(),
         maxPrice: json["max_price"]?.toDouble(),
         text: json["text"],
@@ -336,7 +340,7 @@ class Category {
         id: json["id"],
         name: json["name"],
         icon: json["icon"],
-    slug: json["slug"],
+        slug: json["slug"],
         subCategories: json["category_sub"] == null
             ? []
             : List<SubCategory>.from(
@@ -386,7 +390,7 @@ class SubCategory {
         id: json["id"],
         name: json["name"],
         icon: json["icon"],
-    slug: json["slug"],
+        slug: json["slug"],
       );
 
   Map<String, dynamic> toJson() {

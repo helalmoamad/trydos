@@ -28,13 +28,16 @@ class SizesFiltersList extends StatefulWidget {
     required this.attribute,
     required this.boutiqueSlug,
     this.category,
+    required this.searchText,
+    required this.fromSearch,
   });
   final Attribute attribute;
 
   final bool hideTitle;
   final String boutiqueSlug;
   final String? category;
-
+  final bool fromSearch;
+  final String? searchText;
 
   @override
   State<SizesFiltersList> createState() => _SizesFiltersListState();
@@ -99,75 +102,87 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                       HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
                       bool isSelected = widget.hideTitle
                           ? false
-                          : ((homeBloc.state.choosedFiltersByUser?.filters?.attributes?.isNullOrEmpty ?? true) ? false :
-                           homeBloc.state.choosedFiltersByUser!.filters!.attributes![0].options?.any((element) =>
-                      element == widget.attribute.options?[index]) ?? false);
+                          : ((homeBloc.state.choosedFiltersByUser?.filters
+                                      ?.attributes?.isNullOrEmpty ??
+                                  true)
+                              ? false
+                              : homeBloc.state.choosedFiltersByUser!.filters!
+                                      .attributes![0].options
+                                      ?.any((element) =>
+                                          element ==
+                                          widget.attribute.options?[index]) ??
+                                  false);
                       return Stack(
                         children: [
                           GestureDetector(
                             onTap: () {
                               Filter? prevChoosedOrAppliedFilterToAddToIt =
-                              widget.hideTitle
-                                  ? homeBloc
-                                  .state.appliedFiltersByUser?.filters
-                                  : homeBloc
-                                  .state.choosedFiltersByUser?.filters;
+                                  widget.hideTitle
+                                      ? homeBloc
+                                          .state.appliedFiltersByUser?.filters
+                                      : homeBloc
+                                          .state.choosedFiltersByUser?.filters;
                               if (widget.hideTitle || !isSelected) {
-                                String size =
-                                widget.attribute.options![index];
-                                if (prevChoosedOrAppliedFilterToAddToIt == null) {
-                                  prevChoosedOrAppliedFilterToAddToIt = Filter();
+                                String size = widget.attribute.options![index];
+                                if (prevChoosedOrAppliedFilterToAddToIt ==
+                                    null) {
+                                  prevChoosedOrAppliedFilterToAddToIt =
+                                      Filter();
                                 }
                                 prevChoosedOrAppliedFilterToAddToIt =
                                     prevChoosedOrAppliedFilterToAddToIt
                                         .copyWithSaveOtherField(
-                                      attributes: prevChoosedOrAppliedFilterToAddToIt
-                                          .attributes.isNullOrEmpty
+                                  attributes:
+                                      prevChoosedOrAppliedFilterToAddToIt
+                                              .attributes.isNullOrEmpty
                                           ? [
-                                        Attribute(
-                                            id: widget.attribute.id,
-                                            name:
-                                            widget.attribute.name,
-                                            options: [size])
-                                      ]
+                                              Attribute(
+                                                  id: widget.attribute.id,
+                                                  name: widget.attribute.name,
+                                                  options: [size])
+                                            ]
                                           : [
-                                        prevChoosedOrAppliedFilterToAddToIt
-                                            .attributes![0]
-                                            .copyWith(options: [
-                                          ...prevChoosedOrAppliedFilterToAddToIt
-                                              .attributes![0]
-                                              .options ??
-                                              [],
-                                          size
-                                        ])
-                                      ],);
+                                              prevChoosedOrAppliedFilterToAddToIt
+                                                  .attributes![0]
+                                                  .copyWith(options: [
+                                                ...prevChoosedOrAppliedFilterToAddToIt
+                                                        .attributes![0]
+                                                        .options ??
+                                                    [],
+                                                size
+                                              ])
+                                            ],
+                                );
                                 if (widget.hideTitle) {
                                   homeBloc.add(GetProductsWithFiltersEvent(
+                                      fromSearch: widget.fromSearch,
+                                      searchText: widget.searchText,
                                       boutiqueSlug: widget.boutiqueSlug,
                                       filtersAppliedByUser: GetProductFiltersModel(
                                           filters:
-                                          prevChoosedOrAppliedFilterToAddToIt),
+                                              prevChoosedOrAppliedFilterToAddToIt),
                                       category: widget.category,
                                       offset: 1));
                                 } else {
                                   homeBloc.add(ChangeSelectedFiltersEvent(
                                     filtersChoosedByUser: GetProductFiltersModel(
                                         filters:
-                                        prevChoosedOrAppliedFilterToAddToIt),
+                                            prevChoosedOrAppliedFilterToAddToIt),
                                   ));
                                 }
                               } else {
-                                  prevChoosedOrAppliedFilterToAddToIt!.attributes![0].options!
-                                      .removeWhere(((element) => element ==
-                                      widget.attribute.options![index]));
-                                  homeBloc
-                                      .add(
-                                      ChangeSelectedFiltersEvent(
-                                        category: widget.category,
-                                        boutiqueSlug: widget.boutiqueSlug,
-                                        filtersChoosedByUser: GetProductFiltersModel(
-                                            filters: prevChoosedOrAppliedFilterToAddToIt),
-                                      ));
+                                prevChoosedOrAppliedFilterToAddToIt!
+                                    .attributes![0].options!
+                                    .removeWhere(((element) =>
+                                        element ==
+                                        widget.attribute.options![index]));
+                                homeBloc.add(ChangeSelectedFiltersEvent(
+                                  category: widget.category,
+                                  boutiqueSlug: widget.boutiqueSlug,
+                                  filtersChoosedByUser: GetProductFiltersModel(
+                                      filters:
+                                          prevChoosedOrAppliedFilterToAddToIt),
+                                ));
                               }
                             },
                             child: Container(
@@ -192,8 +207,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                           //   color: const Color(0xff5D5C5D),
                                           // )
                                           //     :
-                                          textTheme.bodyText2?.mq
-                                              .copyWith(
+                                          textTheme.bodyText2?.mq.copyWith(
                                         height: 1.3,
                                         fontSize: 15.sp,
                                         color: const Color(0xff5D5C5D),
@@ -204,8 +218,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                           ),
                           Visibility(
                               visible: isSelected,
-                              child: FilterSelectedMark(
-                                  width: 20, height: 20))
+                              child: FilterSelectedMark(width: 20, height: 20))
                         ],
                       );
                     },

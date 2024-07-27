@@ -474,12 +474,22 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setUserCountryIsAvailable(int userCountryAvailable) {
-    return _preferences.setInt("UserCountryIsAvailable", userCountryAvailable);
+    return _preferences.setInt(
+        PrefsKey.userCountryIsAvailable, userCountryAvailable);
   }
 
   @override
   int? get userCountryIsAvailable =>
-      _preferences.getInt("UserCountryIsAvailable");
+      _preferences.getInt(PrefsKey.userCountryIsAvailable);
+
+  @override
+  // TODO: implement language
+  String? get language => _preferences.getString(PrefsKey.language);
+
+  @override
+  Future<bool> setLanguage(String? language) {
+    return _preferences.setString(PrefsKey.language, language!);
+  }
 
 // @override
 
