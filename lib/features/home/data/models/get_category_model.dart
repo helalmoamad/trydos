@@ -2,7 +2,7 @@
 //
 //     final getCategoryModel = getCategoryModelFromJson(jsonString);
 
-import 'dart:convert';
+/*import 'dart:convert';
 import 'dart:developer';
 
 GetCategoryModel getCategoryModelFromJson(String str) =>
@@ -208,3 +208,4 @@ class MostViewedProductThumbnail {
         "original_height": originalHeight,
       };
 }
+*/

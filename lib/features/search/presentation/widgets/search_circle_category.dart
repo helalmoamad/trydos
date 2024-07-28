@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -15,10 +16,14 @@ import '../../../app/my_text_widget.dart';
 
 class SearchChipcategory extends StatefulWidget {
   final String title;
+  final TextEditingController controller;
   final ValueNotifier<List<int>> selectedCategory;
 
   const SearchChipcategory(
-      {Key? key, required this.title, required this.selectedCategory})
+      {Key? key,
+      required this.title,
+      required this.selectedCategory,
+      required this.controller})
       : super(key: key);
 
   @override
@@ -63,7 +68,8 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
           border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
       child: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
-            previous.categories != current.categories,
+            previous.categories != current.categories ||
+            previous.getProductFiltersStatus != current.getProductFiltersStatus,
         builder: (context, state) {
           selectedCategorySlugs =
               state.selectedBoutiqueBrandCategorySlugsForSearch["category"] ??
@@ -163,6 +169,9 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                                   selectedCategorySlugs));
                                     }
                                     widget.selectedCategory.notifyListeners();
+                                    homeBloc.add(GetProductFiltersEvent(
+                                        fromSearch: true,
+                                        searchText: widget.controller.text));
                                   },
                                   child: Stack(
                                     children: [
@@ -177,7 +186,9 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                                     BorderRadius.circular(12),
                                                 color: Color(0xffF8F8F8),
                                                 border: Border.all(
-                                                    color: value.contains(index)
+                                                    color: state
+                                                            .categories![index]
+                                                            .isSelected
                                                         ? Color(0xffFF5F61)
                                                         : Color(0xffF8F8F8))),
                                             padding: EdgeInsets.symmetric(
@@ -187,11 +198,12 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.center,
                                                 children: [
-                                                  SvgPicture.network(
-                                                    state
+                                                  MyCachedNetworkImage(
+                                                    imageUrl: state
                                                         .categories![index]
                                                         .mostViewedProductThumbnail!
                                                         .filePath!,
+                                                    imageFit: BoxFit.cover,
                                                     width: 15,
                                                     height: 15,
                                                   ),
@@ -213,7 +225,8 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                             ),
                                           )),
                                       Visibility(
-                                          visible: value.contains(index),
+                                          visible: state
+                                              .categories![index].isSelected,
                                           child: FilterSelectedMark(
                                               width: 12, height: 12))
                                     ],

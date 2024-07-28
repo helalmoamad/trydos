@@ -17,9 +17,13 @@ import '../../../app/my_text_widget.dart';
 
 class SearchChipBrand extends StatefulWidget {
   final String title;
+  final TextEditingController controller;
   final ValueNotifier<List<int>> selectedBrand;
   const SearchChipBrand(
-      {Key? key, required this.title, required this.selectedBrand})
+      {Key? key,
+      required this.title,
+      required this.selectedBrand,
+      required this.controller})
       : super(key: key);
 
   @override
@@ -55,17 +59,7 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
           if (state.brands.isNullOrEmpty) {
             return SizedBox.shrink();
           }
-          /*  selectedBrandSlugs =
-              state.selectedBoutiqueBrandCategorySlugsForSearch["brand"] ?? [];
 
-          selectedBrandSlugs.forEach((e) {
-            if (state.brands!.any((element) => '"${element.slug}"' == e)) {
-              selectedBrand.value.add(state.brands!.indexOf(state.brands!
-                  .firstWhere((element) => '"${element.slug}"' == e)));
-            }
-          });
-
-          selectedBrand.value.removeWhere((element) => element == -1);*/
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -143,6 +137,10 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                                   selectedBrandSlugs));
                                     }
                                     widget.selectedBrand.notifyListeners();
+
+                                    homeBloc.add(GetProductFiltersEvent(
+                                        fromSearch: true,
+                                        searchText: widget.controller.text));
                                   },
                                   child: Stack(
                                     children: [
@@ -157,11 +155,13 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                                     BorderRadius.circular(12),
                                                 color: Color(0xffF8F8F8),
                                                 border: Border.all(
-                                                    color: value.contains(index)
+                                                    color: state.brands![index]
+                                                                .isSelected ??
+                                                            false
                                                         ? Color(0xffFF5F61)
                                                         : Color(0xffF8F8F8))),
                                             padding: EdgeInsets.symmetric(
-                                                vertical: 6, horizontal: 10),
+                                                vertical: 0, horizontal: 0),
                                             child: Center(
                                               child: Row(
                                                 crossAxisAlignment:
@@ -169,16 +169,17 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                                 children: [
                                                   SvgNetworkWidget(
                                                     svgUrl: state
-                                                        .brands![index].icon!,
-                                                    width: 30,
-                                                    height: 15,
+                                                        .brands![index].image!,
+                                                    height: 20,
                                                   ),
                                                 ],
                                               ),
                                             ),
                                           )),
                                       Visibility(
-                                          visible: value.contains(index),
+                                          visible:
+                                              state.brands![index].isSelected ??
+                                                  false,
                                           child: FilterSelectedMark(
                                               width: 12, height: 12))
                                     ],

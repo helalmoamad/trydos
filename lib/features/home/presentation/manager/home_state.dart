@@ -6,9 +6,6 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
-import 'package:trydos/features/home/data/models/get_brand_model.dart' as brand;
-import 'package:trydos/features/home/data/models/get_category_model.dart'
-    as category;
 
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
@@ -148,8 +145,8 @@ class HomeState {
       getProductDetailWithoutRelatedProductsModel;
 
   final StartingSetting? startingSetting;
-  List<category.Category>? categories;
-  List<brand.Brand>? brands;
+  List<get_product_with_filter.Category>? categories;
+  List<get_filters.Brand>? brands;
   Map<String, String>? CurrentColorSizeForCart;
   Map<String, List<int>>? currentQuantityForCart;
   final Map<String, GetProductDetailWithoutRelatedProductsModel>
@@ -174,8 +171,8 @@ class HomeState {
       List<String>? searchHistory,
       Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
           productStatus,
-      List<brand.Brand>? brands,
-      List<category.Category>? category,
+      List<get_filters.Brand>? brands,
+      List<get_product_with_filter.Category>? category,
       Map<String, List<int>>? currentQuantityForCart,
       Map<String, List<cart.Cart>>? cartCollection,
       Map<String, String>? CurrentColorSizeForCart,
@@ -235,8 +232,9 @@ class HomeState {
         appliedFiltersByUser: resetAppliedFilters
             ? null
             : appliedFiltersByUser ?? this.appliedFiltersByUser,
-        getProductFiltersModel: resetGetProductFiltersModel ? null :
-            getProductFiltersModel ?? this.getProductFiltersModel,
+        getProductFiltersModel: resetGetProductFiltersModel
+            ? null
+            : getProductFiltersModel ?? this.getProductFiltersModel,
         searchHistory: searchHistory ?? this.searchHistory,
         getCartShippingItemsModel:
             getCartShippingItemsModel ?? this.getCartShippingItemsModel,

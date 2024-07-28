@@ -384,19 +384,19 @@ class AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
-class GetBrandEvent extends HomeEvent {
+/*class GetBrandEvent extends HomeEvent {
   GetBrandEvent();
 
   @override
   List<Object?> get props => [];
 }
-
-class GetCategoryEvent extends HomeEvent {
+*/
+/*class GetCategoryEvent extends HomeEvent {
   GetCategoryEvent();
 
   @override
   List<Object?> get props => [];
-}
+}*/
 
 class GetAllowedCountriesEvent extends HomeEvent {
   GetAllowedCountriesEvent();

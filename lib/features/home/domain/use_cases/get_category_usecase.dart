@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart';
+/*import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_category_model.dart';
@@ -17,3 +17,4 @@ class GetCategoryUseCase implements UseCase<GetCategoryModel, NoParams> {
     return repository.getCategory();
   }
 }
+*/

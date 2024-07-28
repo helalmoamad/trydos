@@ -5,8 +5,9 @@
 import 'dart:convert';
 
 import 'package:trydos/core/utils/extensions/list.dart';
-
-import 'get_category_model.dart';
+import 'package:trydos/features/home/data/models/get_category_model.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 GetProductFiltersModel getProductFiltersModelFromJson(String str) =>
     GetProductFiltersModel.fromJson(json.decode(str));
@@ -36,10 +37,7 @@ class GetProductFiltersModel {
     String? message,
     Filter? filters,
   }) =>
-      GetProductFiltersModel(
-        message: message ,
-        filters: filters
-      );
+      GetProductFiltersModel(message: message, filters: filters);
 
   factory GetProductFiltersModel.fromJson(Map<String, dynamic> json) =>
       GetProductFiltersModel(
@@ -186,11 +184,13 @@ class Brand {
   final String? name;
   final String? slug;
   final String? image;
+  final bool? isSelected;
 
   Brand({
     this.id,
     this.name,
     this.slug,
+    this.isSelected = false,
     this.image,
   });
 
@@ -199,10 +199,12 @@ class Brand {
     String? name,
     String? slug,
     String? icon,
+    final bool? isSelected,
   }) =>
       Brand(
         id: id ?? this.id,
         name: name ?? this.name,
+        isSelected: isSelected ?? this.isSelected,
         slug: slug ?? this.slug,
         image: icon ?? this.image,
       );

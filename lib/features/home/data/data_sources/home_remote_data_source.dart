@@ -103,7 +103,7 @@ class HomeRemoteDatasource {
     return getProductsWithFilters();
   }
 
-  Future<GetCategoryModel> getCategory() {
+  /* Future<GetCategoryModel> getCategory() {
     GetClient<GetCategoryModel> getCategory = GetClient<GetCategoryModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetCategoryModel>(
@@ -114,9 +114,9 @@ class HomeRemoteDatasource {
     );
 
     return getCategory();
-  }
+  }*/
 
-  Future<GetBrandModel> getBrand() {
+  /* Future<GetBrandModel> getBrand() {
     GetClient<GetBrandModel> getBrand = GetClient<GetBrandModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetBrandModel>(
@@ -128,7 +128,7 @@ class HomeRemoteDatasource {
 
     return getBrand();
   }
-
+*/
   Future<MainCategoriesResponseModel> getMainCategories() {
     GetClient<MainCategoriesResponseModel> getMainCategories =
         GetClient<MainCategoriesResponseModel>(
