@@ -144,8 +144,7 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                 }
                                 return InkWell(
                                   onTap: () {
-                                    if (widget.selectedCategory.value
-                                        .contains(index)) {
+                                    if (state.categories![index].isSelected) {
                                       selectedCategorySlugs.remove(
                                           '"${state.categories![index].slug ?? ""}"');
                                       widget.selectedCategory.value
@@ -177,8 +176,10 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                     children: [
                                       AnimatedScale(
                                           curve: Curves.fastEaseInToSlowEaseOut,
-                                          scale:
-                                              value.contains(index) ? 1 : 0.94,
+                                          scale: state
+                                                  .categories![index].isSelected
+                                              ? 1
+                                              : 0.94,
                                           duration: Duration(milliseconds: 100),
                                           child: Container(
                                             decoration: BoxDecoration(
@@ -187,8 +188,14 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                                 color: Color(0xffF8F8F8),
                                                 border: Border.all(
                                                     color: state
-                                                            .categories![index]
-                                                            .isSelected
+                                                                .categories![
+                                                                    index]
+                                                                .isSelected ||
+                                                            (state.getProductFiltersStatus !=
+                                                                    GetProductFiltersStatus
+                                                                        .success &&
+                                                                value.contains(
+                                                                    index))
                                                         ? Color(0xffFF5F61)
                                                         : Color(0xffF8F8F8))),
                                             padding: EdgeInsets.symmetric(

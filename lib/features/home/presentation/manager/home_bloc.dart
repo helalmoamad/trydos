@@ -988,17 +988,25 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             getProductFiltersModel: removeAlreadyChoosedFilters(r, filters),
             choosedFiltersByUser: event.filtersChoosedByUser));
         List<filters_model.Brand>? brand = state.brands?.map((e) {
-          if (state.selectedBoutiqueBrandCategorySlugsForSearch["brand"]!
-              .contains('"${e.slug}"')) {
-            return e.copyWith(isSelected: true);
+          if (state.selectedBoutiqueBrandCategorySlugsForSearch["brand"] !=
+              null) {
+            if (state.selectedBoutiqueBrandCategorySlugsForSearch["brand"]!
+                .contains('"${e.slug}"')) {
+              return e.copyWith(isSelected: true);
+            }
+            return e;
           } else {
             return e;
           }
         }).toList();
         List<Category>? category = state.categories?.map((e) {
-          if (state.selectedBoutiqueBrandCategorySlugsForSearch["category"]!
-              .contains('"${e.slug}"')) {
-            return e.copyWith(isSelected: true);
+          if (state.selectedBoutiqueBrandCategorySlugsForSearch["category"] !=
+              null) {
+            if (state.selectedBoutiqueBrandCategorySlugsForSearch["category"]!
+                .contains('"${e.slug}"')) {
+              return e.copyWith(isSelected: true);
+            }
+            return e;
           } else {
             return e;
           }

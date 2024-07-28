@@ -52,6 +52,7 @@ class GetProductFiltersModel {
 }
 
 class Filter {
+  final int? totalSize;
   final List<Brand>? brands;
   final List<Attribute>? attributes;
   final List<String>? colors;
@@ -61,6 +62,7 @@ class Filter {
 
   Filter({
     this.brands,
+    this.totalSize,
     this.attributes,
     this.categories,
     this.colors,
@@ -73,6 +75,7 @@ class Filter {
     List<Attribute>? attributes,
     List<Category>? categories,
     List<String>? colors,
+    int? totalSize,
     Prices? prices,
     String? boutiqueSlug,
   }) =>
@@ -81,6 +84,7 @@ class Filter {
         attributes: attributes ?? this.attributes,
         colors: colors ?? this.colors,
         prices: prices,
+        totalSize: totalSize ?? this.totalSize,
         categories: categories ?? this.categories,
         boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
       );
@@ -104,6 +108,7 @@ class Filter {
 
   factory Filter.fromJson(Map<String, dynamic> json) {
     return Filter(
+      totalSize: json["total_size"],
       brands: json["brands"] == null
           ? []
           : List<Brand>.from(json["brands"]!.map((x) => Brand.fromJson(x))),
@@ -125,6 +130,7 @@ class Filter {
 
   Map<String, dynamic> toJson() {
     return {
+      "total_size": totalSize,
       "brands": brands == null
           ? []
           : List<dynamic>.from(brands!.map((x) => x.toJson())),
