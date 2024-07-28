@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -15,9 +16,13 @@ import '../../../app/my_text_widget.dart';
 
 class SearchChipBoutique extends StatefulWidget {
   final String title;
+  final TextEditingController controller;
   final ValueNotifier<List<int>> selectedBoutique;
   const SearchChipBoutique(
-      {Key? key, required this.title, required this.selectedBoutique})
+      {Key? key,
+      required this.title,
+      required this.selectedBoutique,
+      required this.controller})
       : super(key: key);
 
   @override
@@ -112,7 +117,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                 height: 10,
               ),
               SizedBox(
-                height: 30,
+                height: 60,
                 child: ScrollConfiguration(
                   behavior: CupertinoScrollBehavior(),
                   child: Stack(
@@ -164,57 +169,66 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                                   selectedBoutiqueSlugs));
                                     }
                                     widget.selectedBoutique.notifyListeners();
+                                    homeBloc.add(GetProductFiltersEvent(
+                                        fromSearch: true,
+                                        searchText: widget.controller.text));
                                   },
-                                  child: Stack(
+                                  child: Column(
                                     children: [
-                                      AnimatedScale(
-                                          curve: Curves.fastEaseInToSlowEaseOut,
-                                          scale:
-                                              value.contains(index) ? 1 : 0.94,
-                                          duration: Duration(milliseconds: 100),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                                color: Color(0xffF8F8F8),
-                                                border: Border.all(
-                                                    color: value.contains(index)
-                                                        ? Color(0xffFF5F61)
-                                                        : Color(0xffF8F8F8))),
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 6, horizontal: 10),
-                                            child: Center(
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  SvgPicture.network(
-                                                    state.boutiques![index]
-                                                        .icon!.filePath!,
-                                                    width: 15,
-                                                    height: 15,
+                                      Stack(
+                                        children: [
+                                          AnimatedScale(
+                                              curve: Curves
+                                                  .fastEaseInToSlowEaseOut,
+                                              scale: value.contains(index)
+                                                  ? 1
+                                                  : 0.94,
+                                              duration:
+                                                  Duration(milliseconds: 100),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    color: Color(0xffF8F8F8),
+                                                    border: Border.all(
+                                                        color: value
+                                                                .contains(index)
+                                                            ? Color(0xffFF5F61)
+                                                            : Color(
+                                                                0xffF8F8F8))),
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 0, horizontal: 0),
+                                                child: Center(
+                                                  child: MyCachedNetworkImage(
+                                                    imageUrl: state
+                                                        .boutiques![index]
+                                                        .banners!
+                                                        .first
+                                                        .filePath!,
+                                                    imageFit: BoxFit.cover,
+                                                    height: 40,
+                                                    width: 100,
                                                   ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  MyTextWidget(
-                                                    state.boutiques![index]
-                                                        .name!,
-                                                    style: context
-                                                        .textTheme.bodyText2?.rq
-                                                        .copyWith(
-                                                            height: 18 / 14,
-                                                            color: Color(
-                                                                0xff8D8D8D)),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          )),
-                                      Visibility(
-                                          visible: value.contains(index),
-                                          child: FilterSelectedMark(
-                                              width: 12, height: 12))
+                                                ),
+                                              )),
+                                          Visibility(
+                                              visible: value.contains(index),
+                                              child: FilterSelectedMark(
+                                                  width: 12, height: 12))
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 2,
+                                      ),
+                                      Center(
+                                          child: MyTextWidget(
+                                        state.boutiques![index].name!,
+                                        style: context.textTheme.bodyText2?.rq
+                                            .copyWith(
+                                                height: 12 / 14,
+                                                color: Color(0xff8D8D8D)),
+                                      ))
                                     ],
                                   ),
                                 );

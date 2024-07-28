@@ -233,401 +233,423 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   physics: ClampingScrollPhysics(),
                                   slivers: [
                                     SliverAppBar(
-                                      pinned: true,
-                                      backgroundColor: colorScheme.white,
-                                      automaticallyImplyLeading: false,
-                                      flexibleSpace: ValueListenableBuilder<bool>(
-                                          valueListenable: searchVisible,
-                                          builder: (context , searchOpen , _) {
-                                            return TrydosAppBar(
-                                        appBarParams: AppBarParams(
-                                            backgroundColor: colorScheme.white,
-                                            scrolledUnderElevation: 0,
-                                            backIconColor: Colors.black,
-                                            hasLeading: !isExpanded && !searchOpen,
-                                            action: [
-                                               ValueListenableBuilder<bool>(
-                                                      valueListenable:
-                                                          displayBoutiqueIconInAppBar,
-                                                      builder:
-                                                          (context, display, _) {
-                                                        return Visibility(
-                                                          visible: display && !searchOpen,
-                                                          child: Padding(
+                                        pinned: true,
+                                        backgroundColor: colorScheme.white,
+                                        automaticallyImplyLeading: false,
+                                        flexibleSpace:
+                                            ValueListenableBuilder<bool>(
+                                                valueListenable: searchVisible,
+                                                builder:
+                                                    (context, searchOpen, _) {
+                                                  return TrydosAppBar(
+                                                    appBarParams: AppBarParams(
+                                                        backgroundColor:
+                                                            colorScheme.white,
+                                                        scrolledUnderElevation:
+                                                            0,
+                                                        backIconColor:
+                                                            Colors.black,
+                                                        hasLeading:
+                                                            !isExpanded &&
+                                                                !searchOpen,
+                                                        action: [
+                                                          ValueListenableBuilder<
+                                                                  bool>(
+                                                              valueListenable:
+                                                                  displayBoutiqueIconInAppBar,
+                                                              builder: (context,
+                                                                  display, _) {
+                                                                return Visibility(
+                                                                  visible:
+                                                                      display &&
+                                                                          !searchOpen,
+                                                                  child:
+                                                                      Padding(
+                                                                    padding: EdgeInsetsDirectional.only(
+                                                                        start: 30
+                                                                            .w),
+                                                                    child:
+                                                                        SvgNetworkWidget(
+                                                                      svgUrl:
+                                                                          widget.boutiqueIcon ??
+                                                                              "",
+                                                                      height:
+                                                                          20,
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              }),
+                                                          Padding(
                                                             padding:
-                                                                EdgeInsetsDirectional
+                                                                const EdgeInsetsDirectional
                                                                     .only(
+                                                                    end: 20.0),
+                                                            child: InkWell(
+                                                                onTap: () {
+                                                                  searchVisible
+                                                                          .value =
+                                                                      !searchVisible
+                                                                          .value;
+                                                                  focusNode
+                                                                      .unfocus();
+                                                                },
+                                                                child:
+                                                                    AnimatedSearchBar(
+                                                                  onFieldSubmitted:
+                                                                      (text) {
+                                                                    if (text.length >
+                                                                        2) {
+                                                                      searchVisible
+                                                                              .value =
+                                                                          !searchVisible
+                                                                              .value;
+                                                                    }
+                                                                  },
+                                                                  width:
+                                                                      1.sw - 20,
+                                                                  height: 40,
+                                                                  onClickClose:
+                                                                      () {
+                                                                    if (controller
+                                                                            .text
+                                                                            .length >
+                                                                        0) {
+                                                                      controller
+                                                                          .clear();
+                                                                    } else {
+                                                                      searchVisible
+                                                                              .value =
+                                                                          false;
+                                                                      appBloc.add(
+                                                                          HideBottomNavigationBar(
+                                                                              false));
+                                                                    }
+                                                                  },
+                                                                  textController:
+                                                                      controller,
+                                                                  focusNode:
+                                                                      focusNode,
+                                                                  onSuffixTap:
+                                                                      () {
+                                                                    searchVisible
+                                                                            .value =
+                                                                        true;
+                                                                    controller
+                                                                        .text = "";
+                                                                  },
+                                                                  suffixWidget:
+                                                                      Center(
+                                                                    child: SvgPicture
+                                                                        .asset(
+                                                                      AppAssets
+                                                                          .searchOutlinedSvg,
+                                                                      height:
+                                                                          20,
+                                                                      width: 20,
+                                                                      color: Color(
+                                                                          0xff388CFF),
+                                                                    ),
+                                                                  ),
+                                                                  prefixWidget:
+                                                                      Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            15,
+                                                                        top: 10,
+                                                                        bottom:
+                                                                            10),
+                                                                    child: Row(
+                                                                      mainAxisSize:
+                                                                          MainAxisSize
+                                                                              .min,
+                                                                      children: [
+                                                                        SvgPicture
+                                                                            .asset(
+                                                                          AppAssets
+                                                                              .realCameraSvg,
+                                                                          height:
+                                                                              20,
+                                                                          width:
+                                                                              20,
+                                                                        ),
+                                                                        SvgPicture
+                                                                            .asset(
+                                                                          AppAssets
+                                                                              .microphoneSvg,
+                                                                          height:
+                                                                              20,
+                                                                          width:
+                                                                              20,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  animationDurationInMilli:
+                                                                      400,
+                                                                  searchDecoration:
+                                                                      InputDecoration(
+                                                                    border:
+                                                                        OutlineInputBorder(
+                                                                      borderSide: BorderSide(
+                                                                          color: focusNode.hasFocus
+                                                                              ? Color(0xffE6E6E6)
+                                                                              : Color(0xffF8F8F8),
+                                                                          width: 0.4),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              kbrBorderTextField),
+                                                                    ),
+                                                                    focusedBorder:
+                                                                        OutlineInputBorder(
+                                                                      borderSide: BorderSide(
+                                                                          color: focusNode.hasFocus
+                                                                              ? Color(0xffE6E6E6)
+                                                                              : Color(0xffF8F8F8),
+                                                                          width: 0.4),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              kbrBorderTextField),
+                                                                    ),
+                                                                    enabledBorder:
+                                                                        OutlineInputBorder(
+                                                                      borderSide: BorderSide(
+                                                                          color: focusNode.hasFocus
+                                                                              ? Color(0xffE6E6E6)
+                                                                              : Color(0xffF8F8F8),
+                                                                          width: 0.4),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              kbrBorderTextField),
+                                                                    ),
+                                                                    disabledBorder:
+                                                                        OutlineInputBorder(
+                                                                      borderSide: BorderSide(
+                                                                          color: focusNode.hasFocus
+                                                                              ? Color(0xffE6E6E6)
+                                                                              : Color(0xffF8F8F8),
+                                                                          width: 0.4),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              kbrBorderTextField),
+                                                                    ),
+                                                                    errorBorder:
+                                                                        OutlineInputBorder(
+                                                                      borderSide: BorderSide(
+                                                                          color: context
+                                                                              .colorScheme
+                                                                              .error,
+                                                                          width:
+                                                                              0.4),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              kbrBorderTextField),
+                                                                    ),
+                                                                    focusedErrorBorder:
+                                                                        OutlineInputBorder(
+                                                                      borderSide: BorderSide(
+                                                                          color: context
+                                                                              .colorScheme
+                                                                              .error,
+                                                                          width:
+                                                                              0.4),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              kbrBorderTextField),
+                                                                    ),
+                                                                    filled:
+                                                                        true,
+                                                                    fillColor: focusNode.hasFocus
+                                                                        ? colorScheme
+                                                                            .white
+                                                                        : Color(
+                                                                            0xffF8F8F8),
+                                                                    prefixIcon:
+                                                                        Padding(
+                                                                      padding: const EdgeInsets
+                                                                          .only(
+                                                                          top:
+                                                                              12,
+                                                                          bottom:
+                                                                              12),
+                                                                      child: SvgPicture
+                                                                          .asset(
+                                                                        AppAssets
+                                                                            .searchOutlinedSvg,
+                                                                        height:
+                                                                            20,
+                                                                        width:
+                                                                            20,
+                                                                        color: Color(
+                                                                            0xff388CFF),
+                                                                      ),
+                                                                    ),
+                                                                    suffixIcon:
+                                                                        Padding(
+                                                                      padding: const EdgeInsets
+                                                                          .only(
+                                                                          right:
+                                                                              15,
+                                                                          top:
+                                                                              10,
+                                                                          bottom:
+                                                                              10),
+                                                                      child:
+                                                                          Row(
+                                                                        mainAxisSize:
+                                                                            MainAxisSize.min,
+                                                                        children: [
+                                                                          SvgPicture
+                                                                              .asset(
+                                                                            AppAssets.realCameraSvg,
+                                                                            height:
+                                                                                20,
+                                                                            width:
+                                                                                20,
+                                                                          ),
+                                                                          SizedBox(
+                                                                            width:
+                                                                                20,
+                                                                          ),
+                                                                          SvgPicture
+                                                                              .asset(
+                                                                            AppAssets.microphoneSvg,
+                                                                            height:
+                                                                                20,
+                                                                            width:
+                                                                                20,
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                    //context.colorScheme.white,
+                                                                    contentPadding: HWEdgeInsetsDirectional.only(
                                                                         start:
-                                                                            30.w),
-                                                            child: SvgNetworkWidget(
-                                                              svgUrl: widget
-                                                                      .boutiqueIcon ??
-                                                                  "",
-                                                              height: 20,
-                                                            ),
+                                                                            20,
+                                                                        end: 10,
+                                                                        bottom:
+                                                                            12,
+                                                                        top:
+                                                                            12),
+                                                                    hintText:
+                                                                        'Search',
+                                                                    hintStyle: context
+                                                                        .textTheme
+                                                                        .subtitle1
+                                                                        ?.lq
+                                                                        .copyWith(
+                                                                            color:
+                                                                                Color(0xffC4C2C2)),
+                                                                    labelStyle: context
+                                                                        .textTheme
+                                                                        .bodyText2
+                                                                        ?.copyWith(
+                                                                            color:
+                                                                                context.colorScheme.hint),
+                                                                  ),
+                                                                  onChanged:
+                                                                      (String
+                                                                          text) {
+                                                                    //  buildSearchResult.value = text.length;
+                                                                    if (text.length >
+                                                                        2) {
+                                                                      homeBloc.add(
+                                                                          GetProductsWithFiltersEvent(
+                                                                        fromSearch:
+                                                                            widget.fromSearch,
+                                                                        category:
+                                                                            widget.category,
+                                                                        offset:
+                                                                            1,
+                                                                        getWithPagination:
+                                                                            false,
+                                                                        searchText:
+                                                                            text,
+                                                                        boutiqueSlug:
+                                                                            widget.boutiqueSlug,
+                                                                      ));
+                                                                    }
+                                                                  },
+                                                                  hideTrendingAndHistory:
+                                                                      hideTrendingAndHistory,
+                                                                )),
                                                           ),
-                                                        );
-                                                }
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsetsDirectional
-                                                        .only(end: 20.0),
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    searchVisible.value =
-                                                        !searchVisible
-                                                            .value;
-                                                    focusNode.unfocus();
-                                                  },
-                                                  child: BlocBuilder<HomeBloc,
-                                                      HomeState>(
-                                                    builder: (context, state) {
-                                                      Filter?
-                                                          prevChoosedOrAppliedFilter =
-                                                          homeBloc
-                                                              .state
-                                                              .appliedFiltersByUser
-                                                              ?.filters;
-                                                      return AnimatedSearchBar(
-                                                        onFieldSubmitted:
-                                                            (text) {
-                                                          if (text.length > 2) {
-                                                            searchVisible
-                                                                    .value =
-                                                                !searchVisible
-                                                                    .value;
-                                                          }
-                                                        },
-                                                        width: 1.sw - 20,
-                                                        height: 40,
-                                                        onClickClose: () {
-                                                          if (controller
-                                                                  .text.length >
-                                                              0) {
-                                                            controller.clear();
-                                                          } else {
-                                                            searchVisible
-                                                                    .value =
-                                                                false;
-                                                            appBloc.add(
-                                                                HideBottomNavigationBar(
-                                                                    false));
-                                                          }
-                                                        },
-                                                        textController:
-                                                            controller,
-                                                        focusNode: focusNode,
-                                                        onSuffixTap: () {
-                                                          searchVisible.value = true;
-                                                          controller.text = "";
-                                                        },
-                                                        suffixWidget: Center(
-                                                          child:
-                                                              SvgPicture.asset(
-                                                            AppAssets
-                                                                .searchOutlinedSvg,
-                                                            height: 20,
-                                                            width: 20,
-                                                            color: Color(
-                                                                0xff388CFF),
-                                                          ),
-                                                        ),
-                                                        prefixWidget: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  right: 15,
-                                                                  top: 10,
-                                                                  bottom: 10),
-                                                          child: Row(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              SvgPicture.asset(
-                                                                AppAssets
-                                                                    .realCameraSvg,
-                                                                height: 20,
-                                                                width: 20,
-                                                              ),
-                                                              SvgPicture.asset(
-                                                                AppAssets
-                                                                    .microphoneSvg,
-                                                                height: 20,
-                                                                width: 20,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        animationDurationInMilli:
-                                                            400,
-                                                        searchDecoration:
-                                                            InputDecoration(
-                                                          border:
-                                                              OutlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color: focusNode
-                                                                        .hasFocus
-                                                                    ? Color(
-                                                                        0xffE6E6E6)
-                                                                    : Color(
-                                                                        0xffF8F8F8),
-                                                                width: 0.4),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        kbrBorderTextField),
-                                                          ),
-                                                          focusedBorder:
-                                                              OutlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color: focusNode
-                                                                        .hasFocus
-                                                                    ? Color(
-                                                                        0xffE6E6E6)
-                                                                    : Color(
-                                                                        0xffF8F8F8),
-                                                                width: 0.4),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        kbrBorderTextField),
-                                                          ),
-                                                          enabledBorder:
-                                                              OutlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color: focusNode
-                                                                        .hasFocus
-                                                                    ? Color(
-                                                                        0xffE6E6E6)
-                                                                    : Color(
-                                                                        0xffF8F8F8),
-                                                                width: 0.4),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        kbrBorderTextField),
-                                                          ),
-                                                          disabledBorder:
-                                                              OutlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color: focusNode
-                                                                        .hasFocus
-                                                                    ? Color(
-                                                                        0xffE6E6E6)
-                                                                    : Color(
-                                                                        0xffF8F8F8),
-                                                                width: 0.4),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        kbrBorderTextField),
-                                                          ),
-                                                          errorBorder:
-                                                              OutlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color: context
-                                                                    .colorScheme
-                                                                    .error,
-                                                                width: 0.4),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        kbrBorderTextField),
-                                                          ),
-                                                          focusedErrorBorder:
-                                                              OutlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color: context
-                                                                    .colorScheme
-                                                                    .error,
-                                                                width: 0.4),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        kbrBorderTextField),
-                                                          ),
-                                                          filled: true,
-                                                          fillColor:
-                                                          focusNode.hasFocus
-                                                              ? colorScheme.white
-                                                              : Color(0xffF8F8F8),
-                                                          prefixIcon: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    top: 12,
-                                                                    bottom: 12),
-                                                            child: SvgPicture
-                                                                .asset(
-                                                              AppAssets
-                                                                  .searchOutlinedSvg,
-                                                              height: 20,
-                                                              width: 20,
-                                                              color: Color(
-                                                                  0xff388CFF),
-                                                            ),
-                                                          ),
-                                                          suffixIcon: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    right: 15,
-                                                                    top: 10,
-                                                                    bottom: 10),
-                                                            child: Row(
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .min,
-                                                              children: [
-                                                                SvgPicture
-                                                                    .asset(
-                                                                  AppAssets
-                                                                      .realCameraSvg,
-                                                                  height: 20,
-                                                                  width: 20,
-                                                                ),
-                                                                SizedBox(
-                                                                  width: 20,
-                                                                ),
-                                                                SvgPicture
-                                                                    .asset(
-                                                                  AppAssets
-                                                                      .microphoneSvg,
-                                                                  height: 20,
-                                                                  width: 20,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          //context.colorScheme.white,
-                                                          contentPadding:
-                                                              HWEdgeInsetsDirectional
-                                                                  .only(
-                                                                      start: 20,
-                                                                      end: 10,
-                                                                      bottom:
-                                                                          12,
-                                                                      top: 12),
-                                                          hintText: 'Search',
-                                                          hintStyle: context
-                                                              .textTheme
-                                                              .subtitle1
-                                                              ?.lq
-                                                              .copyWith(
-                                                                  color: Color(
-                                                                      0xffC4C2C2)),
-                                                          labelStyle: context
-                                                              .textTheme
-                                                              .bodyText2
-                                                              ?.copyWith(
-                                                                  color: context
-                                                                      .colorScheme
-                                                                      .hint),
-                                                        ),
-                                                        onChanged:
-                                                            (String text) {
-                                                          //  buildSearchResult.value = text.length;
-                                                          if (text.length > 2) {
-                                                            homeBloc.add(
-                                                                GetProductsWithFiltersEvent(
-                                                              filtersAppliedByUser:
-                                                                  GetProductFiltersModel(
-                                                                      filters:
-                                                                          prevChoosedOrAppliedFilter),
-                                                              fromSearch: widget
-                                                                  .fromSearch,
-                                                              category: widget
-                                                                  .category,
-                                                              offset: 1,
-                                                              getWithPagination:
-                                                                  false,
-                                                              searchText: text,
-                                                              boutiqueSlug: widget
-                                                                  .boutiqueSlug,
-                                                            ));
-                                                          }
-                                                        },
-                                                        hideTrendingAndHistory:
-                                                            hideTrendingAndHistory,
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                              ),
-                                             searchOpen ? SizedBox.shrink() : Row(
-                                               children: [
-                                                 isExpanded
-                                                     ? SizedBox.shrink()
-                                                     : Padding(
-                                                   padding:
-                                                   const EdgeInsetsDirectional
-                                                       .only(end: 20.0),
-                                                   child: SvgPicture.asset(
-                                                       AppAssets.sortingSvg,
-                                                       width: 20,
-                                                       height: 20),
-                                                 ),
-                                                 Padding(
-                                                     padding:
-                                                     const EdgeInsetsDirectional
-                                                         .only(end: 20.0),
-                                                     child: GestureDetector(
-                                                       onTap: () {
-                                                         filterPageExpanded.value =
-                                                         true;
-                                                       },
-                                                       child: SvgPicture.asset(
-                                                         AppAssets.filtersSvg,
-                                                         width: 20,
-                                                         height: 20,
-                                                         color: isExpanded
-                                                             ? Color(0xffFF5F61)
-                                                             : null,
-                                                       ),
-                                                     )),
-                                                 GestureDetector(
-                                                     onTap: () {
-                                                       if (isExpanded)
-                                                         filterPageExpanded.value =
-                                                         false;
-                                                     },
-                                                     child: SizedBox(
-                                                       height: 30,
-                                                       child: Row(children: [
-                                                         !isExpanded
-                                                             ? SvgPicture.asset(
-                                                           AppAssets
-                                                               .shareSvg,
-                                                           width: 20,
-                                                           height: 20,
-                                                           color: Color(
-                                                               0xff3C3C3C),
-                                                         )
-                                                             : GestureDetector(
-                                                           child: SvgPicture
-                                                               .asset(
-                                                             AppAssets
-                                                                 .closeSvg,
-                                                             width: 15,
-                                                             height: 15,
-                                                             color: Color(
-                                                                 0xffFF5F61),
-                                                           ),
-                                                         ),
-                                                         SizedBox(
-                                                             width: !isExpanded
-                                                                 ? 10.0
-                                                                 : 25)
-                                                       ]),
-                                                     )),
-                                               ],
-                                             )
-                                            ],
-                                            withShadow: false),
-                                      );})
-                                    ),
+                                                          searchOpen
+                                                              ? SizedBox
+                                                                  .shrink()
+                                                              : Row(
+                                                                  children: [
+                                                                    isExpanded
+                                                                        ? SizedBox
+                                                                            .shrink()
+                                                                        : Padding(
+                                                                            padding:
+                                                                                const EdgeInsetsDirectional.only(end: 20.0),
+                                                                            child: SvgPicture.asset(AppAssets.sortingSvg,
+                                                                                width: 20,
+                                                                                height: 20),
+                                                                          ),
+                                                                    Padding(
+                                                                        padding: const EdgeInsetsDirectional
+                                                                            .only(
+                                                                            end:
+                                                                                20.0),
+                                                                        child:
+                                                                            GestureDetector(
+                                                                          onTap:
+                                                                              () {
+                                                                            filterPageExpanded.value =
+                                                                                true;
+                                                                          },
+                                                                          child:
+                                                                              SvgPicture.asset(
+                                                                            AppAssets.filtersSvg,
+                                                                            width:
+                                                                                20,
+                                                                            height:
+                                                                                20,
+                                                                            color: isExpanded
+                                                                                ? Color(0xffFF5F61)
+                                                                                : null,
+                                                                          ),
+                                                                        )),
+                                                                    GestureDetector(
+                                                                        onTap:
+                                                                            () {
+                                                                          if (isExpanded)
+                                                                            filterPageExpanded.value =
+                                                                                false;
+                                                                        },
+                                                                        child:
+                                                                            SizedBox(
+                                                                          height:
+                                                                              30,
+                                                                          child:
+                                                                              Row(children: [
+                                                                            !isExpanded
+                                                                                ? SvgPicture.asset(
+                                                                                    AppAssets.shareSvg,
+                                                                                    width: 20,
+                                                                                    height: 20,
+                                                                                    color: Color(0xff3C3C3C),
+                                                                                  )
+                                                                                : GestureDetector(
+                                                                                    child: SvgPicture.asset(
+                                                                                      AppAssets.closeSvg,
+                                                                                      width: 15,
+                                                                                      height: 15,
+                                                                                      color: Color(0xffFF5F61),
+                                                                                    ),
+                                                                                  ),
+                                                                            SizedBox(width: !isExpanded ? 10.0 : 25)
+                                                                          ]),
+                                                                        )),
+                                                                  ],
+                                                                )
+                                                        ],
+                                                        withShadow: false),
+                                                  );
+                                                })),
                                     ValueListenableBuilder<bool>(
                                         valueListenable: searchVisible,
                                         builder: (context, searchOpen, _) {

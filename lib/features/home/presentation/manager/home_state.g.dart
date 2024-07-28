@@ -51,10 +51,11 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               json['appliedFiltersByUser'] as Map<String, dynamic>),
       currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
       brands: (json['brands'] as List<dynamic>?)
-          ?.map((e) => brand.Brand.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => get_filters.Brand.fromJson(e as Map<String, dynamic>))
           .toList(),
       categories: (json['categories'] as List<dynamic>?)
-          ?.map((e) => category.Category.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => get_product_with_filter.Category.fromJson(
+              e as Map<String, dynamic>))
           .toList(),
       productStatus: (json['productStatus'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(

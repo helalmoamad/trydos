@@ -2,7 +2,7 @@
 //
 //     final getBrandModel = getBrandModelFromJson(jsonString);
 
-import 'dart:convert';
+/*import 'dart:convert';
 
 GetBrandModel getBrandModelFromJson(String str) =>
     GetBrandModel.fromJson(json.decode(str));
@@ -105,3 +105,4 @@ class Brand {
         "icon": icon,
       };
 }
+*/
