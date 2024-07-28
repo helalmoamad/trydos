@@ -1598,11 +1598,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         makeChoosedFiltersNull = true;
       }
     }
-    add(GetProductFiltersEvent(
-        category: event.category,
-        boutiqueSlug: event.boutiqueSlug,
-        filtersChoosedByUser:
-            makeChoosedFiltersNull ? null : event.filtersChoosedByUser));
+    if(event.filtersChoosedByUser != null) {
+      add(GetProductFiltersEvent(
+          category: event.category,
+          boutiqueSlug: event.boutiqueSlug,
+          filtersChoosedByUser:
+          makeChoosedFiltersNull ? null : event.filtersChoosedByUser));
+    }
     filters_model.Filter filters =
         event.filtersChoosedByUser?.filters ?? filters_model.Filter();
     emit(state.copyWith(
@@ -1613,6 +1615,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 filters.prices != null)
             ? event.filtersChoosedByUser
             : null,
+        getProductFiltersModel: null,
+        resetGetProductFiltersModel: true,
+        getProductFiltersStatus: GetProductFiltersStatus.loading,
         getProductListingWithFiltersPaginationModels:
             event.filtersChoosedByUser == null
                 ? PaginationModel.init()
