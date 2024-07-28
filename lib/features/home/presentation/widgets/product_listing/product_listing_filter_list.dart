@@ -102,6 +102,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+      print('ddqdqddq ${state.getProductFiltersModel}');
       if (state.getProductFiltersModel?.filters == null) {
         return FiltersLoadingListPage(
           countOfListInPage: isExpanded ? 6 : 1,
