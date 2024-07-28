@@ -835,6 +835,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               : BlocBuilder<HomeBloc,
                                                   HomeState>(
                                                   builder: (context, state) {
+                                                    print('aaaaaaaaaaaa ${state.getProductFiltersModel?.filters}');
+                                                    print('aaaaaaaaaaaa ${state.getProductFiltersStatus}');
                                                     return SliverAppBar(
                                                         pinned: !isExpanded,
                                                         surfaceTintColor:

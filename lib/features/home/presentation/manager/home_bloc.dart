@@ -193,6 +193,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetStoryForProductUseCase getStoryUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
       getProductDetailWithoutRelatedProductsUseCase;
+
   // final GetBrandUseCase getBrandUseCase;
 
   // final GetCategoryUseCase getCategoryUseCase;
@@ -860,6 +861,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           resetAppliedFilters: true,
           choosedFiltersByUser: null,
           resetGetProductFiltersModel: true,
+          getProductFiltersStatus: GetProductFiltersStatus.loading,
           productStatus: {},
           selectedBoutiqueBrandCategorySlugsForSearch: {},
           getProductListingWithFiltersPaginationModels: PaginationModel.init(),
@@ -972,7 +974,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     ));
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetProductFiltersEvent')) {
-        add(GetMainCategoriesEvent());
+        add(GetProductFiltersEvent(
+          filtersChoosedByUser: event.filtersChoosedByUser,
+          category: event.category,
+          boutiqueSlug: event.boutiqueSlug,
+          forceUpdate: event.forceUpdate,
+          fromSearch: event.fromSearch,
+          searchText: event.searchText
+        ));
         isFailedTheFirstTime.add('GetProductFiltersEvent');
       }
       emit(state.copyWith(
@@ -982,22 +991,24 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       isFailedTheFirstTime.remove('GetProductFiltersEvent');
       try {
         emit(state.copyWith(
-            brands: r.filters!.brands!,
-            category: r.filters!.categories,
+            brands: r.filters!.brands ?? [],
+            category: r.filters!.categories ?? [],
             getProductFiltersStatus: GetProductFiltersStatus.success,
             getProductFiltersModel: removeAlreadyChoosedFilters(r, filters),
             choosedFiltersByUser: event.filtersChoosedByUser));
         List<filters_model.Brand>? brand = state.brands?.map((e) {
-          if (state.selectedBoutiqueBrandCategorySlugsForSearch["brand"]!
-              .contains('"${e.slug}"')) {
+          if (state.selectedBoutiqueBrandCategorySlugsForSearch["brand"]
+                  ?.contains('"${e.slug}"') ??
+              false) {
             return e.copyWith(isSelected: true);
           } else {
             return e;
           }
         }).toList();
         List<Category>? category = state.categories?.map((e) {
-          if (state.selectedBoutiqueBrandCategorySlugsForSearch["category"]!
-              .contains('"${e.slug}"')) {
+          if (state.selectedBoutiqueBrandCategorySlugsForSearch["category"]
+                  ?.contains('"${e.slug}"') ??
+              false) {
             return e.copyWith(isSelected: true);
           } else {
             return e;
@@ -1590,12 +1601,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         makeChoosedFiltersNull = true;
       }
     }
-    if(event.filtersChoosedByUser != null) {
+    if (event.filtersChoosedByUser != null) {
       add(GetProductFiltersEvent(
           category: event.category,
           boutiqueSlug: event.boutiqueSlug,
           filtersChoosedByUser:
-          makeChoosedFiltersNull ? null : event.filtersChoosedByUser));
+              makeChoosedFiltersNull ? null : event.filtersChoosedByUser));
     }
     filters_model.Filter filters =
         event.filtersChoosedByUser?.filters ?? filters_model.Filter();

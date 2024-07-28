@@ -198,8 +198,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 itemCount: widget.boutniqe.banners!.length,
                                 itemBuilder: (context, index, _) {
                                   return Padding(
-                                    padding: EdgeInsets.only(
-                                        right: index == 0 ? 0 : 10,
+                                    padding: EdgeInsetsDirectional.only(
+                                        start: index == 0 ? 0 : 10,
                                         top: 10,
                                         bottom: 10),
                                     child: Stack(
