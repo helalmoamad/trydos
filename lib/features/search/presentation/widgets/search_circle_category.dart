@@ -188,14 +188,8 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                                 color: Color(0xffF8F8F8),
                                                 border: Border.all(
                                                     color: state
-                                                                .categories![
-                                                                    index]
-                                                                .isSelected ||
-                                                            (state.getProductFiltersStatus !=
-                                                                    GetProductFiltersStatus
-                                                                        .success &&
-                                                                value.contains(
-                                                                    index))
+                                                            .categories![index]
+                                                            .isSelected
                                                         ? Color(0xffFF5F61)
                                                         : Color(0xffF8F8F8))),
                                             padding: EdgeInsets.symmetric(

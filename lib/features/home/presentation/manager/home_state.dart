@@ -70,6 +70,7 @@ class HomeState {
     this.currentPage = 0,
     this.brands,
     this.categories,
+    this.totalProductNumber,
     this.productStatus,
     this.productITemForCart,
     this.getCartShippingItemsModel,
@@ -133,8 +134,9 @@ class HomeState {
       getHomeBoutiquesPaginationObjectByMainCategory;
   List<Story>? storiesForProduct;
   List<String>? sizes;
+  int? totalProductNumber;
 
-  List<Boutique>? boutiques;
+  List<get_filters.Boutique>? boutiques;
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
   final cart.GetCartShippingItemsModel? getCartShippingItemsModel;
@@ -155,6 +157,7 @@ class HomeState {
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
+      int? totalProductNumber,
       Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
       final List<ImageForAddToCart>? ListitemForAddToCart,
       final GetAllowedCountriesModel? getAllowedCountriesModel,
@@ -165,7 +168,7 @@ class HomeState {
       Map<String, List<String>>? selectedBoutiqueBrandCategorySlugsForSearch,
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
-      List<Boutique>? boutiques,
+      List<get_filters.Boutique>? boutiques,
       int? selectedCollection,
       List<String>? sizes,
       List<String>? searchHistory,
@@ -242,6 +245,7 @@ class HomeState {
             getCommentForProductStatus ?? this.getCommentForProductStatus,
         getProductListingStatus:
             getProductListingStatus ?? this.getProductListingStatus,
+        totalProductNumber: totalProductNumber ?? this.totalProductNumber,
         currentSelectedColorForEveryProduct: currentSelectedColorForEveryProduct ??
             this.currentSelectedColorForEveryProduct,
         getCartItemsStatus: getCartItemsStatus ?? this.getCartItemsStatus,

@@ -37,22 +37,6 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    scrollController.addListener(() {
-      if (scrollController.offset >=
-          (scrollController.position.maxScrollExtent *
-              0.7 *
-              (homeBloc
-                  .state
-                  .getHomeBoutiquesPaginationObjectByMainCategory["Empty"]!
-                  .page))) {
-        homeBloc.add(GetHomeBoutiqesEvent(
-            categorySlug: "Empty",
-            offset: homeBloc.state
-                .getHomeBoutiquesPaginationObjectByMainCategory["Empty"]!.page
-                .toString(),
-            getWithPagination: true));
-      }
-    });
     super.initState();
   }
 
@@ -144,8 +128,8 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                 }
                                 return InkWell(
                                   onTap: () {
-                                    if (widget.selectedBoutique.value
-                                        .contains(index)) {
+                                    if (state.boutiques![index].isSelected ??
+                                        false) {
                                       selectedBoutiqueSlugs.remove(
                                           '"${state.boutiques![index].slug ?? ""}"');
                                       widget.selectedBoutique.value
@@ -180,7 +164,9 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                           AnimatedScale(
                                               curve: Curves
                                                   .fastEaseInToSlowEaseOut,
-                                              scale: value.contains(index)
+                                              scale: state.boutiques![index]
+                                                          .isSelected ??
+                                                      false
                                                   ? 1
                                                   : 0.94,
                                               duration:
@@ -192,28 +178,39 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                                             12),
                                                     color: Color(0xffF8F8F8),
                                                     border: Border.all(
-                                                        color: value
-                                                                .contains(index)
+                                                        color: state
+                                                                    .boutiques![
+                                                                        index]
+                                                                    .isSelected ??
+                                                                false
                                                             ? Color(0xffFF5F61)
                                                             : Color(
                                                                 0xffF8F8F8))),
                                                 padding: EdgeInsets.symmetric(
                                                     vertical: 0, horizontal: 0),
                                                 child: Center(
-                                                  child: MyCachedNetworkImage(
-                                                    imageUrl: state
-                                                        .boutiques![index]
-                                                        .banners!
-                                                        .first
-                                                        .filePath!,
-                                                    imageFit: BoxFit.cover,
-                                                    height: 40,
-                                                    width: 100,
-                                                  ),
+                                                  child: state.boutiques![index]
+                                                              .banner !=
+                                                          null
+                                                      ? MyCachedNetworkImage(
+                                                          imageUrl: state
+                                                                  .boutiques![
+                                                                      index]
+                                                                  .banner!
+                                                                  .filePath ??
+                                                              " okp*/kmkm",
+                                                          imageFit:
+                                                              BoxFit.cover,
+                                                          height: 40,
+                                                          width: 100,
+                                                        )
+                                                      : SizedBox.shrink(),
                                                 ),
                                               )),
                                           Visibility(
-                                              visible: value.contains(index),
+                                              visible: state.boutiques![index]
+                                                      .isSelected ??
+                                                  false,
                                               child: FilterSelectedMark(
                                                   width: 12, height: 12))
                                         ],

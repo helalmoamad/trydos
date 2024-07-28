@@ -57,6 +57,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ?.map((e) => get_product_with_filter.Category.fromJson(
               e as Map<String, dynamic>))
           .toList(),
+      totalProductNumber: (json['totalProductNumber'] as num?)?.toInt(),
       productStatus: (json['productStatus'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(
             k,
@@ -112,7 +113,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                       as Map<String, dynamic>,
                   (value) => Products.fromJson(value as Map<String, dynamic>)),
       boutiques: (json['boutiques'] as List<dynamic>?)
-          ?.map((e) => Boutique.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => get_filters.Boutique.fromJson(e as Map<String, dynamic>))
           .toList(),
       getStoriesForProductStatus: $enumDecodeNullable(
               _$GetStoriesForProductStatusEnumMap,
@@ -275,6 +276,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'storiesForProduct':
           instance.storiesForProduct?.map((e) => e.toJson()).toList(),
       'sizes': instance.sizes,
+      'totalProductNumber': instance.totalProductNumber,
       'boutiques': instance.boutiques?.map((e) => e.toJson()).toList(),
       'getProductListingPaginationWithoutFiltersModel': instance
           .getProductListingPaginationWithoutFiltersModel

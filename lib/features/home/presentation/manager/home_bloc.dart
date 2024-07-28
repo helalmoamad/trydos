@@ -448,18 +448,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       List<Boutique> boutiques = List.of(
           getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
               .items);
-      for (int i = 0; i < (r.data!.boutiques?.length ?? 0); i++) {
-        int index = boutiques
-            .indexWhere((element) => element.id == r.data!.boutiques![i].id);
-        if (index == -1) {
-          boutiques.add(r.data!.boutiques![i]);
-        } else {
-          boutiques[index] = r.data!.boutiques![i];
-        }
-      }
-      if (event.categorySlug == "Empty") {
-        emit(state.copyWith(boutiques: boutiques));
-      }
+
       reRequestTheseBoutiques[event.categorySlug] = true;
       emit(state.copyWith(
           reRequestTheseBoutiques: reRequestTheseBoutiques,
@@ -879,7 +868,46 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       choosedFiltersByUser: event.filtersChoosedByUser,
       resetAppliedFilters: event.filtersChoosedByUser == null,
     ));
-
+    List<filters_model.Brand>? brand = state.brands?.map((e) {
+      if (state.selectedBoutiqueBrandCategorySlugsForSearch["brand"] != null) {
+        if (state.selectedBoutiqueBrandCategorySlugsForSearch["brand"]!
+            .contains('"${e.slug}"')) {
+          return e.copyWith(isSelected: true);
+        }
+        return e;
+      } else {
+        return e;
+      }
+    }).toList();
+    List<Category>? category = state.categories?.map((e) {
+      if (state.selectedBoutiqueBrandCategorySlugsForSearch["category"] !=
+          null) {
+        if (state.selectedBoutiqueBrandCategorySlugsForSearch["category"]!
+            .contains('"${e.slug}"')) {
+          return e.copyWith(isSelected: true);
+        }
+        return e;
+      } else {
+        return e;
+      }
+    }).toList();
+    List<filters_model.Boutique>? boutiques = state.boutiques?.map((e) {
+      if (state.selectedBoutiqueBrandCategorySlugsForSearch["boutique"] !=
+          null) {
+        if (state.selectedBoutiqueBrandCategorySlugsForSearch["boutique"]!
+            .contains('"${e.slug}"')) {
+          return e.copyWith(isSelected: true);
+        }
+        return e;
+      } else {
+        return e;
+      }
+    }).toList();
+    emit(state.copyWith(
+      category: category,
+      boutiques: boutiques,
+      brands: brand,
+    ));
     filters_model.Filter filters =
         event.filtersChoosedByUser?.filters ?? filters_model.Filter();
     List<filters_model.Attribute>? attribute;
@@ -984,6 +1012,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         emit(state.copyWith(
             brands: r.filters!.brands!,
             category: r.filters!.categories,
+            totalProductNumber: r.filters!.totalSize,
             getProductFiltersStatus: GetProductFiltersStatus.success,
             getProductFiltersModel: removeAlreadyChoosedFilters(r, filters),
             choosedFiltersByUser: event.filtersChoosedByUser));
@@ -1011,10 +1040,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             return e;
           }
         }).toList();
+        List<filters_model.Boutique>? boutiques = state.boutiques?.map((e) {
+          if (state.selectedBoutiqueBrandCategorySlugsForSearch["boutique"] !=
+              null) {
+            if (state.selectedBoutiqueBrandCategorySlugsForSearch["boutique"]!
+                .contains('"${e.slug}"')) {
+              return e.copyWith(isSelected: true);
+            }
+            return e;
+          } else {
+            return e;
+          }
+        }).toList();
         emit(state.copyWith(
-          category: category,
-          brands: brand,
-        ));
+            category: category, brands: brand, boutiques: boutiques));
       } catch (e, st) {
         print(e);
         print(st);
@@ -1598,12 +1637,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         makeChoosedFiltersNull = true;
       }
     }
-    if(event.filtersChoosedByUser != null) {
+    if (event.filtersChoosedByUser != null) {
       add(GetProductFiltersEvent(
           category: event.category,
           boutiqueSlug: event.boutiqueSlug,
           filtersChoosedByUser:
-          makeChoosedFiltersNull ? null : event.filtersChoosedByUser));
+              makeChoosedFiltersNull ? null : event.filtersChoosedByUser));
     }
     filters_model.Filter filters =
         event.filtersChoosedByUser?.filters ?? filters_model.Filter();

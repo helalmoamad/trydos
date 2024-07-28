@@ -83,7 +83,6 @@ class _SearchPageState extends ThemeState<SearchPage> {
                 .selectedBoutiqueBrandCategorySlugsForSearch.values
                 .toList()
                 .any((element) => !element.isEmpty);
-
             return SafeArea(
                 child: CustomScrollView(
                     physics: const ClampingScrollPhysics(),
@@ -232,11 +231,10 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                         right: 20,
                                         top: 10,
                                         child: Container(
-                                          width: 30,
-                                          height: 30,
-                                          child: MyTextWidget(
-                                              "${state.getProductFiltersModel!.filters!.totalSize == null || state.getProductFiltersModel!.filters!.totalSize == 0 ? " " : state.getProductFiltersModel!.filters!.totalSize}"),
-                                        )),
+                                            width: 30,
+                                            height: 30,
+                                            child: MyTextWidget(
+                                                "${state.totalProductNumber == 0 ? " " : state.totalProductNumber}"))),
                                     state.getProductFiltersStatus ==
                                             GetProductFiltersStatus.loading
                                         ? Positioned(
