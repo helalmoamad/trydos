@@ -1,11 +1,15 @@
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
+import 'package:trydos/features/home/data/models/get_brand_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
+import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
+import 'package:trydos/features/home/data/models/get_currency_for_country.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
-import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
+
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
@@ -97,6 +101,32 @@ class HomeRemoteDatasource {
     );
 
     return getProductsWithFilters();
+  }
+
+  Future<GetCategoryModel> getCategory() {
+    GetClient<GetCategoryModel> getCategory = GetClient<GetCategoryModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetCategoryModel>(
+        endpoint: MarketEndPoints.getCategoryEP,
+        response: ResponseValue<GetCategoryModel>(
+            fromJson: (response) => GetCategoryModel.fromJson(response)),
+      ),
+    );
+
+    return getCategory();
+  }
+
+  Future<GetBrandModel> getBrand() {
+    GetClient<GetBrandModel> getBrand = GetClient<GetBrandModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetBrandModel>(
+        endpoint: MarketEndPoints.getBrandEP,
+        response: ResponseValue<GetBrandModel>(
+            fromJson: (response) => GetBrandModel.fromJson(response)),
+      ),
+    );
+
+    return getBrand();
   }
 
   Future<MainCategoriesResponseModel> getMainCategories() {
@@ -209,5 +239,48 @@ class HomeRemoteDatasource {
       ),
     );
     return updateItemInCart();
+  }
+
+  /* Future<SearchResultModel> getSearchResult(Map<String, dynamic> params) {
+    GetClient<SearchResultModel> getSearchResult = GetClient<SearchResultModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<SearchResultModel>(
+        endpoint: MarketEndPoints.getSearchResultEP,
+        queryParameters: params,
+        response: ResponseValue<SearchResultModel>(
+            fromJson: (response) => SearchResultModel.fromJson(response)),
+      ),
+    );
+
+    return getSearchResult();
+  }*/
+
+  Future<GetCurrencyForCountryModel> getCurrencyForCountry() {
+    GetClient<GetCurrencyForCountryModel> getCurrencyForCountry =
+        GetClient<GetCurrencyForCountryModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetCurrencyForCountryModel>(
+        endpoint: MarketEndPoints.getCurrencyEP,
+        response: ResponseValue<GetCurrencyForCountryModel>(
+            fromJson: (response) =>
+                GetCurrencyForCountryModel.fromJson(response)),
+      ),
+    );
+
+    return getCurrencyForCountry();
+  }
+
+  Future<GetAllowedCountriesModel> getAllowedCountries() {
+    GetClient<GetAllowedCountriesModel> verifyOtpSignIn =
+        GetClient<GetAllowedCountriesModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetAllowedCountriesModel>(
+        endpoint: MarketEndPoints.getAllowesdCountriesEP,
+        response: ResponseValue<GetAllowedCountriesModel>(
+            fromJson: (response) =>
+                GetAllowedCountriesModel.fromJson(response)),
+      ),
+    );
+    return verifyOtpSignIn();
   }
 }

@@ -21,13 +21,14 @@ class SelectSizeContent extends StatefulWidget {
     super.key,
     required this.scrollController,
     required this.selectedColor,
+    required this.sizes,
     required this.addToBagButtonShapeNotifier,
     required this.sizeIsNotAvailableNotifier,
   });
 
   final ScrollController scrollController;
   final Color selectedColor;
-
+  final List<String> sizes;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final ValueNotifier<String?> sizeIsNotAvailableNotifier;
 
@@ -44,6 +45,13 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    if (widget.sizes.length > 0) {
+      homeBloc.add(AddCurrentColorSizeEvent(
+          choice_1: widget.sizes[widget.sizes.length ~/ 2]));
+    } else {
+      homeBloc.add(AddCurrentColorSizeEvent(choice_1: ""));
+    }
+
     currentIndexInSizes = ValueNotifier(0);
 
     super.initState();
@@ -55,7 +63,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
       buildWhen: (p, c) =>
           p.currentSelectedColorForEveryProduct !=
               c.currentSelectedColorForEveryProduct ||
-          p.sizes != c.sizes,
+          p.sizes != c.sizes ||
+          p.cartCollection != c.cartCollection,
       builder: (context, state) {
         sizes = state.sizes ?? [" "];
         currentIndexInSizes.value = sizes.length ~/ 2;

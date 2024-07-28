@@ -14,12 +14,16 @@ import '../../../../app/my_text_widget.dart';
 class ProductDetailsSheetHeader extends StatefulWidget {
   final String price;
   final String offerPrice;
+  final String priceSymbol;
+  final int decimalPoint;
 
   const ProductDetailsSheetHeader({
     super.key,
     required this.addToBagButtonShapeNotifier,
-    required this.price,
+    required this.priceSymbol,
     required this.offerPrice,
+    required this.price,
+    required this.decimalPoint,
   });
 
   final ValueNotifier<int> addToBagButtonShapeNotifier;
@@ -95,9 +99,8 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: colorScheme.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(30))
-      ),
+          color: colorScheme.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30))),
       child: Column(
         children: [
           Padding(
@@ -110,7 +113,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       MyTextWidget(
-                        widget.price.split(" ").toList()[0],
+                        widget.price,
                         style: textTheme.headline3?.rq.copyWith(
                           color: Color(0xffC4C2C2),
                           decoration: TextDecoration.lineThrough,
@@ -121,7 +124,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                         width: 5,
                       ),
                       MyTextWidget(
-                        widget.offerPrice,
+                        double.parse(widget.offerPrice).toStringAsFixed(widget.decimalPoint),
                         style: textTheme.headline3?.bq.copyWith(
                           color: Color(0xff505050),
                           height: 0,
@@ -131,7 +134,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                         width: 4,
                       ),
                       MyTextWidget(
-                        widget.price.split(" ").toList()[1],
+                        widget.priceSymbol,
                         style: textTheme.caption?.rq.copyWith(
                           fontSize: 18,
                           color: Color(0xffC4C2C2),
@@ -156,13 +159,13 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      MyTextWidget(
-                                        widget.price.split(" ").toList()[1],
-                                        style: textTheme.caption?.rq.copyWith(
-                                          color: Color(0xffC4C2C2),
-                                          height: 0,
-                                        ),
-                                      ),
+                                      // MyTextWidget(
+                                      //   widget.price.split(" ").toList()[1],
+                                      //   style: textTheme.caption?.rq.copyWith(
+                                      //     color: Color(0xffC4C2C2),
+                                      //     height: 0,
+                                      //   ),
+                                      // ),
                                     ],
                                   )
                                 : const SizedBox.shrink();

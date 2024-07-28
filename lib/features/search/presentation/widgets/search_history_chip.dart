@@ -1,12 +1,25 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/search/presentation/widgets/close_circle.dart';
 
 class SearchHistoryChip extends StatelessWidget {
+  final ValueNotifier<int> buildSearchResult;
+  final ValueNotifier<bool> hideTrendingAndHistory;
+  final TextEditingController controller;
+
   const SearchHistoryChip(
-      {super.key, required this.text, required this.onClickClose});
+      {super.key,
+      required this.text,
+      required this.onClickClose,
+      required this.buildSearchResult,
+      required this.hideTrendingAndHistory,
+      required this.controller});
 
   final String text;
   final void Function() onClickClose;
@@ -21,30 +34,39 @@ class SearchHistoryChip extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                height: 28,
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                    color: Color(0xffF8F8F8),
-                    borderRadius: BorderRadius.circular(10)),
-                child: Center(
-                  child: Text(
-                    text,
-                    style: context.textTheme.bodyText2?.rq
-                        .copyWith(height: 18 / 14, color: Color(0xff8D8D8D)),
+              GestureDetector(
+                onTap: () {
+                  controller.text = text;
+                  buildSearchResult.value = 1;
+                  hideTrendingAndHistory.value = false;
+                  BlocProvider.of<HomeBloc>(context)
+                      .add(GetSearchREsultEvent(searchTitle: text));
+                },
+                child: Container(
+                  height: 28,
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                      color: Color(0xffF8F8F8),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Center(
+                    child: Text(
+                      text,
+                      style: context.textTheme.bodyText2?.rq
+                          .copyWith(height: 18 / 14, color: Color(0xff8D8D8D)),
+                    ),
                   ),
                 ),
               ),
               SizedBox(
-                width: 6,
+                width: 5,
               )
             ],
           ),
           GestureDetector(
             onTap: onClickClose,
             child: Container(
-              width : 40,
-              height:40,
+              width: 12,
+              height: 12,
               color: Colors.transparent, // don't remove it
               child: Align(
                 alignment: Alignment.centerRight,

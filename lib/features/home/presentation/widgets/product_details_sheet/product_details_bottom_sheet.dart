@@ -15,6 +15,7 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_comments_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_header.dart';
@@ -37,12 +38,17 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final String boutiqueIcon;
   final String currentColorName;
   final String currentColornum;
-  final int CurrentQuantity;
+  final String currentSize;
+
+  final ValueNotifier<int> addToBagButtonShapeNotifier;
+  final List<String> sizes;
   const ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
-      required this.CurrentQuantity,
+      required this.addToBagButtonShapeNotifier,
       required this.boutiqueIcon,
+      required this.sizes,
+      required this.currentSize,
       required this.currentColornum,
       required this.boutiqueId,
       required this.currentColor,
@@ -54,7 +60,6 @@ class ProductDetailsBottomSheet extends StatefulWidget {
 }
 
 class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
-  final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
   final ValueNotifier<List<int>> indicesOfChatCardsToShare = ValueNotifier([]);
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final ValueNotifier<double> workOnBlurNotifier = ValueNotifier(10);
@@ -76,7 +81,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
 
   @override
   void initState() {
-    addToBagButtonShapeNotifier.value = widget.CurrentQuantity;
     homeBloc = BlocProvider.of<HomeBloc>(context);
 
     syncColorImageList = widget.productItem.syncColorImages ?? [];
@@ -165,19 +169,14 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                 offsetOfColorsGallerySlider =
                                     renderBox.localToGlobal(Offset.zero);
                               }
-                              if (currentPosition.dy > (288.h + 70.w + 10.h)) {
-                                if (currentPosition.dy <=
-                                        (288.h + 70.w + 30.h + 125 + 100) &&
-                                    currentPosition.dy >=
-                                        (288.h + 70.w + 30.h + 125)) {
-                                  userWantToScrollHorizontally = true;
-                                }
-                              } else if (currentPosition.dx >=
+                              if (currentPosition.dx >=
                                       offsetOfColorsGallerySlider!.dx &&
                                   currentPosition.dx <=
                                       (offsetOfColorsGallerySlider!.dx + 200) &&
-                                  currentPosition.dy <= (288.h + 70.w + 10.h) &&
-                                  currentPosition.dy >= (288.h + 10.h)) {
+                                  currentPosition.dy >=
+                                      (288.h + (35.w + 10.h)) &&
+                                  currentPosition.dy <=
+                                      (288.h + (70.w + 70.w + 10.h))) {
                                 userWantToScrollHorizontally = true;
                               }
                               return userWantToScrollHorizontally;
@@ -230,7 +229,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             }
                           : null,
                       panelBuilder: (controller) => Column(
-                        mainAxisSize: MainAxisSize.min,
+                        //mainAxisSize: MainAxisSize.min,
                         children: [
                           if (currentTab == 3) ...{
                             SizedBox(
@@ -261,91 +260,101 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             Material(
                               color: Colors.transparent,
                               child: gallery3dControllerForCircles != null
-                                  ? Gallery3D(
-                                      key: colorsGallerySliderKey,
-                                      // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
-                                      controller:
-                                          gallery3dControllerForCircles!,
-                                      denyScrolling: false,
-                                      width: 200,
-                                      stopScrollingOnEdges:
-                                          (double primaryDelta) {
-                                        return (primaryDelta <= 0 &&
-                                                gallery3dControllerForCircles!
-                                                        .currentIndex ==
-                                                    (syncColorImageList
-                                                                .length ~/
-                                                            2 -
-                                                        1)) ||
-                                            (primaryDelta >= 0 &&
-                                                gallery3dControllerForCircles!
-                                                        .currentIndex ==
-                                                    0);
-                                      },
-                                      changingPagesScrollOffset: 0.1,
-                                      isClip: false,
-                                      onItemChanged: (index) {
-                                        currentIndexInSlider = index;
-                                        currentImageTab.value = index;
-
-                                        homeBloc.add(
-                                            AddCurrentSelectedColorEvent(
-                                                currentSelectedColor: index,
-                                                productId: widget.productItem.id
-                                                    .toString()));
-                                      },
-                                      onClickItem: (index) {},
-                                      itemConfig: GalleryItemConfig(
-                                          width: 70.w,
-                                          height: 70.w,
-                                          radius: 180,
-                                          isShowTransformMask: false,
-                                          shadows: const [
-                                            BoxShadow(
-                                              color: Color(0x19000000),
-                                              offset: Offset(0, 3),
-                                              blurRadius: 6,
-                                            ),
-                                          ]),
-                                      itemBuilder: (context, index) {
-                                        return Visibility(
-                                          visible: ((gallery3dControllerForCircles
-                                                              ?.currentIndex ??
-                                                          0) <
-                                                      (syncColorImageList
-                                                              .length ~/
-                                                          2) &&
-                                                  index <
-                                                      (syncColorImageList
-                                                              .length ~/
-                                                          2)) ||
-                                              ((gallery3dControllerForCircles
-                                                              ?.currentIndex ??
-                                                          0) >=
-                                                      (syncColorImageList
-                                                              .length ~/
-                                                          2) &&
-                                                  index >=
-                                                      (syncColorImageList
-                                                              .length ~/
-                                                          2)),
-                                          child: ProductListingImageWidget(
-                                            orginalHeight:
-                                                orginalHeight![index],
-                                            orginalWidth: orginalWidth![index],
-                                            width: 70.w,
-                                            height: 70.w,
-                                            imageUrl: images[index],
-                                            innerShadowYOffset: 4,
-                                            borderColor: index ==
-                                                    currentIndexInSlider
-                                                ? Color(int.parse(
-                                                    '0xff${widget.productItem.colors![currentIndexInSlider % widget.productItem.colors!.length].color!.substring(1)}'))
-                                                : Colors.white,
-                                            circleShape: true,
-                                          ),
-                                        );
-                                      })
+                                  ? Directionality(
+                                      textDirection: TextDirection.ltr,
+                                      child: Gallery3D(
+                                          key: colorsGallerySliderKey,
+                                          // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
+                                          controller:
+                                              gallery3dControllerForCircles!,
+                                          denyScrolling: false,
+                                          width: 200,
+                                          stopScrollingOnEdges:
+                                              (double primaryDelta) {
+                                            return (primaryDelta <= 0 &&
+                                                    gallery3dControllerForCircles!
+                                                            .currentIndex ==
+                                                        (syncColorImageList
+                                                                    .length ~/
+                                                                2 -
+                                                            1)) ||
+                                                (primaryDelta >= 0 &&
+                                                    gallery3dControllerForCircles!
+                                                            .currentIndex ==
+                                                        0);
+                                          },
+                                          changingPagesScrollOffset: 0.1,
+                                          isClip: false,
+                                          onItemChanged: (index) {
+                                            currentIndexInSlider = index;
+                                            currentImageTab.value = index;
+                                            homeBloc.add(
+                                                AddCurrentSelectedColorEvent(
+                                                    currentSelectedColor:
+                                                        index %
+                                                            (syncColorImageList
+                                                                    .length ~/
+                                                                2),
+                                                    productId: widget
+                                                        .productItem.id
+                                                        .toString()));
+                                          },
+                                          onClickItem: (index) {},
+                                          itemConfig: GalleryItemConfig(
+                                              width: 70.w,
+                                              height: 70.w,
+                                              radius: 180,
+                                              isShowTransformMask: false,
+                                              shadows: const [
+                                                BoxShadow(
+                                                  color: Color(0x19000000),
+                                                  offset: Offset(0, 3),
+                                                  blurRadius: 6,
+                                                ),
+                                              ]),
+                                          itemBuilder: (context, index) {
+                                            return Visibility(
+                                              visible: ((gallery3dControllerForCircles
+                                                                  ?.currentIndex ??
+                                                              0) <
+                                                          (syncColorImageList
+                                                                  .length ~/
+                                                              2) &&
+                                                      index <
+                                                          (syncColorImageList
+                                                                  .length ~/
+                                                              2)) ||
+                                                  ((gallery3dControllerForCircles
+                                                                  ?.currentIndex ??
+                                                              0) >=
+                                                          (syncColorImageList
+                                                                  .length ~/
+                                                              2) &&
+                                                      index >=
+                                                          (syncColorImageList
+                                                                  .length ~/
+                                                              2)),
+                                              child: ProductListingImageWidget(
+                                                orginalHeight:
+                                                    orginalHeight![index],
+                                                orginalWidth:
+                                                    orginalWidth![index],
+                                                width: 70.w,
+                                                height: 70.w,
+                                                imageWidth: 70,
+                                                imageHeight: 70,
+                                                imageUrl: images[index],
+                                                innerShadowYOffset: 4,
+                                                borderColor: index ==
+                                                        currentIndexInSlider
+                                                    ? Color(int.parse(
+                                                        '0xff${widget.productItem.colors![currentIndexInSlider % widget.productItem.colors!.length].color!.substring(1)}'))
+                                                    : Colors.white,
+                                                circleShape: true,
+                                              ),
+                                            );
+                                          }),
+                                    )
                                   : SizedBox.shrink(),
                             ),
                             10.verticalSpace,
@@ -353,14 +362,38 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                           Stack(
                             alignment: Alignment.topCenter,
                             children: [
-                              ProductDetailsSheetHeader(
-                                addToBagButtonShapeNotifier:
-                                    addToBagButtonShapeNotifier,
-                                price: widget.productItem.priceFormatted ?? '',
-                                offerPrice:
-                                    (widget.productItem.offerPrice ?? '')
-                                        .toString(),
-                              ),
+                              BlocBuilder<HomeBloc, HomeState>(
+                                  buildWhen: (previous, current) =>
+                                      previous.getCurrencyForCountryModel !=
+                                      current.getCurrencyForCountryModel,
+                                  builder: (context, state) {
+                                    return ProductDetailsSheetHeader(
+                                      priceSymbol: state
+                                              .getCurrencyForCountryModel!
+                                              .data!
+                                              .currency!
+                                              .symbol ??
+                                          "",
+                                      decimalPoint: state.startingSetting?.decimalPointSetting ?? 2,
+                                      addToBagButtonShapeNotifier:
+                                          widget.addToBagButtonShapeNotifier,
+                                      price: (widget.productItem.price! *
+                                              state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .exchangeRate!)
+                                          .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2),
+                                      offerPrice: (widget
+                                                  .productItem.offerPrice! *
+                                              state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .exchangeRate!)
+                                          .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2),
+                                    );
+                                  }),
                               currentTab != -1
                                   ? Positioned(
                                       top: 7,
@@ -411,12 +444,13 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                 )
                               : currentTab == 3
                                   ? SelectSizeContent(
+                                      sizes: widget.sizes,
                                       scrollController: controller,
                                       selectedColor: Colors.blue,
                                       sizeIsNotAvailableNotifier:
                                           sizeIsNotAvailableNotifier,
                                       addToBagButtonShapeNotifier:
-                                          addToBagButtonShapeNotifier,
+                                          widget.addToBagButtonShapeNotifier,
                                     )
                                   : const SizedBox.shrink(),
                         ],
@@ -476,17 +510,28 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               builder: (context, indices, _) {
                 return indices.isEmpty
                     ? ProductDetailsSheetBottomBar(
-                        imageUrl: widget.productItem.images![0].filePath!,
+                        colorNum: widget.currentColornum,
+                        Size: widget.currentSize,
+                        colorName: widget.currentColorName,
+                        productId: widget.productItem.id.toString(),
+                        imageUrl:
+                            !widget.productItem.syncColorImages.isNullOrEmpty
+                                ? widget
+                                        .productItem
+                                        .syncColorImages![widget.currentColor]
+                                        .images![0]
+                                        .filePath ??
+                                    ""
+                                : widget
+                                        .productItem
+                                        .images![widget.currentColor]
+                                        .filePath ??
+                                    "",
                         onFinishBuying: (quantity) {
-                          homeBloc.add(AddItemToCartEvent(
-                              colorName: widget.currentColorName,
-                              iconBoutique: widget.boutiqueIcon,
-                              boutiqueId: 46,
-                              thumbnail:
-                                  widget.productItem.images![0].filePath!,
+                          homeBloc.add(AddMultiItemsToCartEvent(
+                              boutiqueIcon: widget.boutiqueIcon,
+                              boutiqueId: widget.boutiqueId,
                               products: widget.productItem,
-                              color: widget.currentColornum,
-                              quantity: int.parse(quantity),
                               id: widget.productItem.id.toString()));
                           setState(() {
                             tag = 'cart';
@@ -514,7 +559,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         currentActiveTab: currentActiveTab,
                         sizeIsNotAvailableNotifier: sizeIsNotAvailableNotifier,
                         addToBagButtonShapeNotifier:
-                            addToBagButtonShapeNotifier)
+                            widget.addToBagButtonShapeNotifier)
                     : ShareButton(
                         onTap: () {},
                       );

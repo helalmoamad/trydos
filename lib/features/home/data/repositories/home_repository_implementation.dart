@@ -7,12 +7,17 @@ import 'package:trydos/features/authentication/data/models/send_otp_response_mod
 import 'package:trydos/features/authentication/data/models/verify_guest_phone_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
+import 'package:trydos/features/home/data/models/get_brand_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
+import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
+import 'package:trydos/features/home/data/models/get_currency_for_country.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
@@ -120,5 +125,33 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.updateItemInCart(params));
+  }
+
+  @override
+  Future<Either<Failure, GetBrandModel>> getBrand() {
+    return handlingExceptionRequest(tryCall: () => dataSource.getBrand());
+  }
+
+  @override
+  Future<Either<Failure, GetCategoryModel>> getCategory() {
+    return handlingExceptionRequest(tryCall: () => dataSource.getCategory());
+  }
+
+  @override
+  Future<Either<Failure, GetCurrencyForCountryModel>> getCurrencyForCountry() {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getCurrencyForCountry());
+  }
+
+  /* Future<Either<Failure, SearchResultModel>> getSearchResult(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getSearchResult(params));
+  */
+
+  @override
+  Future<Either<Failure, GetAllowedCountriesModel>> getAllowCountries() {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getAllowedCountries());
   }
 }

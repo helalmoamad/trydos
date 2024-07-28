@@ -39,7 +39,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
             leading: LanguageService.rtl ? null : leadingAppBar(context),
             actions: [
               LanguageService.rtl ? leadingAppBar(context) : SizedBox.shrink(),
-              ...appBarParams.action ?? []
+              ...appBarParams.action ?? [],
             ],
             centerTitle: appBarParams.centerTitle,
             elevation: appBarParams.elevation,
@@ -103,6 +103,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
                     padding: EdgeInsets.all(8),
                     child: SvgPicture.asset(
                       AppAssets.backIconArrowSvg,
+                      matchTextDirection: true,
                       width: 8.w,
                       color:
                           appBarParams.backIconColor ?? const Color(0xff388CFF),

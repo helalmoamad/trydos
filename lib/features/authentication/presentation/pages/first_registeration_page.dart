@@ -54,7 +54,6 @@ class _RegistrationPageState extends State<RegistrationPage>
 
   @override
   void dispose() {
-    print('ddddddddddddddddd');
     prefsRepository.setTimerForOtpRunning(false);
     super.dispose();
   }
@@ -134,10 +133,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                     curve: Curves.easeInOut);
                                 return;
                               }
-                              pageContent.value = 2;
-                              pageController.animateToPage(2,
-                                  duration: Duration(milliseconds: 500),
-                                  curve: Curves.easeInOut);
+                                context.go(GRouter.config.applicationRoutes.kBasePage);
                             },
                             child: Padding(
                               padding: HWEdgeInsets.only(

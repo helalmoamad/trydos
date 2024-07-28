@@ -1,8 +1,15 @@
-
 import 'dart:convert' as convert;
 import 'dart:developer';
 import 'package:adobe_xd/pinned.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/country_dropdown.dart';
+import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -39,6 +46,7 @@ import 'features/chat/presentation/manager/chat_state.dart';
 import 'features/chat/presentation/utils/firebase_presence.dart';
 import 'features/home/presentation/manager/home_state.dart';
 import 'features/home/presentation/widgets/cart_page.dart';
+
 Widget get logo {
   debugPrint('deblogo');
   return Stack(
@@ -278,7 +286,11 @@ void DealWithMessageReceivedStatusStoredFromBackground() async {
 class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   late ChatBloc chatBloc;
   late HomeBloc homeBloc;
+  late AppBloc appBloc;
   late CallsBloc callsBloc;
+  ValueNotifier<bool> visibleCountries = ValueNotifier(false);
+  final TextEditingController controller = TextEditingController();
+
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<int> buildSearchResult = ValueNotifier(0);
   final ValueNotifier<bool> hideTrendingAndHistory = ValueNotifier(false);
@@ -321,14 +333,18 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   void initState() {
     pages.add(
       SearchPage(
+        controller: controller,
         buildSearchResult: buildSearchResult,
         hideTrendingAndHistory: hideTrendingAndHistory,
       ),
     );
     WidgetsBinding.instance.addObserver(this);
+    GetIt.I<HomeBloc>().add(GetAllowedCountriesEvent());
     chatBloc = BlocProvider.of<ChatBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    appBloc = BlocProvider.of<AppBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
+
     if (prefsRepository.chatToken != null) {
       onMessage();
     }
@@ -387,8 +403,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             navigatorKey.currentState!.context.widget is! SinglePageChat) {
           navigatorKey.currentState!.context.pop();
         }
-      }
-      else if (event.data['type'] == 'VideoCallEvent') {
+      } else if (event.data['type'] == 'VideoCallEvent') {
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'VideoCallEvent ForeGround Message');
@@ -415,8 +430,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               auth_token: prefsRepository.chatToken!,
               uId: prefsRepository.myChatId!.toString()),
         ));
-      }
-      else if (event.data['type'] == 'VoiceCallEvent') {
+      } else if (event.data['type'] == 'VoiceCallEvent') {
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'VoiceCallEvent ForeGround Message');
@@ -443,8 +457,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               auth_token: prefsRepository.chatToken!,
               uId: prefsRepository.myChatId!.toString()),
         ));
-      }
-      else if (event.data['type'] == 'AnswerCallEvent') {
+      } else if (event.data['type'] == 'AnswerCallEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
         GetIt.I<PrefsRepository>().saveRequestsData(
@@ -464,14 +477,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           navigatorKey.currentState!.context.pop();
         }
         callsBloc.add(UserInteractWithCall(rejectIt: false));
-      }
-      else if (event.data['type'] == 'ChannelDeletedEvent') {
+      } else if (event.data['type'] == 'ChannelDeletedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data["data"].toString());
         GetIt.I<ChatBloc>()
             .add(DeleteChatFromNotificationEvent(channelId: data['channelId']));
-      }
-      else if (event.data['type'] == 'UpdatingMessageEvent') {
+      } else if (event.data['type'] == 'UpdatingMessageEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data["data"].toString());
         GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
@@ -487,14 +498,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                 ? "message"
                 : "call",
             deleteFromId: data['message']["deleted_by_user_id"] ?? 0));
-      }
-      else if (event.data['type'] == 'ChannelUpdatedEvent') {
+      } else if (event.data['type'] == 'ChannelUpdatedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data["data"].toString());
         GetIt.I<ChatBloc>().add(UpdateChannelObjectFromNotificationEvent(
             chat: Chat.fromJson(data['channel'])));
-      }
-      else if (event.data['type'] == 'ChannelWatchedEvent') {
+      } else if (event.data['type'] == 'ChannelWatchedEvent') {
         Map<String, dynamic> data =
             convert.jsonDecode(event.data['data'].toString());
         chatBloc.add(WatchedMessageFromPusherEvent(
@@ -538,6 +547,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     });
   }
 
+  final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -577,52 +587,167 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               }
             },
             child: Scaffold(
-              backgroundColor: colorScheme.background,
-              bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-                  buildWhen: (p, c) => p.showBars != c.showBars,
-                  builder: (context, state) {
-                    if (state.showBars == true) {
-                      return BlocBuilder<AppBloc, AppState>(
+                backgroundColor: colorScheme.background,
+                bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
+                    buildWhen: (p, c) => p.showBars != c.showBars,
+                    builder: (context, state) {
+                      if (state.showBars == true) {
+                        return BlocBuilder<AppBloc, AppState>(
+                            buildWhen: (p, c) =>
+                                p.hideBottomNavigationBar !=
+                                c.hideBottomNavigationBar,
+                            builder: (context, state) {
+                              return state.hideBottomNavigationBar
+                                  ? const SizedBox.shrink()
+                                  : const AppBottomNavBar();
+                            });
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    }),
+                body: BlocBuilder<HomeBloc, HomeState>(
+                    buildWhen: (p, c) =>
+                        p.getAllowedCountriesModel !=
+                        c.getAllowedCountriesModel,
+                    builder: (context, homestate) {
+                      return BlocBuilder<AuthBloc, AuthState>(
                           buildWhen: (p, c) =>
-                              p.hideBottomNavigationBar !=
-                              c.hideBottomNavigationBar,
-                          builder: (context, state) {
-                            return state.hideBottomNavigationBar
-                                ? const SizedBox.shrink()
-                                : const AppBottomNavBar();
+                              p.getCustomerCountryStatus !=
+                              c.getCustomerCountryStatus,
+                          builder: (context, authstate) {
+                            if (homestate.getAllowedCountriesModel == null ||
+                                homestate.getAllowedCountriesModel!.data!
+                                    .countries.isNullOrEmpty) {
+                              return Center(
+                                child: TrydosLoader(),
+                              );
+                            }
+                            visibleCountries.value = (homestate
+                                    .getAllowedCountriesModel!.data!.countries!
+                                    .any((element) {
+                                  return element.iso ==
+                                      _prefsRepository.countryIso!;
+                                }) ||
+                                _prefsRepository.userCountryIsAvailable == 1);
+                            return ValueListenableBuilder<bool>(
+                                valueListenable: visibleCountries,
+                                builder: (context, visible, _) {
+                                  visible
+                                      ? appBloc
+                                          .add(HideBottomNavigationBar(false))
+                                      : appBloc
+                                          .add(HideBottomNavigationBar(true));
+                                  return !visible
+                                      ? Padding(
+                                          padding:
+                                              EdgeInsets.only(top: 1.sh / 2.5),
+                                          child: Directionality(
+                                            textDirection: TextDirection.ltr,
+                                            child: Column(
+                                              children: [
+                                                MyTextWidget(
+                                                  "your country is not available in this application",
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                MyTextWidget(
+                                                  "choose a country :",
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                Center(
+                                                    child: CountryDropdown(
+                                                  countries: homestate
+                                                              .getAllowedCountriesModel !=
+                                                          null
+                                                      ? homestate
+                                                              .getAllowedCountriesModel!
+                                                              .data!
+                                                              .countries ??
+                                                          []
+                                                      : [],
+                                                )),
+                                                SizedBox(height: 80),
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    if (_prefsRepository
+                                                            .userChoosedCountryIso !=
+                                                        null) {
+                                                      print("${_prefsRepository.userChoosedCountryIso}" +
+                                                          "-------------------------------------------------");
+                                                      visibleCountries.value =
+                                                          !visible;
+                                                      _prefsRepository
+                                                          .setUserCountryIsAvailable(
+                                                              1);
+                                                    } else {
+                                                      print("88888888888888" +
+                                                          "-------------------------------------------------");
+
+                                                      showMessage(
+                                                          "you have to choose a country",
+                                                          backGroundColor:
+                                                              Colors.black,
+                                                          foreGroundColor:
+                                                              Colors.white);
+                                                    }
+                                                  },
+                                                  child: MyTextWidget(
+                                                      " ok && countinue"),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      : Stack(
+                                          alignment: Alignment.topCenter,
+                                          children: [
+                                            BlocBuilder<AppBloc, AppState>(
+                                              buildWhen: (oldState, newState) =>
+                                                  oldState.currentIndex !=
+                                                  newState.currentIndex,
+                                              builder: (_, state) {
+                                                return pages[
+                                                    state.currentIndex];
+                                              },
+                                            ),
+                                            BlocBuilder<AppBloc, AppState>(
+                                                buildWhen: (p, c) =>
+                                                    p.showBars != c.showBars ||
+                                                    p.currentIndex !=
+                                                        c.currentIndex,
+                                                builder: (context, state) {
+                                                  if (state.showBars == true &&
+                                                          state.currentIndex ==
+                                                              0 ||
+                                                      state.currentIndex == 4) {
+                                                    return TabsBar(
+                                                      controller: controller,
+                                                      buildSearchResult:
+                                                          buildSearchResult,
+                                                      hideTrendingAndHistory:
+                                                          hideTrendingAndHistory,
+                                                    );
+                                                  } else {
+                                                    return const SizedBox
+                                                        .shrink();
+                                                  }
+                                                })
+                                          ],
+                                        );
+                                });
                           });
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  }),
-              body: Stack(
-                alignment: Alignment.topCenter,
-                children: [
-                  BlocBuilder<AppBloc, AppState>(
-                    buildWhen: (oldState, newState) =>
-                        oldState.currentIndex != newState.currentIndex,
-                    builder: (_, state) {
-                      return pages[state.currentIndex];
-                    },
-                  ),
-                  BlocBuilder<AppBloc, AppState>(
-                      buildWhen: (p, c) =>
-                          p.showBars != c.showBars ||
-                          p.currentIndex != c.currentIndex,
-                      builder: (context, state) {
-                        if (state.showBars == true && state.currentIndex == 0 ||
-                            state.currentIndex == 4) {
-                          return TabsBar(
-                            buildSearchResult: buildSearchResult,
-                            hideTrendingAndHistory: hideTrendingAndHistory,
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      })
-                ],
-              ),
-            )),
+                    }))),
       ),
     );
   }

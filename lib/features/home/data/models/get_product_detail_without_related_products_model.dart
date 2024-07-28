@@ -60,6 +60,7 @@ class Product {
   final int? leftStock;
   final int? reviewsCount;
   final dynamic sellerId;
+  final BoutiqueForCart? boutique;
   final Seller? seller;
   final Shop? shop;
   final bool? isFavSeller;
@@ -82,6 +83,7 @@ class Product {
     this.hasTax,
     this.deliveryAt,
     this.tax,
+    this.boutique,
     this.unitPrice,
     this.currentStock,
     this.leftStock,
@@ -114,6 +116,7 @@ class Product {
     int? leftStock,
     int? reviewsCount,
     dynamic sellerId,
+    BoutiqueForCart? boutique,
     Seller? seller,
     Shop? shop,
     bool? isFavSeller,
@@ -143,6 +146,7 @@ class Product {
         sellerId: sellerId ?? this.sellerId,
         seller: seller ?? this.seller,
         shop: shop ?? this.shop,
+        boutique: boutique ?? this.boutique,
         isFavSeller: isFavSeller ?? this.isFavSeller,
         reviews: reviews ?? this.reviews,
         hasWholeSale: hasWholeSale ?? this.hasWholeSale,
@@ -157,6 +161,9 @@ class Product {
         description: json["description"],
         model: json["model"],
         features: json["features"],
+        boutique: json["boutique"] == null
+            ? null
+            : BoutiqueForCart.fromJson(json["boutique"]),
         inStock: json["in_stock"],
         variation: json["variation"] == null
             ? []
@@ -169,8 +176,8 @@ class Product {
         hasDiscount: json["has_discount"],
         hasTax: json["has_tax"],
         deliveryAt: json["delivery_at"],
-        tax: json["tax"],
-        unitPrice: json["unit_price"],
+        tax: json["tax"].toString(),
+        unitPrice: json["unit_price"].toString(),
         currentStock: json["current_stock"],
         leftStock: json["Left_stock"],
         reviewsCount: json["reviews_count"],
@@ -199,6 +206,7 @@ class Product {
         "model": model,
         "features": features,
         "in_stock": inStock,
+        "boutique": boutique?.toJson(),
         "variation": variation == null
             ? []
             : List<dynamic>.from(variation!.map((x) => x.toJson())),
@@ -303,6 +311,36 @@ class Icon {
         "file_path": filePath,
         "original_width": originalWidth,
         "original_height": originalHeight,
+      };
+}
+
+class BoutiqueForCart {
+  final int? id;
+  final Icon? icon;
+
+  BoutiqueForCart({
+    this.id,
+    this.icon,
+  });
+
+  BoutiqueForCart copyWith({
+    int? id,
+    Icon? icon,
+  }) =>
+      BoutiqueForCart(
+        id: id ?? this.id,
+        icon: icon ?? this.icon,
+      );
+
+  factory BoutiqueForCart.fromJson(Map<String, dynamic> json) =>
+      BoutiqueForCart(
+        id: json["id"],
+        icon: json["icon"] == null ? null : Icon.fromJson(json["icon"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "icon": icon?.toJson(),
       };
 }
 
@@ -460,9 +498,9 @@ class Shop {
 
 class Variation {
   final String? type;
-  final int? price;
+  final double? price;
   final String? priceFormated;
-  final int? offerPrice;
+  final double? offerPrice;
   final String? offerPriceFormated;
   final String? sku;
   final int? qty;
@@ -479,9 +517,9 @@ class Variation {
 
   Variation copyWith({
     String? type,
-    int? price,
+    double? price,
     String? priceFormated,
-    int? offerPrice,
+    double? offerPrice,
     String? offerPriceFormated,
     String? sku,
     int? qty,
@@ -498,9 +536,9 @@ class Variation {
 
   factory Variation.fromJson(Map<String, dynamic> json) => Variation(
         type: json["type"],
-        price: json["price"],
+        price: json["price"]?.toDouble(),
         priceFormated: json["price_formated"],
-        offerPrice: json["offer_price"],
+        offerPrice: json["offer_price"]?.toDouble(),
         offerPriceFormated: json["offer_price_formated"],
         sku: json["sku"],
         qty: json["qty"],

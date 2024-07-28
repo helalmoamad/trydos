@@ -17,6 +17,13 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   String? get chatToken => _preferences.getString(PrefsKey.chatToken);
+  @override
+  Future<bool> setUserChoosedCountryIso(String? countryIso) =>
+      _preferences.setString(PrefsKey.currentCountry, countryIso!);
+
+  @override
+  String? get userChoosedCountryIso =>
+      _preferences.getString(PrefsKey.currentCountry);
 
   @override
   String? get marketToken => _preferences.getString(PrefsKey.marketToken);
@@ -455,16 +462,27 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  bool? get isTimerForOtpRunning => _preferences.getBool(PrefsKey.isTimerRunningId);
+  bool? get isTimerForOtpRunning =>
+      _preferences.getBool(PrefsKey.isTimerRunningId);
 
   @override
-  Future<bool> setTimerForOtpRunning(bool isRunning) => _preferences.setBool(PrefsKey.isTimerRunningId, isRunning);
+  Future<bool> setTimerForOtpRunning(bool isRunning) =>
+      _preferences.setBool(PrefsKey.isTimerRunningId, isRunning);
 
   @override
   Future<bool> removeStoriesName() => _preferences.remove(PrefsKey.storiesName);
 
+  @override
+  Future<bool> setUserCountryIsAvailable(int userCountryAvailable) {
+    return _preferences.setInt("UserCountryIsAvailable", userCountryAvailable);
+  }
+
+  @override
+  int? get userCountryIsAvailable =>
+      _preferences.getInt("UserCountryIsAvailable");
+
 // @override
-// // TODO: implement localMessages
+
 // List<Map<String,dynamic>> get localMessages {
 //   String? messages = _preferences.getString(PrefsKey.messages);
 //   if (messages == null) {

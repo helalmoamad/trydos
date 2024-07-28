@@ -9,7 +9,7 @@ extension ScopeApi on String {
   String authFirebaseScope() => '$_api/${_currentVersion}/auth/firebase/$this';
 
   String authScope() => '$_api/${_currentVersion}/auth/$this';
-
+  String countryScope() => '$_api/${_currentVersion}/$this';
   String customerScope() => '$_api/${_currentVersion}/customer/$this';
   String productsScope() => '$_api/${_currentVersion}/mobile/products/$this';
   String productScope() => '$_api/${_currentVersion}/mobile/product/$this';
@@ -17,6 +17,7 @@ extension ScopeApi on String {
   String productScopeWeb() => '$_api/${_currentVersion}/web/product/$this';
   String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
   String cartScope() => '$_api/${_currentVersion}/cart/$this';
+  String searchScope() => '$_api/${_currentVersion}/products/$this';
 }
 
 abstract class MarketEndPoints {
@@ -36,10 +37,16 @@ abstract class MarketEndPoints {
   static final registerEP = 'register'.authScope();
   static final registerGuestEP = 'register-guest'.authScope();
   static final loginEP = 'login'.phoneScope();
+  static final getAllowesdCountriesEP = "countries".countryScope();
   static final updateNameEP = 'update-name'.customerScope();
   static final getCustomerInfoEP = 'info'.customerScope();
   static final getStartingSettingsEP = 'startingSettings'.homeScope();
   static final getHomeSectionsEP = 'home_sections'.homeScope();
+  static final getBrandEP = 'brands'.homeScope();
+  static final getCurrencyEP = 'currency'.homeScope();
+
+  static final getCategoryEP = 'categories'.homeScope();
+
   static final getHomeBoutiqesEP = 'boutiques'.homeScope();
   static String getCommentForProductEP(String productId) =>
       'likesCommentsSharesDetails/$productId'.productScopeWeb();
@@ -48,6 +55,8 @@ abstract class MarketEndPoints {
       'mainCategoriesRelatedWithBoutique'.homeScope();
 
   static final getProductFiltersEP = 'filters'.productsScope();
+  static final getSearchResultEP = 'search'.searchScope();
+
   static final getProductListingWithoutFiltersEP = 'products'.mobileScope();
   static final getProductListingWithFiltersEP = 'with_filter'.productsScope();
 }

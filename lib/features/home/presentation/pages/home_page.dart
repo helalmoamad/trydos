@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -17,6 +18,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
@@ -48,10 +50,14 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    homeBloc.add(GetCartItemEvent());
 
     String selectedCategorySlug;
+    homeBloc.add(GetCurrencyForCountryEvent());
     homeBloc.add(GetHomeBoutiqesEvent(
         categorySlug: "Empty", offset: "1", getWithPagination: false));
+    homeBloc.add(GetBrandEvent());
+    homeBloc.add(GetCategoryEvent());
     scrollController.addListener(() {
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
       if (currentSelectedMainCategoryTab == -1) {
@@ -65,11 +71,15 @@ class _HomePageState extends State<HomePage> {
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent *
               0.7 *
-              (homeBloc
-                  .state
-                  .getHomeBoutiquesPaginationObjectByMainCategory[
-                      selectedCategorySlug]!
-                  .page))) {
+              (homeBloc.state.getHomeBoutiquesPaginationObjectByMainCategory[
+                          selectedCategorySlug] !=
+                      null
+                  ? homeBloc
+                      .state
+                      .getHomeBoutiquesPaginationObjectByMainCategory[
+                          selectedCategorySlug]!
+                      .page
+                  : 1))) {
         homeBloc.add(GetHomeBoutiqesEvent(
             categorySlug: selectedCategorySlug,
             offset: homeBloc
@@ -174,17 +184,12 @@ class _HomePageState extends State<HomePage> {
               builder: (context, appState) {
                 return BlocBuilder<HomeBloc, HomeState>(
                   builder: (context, homeState) {
-                    print('9999999999999999999999999999999');
-                    //  print(homeState.getHomeSectionsPaginationObject[0]
-                    //    ?.items[0].sections![0].title);
-
                     String? currentSlug = appState.tabIndex != -1
                         ? (homeState.mainCategoriesResponseModel?.data
                                 ?.mainCategories?[appState.tabIndex].slug ??
                             "Empty")
                         : "Empty";
-                    if (
-                        homeState.getHomeBoutiquesPaginationObjectByMainCategory[
+                    if (homeState.getHomeBoutiquesPaginationObjectByMainCategory[
                                 currentSlug] ==
                             null ||
                         ((homeState
@@ -208,23 +213,65 @@ class _HomePageState extends State<HomePage> {
                           key: Key(WidgetsKey.boutiquesFailureStatusKey),
                           itemBuilder: (_, index) => Padding(
                               padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                              child: TrydosShimmerLoading(
-                                  width: 1.sw,
-                                  logoTextWidth: 70.w,
-                                  height: 235,
-                                  logoTextHeight: 20)
-                              //HomePageCard(showWhite: index % 2 == 0),
-                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20.0),
+                                child: Shimmer.fromColors(
+                                    baseColor: Colors.grey.shade300,
+                                    highlightColor: Colors.grey.shade100,
+                                    enabled: true,
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        Container(
+                                            width: 1.sw,
+                                            height: 235,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                              BorderRadius.circular(20.0),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: const Color(0xff000000)
+                                                      .withOpacity(0.4),
+                                                  offset: Offset(0, 3),
+                                                  blurRadius: 6,
+                                                )
+                                              ],
+                                            )),
+                                        Container(
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 20),
+                                            width: 1.sw,
+                                            height: 135,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                              BorderRadius.circular(20.0),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: const Color(0xff000000)
+                                                      .withOpacity(0.6),
+                                                  offset: Offset(0, 3),
+                                                  blurRadius: 6,
+                                                )
+                                              ],
+                                            )),
+                                        Positioned(
+                                          bottom: 30,
+                                          child: Row(
+                                            children: List.generate(
+                                                5, (index) => CircleAvatar(
+                                              radius: 20,
+                                            )),
+                                          ),
+                                        )
+                                      ],
+                                    )),
+                              )),
+                          //HomePageCard(showWhite: index % 2 == 0),
                           separator: SizedBox(
                             height: 20,
                           ),
                           childCount: 10);
                     }
-                    print('ccccccccccccccccc ${currentSlug}');
-                    print('ccccccccccccccccc ${homeState
-                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                    currentSlug]!
-                        .items.length}');
                     return sliverListSeparated(
                       key: Key(WidgetsKey.boutiquesSuccessStatusKey),
                       itemBuilder: (_, index) => Padding(

@@ -1,13 +1,19 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 
 class TrydosShimmerLoading extends StatefulWidget {
-  const TrydosShimmerLoading({super.key , required this.width, this.radius = 15 ,  required this.logoTextWidth , required this.height, required this.logoTextHeight, this.circleDimensions});
+  const TrydosShimmerLoading(
+      {super.key,
+      required this.width,
+      this.radius = 15,
+      required this.logoTextWidth,
+      required this.height,
+      required this.logoTextHeight,
+      this.circleDimensions});
 
-  final double width , logoTextWidth;
-  final double height , logoTextHeight;
+  final double width, logoTextWidth;
+  final double height, logoTextHeight;
   final double? circleDimensions;
   final double radius;
 
@@ -15,13 +21,16 @@ class TrydosShimmerLoading extends StatefulWidget {
   State<TrydosShimmerLoading> createState() => _TrydosShimmerLoadingState();
 }
 
-class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading> with SingleTickerProviderStateMixin{
-
+class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading>
+    with SingleTickerProviderStateMixin {
   late AnimationController controller;
 
   @override
   void initState() {
-    controller = AnimationController(vsync: this , duration: Duration(milliseconds: 300),reverseDuration: Duration(milliseconds: 300));
+    controller = AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: 300),
+        reverseDuration: Duration(milliseconds: 300));
     controller.repeat(reverse: true);
     super.initState();
   }
@@ -39,8 +48,7 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading> with Single
       height: widget.height,
       decoration: BoxDecoration(
           color: Color(0xffE6E6E6),
-          borderRadius: BorderRadius.circular(widget.radius)
-      ),
+          borderRadius: BorderRadius.circular(widget.radius)),
       child: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -51,7 +59,7 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading> with Single
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 ScaleTransition(
-                  scale: Tween<double>(begin: 1 , end: 1.25).animate(controller),
+                  scale: Tween<double>(begin: 1, end: 1.25).animate(controller),
                   child: SizedBox(
                     width: widget.circleDimensions ?? 18,
                     height: widget.circleDimensions ?? 18,
@@ -62,9 +70,11 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading> with Single
                     ),
                   ),
                 ),
-                SizedBox(height: 2.5,),
+                SizedBox(
+                  height: 2.5,
+                ),
                 Transform.translate(
-                  offset: Offset(-2 , 0),
+                  offset: Offset(-2, 0),
                   child: SizedBox(
                     width: 7.15,
                     height: 10.7,
@@ -98,8 +108,14 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading> with Single
                 )
               ],
             ),
-            SizedBox(height: widget.height/10,),
-            SvgPicture.asset(AppAssets.trydosTextSvg , width: widget.logoTextWidth ,height: widget.logoTextHeight,)
+            SizedBox(
+              height: widget.height / 10,
+            ),
+            SvgPicture.asset(
+              AppAssets.trydosTextSvg,
+              width: widget.logoTextWidth,
+              height: widget.logoTextHeight,
+            )
           ],
         ),
       ),

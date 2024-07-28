@@ -136,13 +136,14 @@ class StartingSetting {
   final List<CurrencyList>? currencyList;
   final String? telrSuccessUrl;
   final String? postPaySuccessUrl;
-
+  final int? decimalPointSetting;
   StartingSetting({
     this.primaryColor,
     this.mainBackgroundColor,
     this.titleColor,
     this.subCategoriesColor,
     this.buyNowButtonColor,
+    this.decimalPointSetting,
     this.priceColor,
     this.shareButtonColor,
     this.includingTaxColor,
@@ -224,6 +225,7 @@ class StartingSetting {
     bool? showCashPayment,
     bool? showFlashDeal,
     int? androidMinVersion,
+    int? decimalPointSetting,
     int? iosMinVersion,
     int? closedHour,
     String? messageTimeEndWork,
@@ -266,6 +268,7 @@ class StartingSetting {
         shareButtonColor: shareButtonColor ?? this.shareButtonColor,
         includingTaxColor: includingTaxColor ?? this.includingTaxColor,
         giftBackColor: giftBackColor ?? this.giftBackColor,
+        decimalPointSetting: decimalPointSetting ?? this.decimalPointSetting,
         categoryHeaderColor: categoryHeaderColor ?? this.categoryHeaderColor,
         newSoftGreyColor: newSoftGreyColor ?? this.newSoftGreyColor,
         mainGreyColor: mainGreyColor ?? this.mainGreyColor,
@@ -349,6 +352,7 @@ class StartingSetting {
     descriptionOnPageProductDetails: json["description_on_page_product_details"],
     collectionGrid: json["collection_grid"],
     showNotifications: json["show_notifications"],
+    decimalPointSetting: json["decimal_point_settings"],
     showFeedBack: json["show_feedBack"],
     showContactWithWhatsapp: json["show_contact_with_whatsapp"],
     defaultCountryDialCode: json["default_country_dial_code"],
@@ -393,6 +397,7 @@ class StartingSetting {
     "newSoftGreyColorAux": newSoftGreyColorAux,
     "applyCouponButtonColor": applyCouponButtonColor,
     "flash_deal_foreColor": flashDealForeColor,
+    "decimal_point_settings": decimalPointSetting,
     "flash_deal_backColor": flashDealBackColor,
     "offersTheme": offersTheme?.toJson(),
     "square_curved_logo_url": squareCurvedLogoUrl,
