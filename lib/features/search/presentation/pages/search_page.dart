@@ -56,6 +56,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
   late final HomeBloc homeBloc;
   @override
   void initState() {
+    widget.hideTrendingAndHistory.value = true;
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
@@ -79,10 +80,14 @@ class _SearchPageState extends ThemeState<SearchPage> {
               previous.selectedBoutiqueBrandCategorySlugsForSearch.values !=
                   current.selectedBoutiqueBrandCategorySlugsForSearch.values,
           builder: (context, state) {
+            print(state.getProductFiltersStatus);
             hideAppleyResetButtom.value = state
-                .selectedBoutiqueBrandCategorySlugsForSearch.values
-                .toList()
-                .any((element) => !element.isEmpty);
+                    .selectedBoutiqueBrandCategorySlugsForSearch.values
+                    .toList()
+                    .any((element) => !element.isEmpty) ||
+                state.boutiques!.any((element) => element.isSelected!) ||
+                state.categories!.any((element) => element.isSelected!) ||
+                state.brands!.any((element) => element.isSelected!);
             return SafeArea(
                 child: CustomScrollView(
                     physics: const ClampingScrollPhysics(),
@@ -233,8 +238,14 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                         child: Container(
                                             width: 30,
                                             height: 30,
-                                            child: MyTextWidget(
-                                                "${state.totalProductNumber == 0 ? " " : state.totalProductNumber}"))),
+                                            child: state.getProductFiltersStatus ==
+                                                        GetProductFiltersStatus
+                                                            .success &&
+                                                    state.totalProductNumber !=
+                                                        0
+                                                ? MyTextWidget(
+                                                    "(${state.totalProductNumber})")
+                                                : SizedBox.shrink())),
                                     state.getProductFiltersStatus ==
                                             GetProductFiltersStatus.loading
                                         ? Positioned(

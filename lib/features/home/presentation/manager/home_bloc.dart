@@ -863,6 +863,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onGetProductFiltersEvent(
       GetProductFiltersEvent event, Emitter<HomeState> emit) async {
+    if (event.boutiqueSlug == null &&
+        event.category == null &&
+        event.fromSearch == false) {
+      emit(state.copyWith(selectedBoutiqueBrandCategorySlugsForSearch: {}));
+    }
     emit(state.copyWith(
       getProductFiltersStatus: GetProductFiltersStatus.loading,
       choosedFiltersByUser: event.filtersChoosedByUser,
@@ -1012,6 +1017,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         emit(state.copyWith(
             brands: r.filters!.brands!,
             category: r.filters!.categories,
+            boutiques: r.filters!.boutiques,
             totalProductNumber: r.filters!.totalSize,
             getProductFiltersStatus: GetProductFiltersStatus.success,
             getProductFiltersModel: removeAlreadyChoosedFilters(r, filters),
@@ -1656,7 +1662,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             : null,
         getProductFiltersModel: null,
         resetGetProductFiltersModel: true,
-        getProductFiltersStatus: GetProductFiltersStatus.loading,
         getProductListingWithFiltersPaginationModels:
             event.filtersChoosedByUser == null
                 ? PaginationModel.init()

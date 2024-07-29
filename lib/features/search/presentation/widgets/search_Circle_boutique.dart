@@ -57,9 +57,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
           selectedBoutiqueSlugs =
               state.selectedBoutiqueBrandCategorySlugsForSearch["boutique"] ??
                   [];
-          if (state.boutiques.isNullOrEmpty) {
-            return SizedBox.shrink();
-          }
+
           /*    selectedBoutiqueSlugs =
               state.selectedBoutiqueBrandCategorySlugsForSearch["boutique"] ??
                   [];
@@ -107,44 +105,21 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                   child: Stack(
                     alignment: Alignment.centerRight,
                     children: [
-                      ListView.separated(
-                          controller: scrollController,
-                          shrinkWrap: true,
-                          physics: ClampingScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return ValueListenableBuilder(
-                              valueListenable: widget.selectedBoutique,
-                              builder: (context, value, _) {
-                                if (value.isNullOrEmpty) {
-                                  selectedBoutiqueSlugs = [];
-                                  homeBloc.add(
-                                      AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
-                                          withBoutique: true,
-                                          withBrand: false,
-                                          selectedBoutiqueBrandCategorySlugsForSearch:
-                                              selectedBoutiqueSlugs));
-                                }
-                                return InkWell(
-                                  onTap: () {
-                                    if (state.boutiques![index].isSelected ??
-                                        false) {
-                                      selectedBoutiqueSlugs.remove(
-                                          '"${state.boutiques![index].slug ?? ""}"');
-                                      widget.selectedBoutique.value
-                                          .remove(index);
-                                      homeBloc.add(
-                                          AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
-                                              withBoutique: true,
-                                              withBrand: false,
-                                              selectedBoutiqueBrandCategorySlugsForSearch:
-                                                  selectedBoutiqueSlugs));
-                                    } else {
-                                      widget.selectedBoutique.value.add(index);
-                                      selectedBoutiqueSlugs.add(
-                                          '"${state.boutiques![index].slug ?? ""}"');
-
+                      state.boutiques.isNullOrEmpty
+                          ? SizedBox.shrink()
+                          : ListView.separated(
+                              controller: scrollController,
+                              shrinkWrap: true,
+                              physics: ClampingScrollPhysics(),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return ValueListenableBuilder(
+                                  valueListenable: widget.selectedBoutique,
+                                  builder: (context, value, _) {
+                                    if (value.isNullOrEmpty) {
+                                      selectedBoutiqueSlugs = [];
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
                                               withBoutique: true,
@@ -152,92 +127,129 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                               selectedBoutiqueBrandCategorySlugsForSearch:
                                                   selectedBoutiqueSlugs));
                                     }
-                                    widget.selectedBoutique.notifyListeners();
-                                    homeBloc.add(GetProductFiltersEvent(
-                                        fromSearch: true,
-                                        searchText: widget.controller.text));
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Stack(
+                                    return InkWell(
+                                      onTap: () {
+                                        if (state
+                                                .boutiques![index].isSelected ??
+                                            false) {
+                                          selectedBoutiqueSlugs.remove(
+                                              '"${state.boutiques![index].slug ?? ""}"');
+                                          widget.selectedBoutique.value
+                                              .remove(index);
+                                          homeBloc.add(
+                                              AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
+                                                  withBoutique: true,
+                                                  withBrand: false,
+                                                  selectedBoutiqueBrandCategorySlugsForSearch:
+                                                      selectedBoutiqueSlugs));
+                                        } else {
+                                          widget.selectedBoutique.value
+                                              .add(index);
+                                          selectedBoutiqueSlugs.add(
+                                              '"${state.boutiques![index].slug ?? ""}"');
+
+                                          homeBloc.add(
+                                              AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
+                                                  withBoutique: true,
+                                                  withBrand: false,
+                                                  selectedBoutiqueBrandCategorySlugsForSearch:
+                                                      selectedBoutiqueSlugs));
+                                        }
+                                        widget.selectedBoutique
+                                            .notifyListeners();
+                                        homeBloc.add(GetProductFiltersEvent(
+                                            fromSearch: true,
+                                            searchText:
+                                                widget.controller.text));
+                                      },
+                                      child: Column(
                                         children: [
-                                          AnimatedScale(
-                                              curve: Curves
-                                                  .fastEaseInToSlowEaseOut,
-                                              scale: state.boutiques![index]
-                                                          .isSelected ??
-                                                      false
-                                                  ? 1
-                                                  : 0.94,
-                                              duration:
-                                                  Duration(milliseconds: 100),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                    color: Color(0xffF8F8F8),
-                                                    border: Border.all(
-                                                        color: state
-                                                                    .boutiques![
-                                                                        index]
-                                                                    .isSelected ??
-                                                                false
-                                                            ? Color(0xffFF5F61)
-                                                            : Color(
-                                                                0xffF8F8F8))),
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 0, horizontal: 0),
-                                                child: Center(
-                                                  child: state.boutiques![index]
-                                                              .banner !=
-                                                          null
-                                                      ? MyCachedNetworkImage(
-                                                          imageUrl: state
+                                          Stack(
+                                            children: [
+                                              AnimatedScale(
+                                                  curve: Curves
+                                                      .fastEaseInToSlowEaseOut,
+                                                  scale: state.boutiques![index]
+                                                              .isSelected ??
+                                                          false
+                                                      ? 1
+                                                      : 0.94,
+                                                  duration: Duration(
+                                                      milliseconds: 100),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12),
+                                                        color:
+                                                            Color(0xffF8F8F8),
+                                                        border: Border.all(
+                                                            color: state
+                                                                        .boutiques![
+                                                                            index]
+                                                                        .isSelected ??
+                                                                    false
+                                                                ? Color(
+                                                                    0xffFF5F61)
+                                                                : Color(
+                                                                    0xffF8F8F8))),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 0,
+                                                            horizontal: 0),
+                                                    child: Center(
+                                                      child: state
+                                                                  .boutiques![
+                                                                      index]
+                                                                  .banner !=
+                                                              null
+                                                          ? MyCachedNetworkImage(
+                                                              imageUrl: state
                                                                   .boutiques![
                                                                       index]
                                                                   .banner!
-                                                                  .filePath ??
-                                                              " okp*/kmkm",
-                                                          imageFit:
-                                                              BoxFit.cover,
-                                                          height: 40,
-                                                          width: 100,
-                                                        )
-                                                      : SizedBox.shrink(),
-                                                ),
-                                              )),
-                                          Visibility(
-                                              visible: state.boutiques![index]
-                                                      .isSelected ??
-                                                  false,
-                                              child: FilterSelectedMark(
-                                                  width: 12, height: 12))
+                                                                  .filePath!,
+                                                              imageFit:
+                                                                  BoxFit.cover,
+                                                              height: 40,
+                                                              width: 100,
+                                                            )
+                                                          : SizedBox.shrink(),
+                                                    ),
+                                                  )),
+                                              Visibility(
+                                                  visible: state
+                                                          .boutiques![index]
+                                                          .isSelected ??
+                                                      false,
+                                                  child: FilterSelectedMark(
+                                                      width: 12, height: 12))
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 2,
+                                          ),
+                                          Center(
+                                              child: MyTextWidget(
+                                            state.boutiques![index].name!,
+                                            style: context
+                                                .textTheme.bodyText2?.rq
+                                                .copyWith(
+                                                    height: 12 / 14,
+                                                    color: Color(0xff8D8D8D)),
+                                          ))
                                         ],
                                       ),
-                                      SizedBox(
-                                        height: 2,
-                                      ),
-                                      Center(
-                                          child: MyTextWidget(
-                                        state.boutiques![index].name!,
-                                        style: context.textTheme.bodyText2?.rq
-                                            .copyWith(
-                                                height: 12 / 14,
-                                                color: Color(0xff8D8D8D)),
-                                      ))
-                                    ],
-                                  ),
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return SizedBox(
-                              width: 10,
-                            );
-                          },
-                          itemCount: state.boutiques!.length),
+                              separatorBuilder: (context, index) {
+                                return SizedBox(
+                                  width: 10,
+                                );
+                              },
+                              itemCount: state.boutiques!.length),
                     ],
                   ),
                 ),

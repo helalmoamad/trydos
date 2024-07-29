@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
@@ -25,6 +26,7 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as filter_products;
+import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
@@ -104,6 +106,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   void initState() {
     fromSearch = widget.fromSearch;
     searchVisible.value = false;
+
     Timer.periodic(Duration(milliseconds: 100), postFrameCallback);
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -137,11 +140,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   void dispose() {
+    focusNode.dispose();
     homeBloc.add(ChangeSelectedFiltersEvent(
         boutiqueSlug: widget.boutiqueSlug,
         category: widget.category,
         filtersChoosedByUser: null));
     appBloc.add(ShowOrHideBars(true));
+    if (!widget.fromSearch) {
+      homeBloc.add(GetProductFiltersEvent(
+          boutiqueSlug: null, category: null, fromSearch: false));
+    }
+
     scrollController.dispose();
     super.dispose();
   }
@@ -296,179 +305,143 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         onTap: () {
                                                                           searchVisible.value =
                                                                               !searchVisible.value;
-                                                                          focusNode
-                                                                              .unfocus();
                                                                         },
-                                                                        child: AnimatedSearchBar(
-                                                                          onFieldSubmitted:
-                                                                              (text) {
-                                                                            if (text.length >
-                                                                                2) {
-                                                                              searchVisible.value = !searchVisible.value;
-                                                                            }
-                                                                            fromSearchListing.value =
-                                                                                true;
-                                                                          },
-                                                                          width:
-                                                                              1.sw - 20,
-                                                                          height:
-                                                                              40,
-                                                                          onClickClose:
-                                                                              () {
-                                                                            if (controller.text.length >
-                                                                                0) {
-                                                                              controller.clear();
-                                                                            } else {
-                                                                              searchVisible.value = false;
-                                                                              appBloc.add(HideBottomNavigationBar(false));
-                                                                            }
-                                                                          },
-                                                                          textController:
-                                                                              controller,
-                                                                          focusNode:
-                                                                              focusNode,
-                                                                          onSuffixTap:
-                                                                              () {
-                                                                            searchVisible.value =
-                                                                                true;
-                                                                            controller.text =
-                                                                                "";
-                                                                          },
-                                                                          suffixWidget:
-                                                                              Center(
-                                                                            child:
-                                                                                SvgPicture.asset(
-                                                                              AppAssets.searchOutlinedSvg,
-                                                                              height: 20,
-                                                                              width: 20,
-                                                                              color: Color(0xff388CFF),
-                                                                            ),
-                                                                          ),
-                                                                          prefixWidget:
-                                                                              Padding(
-                                                                            padding: const EdgeInsets.only(
-                                                                                right: 15,
-                                                                                top: 10,
-                                                                                bottom: 10),
-                                                                            child:
-                                                                                Row(
-                                                                              mainAxisSize: MainAxisSize.min,
-                                                                              children: [
-                                                                                SvgPicture.asset(
-                                                                                  AppAssets.realCameraSvg,
-                                                                                  height: 20,
-                                                                                  width: 20,
+                                                                        child: searchVisible.value || widget.fromSearch == false
+                                                                            ? AnimatedSearchBar(
+                                                                                onFieldSubmitted: (text) {
+                                                                                  if (text.length > 2) {
+                                                                                    searchVisible.value = !searchVisible.value;
+                                                                                  }
+                                                                                  fromSearchListing.value = true;
+                                                                                },
+                                                                                width: 1.sw - 20,
+                                                                                height: 40,
+                                                                                onClickClose: () {
+                                                                                  focusNode.unfocus();
+                                                                                  searchVisible.value = false;
+
+                                                                                  controller.clear();
+
+                                                                                  searchVisible.value = false;
+                                                                                  appBloc.add(HideBottomNavigationBar(false));
+                                                                                },
+                                                                                textController: controller,
+                                                                                focusNode: focusNode,
+                                                                                onSuffixTap: () {
+                                                                                  searchVisible.value = true;
+                                                                                  controller.text = "";
+                                                                                },
+                                                                                suffixWidget: Center(
+                                                                                  child: SvgPicture.asset(
+                                                                                    AppAssets.searchOutlinedSvg,
+                                                                                    height: 20,
+                                                                                    width: 20,
+                                                                                    color: Color(0xff388CFF),
+                                                                                  ),
                                                                                 ),
-                                                                                SvgPicture.asset(
-                                                                                  AppAssets.microphoneSvg,
-                                                                                  height: 20,
-                                                                                  width: 20,
+                                                                                prefixWidget: Padding(
+                                                                                  padding: const EdgeInsets.only(right: 15, top: 10, bottom: 10),
+                                                                                  child: Row(
+                                                                                    mainAxisSize: MainAxisSize.min,
+                                                                                    children: [
+                                                                                      SvgPicture.asset(
+                                                                                        AppAssets.realCameraSvg,
+                                                                                        height: 20,
+                                                                                        width: 20,
+                                                                                      ),
+                                                                                      SvgPicture.asset(
+                                                                                        AppAssets.microphoneSvg,
+                                                                                        height: 20,
+                                                                                        width: 20,
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
                                                                                 ),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                          animationDurationInMilli:
-                                                                              400,
-                                                                          searchDecoration:
-                                                                              InputDecoration(
-                                                                            border:
-                                                                                OutlineInputBorder(
-                                                                              borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
-                                                                              borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                            ),
-                                                                            focusedBorder:
-                                                                                OutlineInputBorder(
-                                                                              borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
-                                                                              borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                            ),
-                                                                            enabledBorder:
-                                                                                OutlineInputBorder(
-                                                                              borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
-                                                                              borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                            ),
-                                                                            disabledBorder:
-                                                                                OutlineInputBorder(
-                                                                              borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
-                                                                              borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                            ),
-                                                                            errorBorder:
-                                                                                OutlineInputBorder(
-                                                                              borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
-                                                                              borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                            ),
-                                                                            focusedErrorBorder:
-                                                                                OutlineInputBorder(
-                                                                              borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
-                                                                              borderRadius: BorderRadius.circular(kbrBorderTextField),
-                                                                            ),
-                                                                            filled:
-                                                                                true,
-                                                                            fillColor: focusNode.hasFocus
-                                                                                ? colorScheme.white
-                                                                                : Color(0xffF8F8F8),
-                                                                            prefixIcon:
-                                                                                Padding(
-                                                                              padding: const EdgeInsets.only(top: 12, bottom: 12),
-                                                                              child: SvgPicture.asset(
+                                                                                animationDurationInMilli: 400,
+                                                                                searchDecoration: InputDecoration(
+                                                                                  border: OutlineInputBorder(
+                                                                                    borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                    borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                  ),
+                                                                                  focusedBorder: OutlineInputBorder(
+                                                                                    borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                    borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                  ),
+                                                                                  enabledBorder: OutlineInputBorder(
+                                                                                    borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                    borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                  ),
+                                                                                  disabledBorder: OutlineInputBorder(
+                                                                                    borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                    borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                  ),
+                                                                                  errorBorder: OutlineInputBorder(
+                                                                                    borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
+                                                                                    borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                  ),
+                                                                                  focusedErrorBorder: OutlineInputBorder(
+                                                                                    borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
+                                                                                    borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                  ),
+                                                                                  filled: true,
+                                                                                  fillColor: focusNode.hasFocus ? colorScheme.white : Color(0xffF8F8F8),
+                                                                                  prefixIcon: Padding(
+                                                                                    padding: const EdgeInsets.only(top: 12, bottom: 12),
+                                                                                    child: SvgPicture.asset(
+                                                                                      AppAssets.searchOutlinedSvg,
+                                                                                      height: 20,
+                                                                                      width: 20,
+                                                                                      color: Color(0xff388CFF),
+                                                                                    ),
+                                                                                  ),
+                                                                                  suffixIcon: Padding(
+                                                                                    padding: const EdgeInsets.only(right: 15, top: 10, bottom: 10),
+                                                                                    child: Row(
+                                                                                      mainAxisSize: MainAxisSize.min,
+                                                                                      children: [
+                                                                                        SvgPicture.asset(
+                                                                                          AppAssets.realCameraSvg,
+                                                                                          height: 20,
+                                                                                          width: 20,
+                                                                                        ),
+                                                                                        SizedBox(
+                                                                                          width: 20,
+                                                                                        ),
+                                                                                        SvgPicture.asset(
+                                                                                          AppAssets.microphoneSvg,
+                                                                                          height: 20,
+                                                                                          width: 20,
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                  ),
+                                                                                  //context.colorScheme.white,
+                                                                                  contentPadding: HWEdgeInsetsDirectional.only(start: 20, end: 10, bottom: 12, top: 12),
+                                                                                  hintText: 'Search',
+                                                                                  hintStyle: context.textTheme.subtitle1?.lq.copyWith(color: Color(0xffC4C2C2)),
+                                                                                  labelStyle: context.textTheme.bodyText2?.copyWith(color: context.colorScheme.hint),
+                                                                                ),
+                                                                                onChanged: (String text) {
+                                                                                  print("+++++++++++++++++++++++++++++++++++++" + "${fromSearch}");
+                                                                                  //  buildSearchResult.value = text.length;
+                                                                                  if (text.length > 2) {
+                                                                                    homeBloc.add(GetProductsWithFiltersEvent(
+                                                                                      offset: 1,
+                                                                                      fromSearch: fromSearch,
+                                                                                      category: widget.category,
+                                                                                      searchText: text,
+                                                                                      boutiqueSlug: widget.boutiqueSlug,
+                                                                                    ));
+                                                                                  }
+                                                                                },
+                                                                                hideTrendingAndHistory: hideTrendingAndHistory,
+                                                                              )
+                                                                            : SvgPicture.asset(
                                                                                 AppAssets.searchOutlinedSvg,
                                                                                 height: 20,
                                                                                 width: 20,
                                                                                 color: Color(0xff388CFF),
-                                                                              ),
-                                                                            ),
-                                                                            suffixIcon:
-                                                                                Padding(
-                                                                              padding: const EdgeInsets.only(right: 15, top: 10, bottom: 10),
-                                                                              child: Row(
-                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                children: [
-                                                                                  SvgPicture.asset(
-                                                                                    AppAssets.realCameraSvg,
-                                                                                    height: 20,
-                                                                                    width: 20,
-                                                                                  ),
-                                                                                  SizedBox(
-                                                                                    width: 20,
-                                                                                  ),
-                                                                                  SvgPicture.asset(
-                                                                                    AppAssets.microphoneSvg,
-                                                                                    height: 20,
-                                                                                    width: 20,
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                            //context.colorScheme.white,
-                                                                            contentPadding: HWEdgeInsetsDirectional.only(
-                                                                                start: 20,
-                                                                                end: 10,
-                                                                                bottom: 12,
-                                                                                top: 12),
-                                                                            hintText:
-                                                                                'Search',
-                                                                            hintStyle:
-                                                                                context.textTheme.subtitle1?.lq.copyWith(color: Color(0xffC4C2C2)),
-                                                                            labelStyle:
-                                                                                context.textTheme.bodyText2?.copyWith(color: context.colorScheme.hint),
-                                                                          ),
-                                                                          onChanged:
-                                                                              (String text) {
-                                                                            //  buildSearchResult.value = text.length;
-                                                                            if (text.length >
-                                                                                2) {
-                                                                              homeBloc.add(GetProductsWithFiltersEvent(
-                                                                                fromSearch: fromSearch,
-                                                                                category: widget.category,
-                                                                                offset: 1,
-                                                                                getWithPagination: false,
-                                                                                searchText: text,
-                                                                                boutiqueSlug: widget.boutiqueSlug,
-                                                                              ));
-                                                                            }
-                                                                          },
-                                                                          hideTrendingAndHistory:
-                                                                              hideTrendingAndHistory,
-                                                                        )),
+                                                                              )),
                                                                   ),
                                                                   searchOpen
                                                                       ? SizedBox
@@ -925,105 +898,119 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   (state.getProductListingPaginationWithoutFiltersModel[
                                                                           key] ==
                                                                       null)) {
-                                                                return SliverPadding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .only(
-                                                                          top:
-                                                                              10),
-                                                                  sliver:
-                                                                      SliverGrid(
-                                                                    key:
-                                                                        gridViewKeyForRendering,
-                                                                    gridDelegate:
-                                                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                                                      crossAxisCount:
-                                                                          2,
-                                                                      childAspectRatio:
-                                                                          200.w /
-                                                                              350,
-                                                                      crossAxisSpacing:
-                                                                          10,
-                                                                      mainAxisSpacing:
-                                                                          15,
-                                                                    ),
-                                                                    delegate:
-                                                                        SliverChildBuilderDelegate(
-                                                                      childCount:
-                                                                          8,
-                                                                      (BuildContext
-                                                                              context,
-                                                                          int index) {
-                                                                        return ClipRRect(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(20.0),
-                                                                          child: Shimmer.fromColors(
-                                                                              baseColor: Colors.grey.shade300,
-                                                                              highlightColor: Colors.grey.shade100,
-                                                                              enabled: true,
-                                                                              child: Stack(
-                                                                                children: [
-                                                                                  Container(
-                                                                                      decoration: BoxDecoration(
-                                                                                    borderRadius: BorderRadius.circular(20.0),
-                                                                                    boxShadow: [
-                                                                                      BoxShadow(
-                                                                                        color: const Color(0xff000000).withOpacity(0.4),
-                                                                                        offset: Offset(0, 3),
-                                                                                        blurRadius: 6,
-                                                                                      )
-                                                                                    ],
-                                                                                  )),
-                                                                                  Container(
-                                                                                      height: 275,
-                                                                                      decoration: BoxDecoration(
-                                                                                        borderRadius: BorderRadius.circular(20.0),
-                                                                                        boxShadow: [
-                                                                                          BoxShadow(
-                                                                                            color: const Color(0xff000000).withOpacity(0.6),
-                                                                                            offset: Offset(0, 3),
-                                                                                            blurRadius: 6,
-                                                                                          )
-                                                                                        ],
-                                                                                      )),
-                                                                                  Positioned(
-                                                                                    bottom: 70,
-                                                                                    left: 60.w,
-                                                                                    child: SizedBox(
-                                                                                      width: 100.w,
-                                                                                      child: Stack(
-                                                                                        alignment: Alignment.center,
-                                                                                        children: List.generate(
-                                                                                            5,
-                                                                                            (index) => Positioned(
-                                                                                                  left: index == 0
-                                                                                                      ? 0
-                                                                                                      : index == 2
-                                                                                                          ? 15
-                                                                                                          : null,
-                                                                                                  right: index == 1
-                                                                                                      ? 0
-                                                                                                      : index == 3
-                                                                                                          ? 15
-                                                                                                          : null,
-                                                                                                  child: CircleAvatar(
-                                                                                                    radius: index == 4
-                                                                                                        ? 20
-                                                                                                        : index < 2
-                                                                                                            ? 12
-                                                                                                            : 15,
-                                                                                                  ),
-                                                                                                )),
-                                                                                      ),
-                                                                                    ),
-                                                                                  )
-                                                                                ],
-                                                                              )),
-                                                                        );
-                                                                      },
-                                                                    ),
-                                                                  ),
-                                                                );
+                                                                return fromSearch ==
+                                                                        true
+                                                                    ? SliverPadding(
+                                                                        padding: const EdgeInsets
+                                                                            .only(
+                                                                            top:
+                                                                                10),
+                                                                        sliver:
+                                                                            SliverAppBar(
+                                                                          centerTitle:
+                                                                              true,
+                                                                          title:
+                                                                              Text(
+                                                                            "No Elements Found",
+                                                                            style:
+                                                                                TextStyle(color: Colors.black, fontSize: 24),
+                                                                          ),
+                                                                        ))
+                                                                    : SliverPadding(
+                                                                        padding: const EdgeInsets
+                                                                            .only(
+                                                                            top:
+                                                                                10),
+                                                                        sliver:
+                                                                            SliverGrid(
+                                                                          key:
+                                                                              gridViewKeyForRendering,
+                                                                          gridDelegate:
+                                                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                                                            crossAxisCount:
+                                                                                2,
+                                                                            childAspectRatio:
+                                                                                200.w / 350,
+                                                                            crossAxisSpacing:
+                                                                                10,
+                                                                            mainAxisSpacing:
+                                                                                15,
+                                                                          ),
+                                                                          delegate:
+                                                                              SliverChildBuilderDelegate(
+                                                                            childCount:
+                                                                                8,
+                                                                            (BuildContext context,
+                                                                                int index) {
+                                                                              return ClipRRect(
+                                                                                borderRadius: BorderRadius.circular(20.0),
+                                                                                child: Shimmer.fromColors(
+                                                                                    baseColor: Colors.grey.shade300,
+                                                                                    highlightColor: Colors.grey.shade100,
+                                                                                    enabled: true,
+                                                                                    child: Stack(
+                                                                                      children: [
+                                                                                        Container(
+                                                                                            decoration: BoxDecoration(
+                                                                                          borderRadius: BorderRadius.circular(20.0),
+                                                                                          boxShadow: [
+                                                                                            BoxShadow(
+                                                                                              color: const Color(0xff000000).withOpacity(0.4),
+                                                                                              offset: Offset(0, 3),
+                                                                                              blurRadius: 6,
+                                                                                            )
+                                                                                          ],
+                                                                                        )),
+                                                                                        Container(
+                                                                                            height: 275,
+                                                                                            decoration: BoxDecoration(
+                                                                                              borderRadius: BorderRadius.circular(20.0),
+                                                                                              boxShadow: [
+                                                                                                BoxShadow(
+                                                                                                  color: const Color(0xff000000).withOpacity(0.6),
+                                                                                                  offset: Offset(0, 3),
+                                                                                                  blurRadius: 6,
+                                                                                                )
+                                                                                              ],
+                                                                                            )),
+                                                                                        Positioned(
+                                                                                          bottom: 70,
+                                                                                          left: 60.w,
+                                                                                          child: SizedBox(
+                                                                                            width: 100.w,
+                                                                                            child: Stack(
+                                                                                              alignment: Alignment.center,
+                                                                                              children: List.generate(
+                                                                                                  5,
+                                                                                                  (index) => Positioned(
+                                                                                                        left: index == 0
+                                                                                                            ? 0
+                                                                                                            : index == 2
+                                                                                                                ? 15
+                                                                                                                : null,
+                                                                                                        right: index == 1
+                                                                                                            ? 0
+                                                                                                            : index == 3
+                                                                                                                ? 15
+                                                                                                                : null,
+                                                                                                        child: CircleAvatar(
+                                                                                                          radius: index == 4
+                                                                                                              ? 20
+                                                                                                              : index < 2
+                                                                                                                  ? 12
+                                                                                                                  : 15,
+                                                                                                        ),
+                                                                                                      )),
+                                                                                            ),
+                                                                                          ),
+                                                                                        )
+                                                                                      ],
+                                                                                    )),
+                                                                              );
+                                                                            },
+                                                                          ),
+                                                                        ),
+                                                                      );
                                                               }
                                                               products = state
                                                                       .getProductListingPaginationWithoutFiltersModel[

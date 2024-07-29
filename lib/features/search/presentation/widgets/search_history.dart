@@ -9,6 +9,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/search/presentation/widgets/search_history_chip.dart';
@@ -147,8 +148,7 @@ class _SearchHistoryState extends State<SearchHistory> {
                                 widget.buildSearchResult.value = 1;
                                 widget.hideTrendingAndHistory.value = false;
                                 BlocProvider.of<HomeBloc>(context).add(
-                                    GetProductsWithFiltersEvent(
-                                        offset: 1,
+                                    GetProductFiltersEvent(
                                         fromSearch: true,
                                         searchText: _items[index]));
                               },
