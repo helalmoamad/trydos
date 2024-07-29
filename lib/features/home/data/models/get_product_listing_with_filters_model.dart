@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'get_category_model.dart';
 import 'get_product_filters_model.dart' as filters;
 import 'get_product_listing_without_filters_model.dart'
     as product_without_filters;
@@ -55,7 +56,7 @@ class Data {
   final List<filters.Brand>? brands;
   final List<filters.Attribute>? attributes;
   final List<String>? colors;
-  final List<filters.Category>? categories;
+  final List<Category>? categories;
   final filters.Prices? prices;
   final String? boutiqueSlug;
 
@@ -80,7 +81,7 @@ class Data {
     List<filters.Brand>? brands,
     List<filters.Attribute>? attributes,
     List<String>? colors,
-    List<filters.Category>? categories,
+    List<Category>? categories,
     filters.Prices? prices,
     String? boutiqueSlug,
   }) =>
@@ -115,8 +116,8 @@ class Data {
               json["attributes"]!.map((x) => filters.Attribute.fromJson(x))),
       categories: json["categories"] == null
           ? []
-          : List<filters.Category>.from(
-              json["categories"]!.map((x) => filters.Category.fromJson(x))),
+          : List<Category>.from(
+              json["categories"]!.map((x) => Category.fromJson(x))),
       colors: json["colors"] == null
           ? []
           : List<String>.from(json["colors"]!.map((x) => x)),
@@ -150,40 +151,6 @@ class Data {
       };
 }
 
-class Category {
-  final int? id;
-  final String? name;
-  final String? icon;
-
-  Category({
-    this.id,
-    this.name,
-    this.icon,
-  });
-
-  Category copyWith({
-    int? id,
-    String? name,
-    String? icon,
-  }) =>
-      Category(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        icon: icon ?? this.icon,
-      );
-
-  factory Category.fromJson(Map<String, dynamic> json) => Category(
-        id: json["id"],
-        name: json["name"],
-        icon: json["icon"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "icon": icon,
-      };
-}
 
 class Color {
   final String? name;

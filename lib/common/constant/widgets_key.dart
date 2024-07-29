@@ -49,4 +49,7 @@ class WidgetsKey {
   static const fileCountInEachChatKey = 'file_count_in_each_chat_key';
   static const messagesListKey = 'messages_list_key';
   static const messagesListCardKey = 'messages_list_card_key';
+  static const productListFilterKey = 'product_list_filter_key';
+  static const countryDropDownKey = 'country_drop_down_key';
+  static const chooseCountryButtonKey = 'choose_country_key';
 }

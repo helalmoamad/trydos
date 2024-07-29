@@ -15,7 +15,11 @@ import '../../../app/my_text_widget.dart';
 
 class SearchChipcategory extends StatefulWidget {
   final String title;
-  const SearchChipcategory({Key? key, required this.title}) : super(key: key);
+  final ValueNotifier<List<int>> selectedCategory;
+
+  const SearchChipcategory(
+      {Key? key, required this.title, required this.selectedCategory})
+      : super(key: key);
 
   @override
   State<SearchChipcategory> createState() => _SearchChipcategoryState();
@@ -24,8 +28,9 @@ class SearchChipcategory extends StatefulWidget {
 class _SearchChipcategoryState extends State<SearchChipcategory> {
   final ScrollController scrollController = ScrollController();
   late HomeBloc homeBloc;
-  final ValueNotifier<List<int>> selectedCategory = ValueNotifier([]);
+
   List<String> selectedCategorySlugs = [];
+
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -60,9 +65,26 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
         buildWhen: (previous, current) =>
             previous.categories != current.categories,
         builder: (context, state) {
+          selectedCategorySlugs =
+              state.selectedBoutiqueBrandCategorySlugsForSearch["category"] ??
+                  [];
           if (state.categories.isNullOrEmpty) {
             return SizedBox.shrink();
           }
+          /*  selectedCategorySlugs =
+              state.selectedBoutiqueBrandCategorySlugsForSearch["category"] ??
+                  [];
+
+          selectedCategorySlugs.forEach((e) {
+            if (state.categories!.any((element) => '"${element.slug}"' == e)) {
+              selectedCategory.value.add(state.categories!.indexOf(state
+                  .categories!
+                  .firstWhere((element) => '"${element.slug}"' == e)));
+            }
+          });
+
+          selectedCategory.value.removeWhere((element) => element == -1);
+**/
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -103,15 +125,25 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
                             return ValueListenableBuilder(
-                              valueListenable: selectedCategory,
+                              valueListenable: widget.selectedCategory,
                               builder: (context, value, _) {
+                                if (value.isNullOrEmpty) {
+                                  selectedCategorySlugs = [];
+                                  homeBloc.add(
+                                      AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
+                                          withBoutique: false,
+                                          withBrand: false,
+                                          selectedBoutiqueBrandCategorySlugsForSearch:
+                                              selectedCategorySlugs));
+                                }
                                 return InkWell(
                                   onTap: () {
-                                    if (selectedCategory.value
+                                    if (widget.selectedCategory.value
                                         .contains(index)) {
                                       selectedCategorySlugs.remove(
-                                          "${state.categories![index].slug ?? ""}");
-                                      selectedCategory.value.remove(index);
+                                          '"${state.categories![index].slug ?? ""}"');
+                                      widget.selectedCategory.value
+                                          .remove(index);
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
                                               withBoutique: false,
@@ -119,9 +151,9 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                               selectedBoutiqueBrandCategorySlugsForSearch:
                                                   selectedCategorySlugs));
                                     } else {
-                                      selectedCategory.value.add(index);
+                                      widget.selectedCategory.value.add(index);
                                       selectedCategorySlugs.add(
-                                          "${state.categories![index].slug ?? ""}");
+                                          '"${state.categories![index].slug ?? ""}"');
 
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
@@ -130,7 +162,7 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                               selectedBoutiqueBrandCategorySlugsForSearch:
                                                   selectedCategorySlugs));
                                     }
-                                    selectedCategory.notifyListeners();
+                                    widget.selectedCategory.notifyListeners();
                                   },
                                   child: Stack(
                                     children: [
@@ -156,8 +188,10 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                                     CrossAxisAlignment.center,
                                                 children: [
                                                   SvgPicture.network(
-                                                    state.categories![index]
-                                                        .icon!,
+                                                    state
+                                                        .categories![index]
+                                                        .mostViewedProductThumbnail!
+                                                        .filePath!,
                                                     width: 15,
                                                     height: 15,
                                                   ),

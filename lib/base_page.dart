@@ -35,6 +35,7 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
+import 'common/constant/widgets_key.dart';
 import 'features/app/app_widgets/tabs_bar.dart';
 import 'features/authentication/presentation/pages/first_registeration_page.dart';
 import 'features/calls/presentation/pages/in_app_view.dart';
@@ -550,6 +551,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   @override
   Widget build(BuildContext context) {
+    print("${_prefsRepository.language}" +
+        "5555555555555555555555555555555555555555555555555555555555555");
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
@@ -616,6 +619,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                               c.getCustomerCountryStatus,
                           builder: (context, authstate) {
                             if (homestate.getAllowedCountriesModel == null ||
+                                _prefsRepository.countryIso == null ||
                                 homestate.getAllowedCountriesModel!.data!
                                     .countries.isNullOrEmpty) {
                               return Center(
@@ -667,6 +671,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                 ),
                                                 Center(
                                                     child: CountryDropdown(
+                                                  key: Key(WidgetsKey
+                                                      .countryDropDownKey),
                                                   countries: homestate
                                                               .getAllowedCountriesModel !=
                                                           null
@@ -679,6 +685,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                 )),
                                                 SizedBox(height: 80),
                                                 ElevatedButton(
+                                                  key: Key(WidgetsKey
+                                                      .chooseCountryButtonKey),
                                                   onPressed: () {
                                                     if (_prefsRepository
                                                             .userChoosedCountryIso !=

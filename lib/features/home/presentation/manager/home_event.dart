@@ -28,13 +28,17 @@ class GetMainCategoriesEvent extends HomeEvent {
 class GetProductFiltersEvent extends HomeEvent {
   const GetProductFiltersEvent(
       {this.category,
+      this.fromSearch,
       this.boutiqueSlug,
+      this.searchText,
       this.forceUpdate = false,
       this.filtersChoosedByUser});
 
   final String? boutiqueSlug;
+  final String? searchText;
   final String? category;
   final bool forceUpdate;
+  final bool? fromSearch;
   final GetProductFiltersModel? filtersChoosedByUser;
 
   @override
@@ -134,15 +138,17 @@ class GetProductsWithFiltersEvent extends HomeEvent {
   final String? searchText;
   final int offset;
   final int? limit;
-  final String boutiqueSlug;
+  final String? boutiqueSlug;
+  final bool? fromSearch;
   final bool getWithPagination;
   final GetProductFiltersModel? filtersAppliedByUser;
 
   GetProductsWithFiltersEvent(
       {this.filtersAppliedByUser,
-      required this.boutiqueSlug,
+      this.boutiqueSlug,
       this.getWithPagination = false,
       this.searchText,
+      this.fromSearch,
       required this.offset,
       this.limit,
       this.category});
@@ -321,17 +327,6 @@ class AddQuantityForCartEvent extends HomeEvent {
       required this.currentSize,
       required this.cartId,
       required this.colorName});
-
-  @override
-  List<Object?> get props => [];
-}
-
-class GetSearchREsultEvent extends HomeEvent {
-  final String searchTitle;
-
-  GetSearchREsultEvent({
-    required this.searchTitle,
-  });
 
   @override
   List<Object?> get props => [];

@@ -60,14 +60,50 @@ class Data {
   };
 }
 
+class FlatPhotoPath {
+  final String? originalHeight;
+  final String? originalWidth;
+  final String? filePath;
+
+  FlatPhotoPath({
+    this.originalWidth,
+    this.filePath,
+    this.originalHeight,
+  });
+
+  FlatPhotoPath copyWith({
+    String? originalWidth,
+    String? originalHeight,
+    String? filePath,
+  }) =>
+      FlatPhotoPath(
+        originalWidth: originalWidth ?? this.originalWidth,
+        originalHeight: originalHeight ?? this.originalHeight,
+        filePath: filePath ?? this.filePath,
+      );
+
+  factory FlatPhotoPath.fromJson(Map<String, dynamic> json) =>
+      FlatPhotoPath(
+        filePath: json["file_path"],
+        originalHeight: json["original_height"],
+        originalWidth: json["original_width"],
+      );
+
+  Map<String, dynamic> toJson() => {
+    "file_path": filePath,
+    "original_width": originalWidth,
+    "original_height": originalHeight,
+  };
+}
+
 class MainCategory {
   final int? id;
   final String? categoryFrontColor;
   final String? categoryBackColor;
   final String? name;
   final String? slug;
-  final String? icon;
   final int? totalProduct;
+  final FlatPhotoPath? flatPhotoPath ;
 
   MainCategory({
     this.id,
@@ -75,7 +111,7 @@ class MainCategory {
     this.categoryBackColor,
     this.name,
     this.slug,
-    this.icon,
+    this.flatPhotoPath,
     this.totalProduct,
   });
 
@@ -86,6 +122,7 @@ class MainCategory {
     String? name,
     String? slug,
     String? icon,
+    FlatPhotoPath? flatPhotoPath,
     int? totalProduct,
   }) =>
       MainCategory(
@@ -94,7 +131,7 @@ class MainCategory {
         categoryBackColor: categoryBackColor ?? this.categoryBackColor,
         name: name ?? this.name,
         slug: slug ?? this.slug,
-        icon: icon ?? this.icon,
+        flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
         totalProduct: totalProduct ?? this.totalProduct,
       );
 
@@ -104,7 +141,7 @@ class MainCategory {
     categoryBackColor: json["category_back_color"],
     name: json["name"],
     slug: json["slug"],
-    icon: json["icon"],
+    flatPhotoPath: json["flat_photo_path"] == null ? null : FlatPhotoPath.fromJson(json["flat_photo_path"]),
     totalProduct: json["total_product"],
   );
 
@@ -114,7 +151,7 @@ class MainCategory {
     "category_back_color": categoryBackColor,
     "name": name,
     "slug": slug,
-    "icon": icon,
+    "flat_photo_path": flatPhotoPath?.toJson(),
     "total_product": totalProduct,
   };
 }

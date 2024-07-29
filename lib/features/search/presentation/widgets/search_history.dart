@@ -147,8 +147,10 @@ class _SearchHistoryState extends State<SearchHistory> {
                                 widget.buildSearchResult.value = 1;
                                 widget.hideTrendingAndHistory.value = false;
                                 BlocProvider.of<HomeBloc>(context).add(
-                                    GetSearchREsultEvent(
-                                        searchTitle: _items[index]));
+                                    GetProductsWithFiltersEvent(
+                                        offset: 1,
+                                        fromSearch: true,
+                                        searchText: _items[index]));
                               },
                               child: MyTextWidget(
                                 _items[index],

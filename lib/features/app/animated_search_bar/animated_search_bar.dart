@@ -110,11 +110,13 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
     focusNode = widget.focusNode;
     focusNode.addListener(() {
       if (!prevFocusStatus) {
-        setState(() {
-          prevFocusStatus = true;
-        });
-        if (!focusNode.hasFocus) {
-          prevFocusStatus = false;
+        if (mounted) {
+          setState(() {
+            prevFocusStatus = true;
+          });
+          if (!focusNode.hasFocus) {
+            prevFocusStatus = false;
+          }
         }
       }
     });
@@ -143,11 +145,13 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
       listenWhen: (p, c) =>
           c.currentIndex == 0 && p.currentIndex != c.currentIndex,
       listener: (context, state) {
-        setState(() {
-          toggle = 0;
-          unfocusKeyboard();
-          _con.reverse();
-        });
+        if(mounted) {
+          setState(() {
+            toggle = 0;
+            unfocusKeyboard();
+            _con.reverse();
+          });
+        }
       },
       child: AnimatedContainer(
         padding: EdgeInsets.only(left: 10, right: 10),
@@ -316,6 +320,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                           () {
                             ///if the search bar is closed
                             if (toggle == 0) {
+                              print('qqqqqqqqqqqqqqqqqq');
                               toggle = 1;
                               setState(() {
                                 ///if the autoFocus is true, the keyboard will pop open, automatically

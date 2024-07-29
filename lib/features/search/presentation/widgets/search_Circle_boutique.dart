@@ -15,7 +15,10 @@ import '../../../app/my_text_widget.dart';
 
 class SearchChipBoutique extends StatefulWidget {
   final String title;
-  const SearchChipBoutique({Key? key, required this.title}) : super(key: key);
+  final ValueNotifier<List<int>> selectedBoutique;
+  const SearchChipBoutique(
+      {Key? key, required this.title, required this.selectedBoutique})
+      : super(key: key);
 
   @override
   State<SearchChipBoutique> createState() => _SearchChipBoutiqueState();
@@ -24,7 +27,7 @@ class SearchChipBoutique extends StatefulWidget {
 class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
   final ScrollController scrollController = ScrollController();
   late HomeBloc homeBloc;
-  final ValueNotifier<List<int>> selectedBoutique = ValueNotifier([]);
+
   List<String> selectedBoutiqueSlugs = [];
   @override
   void initState() {
@@ -58,11 +61,31 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
           border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
       child: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
-            previous.boutiques != current.boutiques,
+            previous.boutiques != current.boutiques ||
+            previous.selectedBoutiqueBrandCategorySlugsForSearch["boutique"] !=
+                current.selectedBoutiqueBrandCategorySlugsForSearch["boutique"],
         builder: (context, state) {
+          selectedBoutiqueSlugs =
+              state.selectedBoutiqueBrandCategorySlugsForSearch["boutique"] ??
+                  [];
           if (state.boutiques.isNullOrEmpty) {
             return SizedBox.shrink();
           }
+          /*    selectedBoutiqueSlugs =
+              state.selectedBoutiqueBrandCategorySlugsForSearch["boutique"] ??
+                  [];
+          print(selectedBoutiqueSlugs);
+          selectedBoutiqueSlugs.forEach((e) {
+            if (state.boutiques!.any((element) => '"${element.slug}"' == e)) {
+              selectedBoutique.value.add(state.boutiques!.indexOf(state
+                  .boutiques!
+                  .firstWhere((element) => '"${element.slug}"' == e)));
+            }
+          });
+          print(selectedBoutique.value);
+
+          selectedBoutique.value.removeWhere((element) => element == -1);*/
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -103,15 +126,25 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
                             return ValueListenableBuilder(
-                              valueListenable: selectedBoutique,
+                              valueListenable: widget.selectedBoutique,
                               builder: (context, value, _) {
+                                if (value.isNullOrEmpty) {
+                                  selectedBoutiqueSlugs = [];
+                                  homeBloc.add(
+                                      AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
+                                          withBoutique: true,
+                                          withBrand: false,
+                                          selectedBoutiqueBrandCategorySlugsForSearch:
+                                              selectedBoutiqueSlugs));
+                                }
                                 return InkWell(
                                   onTap: () {
-                                    if (selectedBoutique.value
+                                    if (widget.selectedBoutique.value
                                         .contains(index)) {
                                       selectedBoutiqueSlugs.remove(
-                                          "${state.boutiques![index].slug ?? ""}");
-                                      selectedBoutique.value.remove(index);
+                                          '"${state.boutiques![index].slug ?? ""}"');
+                                      widget.selectedBoutique.value
+                                          .remove(index);
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
                                               withBoutique: true,
@@ -119,9 +152,9 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                               selectedBoutiqueBrandCategorySlugsForSearch:
                                                   selectedBoutiqueSlugs));
                                     } else {
-                                      selectedBoutique.value.add(index);
+                                      widget.selectedBoutique.value.add(index);
                                       selectedBoutiqueSlugs.add(
-                                          "${state.boutiques![index].slug ?? ""}");
+                                          '"${state.boutiques![index].slug ?? ""}"');
 
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
@@ -130,7 +163,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                               selectedBoutiqueBrandCategorySlugsForSearch:
                                                   selectedBoutiqueSlugs));
                                     }
-                                    selectedBoutique.notifyListeners();
+                                    widget.selectedBoutique.notifyListeners();
                                   },
                                   child: Stack(
                                     children: [

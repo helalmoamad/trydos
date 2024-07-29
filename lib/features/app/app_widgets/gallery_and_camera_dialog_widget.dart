@@ -12,7 +12,7 @@ import '../my_text_widget.dart';
 class GalleryAndCameraDialogWidget extends StatelessWidget {
   const GalleryAndCameraDialogWidget(
       {super.key,
-         required this.onChooseFileFromGalleryAction,
+      required this.onChooseFileFromGalleryAction,
       required this.onChooseFileFromCameraAction});
 
   final void Function(AssetEntity? assetEntity) onChooseFileFromGalleryAction;
@@ -34,7 +34,8 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                 cameras = await availableCameras();
                 File? selectedFile = await Navigator.push<File>(
                   context,
-                  MaterialPageRoute(builder: (context) => CameraScreen(cameras)),
+                  MaterialPageRoute(
+                      builder: (context) => CameraScreen(cameras)),
                 );
                 onChooseFileFromCameraAction.call(selectedFile);
                 Navigator.of(context).pop();
@@ -45,15 +46,15 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
               return TextButton(
                 onPressed: () async {
                   AssetEntity? assetEntity;
-                    assetEntity =
-                    await HelperFunctions.getAssetFromGallery(context);
+                  assetEntity =
+                      await HelperFunctions.getAssetFromGallery(context);
                   if (assetEntity != null) {
                     if (assetEntity.type == AssetType.video &&
                         assetEntity.duration > 59) {
                       showMessage(
                           'Video length must not be longer than 59 seconds',
                           showInRelease: true);
-                    }else {
+                    } else {
                       onChooseFileFromGalleryAction.call(assetEntity);
                     }
                   }

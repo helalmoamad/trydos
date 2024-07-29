@@ -641,77 +641,75 @@ class _CartPageState extends State<CartPage> {
                                                                                   ),
                                                                                 ],
                                                                               )),
-                                                                          Container(
-                                                                            margin:
-                                                                                EdgeInsets.only(top: 5),
-                                                                            alignment:
-                                                                                Alignment.centerLeft,
-                                                                            width:
-                                                                                200,
-                                                                            height:
-                                                                                15,
-                                                                            child:
-                                                                                Row(
-                                                                              mainAxisAlignment: MainAxisAlignment.start,
-                                                                              children: [
-                                                                                SvgPicture.asset(
-                                                                                  AppAssets.colorPickerSvg,
-                                                                                  height: 12,
-                                                                                ),
-                                                                                SizedBox(
-                                                                                  width: 5,
-                                                                                ),
-                                                                                Text(
-                                                                                  "Color, ",
-                                                                                  style: context.textTheme.subtitle1?.la.copyWith(fontWeight: FontWeight.normal, fontSize: 12, color: const Color(0xff505050), letterSpacing: 0.18, height: 1.33),
-                                                                                ),
-                                                                                Text(
-                                                                                  !state.cartCollection![keyFirst]![index].variations.isNullOrEmpty ? state.cartCollection![keyFirst]![index].variations![0].color ?? "" : "",
-                                                                                  style: context.textTheme.subtitle1?.ra.copyWith(
-                                                                                    fontSize: 13,
-                                                                                    color: const Color((0xff505050)),
-                                                                                    letterSpacing: 0.18,
-                                                                                  ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                          Container(
-                                                                            margin:
-                                                                                EdgeInsets.only(top: 5),
-                                                                            alignment:
-                                                                                Alignment.centerLeft,
-                                                                            width:
-                                                                                200,
-                                                                            height:
-                                                                                15,
-                                                                            child:
-                                                                                Row(
-                                                                              mainAxisAlignment: MainAxisAlignment.start,
-                                                                              children: [
-                                                                                SvgPicture.asset(
-                                                                                  AppAssets.sizeIconSvg,
-                                                                                  height: 12,
-                                                                                  color: Color(0xff48C8A8),
-                                                                                ),
-                                                                                SizedBox(
-                                                                                  width: 5,
-                                                                                ),
-                                                                                Text(
-                                                                                  "Size, ",
-                                                                                  style: context.textTheme.subtitle1?.la.copyWith(fontWeight: FontWeight.normal, fontSize: 12, color: const Color(0xff505050), letterSpacing: 0.18, height: 1.33),
-                                                                                ),
-                                                                                Text(
-                                                                                  !state.cartCollection![keyFirst]![index].variations.isNullOrEmpty ? state.cartCollection![keyFirst]![index].variations![0].size ?? "" : "",
-                                                                                  style: context.textTheme.subtitle1?.ra.copyWith(
-                                                                                    fontSize: 13,
-                                                                                    color: const Color((0xff505050)),
-                                                                                    letterSpacing: 0.18,
-                                                                                  ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          ),
+                                                                          state.cartCollection![keyFirst]![index].variations.isNullOrEmpty
+                                                                              ? SizedBox.shrink()
+                                                                              : (state.cartCollection![keyFirst]![index].variations![0].color == "" || state.cartCollection![keyFirst]![index].variations![0].color == null)
+                                                                                  ? SizedBox.shrink()
+                                                                                  : Container(
+                                                                                      margin: EdgeInsets.only(top: 5),
+                                                                                      alignment: Alignment.centerLeft,
+                                                                                      width: 200,
+                                                                                      height: 15,
+                                                                                      child: Row(
+                                                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                                                        children: [
+                                                                                          SvgPicture.asset(
+                                                                                            AppAssets.colorPickerSvg,
+                                                                                            height: 12,
+                                                                                          ),
+                                                                                          SizedBox(
+                                                                                            width: 5,
+                                                                                          ),
+                                                                                          Text(
+                                                                                            "Color, ",
+                                                                                            style: context.textTheme.subtitle1?.la.copyWith(fontWeight: FontWeight.normal, fontSize: 12, color: const Color(0xff505050), letterSpacing: 0.18, height: 1.33),
+                                                                                          ),
+                                                                                          Text(
+                                                                                            !state.cartCollection![keyFirst]![index].variations.isNullOrEmpty ? state.cartCollection![keyFirst]![index].variations![0].color ?? "" : "",
+                                                                                            style: context.textTheme.subtitle1?.ra.copyWith(
+                                                                                              fontSize: 13,
+                                                                                              color: const Color((0xff505050)),
+                                                                                              letterSpacing: 0.18,
+                                                                                            ),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    ),
+                                                                          state.cartCollection![keyFirst]![index].variations.isNullOrEmpty
+                                                                              ? SizedBox.shrink()
+                                                                              : (state.cartCollection![keyFirst]![index].variations![0].size == "" || state.cartCollection![keyFirst]![index].variations![0].size == null)
+                                                                                  ? SizedBox.shrink()
+                                                                                  : Container(
+                                                                                      margin: EdgeInsets.only(top: 5),
+                                                                                      alignment: Alignment.centerLeft,
+                                                                                      width: 200,
+                                                                                      height: 15,
+                                                                                      child: Row(
+                                                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                                                        children: [
+                                                                                          SvgPicture.asset(
+                                                                                            AppAssets.sizeIconSvg,
+                                                                                            height: 12,
+                                                                                            color: Color(0xff48C8A8),
+                                                                                          ),
+                                                                                          SizedBox(
+                                                                                            width: 5,
+                                                                                          ),
+                                                                                          Text(
+                                                                                            "Size, ",
+                                                                                            style: context.textTheme.subtitle1?.la.copyWith(fontWeight: FontWeight.normal, fontSize: 12, color: const Color(0xff505050), letterSpacing: 0.18, height: 1.33),
+                                                                                          ),
+                                                                                          Text(
+                                                                                            !state.cartCollection![keyFirst]![index].variations.isNullOrEmpty ? state.cartCollection![keyFirst]![index].variations![0].size ?? "" : "",
+                                                                                            style: context.textTheme.subtitle1?.ra.copyWith(
+                                                                                              fontSize: 13,
+                                                                                              color: const Color((0xff505050)),
+                                                                                              letterSpacing: 0.18,
+                                                                                            ),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    ),
                                                                         ],
                                                                       ),
                                                                       left: 130,
@@ -721,7 +719,8 @@ class _CartPageState extends State<CartPage> {
                                                                           Row(
                                                                         children: [
                                                                           Text(
-                                                                            (state.cartCollection![keyFirst]![index].price! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2),
+                                                                            (state.cartCollection![keyFirst]![index].price! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ??
+                                                                                2),
                                                                             style: context.textTheme.subtitle1?.ra.copyWith(
                                                                                 decorationColor: Color(0xffC4C2C2),
                                                                                 fontSize: 18,

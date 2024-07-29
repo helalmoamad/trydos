@@ -130,6 +130,34 @@ class SharedScenarios {
     await tester.tap(laterTakeLookButton);
     await tester.pumpAndSettle();
     ////////////////////////////
+    final Finder countryDropDownWidget =
+        find.byKey(Key(WidgetsKey.countryDropDownKey));
+    if (countryDropDownWidget.evaluate().isEmpty) {
+      print('DropdownButton not found.');
+    } else {
+      await tester.tap(countryDropDownWidget);
+      await tester.pumpAndSettle();
+      ///////////////////
+      final firstItemFinder = find
+          .descendant(
+            of: find.byType(DropdownMenuItem<String>),
+            matching: find.byType(Text),
+          )
+          .first;
+
+      await tester.tap(firstItemFinder);
+      await tester.pumpAndSettle();
+      final selectedText =
+          (firstItemFinder.evaluate().first.widget as Text).data;
+      expect(find.text(selectedText!), findsOneWidget);
+      await Future.delayed(const Duration(seconds: 3));
+      ///////////////////
+      final Finder chooseCountryButton =
+          find.byKey(Key(WidgetsKey.chooseCountryButtonKey));
+      await tester.tap(chooseCountryButton);
+      await tester.pumpAndSettle();
+    }
+    ////////////////////////////
     await GlobalTestFunctions.waitFor(tester, find.byType(HomePage),
         timeout: Duration(seconds: 40));
     //////////////////////////

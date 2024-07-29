@@ -14,7 +14,7 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Click on boutique , go to list of products , click on product , go to product details',
+    'Click on boutique ,find products filters, find list of products , click on product , go to product details',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
@@ -49,7 +49,17 @@ void main() {
         successMessage: 'Find ProductListingPage  Success',
         failedMessage: 'Find ProductListingPage  failed',
       );
-      //////////////////////////
+      final Finder productListFilterWidget =
+          find.byKey(Key(WidgetsKey.productListFilterKey));
+      // /////////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: productListFilterWidget,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find product List Filter Widget  Success',
+        failedMessage: 'Find product List Filte Widget failed',
+      );
+      /////////////////////////////
       final Finder productInBoutiqueButton = find.byKey(
         Key('${WidgetsKey.productInBoutiqueListKey}0'),
       );
