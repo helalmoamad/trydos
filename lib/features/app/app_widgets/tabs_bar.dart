@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +11,8 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
+import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_search.dart';
@@ -141,6 +142,7 @@ class _TabsBarState extends State<TabsBar> {
                                           homeBloc.add(
                                               AddSearchTextToHistoryEvent(
                                                   searchTitle: text));
+
                                           HelperFunctions.slidingNavigation(
                                               context,
                                               ProductListingPage(
@@ -159,6 +161,7 @@ class _TabsBarState extends State<TabsBar> {
                                       width: 1.sw,
                                       height: 40,
                                       onClickClose: () {
+                                        GetProductFiltersEvent(searchText: "");
                                         if (widget.controller.text.length > 0) {
                                           widget.buildSearchResult.value = 0;
                                           widget.controller.clear();
@@ -321,7 +324,6 @@ class _TabsBarState extends State<TabsBar> {
                                           homeBloc.add(
                                               GetProductsWithFiltersEvent(
                                                   offset: 1,
-                                                  getWithPagination: false,
                                                   fromSearch: true,
                                                   searchText: text));
                                           widget.buildSearchResult.value =
@@ -398,7 +400,8 @@ class _TabsBarState extends State<TabsBar> {
                                                         children: [
                                                           SvgNetworkWidget(
                                                             svgUrl: mainCategory
-                                                                .flatPhotoPath!.filePath
+                                                                .flatPhotoPath!
+                                                                .filePath
                                                                 .toString(),
                                                             height: 20,
                                                             color: state.tabIndex ==

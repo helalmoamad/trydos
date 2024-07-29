@@ -878,6 +878,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onGetProductFiltersEvent(
       GetProductFiltersEvent event, Emitter<HomeState> emit) async {
+    if (event.boutiqueSlug == null &&
+        event.category == null &&
+        event.fromSearch == false) {
+      emit(state.copyWith(selectedBoutiqueBrandCategorySlugsForSearch: {}));
+    }
     emit(state.copyWith(
       getProductFiltersStatus: GetProductFiltersStatus.loading,
       resetChoosedFilters: event.filtersChoosedByUser == null,
@@ -1034,6 +1039,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         emit(state.copyWith(
             brands: r.filters!.brands!,
             category: r.filters!.categories,
+            boutiques: r.filters!.boutiques,
             totalProductNumber: r.filters!.totalSize,
             getProductFiltersStatus: GetProductFiltersStatus.success,
             getProductFiltersModel: removeAlreadyChoosedFilters(r, filters),
