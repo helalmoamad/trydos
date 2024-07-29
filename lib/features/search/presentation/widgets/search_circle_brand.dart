@@ -113,8 +113,8 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                 }
                                 return InkWell(
                                   onTap: () {
-                                    if (widget.selectedBrand.value
-                                        .contains(index)) {
+                                    if (state.brands![index].isSelected ??
+                                        false) {
                                       selectedBrandSlugs.remove(
                                           '"${state.brands![index].slug ?? ""}"');
                                       widget.selectedBrand.value.remove(index);

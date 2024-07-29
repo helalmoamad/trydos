@@ -74,18 +74,15 @@ class _SearchPageState extends ThemeState<SearchPage> {
         body: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.searchHistory != current.searchHistory ||
+              previous.getProductFiltersStatus !=
+                  current.getProductFiltersStatus ||
               previous.selectedBoutiqueBrandCategorySlugsForSearch.values !=
                   current.selectedBoutiqueBrandCategorySlugsForSearch.values,
           builder: (context, state) {
             hideAppleyResetButtom.value = state
-                    .selectedBoutiqueBrandCategorySlugsForSearch.values
-                    .toList()
-                    .any((element) => !element.isEmpty) ||
-                state.brands!.any((element) =>
-                    element.isSelected == true ||
-                    state.categories!
-                        .any((element) => element.isSelected == true));
-
+                .selectedBoutiqueBrandCategorySlugsForSearch.values
+                .toList()
+                .any((element) => !element.isEmpty);
             return SafeArea(
                 child: CustomScrollView(
                     physics: const ClampingScrollPhysics(),
@@ -234,21 +231,23 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                         right: 20,
                                         top: 10,
                                         child: Container(
-                                          width: 30,
-                                          height: 30,
-                                          child: MyTextWidget(
-                                              "(${state.getProductListingWithFiltersPaginationModels!.items.length == 0 ? " " : state.getProductListingWithFiltersPaginationModels!.items.length})"),
-                                        )),
-                                    state.getProductFiltersStatus !=
-                                            GetProductFiltersStatus.success
+                                            width: 30,
+                                            height: 30,
+                                            child: MyTextWidget(
+                                                "${state.countOfProductExpectedByFiltering == 0 ? " " : state.countOfProductExpectedByFiltering}"))),
+                                    state.getProductFiltersStatus ==
+                                            GetProductFiltersStatus.loading
                                         ? Positioned(
-                                            right: 20,
-                                            top: 10,
+                                            right: 40,
+                                            top: 28,
                                             child: Container(
                                                 width: 15,
                                                 height: 15,
                                                 child: Center(
-                                                  child: TrydosLoader(),
+                                                  child: TrydosLoader(
+                                                    color: Colors.white,
+                                                    size: 15,
+                                                  ),
                                                 )))
                                         : SizedBox.shrink()
                                   ],

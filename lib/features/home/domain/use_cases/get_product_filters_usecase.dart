@@ -24,7 +24,6 @@ class GetProductsFiltersParams {
   final List<String>? prices;
   final List<String>? brands;
   final List<String>? colors;
-  final List<String>? categories;
   final List<Map<String, dynamic>>? attributes;
   final String? searchText;
   final int? offset;
@@ -38,7 +37,6 @@ class GetProductsFiltersParams {
       this.brands,
       this.boutiqueSlugs,
       this.attributes,
-      this.categories,
       this.colors,
       this.boutiqueSlug,
       this.searchText,
@@ -53,7 +51,6 @@ class GetProductsFiltersParams {
         "prices": prices.toString(),
         "brands": brands.toString(),
         "attributes": attributes.toString(),
-        "categories": categories.toString(),
         "colors": colors.toString(),
         "search_text": searchText,
         "offset": offset,

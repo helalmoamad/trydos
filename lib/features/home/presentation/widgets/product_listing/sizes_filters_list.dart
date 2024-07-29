@@ -165,6 +165,8 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                       offset: 1));
                                 } else {
                                   homeBloc.add(ChangeSelectedFiltersEvent(
+                                    category: widget.category,
+                                    boutiqueSlug: widget.boutiqueSlug,
                                     filtersChoosedByUser: GetProductFiltersModel(
                                         filters:
                                             prevChoosedOrAppliedFilterToAddToIt),

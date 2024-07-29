@@ -910,7 +910,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               ),
             ),
           },
-          if (countOfFilters != 0) ...{
+          if (countOfFilters != 0 ||  state.choosedFiltersByUser != null) ...{
             if (isExpanded) ...{
               SizedBox(
                 height: 20,
@@ -1113,12 +1113,30 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                           borderRadius:
                                               BorderRadius.circular(20)),
                                       child: Center(
-                                        child: MyTextWidget(
-                                          'Apply',
-                                          style: textTheme.headline6?.rq
-                                              .copyWith(
-                                                  color: Color(0xffFEFEFE),
-                                                  height: 23 / 18),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            if(state.countOfProductExpectedByFiltering != null)...{
+                                              MyTextWidget(
+                                                '${state.countOfProductExpectedByFiltering}- ',
+                                                style: textTheme.subtitle2?.mq
+                                                    .copyWith(
+                                                    color: Color(0xffFEFEFE),
+                                                    height: 23 / 18),
+                                              ),
+                                            },
+                                            MyTextWidget(
+                                              'Apply',
+                                              style: textTheme.headline6?.rq
+                                                  .copyWith(
+                                                      color: Color(0xffFEFEFE),
+                                                      height: 23 / 18),
+                                            ),
+                                            if(state.getProductFiltersStatus == GetProductFiltersStatus.loading)...{
+                                              SizedBox(width: 5,),
+                                              TrydosLoader(size: 20,),
+                                            }
+                                          ],
                                         ),
                                       ),
                                     ),
@@ -1136,14 +1154,14 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                       builder: (context, state) {
                                         if (state.choosedFiltersByUser ==
                                                     null &&
-                                                lowerAndUpperPrices == null ||
+                                            (lowerAndUpperPrices == null ||
                                             (lowerAndUpperPrices != null &&
                                                 (lowerAndUpperPrices!
                                                             .value.item1 ==
                                                         minPrice! &&
                                                     lowerAndUpperPrices!
                                                             .value.item2 ==
-                                                        maxPrice!))) {
+                                                        maxPrice!)))) {
                                           return SizedBox.shrink();
                                         }
                                         return Expanded(
@@ -1163,6 +1181,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                             widget.boutiqueSlug,
                                                         category:
                                                             widget.category,
+                                                        resetChoosedFilters: true,
                                                         filtersChoosedByUser:
                                                             null));
                                               }
@@ -1319,6 +1338,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             if (isExpanded) {
                               BlocProvider.of<HomeBloc>(context)
                                   .add(ChangeSelectedFiltersEvent(
+                                category: widget.category,
+                                boutiqueSlug: widget.boutiqueSlug,
                                 filtersChoosedByUser: newGetProductFiltersModel,
                               ));
                               return;
@@ -1395,6 +1416,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             if (isExpanded) {
                               BlocProvider.of<HomeBloc>(context)
                                   .add(ChangeSelectedFiltersEvent(
+                                category: widget.category,
+                                boutiqueSlug: widget.boutiqueSlug,
                                 filtersChoosedByUser: newGetProductFiltersModel,
                               ));
                               return;
@@ -1474,6 +1497,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             if (isExpanded) {
                               BlocProvider.of<HomeBloc>(context)
                                   .add(ChangeSelectedFiltersEvent(
+                                category: widget.category,
+                                boutiqueSlug: widget.boutiqueSlug,
                                 filtersChoosedByUser: newGetProductFiltersModel,
                               ));
                               return;
@@ -1536,6 +1561,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               if (isExpanded) {
                                 BlocProvider.of<HomeBloc>(context)
                                     .add(ChangeSelectedFiltersEvent(
+                                  category: widget.category,
+                                  boutiqueSlug: widget.boutiqueSlug,
                                   filtersChoosedByUser:
                                       newGetProductFiltersModel,
                                 ));
@@ -1594,6 +1621,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       if (isExpanded) {
                         BlocProvider.of<HomeBloc>(context)
                             .add(ChangeSelectedFiltersEvent(
+                          category: widget.category,
+                          boutiqueSlug: widget.boutiqueSlug,
                           filtersChoosedByUser: newGetProductFiltersModel,
                         ));
                         return;

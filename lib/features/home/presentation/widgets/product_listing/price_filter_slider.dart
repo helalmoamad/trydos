@@ -60,6 +60,9 @@ class _PriceFilterState extends State<PriceFilter> {
 
   @override
   Widget build(BuildContext context) {
+    if((widget.pricesFiltersRanges.maxPrice! - widget.pricesFiltersRanges!.minPrice!) < 1){
+      return SizedBox.shrink();
+    }
     return Padding(
       padding: EdgeInsetsDirectional.only(
           start: widget.hideTitle ? 0 : 30.0, end: 20),

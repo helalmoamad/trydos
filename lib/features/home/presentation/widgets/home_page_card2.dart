@@ -83,7 +83,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 ProductListingPage(
                   boutniqe: widget.boutniqe,
                   withSlidingImages: widget.withSlidingImages,
-                  boutiqueSlug: widget.boutniqe.slug ?? "",
+                  boutiqueSlug: widget.boutniqe.slug!,
                   boutiqueDescription: widget.boutniqe.description!,
                   boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
                   boutiqueIcon: widget.boutniqe.icon!.filePath!,
@@ -344,7 +344,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                             svgUrl: widget
                                 .boutniqe
                                 .mainCategoriesForProductIds![index]
-                                .categoryIcon!,
+                                .flatPhotoPath!.filePath!,
                             width: 12,
                             height: 12,
                           ));
@@ -490,7 +490,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                 .boutniqe
                                                 .childCategoriesForProductIds![
                                                     index]
-                                                .productThumbnail!,
+                                                .mostViewedProductThumbnail!.filePath!,
                                             name: widget
                                                 .boutniqe
                                                 .childCategoriesForProductIds![
