@@ -56,6 +56,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
   late final HomeBloc homeBloc;
   @override
   void initState() {
+    widget.hideTrendingAndHistory.value = true;
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
@@ -74,18 +75,19 @@ class _SearchPageState extends ThemeState<SearchPage> {
         body: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.searchHistory != current.searchHistory ||
+              previous.getProductFiltersStatus !=
+                  current.getProductFiltersStatus ||
               previous.selectedBoutiqueBrandCategorySlugsForSearch.values !=
                   current.selectedBoutiqueBrandCategorySlugsForSearch.values,
           builder: (context, state) {
+            print(state.getProductFiltersStatus);
             hideAppleyResetButtom.value = state
                     .selectedBoutiqueBrandCategorySlugsForSearch.values
                     .toList()
                     .any((element) => !element.isEmpty) ||
-                state.brands!.any((element) =>
-                    element.isSelected == true ||
-                    state.categories!
-                        .any((element) => element.isSelected == true));
-
+                state.boutiques!.any((element) => element.isSelected!) ||
+                state.categories!.any((element) => element.isSelected!) ||
+                state.brands!.any((element) => element.isSelected!);
             return SafeArea(
                 child: CustomScrollView(
                     physics: const ClampingScrollPhysics(),
@@ -234,21 +236,29 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                         right: 20,
                                         top: 10,
                                         child: Container(
-                                          width: 30,
-                                          height: 30,
-                                          child: MyTextWidget(
-                                              "(${state.getProductListingWithFiltersPaginationModels!.items.length == 0 ? " " : state.getProductListingWithFiltersPaginationModels!.items.length})"),
-                                        )),
-                                    state.getProductFiltersStatus !=
-                                            GetProductFiltersStatus.success
+                                            width: 30,
+                                            height: 30,
+                                            child: state.getProductFiltersStatus ==
+                                                        GetProductFiltersStatus
+                                                            .success &&
+                                                    state.countOfProductExpectedByFiltering !=
+                                                        0
+                                                ? MyTextWidget(
+                                                    "(${state.countOfProductExpectedByFiltering})")
+                                                : SizedBox.shrink())),
+                                    state.getProductFiltersStatus ==
+                                            GetProductFiltersStatus.loading
                                         ? Positioned(
-                                            right: 20,
-                                            top: 10,
+                                            right: 40,
+                                            top: 28,
                                             child: Container(
                                                 width: 15,
                                                 height: 15,
                                                 child: Center(
-                                                  child: TrydosLoader(),
+                                                  child: TrydosLoader(
+                                                    color: Colors.white,
+                                                    size: 15,
+                                                  ),
                                                 )))
                                         : SizedBox.shrink()
                                   ],

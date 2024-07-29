@@ -119,12 +119,14 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
 
 class ChangeSelectedFiltersEvent extends HomeEvent {
   final GetProductFiltersModel? filtersChoosedByUser;
+  final bool resetChoosedFilters;
   final String? boutiqueSlug;
   final String? category;
 
   ChangeSelectedFiltersEvent({
     this.filtersChoosedByUser,
     this.boutiqueSlug,
+    this.resetChoosedFilters = false,
     this.category,
   });
 

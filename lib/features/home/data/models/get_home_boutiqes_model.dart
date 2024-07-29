@@ -214,12 +214,12 @@ class Icon {
 }
 
 class ChildCategoriesForProductId {
-  final String? categoryId;
+  final int? categoryId;
   final String? categorySlug;
   final String? categoryName;
   final String? productName;
   final int? countProducts;
-  final String? productThumbnail;
+  final Icon? mostViewedProductThumbnail;
 
   ChildCategoriesForProductId({
     this.categoryId,
@@ -227,16 +227,16 @@ class ChildCategoriesForProductId {
     this.categoryName,
     this.productName,
     this.countProducts,
-    this.productThumbnail,
+    this.mostViewedProductThumbnail,
   });
 
   ChildCategoriesForProductId copyWith({
-    String? categoryId,
+    int? categoryId,
     String? categorySlug,
     String? categoryName,
     String? productName,
     int? countProducts,
-    String? productThumbnail,
+    Icon? mostViewedProductThumbnail,
   }) =>
       ChildCategoriesForProductId(
         categoryId: categoryId ?? this.categoryId,
@@ -244,26 +244,26 @@ class ChildCategoriesForProductId {
         categoryName: categoryName ?? this.categoryName,
         productName: productName ?? this.productName,
         countProducts: countProducts ?? this.countProducts,
-        productThumbnail: productThumbnail ?? this.productThumbnail,
+        mostViewedProductThumbnail: mostViewedProductThumbnail ?? this.mostViewedProductThumbnail,
       );
 
   factory ChildCategoriesForProductId.fromJson(Map<String, dynamic> json) =>
       ChildCategoriesForProductId(
-        categoryId: json["category_id"],
-        categorySlug: json["category_slug"],
-        categoryName: json["category_name"],
-        productName: json["product_name"],
-        countProducts: json["count_products"],
-        productThumbnail: json["product_thumbnail"],
+        categoryId: json["id"],
+        categorySlug: json["slug"],
+        categoryName: json["name"],
+        productName: json["most_viewed_product_name"],
+        countProducts: json["num_available_product"],
+        mostViewedProductThumbnail: json["most_viewed_product_thumbnail"] == null ? null : Icon.fromJson(json["most_viewed_product_thumbnail"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "category_id": categoryId,
-        "category_slug": categorySlug,
-        "category_name": categoryName,
-        "product_name": productName,
-        "count_products": countProducts,
-        "product_thumbnail": productThumbnail,
+        "id": categoryId,
+        "slug": categorySlug,
+        "name": categoryName,
+        "most_viewed_product_name": productName,
+        "num_available_product": countProducts,
+        "most_viewed_product_thumbnail": mostViewedProductThumbnail?.toJson(),
       };
 }
 
@@ -271,26 +271,26 @@ class MainCategoriesForProductId {
   final int? categoryId;
   final String? categorySlug;
   final String? categoryName;
-  final String? categoryIcon;
+  final Icon? flatPhotoPath;
 
   MainCategoriesForProductId({
     this.categoryId,
     this.categorySlug,
     this.categoryName,
-    this.categoryIcon,
+    this.flatPhotoPath,
   });
 
   MainCategoriesForProductId copyWith({
     int? categoryId,
     String? categorySlug,
     String? categoryName,
-    String? categoryIcon,
+    Icon? flatPhotoPath,
   }) =>
       MainCategoriesForProductId(
         categoryId: categoryId ?? this.categoryId,
         categorySlug: categorySlug ?? this.categorySlug,
         categoryName: categoryName ?? this.categoryName,
-        categoryIcon: categoryIcon ?? this.categoryIcon,
+        flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
       );
 
   factory MainCategoriesForProductId.fromJson(Map<String, dynamic> json) =>
@@ -298,13 +298,13 @@ class MainCategoriesForProductId {
         categoryId: json["category_id"],
         categorySlug: json["category_slug"],
         categoryName: json["category_name"],
-        categoryIcon: json["category_icon"],
+        flatPhotoPath: json["flat_photo_path"] == null ? null : Icon.fromJson(json["flat_photo_path"]),
       );
 
   Map<String, dynamic> toJson() => {
         "category_id": categoryId,
         "category_slug": categorySlug,
         "category_name": categoryName,
-        "category_icon": categoryIcon,
+        "flat_photo_path": flatPhotoPath?.toJson(),
       };
 }

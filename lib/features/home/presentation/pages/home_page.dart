@@ -57,7 +57,8 @@ class _HomePageState extends State<HomePage> {
     homeBloc.add(GetHomeBoutiqesEvent(
         categorySlug: "Empty", offset: "1", getWithPagination: false));
 
-    homeBloc.add(GetProductFiltersEvent());
+    homeBloc.add(GetProductFiltersEvent(
+        boutiqueSlug: null, category: null, fromSearch: false));
     scrollController.addListener(() {
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
       if (currentSelectedMainCategoryTab == -1) {
