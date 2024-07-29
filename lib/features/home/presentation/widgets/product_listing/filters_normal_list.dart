@@ -134,6 +134,8 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                     offset: 1));
                               } else {
                                 homeBloc.add(ChangeSelectedFiltersEvent(
+                                  category: widget.category,
+                                  boutiqueSlug: widget.boutiqueSlug,
                                   filtersChoosedByUser: GetProductFiltersModel(
                                       filters:
                                           prevChoosedOrAppliedFilterToAddToIt),

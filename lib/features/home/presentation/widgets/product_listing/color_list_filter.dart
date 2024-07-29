@@ -121,6 +121,8 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                     offset: 1));
                               } else {
                                 homeBloc.add(ChangeSelectedFiltersEvent(
+                                  category: widget.category,
+                                  boutiqueSlug: widget.boutiqueSlug,
                                   filtersChoosedByUser: GetProductFiltersModel(
                                       filters:
                                           prevChoosedOrAppliedFilterToAddToIt),

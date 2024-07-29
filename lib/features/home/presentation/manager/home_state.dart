@@ -5,7 +5,7 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
 
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country.dart';
-import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart' as boutiques_model;
 
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
@@ -70,7 +70,6 @@ class HomeState {
     this.currentPage = 0,
     this.brands,
     this.categories,
-    this.totalProductNumber,
     this.productStatus,
     this.productITemForCart,
     this.getCartShippingItemsModel,
@@ -92,6 +91,7 @@ class HomeState {
     this.getAllowedCountriesModel,
     this.getCurrencyForCountryModel,
     this.ListitemForAddToCart,
+    this.countOfProductExpectedByFiltering,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
     this.getProductListingPaginationWithoutFiltersModel = const {},
@@ -130,11 +130,11 @@ class HomeState {
   final GetCartItemsStatus getCartItemsStatus;
   final GetProductListingStatus getProductListingStatus;
   GetStoriesForProductStatus getStoriesForProductStatus;
-  final Map<String, PaginationModel<Boutique>>
+  final Map<String, PaginationModel<boutiques_model.Boutique>>
       getHomeBoutiquesPaginationObjectByMainCategory;
   List<Story>? storiesForProduct;
   List<String>? sizes;
-  int? totalProductNumber;
+  int? countOfProductExpectedByFiltering;
 
   List<get_filters.Boutique>? boutiques;
   final Map<String, PaginationModel<product.Products>>
@@ -186,7 +186,7 @@ class HomeState {
       final GetProductListingStatus? getProductListingStatus,
       final StartingSetting? startingSetting,
       final MainCategoriesResponseModel? mainCategoriesResponseModel,
-      final Map<String, PaginationModel<Boutique>>?
+      final Map<String, PaginationModel<boutiques_model.Boutique>>?
           getHomeBoutiquesPaginationObjectByMainCategory,
       final Map<String, GetProductDetailWithoutRelatedProductsModel>?
           cachedProductWithoutRelatedProductsModel,
@@ -196,7 +196,9 @@ class HomeState {
           getProductDetailWithoutSimilarRelatedProductsStatus,
       final Map<String, int>? currentSelectedColorForEveryProduct,
       int? currentPage,
+      int? countOfProductExpectedByFiltering,
       bool resetAppliedFilters = false,
+      bool resetChoosedFilters = false,
       bool resetGetProductFiltersModel = false,
       List<Story>? storiesForProduct,
       final GetProductFiltersStatus? getProductFiltersStatus,
@@ -213,6 +215,7 @@ class HomeState {
         getCommentForProductModel:
             getCommentForProductModel ?? this.getCommentForProductModel,
         sizes: sizes ?? this.sizes,
+        countOfProductExpectedByFiltering: countOfProductExpectedByFiltering ?? this.countOfProductExpectedByFiltering,
         ListitemForAddToCart: ListitemForAddToCart ?? this.ListitemForAddToCart,
         getCurrencyForCountryModel:
             getCurrencyForCountryModel ?? this.getCurrencyForCountryModel,
@@ -231,7 +234,7 @@ class HomeState {
         brands: brands ?? this.brands,
         CurrentColorSizeForCart:
             CurrentColorSizeForCart ?? this.CurrentColorSizeForCart,
-        choosedFiltersByUser: choosedFiltersByUser,
+        choosedFiltersByUser: resetChoosedFilters ? null : choosedFiltersByUser ?? this.choosedFiltersByUser,
         appliedFiltersByUser: resetAppliedFilters
             ? null
             : appliedFiltersByUser ?? this.appliedFiltersByUser,
@@ -245,7 +248,6 @@ class HomeState {
             getCommentForProductStatus ?? this.getCommentForProductStatus,
         getProductListingStatus:
             getProductListingStatus ?? this.getProductListingStatus,
-        totalProductNumber: totalProductNumber ?? this.totalProductNumber,
         currentSelectedColorForEveryProduct: currentSelectedColorForEveryProduct ??
             this.currentSelectedColorForEveryProduct,
         getCartItemsStatus: getCartItemsStatus ?? this.getCartItemsStatus,

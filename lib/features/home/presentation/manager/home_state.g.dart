@@ -54,10 +54,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ?.map((e) => get_filters.Brand.fromJson(e as Map<String, dynamic>))
           .toList(),
       categories: (json['categories'] as List<dynamic>?)
-          ?.map((e) => get_product_with_filter.Category.fromJson(
-              e as Map<String, dynamic>))
+          ?.map((e) => get_product_with_filter.Category.fromJson(e as Map<String, dynamic>))
           .toList(),
-      totalProductNumber: (json['totalProductNumber'] as num?)?.toInt(),
       productStatus: (json['productStatus'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(
             k,
@@ -167,6 +165,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),
+      countOfProductExpectedByFiltering:
+          (json['countOfProductExpectedByFiltering'] as num?)?.toInt(),
       getCartItemsStatus: $enumDecodeNullable(
               _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
           GetCartItemsStatus.init,
@@ -210,10 +210,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                   ?.map(
                 (k, e) => MapEntry(
                     k,
-                    PaginationModel<Boutique>.fromJson(
+                    PaginationModel<boutiques_model.Boutique>.fromJson(
                         e as Map<String, dynamic>,
                         (value) =>
-                            Boutique.fromJson(value as Map<String, dynamic>))),
+                            boutiques_model.Boutique.fromJson(value as Map<String, dynamic>))),
               ) ??
               const {},
     );
@@ -276,7 +276,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'storiesForProduct':
           instance.storiesForProduct?.map((e) => e.toJson()).toList(),
       'sizes': instance.sizes,
-      'totalProductNumber': instance.totalProductNumber,
+      'countOfProductExpectedByFiltering':
+          instance.countOfProductExpectedByFiltering,
       'boutiques': instance.boutiques?.map((e) => e.toJson()).toList(),
       'getProductListingPaginationWithoutFiltersModel': instance
           .getProductListingPaginationWithoutFiltersModel

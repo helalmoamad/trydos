@@ -241,10 +241,10 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                             child: state.getProductFiltersStatus ==
                                                         GetProductFiltersStatus
                                                             .success &&
-                                                    state.totalProductNumber !=
+                                                    state.countOfProductExpectedByFiltering !=
                                                         0
                                                 ? MyTextWidget(
-                                                    "(${state.totalProductNumber})")
+                                                    "(${state.countOfProductExpectedByFiltering})")
                                                 : SizedBox.shrink())),
                                     state.getProductFiltersStatus ==
                                             GetProductFiltersStatus.loading
