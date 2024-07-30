@@ -102,9 +102,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
-      print('ddqdqddq ${state.getProductFiltersModel}');
-      print('ddqdqddq ${state.choosedFiltersByUser}');
-      if (state.getProductFiltersModel?.filters == null) {
+      if (state.getProductFiltersModel?.filters == null &&
+          state.getProductFiltersStatus == GetProductFiltersStatus.loading) {
         return FiltersLoadingListPage(
           countOfListInPage: isExpanded ? 6 : 1,
         );
@@ -182,7 +181,19 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       SvgPicture.asset(
                         AppAssets.registerInfoSvg,
                         color: Color(0xffD3D3D3),
-                      )
+                      ),
+                      if (state.getProductFiltersStatus ==
+                          GetProductFiltersStatus.loading)
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 5,
+                            ),
+                            TrydosLoader(
+                              size: 20,
+                            ),
+                          ],
+                        )
                     ],
                   )),
               SizedBox(
@@ -345,7 +356,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     return child!;
                                   },
                                   child: AutoScrollTag(
-                                    key: ValueKey(index),
+                                    key: ValueKey('${DateTime.now()}index $index'),
                                     controller: autoScrollController,
                                     index: index,
                                     child: index == 0 &&
@@ -910,7 +921,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               ),
             ),
           },
-          if (countOfFilters != 0 ||  state.choosedFiltersByUser != null) ...{
+          if (countOfFilters != 0 || state.choosedFiltersByUser != null) ...{
             if (isExpanded) ...{
               SizedBox(
                 height: 20,
@@ -1114,17 +1125,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                               BorderRadius.circular(20)),
                                       child: Center(
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
-                                            if(state.countOfProductExpectedByFiltering != null)...{
-                                              MyTextWidget(
-                                                '${state.countOfProductExpectedByFiltering}- ',
-                                                style: textTheme.subtitle2?.mq
-                                                    .copyWith(
-                                                    color: Color(0xffFEFEFE),
-                                                    height: 23 / 18),
-                                              ),
-                                            },
                                             MyTextWidget(
                                               'Apply',
                                               style: textTheme.headline6?.rq
@@ -1132,10 +1135,18 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                       color: Color(0xffFEFEFE),
                                                       height: 23 / 18),
                                             ),
-                                            if(state.getProductFiltersStatus == GetProductFiltersStatus.loading)...{
-                                              SizedBox(width: 5,),
-                                              TrydosLoader(size: 20,),
-                                            }
+                                            if (state
+                                                    .countOfProductExpectedByFiltering !=
+                                                null) ...{
+                                              MyTextWidget(
+                                                '(${state.countOfProductExpectedByFiltering}  products)',
+                                                style: textTheme.subtitle1?.mq
+                                                    .copyWith(
+                                                        color:
+                                                            Color(0xffFEFEFE),
+                                                        height: 23 / 18),
+                                              ),
+                                            },
                                           ],
                                         ),
                                       ),
@@ -1153,15 +1164,15 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     return BlocBuilder<HomeBloc, HomeState>(
                                       builder: (context, state) {
                                         if (state.choosedFiltersByUser ==
-                                                    null &&
+                                                null &&
                                             (lowerAndUpperPrices == null ||
-                                            (lowerAndUpperPrices != null &&
-                                                (lowerAndUpperPrices!
-                                                            .value.item1 ==
-                                                        minPrice! &&
-                                                    lowerAndUpperPrices!
-                                                            .value.item2 ==
-                                                        maxPrice!)))) {
+                                                (lowerAndUpperPrices != null &&
+                                                    (lowerAndUpperPrices!
+                                                                .value.item1 ==
+                                                            minPrice! &&
+                                                        lowerAndUpperPrices!
+                                                                .value.item2 ==
+                                                            maxPrice!)))) {
                                           return SizedBox.shrink();
                                         }
                                         return Expanded(
@@ -1181,7 +1192,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                             widget.boutiqueSlug,
                                                         category:
                                                             widget.category,
-                                                        resetChoosedFilters: true,
+                                                        resetChoosedFilters:
+                                                            true,
                                                         filtersChoosedByUser:
                                                             null));
                                               }

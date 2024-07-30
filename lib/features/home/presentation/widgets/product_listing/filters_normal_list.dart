@@ -12,6 +12,7 @@ import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
+import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
 import '../../manager/home_event.dart';
 import '../../manager/home_state.dart';
@@ -70,7 +71,23 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
                   color: Color(0xffD3D3D3),
-                )
+                ),
+                BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+                  if (state.getProductFiltersStatus ==
+                      GetProductFiltersStatus.loading) {
+                    return Row(
+                      children: [
+                        SizedBox(
+                          width: 5,
+                        ),
+                        TrydosLoader(
+                          size: 20,
+                        ),
+                      ],
+                    );
+                  }
+                  return SizedBox.shrink();
+                })
               ],
             ),
             SizedBox(

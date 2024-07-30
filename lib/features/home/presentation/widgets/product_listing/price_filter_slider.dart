@@ -20,8 +20,10 @@ import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:tuple/tuple.dart';
 
+import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../search/presentation/widgets/close_circle.dart';
 import '../../manager/home_bloc.dart';
+import '../../manager/home_state.dart';
 
 class PriceFilter extends StatefulWidget {
   const PriceFilter({
@@ -280,7 +282,23 @@ class _PriceFilterState extends State<PriceFilter> {
                             SvgPicture.asset(
                               AppAssets.registerInfoSvg,
                               color: Color(0xffD3D3D3),
-                            )
+                            ),
+                            BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+                              if (state.getProductFiltersStatus ==
+                                  GetProductFiltersStatus.loading) {
+                                return Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    TrydosLoader(
+                                      size: 20,
+                                    ),
+                                  ],
+                                );
+                              }
+                              return SizedBox.shrink();
+                            })
                           ],
                         ),
                         GestureDetector(
