@@ -59,6 +59,7 @@ class Filter {
   final Prices? prices;
   final List<Boutique>? boutiques;
   final String? boutiqueSlug;
+  final String? searchText;
   List<Category>? categories;
 
   Filter({
@@ -66,6 +67,7 @@ class Filter {
     this.totalSize,
     this.boutiques,
     this.attributes,
+    this.searchText,
     this.categories,
     this.colors,
     this.prices,
@@ -77,6 +79,7 @@ class Filter {
           List<Attribute>? attributes,
           List<Category>? categories,
           List<String>? colors,
+          String? searchText,
           int? totalSize,
           Prices? prices,
           String? boutiqueSlug,
@@ -86,6 +89,7 @@ class Filter {
         attributes: attributes ?? this.attributes,
         colors: colors ?? this.colors,
         prices: prices,
+        searchText: searchText ?? this.searchText,
         boutiques: boutiques ?? this.boutiques,
         totalSize: totalSize ?? this.totalSize,
         categories: categories ?? this.categories,
@@ -97,6 +101,7 @@ class Filter {
     List<Attribute>? attributes,
     List<Category>? categories,
     List<String>? colors,
+    String? searchText,
     int? totalSize,
     List<Boutique>? boutiques,
     Prices? prices,
@@ -106,6 +111,7 @@ class Filter {
         brands: brands,
         attributes: attributes,
         colors: colors,
+        searchText: searchText ?? this.searchText,
         totalSize: totalSize,
         boutiques: boutiques ?? this.boutiques,
         prices: prices,

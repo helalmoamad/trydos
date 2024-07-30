@@ -162,8 +162,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onRemoveSearchTextToHistoryEvent,
     );
 
-    on<GetProductsWithoutFiltersEvent>(_onGetProductsWithoutFiltersEvent,
-        transformer: throttleDroppable(Duration(seconds: 5)));
+    on<GetProductsWithoutFiltersEvent>(
+      _onGetProductsWithoutFiltersEvent,
+    );
     on<GetStoryForProductEvent>(_onGetStoryEvent,
         transformer: throttleDroppable(Duration(seconds: 5)));
     on<AddProductItemForCartEvent>(_onAddProductItemForCartEvent,
@@ -488,6 +489,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onGetProductsWithoutFiltersEvent(
       GetProductsWithoutFiltersEvent event, Emitter<HomeState> emit) async {
     String keyForCacheData = event.boutiqueSlug + (event.category ?? '');
+    print("11111${keyForCacheData}111111111");
     Map<String, PaginationModel<product.Products>> getProductsWithoutFilters =
         Map.of(state.getProductListingPaginationWithoutFiltersModel);
 
@@ -497,7 +499,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       getProductsWithoutFilters[keyForCacheData] =
           const PaginationModel<product.Products>.init();
     }
-
+    print("122222222222222222222111");
     if (!reRequestTheseProductListingInBoutiques.containsKey(keyForCacheData)) {
       getProductsWithoutFilters[keyForCacheData] =
           getProductsWithoutFilters[keyForCacheData]!.copyWith(
@@ -505,7 +507,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               page: 0,
               hasReachedMax: false);
     }
-    if ((!event.getWithPagination &&
+    /* if ((!event.getWithPagination &&
             (getProductsWithoutFilters[keyForCacheData]!.paginationStatus ==
                     PaginationStatus.loading ||
                 getProductsWithoutFilters[keyForCacheData]!.paginationStatus ==
@@ -513,7 +515,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         (event.getWithPagination &&
             getProductsWithoutFilters[keyForCacheData]!.hasReachedMax)) {
       return;
-    }
+    }*/
+    print("1133333333333333333333333333311");
     emit(state.copyWith(
       getProductListingPaginationWithoutFiltersModel:
           getProductsWithoutFilters.map((key, value) {
@@ -575,7 +578,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                       items: [
                         ...resetListAfterGetData
                             ? []
-                            : getProductsWithoutFilters[keyForCacheData]!.items,
+                            : event.getWithPagination
+                                ? getProductsWithoutFilters[keyForCacheData]!
+                                    .items
+                                : [],
                         ...r.data?.products ?? []
                       ]));
             } else {
@@ -709,18 +715,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                         ...r.data!.products ?? []
                       ]
                     : r.data!.products),
-        countOfProductExpectedByFiltering : r.data!.totalSize,
+        countOfProductExpectedByFiltering: r.data!.totalSize,
         resetGetProductFiltersModel: r.data!.products!.length == 1,
-        getProductFiltersModel: r.data!.products!.length == 1 ? null : removeAlreadyChoosedFilters(
-            filters_model.GetProductFiltersModel(
-                filters: filters_model.Filter(
-              brands: r.data!.brands,
-              attributes: r.data!.attributes,
-              prices: r.data!.prices,
-              colors: r.data!.colors,
-              categories: r.data!.categories,
-            )),
-            appliedFiltersByUser!.filters!),
+        getProductFiltersModel: r.data!.products!.length == 1
+            ? null
+            : removeAlreadyChoosedFilters(
+                filters_model.GetProductFiltersModel(
+                    filters: filters_model.Filter(
+                  brands: r.data!.brands,
+                  attributes: r.data!.attributes,
+                  prices: r.data!.prices,
+                  colors: r.data!.colors,
+                  categories: r.data!.categories,
+                )),
+                appliedFiltersByUser!.filters!),
       ));
     });
   }
@@ -1037,13 +1045,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       isFailedTheFirstTime.remove('GetProductFiltersEvent');
       try {
         emit(state.copyWith(
-            brands: r.filters!.brands!,
-            category: r.filters!.categories,
-            boutiques: r.filters!.boutiques,
-            totalProductNumber: r.filters!.totalSize,
-            getProductFiltersStatus: GetProductFiltersStatus.success,
-            getProductFiltersModel: removeAlreadyChoosedFilters(r, filters),
-            ));
+          brands: r.filters!.brands!,
+          category: r.filters!.categories,
+          boutiques: r.filters!.boutiques,
+          totalProductNumber: r.filters!.totalSize,
+          countOfProductExpectedByFiltering: r.filters!.totalSize,
+          getProductFiltersStatus: GetProductFiltersStatus.success,
+          getProductFiltersModel: removeAlreadyChoosedFilters(r, filters),
+        ));
         List<filters_model.Brand>? brand = state.brands?.map((e) {
           if (state.selectedBoutiqueBrandCategorySlugsForSearch["brand"] !=
               null) {
@@ -1665,22 +1674,24 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         makeChoosedFiltersNull = true;
       }
     }
-      add(GetProductFiltersEvent(
-          category: event.category,
-          boutiqueSlug: event.boutiqueSlug,
-          filtersChoosedByUser:
-              makeChoosedFiltersNull ? null : event.filtersChoosedByUser));
+    add(GetProductFiltersEvent(
+        category: event.category,
+        boutiqueSlug: event.boutiqueSlug,
+        filtersChoosedByUser:
+            makeChoosedFiltersNull ? null : event.filtersChoosedByUser));
 
     filters_model.Filter filters =
         event.filtersChoosedByUser?.filters ?? filters_model.Filter();
     emit(state.copyWith(
-        choosedFiltersByUser: event.resetChoosedFilters ? null : ((filters.colors?.isNotEmpty ?? false) ||
-                (filters.brands?.isNotEmpty ?? false) ||
-                (filters.attributes?.isNotEmpty ?? false) ||
-                (filters.categories?.isNotEmpty ?? false) ||
-                filters.prices != null)
-            ? event.filtersChoosedByUser
-            : null,
+        choosedFiltersByUser: event.resetChoosedFilters
+            ? null
+            : ((filters.colors?.isNotEmpty ?? false) ||
+                    (filters.brands?.isNotEmpty ?? false) ||
+                    (filters.attributes?.isNotEmpty ?? false) ||
+                    (filters.categories?.isNotEmpty ?? false) ||
+                    filters.prices != null)
+                ? event.filtersChoosedByUser
+                : null,
         resetChoosedFilters: event.resetChoosedFilters,
         getProductListingWithFiltersPaginationModels:
             event.filtersChoosedByUser == null

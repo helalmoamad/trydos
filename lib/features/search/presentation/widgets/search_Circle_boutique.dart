@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -17,12 +18,14 @@ import '../../../app/my_text_widget.dart';
 class SearchChipBoutique extends StatefulWidget {
   final String title;
   final TextEditingController controller;
+  final bool isLoading;
   final ValueNotifier<List<int>> selectedBoutique;
   const SearchChipBoutique(
       {Key? key,
       required this.title,
       required this.selectedBoutique,
-      required this.controller})
+      required this.controller,
+      required this.isLoading})
       : super(key: key);
 
   @override
@@ -86,6 +89,21 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                       style: context.textTheme.caption?.rq
                           .copyWith(color: Color(0xff505050), height: 15 / 12),
                     ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    widget.isLoading
+                        ? Container(
+                            width: 15,
+                            height: 15,
+                            child: Center(
+                              child: TrydosLoader(
+                                color: Colors.black,
+                                size: 15,
+                              ),
+                            ))
+                        : SizedBox.shrink(),
+                    Spacer(),
                     SvgPicture.asset(
                       AppAssets.backArrowArabic,
                       color: Color(0xffC4C2C2),

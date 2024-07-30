@@ -293,7 +293,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<int> buildSearchResult = ValueNotifier(0);
-  final ValueNotifier<bool> hideTrendingAndHistory = ValueNotifier(false);
+  final ValueNotifier<bool> appearTrendingAndHistory = ValueNotifier(true);
 
   final List<Widget> pages = [
     const HomePage(),
@@ -335,7 +335,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       SearchPage(
         controller: controller,
         buildSearchResult: buildSearchResult,
-        hideTrendingAndHistory: hideTrendingAndHistory,
+        appearTrendingAndHistory: appearTrendingAndHistory,
       ),
     );
     WidgetsBinding.instance.addObserver(this);
@@ -745,8 +745,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                       controller: controller,
                                                       buildSearchResult:
                                                           buildSearchResult,
-                                                      hideTrendingAndHistory:
-                                                          hideTrendingAndHistory,
+                                                      appearTrendingAndHistory:
+                                                          appearTrendingAndHistory,
                                                     );
                                                   } else {
                                                     return const SizedBox

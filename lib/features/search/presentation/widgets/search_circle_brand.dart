@@ -5,8 +5,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
+import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -17,13 +19,15 @@ import '../../../app/my_text_widget.dart';
 
 class SearchChipBrand extends StatefulWidget {
   final String title;
+  final bool isLoading;
   final TextEditingController controller;
   final ValueNotifier<List<int>> selectedBrand;
   const SearchChipBrand(
       {Key? key,
       required this.title,
       required this.selectedBrand,
-      required this.controller})
+      required this.controller,
+      required this.isLoading})
       : super(key: key);
 
   @override
@@ -62,13 +66,27 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     MyTextWidget(
                       widget.title,
                       style: context.textTheme.caption?.rq
                           .copyWith(color: Color(0xff505050), height: 15 / 12),
                     ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    widget.isLoading
+                        ? Container(
+                            width: 15,
+                            height: 15,
+                            child: Center(
+                              child: TrydosLoader(
+                                color: Colors.black,
+                                size: 15,
+                              ),
+                            ))
+                        : SizedBox.shrink(),
+                    Spacer(),
                     SvgPicture.asset(
                       AppAssets.backArrowArabic,
                       color: Color(0xffC4C2C2),
@@ -112,6 +130,13 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                     }
                                     return InkWell(
                                       onTap: () {
+                                        homeBloc.add(ChangeSelectedFiltersEvent(
+                                            filtersChoosedByUser:
+                                                GetProductFiltersModel(
+                                                    filters: Filter(brands: [
+                                          state.brands![index]
+                                        ]))));
+
                                         if (state.brands![index].isSelected ??
                                             false) {
                                           selectedBrandSlugs.remove(

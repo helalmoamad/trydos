@@ -8,6 +8,7 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
@@ -51,11 +52,42 @@ class _SearchResultState extends ThemeState<SearchResult> {
             c.getProductListingWithFiltersPaginationModels,
         builder: (context, state) {
           if (state.getProductListingWithFiltersPaginationModels
+                  ?.paginationStatus ==
+              PaginationStatus.loading) {
+            return Column(children: [
+              SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsetsDirectional.only(start: 20.0),
+                child: MyTextWidget(
+                  LocaleKeys.find_products.tr(),
+                  style: textTheme.caption?.rq
+                      .copyWith(height: 15 / 12, color: Color(0xff505050)),
+                ),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                  width: 15,
+                  height: 15,
+                  child: Center(
+                    child: TrydosLoader(
+                      color: Colors.black,
+                      size: 15,
+                    ),
+                  ))
+            ]);
+          }
+          if (state.getProductListingWithFiltersPaginationModels
                       ?.paginationStatus !=
                   PaginationStatus.success ||
+              state.getProductListingWithFiltersPaginationModels == null ||
               !value) {
-            return SizedBox
-                .shrink(); /* Column(
+            return SizedBox.shrink();
+          }
+          /* Column(
               children: [
                 SizedBox(
                   height: 15,
@@ -142,9 +174,21 @@ class _SearchResultState extends ThemeState<SearchResult> {
                 ),
               ],
             );*/
-          }
+
           if (state.getProductListingWithFiltersPaginationModels == null) {
             return SizedBox.shrink();
+          }
+          if (state.getProductListingWithFiltersPaginationModels!.items
+              .isNullOrEmpty) {
+            return Padding(
+              padding: const EdgeInsets.all(10),
+              child: Center(
+                child: MyTextWidget(
+                  "No elements found",
+                  style: TextStyle(color: Colors.red, fontSize: 18),
+                ),
+              ),
+            );
           }
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,

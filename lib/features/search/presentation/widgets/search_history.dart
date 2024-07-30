@@ -19,14 +19,14 @@ import '../../../../common/constant/design/assets_provider.dart';
 class SearchHistory extends StatefulWidget {
   List<String> items;
   final ValueNotifier<int> buildSearchResult;
-  final ValueNotifier<bool> hideTrendingAndHistory;
+  final ValueNotifier<bool> appearTrendingAndHistory;
   final TextEditingController controller;
 
   SearchHistory(
       {super.key,
       required this.items,
       required this.buildSearchResult,
-      required this.hideTrendingAndHistory,
+      required this.appearTrendingAndHistory,
       required this.controller});
 
   @override
@@ -145,8 +145,8 @@ class _SearchHistoryState extends State<SearchHistory> {
                             child: InkWell(
                               onTap: () {
                                 widget.controller.text = _items[index];
-                                widget.buildSearchResult.value = 1;
-                                widget.hideTrendingAndHistory.value = false;
+                                //  widget.buildSearchResult.value = 1;
+                                widget.appearTrendingAndHistory.value = true;
                                 BlocProvider.of<HomeBloc>(context).add(
                                     GetProductFiltersEvent(
                                         fromSearch: true,
@@ -189,7 +189,7 @@ class _SearchHistoryState extends State<SearchHistory> {
         child: SearchHistoryChip(
           controller: widget.controller,
           buildSearchResult: widget.buildSearchResult,
-          hideTrendingAndHistory: widget.hideTrendingAndHistory,
+          appearTrendingAndHistory: widget.appearTrendingAndHistory,
           text: text,
           onClickClose: () {
             final removedItem = _items[index];
