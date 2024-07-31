@@ -25,17 +25,17 @@ class FiltersNormalList<T> extends StatefulWidget {
       required this.isBrandFilter,
       required this.filters,
       this.searchText,
-      required this.fromSearch,
-      required this.boutiqueSlug,
+      required this.fromHomeSearch,
+      this.boutiqueSlug,
       this.category});
 
   final bool isBrandFilter;
   final String filterListTitle;
   final List<T> filters;
-  final bool fromSearch;
+  final bool fromHomeSearch;
   final String? searchText;
   final bool hideTitle;
-  final String boutiqueSlug;
+  final String? boutiqueSlug;
   final String? category;
 
   @override
@@ -128,6 +128,8 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                               prevChoosedOrAppliedFilterToAddToIt =
                                   prevChoosedOrAppliedFilterToAddToIt
                                       .copyWithSaveOtherField(
+                                      prices: prevChoosedOrAppliedFilterToAddToIt.prices,
+                                      searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
                                           brands: !widget.isBrandFilter
                                               ? prevChoosedOrAppliedFilterToAddToIt
                                                   .brands
@@ -140,13 +142,17 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                                       item
                                                     ]);
                               if (widget.hideTitle) {
+                                homeBloc.add(ChangeAppliedFiltersEvent(
+                                  category: widget.category,
+                                  boutiqueSlug: widget.boutiqueSlug,
+                                  filtersAppliedByUser: GetProductFiltersModel(
+                                      filters:
+                                      prevChoosedOrAppliedFilterToAddToIt),
+                                ));
                                 homeBloc.add(GetProductsWithFiltersEvent(
-                                    fromSearch: widget.fromSearch,
+                                    fromSearch: widget.fromHomeSearch,
                                     searchText: widget.searchText,
                                     boutiqueSlug: widget.boutiqueSlug,
-                                    filtersAppliedByUser: GetProductFiltersModel(
-                                        filters:
-                                            prevChoosedOrAppliedFilterToAddToIt),
                                     category: widget.category,
                                     offset: 1));
                               } else {

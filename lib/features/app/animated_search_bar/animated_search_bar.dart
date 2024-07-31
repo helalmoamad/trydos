@@ -25,7 +25,7 @@ class AnimatedSearchBar extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final bool boxShadow;
   final Function(String)? onChanged;
-  final void Function() onClickClose;
+  final bool Function() onClickClose;
   final InputDecoration? searchDecoration;
   final Widget suffixWidget;
   final Widget prefixWidget;
@@ -266,7 +266,8 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                         : InkWell(
                             onTap: () {
                               widget.hideTrendingAndHistory.value = false;
-                              widget.onClickClose.call();
+                              bool stop = widget.onClickClose.call();
+                              if(stop) return ;
                               toggle = 0;
 
                               ///if the autoFocus is true, the keyboard will close, automatically

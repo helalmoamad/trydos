@@ -15,6 +15,7 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 
 import '../../../../core/data/model/pagination_model.dart';
 import '../../data/models/get_cart_item_model.dart';
+import '../../data/models/get_home_boutiqes_model.dart';
 import '../../data/models/get_product_filters_model.dart' as get_filters;
 import '../../data/models/get_product_listing_with_filters_model.dart'
     as get_product_with_filter;
@@ -68,8 +69,6 @@ class HomeState {
     this.choosedFiltersByUser,
     this.appliedFiltersByUser,
     this.currentPage = 0,
-    this.brands,
-    this.categories,
     this.productStatus,
     this.productITemForCart,
     this.getCartShippingItemsModel,
@@ -80,11 +79,9 @@ class HomeState {
     this.selectedCollection,
     this.cartCollection = const {},
     this.getProductListingWithFiltersPaginationModels,
-    this.boutiques,
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
     this.CurrentColorSizeForCart,
-    this.selectedBoutiqueBrandCategorySlugsForSearch = const {},
     this.currentQuantityForCart,
     this.addImagesToProductIdForCart = const {},
     this.searchHistory,
@@ -117,7 +114,6 @@ class HomeState {
   int? selectedCollection;
   int currentPage;
   List<String>? searchHistory;
-  Map<String, List<String>> selectedBoutiqueBrandCategorySlugsForSearch;
   Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
   Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
       productStatus;
@@ -136,7 +132,6 @@ class HomeState {
   List<String>? sizes;
   int? countOfProductExpectedByFiltering;
 
-  List<get_filters.Boutique>? boutiques;
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
   final cart.GetCartShippingItemsModel? getCartShippingItemsModel;
@@ -147,8 +142,6 @@ class HomeState {
       getProductDetailWithoutRelatedProductsModel;
 
   final StartingSetting? startingSetting;
-  List<get_product_with_filter.Category>? categories;
-  List<get_filters.Brand>? brands;
   Map<String, String>? CurrentColorSizeForCart;
   Map<String, List<int>>? currentQuantityForCart;
   final Map<String, GetProductDetailWithoutRelatedProductsModel>
@@ -165,17 +158,13 @@ class HomeState {
       final GetCommentForProductStatus? getCommentForProductStatus,
       final GetCartItemsStatus? getCartItemsStatus,
       Map<int, int?>? currentStoryInEachCollection,
-      Map<String, List<String>>? selectedBoutiqueBrandCategorySlugsForSearch,
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
-      List<get_filters.Boutique>? boutiques,
       int? selectedCollection,
       List<String>? sizes,
       List<String>? searchHistory,
       Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
           productStatus,
-      List<get_filters.Brand>? brands,
-      List<get_product_with_filter.Category>? category,
       Map<String, List<int>>? currentQuantityForCart,
       Map<String, List<cart.Cart>>? cartCollection,
       Map<String, String>? CurrentColorSizeForCart,
@@ -230,8 +219,6 @@ class HomeState {
         currentQuantityForCart:
             currentQuantityForCart ?? this.currentQuantityForCart,
         productITemForCart: productITemForCart ?? this.productITemForCart,
-        categories: category ?? this.categories,
-        brands: brands ?? this.brands,
         CurrentColorSizeForCart:
             CurrentColorSizeForCart ?? this.CurrentColorSizeForCart,
         choosedFiltersByUser: resetChoosedFilters ? null : choosedFiltersByUser ?? this.choosedFiltersByUser,
@@ -281,10 +268,9 @@ class HomeState {
         getProductDetailWithoutRelatedProductsModel:
             getProductDetailWithoutRelatedProductsModel ??
                 this.getProductDetailWithoutRelatedProductsModel,
-        boutiques: boutiques ?? this.boutiques,
         productStatus: productStatus ?? this.productStatus,
         getAllowedCountriesModel: getAllowedCountriesModel ?? this.getAllowedCountriesModel,
-        selectedBoutiqueBrandCategorySlugsForSearch: selectedBoutiqueBrandCategorySlugsForSearch ?? this.selectedBoutiqueBrandCategorySlugsForSearch);
+    );
   }
 
   factory HomeState.fromJson(Map<String, dynamic> data) =>

@@ -28,17 +28,17 @@ class SizesFiltersList extends StatefulWidget {
     super.key,
     this.hideTitle = false,
     required this.attribute,
-    required this.boutiqueSlug,
+    this.boutiqueSlug,
     this.category,
      this.searchText,
-    required this.fromSearch,
+    required this.fromHomeSearch,
   });
   final Attribute attribute;
 
   final bool hideTitle;
-  final String boutiqueSlug;
+  final String? boutiqueSlug;
   final String? category;
-  final bool fromSearch;
+  final bool fromHomeSearch;
   final String? searchText;
 
   @override
@@ -150,6 +150,8 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                 prevChoosedOrAppliedFilterToAddToIt =
                                     prevChoosedOrAppliedFilterToAddToIt
                                         .copyWithSaveOtherField(
+                                      prices: prevChoosedOrAppliedFilterToAddToIt.prices,
+                                      searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
                                   attributes:
                                       prevChoosedOrAppliedFilterToAddToIt
                                               .attributes.isNullOrEmpty
@@ -172,13 +174,17 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                             ],
                                 );
                                 if (widget.hideTitle) {
+                                  homeBloc.add(ChangeAppliedFiltersEvent(
+                                      category: widget.category,
+                                      boutiqueSlug: widget.boutiqueSlug,
+                                      filtersAppliedByUser:
+                                      GetProductFiltersModel(
+                                          filters:
+                                          prevChoosedOrAppliedFilterToAddToIt),));
                                   homeBloc.add(GetProductsWithFiltersEvent(
-                                      fromSearch: widget.fromSearch,
+                                      fromSearch: widget.fromHomeSearch,
                                       searchText: widget.searchText,
                                       boutiqueSlug: widget.boutiqueSlug,
-                                      filtersAppliedByUser: GetProductFiltersModel(
-                                          filters:
-                                              prevChoosedOrAppliedFilterToAddToIt),
                                       category: widget.category,
                                       offset: 1));
                                 } else {

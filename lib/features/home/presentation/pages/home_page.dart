@@ -30,7 +30,6 @@ import '../../../app/my_text_widget.dart';
 import '../../../story/presentation/widget/stories_list.dart';
 import '../manager/home_state.dart';
 import '../widgets/home_page_card2.dart';
-import '../widgets/quick_offer_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -50,15 +49,13 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    homeBloc.add(GetCartItemEvent());
-
+    if(homeBloc.state.getCurrencyForCountryModel == null) {
+      homeBloc.add(GetCartItemEvent());
+      homeBloc.add(GetCurrencyForCountryEvent());
+      homeBloc.add(GetHomeBoutiqesEvent(
+          categorySlug: "Empty", offset: "1", getWithPagination: false));
+    }
     String selectedCategorySlug;
-    homeBloc.add(GetCurrencyForCountryEvent());
-    homeBloc.add(GetHomeBoutiqesEvent(
-        categorySlug: "Empty", offset: "1", getWithPagination: false));
-
-    homeBloc.add(GetProductFiltersEvent(
-        boutiqueSlug: null, category: null, fromSearch: false));
     scrollController.addListener(() {
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
       if (currentSelectedMainCategoryTab == -1) {

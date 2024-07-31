@@ -10,7 +10,7 @@ import 'package:trydos/features/search/presentation/widgets/close_circle.dart';
 
 class SearchHistoryChip extends StatelessWidget {
   final ValueNotifier<int> buildSearchResult;
-  final ValueNotifier<bool> hideTrendingAndHistory;
+  final ValueNotifier<bool> appearTrendingAndHistory;
   final TextEditingController controller;
 
   const SearchHistoryChip(
@@ -18,7 +18,7 @@ class SearchHistoryChip extends StatelessWidget {
       required this.text,
       required this.onClickClose,
       required this.buildSearchResult,
-      required this.hideTrendingAndHistory,
+      required this.appearTrendingAndHistory,
       required this.controller});
 
   final String text;
@@ -38,7 +38,7 @@ class SearchHistoryChip extends StatelessWidget {
                 onTap: () {
                   controller.text = text;
                   buildSearchResult.value = 1;
-                  hideTrendingAndHistory.value = false;
+                  appearTrendingAndHistory.value = true;
                   BlocProvider.of<HomeBloc>(context).add(
                       GetProductsWithFiltersEvent(
                           offset: 1, fromSearch: true, searchText: text));

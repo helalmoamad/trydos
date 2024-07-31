@@ -33,7 +33,7 @@ class PriceFilter extends StatefulWidget {
     required this.pricrSymbol,
     required this.pricrRate,
     required this.lowerAndUpperBound,
-    required this.boutiqueSlug,
+    this.boutiqueSlug,
     this.category,
     required this.decimalPoint,
   });
@@ -42,7 +42,7 @@ class PriceFilter extends StatefulWidget {
   final Prices pricesFiltersRanges;
   final String pricrSymbol;
   final double pricrRate;
-  final String boutiqueSlug;
+  final String? boutiqueSlug;
   final String? category;
   final ValueNotifier<Tuple2<double, double>> lowerAndUpperBound;
   final int decimalPoint;

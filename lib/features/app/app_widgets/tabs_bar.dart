@@ -11,16 +11,13 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
-import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
-import 'package:trydos/features/home/presentation/pages/product_listing_search.dart';
-import 'package:trydos/features/search/presentation/widgets/search_history.dart';
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/constant/design/constant_design.dart';
 import '../../../common/constant/widgets_key.dart';
 import '../../../core/utils/responsive_padding.dart';
+import '../../home/data/models/get_product_filters_model.dart';
+import '../../home/data/models/get_product_listing_with_filters_model.dart' as product_listing;
 import '../../home/presentation/manager/home_bloc.dart';
 import '../../home/presentation/manager/home_state.dart';
 import '../animated_search_bar/animated_search_bar.dart';
@@ -33,11 +30,11 @@ class TabsBar extends StatefulWidget {
   const TabsBar({
     Key? key,
     required this.buildSearchResult,
-    required this.hideTrendingAndHistory,
+    required this.appearTrendingAndHistory,
     required this.controller,
   }) : super(key: key);
   final ValueNotifier<int> buildSearchResult;
-  final ValueNotifier<bool> hideTrendingAndHistory;
+  final ValueNotifier<bool> appearTrendingAndHistory;
   final TextEditingController controller;
 
   @override
@@ -50,6 +47,7 @@ class _TabsBarState extends State<TabsBar> {
 
   @override
   void initState() {
+    widget.appearTrendingAndHistory.value = true;
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
@@ -59,12 +57,6 @@ class _TabsBarState extends State<TabsBar> {
 
   @override
   void didChangeDependencies() {
-    focusNode.addListener(() {
-      if (focusNode.hasFocus) {
-        widget.hideTrendingAndHistory.value =
-            widget.controller.text.length > 0 ? true : false;
-      }
-    });
     super.didChangeDependencies();
   }
 
@@ -131,55 +123,42 @@ class _TabsBarState extends State<TabsBar> {
                                       p.currentIndex != c.currentIndex,
                                   builder: (context, state) {
                                     return AnimatedSearchBar(
+                                      autoFocus: true,
                                       onFieldSubmitted: (text) {
                                         if (text.replaceAll(" ", "").length >
                                             2) {
                                           widget.buildSearchResult.value =
                                               text.length;
-                                          widget.hideTrendingAndHistory.value =
-                                              true;
+                                          widget.appearTrendingAndHistory
+                                              .value = true;
 
                                           homeBloc.add(
                                               AddSearchTextToHistoryEvent(
                                                   searchTitle: text));
-
-                                          HelperFunctions.slidingNavigation(
-                                              context,
-                                              ProductListingPage(
-                                                searchText: text,
-                                                boutiqueIcon: "",
-                                                fromSearch: true,
-                                                withSlidingImages: false,
-                                                boutiqueSlug: '',
-                                              ));
-                                        } else {
-                                          widget.buildSearchResult.value = 0;
-                                          widget.hideTrendingAndHistory.value =
-                                              false;
                                         }
                                       },
                                       width: 1.sw,
                                       height: 40,
                                       onClickClose: () {
-                                        GetProductFiltersEvent(searchText: "");
                                         if (widget.controller.text.length > 0) {
                                           widget.buildSearchResult.value = 0;
                                           widget.controller.clear();
-                                          widget.hideTrendingAndHistory.value =
-                                              false;
+                                          widget.appearTrendingAndHistory.value = true;
+                                          return true;
                                         } else {
                                           appBloc.add(ChangeBasePage(0));
                                           appBloc.add(
                                               HideBottomNavigationBar(false));
                                         }
+                                        return false;
                                       },
                                       textController: widget.controller,
                                       focusNode: focusNode,
                                       onSuffixTap: () {
-                                        widget.controller.clear();
-                                        widget.buildSearchResult.value = 0;
-                                        widget.hideTrendingAndHistory.value =
-                                            false;
+                                        widget.buildSearchResult.value = 1;
+                                        widget.appearTrendingAndHistory.value =
+                                            true;
+
                                         Future.delayed(
                                             Duration(milliseconds: 300), () {
                                           appBloc.add(ChangeBasePage(4));
@@ -319,7 +298,6 @@ class _TabsBarState extends State<TabsBar> {
                                                     context.colorScheme.hint),
                                       ),
                                       onChanged: (String text) {
-                                        widget.buildSearchResult.value = 0;
                                         if (text.length > 2) {
                                           homeBloc.add(
                                               GetProductsWithFiltersEvent(
@@ -331,7 +309,7 @@ class _TabsBarState extends State<TabsBar> {
                                         }
                                       },
                                       hideTrendingAndHistory:
-                                          widget.hideTrendingAndHistory,
+                                          widget.appearTrendingAndHistory,
                                     );
                                   },
                                 ),

@@ -1,15 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
@@ -19,13 +24,19 @@ import 'package:trydos/features/search/presentation/widgets/search_circle_catego
 
 import 'package:trydos/features/search/presentation/widgets/trendig_section.dart';
 
+import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/utils/theme_state.dart';
 
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 
+import '../../../app/my_cached_network_image.dart';
+import '../../../home/data/models/get_product_listing_with_filters_model.dart'
+    as product_listing_model;
 import '../../../home/presentation/manager/home_bloc.dart';
 
+import '../../../home/presentation/widgets/product_listing/filters_normal_list.dart';
+import '../../../home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import '../widgets/search_history.dart';
 import '../widgets/search_result.dart';
 
@@ -33,12 +44,13 @@ class SearchPage extends StatefulWidget {
   const SearchPage(
       {super.key,
       required this.buildSearchResult,
-      required this.hideTrendingAndHistory,
+      required this.appearTrendingAndHistory,
       required this.controller});
+
   final TextEditingController controller;
 
   final ValueNotifier<int> buildSearchResult;
-  final ValueNotifier<bool> hideTrendingAndHistory;
+  final ValueNotifier<bool> appearTrendingAndHistory;
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -47,19 +59,31 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends ThemeState<SearchPage> {
   final ScrollController scrollController = ScrollController();
   final ValueNotifier<bool> hideAppleyResetButtom = ValueNotifier(true);
-  final ValueNotifier<List<int>> selectBoutiqueSearch = ValueNotifier([]);
-  final ValueNotifier<List<int>> selectBrandSearch = ValueNotifier([]);
-
-  final ValueNotifier<List<int>> selectCategorySearch = ValueNotifier([]);
 
   late final AppBloc appBloc;
   late final HomeBloc homeBloc;
+
   @override
   void initState() {
-    widget.hideTrendingAndHistory.value = true;
+    BlocProvider.of<HomeBloc>(context).add(GetProductFiltersEvent(
+        fromHomePageSearch: true,
+        resetAppliesFilters: true,
+        filtersChoosedByUser: null));
+    widget.appearTrendingAndHistory.value = true;
+    widget.controller.addListener(() {
+      if (widget.controller.text.length > 2) {
+        hideAppleyResetButtom.value = false;
+      }
+    });
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    homeBloc.add(GetProductFiltersEvent(searchText: null));
+    super.dispose();
   }
 
   @override
@@ -77,17 +101,13 @@ class _SearchPageState extends ThemeState<SearchPage> {
               previous.searchHistory != current.searchHistory ||
               previous.getProductFiltersStatus !=
                   current.getProductFiltersStatus ||
-              previous.selectedBoutiqueBrandCategorySlugsForSearch.values !=
-                  current.selectedBoutiqueBrandCategorySlugsForSearch.values,
+              previous.countOfProductExpectedByFiltering !=
+                  current.countOfProductExpectedByFiltering ||
+              previous.getProductListingWithFiltersPaginationModels
+                      ?.paginationStatus !=
+                  current.getProductListingWithFiltersPaginationModels
+                      ?.paginationStatus,
           builder: (context, state) {
-            print(state.getProductFiltersStatus);
-            hideAppleyResetButtom.value = state
-                    .selectedBoutiqueBrandCategorySlugsForSearch.values
-                    .toList()
-                    .any((element) => !element.isEmpty) ||
-                state.boutiques!.any((element) => element.isSelected!) ||
-                state.categories!.any((element) => element.isSelected!) ||
-                state.brands!.any((element) => element.isSelected!);
             return SafeArea(
                 child: CustomScrollView(
                     physics: const ClampingScrollPhysics(),
@@ -100,26 +120,26 @@ class _SearchPageState extends ThemeState<SearchPage> {
                       builder: (context, value, _) {
                         return SliverMainAxisGroup(slivers: [
                           ValueListenableBuilder<bool>(
-                              valueListenable: widget.hideTrendingAndHistory,
+                              valueListenable: widget.appearTrendingAndHistory,
                               child: SearchHistory(
                                 controller: widget.controller,
                                 buildSearchResult: widget.buildSearchResult,
-                                hideTrendingAndHistory:
-                                    widget.hideTrendingAndHistory,
+                                appearTrendingAndHistory:
+                                    widget.appearTrendingAndHistory,
                                 items: state.searchHistory ?? [],
                               ),
-                              builder: (context, hide, child) {
+                              builder: (context, appear, child) {
                                 return SliverToBoxAdapter(
-                                  child: hide ? SizedBox.shrink() : child!,
+                                  child: appear ? child! : SizedBox.shrink(),
                                 );
                               }),
                           ValueListenableBuilder<bool>(
-                              valueListenable: widget.hideTrendingAndHistory,
+                              valueListenable: widget.appearTrendingAndHistory,
                               child: TrendingSection(),
-                              builder: (context, hide, child) {
+                              builder: (context, appear, child) {
                                 return SliverToBoxAdapter(
                                   child: Visibility(
-                                    visible: !hide,
+                                    visible: appear,
                                     child: child!,
                                   ),
                                 );
@@ -133,149 +153,777 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   ),
                   SliverToBoxAdapter(
                       child: SizedBox(
-                    height: 1.sh - 580.h,
+                    height: state
+                                .getProductListingWithFiltersPaginationModels ==
+                            null
+                        ? 250.h
+                        : state.getProductListingWithFiltersPaginationModels!
+                                .items.isNullOrEmpty
+                            ? 250.h
+                            : 150.h,
                   )),
-                  ValueListenableBuilder<bool>(
-                      valueListenable: widget.hideTrendingAndHistory,
-                      child: SearchChipBrand(
-                        controller: widget.controller,
-                        selectedBrand: selectBrandSearch,
-                        title: 'Brands',
-                      ),
-                      builder: (context, hide, child) {
-                        return SliverToBoxAdapter(
-                          child: Visibility(
-                            visible: !hide,
-                            child: child!,
-                          ),
-                        );
-                      }),
-                  ValueListenableBuilder<bool>(
-                      valueListenable: widget.hideTrendingAndHistory,
-                      child: SearchChipcategory(
-                        controller: widget.controller,
-                        selectedCategory: selectCategorySearch,
-                        title: 'Category',
-                      ),
-                      builder: (context, hide, child) {
-                        return SliverToBoxAdapter(
-                          child: Visibility(
-                            visible: !hide,
-                            child: child!,
-                          ),
-                        );
-                      }),
-                  ValueListenableBuilder<bool>(
-                      valueListenable: widget.hideTrendingAndHistory,
-                      child: SearchChipBoutique(
-                        controller: widget.controller,
-                        selectedBoutique: selectBoutiqueSearch,
-                        title: "Boutique",
-                      ),
-                      builder: (context, hide, child) {
-                        return SliverToBoxAdapter(
-                          child: Visibility(
-                            visible: !hide,
-                            child: child!,
-                          ),
-                        );
-                      }),
-                  ValueListenableBuilder<bool>(
-                      valueListenable: hideAppleyResetButtom,
-                      child: Container(
-                        margin: EdgeInsets.only(
-                            bottom: !hideAppleyResetButtom.value ? 0 : 30),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  if (state.getProductFiltersStatus ==
+                          GetProductFiltersStatus.loading &&
+                      state.getProductFiltersModel?.filters == null)
+                    SliverToBoxAdapter(
+                        child: Center(
+                      child: TrydosLoader(),
+                    )),
+                  if (!(state.getProductFiltersModel?.filters?.brands
+                          .isNullOrEmpty ??
+                      true))
+                    ValueListenableBuilder<bool>(
+                        valueListenable: widget.appearTrendingAndHistory,
+                        child: SearchChipBrand(
+                          isLoading: state.getProductFiltersStatus ==
+                                  GetProductFiltersStatus.loading ||
+                              state.getProductListingWithFiltersPaginationModels
+                                      ?.paginationStatus ==
+                                  PaginationStatus.loading,
+                          controller: widget.controller,
+                          title: 'Brands',
+                        ),
+                        builder: (context, appear, child) {
+                          return SliverToBoxAdapter(
+                            child: Visibility(
+                              visible: appear,
+                              child: child!,
+                            ),
+                          );
+                        }),
+                  if (!(state.getProductFiltersModel?.filters?.categories
+                          .isNullOrEmpty ??
+                      true))
+                    ValueListenableBuilder<bool>(
+                        valueListenable: widget.appearTrendingAndHistory,
+                        child: SearchChipCategory(
+                          isLoading: state.getProductFiltersStatus ==
+                                  GetProductFiltersStatus.loading ||
+                              state.getProductListingWithFiltersPaginationModels
+                                      ?.paginationStatus ==
+                                  PaginationStatus.loading,
+                          controller: widget.controller,
+                          title: 'Category',
+                        ),
+                        builder: (context, appear, child) {
+                          return SliverToBoxAdapter(
+                            child: Visibility(
+                              visible: appear,
+                              child: child!,
+                            ),
+                          );
+                        }),
+                  if (!(state.getProductFiltersModel?.filters?.boutiques
+                          .isNullOrEmpty ??
+                      true))
+                    ValueListenableBuilder<bool>(
+                        valueListenable: widget.appearTrendingAndHistory,
+                        child: SearchChipBoutique(
+                          isLoading: state.getProductFiltersStatus ==
+                                  GetProductFiltersStatus.loading ||
+                              state.getProductListingWithFiltersPaginationModels
+                                      ?.paginationStatus ==
+                                  PaginationStatus.loading,
+                          controller: widget.controller,
+                          title: "Boutique",
+                        ),
+                        builder: (context, appear, child) {
+                          return SliverToBoxAdapter(
+                            child: Visibility(
+                              visible: appear,
+                              child: child!,
+                            ),
+                          );
+                        }),
+                  BlocBuilder<HomeBloc, HomeState>(
+                    builder: (context, state) {
+                      Filter? filters;
+                      filters = state.choosedFiltersByUser?.filters;
+                      if ((filters?.brands.isNullOrEmpty ?? true) &&
+                          (filters?.categories.isNullOrEmpty ?? true) &&
+                          (filters?.boutiques.isNullOrEmpty ?? true)) {
+                        return SliverToBoxAdapter(child: SizedBox.shrink());
+                      }
+                      return SliverToBoxAdapter(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            InkWell(
-                              onTap: () {
-                                homeBloc.add(GetProductsWithFiltersEvent(
-                                    offset: 1,
-                                    getWithPagination: false,
-                                    fromSearch: true,
-                                    searchText: widget.controller.text));
-                                HelperFunctions.slidingNavigation(
-                                    context,
-                                    ProductListingPage(
-                                      searchText: widget.controller.text,
-                                      boutiqueIcon: "",
-                                      fromSearch: true,
-                                      withSlidingImages: false,
-                                      boutiqueSlug: '',
-                                    ));
-                              },
-                              child: Container(
-                                width: 200,
-                                height: 65,
-                                decoration: BoxDecoration(
-                                    color: Color(0xffFF5F61),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
-                                          blurRadius: 6,
-                                          offset: Offset(0, 3)),
-                                      BoxShadow(
-                                        color: Colors.white.withOpacity(0.4),
-                                        blurRadius: 6,
-                                        offset: Offset(0, 3),
-                                      )
-                                    ],
-                                    borderRadius: BorderRadius.circular(20)),
-                                child: Stack(
-                                  children: [
-                                    Center(
-                                      child: MyTextWidget(
-                                        'Search',
-                                        style: textTheme.headline6?.rq.copyWith(
-                                            color: Color(0xffFEFEFE),
-                                            height: 23 / 18),
-                                      ),
-                                    ),
-                                    Positioned(
-                                        right: 20,
-                                        top: 10,
-                                        child: Container(
-                                            width: 30,
-                                            height: 30,
-                                            child: state.getProductFiltersStatus ==
-                                                        GetProductFiltersStatus
-                                                            .success &&
-                                                    state.countOfProductExpectedByFiltering !=
-                                                        0
-                                                ? MyTextWidget(
-                                                    "(${state.countOfProductExpectedByFiltering})")
-                                                : SizedBox.shrink())),
-                                    state.getProductFiltersStatus ==
-                                            GetProductFiltersStatus.loading
-                                        ? Positioned(
-                                            right: 40,
-                                            top: 28,
-                                            child: Container(
-                                                width: 15,
-                                                height: 15,
-                                                child: Center(
-                                                  child: TrydosLoader(
-                                                    color: Colors.white,
-                                                    size: 15,
-                                                  ),
-                                                )))
-                                        : SizedBox.shrink()
-                                  ],
-                                ),
+                            Padding(
+                              padding:
+                                  const EdgeInsetsDirectional.only(start: 20.0),
+                              child: MyTextWidget(
+                                'Choosed Filters:',
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                                style: context.textTheme.bodyText2?.rq.copyWith(
+                                    color: Colors.black,
+                                    letterSpacing: 0,
+                                    height: 1.25),
                               ),
                             ),
-                            Stack(
-                              children: [
-                                InkWell(
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: Colors.grey.shade300),
+                              height: 30,
+                              width: 1.sw,
+                              child: ListView(
+                                  shrinkWrap: true,
+                                  physics: ClampingScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    if (!(filters?.categories.isNullOrEmpty ??
+                                        true)) ...{
+                                      Center(
+                                          child: FilterSelectedMark(
+                                              width: 15, height: 15)),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                    },
+                                    SizedBox(
+                                        height: 28,
+                                        child: ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount:
+                                              filters?.categories?.length ?? 0,
+                                          itemBuilder: (ctx, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                List<
+                                                        product_listing_model
+                                                        .Category>
+                                                    newCategories =
+                                                    filters?.categories ?? [];
+                                                newCategories.removeAt(index);
+                                                GetProductFiltersModel
+                                                    newGetProductFiltersModel =
+                                                    GetProductFiltersModel(
+                                                        filters: filters
+                                                            ?.copyWithSaveOtherField(
+                                                                categories:
+                                                                    newCategories));
+                                                BlocProvider.of<HomeBloc>(
+                                                        context)
+                                                    .add(
+                                                        ChangeSelectedFiltersEvent(
+                                                  filtersChoosedByUser:
+                                                      newGetProductFiltersModel,
+                                                ));
+                                              },
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  FilterImage(
+                                                    width: filters!
+                                                            .categories![index]
+                                                            .isSubCategory
+                                                        ? 15
+                                                        : 20,
+                                                    height: filters
+                                                            .categories![index]
+                                                            .isSubCategory
+                                                        ? 15
+                                                        : 20,
+                                                    imageUrl: filters
+                                                        .categories![index]
+                                                        .mostViewedProductThumbnail!
+                                                        .filePath
+                                                        .toString(),
+                                                    withInnerShadow: true,
+                                                    withBackGroundShadow: false,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  MyTextWidget(
+                                                    filters
+                                                        .categories![index].name
+                                                        .toString(),
+                                                    maxLines: 1,
+                                                    textAlign: TextAlign.center,
+                                                    style: context
+                                                        .textTheme.caption?.rq
+                                                        .copyWith(
+                                                            color: Color(
+                                                                0xff8E8E8E),
+                                                            letterSpacing: 0,
+                                                            height: 1.25),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        )),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    if (!(filters?.boutiques.isNullOrEmpty ??
+                                        true)) ...{
+                                      Center(
+                                          child: FilterSelectedMark(
+                                              width: 15, height: 15)),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                    },
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    SizedBox(
+                                        height: 28,
+                                        child: ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount:
+                                              filters?.boutiques?.length ?? 0,
+                                          itemBuilder: (ctx, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                List<Boutique> newBoutiques =
+                                                    filters?.boutiques ?? [];
+                                                newBoutiques.removeAt(index);
+                                                GetProductFiltersModel
+                                                    newGetProductFiltersModel =
+                                                    GetProductFiltersModel(
+                                                        filters: filters
+                                                            ?.copyWithSaveOtherField(
+                                                                boutiques:
+                                                                    newBoutiques));
+                                                BlocProvider.of<HomeBloc>(
+                                                        context)
+                                                    .add(
+                                                        ChangeSelectedFiltersEvent(
+                                                  filtersChoosedByUser:
+                                                      newGetProductFiltersModel,
+                                                ));
+                                              },
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  MyCachedNetworkImage(
+                                                    imageUrl: filters!
+                                                        .boutiques![index]
+                                                        .banner!
+                                                        .filePath!,
+                                                    imageFit: BoxFit.cover,
+                                                    height: 40,
+                                                    width: 60,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        )),
+                                    if (!(filters?.brands.isNullOrEmpty ??
+                                        true)) ...{
+                                      Center(
+                                          child: FilterSelectedMark(
+                                              width: 15, height: 15)),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                    },
+                                    SizedBox(
+                                        height: 28,
+                                        child: ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount:
+                                              filters?.brands?.length ?? 0,
+                                          itemBuilder: (ctx, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                List<Brand> newBrands =
+                                                    filters!.brands ?? [];
+                                                newBrands.removeAt(index);
+                                                GetProductFiltersModel
+                                                    newGetProductFiltersModel =
+                                                    GetProductFiltersModel(
+                                                        filters: filters
+                                                            .copyWithSaveOtherField(
+                                                                brands:
+                                                                    newBrands));
+                                                BlocProvider.of<HomeBloc>(
+                                                        context)
+                                                    .add(
+                                                        ChangeSelectedFiltersEvent(
+                                                  filtersChoosedByUser:
+                                                      newGetProductFiltersModel,
+                                                ));
+                                              },
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  FilterImage(
+                                                    width: 20,
+                                                    height: 20,
+                                                    imageUrl: filters!
+                                                        .brands![index].image
+                                                        .toString(),
+                                                    isSvg: true,
+                                                    withInnerShadow: true,
+                                                    withBackGroundShadow: false,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  MyTextWidget(
+                                                    filters.brands![index].name
+                                                        .toString(),
+                                                    maxLines: 1,
+                                                    textAlign: TextAlign.center,
+                                                    style: context
+                                                        .textTheme.caption?.rq
+                                                        .copyWith(
+                                                            color: Color(
+                                                                0xff8E8E8E),
+                                                            letterSpacing: 0,
+                                                            height: 1.25),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        )),
+                                  ]),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  BlocBuilder<HomeBloc, HomeState>(
+                    builder: (context, state) {
+                      Filter? filters;
+                      filters = state.appliedFiltersByUser?.filters;
+                      if ((filters?.brands.isNullOrEmpty ?? true) &&
+                          (filters?.categories.isNullOrEmpty ?? true) &&
+                          (filters?.boutiques.isNullOrEmpty ?? true)) {
+                        return SliverToBoxAdapter(child: SizedBox.shrink());
+                      }
+                      return SliverToBoxAdapter(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsetsDirectional.only(start: 20.0),
+                              child: MyTextWidget(
+                                'Applied Filters:',
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                                style: context.textTheme.bodyText2?.rq.copyWith(
+                                    color: Colors.black,
+                                    letterSpacing: 0,
+                                    height: 1.25),
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: Colors.grey.shade300),
+                              height: 30,
+                              width: 1.sw,
+                              child: ListView(
+                                  shrinkWrap: true,
+                                  physics: ClampingScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    if (!(filters?.categories.isNullOrEmpty ??
+                                        true)) ...{
+                                      Center(
+                                          child: FilterSelectedMark(
+                                              width: 15, height: 15)),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                    },
+                                    SizedBox(
+                                        height: 28,
+                                        child: ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount:
+                                              filters?.categories?.length ?? 0,
+                                          itemBuilder: (ctx, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                List<
+                                                        product_listing_model
+                                                        .Category>
+                                                    newCategories =
+                                                    filters?.categories ?? [];
+                                                newCategories.removeAt(index);
+                                                GetProductFiltersModel
+                                                    newGetProductFiltersModel =
+                                                    GetProductFiltersModel(
+                                                        filters: filters
+                                                            ?.copyWithSaveOtherField(
+                                                          prices: filters.prices,
+                                                                searchText: filters.searchText,
+                                                                categories:
+                                                                    newCategories));
+                                                homeBloc.add(
+                                                    ChangeAppliedFiltersEvent(
+                                                        filtersAppliedByUser:
+                                                            newGetProductFiltersModel));
+                                                BlocProvider.of<HomeBloc>(
+                                                        context)
+                                                    .add(
+                                                        GetProductsWithFiltersEvent(
+                                                  fromSearch: true,
+                                                  searchText:
+                                                      widget.controller.text,
+                                                  offset: 1,
+                                                ));
+                                              },
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  FilterImage(
+                                                    width: filters!
+                                                            .categories![index]
+                                                            .isSubCategory
+                                                        ? 15
+                                                        : 20,
+                                                    height: filters
+                                                            .categories![index]
+                                                            .isSubCategory
+                                                        ? 15
+                                                        : 20,
+                                                    imageUrl: filters
+                                                        .categories![index]
+                                                        .mostViewedProductThumbnail!
+                                                        .filePath
+                                                        .toString(),
+                                                    withInnerShadow: true,
+                                                    withBackGroundShadow: false,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  MyTextWidget(
+                                                    filters
+                                                        .categories![index].name
+                                                        .toString(),
+                                                    maxLines: 1,
+                                                    textAlign: TextAlign.center,
+                                                    style: context
+                                                        .textTheme.caption?.rq
+                                                        .copyWith(
+                                                            color: Color(
+                                                                0xff8E8E8E),
+                                                            letterSpacing: 0,
+                                                            height: 1.25),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        )),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    if (!(filters?.boutiques.isNullOrEmpty ??
+                                        true)) ...{
+                                      Center(
+                                          child: FilterSelectedMark(
+                                              width: 15, height: 15)),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                    },
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    SizedBox(
+                                        height: 28,
+                                        child: ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount:
+                                              filters?.boutiques?.length ?? 0,
+                                          itemBuilder: (ctx, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                List<Boutique> newBoutiques =
+                                                    filters?.boutiques ?? [];
+                                                newBoutiques.removeAt(index);
+                                                GetProductFiltersModel
+                                                    newGetProductFiltersModel =
+                                                    GetProductFiltersModel(
+                                                        filters: filters
+                                                            ?.copyWithSaveOtherField(
+                                                            prices: filters.prices,
+                                                            searchText: filters.searchText,
+                                                                boutiques:
+                                                                    newBoutiques));
+                                                homeBloc.add(
+                                                ChangeAppliedFiltersEvent(
+                                                filtersAppliedByUser:
+                                                newGetProductFiltersModel));
+                                                BlocProvider.of<HomeBloc>(
+                                                        context)
+                                                    .add(GetProductsWithFiltersEvent(
+                                                        fromSearch: true,
+                                                        searchText: widget
+                                                            .controller.text,
+                                                        offset: 1,
+                                                        ));
+                                              },
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  MyCachedNetworkImage(
+                                                    imageUrl: filters!
+                                                        .boutiques![index]
+                                                        .banner!
+                                                        .filePath!,
+                                                    imageFit: BoxFit.cover,
+                                                    height: 40,
+                                                    width: 60,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        )),
+                                    if (!(filters?.brands.isNullOrEmpty ??
+                                        true)) ...{
+                                      Center(
+                                          child: FilterSelectedMark(
+                                              width: 15, height: 15)),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                    },
+                                    SizedBox(
+                                        height: 28,
+                                        child: ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount:
+                                              filters?.brands?.length ?? 0,
+                                          itemBuilder: (ctx, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                List<Brand> newBrands =
+                                                    filters!.brands ?? [];
+                                                newBrands.removeAt(index);
+                                                GetProductFiltersModel
+                                                    newGetProductFiltersModel =
+                                                    GetProductFiltersModel(
+                                                        filters: filters
+                                                            .copyWithSaveOtherField(
+                                                            prices: filters.prices,
+                                                            searchText: filters.searchText,
+                                                                brands:
+                                                                    newBrands));
+                                                homeBloc.add(
+                                                ChangeAppliedFiltersEvent(
+                                                filtersAppliedByUser:
+                                                newGetProductFiltersModel));
+                                                BlocProvider.of<HomeBloc>(
+                                                        context)
+                                                    .add(GetProductsWithFiltersEvent(
+                                                        fromSearch: true,
+                                                        searchText: widget
+                                                            .controller.text,
+                                                        offset: 1,
+                                                        ));
+                                              },
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  FilterImage(
+                                                    width: 20,
+                                                    height: 20,
+                                                    imageUrl: filters!
+                                                        .brands![index].image
+                                                        .toString(),
+                                                    isSvg: true,
+                                                    withInnerShadow: true,
+                                                    withBackGroundShadow: false,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  MyTextWidget(
+                                                    filters.brands![index].name
+                                                        .toString(),
+                                                    maxLines: 1,
+                                                    textAlign: TextAlign.center,
+                                                    style: context
+                                                        .textTheme.caption?.rq
+                                                        .copyWith(
+                                                            color: Color(
+                                                                0xff8E8E8E),
+                                                            letterSpacing: 0,
+                                                            height: 1.25),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        )),
+                                  ]),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  BlocBuilder<HomeBloc, HomeState>(
+                    builder: (context, state) {
+                      Filter? choosedFilterToAddToIt =
+                          state.choosedFiltersByUser?.filters;
+                      if (choosedFilterToAddToIt == null &&
+                          widget.controller.text.length < 3) {
+                        return SliverToBoxAdapter(child: SizedBox.shrink());
+                      }
+
+                      return SliverToBoxAdapter(
+                        child: Container(
+                          margin: EdgeInsets.only(
+                              bottom: !hideAppleyResetButtom.value ? 0 : 30,
+                              left: 20,
+                              right: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: InkWell(
                                   onTap: () {
-                                    selectBoutiqueSearch.value = [];
-                                    selectBrandSearch.value = [];
-                                    selectCategorySearch.value = [];
-                                    homeBloc.add(GetProductFiltersEvent());
+                                    widget.controller.text = '';
+                                    homeBloc.add(ChangeAppliedFiltersEvent(
+                                      filtersAppliedByUser: state.choosedFiltersByUser,
+                                    ));
+                                    homeBloc.add(GetProductsWithFiltersEvent(
+                                        offset: 1,
+                                        getWithPagination: false,
+                                        fromSearch: true,
+                                        searchText: widget.controller.text));
+                                    HelperFunctions.slidingNavigation(
+                                        context,
+                                        ProductListingPage(
+                                          searchText: widget.controller.text,
+                                          boutiqueIcon: "",
+                                          fromSearch: true,
+                                          withSlidingImages: false,
+                                          boutiqueSlug: null,
+                                        ));
                                   },
                                   child: Container(
-                                    width: 150,
+                                    height: 65,
+                                    decoration: BoxDecoration(
+                                        color: Color(0xffFF5F61),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.1),
+                                              blurRadius: 6,
+                                              offset: Offset(0, 3)),
+                                          BoxShadow(
+                                            color:
+                                                Colors.white.withOpacity(0.4),
+                                            blurRadius: 6,
+                                            offset: Offset(0, 3),
+                                          )
+                                        ],
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: Stack(
+                                      children: [
+                                        Center(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              MyTextWidget(
+                                                'Search ',
+                                                style: textTheme.headline6?.rq
+                                                    .copyWith(
+                                                        color:
+                                                            Color(0xffFEFEFE),
+                                                        height: 23 / 18),
+                                              ),
+                                              state.countOfProductExpectedByFiltering !=
+                                                      null
+                                                  ? MyTextWidget(
+                                                      "(${state.countOfProductExpectedByFiltering} products)",
+                                                      style: textTheme
+                                                          .subtitle1?.rq
+                                                          .copyWith(
+                                                              color: Color(
+                                                                  0xffFEFEFE),
+                                                              height: 23 / 18),
+                                                    )
+                                                  : SizedBox.shrink()
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 15),
+                              Expanded(
+                                flex: 1,
+                                child: InkWell(
+                                  onTap: () {
+                                    homeBloc.add(GetProductFiltersEvent(
+                                      filtersChoosedByUser: null,
+                                      resetAppliesFilters: true,
+                                    ));
+                                    widget.controller.clear();
+                                  },
+                                  child: Container(
                                     height: 65,
                                     decoration: BoxDecoration(
                                         color: colorScheme.white,
@@ -305,19 +953,13 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      builder: (context, hide, child) {
-                        return SliverToBoxAdapter(
-                          child: Visibility(
-                            visible: hide,
-                            child: child!,
+                              ),
+                            ],
                           ),
-                        );
-                      }),
+                        ),
+                      );
+                    },
+                  ),
                 ]));
           },
         ),

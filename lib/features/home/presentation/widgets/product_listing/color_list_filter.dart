@@ -21,14 +21,14 @@ class ColorsListFilter extends StatefulWidget {
       this.hideTitle = false,
        this.searchText,
       required this.colors,
-      required this.fromSearch,
-      required this.boutiqueSlug,
+      required this.fromHomeSearch,
+      this.boutiqueSlug,
       this.category});
 
   final List<String> colors;
   final bool hideTitle;
-  final bool fromSearch;
-  final String boutiqueSlug;
+  final bool fromHomeSearch;
+  final String? boutiqueSlug;
   final String? category;
   final String? searchText;
 
@@ -111,6 +111,8 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                               prevChoosedOrAppliedFilterToAddToIt =
                                   prevChoosedOrAppliedFilterToAddToIt
                                       .copyWithSaveOtherField(
+                                    prices: prevChoosedOrAppliedFilterToAddToIt.prices,
+                                    searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
                                           colors:
                                               prevChoosedOrAppliedFilterToAddToIt
                                                       .colors.isNullOrEmpty
@@ -120,14 +122,19 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                                           .colors!,
                                                       color
                                                     ]);
+
                               if (widget.hideTitle) {
+                                homeBloc.add(ChangeAppliedFiltersEvent(
+                                  category: widget.category,
+                                  boutiqueSlug: widget.boutiqueSlug,
+                                  filtersAppliedByUser: GetProductFiltersModel(
+                                      filters:
+                                      prevChoosedOrAppliedFilterToAddToIt),
+                                ));
                                 homeBloc.add(GetProductsWithFiltersEvent(
-                                    fromSearch: widget.fromSearch,
+                                    fromSearch: widget.fromHomeSearch,
                                     searchText: widget.searchText,
                                     boutiqueSlug: widget.boutiqueSlug,
-                                    filtersAppliedByUser: GetProductFiltersModel(
-                                        filters:
-                                            prevChoosedOrAppliedFilterToAddToIt),
                                     category: widget.category,
                                     offset: 1));
                               } else {
