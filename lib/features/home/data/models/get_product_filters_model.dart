@@ -89,7 +89,7 @@ class Filter {
         attributes: attributes ?? this.attributes,
         colors: colors ?? this.colors,
         prices: prices,
-        searchText: searchText ?? this.searchText,
+        searchText: searchText,
         boutiques: boutiques ?? this.boutiques,
         totalSize: totalSize ?? this.totalSize,
         categories: categories ?? this.categories,

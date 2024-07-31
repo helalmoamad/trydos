@@ -50,12 +50,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           : get_filters.GetProductFiltersModel.fromJson(
               json['appliedFiltersByUser'] as Map<String, dynamic>),
       currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
-      brands: (json['brands'] as List<dynamic>?)
-          ?.map((e) => get_filters.Brand.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      categories: (json['categories'] as List<dynamic>?)
-          ?.map((e) => get_product_with_filter.Category.fromJson(e as Map<String, dynamic>))
-          .toList(),
       productStatus: (json['productStatus'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(
             k,
@@ -110,9 +104,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                   json['getProductListingWithFiltersPaginationModels']
                       as Map<String, dynamic>,
                   (value) => Products.fromJson(value as Map<String, dynamic>)),
-      boutiques: (json['boutiques'] as List<dynamic>?)
-          ?.map((e) => get_filters.Boutique.fromJson(e as Map<String, dynamic>))
-          .toList(),
       getStoriesForProductStatus: $enumDecodeNullable(
               _$GetStoriesForProductStatusEnumMap,
               json['getStoriesForProductStatus']) ??
@@ -125,14 +116,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           (json['CurrentColorSizeForCart'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
-      selectedBoutiqueBrandCategorySlugsForSearch:
-          (json['selectedBoutiqueBrandCategorySlugsForSearch']
-                      as Map<String, dynamic>?)
-                  ?.map(
-                (k, e) => MapEntry(
-                    k, (e as List<dynamic>).map((e) => e as String).toList()),
-              ) ??
-              const {},
       currentQuantityForCart:
           (json['currentQuantityForCart'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(
@@ -210,10 +193,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                   ?.map(
                 (k, e) => MapEntry(
                     k,
-                    PaginationModel<boutiques_model.Boutique>.fromJson(
+                    PaginationModel<Boutique>.fromJson(
                         e as Map<String, dynamic>,
                         (value) =>
-                            boutiques_model.Boutique.fromJson(value as Map<String, dynamic>))),
+                            Boutique.fromJson(value as Map<String, dynamic>))),
               ) ??
               const {},
     );
@@ -246,8 +229,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
       'searchHistory': instance.searchHistory,
-      'selectedBoutiqueBrandCategorySlugsForSearch':
-          instance.selectedBoutiqueBrandCategorySlugsForSearch,
       'addImagesToProductIdForCart': instance.addImagesToProductIdForCart.map(
           (k, e) => MapEntry(k, e.map((k, e) => MapEntry(k.toString(), e)))),
       'productStatus': instance.productStatus?.map((k, e) => MapEntry(
@@ -278,7 +259,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'sizes': instance.sizes,
       'countOfProductExpectedByFiltering':
           instance.countOfProductExpectedByFiltering,
-      'boutiques': instance.boutiques?.map((e) => e.toJson()).toList(),
       'getProductListingPaginationWithoutFiltersModel': instance
           .getProductListingPaginationWithoutFiltersModel
           .map((k, e) => MapEntry(
@@ -294,8 +274,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getProductDetailWithoutRelatedProductsModel':
           instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
       'startingSetting': instance.startingSetting?.toJson(),
-      'categories': instance.categories?.map((e) => e.toJson()).toList(),
-      'brands': instance.brands?.map((e) => e.toJson()).toList(),
       'CurrentColorSizeForCart': instance.CurrentColorSizeForCart,
       'currentQuantityForCart': instance.currentQuantityForCart,
       'cachedProductWithoutRelatedProductsModel': instance

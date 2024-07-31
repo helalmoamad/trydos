@@ -12,6 +12,7 @@ import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
+import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
 import '../../manager/home_event.dart';
 import '../../manager/home_state.dart';
@@ -24,17 +25,17 @@ class FiltersNormalList<T> extends StatefulWidget {
       required this.isBrandFilter,
       required this.filters,
       this.searchText,
-      required this.fromSearch,
-      required this.boutiqueSlug,
+      required this.fromHomeSearch,
+      this.boutiqueSlug,
       this.category});
 
   final bool isBrandFilter;
   final String filterListTitle;
   final List<T> filters;
-  final bool fromSearch;
+  final bool fromHomeSearch;
   final String? searchText;
   final bool hideTitle;
-  final String boutiqueSlug;
+  final String? boutiqueSlug;
   final String? category;
 
   @override
@@ -70,7 +71,23 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
                   color: Color(0xffD3D3D3),
-                )
+                ),
+                BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+                  if (state.getProductFiltersStatus ==
+                      GetProductFiltersStatus.loading) {
+                    return Row(
+                      children: [
+                        SizedBox(
+                          width: 5,
+                        ),
+                        TrydosLoader(
+                          size: 20,
+                        ),
+                      ],
+                    );
+                  }
+                  return SizedBox.shrink();
+                })
               ],
             ),
             SizedBox(
@@ -111,6 +128,8 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                               prevChoosedOrAppliedFilterToAddToIt =
                                   prevChoosedOrAppliedFilterToAddToIt
                                       .copyWithSaveOtherField(
+                                      prices: prevChoosedOrAppliedFilterToAddToIt.prices,
+                                      searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
                                           brands: !widget.isBrandFilter
                                               ? prevChoosedOrAppliedFilterToAddToIt
                                                   .brands
@@ -123,13 +142,17 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                                       item
                                                     ]);
                               if (widget.hideTitle) {
+                                homeBloc.add(ChangeAppliedFiltersEvent(
+                                  category: widget.category,
+                                  boutiqueSlug: widget.boutiqueSlug,
+                                  filtersAppliedByUser: GetProductFiltersModel(
+                                      filters:
+                                      prevChoosedOrAppliedFilterToAddToIt),
+                                ));
                                 homeBloc.add(GetProductsWithFiltersEvent(
-                                    fromSearch: widget.fromSearch,
+                                    fromSearch: widget.fromHomeSearch,
                                     searchText: widget.searchText,
                                     boutiqueSlug: widget.boutiqueSlug,
-                                    filtersAppliedByUser: GetProductFiltersModel(
-                                        filters:
-                                            prevChoosedOrAppliedFilterToAddToIt),
                                     category: widget.category,
                                     offset: 1));
                               } else {

@@ -294,7 +294,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<int> buildSearchResult = ValueNotifier(0);
   final ValueNotifier<bool> appearTrendingAndHistory = ValueNotifier(true);
-
   final List<Widget> pages = [
     const HomePage(),
     const CartPage(),
@@ -730,13 +729,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                     p.currentIndex !=
                                                         c.currentIndex,
                                                 builder: (context, state) {
-                                                  if (state.currentIndex == 0) {
-                                                    homeBloc.add(
-                                                        GetProductFiltersEvent(
-                                                            boutiqueSlug: null,
-                                                            category: null,
-                                                            fromSearch: false));
-                                                  }
                                                   if (state.showBars == true &&
                                                           state.currentIndex ==
                                                               0 ||

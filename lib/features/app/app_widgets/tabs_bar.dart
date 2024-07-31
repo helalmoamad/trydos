@@ -7,21 +7,17 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/extensions/object.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
-import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
-import 'package:trydos/features/home/presentation/pages/product_listing_search.dart';
-import 'package:trydos/features/search/presentation/widgets/search_history.dart';
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/constant/design/constant_design.dart';
 import '../../../common/constant/widgets_key.dart';
 import '../../../core/utils/responsive_padding.dart';
+import '../../home/data/models/get_product_filters_model.dart';
+import '../../home/data/models/get_product_listing_with_filters_model.dart' as product_listing;
 import '../../home/presentation/manager/home_bloc.dart';
 import '../../home/presentation/manager/home_state.dart';
 import '../animated_search_bar/animated_search_bar.dart';
@@ -144,17 +140,17 @@ class _TabsBarState extends State<TabsBar> {
                                       width: 1.sw,
                                       height: 40,
                                       onClickClose: () {
-                                        GetProductFiltersEvent(searchText: "");
                                         if (widget.controller.text.length > 0) {
                                           widget.buildSearchResult.value = 0;
                                           widget.controller.clear();
-                                          widget.appearTrendingAndHistory
-                                              .value = true;
+                                          widget.appearTrendingAndHistory.value = true;
+                                          return true;
                                         } else {
                                           appBloc.add(ChangeBasePage(0));
                                           appBloc.add(
                                               HideBottomNavigationBar(false));
                                         }
+                                        return false;
                                       },
                                       textController: widget.controller,
                                       focusNode: focusNode,
@@ -303,9 +299,6 @@ class _TabsBarState extends State<TabsBar> {
                                       ),
                                       onChanged: (String text) {
                                         if (text.length > 2) {
-                                          homeBloc.add(GetProductFiltersEvent(
-                                              fromSearch: true,
-                                              searchText: text));
                                           homeBloc.add(
                                               GetProductsWithFiltersEvent(
                                                   offset: 1,

@@ -21,11 +21,10 @@ class SearchChipBrand extends StatefulWidget {
   final String title;
   final bool isLoading;
   final TextEditingController controller;
-  final ValueNotifier<List<int>> selectedBrand;
+
   const SearchChipBrand(
       {Key? key,
       required this.title,
-      required this.selectedBrand,
       required this.controller,
       required this.isLoading})
       : super(key: key);
@@ -39,6 +38,7 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
   late HomeBloc homeBloc;
 
   List<String> selectedBrandSlugs = [];
+
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -55,11 +55,8 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
       child: BlocBuilder<HomeBloc, HomeState>(
-        buildWhen: (previous, current) =>
-            previous.brands != current.brands ||
-            previous.selectedBoutiqueBrandCategorySlugsForSearch["brand"] !=
-                current.selectedBoutiqueBrandCategorySlugsForSearch["brand"],
         builder: (context, state) {
+          Filter filters = state.getProductFiltersModel?.filters ?? Filter();
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -103,134 +100,73 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                 height: 30,
                 child: ScrollConfiguration(
                   behavior: CupertinoScrollBehavior(),
-                  child: Stack(
-                    alignment: Alignment.centerRight,
-                    children: [
-                      state.brands.isNullOrEmpty
-                          ? SizedBox.shrink()
-                          : ListView.separated(
-                              controller: scrollController,
-                              shrinkWrap: true,
-                              physics: ClampingScrollPhysics(),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) {
-                                return ValueListenableBuilder(
-                                  valueListenable: widget.selectedBrand,
-                                  builder: (context, value, _) {
-                                    if (value.isNullOrEmpty) {
-                                      selectedBrandSlugs = [];
-                                      homeBloc.add(
-                                          AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
-                                              withBoutique: false,
-                                              withBrand: true,
-                                              selectedBoutiqueBrandCategorySlugsForSearch:
-                                                  selectedBrandSlugs));
-                                    }
-                                    return InkWell(
-                                      onTap: () {
-                                        homeBloc.add(ChangeSelectedFiltersEvent(
-                                            filtersChoosedByUser:
-                                                GetProductFiltersModel(
-                                                    filters: Filter(brands: [
-                                          state.brands![index]
-                                        ]))));
-
-                                        if (state.brands![index].isSelected ??
-                                            false) {
-                                          selectedBrandSlugs.remove(
-                                              '"${state.brands![index].slug ?? ""}"');
-                                          widget.selectedBrand.value
-                                              .remove(index);
-                                          homeBloc.add(
-                                              AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
-                                                  withBoutique: false,
-                                                  withBrand: true,
-                                                  selectedBoutiqueBrandCategorySlugsForSearch:
-                                                      selectedBrandSlugs));
-                                        } else {
-                                          widget.selectedBrand.value.add(index);
-                                          selectedBrandSlugs.add(
-                                              '"${state.brands![index].slug ?? ""}"');
-
-                                          homeBloc.add(
-                                              AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
-                                                  withBoutique: false,
-                                                  withBrand: true,
-                                                  selectedBoutiqueBrandCategorySlugsForSearch:
-                                                      selectedBrandSlugs));
-                                        }
-                                        widget.selectedBrand.notifyListeners();
-
-                                        homeBloc.add(GetProductFiltersEvent(
-                                            fromSearch: true,
-                                            searchText:
-                                                widget.controller.text));
-                                      },
-                                      child: Stack(
-                                        children: [
-                                          AnimatedScale(
-                                              curve: Curves
-                                                  .fastEaseInToSlowEaseOut,
-                                              scale: value.contains(index)
-                                                  ? 1
-                                                  : 0.94,
-                                              duration:
-                                                  Duration(milliseconds: 100),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                    color: Color(0xffF8F8F8),
-                                                    border: Border.all(
-                                                        color: state
-                                                                    .brands![
-                                                                        index]
-                                                                    .isSelected ??
-                                                                false
-                                                            ? Color(0xffFF5F61)
-                                                            : Color(
-                                                                0xffF8F8F8))),
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 0, horizontal: 0),
-                                                child: Center(
-                                                  child: Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      SvgNetworkWidget(
-                                                        svgUrl: state
-                                                            .brands![index]
-                                                            .image!,
-                                                        height: 20,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              )),
-                                          Visibility(
-                                              visible: state.brands![index]
-                                                      .isSelected ??
-                                                  false,
-                                              child: FilterSelectedMark(
-                                                  width: 12, height: 12))
-                                        ],
+                  child: ListView.separated(
+                      controller: scrollController,
+                      shrinkWrap: true,
+                      physics: ClampingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        bool isSelected = homeBloc
+                                .state.choosedFiltersByUser?.filters?.brands
+                                ?.any((element) =>
+                                    element.id == filters.brands?[index].id) ??
+                            false;
+                        return InkWell(
+                          onTap: () {
+                            Filter? prevChoosedFilterToAddToIt =
+                                homeBloc.state.choosedFiltersByUser?.filters;
+                            if (prevChoosedFilterToAddToIt == null) {
+                              prevChoosedFilterToAddToIt = Filter();
+                            }
+                            prevChoosedFilterToAddToIt =
+                                prevChoosedFilterToAddToIt
+                                    .copyWithSaveOtherField(brands: [
+                              ...prevChoosedFilterToAddToIt.brands ?? [],
+                              filters.brands![index]
+                            ]);
+                            homeBloc.add(ChangeSelectedFiltersEvent(
+                                filtersChoosedByUser: GetProductFiltersModel(
+                                    filters: prevChoosedFilterToAddToIt)));
+                          },
+                          child: Stack(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: Color(0xffF8F8F8),
+                                    border: Border.all(
+                                        color: isSelected
+                                            ? Color(0xffFF5F61)
+                                            : Color(0xffF8F8F8))),
+                                child: Center(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      SvgNetworkWidget(
+                                        svgUrl: filters.brands![index].image!,
+                                        height: 20,
                                       ),
-                                    );
-                                  },
-                                );
-                              },
-                              separatorBuilder: (context, index) {
-                                return SizedBox(
-                                  width: 10,
-                                );
-                              },
-                              itemCount: state.brands!.length),
-                    ],
-                  ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                  visible: isSelected,
+                                  child:
+                                      FilterSelectedMark(width: 12, height: 12))
+                            ],
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return SizedBox(
+                          width: 10,
+                        );
+                      },
+                      itemCount: filters.brands?.length ?? 0),
                 ),
               ),
             ],

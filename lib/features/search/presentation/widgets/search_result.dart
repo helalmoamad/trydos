@@ -184,7 +184,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
               padding: const EdgeInsets.all(10),
               child: Center(
                 child: MyTextWidget(
-                  "No elements found",
+                  "No Products found",
                   style: TextStyle(color: Colors.red, fontSize: 18),
                 ),
               ),

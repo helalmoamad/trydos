@@ -9,7 +9,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/search/presentation/widgets/search_history_chip.dart';
@@ -17,12 +16,12 @@ import 'package:trydos/features/search/presentation/widgets/search_history_chip.
 import '../../../../common/constant/design/assets_provider.dart';
 
 class SearchHistory extends StatefulWidget {
-  List<String> items;
+  final List<String> items;
   final ValueNotifier<int> buildSearchResult;
   final ValueNotifier<bool> appearTrendingAndHistory;
   final TextEditingController controller;
 
-  SearchHistory(
+  const SearchHistory(
       {super.key,
       required this.items,
       required this.buildSearchResult,
@@ -40,7 +39,7 @@ class _SearchHistoryState extends State<SearchHistory> {
 
   @override
   Widget build(BuildContext context) {
-    _items = widget.items;
+    _items = List.of(widget.items);
     return Padding(
       padding: const EdgeInsetsDirectional.only(top: 10.0, start: 20),
       child: Column(
@@ -149,7 +148,7 @@ class _SearchHistoryState extends State<SearchHistory> {
                                 widget.appearTrendingAndHistory.value = true;
                                 BlocProvider.of<HomeBloc>(context).add(
                                     GetProductFiltersEvent(
-                                        fromSearch: true,
+                                        fromHomePageSearch: true,
                                         searchText: _items[index]));
                               },
                               child: MyTextWidget(
