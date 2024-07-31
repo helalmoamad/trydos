@@ -9,9 +9,11 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
+import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
 import '../../manager/home_bloc.dart';
 import '../../manager/home_event.dart';
+import '../../manager/home_state.dart';
 
 class ColorsListFilter extends StatefulWidget {
   const ColorsListFilter(
@@ -19,14 +21,14 @@ class ColorsListFilter extends StatefulWidget {
       this.hideTitle = false,
        this.searchText,
       required this.colors,
-      required this.fromSearch,
-      required this.boutiqueSlug,
+      required this.fromHomeSearch,
+      this.boutiqueSlug,
       this.category});
 
   final List<String> colors;
   final bool hideTitle;
-  final bool fromSearch;
-  final String boutiqueSlug;
+  final bool fromHomeSearch;
+  final String? boutiqueSlug;
   final String? category;
   final String? searchText;
 
@@ -63,7 +65,16 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
                   color: Color(0xffD3D3D3),
-                )
+                ),
+               BlocBuilder<HomeBloc,HomeState>(
+                 builder: (context , state){
+                   if(state.getProductFiltersStatus == GetProductFiltersStatus.loading){
+                   return Row(children: [SizedBox(width: 5,),
+                     TrydosLoader(size: 20,),],);
+                   }
+                   return SizedBox.shrink();
+                 }
+               )
               ],
             ),
             SizedBox(
@@ -100,6 +111,8 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                               prevChoosedOrAppliedFilterToAddToIt =
                                   prevChoosedOrAppliedFilterToAddToIt
                                       .copyWithSaveOtherField(
+                                    prices: prevChoosedOrAppliedFilterToAddToIt.prices,
+                                    searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
                                           colors:
                                               prevChoosedOrAppliedFilterToAddToIt
                                                       .colors.isNullOrEmpty
@@ -109,14 +122,19 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                                           .colors!,
                                                       color
                                                     ]);
+
                               if (widget.hideTitle) {
+                                homeBloc.add(ChangeAppliedFiltersEvent(
+                                  category: widget.category,
+                                  boutiqueSlug: widget.boutiqueSlug,
+                                  filtersAppliedByUser: GetProductFiltersModel(
+                                      filters:
+                                      prevChoosedOrAppliedFilterToAddToIt),
+                                ));
                                 homeBloc.add(GetProductsWithFiltersEvent(
-                                    fromSearch: widget.fromSearch,
+                                    fromSearch: widget.fromHomeSearch,
                                     searchText: widget.searchText,
                                     boutiqueSlug: widget.boutiqueSlug,
-                                    filtersAppliedByUser: GetProductFiltersModel(
-                                        filters:
-                                            prevChoosedOrAppliedFilterToAddToIt),
                                     category: widget.category,
                                     offset: 1));
                               } else {
