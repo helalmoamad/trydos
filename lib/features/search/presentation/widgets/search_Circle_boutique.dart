@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -15,9 +16,13 @@ import '../../../app/my_text_widget.dart';
 
 class SearchChipBoutique extends StatefulWidget {
   final String title;
+  final TextEditingController controller;
   final ValueNotifier<List<int>> selectedBoutique;
   const SearchChipBoutique(
-      {Key? key, required this.title, required this.selectedBoutique})
+      {Key? key,
+      required this.title,
+      required this.selectedBoutique,
+      required this.controller})
       : super(key: key);
 
   @override
@@ -32,22 +37,6 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    scrollController.addListener(() {
-      if (scrollController.offset >=
-          (scrollController.position.maxScrollExtent *
-              0.7 *
-              (homeBloc
-                  .state
-                  .getHomeBoutiquesPaginationObjectByMainCategory["Empty"]!
-                  .page))) {
-        homeBloc.add(GetHomeBoutiqesEvent(
-            categorySlug: "Empty",
-            offset: homeBloc.state
-                .getHomeBoutiquesPaginationObjectByMainCategory["Empty"]!.page
-                .toString(),
-            getWithPagination: true));
-      }
-    });
     super.initState();
   }
 
@@ -68,9 +57,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
           selectedBoutiqueSlugs =
               state.selectedBoutiqueBrandCategorySlugsForSearch["boutique"] ??
                   [];
-          if (state.boutiques.isNullOrEmpty) {
-            return SizedBox.shrink();
-          }
+
           /*    selectedBoutiqueSlugs =
               state.selectedBoutiqueBrandCategorySlugsForSearch["boutique"] ??
                   [];
@@ -112,50 +99,27 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                 height: 10,
               ),
               SizedBox(
-                height: 30,
+                height: 60,
                 child: ScrollConfiguration(
                   behavior: CupertinoScrollBehavior(),
                   child: Stack(
                     alignment: Alignment.centerRight,
                     children: [
-                      ListView.separated(
-                          controller: scrollController,
-                          shrinkWrap: true,
-                          physics: ClampingScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return ValueListenableBuilder(
-                              valueListenable: widget.selectedBoutique,
-                              builder: (context, value, _) {
-                                if (value.isNullOrEmpty) {
-                                  selectedBoutiqueSlugs = [];
-                                  homeBloc.add(
-                                      AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
-                                          withBoutique: true,
-                                          withBrand: false,
-                                          selectedBoutiqueBrandCategorySlugsForSearch:
-                                              selectedBoutiqueSlugs));
-                                }
-                                return InkWell(
-                                  onTap: () {
-                                    if (widget.selectedBoutique.value
-                                        .contains(index)) {
-                                      selectedBoutiqueSlugs.remove(
-                                          '"${state.boutiques![index].slug ?? ""}"');
-                                      widget.selectedBoutique.value
-                                          .remove(index);
-                                      homeBloc.add(
-                                          AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
-                                              withBoutique: true,
-                                              withBrand: false,
-                                              selectedBoutiqueBrandCategorySlugsForSearch:
-                                                  selectedBoutiqueSlugs));
-                                    } else {
-                                      widget.selectedBoutique.value.add(index);
-                                      selectedBoutiqueSlugs.add(
-                                          '"${state.boutiques![index].slug ?? ""}"');
-
+                      state.boutiques.isNullOrEmpty
+                          ? SizedBox.shrink()
+                          : ListView.separated(
+                              controller: scrollController,
+                              shrinkWrap: true,
+                              physics: ClampingScrollPhysics(),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return ValueListenableBuilder(
+                                  valueListenable: widget.selectedBoutique,
+                                  builder: (context, value, _) {
+                                    if (value.isNullOrEmpty) {
+                                      selectedBoutiqueSlugs = [];
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
                                               withBoutique: true,
@@ -163,70 +127,129 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                               selectedBoutiqueBrandCategorySlugsForSearch:
                                                   selectedBoutiqueSlugs));
                                     }
-                                    widget.selectedBoutique.notifyListeners();
+                                    return InkWell(
+                                      onTap: () {
+                                        if (state
+                                                .boutiques![index].isSelected ??
+                                            false) {
+                                          selectedBoutiqueSlugs.remove(
+                                              '"${state.boutiques![index].slug ?? ""}"');
+                                          widget.selectedBoutique.value
+                                              .remove(index);
+                                          homeBloc.add(
+                                              AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
+                                                  withBoutique: true,
+                                                  withBrand: false,
+                                                  selectedBoutiqueBrandCategorySlugsForSearch:
+                                                      selectedBoutiqueSlugs));
+                                        } else {
+                                          widget.selectedBoutique.value
+                                              .add(index);
+                                          selectedBoutiqueSlugs.add(
+                                              '"${state.boutiques![index].slug ?? ""}"');
+
+                                          homeBloc.add(
+                                              AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
+                                                  withBoutique: true,
+                                                  withBrand: false,
+                                                  selectedBoutiqueBrandCategorySlugsForSearch:
+                                                      selectedBoutiqueSlugs));
+                                        }
+                                        widget.selectedBoutique
+                                            .notifyListeners();
+                                        homeBloc.add(GetProductFiltersEvent(
+                                            fromSearch: true,
+                                            searchText:
+                                                widget.controller.text));
+                                      },
+                                      child: Column(
+                                        children: [
+                                          Stack(
+                                            children: [
+                                              AnimatedScale(
+                                                  curve: Curves
+                                                      .fastEaseInToSlowEaseOut,
+                                                  scale: state.boutiques![index]
+                                                              .isSelected ??
+                                                          false
+                                                      ? 1
+                                                      : 0.94,
+                                                  duration: Duration(
+                                                      milliseconds: 100),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12),
+                                                        color:
+                                                            Color(0xffF8F8F8),
+                                                        border: Border.all(
+                                                            color: state
+                                                                        .boutiques![
+                                                                            index]
+                                                                        .isSelected ??
+                                                                    false
+                                                                ? Color(
+                                                                    0xffFF5F61)
+                                                                : Color(
+                                                                    0xffF8F8F8))),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 0,
+                                                            horizontal: 0),
+                                                    child: Center(
+                                                      child: state
+                                                                  .boutiques![
+                                                                      index]
+                                                                  .banner !=
+                                                              null
+                                                          ? MyCachedNetworkImage(
+                                                              imageUrl: state
+                                                                  .boutiques![
+                                                                      index]
+                                                                  .banner!
+                                                                  .filePath!,
+                                                              imageFit:
+                                                                  BoxFit.cover,
+                                                              height: 40,
+                                                              width: 100,
+                                                            )
+                                                          : SizedBox.shrink(),
+                                                    ),
+                                                  )),
+                                              Visibility(
+                                                  visible: state
+                                                          .boutiques![index]
+                                                          .isSelected ??
+                                                      false,
+                                                  child: FilterSelectedMark(
+                                                      width: 12, height: 12))
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 2,
+                                          ),
+                                          Center(
+                                              child: MyTextWidget(
+                                            state.boutiques![index].name!,
+                                            style: context
+                                                .textTheme.bodyText2?.rq
+                                                .copyWith(
+                                                    height: 12 / 14,
+                                                    color: Color(0xff8D8D8D)),
+                                          ))
+                                        ],
+                                      ),
+                                    );
                                   },
-                                  child: Stack(
-                                    children: [
-                                      AnimatedScale(
-                                          curve: Curves.fastEaseInToSlowEaseOut,
-                                          scale:
-                                              value.contains(index) ? 1 : 0.94,
-                                          duration: Duration(milliseconds: 100),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                                color: Color(0xffF8F8F8),
-                                                border: Border.all(
-                                                    color: value.contains(index)
-                                                        ? Color(0xffFF5F61)
-                                                        : Color(0xffF8F8F8))),
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 6, horizontal: 10),
-                                            child: Center(
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  SvgPicture.network(
-                                                    state.boutiques![index]
-                                                        .icon!.filePath!,
-                                                    width: 15,
-                                                    height: 15,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  MyTextWidget(
-                                                    state.boutiques![index]
-                                                        .name!,
-                                                    style: context
-                                                        .textTheme.bodyText2?.rq
-                                                        .copyWith(
-                                                            height: 18 / 14,
-                                                            color: Color(
-                                                                0xff8D8D8D)),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          )),
-                                      Visibility(
-                                          visible: value.contains(index),
-                                          child: FilterSelectedMark(
-                                              width: 12, height: 12))
-                                    ],
-                                  ),
                                 );
                               },
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return SizedBox(
-                              width: 10,
-                            );
-                          },
-                          itemCount: state.boutiques!.length),
+                              separatorBuilder: (context, index) {
+                                return SizedBox(
+                                  width: 10,
+                                );
+                              },
+                              itemCount: state.boutiques!.length),
                     ],
                   ),
                 ),

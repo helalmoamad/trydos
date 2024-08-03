@@ -104,32 +104,7 @@ class SharedScenarios {
     );
   }
 
-  /////////////////////////////////////////
-  static Future<void> registerGuest({required WidgetTester tester}) async {
-    await GlobalTestFunctions.waitFor(tester, find.byType(RegistrationPage));
-
-    await GlobalTestFunctions.findWidget(
-      tester: tester,
-      widgetType: RegistrationPage,
-      successMessage: 'Find Registration Page Success',
-      failedMessage: 'Find Registration Page failed',
-    );
-    ////////////////////////////
-    await GlobalTestFunctions.findWidget(
-      tester: tester,
-      widgetType: WelcomeSection,
-      successMessage: 'Find WelcomeSection Success',
-      failedMessage: 'Find WelcomeSection failed',
-    );
-    ////////////////////////////
-    await testTokensAreNull(isJustForMarketToken: true);
-    ////////////////////////////
-    final Finder laterTakeLookButton =
-        find.byKey(Key(WidgetsKey.laterTakeLookKey));
-    await Future.delayed(const Duration(seconds: 1));
-    await tester.tap(laterTakeLookButton);
-    await tester.pumpAndSettle();
-    ////////////////////////////
+  static Future<void> countryDropDown({required WidgetTester tester}) async {
     final Finder countryDropDownWidget =
         find.byKey(Key(WidgetsKey.countryDropDownKey));
     if (countryDropDownWidget.evaluate().isEmpty) {
@@ -157,6 +132,35 @@ class SharedScenarios {
       await tester.tap(chooseCountryButton);
       await tester.pumpAndSettle();
     }
+  }
+
+  /////////////////////////////////////////
+  static Future<void> registerGuest({required WidgetTester tester}) async {
+    await GlobalTestFunctions.waitFor(tester, find.byType(RegistrationPage));
+
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      widgetType: RegistrationPage,
+      successMessage: 'Find Registration Page Success',
+      failedMessage: 'Find Registration Page failed',
+    );
+    ////////////////////////////
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      widgetType: WelcomeSection,
+      successMessage: 'Find WelcomeSection Success',
+      failedMessage: 'Find WelcomeSection failed',
+    );
+    ////////////////////////////
+    await testTokensAreNull(isJustForMarketToken: true);
+    ////////////////////////////
+    final Finder laterTakeLookButton =
+        find.byKey(Key(WidgetsKey.laterTakeLookKey));
+    await Future.delayed(const Duration(seconds: 1));
+    await tester.tap(laterTakeLookButton);
+    await tester.pumpAndSettle();
+    ////////////////////////////
+    await countryDropDown(tester: tester);
     ////////////////////////////
     await GlobalTestFunctions.waitFor(tester, find.byType(HomePage),
         timeout: Duration(seconds: 40));
@@ -302,6 +306,8 @@ class SharedScenarios {
     final Finder skipForNowButton = find.byKey(Key(WidgetsKey.skipForNowKey));
     await tester.tap(skipForNowButton);
     await tester.pumpAndSettle();
+    //////////////////////////
+    await countryDropDown(tester: tester);
     //////////////////////////
     await GlobalTestFunctions.waitFor(tester, find.byType(HomePage));
     //////////////////////////

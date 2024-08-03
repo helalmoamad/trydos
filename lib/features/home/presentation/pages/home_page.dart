@@ -56,8 +56,9 @@ class _HomePageState extends State<HomePage> {
     homeBloc.add(GetCurrencyForCountryEvent());
     homeBloc.add(GetHomeBoutiqesEvent(
         categorySlug: "Empty", offset: "1", getWithPagination: false));
-    homeBloc.add(GetBrandEvent());
-    homeBloc.add(GetCategoryEvent());
+
+    homeBloc.add(GetProductFiltersEvent(
+        boutiqueSlug: null, category: null, fromSearch: false));
     scrollController.addListener(() {
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
       if (currentSelectedMainCategoryTab == -1) {
@@ -227,7 +228,7 @@ class _HomePageState extends State<HomePage> {
                                             height: 235,
                                             decoration: BoxDecoration(
                                               borderRadius:
-                                              BorderRadius.circular(20.0),
+                                                  BorderRadius.circular(20.0),
                                               boxShadow: [
                                                 BoxShadow(
                                                   color: const Color(0xff000000)
@@ -244,7 +245,7 @@ class _HomePageState extends State<HomePage> {
                                             height: 135,
                                             decoration: BoxDecoration(
                                               borderRadius:
-                                              BorderRadius.circular(20.0),
+                                                  BorderRadius.circular(20.0),
                                               boxShadow: [
                                                 BoxShadow(
                                                   color: const Color(0xff000000)
@@ -258,9 +259,10 @@ class _HomePageState extends State<HomePage> {
                                           bottom: 30,
                                           child: Row(
                                             children: List.generate(
-                                                5, (index) => CircleAvatar(
-                                              radius: 20,
-                                            )),
+                                                5,
+                                                (index) => CircleAvatar(
+                                                      radius: 20,
+                                                    )),
                                           ),
                                         )
                                       ],

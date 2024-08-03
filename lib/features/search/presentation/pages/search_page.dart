@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -55,6 +56,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
   late final HomeBloc homeBloc;
   @override
   void initState() {
+    widget.hideTrendingAndHistory.value = true;
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
@@ -73,14 +75,19 @@ class _SearchPageState extends ThemeState<SearchPage> {
         body: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.searchHistory != current.searchHistory ||
+              previous.getProductFiltersStatus !=
+                  current.getProductFiltersStatus ||
               previous.selectedBoutiqueBrandCategorySlugsForSearch.values !=
                   current.selectedBoutiqueBrandCategorySlugsForSearch.values,
           builder: (context, state) {
+            print(state.getProductFiltersStatus);
             hideAppleyResetButtom.value = state
-                .selectedBoutiqueBrandCategorySlugsForSearch.values
-                .toList()
-                .any((element) => !element.isEmpty);
-
+                    .selectedBoutiqueBrandCategorySlugsForSearch.values
+                    .toList()
+                    .any((element) => !element.isEmpty) ||
+                state.boutiques!.any((element) => element.isSelected!) ||
+                state.categories!.any((element) => element.isSelected!) ||
+                state.brands!.any((element) => element.isSelected!);
             return SafeArea(
                 child: CustomScrollView(
                     physics: const ClampingScrollPhysics(),
@@ -91,49 +98,47 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   ValueListenableBuilder<int>(
                       valueListenable: widget.buildSearchResult,
                       builder: (context, value, _) {
-                        return value == 0
-                            ? SliverMainAxisGroup(slivers: [
-                                ValueListenableBuilder<bool>(
-                                    valueListenable:
-                                        widget.hideTrendingAndHistory,
-                                    child: SearchHistory(
-                                      controller: widget.controller,
-                                      buildSearchResult:
-                                          widget.buildSearchResult,
-                                      hideTrendingAndHistory:
-                                          widget.hideTrendingAndHistory,
-                                      items: state.searchHistory ?? [],
-                                    ),
-                                    builder: (context, hide, child) {
-                                      return SliverToBoxAdapter(
-                                        child:
-                                            hide ? SizedBox.shrink() : child!,
-                                      );
-                                    }),
-                                ValueListenableBuilder<bool>(
-                                    valueListenable:
-                                        widget.hideTrendingAndHistory,
-                                    child: TrendingSection(),
-                                    builder: (context, hide, child) {
-                                      return SliverToBoxAdapter(
-                                        child: Visibility(
-                                          visible: !hide,
-                                          child: child!,
-                                        ),
-                                      );
-                                    }),
-                              ])
-                            : SliverToBoxAdapter(
-                                child: SearchResult(),
-                              );
+                        return SliverMainAxisGroup(slivers: [
+                          ValueListenableBuilder<bool>(
+                              valueListenable: widget.hideTrendingAndHistory,
+                              child: SearchHistory(
+                                controller: widget.controller,
+                                buildSearchResult: widget.buildSearchResult,
+                                hideTrendingAndHistory:
+                                    widget.hideTrendingAndHistory,
+                                items: state.searchHistory ?? [],
+                              ),
+                              builder: (context, hide, child) {
+                                return SliverToBoxAdapter(
+                                  child: hide ? SizedBox.shrink() : child!,
+                                );
+                              }),
+                          ValueListenableBuilder<bool>(
+                              valueListenable: widget.hideTrendingAndHistory,
+                              child: TrendingSection(),
+                              builder: (context, hide, child) {
+                                return SliverToBoxAdapter(
+                                  child: Visibility(
+                                    visible: !hide,
+                                    child: child!,
+                                  ),
+                                );
+                              }),
+                        ]);
                       }),
                   SliverToBoxAdapter(
+                    child: SearchResult(
+                      controller: widget.controller,
+                    ),
+                  ),
+                  SliverToBoxAdapter(
                       child: SizedBox(
-                    height: 1.sh - 500,
+                    height: 1.sh - 580.h,
                   )),
                   ValueListenableBuilder<bool>(
                       valueListenable: widget.hideTrendingAndHistory,
                       child: SearchChipBrand(
+                        controller: widget.controller,
                         selectedBrand: selectBrandSearch,
                         title: 'Brands',
                       ),
@@ -148,6 +153,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   ValueListenableBuilder<bool>(
                       valueListenable: widget.hideTrendingAndHistory,
                       child: SearchChipcategory(
+                        controller: widget.controller,
                         selectedCategory: selectCategorySearch,
                         title: 'Category',
                       ),
@@ -162,6 +168,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   ValueListenableBuilder<bool>(
                       valueListenable: widget.hideTrendingAndHistory,
                       child: SearchChipBoutique(
+                        controller: widget.controller,
                         selectedBoutique: selectBoutiqueSearch,
                         title: "Boutique",
                       ),
@@ -215,13 +222,46 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                       )
                                     ],
                                     borderRadius: BorderRadius.circular(20)),
-                                child: Center(
-                                  child: MyTextWidget(
-                                    'Apply',
-                                    style: textTheme.headline6?.rq.copyWith(
-                                        color: Color(0xffFEFEFE),
-                                        height: 23 / 18),
-                                  ),
+                                child: Stack(
+                                  children: [
+                                    Center(
+                                      child: MyTextWidget(
+                                        'Search',
+                                        style: textTheme.headline6?.rq.copyWith(
+                                            color: Color(0xffFEFEFE),
+                                            height: 23 / 18),
+                                      ),
+                                    ),
+                                    Positioned(
+                                        right: 20,
+                                        top: 10,
+                                        child: Container(
+                                            width: 30,
+                                            height: 30,
+                                            child: state.getProductFiltersStatus ==
+                                                        GetProductFiltersStatus
+                                                            .success &&
+                                                    state.countOfProductExpectedByFiltering !=
+                                                        0
+                                                ? MyTextWidget(
+                                                    "(${state.countOfProductExpectedByFiltering})")
+                                                : SizedBox.shrink())),
+                                    state.getProductFiltersStatus ==
+                                            GetProductFiltersStatus.loading
+                                        ? Positioned(
+                                            right: 40,
+                                            top: 28,
+                                            child: Container(
+                                                width: 15,
+                                                height: 15,
+                                                child: Center(
+                                                  child: TrydosLoader(
+                                                    color: Colors.white,
+                                                    size: 15,
+                                                  ),
+                                                )))
+                                        : SizedBox.shrink()
+                                  ],
                                 ),
                               ),
                             ),
@@ -232,6 +272,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                     selectBoutiqueSearch.value = [];
                                     selectBrandSearch.value = [];
                                     selectCategorySearch.value = [];
+                                    homeBloc.add(GetProductFiltersEvent());
                                   },
                                   child: Container(
                                     width: 150,

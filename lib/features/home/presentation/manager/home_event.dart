@@ -119,12 +119,14 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
 
 class ChangeSelectedFiltersEvent extends HomeEvent {
   final GetProductFiltersModel? filtersChoosedByUser;
+  final bool resetChoosedFilters;
   final String? boutiqueSlug;
   final String? category;
 
   ChangeSelectedFiltersEvent({
     this.filtersChoosedByUser,
     this.boutiqueSlug,
+    this.resetChoosedFilters = false,
     this.category,
   });
 
@@ -384,19 +386,19 @@ class AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
-class GetBrandEvent extends HomeEvent {
+/*class GetBrandEvent extends HomeEvent {
   GetBrandEvent();
 
   @override
   List<Object?> get props => [];
 }
-
-class GetCategoryEvent extends HomeEvent {
+*/
+/*class GetCategoryEvent extends HomeEvent {
   GetCategoryEvent();
 
   @override
   List<Object?> get props => [];
-}
+}*/
 
 class GetAllowedCountriesEvent extends HomeEvent {
   GetAllowedCountriesEvent();

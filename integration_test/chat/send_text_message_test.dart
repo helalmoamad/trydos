@@ -36,6 +36,8 @@ void main() {
         successMessage: 'Find LoginSuccessfully Success',
         failedMessage: 'Find LoginSuccessfully failed',
       );
+      /////////////////////////
+      await SharedScenarios.countryDropDown(tester: tester);
       //////////////////////////
       await GlobalTestFunctions.waitFor(tester, find.byType(HomePage));
       //////////////////////////

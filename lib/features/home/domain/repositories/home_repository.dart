@@ -24,8 +24,8 @@ import '../../data/models/get_story_for_product_model.dart';
 abstract class HomeRepository {
   Future<Either<Failure, StartingSettingsResponseModel>> getStartingSettings();
   Future<Either<Failure, GetCartShippingItemsModel>> getCartShippingItem();
-  Future<Either<Failure, GetBrandModel>> getBrand();
-  Future<Either<Failure, GetCategoryModel>> getCategory();
+  // Future<Either<Failure, GetBrandModel>> getBrand();
+//Future<Either<Failure, GetCategoryModel>> getCategory();
   Future<Either<Failure, GetCurrencyForCountryModel>> getCurrencyForCountry();
 
   Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories();

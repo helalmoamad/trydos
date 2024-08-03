@@ -127,7 +127,7 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
         tryCall: () => dataSource.updateItemInCart(params));
   }
 
-  @override
+/*@override
   Future<Either<Failure, GetBrandModel>> getBrand() {
     return handlingExceptionRequest(tryCall: () => dataSource.getBrand());
   }
@@ -135,7 +135,7 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   @override
   Future<Either<Failure, GetCategoryModel>> getCategory() {
     return handlingExceptionRequest(tryCall: () => dataSource.getCategory());
-  }
+  }*/
 
   @override
   Future<Either<Failure, GetCurrencyForCountryModel>> getCurrencyForCountry() {

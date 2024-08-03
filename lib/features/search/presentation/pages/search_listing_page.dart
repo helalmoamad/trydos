@@ -58,20 +58,21 @@ class _SearchListingPageState extends ThemeState<SearchListingPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
-      onPopInvoked: (pop) {
-        appBloc.add(ChangeBasePage(0));
-        appBloc.add(HideBottomNavigationBar(false));
-      },
-      child: SliverMainAxisGroup(
-        slivers: [
-          SliverToBoxAdapter(child: 10.verticalSpace),
-          SliverToBoxAdapter(
-            child: SearchResult(),
-          ),
-        ],
-      )
-    );
+        canPop: false,
+        onPopInvoked: (pop) {
+          appBloc.add(ChangeBasePage(0));
+          appBloc.add(HideBottomNavigationBar(false));
+        },
+        child: SliverMainAxisGroup(
+          slivers: [
+            SliverToBoxAdapter(child: 10.verticalSpace),
+            SliverToBoxAdapter(
+              child: SearchResult(
+                controller: widget.controller,
+              ),
+            ),
+          ],
+        ));
   }
 
   @override

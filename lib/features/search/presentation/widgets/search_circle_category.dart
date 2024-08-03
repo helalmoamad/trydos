@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -15,10 +16,14 @@ import '../../../app/my_text_widget.dart';
 
 class SearchChipcategory extends StatefulWidget {
   final String title;
+  final TextEditingController controller;
   final ValueNotifier<List<int>> selectedCategory;
 
   const SearchChipcategory(
-      {Key? key, required this.title, required this.selectedCategory})
+      {Key? key,
+      required this.title,
+      required this.selectedCategory,
+      required this.controller})
       : super(key: key);
 
   @override
@@ -63,14 +68,12 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
           border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
       child: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
-            previous.categories != current.categories,
+            previous.categories != current.categories ||
+            previous.getProductFiltersStatus != current.getProductFiltersStatus,
         builder: (context, state) {
           selectedCategorySlugs =
               state.selectedBoutiqueBrandCategorySlugsForSearch["category"] ??
                   [];
-          if (state.categories.isNullOrEmpty) {
-            return SizedBox.shrink();
-          }
           /*  selectedCategorySlugs =
               state.selectedBoutiqueBrandCategorySlugsForSearch["category"] ??
                   [];
@@ -117,44 +120,21 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                   child: Stack(
                     alignment: Alignment.centerRight,
                     children: [
-                      ListView.separated(
-                          controller: scrollController,
-                          shrinkWrap: true,
-                          physics: ClampingScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return ValueListenableBuilder(
-                              valueListenable: widget.selectedCategory,
-                              builder: (context, value, _) {
-                                if (value.isNullOrEmpty) {
-                                  selectedCategorySlugs = [];
-                                  homeBloc.add(
-                                      AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
-                                          withBoutique: false,
-                                          withBrand: false,
-                                          selectedBoutiqueBrandCategorySlugsForSearch:
-                                              selectedCategorySlugs));
-                                }
-                                return InkWell(
-                                  onTap: () {
-                                    if (widget.selectedCategory.value
-                                        .contains(index)) {
-                                      selectedCategorySlugs.remove(
-                                          '"${state.categories![index].slug ?? ""}"');
-                                      widget.selectedCategory.value
-                                          .remove(index);
-                                      homeBloc.add(
-                                          AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
-                                              withBoutique: false,
-                                              withBrand: false,
-                                              selectedBoutiqueBrandCategorySlugsForSearch:
-                                                  selectedCategorySlugs));
-                                    } else {
-                                      widget.selectedCategory.value.add(index);
-                                      selectedCategorySlugs.add(
-                                          '"${state.categories![index].slug ?? ""}"');
-
+                      state.categories.isNullOrEmpty
+                          ? SizedBox.shrink()
+                          : ListView.separated(
+                              controller: scrollController,
+                              shrinkWrap: true,
+                              physics: ClampingScrollPhysics(),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return ValueListenableBuilder(
+                                  valueListenable: widget.selectedCategory,
+                                  builder: (context, value, _) {
+                                    if (value.isNullOrEmpty) {
+                                      selectedCategorySlugs = [];
                                       homeBloc.add(
                                           AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
                                               withBoutique: false,
@@ -162,72 +142,117 @@ class _SearchChipcategoryState extends State<SearchChipcategory> {
                                               selectedBoutiqueBrandCategorySlugsForSearch:
                                                   selectedCategorySlugs));
                                     }
-                                    widget.selectedCategory.notifyListeners();
+                                    return InkWell(
+                                      onTap: () {
+                                        if (state
+                                            .categories![index].isSelected) {
+                                          selectedCategorySlugs.remove(
+                                              '"${state.categories![index].slug ?? ""}"');
+                                          widget.selectedCategory.value
+                                              .remove(index);
+                                          homeBloc.add(
+                                              AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
+                                                  withBoutique: false,
+                                                  withBrand: false,
+                                                  selectedBoutiqueBrandCategorySlugsForSearch:
+                                                      selectedCategorySlugs));
+                                        } else {
+                                          widget.selectedCategory.value
+                                              .add(index);
+                                          selectedCategorySlugs.add(
+                                              '"${state.categories![index].slug ?? ""}"');
+
+                                          homeBloc.add(
+                                              AddSelectedBoutiqueCategoryBrandSlugsForSearchEvent(
+                                                  withBoutique: false,
+                                                  withBrand: false,
+                                                  selectedBoutiqueBrandCategorySlugsForSearch:
+                                                      selectedCategorySlugs));
+                                        }
+                                        widget.selectedCategory
+                                            .notifyListeners();
+                                        homeBloc.add(GetProductFiltersEvent(
+                                            fromSearch: true,
+                                            searchText:
+                                                widget.controller.text));
+                                      },
+                                      child: Stack(
+                                        children: [
+                                          AnimatedScale(
+                                              curve: Curves
+                                                  .fastEaseInToSlowEaseOut,
+                                              scale: state.categories![index]
+                                                      .isSelected
+                                                  ? 1
+                                                  : 0.94,
+                                              duration:
+                                                  Duration(milliseconds: 100),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    color: Color(0xffF8F8F8),
+                                                    border: Border.all(
+                                                        color: state
+                                                                .categories![
+                                                                    index]
+                                                                .isSelected
+                                                            ? Color(0xffFF5F61)
+                                                            : Color(
+                                                                0xffF8F8F8))),
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 6,
+                                                    horizontal: 10),
+                                                child: Center(
+                                                  child: Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      MyCachedNetworkImage(
+                                                        imageUrl: state
+                                                            .categories![index]
+                                                            .mostViewedProductThumbnail!
+                                                            .filePath!,
+                                                        imageFit: BoxFit.cover,
+                                                        width: 15,
+                                                        height: 15,
+                                                      ),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      MyTextWidget(
+                                                        state.categories![index]
+                                                            .name!,
+                                                        style: context.textTheme
+                                                            .bodyText2?.rq
+                                                            .copyWith(
+                                                                height: 18 / 14,
+                                                                color: Color(
+                                                                    0xff8D8D8D)),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              )),
+                                          Visibility(
+                                              visible: state.categories![index]
+                                                  .isSelected,
+                                              child: FilterSelectedMark(
+                                                  width: 12, height: 12))
+                                        ],
+                                      ),
+                                    );
                                   },
-                                  child: Stack(
-                                    children: [
-                                      AnimatedScale(
-                                          curve: Curves.fastEaseInToSlowEaseOut,
-                                          scale:
-                                              value.contains(index) ? 1 : 0.94,
-                                          duration: Duration(milliseconds: 100),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                                color: Color(0xffF8F8F8),
-                                                border: Border.all(
-                                                    color: value.contains(index)
-                                                        ? Color(0xffFF5F61)
-                                                        : Color(0xffF8F8F8))),
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 6, horizontal: 10),
-                                            child: Center(
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  SvgPicture.network(
-                                                    state
-                                                        .categories![index]
-                                                        .mostViewedProductThumbnail!
-                                                        .filePath!,
-                                                    width: 15,
-                                                    height: 15,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  MyTextWidget(
-                                                    state.categories![index]
-                                                        .name!,
-                                                    style: context
-                                                        .textTheme.bodyText2?.rq
-                                                        .copyWith(
-                                                            height: 18 / 14,
-                                                            color: Color(
-                                                                0xff8D8D8D)),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          )),
-                                      Visibility(
-                                          visible: value.contains(index),
-                                          child: FilterSelectedMark(
-                                              width: 12, height: 12))
-                                    ],
-                                  ),
                                 );
                               },
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return SizedBox(
-                              width: 10,
-                            );
-                          },
-                          itemCount: state.categories!.length),
+                              separatorBuilder: (context, index) {
+                                return SizedBox(
+                                  width: 10,
+                                );
+                              },
+                              itemCount: state.categories!.length),
                     ],
                   ),
                 ),
