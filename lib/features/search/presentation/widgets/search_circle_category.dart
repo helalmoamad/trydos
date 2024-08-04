@@ -1,26 +1,20 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
-import 'package:trydos/features/home/presentation/widgets/home_page_card2.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../home/data/models/get_product_filters_model.dart';
+import '../../../home/data/models/get_product_listing_with_filters_model.dart' as product_listing;
 
 class SearchChipCategory extends StatefulWidget {
   final String title;
@@ -29,9 +23,9 @@ class SearchChipCategory extends StatefulWidget {
 
   const SearchChipCategory(
       {Key? key,
-      required this.title,
-      required this.controller,
-      required this.isLoading})
+        required this.title,
+        required this.controller,
+        required this.isLoading})
       : super(key: key);
 
   @override
@@ -40,7 +34,6 @@ class SearchChipCategory extends StatefulWidget {
 
 class _SearchChipCategoryState extends State<SearchChipCategory> {
   final ScrollController scrollController = ScrollController();
-  final ValueNotifier<int> resizeItems = ValueNotifier(-1);
   late HomeBloc homeBloc;
 
   List<String> selectedCategorySlugs = [];
@@ -61,7 +54,8 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
           border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
-          Filter filters = state.getProductFiltersModel?.filters ?? Filter();
+          String key = 'search';
+          Filter filters = state.getProductFiltersModel[key]?.filters ?? Filter();
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -80,18 +74,19 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                     ),
                     widget.isLoading
                         ? Container(
-                            width: 15,
-                            height: 15,
-                            child: Center(
-                              child: TrydosLoader(
-                                color: Colors.black,
-                                size: 15,
-                              ),
-                            ))
+                        width: 15,
+                        height: 15,
+                        child: Center(
+                          child: TrydosLoader(
+                            color: Colors.black,
+                            size: 15,
+                          ),
+                        ))
                         : SizedBox.shrink(),
                     Spacer(),
                     SvgPicture.asset(
                       AppAssets.backArrowArabic,
+                      matchTextDirection: true,
                       color: Color(0xffC4C2C2),
                       width: 10,
                       height: 10,
@@ -114,25 +109,39 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
                         bool isSelected = homeBloc
-                                .state.choosedFiltersByUser?.filters?.categories
-                                ?.any((element) =>
-                                    element.id ==
-                                    filters.categories?[index].id) ??
+                            .state.choosedFiltersByUser[key]?.filters?.categories
+                            ?.any((element) =>
+                        element.id ==
+                            filters.categories?[index].id) ??
                             false;
                         return InkWell(
                           onTap: () {
                             Filter? prevChoosedFilterToAddToIt =
-                                homeBloc.state.choosedFiltersByUser?.filters;
+                                homeBloc.state.choosedFiltersByUser[key]?.filters;
                             if (prevChoosedFilterToAddToIt == null) {
                               prevChoosedFilterToAddToIt = Filter();
                             }
-                            prevChoosedFilterToAddToIt =
-                                prevChoosedFilterToAddToIt
-                                    .copyWithSaveOtherField(categories: [
-                              ...prevChoosedFilterToAddToIt.categories ?? [],
-                              filters.categories![index]
-                            ]);
+                            if (isSelected) {
+                              List<product_listing.Category> categories =
+                                  prevChoosedFilterToAddToIt.categories ?? [];
+                              categories.removeWhere((element) =>
+                              element.id == filters.categories![index].id);
+                              prevChoosedFilterToAddToIt =
+                                  prevChoosedFilterToAddToIt
+                                      .copyWithSaveOtherField(
+                                    categories: categories,
+                                  );
+                            } else {
+                              prevChoosedFilterToAddToIt =
+                                  prevChoosedFilterToAddToIt
+                                      .copyWithSaveOtherField(categories: [
+                                    ...prevChoosedFilterToAddToIt.categories ?? [],
+                                    filters.categories![index]
+                                  ]);
+                            }
                             homeBloc.add(ChangeSelectedFiltersEvent(
+                                fromHomePageSearch: true,
+                                boutiqueSlug: key,
                                 filtersChoosedByUser: GetProductFiltersModel(
                                     filters: prevChoosedFilterToAddToIt)));
                           },
@@ -151,7 +160,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                 child: Center(
                                   child: Row(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    CrossAxisAlignment.center,
                                     children: [
                                       MyCachedNetworkImage(
                                         imageUrl: filters
@@ -169,8 +178,8 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                         filters.categories![index].name!,
                                         style: context.textTheme.bodyText2?.rq
                                             .copyWith(
-                                                height: 18 / 14,
-                                                color: Color(0xff8D8D8D)),
+                                            height: 18 / 14,
+                                            color: Color(0xff8D8D8D)),
                                       )
                                     ],
                                   ),
@@ -178,8 +187,8 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                               ),
                               Visibility(
                                   visible: isSelected,
-                                  child: FilterSelectedMark(
-                                      width: 12, height: 12)),
+                                  child:
+                                  FilterSelectedMark(width: 12, height: 12))
                             ],
                           ),
                         );

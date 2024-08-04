@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +75,7 @@ class PostClient<T> extends BaseApi<T> {
       )
           .then((response) {
         stopWatch.stop();
-        prettyPrinterI(stopWatch.elapsed.toString());
+        log('request time: ${stopWatch.elapsed.toString()}');
         GetIt.I<PrefsRepository>().saveRequestsData(
             response.requestOptions.path,
             response.data is! FormData ? response.data : {'data': 'formData'},
