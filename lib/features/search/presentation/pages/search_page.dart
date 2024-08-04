@@ -67,6 +67,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
   void initState() {
     BlocProvider.of<HomeBloc>(context).add(GetProductFiltersEvent(
         fromHomePageSearch: true,
+        boutiqueSlug: 'search',
         resetAppliesFilters: true,
         filtersChoosedByUser: null));
     widget.appearTrendingAndHistory.value = true;
@@ -79,10 +80,10 @@ class _SearchPageState extends ThemeState<SearchPage> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
   }
+  String key = 'search';
 
   @override
   void dispose() {
-    homeBloc.add(GetProductFiltersEvent(searchText: null));
     super.dispose();
   }
 
@@ -97,16 +98,17 @@ class _SearchPageState extends ThemeState<SearchPage> {
       child: Scaffold(
         backgroundColor: colorScheme.white,
         body: BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (previous, current) =>
-              previous.searchHistory != current.searchHistory ||
-              previous.getProductFiltersStatus !=
-                  current.getProductFiltersStatus ||
-              previous.countOfProductExpectedByFiltering !=
-                  current.countOfProductExpectedByFiltering ||
-              previous.getProductListingWithFiltersPaginationModels
-                      ?.paginationStatus !=
-                  current.getProductListingWithFiltersPaginationModels
-                      ?.paginationStatus,
+          buildWhen: (previous, current) {
+            return previous.searchHistory != current.searchHistory ||
+                previous.getProductFiltersStatus !=
+                    current.getProductFiltersStatus ||
+                previous.countOfProductExpectedByFiltering !=
+                    current.countOfProductExpectedByFiltering ||
+                previous.getProductListingWithFiltersPaginationModels[key]
+                    ?.paginationStatus !=
+                    current.getProductListingWithFiltersPaginationModels[key]
+                        ?.paginationStatus;
+          },
           builder: (context, state) {
             return SafeArea(
                 child: CustomScrollView(
@@ -154,22 +156,22 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   SliverToBoxAdapter(
                       child: SizedBox(
                     height: state
-                                .getProductListingWithFiltersPaginationModels ==
+                                .getProductListingWithFiltersPaginationModels[key] ==
                             null
                         ? 250.h
-                        : state.getProductListingWithFiltersPaginationModels!
+                        : state.getProductListingWithFiltersPaginationModels[key]!
                                 .items.isNullOrEmpty
                             ? 250.h
                             : 150.h,
                   )),
                   if (state.getProductFiltersStatus ==
                           GetProductFiltersStatus.loading &&
-                      state.getProductFiltersModel?.filters == null)
+                      state.getProductFiltersModel[key]?.filters == null)
                     SliverToBoxAdapter(
                         child: Center(
                       child: TrydosLoader(),
                     )),
-                  if (!(state.getProductFiltersModel?.filters?.brands
+                  if (!(state.getProductFiltersModel[key]?.filters?.brands
                           .isNullOrEmpty ??
                       true))
                     ValueListenableBuilder<bool>(
@@ -177,7 +179,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                         child: SearchChipBrand(
                           isLoading: state.getProductFiltersStatus ==
                                   GetProductFiltersStatus.loading ||
-                              state.getProductListingWithFiltersPaginationModels
+                              state.getProductListingWithFiltersPaginationModels[key]
                                       ?.paginationStatus ==
                                   PaginationStatus.loading,
                           controller: widget.controller,
@@ -191,7 +193,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                             ),
                           );
                         }),
-                  if (!(state.getProductFiltersModel?.filters?.categories
+                  if (!(state.getProductFiltersModel[key]?.filters?.categories
                           .isNullOrEmpty ??
                       true))
                     ValueListenableBuilder<bool>(
@@ -199,7 +201,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                         child: SearchChipCategory(
                           isLoading: state.getProductFiltersStatus ==
                                   GetProductFiltersStatus.loading ||
-                              state.getProductListingWithFiltersPaginationModels
+                              state.getProductListingWithFiltersPaginationModels[key]
                                       ?.paginationStatus ==
                                   PaginationStatus.loading,
                           controller: widget.controller,
@@ -213,7 +215,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                             ),
                           );
                         }),
-                  if (!(state.getProductFiltersModel?.filters?.boutiques
+                  if (!(state.getProductFiltersModel[key]?.filters?.boutiques
                           .isNullOrEmpty ??
                       true))
                     ValueListenableBuilder<bool>(
@@ -221,7 +223,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                         child: SearchChipBoutique(
                           isLoading: state.getProductFiltersStatus ==
                                   GetProductFiltersStatus.loading ||
-                              state.getProductListingWithFiltersPaginationModels
+                              state.getProductListingWithFiltersPaginationModels[key]
                                       ?.paginationStatus ==
                                   PaginationStatus.loading,
                           controller: widget.controller,
@@ -238,7 +240,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   BlocBuilder<HomeBloc, HomeState>(
                     builder: (context, state) {
                       Filter? filters;
-                      filters = state.choosedFiltersByUser?.filters;
+                      filters = state.choosedFiltersByUser[key]?.filters;
                       if ((filters?.brands.isNullOrEmpty ?? true) &&
                           (filters?.categories.isNullOrEmpty ?? true) &&
                           (filters?.boutiques.isNullOrEmpty ?? true)) {
@@ -313,6 +315,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                                         context)
                                                     .add(
                                                         ChangeSelectedFiltersEvent(
+                                                          fromHomePageSearch: true,
+                                                  boutiqueSlug: key,
                                                   filtersChoosedByUser:
                                                       newGetProductFiltersModel,
                                                 ));
@@ -406,6 +410,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                                         context)
                                                     .add(
                                                         ChangeSelectedFiltersEvent(
+                                                          fromHomePageSearch: true,
+                                                  boutiqueSlug: key,
                                                   filtersChoosedByUser:
                                                       newGetProductFiltersModel,
                                                 ));
@@ -466,6 +472,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                                         context)
                                                     .add(
                                                         ChangeSelectedFiltersEvent(
+                                                          fromHomePageSearch: true,
+                                                  boutiqueSlug: key,
                                                   filtersChoosedByUser:
                                                       newGetProductFiltersModel,
                                                 ));
@@ -518,7 +526,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   BlocBuilder<HomeBloc, HomeState>(
                     builder: (context, state) {
                       Filter? filters;
-                      filters = state.appliedFiltersByUser?.filters;
+                      filters = state.appliedFiltersByUser[key]?.filters;
                       if ((filters?.brands.isNullOrEmpty ?? true) &&
                           (filters?.categories.isNullOrEmpty ?? true) &&
                           (filters?.boutiques.isNullOrEmpty ?? true)) {
@@ -593,6 +601,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                                                     newCategories));
                                                 homeBloc.add(
                                                     ChangeAppliedFiltersEvent(
+                                                      boutiqueSlug: key,
                                                         filtersAppliedByUser:
                                                             newGetProductFiltersModel));
                                                 BlocProvider.of<HomeBloc>(
@@ -600,6 +609,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                                     .add(
                                                         GetProductsWithFiltersEvent(
                                                   fromSearch: true,
+                                                  boutiqueSlug: key,
                                                   searchText:
                                                       widget.controller.text,
                                                   offset: 1,
@@ -694,12 +704,14 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                                                     newBoutiques));
                                                 homeBloc.add(
                                                 ChangeAppliedFiltersEvent(
+                                                  boutiqueSlug: key,
                                                 filtersAppliedByUser:
                                                 newGetProductFiltersModel));
                                                 BlocProvider.of<HomeBloc>(
                                                         context)
                                                     .add(GetProductsWithFiltersEvent(
                                                         fromSearch: true,
+                                                        boutiqueSlug: key,
                                                         searchText: widget
                                                             .controller.text,
                                                         offset: 1,
@@ -761,12 +773,14 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                                                     newBrands));
                                                 homeBloc.add(
                                                 ChangeAppliedFiltersEvent(
+                                                  boutiqueSlug: key,
                                                 filtersAppliedByUser:
                                                 newGetProductFiltersModel));
                                                 BlocProvider.of<HomeBloc>(
                                                         context)
                                                     .add(GetProductsWithFiltersEvent(
                                                         fromSearch: true,
+                                                        boutiqueSlug: key,
                                                         searchText: widget
                                                             .controller.text,
                                                         offset: 1,
@@ -820,7 +834,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   BlocBuilder<HomeBloc, HomeState>(
                     builder: (context, state) {
                       Filter? choosedFilterToAddToIt =
-                          state.choosedFiltersByUser?.filters;
+                          state.choosedFiltersByUser[key]?.filters;
                       if (choosedFilterToAddToIt == null &&
                           widget.controller.text.length < 3) {
                         return SliverToBoxAdapter(child: SizedBox.shrink());
@@ -841,11 +855,13 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                   onTap: () {
                                     widget.controller.text = '';
                                     homeBloc.add(ChangeAppliedFiltersEvent(
-                                      filtersAppliedByUser: state.choosedFiltersByUser,
+                                      boutiqueSlug: key,
+                                      filtersAppliedByUser: state.choosedFiltersByUser[key],
                                     ));
                                     homeBloc.add(GetProductsWithFiltersEvent(
                                         offset: 1,
                                         getWithPagination: false,
+                                        boutiqueSlug: key,
                                         fromSearch: true,
                                         searchText: widget.controller.text));
                                     HelperFunctions.slidingNavigation(
@@ -855,7 +871,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                           boutiqueIcon: "",
                                           fromSearch: true,
                                           withSlidingImages: false,
-                                          boutiqueSlug: null,
+                                          boutiqueSlug: key,
                                         ));
                                   },
                                   child: Container(
@@ -920,6 +936,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                     homeBloc.add(GetProductFiltersEvent(
                                       filtersChoosedByUser: null,
                                       resetAppliesFilters: true,
+                                      boutiqueSlug: key,
+                                      fromHomePageSearch: true
                                     ));
                                     widget.controller.clear();
                                   },

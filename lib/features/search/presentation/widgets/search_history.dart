@@ -149,6 +149,7 @@ class _SearchHistoryState extends State<SearchHistory> {
                                 BlocProvider.of<HomeBloc>(context).add(
                                     GetProductFiltersEvent(
                                         fromHomePageSearch: true,
+                                        boutiqueSlug: 'search',
                                         searchText: _items[index]));
                               },
                               child: MyTextWidget(

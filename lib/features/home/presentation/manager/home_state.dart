@@ -64,10 +64,10 @@ class HomeState {
     this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.startingSetting,
     this.sizes = const [],
-    this.getProductFiltersStatus = GetProductFiltersStatus.init,
-    this.getProductFiltersModel,
-    this.choosedFiltersByUser,
-    this.appliedFiltersByUser,
+    this.getProductFiltersStatus =const {},
+    this.getProductFiltersModel=const {},
+    this.choosedFiltersByUser=const {},
+    this.appliedFiltersByUser=const {},
     this.currentPage = 0,
     this.productStatus,
     this.productITemForCart,
@@ -75,10 +75,11 @@ class HomeState {
     this.reRequestTheseBoutiques = const {},
     this.getCommentForProductModel = const {},
     this.reRequestTheseProductListingInBoutiques = const {},
+    this.reRequestProductWithFilters = const {},
     this.getProductListingStatus = GetProductListingStatus.init,
     this.selectedCollection,
     this.cartCollection = const {},
-    this.getProductListingWithFiltersPaginationModels,
+    this.getProductListingWithFiltersPaginationModels  =const {},
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
     this.CurrentColorSizeForCart,
@@ -104,13 +105,12 @@ class HomeState {
   final GetMainCategoriesStatus getMainCategoriesStatus;
   final List<ImageForAddToCart>? ListitemForAddToCart;
   final GetCurrencyForCountryModel? getCurrencyForCountryModel;
-  final GetProductFiltersStatus getProductFiltersStatus;
-  final PaginationModel<product.Products>?
-      getProductListingWithFiltersPaginationModels;
   final GetAllowedCountriesModel? getAllowedCountriesModel;
-  final get_filters.GetProductFiltersModel? getProductFiltersModel;
-  final get_filters.GetProductFiltersModel? appliedFiltersByUser;
-  final get_filters.GetProductFiltersModel? choosedFiltersByUser;
+  final Map<String , GetProductFiltersStatus> getProductFiltersStatus;
+  final Map<String , PaginationModel<product.Products>?> getProductListingWithFiltersPaginationModels;
+  final Map<String,get_filters.GetProductFiltersModel?> getProductFiltersModel;
+  final Map<String,get_filters.GetProductFiltersModel?> appliedFiltersByUser;
+  final Map<String,get_filters.GetProductFiltersModel?> choosedFiltersByUser;
   int? selectedCollection;
   int currentPage;
   List<String>? searchHistory;
@@ -120,6 +120,7 @@ class HomeState {
   Map<String, List<cart.Cart>>? cartCollection;
   final Map<String, bool> reRequestTheseBoutiques;
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
+  final Map<String, bool> reRequestProductWithFilters;
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
 
@@ -172,6 +173,7 @@ class HomeState {
       final Map<String, product.Products>? productITemForCart,
       final cart.GetCartShippingItemsModel? getCartShippingItemsModel,
       final Map<String, bool>? reRequestTheseProductListingInBoutiques,
+      final Map<String, bool>? reRequestProductWithFilters,
       final GetProductListingStatus? getProductListingStatus,
       final StartingSetting? startingSetting,
       final MainCategoriesResponseModel? mainCategoriesResponseModel,
@@ -186,16 +188,12 @@ class HomeState {
       final Map<String, int>? currentSelectedColorForEveryProduct,
       int? currentPage,
       int? countOfProductExpectedByFiltering,
-      bool resetAppliedFilters = false,
-      bool resetChoosedFilters = false,
-      bool resetGetProductFiltersModel = false,
       List<Story>? storiesForProduct,
-      final GetProductFiltersStatus? getProductFiltersStatus,
-      final PaginationModel<product.Products>?
-          getProductListingWithFiltersPaginationModels,
-      final get_filters.GetProductFiltersModel? getProductFiltersModel,
-      final get_filters.GetProductFiltersModel? appliedFiltersByUser,
-      final get_filters.GetProductFiltersModel? choosedFiltersByUser,
+        final Map<String , GetProductFiltersStatus>? getProductFiltersStatus,
+        final Map<String , PaginationModel<product.Products>?>? getProductListingWithFiltersPaginationModels,
+      final Map<String,get_filters.GetProductFiltersModel?>? getProductFiltersModel,
+      final Map<String,get_filters.GetProductFiltersModel?>? appliedFiltersByUser,
+      final Map<String,get_filters.GetProductFiltersModel?>? choosedFiltersByUser,
       final Map<String, PaginationModel<product.Products>>?
           getProductListingPaginationWithoutFiltersModel,
       final Map<String, GetCommentForProductModel>?
@@ -221,13 +219,9 @@ class HomeState {
         productITemForCart: productITemForCart ?? this.productITemForCart,
         CurrentColorSizeForCart:
             CurrentColorSizeForCart ?? this.CurrentColorSizeForCart,
-        choosedFiltersByUser: resetChoosedFilters ? null : choosedFiltersByUser ?? this.choosedFiltersByUser,
-        appliedFiltersByUser: resetAppliedFilters
-            ? null
-            : appliedFiltersByUser ?? this.appliedFiltersByUser,
-        getProductFiltersModel: resetGetProductFiltersModel
-            ? null
-            : getProductFiltersModel ?? this.getProductFiltersModel,
+        choosedFiltersByUser:  choosedFiltersByUser ?? this.choosedFiltersByUser,
+        appliedFiltersByUser: appliedFiltersByUser ?? this.appliedFiltersByUser,
+        getProductFiltersModel:  getProductFiltersModel ?? this.getProductFiltersModel,
         searchHistory: searchHistory ?? this.searchHistory,
         getCartShippingItemsModel:
             getCartShippingItemsModel ?? this.getCartShippingItemsModel,
@@ -242,6 +236,8 @@ class HomeState {
             reRequestTheseBoutiques ?? this.reRequestTheseBoutiques,
         reRequestTheseProductListingInBoutiques: reRequestTheseProductListingInBoutiques ??
             this.reRequestTheseProductListingInBoutiques,
+      reRequestProductWithFilters: reRequestProductWithFilters ??
+            this.reRequestProductWithFilters,
         getStoriesForProductStatus:
             getStoriesForProductStatus ?? this.getStoriesForProductStatus,
         selectedCollection: selectedCollection ?? this.selectedCollection,

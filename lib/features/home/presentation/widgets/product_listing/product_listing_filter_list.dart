@@ -17,11 +17,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
-import 'package:trydos/features/home/data/models/get_category_model.dart';
-import 'package:trydos/features/home/data/models/get_category_model.dart';
-import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart'
-    as categoriess;
+    as product_listing;
 import 'package:trydos/features/home/presentation/widgets/product_listing/price_filter_ranges.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/price_filter_slider.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/sizes_filters_list.dart';
@@ -31,7 +28,6 @@ import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../../app/my_text_widget.dart';
 import '../../../data/models/get_product_filters_model.dart' as filter_model;
-import '../../../data/models/get_product_filters_model.dart';
 import '../../manager/home_bloc.dart';
 import '../../manager/home_event.dart';
 import '../../manager/home_state.dart';
@@ -44,7 +40,7 @@ class StackedFiltersList extends StatefulWidget {
       {super.key,
       required this.onMoveToAnotherFiltersSection,
       this.controller,
-      this.boutiqueSlug,
+        required this.boutiqueSlug,
       required this.filterPageExpanded,
       required this.displayAppliedFiltersOnly,
       this.category,
@@ -58,7 +54,7 @@ class StackedFiltersList extends StatefulWidget {
   final ValueNotifier<bool> filterPageExpanded;
   final bool fromSearch;
   final String? searchText;
-  final String? boutiqueSlug;
+  final String boutiqueSlug;
   final String? category;
   final bool displayAppliedFiltersOnly;
 
@@ -82,8 +78,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
   late HomeBloc homeBloc;
   bool isExpanded = false;
 
+  String key = '';
+
   @override
   void initState() {
+    key = widget.boutiqueSlug + (widget.category ?? '');
     homeBloc = BlocProvider.of<HomeBloc>(context);
     isExpanded = widget.filterPageExpanded.value;
     widget.filterPageExpanded.addListener(() {
@@ -102,8 +101,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
-      if (state.getProductFiltersModel?.filters == null &&
-          state.getProductFiltersStatus == GetProductFiltersStatus.loading) {
+      if ((state.getProductFiltersModel[key]?.filters == null  &&
+          state.getProductFiltersStatus[key] == GetProductFiltersStatus.loading) || (state.appliedFiltersByUser[key] == null && (state.getProductListingWithFiltersPaginationModels[key]?.items.length ?? 0) == 1 && state.getProductListingWithFiltersPaginationModels[key]?.paginationStatus == PaginationStatus.loading)) {
         return FiltersLoadingListPage(
           countOfListInPage: isExpanded ? 6 : 1,
         );
@@ -114,14 +113,15 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       //   }));
       // }
       print('ssss ${state.choosedFiltersByUser}');
-      if ((state.getProductFiltersModel?.filters == null &&
-              state.appliedFiltersByUser == null) ||
+      if ((state.getProductFiltersModel[key]?.filters == null &&
+              state.appliedFiltersByUser[key] == null) ||
           state.getCurrencyForCountryModel == null) {
         return SizedBox.shrink();
       }
-      filter_model.Filter filters =
-          state.getProductFiltersModel?.filters ?? filter_model.Filter();
-      filter_model.Filter? choosedFilters = state.choosedFiltersByUser?.filters;
+      filter_model.Filter filters = (state.getProductListingWithFiltersPaginationModels[key]?.items.length ?? 0) == 1 ? filter_model.Filter() :
+          state.getProductFiltersModel[key]?.filters ?? filter_model.Filter();
+      filter_model.Filter? choosedFilters = state.choosedFiltersByUser[key]?.filters;
+      filter_model.Filter? appliedFilters = state.appliedFiltersByUser[key]?.filters;
       if (filters.prices != null) {
         exchangeRate =
             state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ?? 1;
@@ -155,7 +155,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
         countOfFilters++;
         titleOfFilterSection.add('View By Price');
       }
-      if (countOfFilters == 0 && state.appliedFiltersByUser == null) {
+      if (countOfFilters == 0 && state.appliedFiltersByUser[key] == null) {
         return SizedBox.shrink();
       }
       return Column(
@@ -183,7 +183,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                         AppAssets.registerInfoSvg,
                         color: Color(0xffD3D3D3),
                       ),
-                      if (state.getProductFiltersStatus ==
+                      if (state.getProductFiltersStatus[key] ==
                           GetProductFiltersStatus.loading)
                         Row(
                           children: [
@@ -450,7 +450,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                             innerIndex !=
                                                                                 0,
                                                                         displayFilterMark: !isExpanded
+                                                                            ? ((appliedFilters?.categories?.isNullOrEmpty ?? true)
                                                                             ? false
+                                                                            : appliedFilters!.categories!.any((element) => element.id == filters.categories![index].subCategories![innerIndex].id))
                                                                             : ((choosedFilters?.categories?.isNullOrEmpty ?? true)
                                                                                 ? false
                                                                                 : choosedFilters!.categories!.any((element) => element.id == filters.categories![index].subCategories![innerIndex].id)),
@@ -460,14 +462,13 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                           filter_model
                                                                               .Filter?
                                                                               prevChoosedOrAppliedFilterToAddToIt =
-                                                                              !isExpanded ? state.appliedFiltersByUser?.filters : state.choosedFiltersByUser?.filters;
-                                                                          categoriess.Category category = categoriess.Category(
-                                                                              isSubCategory: true,
-                                                                              id: filters.categories![index].subCategories![innerIndex].id,
-                                                                              name: filters.categories![index].subCategories![innerIndex].name,
-                                                                              mostViewedProductThumbnail: filters.categories![index].subCategories![innerIndex].mostViewedProductThumbnail);
-                                                                          if (!isExpanded ||
-                                                                              add) {
+                                                                              !isExpanded ? state.appliedFiltersByUser[key]?.filters : state.choosedFiltersByUser[key]?.filters;
+                                                                          if (add) {
+                                                                            product_listing.Category category = product_listing.Category(
+                                                                                isSubCategory: true,
+                                                                                id: filters.categories![index].subCategories![innerIndex].id,
+                                                                                name: filters.categories![index].subCategories![innerIndex].name,
+                                                                                mostViewedProductThumbnail: filters.categories![index].subCategories![innerIndex].mostViewedProductThumbnail);
                                                                             if (prevChoosedOrAppliedFilterToAddToIt ==
                                                                                 null) {
                                                                               prevChoosedOrAppliedFilterToAddToIt = filter_model.Filter();
@@ -485,21 +486,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                                         ...prevChoosedOrAppliedFilterToAddToIt.categories!,
                                                                                         category
                                                                                       ]);
-                                                                            if (!isExpanded) {
-                                                                              homeBloc.add(ChangeAppliedFiltersEvent(
-                                                                                category: widget.category,
-                                                                                boutiqueSlug: widget.boutiqueSlug,
-                                                                                filtersAppliedByUser: GetProductFiltersModel(filters: prevChoosedOrAppliedFilterToAddToIt),
-                                                                              ));
-                                                                              homeBloc.add(GetProductsWithFiltersEvent(fromSearch: widget.fromSearch, searchText: widget.searchText, boutiqueSlug: widget.boutiqueSlug, category: widget.category, offset: 1));
-                                                                            } else {
-                                                                              homeBloc.add(ChangeSelectedFiltersEvent(
-                                                                                category: widget.category,
-                                                                                boutiqueSlug: widget.boutiqueSlug,
-                                                                                filtersChoosedByUser: filter_model.GetProductFiltersModel(filters: prevChoosedOrAppliedFilterToAddToIt),
-                                                                              ));
-                                                                            }
-                                                                            return;
+
                                                                           } else {
                                                                             prevChoosedOrAppliedFilterToAddToIt!.categories!.removeWhere(((element) =>
                                                                                 element.id ==
@@ -516,6 +503,15 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                               searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
                                                                               categories: prevChoosedOrAppliedFilterToAddToIt.categories,
                                                                             );
+                                                                          }
+                                                                          if (!isExpanded) {
+                                                                            homeBloc.add(ChangeAppliedFiltersEvent(
+                                                                              category: widget.category,
+                                                                              boutiqueSlug: widget.boutiqueSlug,
+                                                                              filtersAppliedByUser: filter_model.GetProductFiltersModel(filters: prevChoosedOrAppliedFilterToAddToIt),
+                                                                            ));
+                                                                            homeBloc.add(GetProductsWithFiltersEvent(fromSearch: widget.fromSearch, searchText: widget.searchText, boutiqueSlug: widget.boutiqueSlug, category: widget.category, offset: 1));
+                                                                          } else {
                                                                             homeBloc.add(ChangeSelectedFiltersEvent(
                                                                               category: widget.category,
                                                                               boutiqueSlug: widget.boutiqueSlug,
@@ -566,23 +562,24 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                           currentExpandedIndex ==
                                                                               index,
                                                                       displayFilterMark: !isExpanded
+                                                                          ? ((appliedFilters?.categories?.isNullOrEmpty ?? true)
                                                                           ? false
+                                                                          : appliedFilters!.categories!.any((element) => element.id == filters.categories![index].id))
                                                                           : ((choosedFilters?.categories?.isNullOrEmpty ?? true)
                                                                               ? false
                                                                               : choosedFilters!.categories!.any((element) => element.id == filters.categories![index].id)),
                                                                       addOrRemoveSpecificFilter: (bool add) {
-                                                                        categoriess
-                                                                            .Category
-                                                                            category =
-                                                                            filters.categories![index];
                                                                         filter_model
                                                                             .Filter?
                                                                             prevChoosedOrAppliedFilterToAddToIt =
                                                                             !isExpanded
-                                                                                ? state.appliedFiltersByUser?.filters
-                                                                                : state.choosedFiltersByUser?.filters;
-                                                                        if (!isExpanded ||
-                                                                            add) {
+                                                                                ? state.appliedFiltersByUser[key]?.filters
+                                                                                : state.choosedFiltersByUser[key]?.filters;
+                                                                        if (add) {
+                                                                          product_listing
+                                                                              .Category
+                                                                          category =
+                                                                          filters.categories![index];
                                                                           if (prevChoosedOrAppliedFilterToAddToIt ==
                                                                               null) {
                                                                             prevChoosedOrAppliedFilterToAddToIt =
@@ -601,25 +598,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                                       ...prevChoosedOrAppliedFilterToAddToIt.categories!,
                                                                                       category
                                                                                     ]);
-                                                                          if (!isExpanded) {
-                                                                            homeBloc.add(ChangeAppliedFiltersEvent(
-                                                                              category: widget.category,
-                                                                              boutiqueSlug: widget.boutiqueSlug,
-                                                                              filtersAppliedByUser: GetProductFiltersModel(filters: prevChoosedOrAppliedFilterToAddToIt),
-                                                                            ));
-                                                                            homeBloc.add(GetProductsWithFiltersEvent(
-                                                                                fromSearch: widget.fromSearch,
-                                                                                searchText: widget.searchText,
-                                                                                boutiqueSlug: widget.boutiqueSlug,
-                                                                                category: widget.category,
-                                                                                offset: 1));
-                                                                          } else {
-                                                                            homeBloc.add(ChangeSelectedFiltersEvent(
-                                                                              category: widget.category,
-                                                                              boutiqueSlug: widget.boutiqueSlug,
-                                                                              filtersChoosedByUser: filter_model.GetProductFiltersModel(filters: prevChoosedOrAppliedFilterToAddToIt),
-                                                                            ));
-                                                                          }
                                                                         } else {
                                                                           prevChoosedOrAppliedFilterToAddToIt!.categories!.removeWhere(((element) =>
                                                                               element.id ==
@@ -630,19 +608,31 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                               .any((sub) => sub.id == element.id)));
                                                                           prevChoosedOrAppliedFilterToAddToIt =
                                                                               prevChoosedOrAppliedFilterToAddToIt.copyWithSaveOtherField(
+                                                                                searchText: prevChoosedOrAppliedFilterToAddToIt
+                                                                                    .searchText,
                                                                             prices:
                                                                                 prevChoosedOrAppliedFilterToAddToIt.prices,
                                                                             categories:
                                                                                 prevChoosedOrAppliedFilterToAddToIt.categories,
                                                                           );
-                                                                          homeBloc
-                                                                              .add(ChangeSelectedFiltersEvent(
-                                                                            category:
-                                                                                widget.category,
-                                                                            boutiqueSlug:
-                                                                                widget.boutiqueSlug,
-                                                                            filtersChoosedByUser:
-                                                                                filter_model.GetProductFiltersModel(filters: prevChoosedOrAppliedFilterToAddToIt),
+                                                                        }
+                                                                        if (!isExpanded) {
+                                                                          homeBloc.add(ChangeAppliedFiltersEvent(
+                                                                            category: widget.category,
+                                                                            boutiqueSlug: widget.boutiqueSlug,
+                                                                            filtersAppliedByUser: filter_model.GetProductFiltersModel(filters: prevChoosedOrAppliedFilterToAddToIt),
+                                                                          ));
+                                                                          homeBloc.add(GetProductsWithFiltersEvent(
+                                                                              fromSearch: widget.fromSearch,
+                                                                              searchText: widget.searchText,
+                                                                              boutiqueSlug: widget.boutiqueSlug,
+                                                                              category: widget.category,
+                                                                              offset: 1));
+                                                                        } else {
+                                                                          homeBloc.add(ChangeSelectedFiltersEvent(
+                                                                            category: widget.category,
+                                                                            boutiqueSlug: widget.boutiqueSlug,
+                                                                            filtersChoosedByUser: filter_model.GetProductFiltersModel(filters: prevChoosedOrAppliedFilterToAddToIt),
                                                                           ));
                                                                         }
                                                                       });
@@ -665,7 +655,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                         .toString(),
                                                     withBackGroundShadow: true,
                                                     displayFilterMark: !isExpanded
+                                                        ? ((appliedFilters?.categories?.isNullOrEmpty ?? true)
                                                         ? false
+                                                        : appliedFilters!.categories!.any((element) => element.id == filters.categories![index].id))
                                                         : ((choosedFilters
                                                                     ?.categories
                                                                     ?.isNullOrEmpty ??
@@ -682,20 +674,20 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                         .id)),
                                                     addOrRemoveSpecificFilter:
                                                         (bool add) {
-                                                      categoriess.Category
-                                                          category =
-                                                          filters.categories![
-                                                              index];
                                                       filter_model.Filter?
                                                           prevChoosedOrAppliedFilterToAddToIt =
                                                           !isExpanded
                                                               ? state
-                                                                  .appliedFiltersByUser
+                                                                  .appliedFiltersByUser[key]
                                                                   ?.filters
                                                               : state
-                                                                  .choosedFiltersByUser
+                                                                  .choosedFiltersByUser[key]
                                                                   ?.filters;
-                                                      if (!isExpanded || add) {
+                                                      if (add) {
+                                                        product_listing.Category
+                                                        category =
+                                                        filters.categories![
+                                                        index];
                                                         if (prevChoosedOrAppliedFilterToAddToIt ==
                                                             null) {
                                                           prevChoosedOrAppliedFilterToAddToIt =
@@ -707,6 +699,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                 prices:
                                                                     prevChoosedOrAppliedFilterToAddToIt
                                                                         .prices,
+                                                                searchText: prevChoosedOrAppliedFilterToAddToIt
+                                                                    .searchText,
                                                                 categories: prevChoosedOrAppliedFilterToAddToIt
                                                                         .categories
                                                                         .isNullOrEmpty
@@ -716,43 +710,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                             .categories!,
                                                                         category
                                                                       ]);
-                                                        if (!isExpanded) {
-                                                          homeBloc.add(
-                                                              ChangeAppliedFiltersEvent(
-                                                            category:
-                                                                widget.category,
-                                                            boutiqueSlug: widget
-                                                                .boutiqueSlug,
-                                                            filtersAppliedByUser:
-                                                                GetProductFiltersModel(
-                                                                    filters:
-                                                                        prevChoosedOrAppliedFilterToAddToIt),
-                                                          ));
-                                                          homeBloc.add(GetProductsWithFiltersEvent(
-                                                              fromSearch: widget
-                                                                  .fromSearch,
-                                                              searchText: widget
-                                                                  .searchText,
-                                                              boutiqueSlug: widget
-                                                                  .boutiqueSlug,
-                                                              category: widget
-                                                                  .category,
-                                                              offset: 1));
-                                                        } else {
-                                                          homeBloc.add(
-                                                              ChangeSelectedFiltersEvent(
-                                                            category:
-                                                                widget.category,
-                                                            boutiqueSlug: widget
-                                                                .boutiqueSlug,
-                                                            filtersChoosedByUser:
-                                                                filter_model
-                                                                    .GetProductFiltersModel(
-                                                                        filters:
-                                                                            prevChoosedOrAppliedFilterToAddToIt),
-                                                          ));
-                                                        }
-                                                        return;
                                                       } else {
                                                         prevChoosedOrAppliedFilterToAddToIt!
                                                             .categories!
@@ -768,22 +725,48 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                           prices:
                                                               prevChoosedOrAppliedFilterToAddToIt
                                                                   .prices,
+                                                              searchText: prevChoosedOrAppliedFilterToAddToIt
+                                                                  .searchText,
                                                           categories:
                                                               prevChoosedOrAppliedFilterToAddToIt
                                                                   .categories,
                                                         );
+                                                      }
+                                                      if (!isExpanded) {
+                                                        homeBloc.add(
+                                                            ChangeAppliedFiltersEvent(
+                                                              category:
+                                                              widget.category,
+                                                              boutiqueSlug: widget
+                                                                  .boutiqueSlug,
+                                                              filtersAppliedByUser:
+                                                              filter_model.GetProductFiltersModel(
+                                                                  filters:
+                                                                  prevChoosedOrAppliedFilterToAddToIt),
+                                                            ));
+                                                        homeBloc.add(GetProductsWithFiltersEvent(
+                                                            fromSearch: widget
+                                                                .fromSearch,
+                                                            searchText: widget
+                                                                .searchText,
+                                                            boutiqueSlug: widget
+                                                                .boutiqueSlug,
+                                                            category: widget
+                                                                .category,
+                                                            offset: 1));
+                                                      } else {
                                                         homeBloc.add(
                                                             ChangeSelectedFiltersEvent(
-                                                          category:
+                                                              category:
                                                               widget.category,
-                                                          boutiqueSlug: widget
-                                                              .boutiqueSlug,
-                                                          filtersChoosedByUser:
+                                                              boutiqueSlug: widget
+                                                                  .boutiqueSlug,
+                                                              filtersChoosedByUser:
                                                               filter_model
                                                                   .GetProductFiltersModel(
-                                                                      filters:
-                                                                          prevChoosedOrAppliedFilterToAddToIt),
-                                                        ));
+                                                                  filters:
+                                                                  prevChoosedOrAppliedFilterToAddToIt),
+                                                            ));
                                                       }
                                                     });
                                               }
@@ -936,11 +919,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
           if (!isExpanded) ...{
             Container(
               padding: EdgeInsets.only(
-                  top: state.appliedFiltersByUser != null ? 5 : 0),
+                  top: state.appliedFiltersByUser[key] != null ? 5 : 0),
               color: Color(0xffF8F8F8),
               child: Container(
                 width: 1.sw,
-                height: state.appliedFiltersByUser != null ? 30 : 0,
+                height: state.appliedFiltersByUser[key] != null ? 30 : 0,
                 margin: EdgeInsets.symmetric(horizontal: 10),
                 padding: EdgeInsets.only(left: 10),
                 decoration: BoxDecoration(
@@ -950,7 +933,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               ),
             ),
           },
-          if (countOfFilters != 0 || state.choosedFiltersByUser != null) ...{
+          if (countOfFilters != 0 || state.choosedFiltersByUser[key] != null) ...{
             if (isExpanded) ...{
               SizedBox(
                 height: 20,
@@ -963,7 +946,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       builder: (context, _, __) {
                         return Container(
                           width: 1.sw,
-                          height: (state.choosedFiltersByUser != null ||
+                          height: (state.choosedFiltersByUser[key] != null ||
                                   (lowerAndUpperPrices != null &&
                                       (lowerAndUpperPrices!.value.item1 >
                                               minPrice! ||
@@ -997,7 +980,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               ),
                               Container(
                                 width: 1.sw,
-                                height: (state.choosedFiltersByUser != null ||
+                                height: (state.choosedFiltersByUser[key] != null ||
                                         (lowerAndUpperPrices != null &&
                                             (lowerAndUpperPrices!.value.item1 >
                                                     minPrice! ||
@@ -1029,7 +1012,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Row(
                             children: [
-                              if (state.choosedFiltersByUser != null ||
+                              if (state.choosedFiltersByUser[key] != null ||
                                   (lowerAndUpperPrices != null &&
                                       (lowerAndUpperPrices!.value.item1 >
                                               minPrice! ||
@@ -1040,55 +1023,63 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                   child: GestureDetector(
                                     onTap: () {
                                       List<filter_model.Brand>? brands = [
-                                        ...state.appliedFiltersByUser?.filters
+                                        ...state.appliedFiltersByUser[key]?.filters
                                                 ?.brands ??
                                             [],
-                                        ...state.choosedFiltersByUser?.filters
+                                        ...state.choosedFiltersByUser[key]?.filters
                                                 ?.brands ??
                                             []
                                       ];
-                                      List<categoriess.Category>? categories = [
-                                        ...state.appliedFiltersByUser?.filters
+                                      List<product_listing.Category>? categories = [
+                                        ...state.appliedFiltersByUser[key]?.filters
                                                 ?.categories ??
                                             [],
-                                        ...state.choosedFiltersByUser?.filters
+                                        ...state.choosedFiltersByUser[key]?.filters
                                                 ?.categories ??
+                                            []
+                                      ];
+                                      List<filter_model.Boutique>? boutiques = [
+                                        ...state.appliedFiltersByUser[key]?.filters
+                                            ?.boutiques ??
+                                            [],
+                                        ...state.choosedFiltersByUser[key]?.filters
+                                            ?.boutiques ??
                                             []
                                       ];
                                       List<String>? colors = [
-                                        ...state.appliedFiltersByUser?.filters
+                                        ...state.appliedFiltersByUser[key]?.filters
                                                 ?.colors ??
                                             [],
-                                        ...state.choosedFiltersByUser?.filters
+                                        ...state.choosedFiltersByUser[key]?.filters
                                                 ?.colors ??
                                             []
                                       ];
                                       List<String> options = [];
                                       int? id;
                                       String? name;
-                                      if (!(state.appliedFiltersByUser?.filters
+                                      if (!(state.appliedFiltersByUser[key]?.filters
                                               ?.attributes?.isNullOrEmpty ??
                                           true)) {
-                                        id = state.appliedFiltersByUser!
+                                        id = state.appliedFiltersByUser[key]!
                                             .filters!.attributes![0].id;
-                                        name = state.appliedFiltersByUser!
+                                        name = state.appliedFiltersByUser[key]!
                                             .filters!.attributes![0].name;
                                         options.addAll(state
-                                                .appliedFiltersByUser!
+                                                .appliedFiltersByUser[key]!
                                                 .filters!
                                                 .attributes![0]
                                                 .options ??
                                             []);
                                       }
-                                      if (!(state.choosedFiltersByUser?.filters
+                                      if (!(state.choosedFiltersByUser[key]?.filters
                                               ?.attributes?.isNullOrEmpty ??
                                           true)) {
-                                        id = state.choosedFiltersByUser!
+                                        id = state.choosedFiltersByUser[key]!
                                             .filters!.attributes![0].id;
-                                        name = state.choosedFiltersByUser!
+                                        name = state.choosedFiltersByUser[key]!
                                             .filters!.attributes![0].name;
                                         options.addAll(state
-                                                .choosedFiltersByUser!
+                                                .choosedFiltersByUser[key]!
                                                 .filters!
                                                 .attributes![0]
                                                 .options ??
@@ -1118,6 +1109,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                   filters: filter_model.Filter(
                                                       brands: brands,
                                                       categories: categories,
+                                                      boutiques: boutiques,
+                                                      searchText: filters.searchText,
                                                       attributes:
                                                           options.isEmpty
                                                               ? null
@@ -1134,7 +1127,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                       prices: prices))));
                                       homeBloc.add(GetProductsWithFiltersEvent(
                                         fromSearch: widget.fromSearch,
-                                        searchText: widget.searchText,
+                                        searchText: filters.searchText,
                                         boutiqueSlug: widget.boutiqueSlug,
                                         category: widget.category,
                                         offset: 1,
@@ -1199,7 +1192,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                   builder: (context, _, __) {
                                     return BlocBuilder<HomeBloc, HomeState>(
                                       builder: (context, state) {
-                                        if (state.choosedFiltersByUser ==
+                                        if (state.choosedFiltersByUser[key] ==
                                                 null &&
                                             (lowerAndUpperPrices == null ||
                                                 (lowerAndUpperPrices != null &&
@@ -1220,7 +1213,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     Tuple2(
                                                         minPrice!, maxPrice!);
                                               }
-                                              if (state.choosedFiltersByUser !=
+                                              if (state.choosedFiltersByUser[key] !=
                                                   null) {
                                                 homeBloc.add(
                                                     ChangeSelectedFiltersEvent(
@@ -1303,9 +1296,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       builder: (context, state) {
         filter_model.Filter? filters;
         if (isExpanded) {
-          filters = state.choosedFiltersByUser?.filters;
+          filters = state.choosedFiltersByUser[key]?.filters;
         } else {
-          filters = state.appliedFiltersByUser?.filters;
+          filters = state.appliedFiltersByUser[key]?.filters;
         }
         if (filters == null && (lowerAndUpperPrices == null && isExpanded)) {
           return SizedBox.shrink();
@@ -1515,7 +1508,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             List<String> categories = filters!.categories!
                                 .map((e) => e.id.toString())
                                 .toList();
-                            List<categoriess.Category> newCategories =
+                            List<product_listing.Category> newCategories =
                                 filters.categories ?? [];
                             newCategories.removeAt(index);
                             categories.removeAt(index);
@@ -1903,7 +1896,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                     ),
                   )
                 },
-                state.getProductListingWithFiltersPaginationModels
+                state.getProductListingWithFiltersPaginationModels[key]
                             ?.paginationStatus ==
                         PaginationStatus.loading
                     ? TrydosLoader(

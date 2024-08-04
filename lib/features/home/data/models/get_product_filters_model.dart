@@ -74,6 +74,28 @@ class Filter {
     this.boutiqueSlug,
   });
 
+  Filter changeAttributesAndSaveOthers(
+      {List<Brand>? brands,
+        List<Attribute>? attributes,
+        List<Category>? categories,
+        List<String>? colors,
+        String? searchText,
+        int? totalSize,
+        Prices? prices,
+        String? boutiqueSlug,
+        List<Boutique>? boutiques}) =>
+      Filter(
+        brands: brands ?? this.brands,
+        attributes: attributes,
+        colors: colors ?? this.colors,
+        prices: prices ?? this.prices,
+        searchText: searchText ?? this.searchText,
+        boutiques: boutiques ?? this.boutiques,
+        totalSize: totalSize ?? this.totalSize,
+        categories: categories ?? this.categories,
+        boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
+      );
+
   Filter copyWithSaveOtherField(
           {List<Brand>? brands,
           List<Attribute>? attributes,

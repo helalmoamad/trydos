@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
+
 import 'get_category_model.dart';
 import 'get_product_filters_model.dart' as filters;
 import 'get_product_listing_without_filters_model.dart'
@@ -58,6 +60,7 @@ class Data {
   final List<String>? colors;
   final List<Category>? categories;
   final filters.Prices? prices;
+  final List<Boutique>? boutiques;
   final String? boutiqueSlug;
 
   Data({
@@ -66,6 +69,7 @@ class Data {
     this.offset,
     this.products,
     this.brands,
+    this.boutiques,
     this.attributes,
     this.categories,
     this.colors,
@@ -83,6 +87,7 @@ class Data {
     List<String>? colors,
     List<Category>? categories,
     filters.Prices? prices,
+    List<Boutique>? boutiques,
     String? boutiqueSlug,
   }) =>
       Data(
@@ -90,10 +95,11 @@ class Data {
         limit: limit ?? this.limit,
         offset: offset ?? this.offset,
         products: products ?? this.products,
-        brands: brands ?? brands,
-        attributes: attributes ?? attributes,
+        brands: brands ?? this.brands,
+        attributes: attributes ?? this.attributes,
+        boutiques: boutiques ?? this.boutiques,
         colors: colors ?? this.colors,
-        prices: prices ?? prices,
+        prices: prices ?? this.prices,
         boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
       );
 
@@ -110,6 +116,10 @@ class Data {
           ? []
           : List<filters.Brand>.from(
               json["brands"]!.map((x) => filters.Brand.fromJson(x))),
+      boutiques: json["boutiques"] == null
+          ? []
+          : List<Boutique>.from(
+              json["boutiques"]!.map((x) => Boutique.fromJson(x))),
       attributes: json["attributes"] == null
           ? []
           : List<filters.Attribute>.from(
@@ -138,6 +148,9 @@ class Data {
         "brands": brands == null
             ? []
             : List<dynamic>.from(brands!.map((x) => x.toJson())),
+    "boutiques": boutiques == null
+            ? []
+            : List<dynamic>.from(boutiques!.map((x) => x.toJson())),
         "attributes": attributes == null
             ? []
             : List<dynamic>.from(attributes!.map((x) => x.toJson())),

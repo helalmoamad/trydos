@@ -56,7 +56,8 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
           border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
-          Filter filters = state.getProductFiltersModel?.filters ?? Filter();
+          String key = 'search';
+          Filter filters = state.getProductFiltersModel[key]?.filters ?? Filter();
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -86,6 +87,7 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                     Spacer(),
                     SvgPicture.asset(
                       AppAssets.backArrowArabic,
+                      matchTextDirection: true,
                       color: Color(0xffC4C2C2),
                       width: 10,
                       height: 10,
@@ -108,24 +110,38 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
                         bool isSelected = homeBloc
-                                .state.choosedFiltersByUser?.filters?.brands
+                                .state.choosedFiltersByUser[key]?.filters?.brands
                                 ?.any((element) =>
                                     element.id == filters.brands?[index].id) ??
                             false;
                         return InkWell(
                           onTap: () {
                             Filter? prevChoosedFilterToAddToIt =
-                                homeBloc.state.choosedFiltersByUser?.filters;
+                                homeBloc.state.choosedFiltersByUser[key]?.filters;
                             if (prevChoosedFilterToAddToIt == null) {
                               prevChoosedFilterToAddToIt = Filter();
                             }
-                            prevChoosedFilterToAddToIt =
-                                prevChoosedFilterToAddToIt
-                                    .copyWithSaveOtherField(brands: [
-                              ...prevChoosedFilterToAddToIt.brands ?? [],
-                              filters.brands![index]
-                            ]);
+                            if (isSelected) {
+                              List<Brand> brands =
+                                  prevChoosedFilterToAddToIt.brands ?? [];
+                              brands.removeWhere((element) =>
+                                  element.id == filters.brands![index].id);
+                              prevChoosedFilterToAddToIt =
+                                  prevChoosedFilterToAddToIt
+                                      .copyWithSaveOtherField(
+                                    brands: brands,
+                              );
+                            } else {
+                              prevChoosedFilterToAddToIt =
+                                  prevChoosedFilterToAddToIt
+                                      .copyWithSaveOtherField(brands: [
+                                ...prevChoosedFilterToAddToIt.brands ?? [],
+                                filters.brands![index]
+                              ]);
+                            }
                             homeBloc.add(ChangeSelectedFiltersEvent(
+                                fromHomePageSearch: true,
+                                boutiqueSlug: key,
                                 filtersChoosedByUser: GetProductFiltersModel(
                                     filters: prevChoosedFilterToAddToIt)));
                           },

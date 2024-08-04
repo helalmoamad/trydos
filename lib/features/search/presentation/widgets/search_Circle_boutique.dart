@@ -52,7 +52,8 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
           border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
-          Filter filters = state.getProductFiltersModel?.filters ?? Filter();
+          String key = 'search';
+          Filter filters = state.getProductFiltersModel[key]?.filters ?? Filter();
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -83,6 +84,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                     Spacer(),
                     SvgPicture.asset(
                       AppAssets.backArrowArabic,
+                      matchTextDirection: true,
                       color: Color(0xffC4C2C2),
                       width: 10,
                       height: 10,
@@ -106,24 +108,38 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                          scrollDirection: Axis.horizontal,
                          itemBuilder: (context, index) {
                                bool isSelected = homeBloc
-                                   .state.choosedFiltersByUser?.filters?.brands
+                                   .state.choosedFiltersByUser[key]?.filters?.boutiques
                                    ?.any((element) =>
                                element.id == filters.boutiques?[index].id) ??
                                    false;
                                return InkWell(
                                  onTap: () {
                                    Filter? prevChoosedFilterToAddToIt =
-                                       homeBloc.state.choosedFiltersByUser?.filters;
+                                       homeBloc.state.choosedFiltersByUser[key]?.filters;
                                    if (prevChoosedFilterToAddToIt == null) {
                                      prevChoosedFilterToAddToIt = Filter();
                                    }
-                                   prevChoosedFilterToAddToIt =
-                                       prevChoosedFilterToAddToIt
-                                           .copyWithSaveOtherField(boutiques: [
-                                         ...prevChoosedFilterToAddToIt.boutiques ?? [],
-                                         filters.boutiques![index]
-                                       ]);
+                                   if(isSelected){
+                                     List<Boutique> boutiques = prevChoosedFilterToAddToIt.boutiques ?? [];
+                                     boutiques.removeWhere((element) => element.id == filters.boutiques![index].id);
+                                     prevChoosedFilterToAddToIt =
+                                         prevChoosedFilterToAddToIt
+                                             .copyWithSaveOtherField(
+                                             boutiques: boutiques,
+                                         );
+                                   }else {
+                                     prevChoosedFilterToAddToIt =
+                                         prevChoosedFilterToAddToIt
+                                             .copyWithSaveOtherField(
+                                             boutiques: [
+                                               ...prevChoosedFilterToAddToIt
+                                                   .boutiques ?? [],
+                                               filters.boutiques![index]
+                                             ]);
+                                   }
                                    homeBloc.add(ChangeSelectedFiltersEvent(
+                                     fromHomePageSearch: true,
+                                       boutiqueSlug: key,
                                        filtersChoosedByUser: GetProductFiltersModel(
                                            filters: prevChoosedFilterToAddToIt)));
                                  },

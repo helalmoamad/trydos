@@ -51,7 +51,8 @@ class _SearchResultState extends ThemeState<SearchResult> {
             p.getProductListingWithFiltersPaginationModels !=
             c.getProductListingWithFiltersPaginationModels,
         builder: (context, state) {
-          if (state.getProductListingWithFiltersPaginationModels
+          String key = 'search';
+          if (state.getProductListingWithFiltersPaginationModels[key]
                   ?.paginationStatus ==
               PaginationStatus.loading) {
             return Column(children: [
@@ -80,10 +81,10 @@ class _SearchResultState extends ThemeState<SearchResult> {
                   ))
             ]);
           }
-          if (state.getProductListingWithFiltersPaginationModels
+          if (state.getProductListingWithFiltersPaginationModels[key]
                       ?.paginationStatus !=
                   PaginationStatus.success ||
-              state.getProductListingWithFiltersPaginationModels == null ||
+              state.getProductListingWithFiltersPaginationModels[key] == null ||
               !value) {
             return SizedBox.shrink();
           }
@@ -175,10 +176,10 @@ class _SearchResultState extends ThemeState<SearchResult> {
               ],
             );*/
 
-          if (state.getProductListingWithFiltersPaginationModels == null) {
+          if (state.getProductListingWithFiltersPaginationModels[key] == null) {
             return SizedBox.shrink();
           }
-          if (state.getProductListingWithFiltersPaginationModels!.items
+          if (state.getProductListingWithFiltersPaginationModels[key]!.items
               .isNullOrEmpty) {
             return Padding(
               padding: const EdgeInsets.all(10),
@@ -222,7 +223,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                               context,
                               ProductDetailsPage(
                                 productItem: state
-                                    .getProductListingWithFiltersPaginationModels!
+                                    .getProductListingWithFiltersPaginationModels[key]!
                                     .items[index],
                               ));
                         },
@@ -242,7 +243,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                                 Flexible(
                                   child: MyTextWidget(
                                     state
-                                        .getProductListingWithFiltersPaginationModels!
+                                        .getProductListingWithFiltersPaginationModels[key]!
                                         .items[index]
                                         .name!,
                                     textAlign: TextAlign.start,
@@ -274,7 +275,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                                 fit: BoxFit.cover,
                                 image: NetworkImage(
                                   state
-                                      .getProductListingWithFiltersPaginationModels!
+                                      .getProductListingWithFiltersPaginationModels[key]!
                                       .items[index]
                                       .images![0]
                                       .filePath!,
@@ -282,7 +283,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                       )
                     ],
                   ),
-                  itemCount: state.getProductListingWithFiltersPaginationModels!
+                  itemCount: state.getProductListingWithFiltersPaginationModels[key]!
                       .items.length,
                   separatorBuilder: (ctx, index) => SizedBox(
                     height: 5,

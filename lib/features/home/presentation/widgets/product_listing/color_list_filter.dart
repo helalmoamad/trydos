@@ -22,13 +22,13 @@ class ColorsListFilter extends StatefulWidget {
        this.searchText,
       required this.colors,
       required this.fromHomeSearch,
-      this.boutiqueSlug,
+        required this.boutiqueSlug,
       this.category});
 
   final List<String> colors;
   final bool hideTitle;
   final bool fromHomeSearch;
-  final String? boutiqueSlug;
+  final String boutiqueSlug;
   final String? category;
   final String? searchText;
 
@@ -37,6 +37,15 @@ class ColorsListFilter extends StatefulWidget {
 }
 
 class _ColorsListFilterState extends State<ColorsListFilter> {
+
+  String key = '';
+
+  @override
+  void initState() {
+    key = widget.boutiqueSlug + (widget.category ?? '');
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.colors.isNullOrEmpty) {
@@ -68,7 +77,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                 ),
                BlocBuilder<HomeBloc,HomeState>(
                  builder: (context , state){
-                   if(state.getProductFiltersStatus == GetProductFiltersStatus.loading){
+                   if(state.getProductFiltersStatus[key] == GetProductFiltersStatus.loading){
                    return Row(children: [SizedBox(width: 5,),
                      TrydosLoader(size: 20,),],);
                    }
@@ -89,8 +98,11 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                   itemBuilder: (ctx, index) {
                     HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
                     bool isSelected = widget.hideTitle
-                        ? false
-                        : (homeBloc.state.choosedFiltersByUser?.filters?.colors
+                        ? (homeBloc.state.appliedFiltersByUser[key]?.filters?.colors
+                        ?.any((element) =>
+                    element == widget.colors[index]) ??
+                        false)
+                        : (homeBloc.state.choosedFiltersByUser[key]?.filters?.colors
                                 ?.any((element) =>
                                     element == widget.colors[index]) ??
                             false);
@@ -102,9 +114,9 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                             String color = widget.colors[index];
                             Filter? prevChoosedOrAppliedFilterToAddToIt = widget
                                     .hideTitle
-                                ? homeBloc.state.appliedFiltersByUser?.filters
-                                : homeBloc.state.choosedFiltersByUser?.filters;
-                            if (widget.hideTitle || !isSelected) {
+                                ? homeBloc.state.appliedFiltersByUser[key]?.filters
+                                : homeBloc.state.choosedFiltersByUser[key]?.filters;
+                            if (!isSelected) {
                               if (prevChoosedOrAppliedFilterToAddToIt == null) {
                                 prevChoosedOrAppliedFilterToAddToIt = Filter();
                               }
@@ -122,40 +134,32 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                                           .colors!,
                                                       color
                                                     ]);
-
-                              if (widget.hideTitle) {
-                                homeBloc.add(ChangeAppliedFiltersEvent(
-                                  category: widget.category,
-                                  boutiqueSlug: widget.boutiqueSlug,
-                                  filtersAppliedByUser: GetProductFiltersModel(
-                                      filters:
-                                      prevChoosedOrAppliedFilterToAddToIt),
-                                ));
-                                homeBloc.add(GetProductsWithFiltersEvent(
-                                    fromSearch: widget.fromHomeSearch,
-                                    searchText: widget.searchText,
-                                    boutiqueSlug: widget.boutiqueSlug,
-                                    category: widget.category,
-                                    offset: 1));
-                              } else {
-                                homeBloc.add(ChangeSelectedFiltersEvent(
-                                  category: widget.category,
-                                  boutiqueSlug: widget.boutiqueSlug,
-                                  filtersChoosedByUser: GetProductFiltersModel(
-                                      filters:
-                                          prevChoosedOrAppliedFilterToAddToIt),
-                                ));
-                              }
                             } else {
                               prevChoosedOrAppliedFilterToAddToIt!.colors!
                                   .removeWhere(((element) =>
                                       element == widget.colors[index]));
+                            }
+                            if (widget.hideTitle) {
+                              homeBloc.add(ChangeAppliedFiltersEvent(
+                                category: widget.category,
+                                boutiqueSlug: widget.boutiqueSlug,
+                                filtersAppliedByUser: GetProductFiltersModel(
+                                    filters:
+                                    prevChoosedOrAppliedFilterToAddToIt),
+                              ));
+                              homeBloc.add(GetProductsWithFiltersEvent(
+                                  fromSearch: widget.fromHomeSearch,
+                                  searchText: widget.searchText,
+                                  boutiqueSlug: widget.boutiqueSlug,
+                                  category: widget.category,
+                                  offset: 1));
+                            } else {
                               homeBloc.add(ChangeSelectedFiltersEvent(
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,
                                 filtersChoosedByUser: GetProductFiltersModel(
                                     filters:
-                                        prevChoosedOrAppliedFilterToAddToIt),
+                                    prevChoosedOrAppliedFilterToAddToIt),
                               ));
                             }
                           },
