@@ -54,6 +54,7 @@ class _TabsBarState extends State<TabsBar> {
   }
 
   final FocusNode focusNode = FocusNode();
+  bool resetSearchAfterSearchingWhileRemoveSearch = false;
 
   @override
   void didChangeDependencies() {
@@ -141,6 +142,21 @@ class _TabsBarState extends State<TabsBar> {
                                       height: 40,
                                       onClickClose: () {
                                         if (widget.controller.text.length > 0) {
+                                          GetProductFiltersModel? getProductFiltersModel = homeBloc.state.appliedFiltersByUser['search'];
+                                          getProductFiltersModel = getProductFiltersModel?.copyWith(
+                                            filters: getProductFiltersModel.filters?.copyWith(
+                                              prices: getProductFiltersModel.filters?.prices,
+                                              searchText: null,
+                                            )
+                                          );
+                                          homeBloc.add(ChangeAppliedFiltersEvent(
+                                            boutiqueSlug: 'search',
+                                            filtersAppliedByUser: getProductFiltersModel,
+                                          ));
+                                          homeBloc.add(GetProductFiltersEvent(
+                                              boutiqueSlug: 'search',
+                                              fromHomePageSearch: true,
+                                              searchText: null));
                                           widget.buildSearchResult.value = 0;
                                           widget.controller.clear();
                                           widget.appearTrendingAndHistory.value = true;
@@ -299,13 +315,43 @@ class _TabsBarState extends State<TabsBar> {
                                       ),
                                       onChanged: (String text) {
                                         if (text.length > 2) {
+                                          resetSearchAfterSearchingWhileRemoveSearch = true;
+                                          GetProductFiltersModel? getProductFiltersModel = homeBloc.state.appliedFiltersByUser['search'];
+                                          getProductFiltersModel = getProductFiltersModel?.copyWith(
+                                              filters: getProductFiltersModel.filters?.copyWith(
+                                                prices: getProductFiltersModel.filters?.prices,
+                                                searchText: text,
+                                              )
+                                          );
+                                          homeBloc.add(ChangeAppliedFiltersEvent(
+                                            boutiqueSlug: 'search',
+                                            filtersAppliedByUser: getProductFiltersModel,
+                                          ));
                                           homeBloc.add(
                                               GetProductsWithFiltersEvent(
                                                   offset: 1,
+                                                  boutiqueSlug: 'search',
                                                   fromSearch: true,
                                                   searchText: text));
                                           widget.buildSearchResult.value =
                                               text.length;
+                                        }
+                                        if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
+                                          resetSearchAfterSearchingWhileRemoveSearch = false;
+                                          Filter filters = homeBloc.state.appliedFiltersByUser['search']?.filters ?? Filter();
+                                          homeBloc.add(ChangeAppliedFiltersEvent(
+                                            boutiqueSlug: 'search',
+                                            filtersAppliedByUser: GetProductFiltersModel(
+                                                filters: filters.copyWithSaveOtherField(
+                                                  prices: filters.prices,
+                                                  searchText: null,
+                                                )),
+                                          ));
+                                          homeBloc.add(GetProductFiltersEvent(
+                                            fromHomePageSearch: true,
+                                            searchText: null,
+                                            boutiqueSlug: 'search',
+                                          ));
                                         }
                                       },
                                       hideTrendingAndHistory:

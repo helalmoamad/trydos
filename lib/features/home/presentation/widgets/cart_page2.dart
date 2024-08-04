@@ -214,13 +214,17 @@ class CartPage2 extends StatelessWidget {
                                     children: [
                                       InkWell(
                                         onTap: () {
+                                          if (indexes == index) {
+                                            changeCartCollection.value =
+                                                !changeCartCollection.value;
+                                          }
                                           indexes = index;
                                           keyFirst = state.cartCollection!.keys
                                               .toList()[index];
                                           changeCartCollections.value =
                                               !changeCartCollections.value;
                                           changeCartCollection.value =
-                                              !changeCartCollection.value;
+                                              changeCartCollection.value;
                                         },
                                         child: Container(
                                             padding: EdgeInsets.symmetric(

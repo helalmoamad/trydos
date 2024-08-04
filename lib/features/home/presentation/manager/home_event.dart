@@ -25,25 +25,18 @@ class GetMainCategoriesEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
-class ResetFilteringSessionEvent extends HomeEvent {
-  const ResetFilteringSessionEvent();
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [];
-}
 
 class GetProductFiltersEvent extends HomeEvent {
   const GetProductFiltersEvent(
       {this.category,
       this.fromHomePageSearch = false,
-      this.boutiqueSlug,
+      required this.boutiqueSlug,
       this.searchText,
       this.forceUpdate = false,
       this.resetAppliesFilters = false,
       this.filtersChoosedByUser});
 
-  final String? boutiqueSlug;
+  final String boutiqueSlug;
   final String? searchText;
   final String? category;
   final bool forceUpdate;
@@ -130,13 +123,17 @@ class GetProductsWithoutFiltersEvent extends HomeEvent {
 class ChangeSelectedFiltersEvent extends HomeEvent {
   final GetProductFiltersModel? filtersChoosedByUser;
   final bool resetChoosedFilters;
-  final String? boutiqueSlug;
+  final bool requestToUpdateFilters;
+  final bool fromHomePageSearch;
+  final String boutiqueSlug;
   final String? category;
 
   ChangeSelectedFiltersEvent({
     this.filtersChoosedByUser,
-    this.boutiqueSlug,
+    required this.boutiqueSlug,
     this.resetChoosedFilters = false,
+    this.fromHomePageSearch = false,
+    this.requestToUpdateFilters = true,
     this.category,
   });
 
@@ -148,12 +145,12 @@ class ChangeSelectedFiltersEvent extends HomeEvent {
 class ChangeAppliedFiltersEvent extends HomeEvent {
   final GetProductFiltersModel? filtersAppliedByUser;
   final bool resetAppliedFilters;
-  final String? boutiqueSlug;
+  final String boutiqueSlug;
   final String? category;
 
   ChangeAppliedFiltersEvent({
     this.filtersAppliedByUser,
-    this.boutiqueSlug,
+    required this.boutiqueSlug,
     this.resetAppliedFilters = false,
     this.category,
   });
@@ -168,13 +165,13 @@ class GetProductsWithFiltersEvent extends HomeEvent {
   final String? searchText;
   final int offset;
   final int? limit;
-  final String? boutiqueSlug;
+  final String boutiqueSlug;
   final bool? fromSearch;
   final bool getWithPagination;
 
   GetProductsWithFiltersEvent(
       {
-      this.boutiqueSlug,
+      required this.boutiqueSlug,
       this.getWithPagination = false,
       this.searchText,
       this.fromSearch,

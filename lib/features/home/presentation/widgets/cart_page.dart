@@ -1,14 +1,12 @@
 import 'package:dotted_border/dotted_border.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 
@@ -24,12 +22,11 @@ import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
-import 'package:trydos/features/home/presentation/pages/home_page.dart';
+
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_page2.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
-import 'package:trydos/routes/router.dart';
 
 class CartPage extends StatefulWidget {
   State<CartPage> createState() => _CartPageState();
@@ -245,13 +242,17 @@ class _CartPageState extends State<CartPage> {
                                   children: [
                                     InkWell(
                                       onTap: () {
+                                        if (indexs == index) {
+                                          changeCartCollection.value =
+                                              !changeCartCollection.value;
+                                        }
                                         indexs = index;
                                         keyFirst = state.cartCollection!.keys
                                             .toList()[index];
                                         changeCartCollections.value =
                                             !changeCartCollections.value;
                                         changeCartCollection.value =
-                                            !changeCartCollection.value;
+                                            changeCartCollection.value;
                                       },
                                       child: Container(
                                           width: 1.sw - 20,
