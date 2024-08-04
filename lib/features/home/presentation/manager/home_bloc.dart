@@ -600,7 +600,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     filters_model.GetProductFiltersModel? prevAppliedFiltersByUser,
         prevChoosedFiltersByUser;
     prevAppliedFiltersByUser = state.appliedFiltersByUser;
-    filters_model.Filter filters = state.appliedFiltersByUser?.filters ?? filters_model.Filter();
+    filters_model.Filter filters =
+        state.appliedFiltersByUser?.filters ?? filters_model.Filter();
 
     // List<filters_model.Attribute>? attribute;
     // attribute = filters.attributes.isNullOrEmpty
@@ -709,34 +710,34 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       try {
         emit(state.copyWith(
           getProductListingWithFiltersPaginationModels:
-          getProductListingWithFiltersPaginationModels.copyWith(
-              paginationStatus: PaginationStatus.success,
-              page: event.getWithPagination
-                  ? getProductListingWithFiltersPaginationModels.page + 1
-                  : 2,
-              hasReachedMax: (r.data!.products?.length ?? 0) < kPageSize,
-              items: event.getWithPagination
-                  ? [
-                ...getProductListingWithFiltersPaginationModels.items,
-                ...r.data!.products ?? []
-              ]
-                  : r.data!.products),
+              getProductListingWithFiltersPaginationModels.copyWith(
+                  paginationStatus: PaginationStatus.success,
+                  page: event.getWithPagination
+                      ? getProductListingWithFiltersPaginationModels.page + 1
+                      : 2,
+                  hasReachedMax: (r.data!.products?.length ?? 0) < kPageSize,
+                  items: event.getWithPagination
+                      ? [
+                          ...getProductListingWithFiltersPaginationModels.items,
+                          ...r.data!.products ?? []
+                        ]
+                      : r.data!.products),
           countOfProductExpectedByFiltering: r.data!.totalSize,
           resetGetProductFiltersModel: r.data!.products!.length == 1,
           getProductFiltersModel: r.data!.products!.length == 1
               ? null
               : removeAlreadyChoosedFilters(
-              filters_model.GetProductFiltersModel(
-                  filters: filters_model.Filter(
+                  filters_model.GetProductFiltersModel(
+                      filters: filters_model.Filter(
                     brands: r.data!.brands,
                     attributes: r.data!.attributes,
                     prices: r.data!.prices,
                     colors: r.data!.colors,
                     categories: r.data!.categories,
                   )),
-              filters),
+                  filters),
         ));
-      }catch(e,st){
+      } catch (e, st) {
         print(e);
         print(st);
       }
