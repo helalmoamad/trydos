@@ -23,9 +23,9 @@ class SearchChipCategory extends StatefulWidget {
 
   const SearchChipCategory(
       {Key? key,
-      required this.title,
-      required this.controller,
-      required this.isLoading})
+        required this.title,
+        required this.controller,
+        required this.isLoading})
       : super(key: key);
 
   @override
@@ -74,14 +74,14 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                     ),
                     widget.isLoading
                         ? Container(
-                            width: 15,
-                            height: 15,
-                            child: Center(
-                              child: TrydosLoader(
-                                color: Colors.black,
-                                size: 15,
-                              ),
-                            ))
+                        width: 15,
+                        height: 15,
+                        child: Center(
+                          child: TrydosLoader(
+                            color: Colors.black,
+                            size: 15,
+                          ),
+                        ))
                         : SizedBox.shrink(),
                     Spacer(),
                     SvgPicture.asset(
@@ -109,10 +109,10 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
                         bool isSelected = homeBloc
-                                .state.choosedFiltersByUser[key]?.filters?.categories
-                                ?.any((element) =>
-                                    element.id ==
-                                    filters.categories?[index].id) ??
+                            .state.choosedFiltersByUser[key]?.filters?.categories
+                            ?.any((element) =>
+                        element.id ==
+                            filters.categories?[index].id) ??
                             false;
                         return InkWell(
                           onTap: () {
@@ -125,19 +125,19 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                               List<product_listing.Category> categories =
                                   prevChoosedFilterToAddToIt.categories ?? [];
                               categories.removeWhere((element) =>
-                                  element.id == filters.categories![index].id);
+                              element.id == filters.categories![index].id);
                               prevChoosedFilterToAddToIt =
                                   prevChoosedFilterToAddToIt
                                       .copyWithSaveOtherField(
                                     categories: categories,
-                              );
+                                  );
                             } else {
                               prevChoosedFilterToAddToIt =
                                   prevChoosedFilterToAddToIt
                                       .copyWithSaveOtherField(categories: [
-                                ...prevChoosedFilterToAddToIt.categories ?? [],
-                                filters.categories![index]
-                              ]);
+                                    ...prevChoosedFilterToAddToIt.categories ?? [],
+                                    filters.categories![index]
+                                  ]);
                             }
                             homeBloc.add(ChangeSelectedFiltersEvent(
                                 fromHomePageSearch: true,
@@ -160,7 +160,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                 child: Center(
                                   child: Row(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    CrossAxisAlignment.center,
                                     children: [
                                       MyCachedNetworkImage(
                                         imageUrl: filters
@@ -178,8 +178,8 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                         filters.categories![index].name!,
                                         style: context.textTheme.bodyText2?.rq
                                             .copyWith(
-                                                height: 18 / 14,
-                                                color: Color(0xff8D8D8D)),
+                                            height: 18 / 14,
+                                            color: Color(0xff8D8D8D)),
                                       )
                                     ],
                                   ),
@@ -188,7 +188,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                               Visibility(
                                   visible: isSelected,
                                   child:
-                                      FilterSelectedMark(width: 12, height: 12))
+                                  FilterSelectedMark(width: 12, height: 12))
                             ],
                           ),
                         );

@@ -177,7 +177,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                     ValueListenableBuilder<bool>(
                         valueListenable: widget.appearTrendingAndHistory,
                         child: SearchChipBrand(
-                          isLoading: state.getProductFiltersStatus ==
+                          isLoading: state.getProductFiltersStatus[key] ==
                                   GetProductFiltersStatus.loading ||
                               state.getProductListingWithFiltersPaginationModels[key]
                                       ?.paginationStatus ==
@@ -199,7 +199,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                     ValueListenableBuilder<bool>(
                         valueListenable: widget.appearTrendingAndHistory,
                         child: SearchChipCategory(
-                          isLoading: state.getProductFiltersStatus ==
+                          isLoading: state.getProductFiltersStatus[key] ==
                                   GetProductFiltersStatus.loading ||
                               state.getProductListingWithFiltersPaginationModels[key]
                                       ?.paginationStatus ==
@@ -221,7 +221,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                     ValueListenableBuilder<bool>(
                         valueListenable: widget.appearTrendingAndHistory,
                         child: SearchChipBoutique(
-                          isLoading: state.getProductFiltersStatus ==
+                          isLoading: state.getProductFiltersStatus[key] ==
                                   GetProductFiltersStatus.loading ||
                               state.getProductListingWithFiltersPaginationModels[key]
                                       ?.paginationStatus ==

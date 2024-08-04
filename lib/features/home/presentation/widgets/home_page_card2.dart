@@ -344,7 +344,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                             svgUrl: widget
                                 .boutniqe
                                 .mainCategoriesForProductIds![index]
-                                .flatPhotoPath!.filePath!,
+                                .flatPhotoPath!
+                                .filePath!,
                             width: 12,
                             height: 12,
                           ));
@@ -490,7 +491,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                 .boutniqe
                                                 .childCategoriesForProductIds![
                                                     index]
-                                                .mostViewedProductThumbnail!.filePath!,
+                                                .mostViewedProductThumbnail!
+                                                .filePath!,
                                             name: widget
                                                 .boutniqe
                                                 .childCategoriesForProductIds![

@@ -12,18 +12,18 @@ import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
-    as cart;
+as cart;
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
-    as filters_model;
+as filters_model;
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
-    as product;
+as product;
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCase.dart';
@@ -71,26 +71,26 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 @LazySingleton()
 class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   HomeBloc(
-    //  this.getHomeSectionsUseCase,
-    this.getMainCategoriesUseCase,
-    this.getStoryUseCase,
-    this.removeItemToCartUseCase,
-    this.getCartItemUseCase,
-    // this.getBrandUseCase,
-    //  this.getCategoryUseCase,
-    this.updateItemInCartUseCase,
-    this.addItemToCartUseCase,
-    this.getCommentForProductUseCase,
-    this.getHomeBoutiqesUseCase,
-    this.getProductFiltersUseCase,
-    this.getAllowedCountryUseCase,
-    this.getWidthAndHeightUseCase,
-    this.getProductDetailWithoutRelatedProductsUseCase,
-    this.getStartingSettingsUseCase,
-    this.getCurrencyForCountryUseCase,
-    this.getProductsWithoutFiltersUseCase,
-    this.getProductsWithFiltersUseCase,
-  ) : super(HomeState()) {
+      //  this.getHomeSectionsUseCase,
+      this.getMainCategoriesUseCase,
+      this.getStoryUseCase,
+      this.removeItemToCartUseCase,
+      this.getCartItemUseCase,
+      // this.getBrandUseCase,
+      //  this.getCategoryUseCase,
+      this.updateItemInCartUseCase,
+      this.addItemToCartUseCase,
+      this.getCommentForProductUseCase,
+      this.getHomeBoutiqesUseCase,
+      this.getProductFiltersUseCase,
+      this.getAllowedCountryUseCase,
+      this.getWidthAndHeightUseCase,
+      this.getProductDetailWithoutRelatedProductsUseCase,
+      this.getStartingSettingsUseCase,
+      this.getCurrencyForCountryUseCase,
+      this.getProductsWithoutFiltersUseCase,
+      this.getProductsWithFiltersUseCase,
+      ) : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
 
     on<AddCurrentColorSizeEvent>(
@@ -188,7 +188,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetCommentForProductUseCase getCommentForProductUseCase;
   final GetStoryForProductUseCase getStoryUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
-      getProductDetailWithoutRelatedProductsUseCase;
+  getProductDetailWithoutRelatedProductsUseCase;
 
   // final GetBrandUseCase getBrandUseCase;
 
@@ -283,7 +283,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   _onAddCurrentSelectedColorEvent(
       AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
     Map<String, int> currentSelectedColorForEveryProduct =
-        Map.of(state.currentSelectedColorForEveryProduct);
+    Map.of(state.currentSelectedColorForEveryProduct);
     currentSelectedColorForEveryProduct[event.productId] =
         event.currentSelectedColor;
     emit(state.copyWith(
@@ -383,28 +383,28 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onGetHomeBoutiquesEvent(
       GetHomeBoutiqesEvent event, Emitter<HomeState> emit) async {
     Map<String, PaginationModel<Boutique>>
-        getHomeBoutiquesPaginationObjectByMainCategory =
-        Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
+    getHomeBoutiquesPaginationObjectByMainCategory =
+    Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
 
     Map<String, bool> reRequestTheseBoutiques =
-        Map.of(state.reRequestTheseBoutiques);
+    Map.of(state.reRequestTheseBoutiques);
     if (getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug] ==
         null) {
       getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug] =
-          const PaginationModel<Boutique>.init();
+      const PaginationModel<Boutique>.init();
     }
     if (!state.reRequestTheseBoutiques.containsKey(event.categorySlug)) {
       getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug] =
           getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
               .copyWith(
-                  paginationStatus: PaginationStatus.initial,
-                  page: 0,
-                  hasReachedMax: false);
+              paginationStatus: PaginationStatus.initial,
+              page: 0,
+              hasReachedMax: false);
     }
     if ((!event.getWithPagination &&
-            getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
-                    .paginationStatus ==
-                PaginationStatus.loading) ||
+        getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
+            .paginationStatus ==
+            PaginationStatus.loading) ||
         (event.getWithPagination &&
             getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
                 .hasReachedMax)) {
@@ -412,7 +412,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
     print('scscscs ${event.categorySlug}');
     emit(state.copyWith(getHomeBoutiquesPaginationObjectByMainCategory:
-        getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
+    getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
       if (key == event.categorySlug)
         return MapEntry(
             key, value.copyWith(paginationStatus: PaginationStatus.loading));
@@ -431,7 +431,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         isFailedTheFirstTime.add('GetHomeBoutiqesEvent');
       }
       emit(state.copyWith(getHomeBoutiquesPaginationObjectByMainCategory:
-          getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
+      getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
         if (key == event.categorySlug)
           return MapEntry(
               key, value.copyWith(paginationStatus: PaginationStatus.failure));
@@ -459,7 +459,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(
           reRequestTheseBoutiques:  Map.of(reRequestTheseBoutiques),
           getHomeBoutiquesPaginationObjectByMainCategory:
-              getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
+          getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
             if (key == event.categorySlug) {
               return MapEntry(
                   key,
@@ -467,12 +467,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                       paginationStatus: PaginationStatus.success,
                       page: event.getWithPagination
                           ? getHomeBoutiquesPaginationObjectByMainCategory[
-                                      event.categorySlug]!
-                                  .page +
-                              1
+                      event.categorySlug]!
+                          .page +
+                          1
                           : 2,
                       hasReachedMax:
-                          (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
+                      (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
                       items: boutiques));
             } else {
               return MapEntry(key, value);
@@ -485,14 +485,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       GetProductsWithoutFiltersEvent event, Emitter<HomeState> emit) async {
     String keyForCacheData = event.boutiqueSlug + (event.category ?? '');
     Map<String, PaginationModel<product.Products>> getProductsWithoutFilters =
-        Map.of(state.getProductListingPaginationWithoutFiltersModel);
+    Map.of(state.getProductListingPaginationWithoutFiltersModel);
 
     if (getProductsWithoutFilters[keyForCacheData] == null) {
       getProductsWithoutFilters[keyForCacheData] =
-          const PaginationModel<product.Products>.init();
+      const PaginationModel<product.Products>.init();
     }
     Map<String, bool> reRequestTheseProductListingInBoutiques =
-        Map.of(state.reRequestTheseProductListingInBoutiques);
+    Map.of(state.reRequestTheseProductListingInBoutiques);
     if (!reRequestTheseProductListingInBoutiques.containsKey(keyForCacheData)) {
       getProductsWithoutFilters[keyForCacheData] =
           getProductsWithoutFilters[keyForCacheData]!.copyWith(
@@ -512,7 +512,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     print("1133333333333333333333333333311");
     emit(state.copyWith(
       getProductListingPaginationWithoutFiltersModel:
-          getProductsWithoutFilters.map((key, value) {
+      getProductsWithoutFilters.map((key, value) {
         if (key == keyForCacheData) {
           return MapEntry(
               key, value.copyWith(paginationStatus: PaginationStatus.loading));
@@ -522,7 +522,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }),
     ));
     final response =
-        await getProductsWithoutFiltersUseCase(GetProductsWithoutFiltersParams(
+    await getProductsWithoutFiltersUseCase(GetProductsWithoutFiltersParams(
       offset: event.offset,
       boutiqueSlug: event.boutiqueSlug,
       category: event.category,
@@ -540,7 +540,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         isFailedTheFirstTime.add('GetProductsWithoutFiltersEvent');
       }
       emit(state.copyWith(getProductListingPaginationWithoutFiltersModel:
-          getProductsWithoutFilters.map((key, value) {
+      getProductsWithoutFilters.map((key, value) {
         if (key == keyForCacheData) {
           return MapEntry(
               key, value.copyWith(paginationStatus: PaginationStatus.failure));
@@ -551,13 +551,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }, (r) {
       isFailedTheFirstTime.remove('GetProductsWithoutFiltersEvent');
       bool resetListAfterGetData =
-          !(reRequestTheseProductListingInBoutiques[keyForCacheData] ?? false);
+      !(reRequestTheseProductListingInBoutiques[keyForCacheData] ?? false);
       reRequestTheseProductListingInBoutiques[keyForCacheData] = true;
       emit(state.copyWith(
           reRequestTheseProductListingInBoutiques:
           Map.of(reRequestTheseProductListingInBoutiques),
           getProductListingPaginationWithoutFiltersModel:
-              getProductsWithoutFilters.map((key, value) {
+          getProductsWithoutFilters.map((key, value) {
             if (key == keyForCacheData) {
               return MapEntry(
                   key,
@@ -567,14 +567,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                           ? getProductsWithoutFilters[keyForCacheData]!.page + 1
                           : 2,
                       hasReachedMax:
-                          (r.data!.products?.length ?? kPageSize) < kPageSize,
+                      (r.data!.products?.length ?? kPageSize) < kPageSize,
                       items: [
                         ...resetListAfterGetData
                             ? []
                             : event.getWithPagination
-                                ? getProductsWithoutFilters[keyForCacheData]!
-                                    .items
-                                : [],
+                            ? getProductsWithoutFilters[keyForCacheData]!
+                            .items
+                            : [],
                         ...r.data?.products ?? []
                       ]));
             } else {
@@ -588,14 +588,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       GetProductsWithFiltersEvent event, Emitter<HomeState> emit) async {
     String key = event.boutiqueSlug + (event.category ?? '');
     Map<String, PaginationModel<product.Products>?>
-        getProductListingWithFiltersPaginationModels =
-        Map.of(state.getProductListingWithFiltersPaginationModels);
+    getProductListingWithFiltersPaginationModels =
+    Map.of(state.getProductListingWithFiltersPaginationModels);
     if (getProductListingWithFiltersPaginationModels[key] == null) {
       getProductListingWithFiltersPaginationModels[key] =
           PaginationModel.init();
     }
     Map<String, bool> reRequestProductWithFilters =
-        Map.of(state.reRequestProductWithFilters);
+    Map.of(state.reRequestProductWithFilters);
     if (!reRequestProductWithFilters.containsKey(key)) {
       getProductListingWithFiltersPaginationModels[key] =
           getProductListingWithFiltersPaginationModels[key]!.copyWith(
@@ -652,13 +652,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     // );
     getProductListingWithFiltersPaginationModels[key] =
         getProductListingWithFiltersPaginationModels[key]!.copyWith(
-      paginationStatus: PaginationStatus.loading,
-    );
+          paginationStatus: PaginationStatus.loading,
+        );
 
     Map<String, filters_model.GetProductFiltersModel?> choosedFilters =
-        Map.of(state.choosedFiltersByUser);
+    Map.of(state.choosedFiltersByUser);
     Map<String, filters_model.GetProductFiltersModel?> appliedFilters =
-        Map.of(state.appliedFiltersByUser);
+    Map.of(state.appliedFiltersByUser);
     choosedFilters[key] = null;
     if (((filters.colors?.isNullOrEmpty ?? true) &&
         (filters.brands?.isNullOrEmpty ?? true) &&
@@ -675,7 +675,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(state.copyWith(
       reRequestProductWithFilters:  Map.of(reRequestProductWithFilters),
       getProductListingWithFiltersPaginationModels:
-          Map.of(getProductListingWithFiltersPaginationModels),
+      Map.of(getProductListingWithFiltersPaginationModels),
       choosedFiltersByUser:  Map.of(choosedFilters),
       appliedFiltersByUser:  Map.of(appliedFilters),
     ));
@@ -683,25 +683,25 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     final response = await getProductsWithFiltersUseCase(
         GetProductsWithFiltersParams(
             brandSlugs:
-                filters.brands?.map((e) => '"${e.slug.toString()}"').toList(),
+            filters.brands?.map((e) => '"${e.slug.toString()}"').toList(),
             categorySlugs: filters.categories
                 ?.map((e) => '"${e.slug.toString()}"')
                 .toList(),
             boutiqueSlugs: event.fromSearch ?? false
                 ? filters.boutiques
-                    ?.map((e) => '"${e.slug.toString()}"')
-                    .toList()
+                ?.map((e) => '"${e.slug.toString()}"')
+                .toList()
                 : ['"${event.boutiqueSlug}"'],
             offset: event.offset,
             attributes: filters.attributes.isNullOrEmpty
                 ? null
                 : [
-                    {
-                      '"id"': filters.attributes![0].id,
-                      '"name"': filters.attributes![0].name,
-                      '"options"': filters.attributes![0].options,
-                    }
-                  ],
+              {
+                '"id"': filters.attributes![0].id,
+                '"name"': filters.attributes![0].name,
+                '"options"': filters.attributes![0].options,
+              }
+            ],
             colors: filters.colors?.map((e) => '"${e.toString()}"').toList(),
             limit: event.limit,
             prices: filters.prices != null
@@ -736,28 +736,28 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 paginationStatus: PaginationStatus.success,
                 page: event.getWithPagination
                     ? getProductListingWithFiltersPaginationModels[key]!.page +
-                        1
+                    1
                     : 2,
                 hasReachedMax: (r.data!.products?.length ?? 0) < kPageSize,
                 items: event.getWithPagination
                     ? [
-                        ...getProductListingWithFiltersPaginationModels[key]!
-                            .items,
-                        ...r.data!.products ?? []
-                      ]
+                  ...getProductListingWithFiltersPaginationModels[key]!
+                      .items,
+                  ...r.data!.products ?? []
+                ]
                     : r.data!.products);
         Map<String, filters_model.GetProductFiltersModel?> data =
-            Map.of(state.getProductFiltersModel);
-          data[key] = filters_model.GetProductFiltersModel(
-              filters: filters_model.Filter(
-            brands: r.data!.brands,
-            attributes: r.data!.attributes,
-            prices: r.data!.prices,
-            boutiques: r.data!.boutiques,
-            colors: r.data!.colors,
-            searchText: filters.searchText,
-            categories: r.data!.categories,
-          ));
+        Map.of(state.getProductFiltersModel);
+        data[key] = filters_model.GetProductFiltersModel(
+            filters: filters_model.Filter(
+              brands: r.data!.brands,
+              attributes: r.data!.attributes,
+              prices: r.data!.prices,
+              boutiques: r.data!.boutiques,
+              colors: r.data!.colors,
+              searchText: filters.searchText,
+              categories: r.data!.categories,
+            ));
         emit(state.copyWith(
           getProductListingWithFiltersPaginationModels:
           Map.of(getProductListingWithFiltersPaginationModels),
@@ -787,55 +787,55 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     List<String> colors = List.of(r.filters?.colors ?? []);
     List<Category> categories = List.of(r.filters?.categories ?? []);
     List<filters_model.Boutique> boutiques =
-        List.of(r.filters?.boutiques ?? []);
+    List.of(r.filters?.boutiques ?? []);
     List<filters_model.Brand> brands = List.of(r.filters?.brands ?? []);
     List<filters_model.Attribute> attributes =
-        List.of(r.filters?.attributes ?? []);
+    List.of(r.filters?.attributes ?? []);
     if (!filters.colors.isNullOrEmpty) {
       colors.removeWhere((element) => filters.colors!.contains(element));
     }
     if (!filters.categories.isNullOrEmpty) {
       categories.removeWhere((element) =>
-          filters.categories!
-              .indexWhere((category) => category.slug == element.slug) !=
+      filters.categories!
+          .indexWhere((category) => category.slug == element.slug) !=
           -1);
     }
     if (!filters.brands.isNullOrEmpty) {
       brands.removeWhere((element) =>
-          filters.brands!.indexWhere((brand) => brand.slug == element.slug) !=
+      filters.brands!.indexWhere((brand) => brand.slug == element.slug) !=
           -1);
     }
     if (!filters.boutiques.isNullOrEmpty) {
       boutiques.removeWhere((element) =>
-          filters.boutiques!
-              .indexWhere((boutique) => boutique.slug == element.slug) !=
+      filters.boutiques!
+          .indexWhere((boutique) => boutique.slug == element.slug) !=
           -1);
     }
 
     if (!filters.attributes.isNullOrEmpty && attributes.isNotEmpty) {
       if (!filters.attributes![0].options.isNullOrEmpty) {
         attributes[0].options!.removeWhere((element) =>
-            filters.attributes![0].options
-                ?.indexWhere((option) => option == element) !=
+        filters.attributes![0].options
+            ?.indexWhere((option) => option == element) !=
             -1);
       }
     }
     return r.copyWithSendValue(
         filters: (r.filters!.prices == null &&
-                brands.isEmpty &&
-                boutiques.isEmpty &&
-                categories.isEmpty &&
-                attributes.isEmpty &&
-                filters.searchText == null &&
-                colors.isEmpty)
+            brands.isEmpty &&
+            boutiques.isEmpty &&
+            categories.isEmpty &&
+            attributes.isEmpty &&
+            filters.searchText == null &&
+            colors.isEmpty)
             ? null
             : filters_model.Filter(
-                prices: r.filters!.prices,
-                searchText: filters.searchText,
-                brands: brands,
-                categories: categories,
-                colors: colors,
-                attributes: attributes));
+            prices: r.filters!.prices,
+            searchText: filters.searchText,
+            brands: brands,
+            categories: categories,
+            colors: colors,
+            attributes: attributes));
   }
 
   FutureOr<void> _onAddSizesFotColorsEvent(
@@ -864,14 +864,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //  if (state.cachedProductWithoutRelatedProductsModel
     //      .containsKey(event.productId)) return;
     Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>
-        productStatus = Map.from(state.productStatus ?? {});
+    productStatus = Map.from(state.productStatus ?? {});
     if (productStatus[event.productId] != null) {
       if (productStatus[event.productId] ==
-              GetProductDetailWithoutSimilarRelatedProductsStatus.success &&
+          GetProductDetailWithoutSimilarRelatedProductsStatus.success &&
           state.cachedProductWithoutRelatedProductsModel[event.productId] !=
               null) {
         if (state.cachedProductWithoutRelatedProductsModel[event.productId]!
-                .product !=
+            .product !=
             null) {
           return;
         }
@@ -880,10 +880,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     emit(state.copyWith(
         getProductDetailWithoutSimilarRelatedProductsStatus:
-            GetProductDetailWithoutSimilarRelatedProductsStatus.loading));
+        GetProductDetailWithoutSimilarRelatedProductsStatus.loading));
 
     final response =
-        await getProductDetailWithoutRelatedProductsUseCase(event.productId!);
+    await getProductDetailWithoutRelatedProductsUseCase(event.productId!);
 
     response.fold((l) {
       if (!isFailedTheFirstTime
@@ -894,22 +894,22 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
       emit(state.copyWith(
           getProductDetailWithoutSimilarRelatedProductsStatus:
-              GetProductDetailWithoutSimilarRelatedProductsStatus.failure));
+          GetProductDetailWithoutSimilarRelatedProductsStatus.failure));
     }, (r) {
       productStatus.addAll({
         event.productId!:
-            GetProductDetailWithoutSimilarRelatedProductsStatus.success
+        GetProductDetailWithoutSimilarRelatedProductsStatus.success
       });
       apisMustNotToRequest.add('GetProductDatailsWithoutRelatedProductsEvent');
       isFailedTheFirstTime
           .remove('GetProductDatailsWithoutRelatedProductsEvent');
       Map<String, GetProductDetailWithoutRelatedProductsModel> newCached =
-          Map.of(state.cachedProductWithoutRelatedProductsModel);
+      Map.of(state.cachedProductWithoutRelatedProductsModel);
       newCached[event.productId!] = r;
       emit(state.copyWith(
           cachedProductWithoutRelatedProductsModel:  Map.of(newCached),
           getProductDetailWithoutSimilarRelatedProductsStatus:
-              GetProductDetailWithoutSimilarRelatedProductsStatus.success,
+          GetProductDetailWithoutSimilarRelatedProductsStatus.success,
           productStatus:  Map.of(productStatus)));
     });
   }
@@ -930,7 +930,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ListitemForAddToCart: [],
       getMainCategoriesStatus: GetMainCategoriesStatus.init,
       getProductDetailWithoutSimilarRelatedProductsStatus:
-          GetProductDetailWithoutSimilarRelatedProductsStatus.init,
+      GetProductDetailWithoutSimilarRelatedProductsStatus.init,
       getStartingSettingsStatus: GetStartingSettingsStatus.init,
     ).toJson();
   }
@@ -939,7 +939,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       GetProductFiltersEvent event, Emitter<HomeState> emit) async {
     String key = event.boutiqueSlug + (event.category ?? '');
     Map<String, GetProductFiltersStatus> statuses =
-        Map.of(state.getProductFiltersStatus);
+    Map.of(state.getProductFiltersStatus);
     statuses[key] = GetProductFiltersStatus.loading;
     emit(state.copyWith(
       getProductFiltersStatus:  Map.of(statuses),
@@ -950,15 +950,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     try {
       attribute = filters.attributes.isNullOrEmpty
           ? ((state.appliedFiltersByUser[key]?.filters?.attributes
-                      ?.isNullOrEmpty ??
-                  true)
-              ? null
-              : state.appliedFiltersByUser[key]?.filters!.attributes!)
+          ?.isNullOrEmpty ??
+          true)
+          ? null
+          : state.appliedFiltersByUser[key]?.filters!.attributes!)
           : filters.attributes;
       if (!attribute.isNullOrEmpty &&
           !filters.attributes.isNullOrEmpty &&
           !(state.appliedFiltersByUser[key]?.filters?.attributes
-                  ?.isNullOrEmpty ??
+              ?.isNullOrEmpty ??
               true)) {
         attribute![0] = attribute[0].copyWith(options: [
           ...filters.attributes![0].options ?? [],
@@ -981,14 +981,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         ],
         attributes: attribute,
         prices:
-            filters.prices ?? state.appliedFiltersByUser[key]?.filters?.prices,
+        filters.prices ?? state.appliedFiltersByUser[key]?.filters?.prices,
         searchText: filters.searchText ??
             state.appliedFiltersByUser[key]?.filters?.searchText,
         boutiques: event.fromHomePageSearch
             ? [
-                ...filters.boutiques ?? [],
-                ...state.appliedFiltersByUser[key]?.filters?.boutiques ?? []
-              ]
+          ...filters.boutiques ?? [],
+          ...state.appliedFiltersByUser[key]?.filters?.boutiques ?? []
+        ]
             : [],
       );
     } catch (e, st) {
@@ -1000,12 +1000,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       brandSlugs: filters.brands?.map((e) => '"${e.slug.toString()}"').toList(),
       categorySlugs: event.category != null
           ? [
-              ...(filters.categories
-                      ?.map((e) => '"${e.slug.toString()}"')
-                      .toList() ??
-                  []),
-              event.category!
-            ]
+        ...(filters.categories
+            ?.map((e) => '"${e.slug.toString()}"')
+            .toList() ??
+            []),
+        event.category!
+      ]
           : filters.categories?.map((e) => '"${e.slug.toString()}"').toList(),
       boutiqueSlugs: event.fromHomePageSearch
           ? filters.boutiques?.map((e) => '"${e.slug.toString()}"').toList()
@@ -1013,12 +1013,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       attributes: filters.attributes.isNullOrEmpty
           ? null
           : [
-              {
-                '"id"': filters.attributes![0].id,
-                '"name"': filters.attributes![0].name,
-                '"options"': filters.attributes![0].options,
-              }
-            ],
+        {
+          '"id"': filters.attributes![0].id,
+          '"name"': filters.attributes![0].name,
+          '"options"': filters.attributes![0].options,
+        }
+      ],
       colors: filters.colors?.map((e) => '"${e.toString()}"').toList(),
       prices: filters.prices != null
           ? ['"${filters.prices!.minPrice}-${filters.prices!.maxPrice}"']
@@ -1043,7 +1043,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       try {
         statuses[key] = GetProductFiltersStatus.success;
         Map<String, filters_model.GetProductFiltersModel?> data =
-            Map.of(state.getProductFiltersModel);
+        Map.of(state.getProductFiltersModel);
         data[key] = r;
         emit(state.copyWith(
             totalProductNumber: r.filters!.totalSize,
@@ -1051,7 +1051,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             getProductFiltersStatus:  Map.of(statuses),
             getProductFiltersModel:
             Map.of(data) //removeAlreadyChoosedFilters(r, filters),
-            ));
+        ));
       } catch (e, st) {
         print(e);
         print(st);
@@ -1063,7 +1063,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       GetCommentForProductEvent event, Emitter<HomeState> emit) async {
     String keyForCacheData = event.productId;
     Map<String, GetCommentForProductModel> getCommentForProduct =
-        Map.of(state.getCommentForProductModel);
+    Map.of(state.getCommentForProductModel);
 
     if (getCommentForProduct[keyForCacheData] == null) {
       emit(state.copyWith(
@@ -1172,7 +1172,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     CartBrand brand = CartBrand(
         image: event.products.brand != null ? event.products.brand!.image : "");
     VariationCart variation =
-        VariationCart(color: event.colorName, size: event.choice_1);
+    VariationCart(color: event.colorName, size: event.choice_1);
     BoutiquesCart boutiquesCart = BoutiquesCart(
         icon: IconCart(filePath: event.boutiqueIcon), id: event.boutiqueId);
     Cart cart = Cart(
@@ -1255,25 +1255,25 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         emit(state.copyWith(cartCollection: state.cartCollection));
       } else {
         Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
-            Map.from(state.addImagesToProductIdForCart);
+        Map.from(state.addImagesToProductIdForCart);
         if (addImagesToProductIdForCart[event.products.id.toString()] == null) {
           addImagesToProductIdForCart[event.products.id.toString()] = {};
         }
         if (!addImagesToProductIdForCart[event.products.id.toString()]![
-                r.data!.idCart!]
+        r.data!.idCart!]
             .isNullOrEmpty) {
           for (int i = 0; i < event.quantity!; i++) {
             addImagesToProductIdForCart[event.products.id.toString()]![
-                    r.data!.idCart!]!
+            r.data!.idCart!]!
                 .add(event.image);
           }
           ;
         } else {
           addImagesToProductIdForCart[event.products.id.toString()]![
-              r.data!.idCart!] = [];
+          r.data!.idCart!] = [];
           for (int i = 0; i < event.quantity!; i++) {
             addImagesToProductIdForCart[event.products.id.toString()]![
-                    r.data!.idCart!]!
+            r.data!.idCart!]!
                 .add(event.image);
           }
           ;
@@ -1306,7 +1306,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onAddProductItemForCartEvent(
       AddProductItemForCartEvent event, Emitter<HomeState> emit) async {
     Map<String, Products> productsForCart =
-        Map.of(state.productITemForCart ?? {});
+    Map.of(state.productITemForCart ?? {});
     if (productsForCart.containsKey(event.productId)) {
       productsForCart[event.productId] = event.product!;
     } else {
@@ -1327,7 +1327,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     emit(state.copyWith(cartCollection: state.cartCollection));
     final response =
-        await removeItemToCartUseCase(RemoveITemToCartParams(id: event.itemId));
+    await removeItemToCartUseCase(RemoveITemToCartParams(id: event.itemId));
 
     response.fold((l) {
       isFailedTheFirstTime.add('RemoveCartItemEvent');
@@ -1344,14 +1344,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       );
     }, (r) {
       Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
-          Map.from(state.addImagesToProductIdForCart);
+      Map.from(state.addImagesToProductIdForCart);
 
       if (!addImagesToProductIdForCart[event.productId]![
-              int.parse(event.itemId)]
+      int.parse(event.itemId)]
           .isNullOrEmpty) {
         addImagesToProductIdForCart[event.productId]![int.parse(event.itemId)]!
             .removeWhere(
-          (element) => element == event.image,
+              (element) => element == event.image,
         );
       }
       emit(state.copyWith(
@@ -1392,12 +1392,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     state.cartCollection![event.boutiqueId] =
         state.cartCollection![event.boutiqueId]!.map((e) {
-      if (e.id.toString() == event.cartId) {
-        return cart;
-      } else {
-        return e;
-      }
-    }).toList();
+          if (e.id.toString() == event.cartId) {
+            return cart;
+          } else {
+            return e;
+          }
+        }).toList();
     emit(state.copyWith(cartCollection: state.cartCollection));
     final response = await updateItemInCartUseCase(
         UpdateITemInCartParams(id: event.cartId, quantity: event.quantity));
@@ -1406,12 +1406,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       isFailedTheFirstTime.add('UpdateCartItemEvent');
       state.cartCollection![event.boutiqueId] =
           state.cartCollection![event.boutiqueId]!.map((e) {
-        if (e.id.toString() == event.cartId) {
-          return PreCart;
-        } else {
-          return e;
-        }
-      }).toList();
+            if (e.id.toString() == event.cartId) {
+              return PreCart;
+            } else {
+              return e;
+            }
+          }).toList();
       emit(state.copyWith(cartCollection: state.cartCollection));
       showMessage(
         l.message,
@@ -1422,12 +1422,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       if (r.data == null || r.data == "") {
         state.cartCollection![event.boutiqueId] =
             state.cartCollection![event.boutiqueId]!.map((e) {
-          if (e.id.toString() == event.cartId) {
-            return PreCart;
-          } else {
-            return e;
-          }
-        }).toList();
+              if (e.id.toString() == event.cartId) {
+                return PreCart;
+              } else {
+                return e;
+              }
+            }).toList();
 
         emit(state.copyWith(
           cartCollection: state.cartCollection,
@@ -1442,26 +1442,26 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
       if (r.data!.status == 1) {
         Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
-            Map.from(state.addImagesToProductIdForCart);
+        Map.from(state.addImagesToProductIdForCart);
 
         if (!addImagesToProductIdForCart[event.productId]![
-                int.parse(event.cartId)]
+        int.parse(event.cartId)]
             .isNullOrEmpty) {
           addImagesToProductIdForCart[event.productId]![
-                  int.parse(event.cartId)]!
+          int.parse(event.cartId)]!
               .removeWhere((element) => element == event.image);
           for (int i = 0; i < event.quantity; i++) {
             addImagesToProductIdForCart[event.productId]![
-                    int.parse(event.cartId)]!
+            int.parse(event.cartId)]!
                 .add(event.image);
           }
           ;
         } else {
           addImagesToProductIdForCart[event.productId]![
-              int.parse(event.cartId)] = [];
+          int.parse(event.cartId)] = [];
           for (int i = 0; i < event.quantity; i++) {
             addImagesToProductIdForCart[event.productId]![
-                    int.parse(event.cartId)]!
+            int.parse(event.cartId)]!
                 .add(event.image);
           }
           ;
@@ -1484,12 +1484,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       } else {
         state.cartCollection![event.boutiqueId] =
             state.cartCollection![event.boutiqueId]!.map((e) {
-          if (e.id.toString() == event.cartId) {
-            return PreCart;
-          } else {
-            return e;
-          }
-        }).toList();
+              if (e.id.toString() == event.cartId) {
+                return PreCart;
+              } else {
+                return e;
+              }
+            }).toList();
         emit(state.copyWith(cartCollection: state.cartCollection));
 
         isFailedTheFirstTime.remove('UpdateCartItemEvent');
@@ -1599,7 +1599,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ChangeAppliedFiltersEvent event, Emitter<HomeState> emit) {
     String key = event.boutiqueSlug + (event.category ?? '');
     Map<String, filters_model.GetProductFiltersModel?> appliedFilters =
-        Map.of(state.appliedFiltersByUser);
+    Map.of(state.appliedFiltersByUser);
     filters_model.Filter filters =
         event.filtersAppliedByUser?.filters ?? filters_model.Filter();
     if (event.resetAppliedFilters ||
@@ -1624,7 +1624,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     bool makeChoosedFiltersNull = false;
     String key = event.boutiqueSlug + (event.category ?? '');
     Map<String, filters_model.GetProductFiltersModel?> choosedFilters =
-        Map.of(state.choosedFiltersByUser);
+    Map.of(state.choosedFiltersByUser);
     if (event.filtersChoosedByUser?.filters != null) {
       if (event.filtersChoosedByUser!.filters!.colors.isNullOrEmpty &&
           event.filtersChoosedByUser!.filters!.brands.isNullOrEmpty &&
@@ -1652,7 +1652,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           boutiqueSlug: event.boutiqueSlug,
           fromHomePageSearch: event.fromHomePageSearch,
           filtersChoosedByUser:
-              makeChoosedFiltersNull ? null : event.filtersChoosedByUser));
+          makeChoosedFiltersNull ? null : event.filtersChoosedByUser));
     }
   }
 
@@ -1737,9 +1737,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           ]);
         } else {
           if (!ListitemForAddToCart!.any((element) =>
-              (element.images == imageForAddToCart.images &&
-                  element.colorName == imageForAddToCart.colorName &&
-                  element.size == imageForAddToCart.size))) {
+          (element.images == imageForAddToCart.images &&
+              element.colorName == imageForAddToCart.colorName &&
+              element.size == imageForAddToCart.size))) {
             print(element.images == imageForAddToCart.images);
             print(element.colorName == imageForAddToCart.colorName);
 
@@ -1779,12 +1779,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onGetSearchListingResultEventEvent(
       GetSearchListingResultEvent event, Emitter<HomeState> emit) async {
     final response =
-        await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
+    await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
       categorySlugs:
-          event.CategorySlug != "" ? ['"${event.CategorySlug}"'] : [],
+      event.CategorySlug != "" ? ['"${event.CategorySlug}"'] : [],
       searchText: event.searchTitle,
       boutiqueSlugs:
-          event.boutiqueSlug != "" ? ['"${event.boutiqueSlug}"'] : [],
+      event.boutiqueSlug != "" ? ['"${event.boutiqueSlug}"'] : [],
     ));
 
     response.fold((l) {
