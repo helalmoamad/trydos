@@ -97,6 +97,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
               children: [
                 InkWell(
                   onTap: () {
+                    appBarParams.onBack?.call();
                     Navigator.pop(context);
                   },
                   child: Container(

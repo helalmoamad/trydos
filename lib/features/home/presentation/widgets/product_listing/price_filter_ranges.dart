@@ -15,22 +15,22 @@ import '../../manager/home_event.dart';
 class PriceFiltersRangesList extends StatefulWidget {
   const PriceFiltersRangesList({
     super.key,
-    required this.boutiqueSlug,
+    this.boutiqueSlug,
     this.category,
     required this.currencySymbol,
     required this.priceRanges,
     required this.exchangeRate,
      this.searchText,
-    required this.fromSearch,
+    required this.fromHomeSearch,
     required this.decimalPoint,
   });
 
-  final String boutiqueSlug;
+  final String? boutiqueSlug;
   final String currencySymbol;
   final double exchangeRate;
   final List<PriceRange> priceRanges;
   final String? category;
-  final bool fromSearch;
+  final bool fromHomeSearch;
   final String? searchText;
   final int decimalPoint;
   @override
@@ -72,6 +72,7 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                       prevChoosedOrAppliedFilterToAddToIt =
                           prevChoosedOrAppliedFilterToAddToIt
                               .copyWithSaveOtherField(
+                              searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
                                   prices: Prices(
                                       currencySymbol: widget.currencySymbol,
                                       minPrice:
@@ -86,6 +87,7 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                       prevChoosedOrAppliedFilterToAddToIt =
                           prevChoosedOrAppliedFilterToAddToIt
                               .copyWithSaveOtherField(
+                          searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
                                   prices: Prices(
                                       currencySymbol: widget.currencySymbol,
                                       minPrice:
@@ -95,14 +97,19 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                     } else {
                       prevChoosedOrAppliedFilterToAddToIt =
                           prevChoosedOrAppliedFilterToAddToIt
-                              .copyWithSaveOtherField(prices: null);
+                              .copyWithSaveOtherField(prices: null ,searchText: prevChoosedOrAppliedFilterToAddToIt.searchText);
                     }
+                    homeBloc.add(ChangeAppliedFiltersEvent(
+                      category: widget.category,
+                      boutiqueSlug: widget.boutiqueSlug,
+                      filtersAppliedByUser: GetProductFiltersModel(
+                          filters:
+                          prevChoosedOrAppliedFilterToAddToIt),
+                    ));
                     homeBloc.add(GetProductsWithFiltersEvent(
-                        fromSearch: widget.fromSearch,
+                        fromSearch: widget.fromHomeSearch,
                         searchText: widget.searchText,
                         boutiqueSlug: widget.boutiqueSlug,
-                        filtersAppliedByUser: GetProductFiltersModel(
-                            filters: prevChoosedOrAppliedFilterToAddToIt),
                         category: widget.category,
                         offset: 1));
                   },
