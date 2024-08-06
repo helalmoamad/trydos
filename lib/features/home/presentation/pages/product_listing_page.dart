@@ -35,6 +35,7 @@ import 'package:trydos/features/search/presentation/pages/search_listing_page.da
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';

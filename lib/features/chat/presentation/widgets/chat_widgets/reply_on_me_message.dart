@@ -20,6 +20,7 @@ class ReplayOnMeMessage extends StatefulWidget {
     this.messageAnswer,
     this.answeredFile,
     this.answeredFilePath,
+    this.index = 0,
     required this.isSent,
     required this.isISentFirstMessage,
     required this.isReplayedMessageRead,
@@ -35,6 +36,7 @@ class ReplayOnMeMessage extends StatefulWidget {
     required this.channalId,
   }) : super(key: key);
   final String message;
+  final int index;
   final String channalId;
   final String messageId;
   final String? messageAnswer;
@@ -91,6 +93,7 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
               onTap: widget.scrollToMessage,
               child: TextMessage(
                 isreplay: true,
+                index: widget.index,
                 key: key,
                 sendColor: widget.isISentFirstMessage
                     ? const Color(0xffF1FDE3)
@@ -136,6 +139,7 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                       )
                     : TextMessage(
                         message: widget.messageAnswer!,
+                        index: widget.index,
                         withImageShadow: true,
                         senderId: GetIt.I<PrefsRepository>().myChatId!,
                         isRead: widget.isAnswerMessageRead,

@@ -22,4 +22,34 @@ class WidgetsKey {
   static const skipForNowKey = 'skip_for_now_key';
   static const registerCancelKey = 'register_cancel_key';
   static const chatNavBarKey = 'chat_navbar_key';
+  static const myContactsFloatingActionKey =
+      'my_contacts_floating_action_button_key';
+  static const boutiqueCardKey = 'boutique_card_key';
+  static const productInBoutiqueListKey = 'product_in_boutique_list_key';
+  static const contactCardKey = 'contact_card_key';
+  static const messageCardKey = 'message_card_key';
+  static const textMessageCardKey = 'text_message_key';
+  static const sendMessageInChatButtonKey = 'send_message_inchat_key';
+  static const sendMessageTextFieldKey = 'send_message_textfield_key';
+  static const messageSentArrowKey = 'message_sent_arrow_key';
+  static const backFromChatKey = 'back_from_chat_key';
+  static const chatConversationCardKey = 'chat_conversation_card_Key';
+  static const deleteChatConversationIconKey =
+      'delete_chat_conversation_icon_Key';
+  static const replayTextKey = 'replay_text_Key';
+  static const replayOnMeMessageKey = 'replay_on_me_message_key';
+  static const deleteMessageKey = 'delete_message_key';
+  static const deleteOnlyMeButtonKey = 'delete_only_me_button_key';
+  static const forWardMessageKey = 'forWard_message_key';
+  static const forwardedArrowKey = 'forwarded_arrow_key';
+  static const goToProfileButtonKey = 'go_to_profile_button_key';
+  static const backFromProfileKey = 'back_from_profile_key';
+  static const imageCountInEachChatKey = 'image_count_in_each_chat_key';
+  static const videoCountInEachChatKey = 'video_count_in_each_chat_key';
+  static const fileCountInEachChatKey = 'file_count_in_each_chat_key';
+  static const messagesListKey = 'messages_list_key';
+  static const messagesListCardKey = 'messages_list_card_key';
+  static const productListFilterKey = 'product_list_filter_key';
+  static const countryDropDownKey = 'country_drop_down_key';
+  static const chooseCountryButtonKey = 'choose_country_key';
 }
