@@ -65,11 +65,11 @@ class _SearchPageState extends ThemeState<SearchPage> {
 
   @override
   void initState() {
-    BlocProvider.of<HomeBloc>(context).add(GetProductFiltersEvent(
+    BlocProvider.of<HomeBloc>(context).add(ChangeSelectedFiltersEvent(
         fromHomePageSearch: true,
         boutiqueSlug: 'search',
-        resetAppliesFilters: true,
-        filtersChoosedByUser: null));
+        filtersChoosedByUser: null
+    ));
     widget.appearTrendingAndHistory.value = true;
     widget.controller.addListener(() {
       if (widget.controller.text.length > 2) {
@@ -84,6 +84,11 @@ class _SearchPageState extends ThemeState<SearchPage> {
 
   @override
   void dispose() {
+    BlocProvider.of<HomeBloc>(context).add(ChangeSelectedFiltersEvent(
+        fromHomePageSearch: true,
+        boutiqueSlug: 'search',
+        filtersChoosedByUser: null
+    ));
     super.dispose();
   }
 
@@ -100,8 +105,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
         body: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) {
             return previous.searchHistory != current.searchHistory ||
-                previous.getProductFiltersStatus !=
-                    current.getProductFiltersStatus ||
+                previous.getProductFiltersStatus[key] !=
+                    current.getProductFiltersStatus[key] ||
                 previous.countOfProductExpectedByFiltering !=
                     current.countOfProductExpectedByFiltering ||
                 previous.getProductListingWithFiltersPaginationModels[key]
@@ -239,594 +244,24 @@ class _SearchPageState extends ThemeState<SearchPage> {
                         }),
                   BlocBuilder<HomeBloc, HomeState>(
                     builder: (context, state) {
-                      Filter? filters;
-                      filters = state.choosedFiltersByUser[key]?.filters;
-                      if ((filters?.brands.isNullOrEmpty ?? true) &&
-                          (filters?.categories.isNullOrEmpty ?? true) &&
-                          (filters?.boutiques.isNullOrEmpty ?? true)) {
-                        return SliverToBoxAdapter(child: SizedBox.shrink());
-                      }
                       return SliverToBoxAdapter(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsetsDirectional.only(start: 20.0),
-                              child: MyTextWidget(
-                                'Choosed Filters:',
-                                maxLines: 1,
-                                textAlign: TextAlign.center,
-                                style: context.textTheme.bodyText2?.rq.copyWith(
-                                    color: Colors.black,
-                                    letterSpacing: 0,
-                                    height: 1.25),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(8),
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: Colors.grey.shade300),
-                              height: 30,
-                              width: 1.sw,
-                              child: ListView(
-                                  shrinkWrap: true,
-                                  physics: ClampingScrollPhysics(),
-                                  scrollDirection: Axis.horizontal,
-                                  children: [
-                                    if (!(filters?.categories.isNullOrEmpty ??
-                                        true)) ...{
-                                      Center(
-                                          child: FilterSelectedMark(
-                                              width: 15, height: 15)),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                    },
-                                    SizedBox(
-                                        height: 28,
-                                        child: ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount:
-                                              filters?.categories?.length ?? 0,
-                                          itemBuilder: (ctx, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                List<
-                                                        product_listing_model
-                                                        .Category>
-                                                    newCategories =
-                                                    filters?.categories ?? [];
-                                                newCategories.removeAt(index);
-                                                GetProductFiltersModel
-                                                    newGetProductFiltersModel =
-                                                    GetProductFiltersModel(
-                                                        filters: filters
-                                                            ?.copyWithSaveOtherField(
-                                                                categories:
-                                                                    newCategories));
-                                                BlocProvider.of<HomeBloc>(
-                                                        context)
-                                                    .add(
-                                                        ChangeSelectedFiltersEvent(
-                                                          fromHomePageSearch: true,
-                                                  boutiqueSlug: key,
-                                                  filtersChoosedByUser:
-                                                      newGetProductFiltersModel,
-                                                ));
-                                              },
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  FilterImage(
-                                                    width: filters!
-                                                            .categories![index]
-                                                            .isSubCategory
-                                                        ? 15
-                                                        : 20,
-                                                    height: filters
-                                                            .categories![index]
-                                                            .isSubCategory
-                                                        ? 15
-                                                        : 20,
-                                                    imageUrl: filters
-                                                        .categories![index]
-                                                        .mostViewedProductThumbnail!
-                                                        .filePath
-                                                        .toString(),
-                                                    withInnerShadow: true,
-                                                    withBackGroundShadow: false,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  MyTextWidget(
-                                                    filters
-                                                        .categories![index].name
-                                                        .toString(),
-                                                    maxLines: 1,
-                                                    textAlign: TextAlign.center,
-                                                    style: context
-                                                        .textTheme.caption?.rq
-                                                        .copyWith(
-                                                            color: Color(
-                                                                0xff8E8E8E),
-                                                            letterSpacing: 0,
-                                                            height: 1.25),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        )),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    if (!(filters?.boutiques.isNullOrEmpty ??
-                                        true)) ...{
-                                      Center(
-                                          child: FilterSelectedMark(
-                                              width: 15, height: 15)),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                    },
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    SizedBox(
-                                        height: 28,
-                                        child: ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount:
-                                              filters?.boutiques?.length ?? 0,
-                                          itemBuilder: (ctx, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                List<Boutique> newBoutiques =
-                                                    filters?.boutiques ?? [];
-                                                newBoutiques.removeAt(index);
-                                                GetProductFiltersModel
-                                                    newGetProductFiltersModel =
-                                                    GetProductFiltersModel(
-                                                        filters: filters
-                                                            ?.copyWithSaveOtherField(
-                                                                boutiques:
-                                                                    newBoutiques));
-                                                BlocProvider.of<HomeBloc>(
-                                                        context)
-                                                    .add(
-                                                        ChangeSelectedFiltersEvent(
-                                                          fromHomePageSearch: true,
-                                                  boutiqueSlug: key,
-                                                  filtersChoosedByUser:
-                                                      newGetProductFiltersModel,
-                                                ));
-                                              },
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  MyCachedNetworkImage(
-                                                    imageUrl: filters!
-                                                        .boutiques![index]
-                                                        .banner!
-                                                        .filePath!,
-                                                    imageFit: BoxFit.cover,
-                                                    height: 40,
-                                                    width: 60,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        )),
-                                    if (!(filters?.brands.isNullOrEmpty ??
-                                        true)) ...{
-                                      Center(
-                                          child: FilterSelectedMark(
-                                              width: 15, height: 15)),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                    },
-                                    SizedBox(
-                                        height: 28,
-                                        child: ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount:
-                                              filters?.brands?.length ?? 0,
-                                          itemBuilder: (ctx, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                List<Brand> newBrands =
-                                                    filters!.brands ?? [];
-                                                newBrands.removeAt(index);
-                                                GetProductFiltersModel
-                                                    newGetProductFiltersModel =
-                                                    GetProductFiltersModel(
-                                                        filters: filters
-                                                            .copyWithSaveOtherField(
-                                                                brands:
-                                                                    newBrands));
-                                                BlocProvider.of<HomeBloc>(
-                                                        context)
-                                                    .add(
-                                                        ChangeSelectedFiltersEvent(
-                                                          fromHomePageSearch: true,
-                                                  boutiqueSlug: key,
-                                                  filtersChoosedByUser:
-                                                      newGetProductFiltersModel,
-                                                ));
-                                              },
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  FilterImage(
-                                                    width: 20,
-                                                    height: 20,
-                                                    imageUrl: filters!
-                                                        .brands![index].image
-                                                        .toString(),
-                                                    isSvg: true,
-                                                    withInnerShadow: true,
-                                                    withBackGroundShadow: false,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  MyTextWidget(
-                                                    filters.brands![index].name
-                                                        .toString(),
-                                                    maxLines: 1,
-                                                    textAlign: TextAlign.center,
-                                                    style: context
-                                                        .textTheme.caption?.rq
-                                                        .copyWith(
-                                                            color: Color(
-                                                                0xff8E8E8E),
-                                                            letterSpacing: 0,
-                                                            height: 1.25),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        )),
-                                  ]),
-                            ),
-                          ],
-                        ),
+                        child:  choosedOrAppliedFiltersWidget(
+                            boutiqueSlug: 'search',
+                            context: context,
+                            choosedFilter: true,
+                            fromSearch: true,
+                          )
                       );
                     },
                   ),
                   BlocBuilder<HomeBloc, HomeState>(
                     builder: (context, state) {
-                      Filter? filters;
-                      filters = state.appliedFiltersByUser[key]?.filters;
-                      if ((filters?.brands.isNullOrEmpty ?? true) &&
-                          (filters?.categories.isNullOrEmpty ?? true) &&
-                          (filters?.boutiques.isNullOrEmpty ?? true)) {
-                        return SliverToBoxAdapter(child: SizedBox.shrink());
-                      }
                       return SliverToBoxAdapter(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsetsDirectional.only(start: 20.0),
-                              child: MyTextWidget(
-                                'Applied Filters:',
-                                maxLines: 1,
-                                textAlign: TextAlign.center,
-                                style: context.textTheme.bodyText2?.rq.copyWith(
-                                    color: Colors.black,
-                                    letterSpacing: 0,
-                                    height: 1.25),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(8),
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: Colors.grey.shade300),
-                              height: 30,
-                              width: 1.sw,
-                              child: ListView(
-                                  shrinkWrap: true,
-                                  physics: ClampingScrollPhysics(),
-                                  scrollDirection: Axis.horizontal,
-                                  children: [
-                                    if (!(filters?.categories.isNullOrEmpty ??
-                                        true)) ...{
-                                      Center(
-                                          child: FilterSelectedMark(
-                                              width: 15, height: 15)),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                    },
-                                    SizedBox(
-                                        height: 28,
-                                        child: ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount:
-                                              filters?.categories?.length ?? 0,
-                                          itemBuilder: (ctx, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                List<
-                                                        product_listing_model
-                                                        .Category>
-                                                    newCategories =
-                                                    filters?.categories ?? [];
-                                                newCategories.removeAt(index);
-                                                GetProductFiltersModel
-                                                    newGetProductFiltersModel =
-                                                    GetProductFiltersModel(
-                                                        filters: filters
-                                                            ?.copyWithSaveOtherField(
-                                                          prices: filters.prices,
-                                                                searchText: filters.searchText,
-                                                                categories:
-                                                                    newCategories));
-                                                homeBloc.add(
-                                                    ChangeAppliedFiltersEvent(
-                                                      boutiqueSlug: key,
-                                                        filtersAppliedByUser:
-                                                            newGetProductFiltersModel));
-                                                BlocProvider.of<HomeBloc>(
-                                                        context)
-                                                    .add(
-                                                        GetProductsWithFiltersEvent(
-                                                  fromSearch: true,
-                                                  boutiqueSlug: key,
-                                                  searchText:
-                                                      widget.controller.text,
-                                                  offset: 1,
-                                                ));
-                                              },
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  FilterImage(
-                                                    width: filters!
-                                                            .categories![index]
-                                                            .isSubCategory
-                                                        ? 15
-                                                        : 20,
-                                                    height: filters
-                                                            .categories![index]
-                                                            .isSubCategory
-                                                        ? 15
-                                                        : 20,
-                                                    imageUrl: filters
-                                                        .categories![index]
-                                                        .mostViewedProductThumbnail!
-                                                        .filePath
-                                                        .toString(),
-                                                    withInnerShadow: true,
-                                                    withBackGroundShadow: false,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  MyTextWidget(
-                                                    filters
-                                                        .categories![index].name
-                                                        .toString(),
-                                                    maxLines: 1,
-                                                    textAlign: TextAlign.center,
-                                                    style: context
-                                                        .textTheme.caption?.rq
-                                                        .copyWith(
-                                                            color: Color(
-                                                                0xff8E8E8E),
-                                                            letterSpacing: 0,
-                                                            height: 1.25),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        )),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    if (!(filters?.boutiques.isNullOrEmpty ??
-                                        true)) ...{
-                                      Center(
-                                          child: FilterSelectedMark(
-                                              width: 15, height: 15)),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                    },
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    SizedBox(
-                                        height: 28,
-                                        child: ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount:
-                                              filters?.boutiques?.length ?? 0,
-                                          itemBuilder: (ctx, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                List<Boutique> newBoutiques =
-                                                    filters?.boutiques ?? [];
-                                                newBoutiques.removeAt(index);
-                                                GetProductFiltersModel
-                                                    newGetProductFiltersModel =
-                                                    GetProductFiltersModel(
-                                                        filters: filters
-                                                            ?.copyWithSaveOtherField(
-                                                            prices: filters.prices,
-                                                            searchText: filters.searchText,
-                                                                boutiques:
-                                                                    newBoutiques));
-                                                homeBloc.add(
-                                                ChangeAppliedFiltersEvent(
-                                                  boutiqueSlug: key,
-                                                filtersAppliedByUser:
-                                                newGetProductFiltersModel));
-                                                BlocProvider.of<HomeBloc>(
-                                                        context)
-                                                    .add(GetProductsWithFiltersEvent(
-                                                        fromSearch: true,
-                                                        boutiqueSlug: key,
-                                                        searchText: widget
-                                                            .controller.text,
-                                                        offset: 1,
-                                                        ));
-                                              },
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  MyCachedNetworkImage(
-                                                    imageUrl: filters!
-                                                        .boutiques![index]
-                                                        .banner!
-                                                        .filePath!,
-                                                    imageFit: BoxFit.cover,
-                                                    height: 40,
-                                                    width: 60,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        )),
-                                    if (!(filters?.brands.isNullOrEmpty ??
-                                        true)) ...{
-                                      Center(
-                                          child: FilterSelectedMark(
-                                              width: 15, height: 15)),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                    },
-                                    SizedBox(
-                                        height: 28,
-                                        child: ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount:
-                                              filters?.brands?.length ?? 0,
-                                          itemBuilder: (ctx, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                List<Brand> newBrands =
-                                                    filters!.brands ?? [];
-                                                newBrands.removeAt(index);
-                                                GetProductFiltersModel
-                                                    newGetProductFiltersModel =
-                                                    GetProductFiltersModel(
-                                                        filters: filters
-                                                            .copyWithSaveOtherField(
-                                                            prices: filters.prices,
-                                                            searchText: filters.searchText,
-                                                                brands:
-                                                                    newBrands));
-                                                homeBloc.add(
-                                                ChangeAppliedFiltersEvent(
-                                                  boutiqueSlug: key,
-                                                filtersAppliedByUser:
-                                                newGetProductFiltersModel));
-                                                BlocProvider.of<HomeBloc>(
-                                                        context)
-                                                    .add(GetProductsWithFiltersEvent(
-                                                        fromSearch: true,
-                                                        boutiqueSlug: key,
-                                                        searchText: widget
-                                                            .controller.text,
-                                                        offset: 1,
-                                                        ));
-                                              },
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  FilterImage(
-                                                    width: 20,
-                                                    height: 20,
-                                                    imageUrl: filters!
-                                                        .brands![index].image
-                                                        .toString(),
-                                                    isSvg: true,
-                                                    withInnerShadow: true,
-                                                    withBackGroundShadow: false,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  MyTextWidget(
-                                                    filters.brands![index].name
-                                                        .toString(),
-                                                    maxLines: 1,
-                                                    textAlign: TextAlign.center,
-                                                    style: context
-                                                        .textTheme.caption?.rq
-                                                        .copyWith(
-                                                            color: Color(
-                                                                0xff8E8E8E),
-                                                            letterSpacing: 0,
-                                                            height: 1.25),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        )),
-                                  ]),
-                            ),
-                          ],
+                        child: choosedOrAppliedFiltersWidget(
+                            boutiqueSlug: 'search',
+                            context: context,
+                            choosedFilter: false,
+                            fromSearch: true,
                         ),
                       );
                     },
@@ -839,7 +274,6 @@ class _SearchPageState extends ThemeState<SearchPage> {
                           widget.controller.text.length < 3) {
                         return SliverToBoxAdapter(child: SizedBox.shrink());
                       }
-
                       return SliverToBoxAdapter(
                         child: Container(
                           margin: EdgeInsets.only(
@@ -853,21 +287,28 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                 flex: 2,
                                 child: InkWell(
                                   onTap: () {
-                                    widget.controller.text = '';
+                                    Filter filters = state.choosedFiltersByUser[key]?.filters ?? Filter();
+                                    String text = widget.controller.text;
+                                    widget.controller.clear();
                                     homeBloc.add(ChangeAppliedFiltersEvent(
                                       boutiqueSlug: key,
-                                      filtersAppliedByUser: state.choosedFiltersByUser[key],
+                                      filtersAppliedByUser: GetProductFiltersModel(
+                                        filters: filters.copyWithSaveOtherField(
+                                          searchText: text,
+                                          prices: filters.prices
+                                        )
+                                      ),
                                     ));
                                     homeBloc.add(GetProductsWithFiltersEvent(
                                         offset: 1,
                                         getWithPagination: false,
                                         boutiqueSlug: key,
                                         fromSearch: true,
-                                        searchText: widget.controller.text));
+                                        searchText: null));
                                     HelperFunctions.slidingNavigation(
                                         context,
                                         ProductListingPage(
-                                          searchText: widget.controller.text,
+                                          searchText: text,
                                           boutiqueIcon: "",
                                           fromSearch: true,
                                           withSlidingImages: false,
@@ -933,11 +374,14 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                 flex: 1,
                                 child: InkWell(
                                   onTap: () {
-                                    homeBloc.add(GetProductFiltersEvent(
-                                      filtersChoosedByUser: null,
-                                      resetAppliesFilters: true,
+                                    homeBloc.add(ChangeAppliedFiltersEvent(
                                       boutiqueSlug: key,
-                                      fromHomePageSearch: true
+                                      filtersAppliedByUser: null,
+                                      resetAppliedFilters: true
+                                    ));
+                                    homeBloc.add(ChangeSelectedFiltersEvent(
+                                        boutiqueSlug: key,
+                                        filtersChoosedByUser: null,
                                     ));
                                     widget.controller.clear();
                                   },

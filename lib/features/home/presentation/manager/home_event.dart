@@ -168,11 +168,13 @@ class GetProductsWithFiltersEvent extends HomeEvent {
   final String boutiqueSlug;
   final bool? fromSearch;
   final bool getWithPagination;
+  final bool resetChoosedFilters;
 
   GetProductsWithFiltersEvent(
       {
       required this.boutiqueSlug,
       this.getWithPagination = false,
+      this.resetChoosedFilters = true,
       this.searchText,
       this.fromSearch,
       required this.offset,
