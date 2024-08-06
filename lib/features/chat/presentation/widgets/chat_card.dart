@@ -22,6 +22,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/no_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/configuration/chat_url_routes.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
@@ -226,6 +227,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       iconUrl: AppAssets.archiveSvg,
                     ),
                     SlidableActionWidget(
+                      key: Key(
+                          '${WidgetsKey.deleteChatConversationIconKey}${widget.index}'),
                       text: LocaleKeys.delete.tr(),
                       onTap: () {
                         if (double.tryParse(widget.chat.id!) == null) {

@@ -18,6 +18,7 @@ import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/main.dart';
 
+import '../../../../common/constant/widgets_key.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../home/presentation/widgets/sliver_list_seprated.dart';
@@ -191,6 +192,9 @@ class ChatPageContentState extends State<ChatPageContent> {
                                           searchedChats[index].id.toString()))
                                   : false;
                               return ChatCard(
+                                key: Key(
+                                  '${WidgetsKey.chatConversationCardKey}$index',
+                                ),
                                 onSendForwardMessage:
                                     widget.onSendForwardMessage,
                                 chat: searchedChats[index],

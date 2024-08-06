@@ -75,7 +75,8 @@ void main() {
             successMessage: 'Find LoginSuccessfully Success',
             failedMessage: 'Find LoginSuccessfully failed',
           );
-          //////////////////////////
+          /////////////////////////
+          await SharedScenarios.countryDropDown(tester: tester);
           await GlobalTestFunctions.waitFor(tester, find.byType(HomePage));
           //////////////////////////
           await GlobalTestFunctions.findWidget(
@@ -117,6 +118,8 @@ void main() {
           await Future.delayed(const Duration(seconds: 1));
           await tester.tap(takeLookButtonKey);
           await tester.pumpAndSettle();
+          /////////////////////////
+          await SharedScenarios.countryDropDown(tester: tester);
           //////////////////////////
           await GlobalTestFunctions.waitFor(tester, find.byType(HomePage));
           //////////////////////////
@@ -127,7 +130,8 @@ void main() {
             failedMessage: 'Find HomePage failed',
           );
           ////////////////////////////
-          await SharedScenarios.testTokensAreNull(isJustForMarketToken: false);
+          await SharedScenarios.testTokensAreNull(
+              isJustForMarketToken: false, isJustForStoryChatTokens: true);
           ////////////////////////////
         },
       );

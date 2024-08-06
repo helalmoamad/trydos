@@ -659,7 +659,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Map.of(state.choosedFiltersByUser);
     Map<String, filters_model.GetProductFiltersModel?> appliedFilters =
     Map.of(state.appliedFiltersByUser);
-    choosedFilters[key] = null;
+    if(event.resetChoosedFilters) {
+      choosedFilters[key] = null;
+    }
     if (((filters.colors?.isNullOrEmpty ?? true) &&
         (filters.brands?.isNullOrEmpty ?? true) &&
         (filters.attributes?.isNullOrEmpty ?? true) &&
@@ -1614,6 +1616,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     } else {
       appliedFilters[key] = event.filtersAppliedByUser;
     }
+    print(event.filtersAppliedByUser?.filters?.searchText);
+    print(appliedFilters[key]?.filters?.searchText);
     emit(state.copyWith(
       appliedFiltersByUser:  Map.of(appliedFilters),
     ));
