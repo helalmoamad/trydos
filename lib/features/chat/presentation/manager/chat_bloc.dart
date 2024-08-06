@@ -264,7 +264,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               int.tryParse(event.channelId) == null) {
             return r.channel!.copyWith(
                 localId: event.channelId,
-                channelMembers: state.pinnedChats.firstWhere((element) => element.id == event.channelId).channelMembers,
+                channelMembers: state.pinnedChats
+                    .firstWhere((element) => element.id == event.channelId)
+                    .channelMembers,
                 messages: e.messages?.map((e) {
                   if (e.localId == event.messageId) {
                     return r.copyWith(localId: e.localId);
@@ -290,7 +292,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               int.tryParse(event.channelId) == null) {
             return r.channel!.copyWith(
                 localId: event.channelId,
-                channelMembers: state.chats.firstWhere((element) => element.id == event.channelId).channelMembers,
+                channelMembers: state.chats
+                    .firstWhere((element) => element.id == event.channelId)
+                    .channelMembers,
                 messages: e.messages?.map((e) {
                   if (e.localId == event.messageId) {
                     return r.copyWith(localId: e.localId);
@@ -357,8 +361,6 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     //   },
     // );
   }
-
-
 
   FutureOr<void> _onGetChatsEvent(
       GetChatsEvent event, Emitter<ChatState> emit) async {
@@ -440,7 +442,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   FutureOr<void> _onGetContactsEvent(
       GetContactsEvent event, Emitter<ChatState> emit) async {
     if (apisMustNotToRequest.contains('GetContactsEvent')) return;
-    emit(state.copyWith(getContactsStatus: GetContactsStatus.loading,
+    emit(state.copyWith(
+      getContactsStatus: GetContactsStatus.loading,
     ));
     final response = await getContactsUseCase(NoParams());
     response.fold(
@@ -1157,6 +1160,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     }, (r) {
       List<Message> messages = List.of(chat.messages ?? []);
       messages.addAll(r);
+      debugPrint('////chat messages length//// ${messages.length} //////////');
       chat = chat.copyWith(
           messages: messages,
           hasReachedMax: r.length < event.limit,
@@ -1590,7 +1594,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                 ? 1
                 : event.isDelete,
             deleteForAll: event.deleteForAll));
-    if(!event.deleteForAll){
+    if (!event.deleteForAll) {
       chat.messages?.removeAt(index);
     }
     List<Chat> chats = !fromPinned

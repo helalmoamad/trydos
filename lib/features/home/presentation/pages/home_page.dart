@@ -276,6 +276,7 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (_, index) => Padding(
                           padding: HWEdgeInsets.symmetric(horizontal: 15.w),
                           child: HomePageCard2(
+                            key: Key('${WidgetsKey.boutiqueCardKey}$index'),
                             category_Slug: currentSlug,
                             withSlidingImages: homeState
                                     .getHomeBoutiquesPaginationObjectByMainCategory[

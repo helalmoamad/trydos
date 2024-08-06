@@ -35,6 +35,7 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
+import 'common/constant/widgets_key.dart';
 import 'features/app/app_widgets/tabs_bar.dart';
 import 'features/authentication/presentation/pages/first_registeration_page.dart';
 import 'features/calls/presentation/pages/in_app_view.dart';
@@ -669,6 +670,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                 ),
                                                 Center(
                                                     child: CountryDropdown(
+                                                  key: Key(WidgetsKey
+                                                      .countryDropDownKey),
                                                   countries: homestate
                                                               .getAllowedCountriesModel !=
                                                           null
@@ -681,6 +684,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                 )),
                                                 SizedBox(height: 80),
                                                 ElevatedButton(
+                                                  key: Key(WidgetsKey
+                                                      .chooseCountryButtonKey),
                                                   onPressed: () {
                                                     if (_prefsRepository
                                                             .userChoosedCountryIso !=
