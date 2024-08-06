@@ -15,6 +15,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/widgets/contact_card.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../main.dart';
@@ -201,8 +202,12 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                           return sliverListSeparated(
                             itemBuilder: (_, index) {
                               return ContactCard(
-                                  index: index,
-                                  contact: searchedContacts[index]);
+                                key: Key(
+                                  '${WidgetsKey.contactCardKey}$index',
+                                ),
+                                index: index,
+                                contact: searchedContacts[index],
+                              );
                             },
                             separator: const SizedBox.shrink(),
                             childCount: searchedContacts.length,

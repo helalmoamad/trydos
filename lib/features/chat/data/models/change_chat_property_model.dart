@@ -4,9 +4,11 @@
 
 import 'dart:convert';
 
-ChangeChatPropertyModel changeChatPropertyModelFromJson(String str) => ChangeChatPropertyModel.fromJson(json.decode(str));
+ChangeChatPropertyModel changeChatPropertyModelFromJson(String str) =>
+    ChangeChatPropertyModel.fromJson(json.decode(str));
 
-String changeChatPropertyModelToJson(ChangeChatPropertyModel data) => json.encode(data.toJson());
+String changeChatPropertyModelToJson(ChangeChatPropertyModel data) =>
+    json.encode(data.toJson());
 
 class ChangeChatPropertyModel {
   final bool? isSuccessful;
@@ -42,21 +44,23 @@ class ChangeChatPropertyModel {
         data: data ?? this.data,
       );
 
-  factory ChangeChatPropertyModel.fromJson(Map<String, dynamic> json) => ChangeChatPropertyModel(
-    isSuccessful: json["isSuccessful"],
-    hasContent: json["hasContent"],
-    code: json["code"],
-    message: json["message"],
-    detailedError: json["detailed_error"],
-    data: Map.from(json["data"]!).map((k, v) => MapEntry<String, dynamic>(k, v)),
-  );
+  factory ChangeChatPropertyModel.fromJson(Map<String, dynamic> json) =>
+      ChangeChatPropertyModel(
+        isSuccessful: json["isSuccessful"],
+        hasContent: json["hasContent"],
+        code: json["code"],
+        message: json["message"],
+        detailedError: json["detailed_error"],
+        data: Map.from(json["data"]!)
+            .map((k, v) => MapEntry<String, dynamic>(k, v)),
+      );
 
   Map<String, dynamic> toJson() => {
-    "isSuccessful": isSuccessful,
-    "hasContent": hasContent,
-    "code": code,
-    "message": message,
-    "detailed_error": detailedError,
-    "data": Map.from(data!).map((k, v) => MapEntry<String, dynamic>(k, v)),
-  };
+        "isSuccessful": isSuccessful,
+        "hasContent": hasContent,
+        "code": code,
+        "message": message,
+        "detailed_error": detailedError,
+        "data": Map.from(data!).map((k, v) => MapEntry<String, dynamic>(k, v)),
+      };
 }

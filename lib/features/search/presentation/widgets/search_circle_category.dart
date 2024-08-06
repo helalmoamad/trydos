@@ -16,6 +16,7 @@ import '../../../app/my_text_widget.dart';
 import '../../../home/data/models/get_product_filters_model.dart';
 import '../../../home/data/models/get_product_listing_with_filters_model.dart'
     as product_listing;
+import '../../../home/presentation/widgets/product_listing/categories_filter_list.dart';
 
 class SearchChipCategory extends StatefulWidget {
   final String title;
@@ -34,6 +35,9 @@ class SearchChipCategory extends StatefulWidget {
 }
 
 class _SearchChipCategoryState extends State<SearchChipCategory> {
+  final ValueNotifier<bool> scaleTheTopItemInFiltersStack =
+      ValueNotifier(false);
+  final ValueNotifier<int> expandingFiltersStack = ValueNotifier(-1);
   final ScrollController scrollController = ScrollController();
   late HomeBloc homeBloc;
 
@@ -100,108 +104,17 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                 height: 10,
               ),
               SizedBox(
-                height: 30,
+                height: 90,
                 child: ScrollConfiguration(
-                  behavior: CupertinoScrollBehavior(),
-                  child: ListView.separated(
-                      controller: scrollController,
-                      shrinkWrap: true,
-                      physics: ClampingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        bool isSelected = homeBloc.state
-                                .choosedFiltersByUser[key]?.filters?.categories
-                                ?.any((element) =>
-                                    element.id ==
-                                    filters.categories?[index].id) ??
-                            false;
-                        return InkWell(
-                          onTap: () {
-                            Filter? prevChoosedFilterToAddToIt = homeBloc
-                                .state.choosedFiltersByUser[key]?.filters;
-                            if (prevChoosedFilterToAddToIt == null) {
-                              prevChoosedFilterToAddToIt = Filter();
-                            }
-                            if (isSelected) {
-                              List<product_listing.Category> categories =
-                                  prevChoosedFilterToAddToIt.categories ?? [];
-                              categories.removeWhere((element) =>
-                                  element.id == filters.categories![index].id);
-                              prevChoosedFilterToAddToIt =
-                                  prevChoosedFilterToAddToIt
-                                      .copyWithSaveOtherField(
-                                categories: categories,
-                              );
-                            } else {
-                              prevChoosedFilterToAddToIt =
-                                  prevChoosedFilterToAddToIt
-                                      .copyWithSaveOtherField(categories: [
-                                ...prevChoosedFilterToAddToIt.categories ?? [],
-                                filters.categories![index]
-                              ]);
-                            }
-                            homeBloc.add(ChangeSelectedFiltersEvent(
-                                fromHomePageSearch: true,
-                                boutiqueSlug: key,
-                                filtersChoosedByUser: GetProductFiltersModel(
-                                    filters: prevChoosedFilterToAddToIt)));
-                          },
-                          child: Stack(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: Color(0xffF8F8F8),
-                                    border: Border.all(
-                                        color: isSelected
-                                            ? Color(0xffFF5F61)
-                                            : Color(0xffF8F8F8))),
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 6, horizontal: 10),
-                                child: Center(
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      MyCachedNetworkImage(
-                                        imageUrl: filters
-                                            .categories![index]
-                                            .mostViewedProductThumbnail!
-                                            .filePath!,
-                                        imageFit: BoxFit.cover,
-                                        width: 15,
-                                        height: 15,
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      MyTextWidget(
-                                        filters.categories![index].name!,
-                                        style: context.textTheme.bodyText2?.rq
-                                            .copyWith(
-                                                height: 18 / 14,
-                                                color: Color(0xff8D8D8D)),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Visibility(
-                                  visible: isSelected,
-                                  child:
-                                      FilterSelectedMark(width: 12, height: 12))
-                            ],
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return SizedBox(
-                          width: 10,
-                        );
-                      },
-                      itemCount: filters.categories?.length ?? 0),
-                ),
+                    behavior: CupertinoScrollBehavior(),
+                    child: CategoriesFilterList(
+                      boutiqueSlug: 'search',
+                      fromSearch: true,
+                      expandingFiltersStack: expandingFiltersStack,
+                      scaleTheTopItemInFiltersStack:
+                          scaleTheTopItemInFiltersStack,
+                      workWithChoosedFilter: true,
+                    )),
               ),
             ],
           );
