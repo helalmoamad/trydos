@@ -28,7 +28,7 @@ class SizesFiltersList extends StatefulWidget {
     super.key,
     this.hideTitle = false,
     required this.attribute,
-    this.boutiqueSlug,
+    required this.boutiqueSlug,
     this.category,
      this.searchText,
     required this.fromHomeSearch,
@@ -36,7 +36,7 @@ class SizesFiltersList extends StatefulWidget {
   final Attribute attribute;
 
   final bool hideTitle;
-  final String? boutiqueSlug;
+  final String boutiqueSlug;
   final String? category;
   final bool fromHomeSearch;
   final String? searchText;
@@ -48,9 +48,10 @@ class SizesFiltersList extends StatefulWidget {
 class _SizesFiltersListState extends State<SizesFiltersList> {
   final CarouselController carouselController = CarouselController();
   late final ValueNotifier<int> currentIndexInSizes;
-
+  String key = '';
   @override
   void initState() {
+    key = widget.boutiqueSlug + (widget.category ?? '');
     currentIndexInSizes =
         ValueNotifier((widget.attribute.options?.length ?? 0) ~/ 2);
     super.initState();
@@ -83,7 +84,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                   color: Color(0xffD3D3D3),
                 ),
                 BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
-                  if (state.getProductFiltersStatus ==
+                  if (state.getProductFiltersStatus[key] ==
                       GetProductFiltersStatus.loading) {
                     return Row(
                       children: [
@@ -119,12 +120,21 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                     itemBuilder: (ctx, index) {
                       HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
                       bool isSelected = widget.hideTitle
+                          ? ((homeBloc.state.appliedFiltersByUser[key]?.filters
+                          ?.attributes?.isNullOrEmpty ??
+                          true)
                           ? false
-                          : ((homeBloc.state.choosedFiltersByUser?.filters
+                          : homeBloc.state.appliedFiltersByUser[key]!.filters!
+                          .attributes![0].options
+                          ?.any((element) =>
+                      element ==
+                          widget.attribute.options?[index]) ??
+                          false)
+                          : ((homeBloc.state.choosedFiltersByUser[key]?.filters
                                       ?.attributes?.isNullOrEmpty ??
                                   true)
                               ? false
-                              : homeBloc.state.choosedFiltersByUser!.filters!
+                              : homeBloc.state.choosedFiltersByUser[key]!.filters!
                                       .attributes![0].options
                                       ?.any((element) =>
                                           element ==
@@ -137,10 +147,10 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                               Filter? prevChoosedOrAppliedFilterToAddToIt =
                                   widget.hideTitle
                                       ? homeBloc
-                                          .state.appliedFiltersByUser?.filters
+                                          .state.appliedFiltersByUser[key]?.filters
                                       : homeBloc
-                                          .state.choosedFiltersByUser?.filters;
-                              if (widget.hideTitle || !isSelected) {
+                                          .state.choosedFiltersByUser[key]?.filters;
+                              if (!isSelected) {
                                 String size = widget.attribute.options![index];
                                 if (prevChoosedOrAppliedFilterToAddToIt ==
                                     null) {
@@ -173,41 +183,39 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                               ])
                                             ],
                                 );
-                                if (widget.hideTitle) {
-                                  homeBloc.add(ChangeAppliedFiltersEvent(
-                                      category: widget.category,
-                                      boutiqueSlug: widget.boutiqueSlug,
-                                      filtersAppliedByUser:
-                                      GetProductFiltersModel(
-                                          filters:
-                                          prevChoosedOrAppliedFilterToAddToIt),));
-                                  homeBloc.add(GetProductsWithFiltersEvent(
-                                      fromSearch: widget.fromHomeSearch,
-                                      searchText: widget.searchText,
-                                      boutiqueSlug: widget.boutiqueSlug,
-                                      category: widget.category,
-                                      offset: 1));
-                                } else {
-                                  homeBloc.add(ChangeSelectedFiltersEvent(
-                                    category: widget.category,
-                                    boutiqueSlug: widget.boutiqueSlug,
-                                    filtersChoosedByUser: GetProductFiltersModel(
-                                        filters:
-                                            prevChoosedOrAppliedFilterToAddToIt),
-                                  ));
-                                }
                               } else {
                                 prevChoosedOrAppliedFilterToAddToIt!
                                     .attributes![0].options!
                                     .removeWhere(((element) =>
                                         element ==
                                         widget.attribute.options![index]));
+                                if(prevChoosedOrAppliedFilterToAddToIt.attributes![0].options!.length == 0){
+                                  prevChoosedOrAppliedFilterToAddToIt = prevChoosedOrAppliedFilterToAddToIt.changeAttributesAndSaveOthers(
+                                    attributes: null
+                                  );
+                                }
+                              }
+                              if (widget.hideTitle) {
+                                homeBloc.add(ChangeAppliedFiltersEvent(
+                                  category: widget.category,
+                                  boutiqueSlug: widget.boutiqueSlug,
+                                  filtersAppliedByUser:
+                                  GetProductFiltersModel(
+                                      filters:
+                                      prevChoosedOrAppliedFilterToAddToIt),));
+                                homeBloc.add(GetProductsWithFiltersEvent(
+                                    fromSearch: widget.fromHomeSearch,
+                                    searchText: widget.searchText,
+                                    boutiqueSlug: widget.boutiqueSlug,
+                                    category: widget.category,
+                                    offset: 1));
+                              } else {
                                 homeBloc.add(ChangeSelectedFiltersEvent(
                                   category: widget.category,
                                   boutiqueSlug: widget.boutiqueSlug,
                                   filtersChoosedByUser: GetProductFiltersModel(
                                       filters:
-                                          prevChoosedOrAppliedFilterToAddToIt),
+                                      prevChoosedOrAppliedFilterToAddToIt),
                                 ));
                               }
                             },
@@ -219,7 +227,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                   borderType: BorderType.RRect,
                                   strokeCap: StrokeCap.round,
                                   strokeWidth: 0.5,
-                                  color: Color(0xff6B6B6B),
+                                  color: isSelected ? Color(0xffFF5F61) : Color(0xff6B6B6B),
                                   dashPattern: [3, 3],
                                   child: Center(
                                     child: Text(

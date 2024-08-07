@@ -52,4 +52,8 @@ class WidgetsKey {
   static const productListFilterKey = 'product_list_filter_key';
   static const countryDropDownKey = 'country_drop_down_key';
   static const chooseCountryButtonKey = 'choose_country_key';
+  static const boutiqueProductListingLoadingKey =
+      'boutique_product_listing_loading_key';
+  static const productsListKey = 'products_list_key';
+  static const appBarGoBackArrowKey = 'app_bar_go_back_arrow_key';
 }

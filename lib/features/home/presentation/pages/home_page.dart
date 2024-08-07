@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    if(homeBloc.state.getCurrencyForCountryModel == null) {
+    if (homeBloc.state.getCurrencyForCountryModel == null) {
       homeBloc.add(GetCartItemEvent());
       homeBloc.add(GetCurrencyForCountryEvent());
       homeBloc.add(GetHomeBoutiqesEvent(

@@ -15,17 +15,17 @@ import '../../manager/home_event.dart';
 class PriceFiltersRangesList extends StatefulWidget {
   const PriceFiltersRangesList({
     super.key,
-    this.boutiqueSlug,
+    required this.boutiqueSlug,
     this.category,
     required this.currencySymbol,
     required this.priceRanges,
     required this.exchangeRate,
-     this.searchText,
+    this.searchText,
     required this.fromHomeSearch,
     required this.decimalPoint,
   });
 
-  final String? boutiqueSlug;
+  final String boutiqueSlug;
   final String currencySymbol;
   final double exchangeRate;
   final List<PriceRange> priceRanges;
@@ -33,13 +33,18 @@ class PriceFiltersRangesList extends StatefulWidget {
   final bool fromHomeSearch;
   final String? searchText;
   final int decimalPoint;
+
   @override
   State<PriceFiltersRangesList> createState() => _PriceFiltersRangesListState();
 }
 
 class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
+
+  String key = '';
+
   @override
   void initState() {
+    key = widget.boutiqueSlug + (widget.category ?? '');
     super.initState();
   }
 
@@ -51,20 +56,27 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
     return SizedBox(
         height: 70,
         child: ListView.separated(
-          itemCount: widget.priceRanges.length ?? 0,
+          itemCount: widget.priceRanges.length,
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
           separatorBuilder: (ctx, index) => SizedBox(
             width: 10,
           ),
           itemBuilder: (ctx, index) {
+            HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
+            bool isSelected = (homeBloc.state.appliedFiltersByUser[key]?.filters
+                        ?.prices?.minPrice ==
+                    widget.priceRanges[index].minPrice) &&
+                (homeBloc.state.appliedFiltersByUser[key]?.filters?.prices
+                        ?.maxPrice ==
+                    widget.priceRanges[index].maxPrice);
             return Stack(
               children: [
                 GestureDetector(
                   onTap: () {
                     HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
                     Filter? prevChoosedOrAppliedFilterToAddToIt =
-                        homeBloc.state.appliedFiltersByUser?.filters;
+                        homeBloc.state.appliedFiltersByUser[key]?.filters;
                     if (prevChoosedOrAppliedFilterToAddToIt == null) {
                       prevChoosedOrAppliedFilterToAddToIt = Filter();
                     }
@@ -72,7 +84,9 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                       prevChoosedOrAppliedFilterToAddToIt =
                           prevChoosedOrAppliedFilterToAddToIt
                               .copyWithSaveOtherField(
-                              searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
+                                  searchText:
+                                      prevChoosedOrAppliedFilterToAddToIt
+                                          .searchText,
                                   prices: Prices(
                                       currencySymbol: widget.currencySymbol,
                                       minPrice:
@@ -87,7 +101,9 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                       prevChoosedOrAppliedFilterToAddToIt =
                           prevChoosedOrAppliedFilterToAddToIt
                               .copyWithSaveOtherField(
-                          searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
+                                  searchText:
+                                      prevChoosedOrAppliedFilterToAddToIt
+                                          .searchText,
                                   prices: Prices(
                                       currencySymbol: widget.currencySymbol,
                                       minPrice:
@@ -97,14 +113,17 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                     } else {
                       prevChoosedOrAppliedFilterToAddToIt =
                           prevChoosedOrAppliedFilterToAddToIt
-                              .copyWithSaveOtherField(prices: null ,searchText: prevChoosedOrAppliedFilterToAddToIt.searchText);
+                              .copyWithSaveOtherField(
+                                  prices: null,
+                                  searchText:
+                                      prevChoosedOrAppliedFilterToAddToIt
+                                          .searchText);
                     }
                     homeBloc.add(ChangeAppliedFiltersEvent(
                       category: widget.category,
                       boutiqueSlug: widget.boutiqueSlug,
                       filtersAppliedByUser: GetProductFiltersModel(
-                          filters:
-                          prevChoosedOrAppliedFilterToAddToIt),
+                          filters: prevChoosedOrAppliedFilterToAddToIt),
                     ));
                     homeBloc.add(GetProductsWithFiltersEvent(
                         fromSearch: widget.fromHomeSearch,
@@ -121,7 +140,7 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                         borderType: BorderType.RRect,
                         strokeCap: StrokeCap.square,
                         strokeWidth: 0.5,
-                        color: Color(0xff6B6B6B),
+                        color: isSelected ? Color(0xffFF5F61) : Color(0xff6B6B6B),
                         padding: EdgeInsets.all(8),
                         dashPattern: [3, 3],
                         child: Center(

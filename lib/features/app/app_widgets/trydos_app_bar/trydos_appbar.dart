@@ -5,6 +5,7 @@ import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../../service/language_service.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../my_text_widget.dart';
 import 'app_bar_params.dart';
@@ -96,6 +97,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? Row(
               children: [
                 InkWell(
+                  key: Key(WidgetsKey.appBarGoBackArrowKey),
                   onTap: () {
                     appBarParams.onBack?.call();
                     Navigator.pop(context);

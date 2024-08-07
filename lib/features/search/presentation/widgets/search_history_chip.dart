@@ -41,6 +41,7 @@ class SearchHistoryChip extends StatelessWidget {
                   appearTrendingAndHistory.value = true;
                   BlocProvider.of<HomeBloc>(context).add(
                       GetProductsWithFiltersEvent(
+                        boutiqueSlug: 'search',
                           offset: 1, fromSearch: true, searchText: text));
                 },
                 child: Container(
