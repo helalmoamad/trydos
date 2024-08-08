@@ -37,7 +37,7 @@ void main() {
       final boutiqueId1 =
           tester.widget<HomePageCard2>(boutiqueCard1).boutniqe.id!;
       ////////////////////////////
-      print('//////// categorySlug : $boutiqueId1 //////////');
+      print('//////// boutiqueCard1  : $boutiqueId1 //////////');
       ////////////////////////////
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(boutiqueCard1);
@@ -75,7 +75,6 @@ void main() {
       );
       //////////////////////////
       int productIndex1 = 0;
-      final List<String> productIds1 = [];
       while (true) {
         final productKey =
             Key('${WidgetsKey.productInBoutiqueListKey}$productIndex1');
@@ -83,16 +82,19 @@ void main() {
           break;
         }
 
-        final productId = tester
+        final productBoutId = tester
             .widget<ProductItem>(find.byKey(productKey))
             .productItem
-            .id!
+            .boutiqueId!
             .toString();
-        productIds1.add(productId);
+        try {
+          expect(productBoutId, equals(boutiqueId1));
+        } catch (e) {
+          break;
+        }
         productIndex1++;
       }
       ///////////////////////////
-      print('/////////// productIds : $productIds1 ///////////////');
       await Future.delayed(const Duration(seconds: 2));
       /////////////////////////
       final Finder appBarGoBackArrow = find.byKey(
@@ -100,6 +102,129 @@ void main() {
       );
       await tester.tap(appBarGoBackArrow);
       await tester.pumpAndSettle();
+      /////////////////////////
+      final Finder boutiqueCard2 = find.byKey(
+        Key('${WidgetsKey.boutiqueCardKey}1'),
+      );
+      ////////////////////////////
+      final boutiqueId2 =
+          tester.widget<HomePageCard2>(boutiqueCard2).boutniqe.id!;
+      ////////////////////////////
+      print('//////// boutiqueId2  : $boutiqueId2 //////////');
+      ////////////////////////////
+      ////////////////////////////
+      ////////////////////////////
+      ////////////////////////////
+      await Future.delayed(const Duration(seconds: 2));
+      await tester.tap(boutiqueCard1);
+      await tester.pump();
+      await Future.delayed(const Duration(seconds: 1));
+      //////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: boutiqueProductListingLoading,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find boutiqueProductListingLoading  Success',
+        failedMessage: 'Find boutiqueProductListingLoading  failed',
+      );
+      await tester.pumpAndSettle();
+      ///////////////////////////////
+      final Finder productsList2 = find.byKey(
+        Key(WidgetsKey.productsListKey),
+      );
+      //////////////////////////
+      await GlobalTestFunctions.waitFor(
+        tester,
+        productsList2,
+      );
+      ///////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: productsList2,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find productsList2  Success',
+        failedMessage: 'Find productsList2  failed',
+      );
+      //////////////////////////
+      int productIndex2 = 0;
+      while (true) {
+        final productKey =
+            Key('${WidgetsKey.productInBoutiqueListKey}$productIndex2');
+        if (find.byKey(productKey).evaluate().isEmpty) {
+          break;
+        }
+
+        final productBoutId = tester
+            .widget<ProductItem>(find.byKey(productKey))
+            .productItem
+            .boutiqueId!
+            .toString();
+        try {
+          expect(productBoutId, equals(boutiqueId2));
+        } catch (e) {
+          break;
+        }
+        productIndex2++;
+      }
+      ///////////////////////////
+      await Future.delayed(const Duration(seconds: 2));
+      /////////////////////////
+      final Finder appBarGoBackArrow2 = find.byKey(
+        Key(WidgetsKey.appBarGoBackArrowKey),
+      );
+      await tester.tap(appBarGoBackArrow2);
+      await tester.pumpAndSettle();
+      /////////////////////////
+      await Future.delayed(const Duration(seconds: 1));
+      await tester.tap(boutiqueCard1);
+      await tester.pump();
+      await Future.delayed(const Duration(seconds: 1));
+      //////////////////////////
+      ///////////////////////////////
+      await GlobalTestFunctions.findNoWidget(
+        tester: tester,
+        actual: boutiqueProductListingLoading,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find boutiqueProductListingLoading  Success',
+        failedMessage: 'Find boutiqueProductListingLoading  failed',
+      );
+      await tester.pumpAndSettle();
+      //////////////////////////
+      await GlobalTestFunctions.waitFor(
+        tester,
+        productsList,
+      );
+      ///////////////////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: productsList,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find productsList  Success',
+        failedMessage: 'Find productsList  failed',
+      );
+      //////////////////////////
+      productIndex1 = 0;
+      while (true) {
+        final productKey =
+            Key('${WidgetsKey.productInBoutiqueListKey}$productIndex1');
+        if (find.byKey(productKey).evaluate().isEmpty) {
+          break;
+        }
+
+        final productBoutId = tester
+            .widget<ProductItem>(find.byKey(productKey))
+            .productItem
+            .boutiqueId!
+            .toString();
+        try {
+          expect(productBoutId, equals(boutiqueId1));
+        } catch (e) {
+          break;
+        }
+        productIndex1++;
+      }
+      ///////////////////////////
+      await Future.delayed(const Duration(seconds: 2));
       /////////////////////////
     },
   );
