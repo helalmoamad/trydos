@@ -13,7 +13,7 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Click on boutique ,',
+    'Test product list cache in boutique',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();

@@ -56,4 +56,8 @@ class WidgetsKey {
       'boutique_product_listing_loading_key';
   static const productsListKey = 'products_list_key';
   static const appBarGoBackArrowKey = 'app_bar_go_back_arrow_key';
+  static const productListingSearchIconKey = 'product_listing_search_icon_key';
+  static const productListingSearchInputKey =
+      'product_listing_search_input_key';
+  static const loadingAfterSearchKey = 'loading_after_search_key';
 }

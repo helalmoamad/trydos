@@ -312,12 +312,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           end:
                                                                               20.0),
                                                                   child: InkWell(
+                                                                      key: Key(WidgetsKey.productListingSearchIconKey),
                                                                       onTap: () {
                                                                         searchVisible.value =
                                                                             !searchVisible.value;
                                                                       },
                                                                       child: searchVisible.value || widget.fromSearch == false
                                                                           ? AnimatedSearchBar(
+                                                                              key: Key(WidgetsKey.productListingSearchInputKey),
                                                                               autoFocus: false,
                                                                               width: 1.sw - 140,
                                                                               height: 40,
@@ -765,73 +767,81 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               HomeState>(
                                             builder: (context, state) {
                                               return SliverAppBar(
-                                                  pinned: !isExpanded,
-                                                  surfaceTintColor:
-                                                      Colors.transparent,
-                                                  backgroundColor:
-                                                      colorScheme.white,
-                                                  automaticallyImplyLeading:
-                                                      false,
-                                                  titleSpacing: 0,
-                                                  toolbarHeight: isExpanded
-                                                      ? 860
-                                                      : (state.getProductFiltersModel[key]?.filters ==
-                                                                  null &&
-                                                              state.getProductFiltersStatus[key] !=
-                                                                  GetProductFiltersStatus
-                                                                      .loading)
-                                                          ? 35
-                                                          : state.appliedFiltersByUser[key] !=
-                                                                  null
-                                                              ? (state.getProductListingWithFiltersPaginationModels[key]?.items.length ?? 1) ==
-                                                                      1
-                                                                  ? 35
-                                                                  : 145
-                                                              : 115,
-                                                  flexibleSpace:
-                                                      StackedFiltersList(
-                                                          key: Key(WidgetsKey
-                                                              .productListFilterKey),
-                                                          fromSearch:
-                                                              fromSearch!,
-                                                          searchText: controller
-                                                                      .text.length >
-                                                                  2
-                                                              ? controller.text
-                                                              : widget
-                                                                  .searchText,
-                                                          filterPageExpanded:
-                                                              filterPageExpanded,
-                                                          closeFilterPage: () {
-                                                            filterPageExpanded
-                                                                .value = false;
-                                                          },
-                                                          displayAppliedFiltersOnly:
-                                                              (state.getProductListingWithFiltersPaginationModels[key]?.items.length ?? 1) ==
-                                                                  1,
-                                                          category:
-                                                              widget.category,
-                                                          boutiqueSlug: widget
-                                                              .boutiqueSlug,
-                                                          controller: isExpanded
-                                                              ? scrollController
-                                                              : null,
-                                                          onMoveToAnotherFiltersSection:
-                                                              (title) {
-                                                            timerForDisplayFilterSectionTitle
-                                                                ?.cancel();
-                                                            showTitleForFilterList
-                                                                .value = title;
-                                                            timerForDisplayFilterSectionTitle =
-                                                                Timer(
-                                                                    Duration(
-                                                                        seconds:
-                                                                            3),
-                                                                    () {
-                                                              showTitleForFilterList
-                                                                  .value = null;
-                                                            });
-                                                          }));
+                                                pinned: !isExpanded,
+                                                surfaceTintColor:
+                                                    Colors.transparent,
+                                                backgroundColor:
+                                                    colorScheme.white,
+                                                automaticallyImplyLeading:
+                                                    false,
+                                                titleSpacing: 0,
+                                                toolbarHeight: isExpanded
+                                                    ? 860
+                                                    : (state
+                                                                    .getProductFiltersModel[
+                                                                        key]
+                                                                    ?.filters ==
+                                                                null &&
+                                                            state.getProductFiltersStatus[
+                                                                    key] !=
+                                                                GetProductFiltersStatus
+                                                                    .loading)
+                                                        ? 35
+                                                        : state.appliedFiltersByUser[
+                                                                    key] !=
+                                                                null
+                                                            ? (state.getProductListingWithFiltersPaginationModels[key]?.items
+                                                                            .length ??
+                                                                        1) ==
+                                                                    1
+                                                                ? 35
+                                                                : 145
+                                                            : 115,
+                                                flexibleSpace:
+                                                    StackedFiltersList(
+                                                  key: Key(WidgetsKey
+                                                      .productListFilterKey),
+                                                  fromSearch: fromSearch!,
+                                                  searchText:
+                                                      controller.text.length > 2
+                                                          ? controller.text
+                                                          : widget.searchText,
+                                                  filterPageExpanded:
+                                                      filterPageExpanded,
+                                                  closeFilterPage: () {
+                                                    filterPageExpanded.value =
+                                                        false;
+                                                  },
+                                                  displayAppliedFiltersOnly: (state
+                                                              .getProductListingWithFiltersPaginationModels[
+                                                                  key]
+                                                              ?.items
+                                                              .length ??
+                                                          1) ==
+                                                      1,
+                                                  category: widget.category,
+                                                  boutiqueSlug:
+                                                      widget.boutiqueSlug,
+                                                  controller: isExpanded
+                                                      ? scrollController
+                                                      : null,
+                                                  onMoveToAnotherFiltersSection:
+                                                      (title) {
+                                                    timerForDisplayFilterSectionTitle
+                                                        ?.cancel();
+                                                    showTitleForFilterList
+                                                        .value = title;
+                                                    timerForDisplayFilterSectionTitle =
+                                                        Timer(
+                                                      Duration(seconds: 3),
+                                                      () {
+                                                        showTitleForFilterList
+                                                            .value = null;
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                              );
                                             },
                                           );
                                         }),
