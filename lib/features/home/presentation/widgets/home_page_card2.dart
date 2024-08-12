@@ -18,7 +18,6 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/service/language_service.dart';
-
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
 
@@ -161,11 +160,13 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 height: 20,
                                 width: 40,
                               )
-                            : MyTextWidget(widget.boutniqe.name!,
+                            : MyTextWidget(
+                                widget.boutniqe.name!,
                                 style: context.textTheme.caption?.rd.copyWith(
                                   fontSize: 16,
                                   color: ui.Color.fromARGB(255, 15, 15, 15),
-                                )),
+                                ),
+                              ),
                         SizedBox(
                           height: 5,
                         ),

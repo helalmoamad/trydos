@@ -423,6 +423,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               20.0),
                                                                   child:
                                                                       AnimatedSearchBar(
+                                                                        key: Key(WidgetsKey.productListingSearchIconKey),
                                                                     autoFocus:
                                                                         false,
                                                                     width:
@@ -1111,6 +1112,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               : 115,
                                                   flexibleSpace:
                                                       StackedFiltersList(
+                                                  key: Key(WidgetsKey
+                                                      .productListFilterKey),
                                                           textController:
                                                               controller,
                                                           hideTitle: false,
@@ -1235,7 +1238,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               .success &&
                                                       !state
                                                           .cashedOrginalBoutique)) {
-                                                return ProductListingLoading();
+                                                return ProductListingLoading(key: Key(WidgetsKey
+                                                    .boutiqueProductListingLoadingKey),);
                                               }
                                               List<filter_products.Products>
                                                   products = [];
@@ -1287,6 +1291,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               // [];
                                               //                                                     }
                                               return SliverPadding(
+                                                key: Key(
+                                                    WidgetsKey.productsListKey),
                                                 padding: const EdgeInsets.only(
                                                     top: 10),
                                                 sliver: SliverGrid(
@@ -1384,6 +1390,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       )));
                                                         },
                                                         child: ProductItem(
+                                                          key: Key(
+                                                              '${WidgetsKey.productInBoutiqueListKey}$index'),
                                                           slidingModeItem:
                                                               slidingMode,
                                                           productItem:

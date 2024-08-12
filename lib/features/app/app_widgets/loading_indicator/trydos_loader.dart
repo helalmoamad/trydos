@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
+import '../../../../common/constant/widgets_key.dart';
 import 'edited_spinkit_three_bounce.dart';
 
 class TrydosLoader extends StatelessWidget {
@@ -10,7 +11,11 @@ class TrydosLoader extends StatelessWidget {
     Key? key,
     double? size,
     Color? color,
-  })  : _widget = _TripperLoaderCircle(size: size, color: color, key: key),
+  })  : _widget = _TripperLoaderCircle(
+          size: size,
+          color: color,
+          key: Key(WidgetsKey.loadingAfterSearchKey),
+        ),
         super(key: key);
 
   TrydosLoader.spinKitThreeBounce({
@@ -24,7 +29,8 @@ class TrydosLoader extends StatelessWidget {
     Key? key,
     double? size,
     Color? color,
-  })  : _widget = _TripperLoaderThreeBounceEditing(size: size, color: color, key: key),
+  })  : _widget = _TripperLoaderThreeBounceEditing(
+            size: size, color: color, key: key),
         super(key: key);
 
   final Widget _widget;
