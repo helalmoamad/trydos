@@ -52,7 +52,9 @@ class _SearchResultState extends ThemeState<SearchResult> {
             c.getProductListingWithFiltersPaginationModels,
         builder: (context, state) {
           String key = 'search';
-          if (state.getProductListingWithFiltersPaginationModels[key]
+          if (state
+                  .getProductListingWithFiltersPaginationModels['${key}' +
+                      '${state.cashedOrginalBoutique ? 'withoutFilter' : ''}']
                   ?.paginationStatus ==
               PaginationStatus.loading) {
             return Column(children: [
@@ -185,8 +187,8 @@ class _SearchResultState extends ThemeState<SearchResult> {
               padding: const EdgeInsets.all(10),
               child: Center(
                 child: MyTextWidget(
-                  "No Products found",
-                  style: TextStyle(color: Colors.red, fontSize: 18),
+                  "No Products Found",
+                  style: TextStyle(color: Colors.black, fontSize: 18),
                 ),
               ),
             );
@@ -223,7 +225,8 @@ class _SearchResultState extends ThemeState<SearchResult> {
                               context,
                               ProductDetailsPage(
                                 productItem: state
-                                    .getProductListingWithFiltersPaginationModels[key]!
+                                    .getProductListingWithFiltersPaginationModels[
+                                        key]!
                                     .items[index],
                               ));
                         },
@@ -243,7 +246,8 @@ class _SearchResultState extends ThemeState<SearchResult> {
                                 Flexible(
                                   child: MyTextWidget(
                                     state
-                                        .getProductListingWithFiltersPaginationModels[key]!
+                                        .getProductListingWithFiltersPaginationModels[
+                                            key]!
                                         .items[index]
                                         .name!,
                                     textAlign: TextAlign.start,
@@ -275,7 +279,8 @@ class _SearchResultState extends ThemeState<SearchResult> {
                                 fit: BoxFit.cover,
                                 image: NetworkImage(
                                   state
-                                      .getProductListingWithFiltersPaginationModels[key]!
+                                      .getProductListingWithFiltersPaginationModels[
+                                          key]!
                                       .items[index]
                                       .images![0]
                                       .filePath!,
@@ -283,8 +288,10 @@ class _SearchResultState extends ThemeState<SearchResult> {
                       )
                     ],
                   ),
-                  itemCount: state.getProductListingWithFiltersPaginationModels[key]!
-                      .items.length,
+                  itemCount: state
+                      .getProductListingWithFiltersPaginationModels[key]!
+                      .items
+                      .length,
                   separatorBuilder: (ctx, index) => SizedBox(
                     height: 5,
                   ),

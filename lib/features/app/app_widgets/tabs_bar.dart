@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +18,8 @@ import '../../../common/constant/design/constant_design.dart';
 import '../../../common/constant/widgets_key.dart';
 import '../../../core/utils/responsive_padding.dart';
 import '../../home/data/models/get_product_filters_model.dart';
-import '../../home/data/models/get_product_listing_with_filters_model.dart' as product_listing;
+import '../../home/data/models/get_product_listing_with_filters_model.dart'
+    as product_listing;
 import '../../home/presentation/manager/home_bloc.dart';
 import '../../home/presentation/manager/home_state.dart';
 import '../animated_search_bar/animated_search_bar.dart';
@@ -121,7 +123,9 @@ class _TabsBarState extends State<TabsBar> {
                               children: [
                                 BlocBuilder<AppBloc, AppState>(
                                   buildWhen: (p, c) =>
-                                      p.currentIndex != c.currentIndex,
+                                      p.currentIndex != c.currentIndex ||
+                                      p.currentIndexForSearch !=
+                                          c.currentIndexForSearch,
                                   builder: (context, state) {
                                     return AnimatedSearchBar(
                                       autoFocus: true,
@@ -142,31 +146,47 @@ class _TabsBarState extends State<TabsBar> {
                                       height: 40,
                                       onClickClose: () {
                                         if (widget.controller.text.length > 0) {
-                                          Filter filters = homeBloc.state.choosedFiltersByUser['search']?.filters ?? Filter();
-                                          Filter appliedFilters = homeBloc.state.appliedFiltersByUser['search']?.filters ?? Filter();
-                                          homeBloc.add(ChangeAppliedFiltersEvent(
+                                          Filter filters = homeBloc
+                                                  .state
+                                                  .choosedFiltersByUser[
+                                                      'search']
+                                                  ?.filters ??
+                                              Filter();
+                                          Filter appliedFilters = homeBloc
+                                                  .state
+                                                  .appliedFiltersByUser[
+                                                      'search']
+                                                  ?.filters ??
+                                              Filter();
+                                          homeBloc
+                                              .add(ChangeAppliedFiltersEvent(
                                             boutiqueSlug: 'search',
-                                            filtersAppliedByUser: GetProductFiltersModel(
-                                                filters: appliedFilters.copyWithSaveOtherField(
-                                                  prices: appliedFilters.prices,
-                                                  searchText: null,
-                                                )
-                                            ),
+                                            filtersAppliedByUser:
+                                                GetProductFiltersModel(
+                                                    filters: appliedFilters
+                                                        .copyWithSaveOtherField(
+                                              prices: appliedFilters.prices,
+                                              searchText: null,
+                                            )),
                                           ));
-                                          homeBloc.add(ChangeSelectedFiltersEvent(
+                                          homeBloc
+                                              .add(ChangeSelectedFiltersEvent(
                                             boutiqueSlug: 'search',
                                             fromHomePageSearch: true,
-                                            filtersChoosedByUser: GetProductFiltersModel(
-                                              filters: filters.copyWithSaveOtherField(
-                                                prices: filters.prices,
-                                                searchText: null
-                                              )
-                                            ),
+                                            filtersChoosedByUser:
+                                                GetProductFiltersModel(
+                                                    filters: filters
+                                                        .copyWithSaveOtherField(
+                                                            prices:
+                                                                filters.prices,
+                                                            searchText: null)),
                                           ));
                                           widget.buildSearchResult.value = 0;
                                           widget.controller.clear();
-                                          resetSearchAfterSearchingWhileRemoveSearch = false;
-                                          widget.appearTrendingAndHistory.value = true;
+                                          resetSearchAfterSearchingWhileRemoveSearch =
+                                              false;
+                                          widget.appearTrendingAndHistory
+                                              .value = true;
                                           return true;
                                         } else {
                                           appBloc.add(ChangeBasePage(0));
@@ -193,7 +213,7 @@ class _TabsBarState extends State<TabsBar> {
                                         child: SvgPicture.asset(
                                           AppAssets.searchOutlinedSvg,
                                           height: 20,
-                                          width: 20,
+                                          width: 40,
                                           color: Color(0xff388CFF),
                                         ),
                                       ),
@@ -278,7 +298,7 @@ class _TabsBarState extends State<TabsBar> {
                                           child: SvgPicture.asset(
                                             AppAssets.searchOutlinedSvg,
                                             height: 20,
-                                            width: 20,
+                                            width: 40,
                                             color: Color(0xff388CFF),
                                           ),
                                         ),
@@ -322,40 +342,59 @@ class _TabsBarState extends State<TabsBar> {
                                       ),
                                       onChanged: (String text) {
                                         if (text.length > 2) {
-                                          resetSearchAfterSearchingWhileRemoveSearch = true;
-                                          Filter filters = homeBloc.state.appliedFiltersByUser['search']?.filters ?? Filter();
-                                          homeBloc.add(ChangeAppliedFiltersEvent(
-                                            boutiqueSlug: 'search',
-                                            filtersAppliedByUser: GetProductFiltersModel(
-                                              filters: filters.copyWithSaveOtherField(
-                                                prices: filters.prices,
-                                                searchText: text,
-                                              )
-                                            ),
-                                          ));
+                                          resetSearchAfterSearchingWhileRemoveSearch =
+                                              true;
+                                          Filter filters = homeBloc
+                                                  .state
+                                                  .choosedFiltersByUser[
+                                                      'search']
+                                                  ?.filters ??
+                                              Filter();
+
                                           homeBloc.add(
                                               GetProductsWithFiltersEvent(
+                                                  fromChoosed: true,
                                                   offset: 1,
                                                   boutiqueSlug: 'search',
                                                   resetChoosedFilters: false,
                                                   fromSearch: true,
-                                                  searchText: text
-                                              ));
+                                                  searchText: text));
+
+                                          homeBloc.add(GetProductFiltersEvent(
+                                            fromHomePageSearch: true,
+                                            filtersChoosedByUser:
+                                                GetProductFiltersModel(
+                                                    filters: filters
+                                                        .copyWithSaveOtherField(
+                                              prices: filters.prices,
+                                              searchText: text,
+                                            )),
+                                            searchText: text,
+                                            boutiqueSlug: 'search',
+                                          ));
+
                                           widget.buildSearchResult.value =
                                               text.length;
                                         }
-                                        if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
-                                          resetSearchAfterSearchingWhileRemoveSearch = false;
-                                          Filter filters = homeBloc.state.appliedFiltersByUser['search']?.filters ?? Filter();
-                                          homeBloc.add(ChangeAppliedFiltersEvent(
-                                            boutiqueSlug: 'search',
-                                            filtersAppliedByUser: GetProductFiltersModel(
-                                                filters: filters.copyWithSaveOtherField(
-                                                  prices: filters.prices,
-                                                  searchText: null,
-                                                )),
-                                          ));
+                                        if (text.length < 1 &&
+                                            resetSearchAfterSearchingWhileRemoveSearch) {
+                                          resetSearchAfterSearchingWhileRemoveSearch =
+                                              false;
+                                          Filter filters = homeBloc
+                                                  .state
+                                                  .choosedFiltersByUser[
+                                                      'search']
+                                                  ?.filters ??
+                                              Filter();
+
                                           homeBloc.add(GetProductFiltersEvent(
+                                            filtersChoosedByUser:
+                                                GetProductFiltersModel(
+                                                    filters: filters
+                                                        .copyWithSaveOtherField(
+                                              prices: filters.prices,
+                                              searchText: null,
+                                            )),
                                             fromHomePageSearch: true,
                                             searchText: null,
                                             boutiqueSlug: 'search',

@@ -109,6 +109,7 @@ class Data {
 
 class Products {
   final int? id;
+  final int? boutiqueId;
   final String? name;
   final String? slug;
   final String? shareLink;
@@ -132,6 +133,7 @@ class Products {
 
   Products({
     this.id,
+    this.boutiqueId,
     this.name,
     this.slug,
     this.shareLink,
@@ -156,6 +158,7 @@ class Products {
 
   Products copyWith({
     int? id,
+    int? boutiqueId,
     String? name,
     String? slug,
     String? shareLink,
@@ -179,6 +182,7 @@ class Products {
   }) =>
       Products(
         id: id ?? this.id,
+        boutiqueId: boutiqueId ?? this.boutiqueId,
         name: name ?? this.name,
         slug: slug ?? this.slug,
         shareLink: shareLink ?? this.shareLink,
@@ -204,6 +208,7 @@ class Products {
 
   factory Products.fromJson(Map<String, dynamic> json) => Products(
         id: json["id"],
+        boutiqueId: json["boutique_id"],
         name: json["name"],
         slug: json["slug"],
         shareLink: json["share_link"],
@@ -243,6 +248,7 @@ class Products {
 
   Map<String, dynamic> toJson() => {
         "id": id,
+        "boutique_id": boutiqueId,
         "name": name,
         "slug": slug,
         "share_link": shareLink,
@@ -276,65 +282,42 @@ class Products {
 
 class Brand {
   final int? id;
+  final String? slug;
   final String? name;
-  final String? image;
+  final Thumbnail? icon;
 
   Brand({
     this.id,
+    this.slug,
     this.name,
-    this.image,
+    this.icon,
   });
 
   Brand copyWith({
     int? id,
+    String? slug,
     String? name,
-    String? image,
+    Thumbnail? icon,
   }) =>
       Brand(
         id: id ?? this.id,
+        slug: slug ?? this.slug,
         name: name ?? this.name,
-        image: image ?? this.image,
+        icon: icon ?? this.icon,
       );
 
   factory Brand.fromJson(Map<String, dynamic> json) => Brand(
         id: json["id"],
+        slug: json["slug"],
         name: json["name"],
-        image: json["image"],
+        icon: json["icon"] == null ? null : Thumbnail.fromJson(json["icon"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
+        "slug": slug,
         "name": name,
-        "image": image,
-      };
-}
-
-class Color {
-  final String? name;
-  final String? color;
-
-  Color({
-    this.name,
-    this.color,
-  });
-
-  Color copyWith({
-    String? name,
-    String? color,
-  }) =>
-      Color(
-        name: name ?? this.name,
-        color: color ?? this.color,
-      );
-
-  factory Color.fromJson(Map<String, dynamic> json) => Color(
-        name: json["name"],
-        color: json["color"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "color": color,
+        "icon": icon?.toJson(),
       };
 }
 
@@ -370,6 +353,35 @@ class Thumbnail {
         "file_path": filePath,
         "original_width": originalWidth,
         "original_height": originalHeight,
+      };
+}
+
+class Color {
+  final String? name;
+  final String? color;
+
+  Color({
+    this.name,
+    this.color,
+  });
+
+  Color copyWith({
+    String? name,
+    String? color,
+  }) =>
+      Color(
+        name: name ?? this.name,
+        color: color ?? this.color,
+      );
+
+  factory Color.fromJson(Map<String, dynamic> json) => Color(
+        name: json["name"],
+        color: json["color"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "color": color,
       };
 }
 

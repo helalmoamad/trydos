@@ -48,147 +48,180 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 10),
-      padding: EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
-      child: BlocBuilder<HomeBloc, HomeState>(
-        builder: (context, state) {
-          String key = 'search';
-          Filter filters = state.getProductFiltersModel[key]?.filters ?? Filter();
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Row(
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (context, state) {
+        String key = 'search';
+        Filter filters = state.getProductFiltersModel[key]?.filters ?? Filter();
+        int visible = filters.brands?.length ?? 0;
+        return visible > 0
+            ? Container(
+                margin:
+                    EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 10),
+                padding: EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    MyTextWidget(
-                      widget.title,
-                      style: context.textTheme.caption?.rq
-                          .copyWith(color: Color(0xff505050), height: 15 / 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Row(
+                        children: [
+                          MyTextWidget(
+                            widget.title,
+                            style: context.textTheme.caption?.rq.copyWith(
+                                color: Color(0xff505050), height: 15 / 12),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          widget.isLoading
+                              ? Container(
+                                  width: 15,
+                                  height: 15,
+                                  child: Center(
+                                    child: TrydosLoader(
+                                      color: Colors.black,
+                                      size: 15,
+                                    ),
+                                  ))
+                              : SizedBox.shrink(),
+                          Spacer(),
+                          SvgPicture.asset(
+                            AppAssets.backArrowArabic,
+                            matchTextDirection: true,
+                            color: Color(0xffC4C2C2),
+                            width: 10,
+                            height: 10,
+                          )
+                        ],
+                      ),
                     ),
                     SizedBox(
-                      width: 5,
-                    ),
-                    widget.isLoading
-                        ? Container(
-                            width: 15,
-                            height: 15,
-                            child: Center(
-                              child: TrydosLoader(
-                                color: Colors.black,
-                                size: 15,
-                              ),
-                            ))
-                        : SizedBox.shrink(),
-                    Spacer(),
-                    SvgPicture.asset(
-                      AppAssets.backArrowArabic,
-                      matchTextDirection: true,
-                      color: Color(0xffC4C2C2),
-                      width: 10,
                       height: 10,
-                    )
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: 30,
-                child: ScrollConfiguration(
-                  behavior: CupertinoScrollBehavior(),
-                  child: ListView.separated(
-                      controller: scrollController,
-                      shrinkWrap: true,
-                      physics: ClampingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        bool isSelected = homeBloc
-                                .state.choosedFiltersByUser[key]?.filters?.brands
-                                ?.any((element) =>
-                                    element.id == filters.brands?[index].id) ??
-                            false;
-                        return InkWell(
-                          onTap: () {
-                            Filter? prevChoosedFilterToAddToIt =
-                                homeBloc.state.choosedFiltersByUser[key]?.filters;
-                            if (prevChoosedFilterToAddToIt == null) {
-                              prevChoosedFilterToAddToIt = Filter();
-                            }
-                            if (isSelected) {
-                              List<Brand> brands =
-                                  prevChoosedFilterToAddToIt.brands ?? [];
-                              brands.removeWhere((element) =>
-                                  element.id == filters.brands![index].id);
-                              prevChoosedFilterToAddToIt =
-                                  prevChoosedFilterToAddToIt
-                                      .copyWithSaveOtherField(
-                                    brands: brands,
-                              );
-                            } else {
-                              prevChoosedFilterToAddToIt =
-                                  prevChoosedFilterToAddToIt
-                                      .copyWithSaveOtherField(brands: [
-                                ...prevChoosedFilterToAddToIt.brands ?? [],
-                                filters.brands![index]
-                              ]);
-                            }
-                            homeBloc.add(ChangeSelectedFiltersEvent(
-                                fromHomePageSearch: true,
-                                boutiqueSlug: key,
-                                filtersChoosedByUser: GetProductFiltersModel(
-                                    filters: prevChoosedFilterToAddToIt)));
-                          },
-                          child: Stack(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: Color(0xffF8F8F8),
-                                    border: Border.all(
-                                        color: isSelected
-                                            ? Color(0xffFF5F61)
-                                            : Color(0xffF8F8F8))),
-                                child: Center(
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      SvgNetworkWidget(
-                                        svgUrl: filters.brands![index].image!,
-                                        height: 20,
+                    ),
+                    SizedBox(
+                      height: 30,
+                      child: ScrollConfiguration(
+                        behavior: CupertinoScrollBehavior(),
+                        child: ListView.separated(
+                            controller: scrollController,
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              bool isSelected = homeBloc
+                                      .state
+                                      .choosedFiltersByUser[key]
+                                      ?.filters
+                                      ?.brands
+                                      ?.any((element) =>
+                                          element.id ==
+                                          filters.brands?[index].id) ??
+                                  false;
+                              return InkWell(
+                                onTap: () {
+                                  Filter? prevChoosedFilterToAddToIt = homeBloc
+                                      .state.choosedFiltersByUser[key]?.filters;
+                                  if (prevChoosedFilterToAddToIt == null) {
+                                    prevChoosedFilterToAddToIt = Filter();
+                                  }
+                                  if (isSelected) {
+                                    List<Brand> brands =
+                                        prevChoosedFilterToAddToIt.brands ?? [];
+                                    brands.removeWhere((element) =>
+                                        element.id ==
+                                        filters.brands![index].id);
+                                    prevChoosedFilterToAddToIt =
+                                        prevChoosedFilterToAddToIt
+                                            .copyWithSaveOtherField(
+                                      searchText:
+                                          widget.controller.text.length > 2
+                                              ? widget.controller.text
+                                              : null,
+                                      brands: brands,
+                                    );
+                                  } else {
+                                    prevChoosedFilterToAddToIt =
+                                        prevChoosedFilterToAddToIt
+                                            .copyWithSaveOtherField(
+                                                searchText: widget.controller
+                                                            .text.length >
+                                                        2
+                                                    ? widget.controller.text
+                                                    : null,
+                                                brands: [
+                                          ...prevChoosedFilterToAddToIt
+                                                  .brands ??
+                                              [],
+                                          filters.brands![index]
+                                        ]);
+                                  }
+                                  homeBloc.add(ChangeSelectedFiltersEvent(
+                                      fromHomePageSearch: true,
+                                      boutiqueSlug: key,
+                                      filtersChoosedByUser:
+                                          GetProductFiltersModel(
+                                              filters:
+                                                  prevChoosedFilterToAddToIt)));
+                                },
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          color: Color(0xffF8F8F8),
+                                          border: Border.all(
+                                              color: isSelected
+                                                  ? Color(0xffFF5F61)
+                                                  : Color(0xffF8F8F8))),
+                                      child: Center(
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            filters.brands![index].icon != null
+                                                ? filters.brands![index].icon!
+                                                            .filePath !=
+                                                        null
+                                                    ? SvgNetworkWidget(
+                                                        svgUrl: filters
+                                                            .brands![index]
+                                                            .icon!
+                                                            .filePath!,
+                                                        height: 20,
+                                                      )
+                                                    : SizedBox.shrink()
+                                                : SizedBox.shrink(),
+                                          ],
+                                        ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    Visibility(
+                                        visible: isSelected,
+                                        child: FilterSelectedMark(
+                                            width: 12, height: 12))
+                                  ],
                                 ),
-                              ),
-                              Visibility(
-                                  visible: isSelected,
-                                  child:
-                                      FilterSelectedMark(width: 12, height: 12))
-                            ],
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return SizedBox(
-                          width: 10,
-                        );
-                      },
-                      itemCount: filters.brands?.length ?? 0),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return SizedBox(
+                                width: 10,
+                              );
+                            },
+                            itemCount: filters.brands?.length ?? 0),
+                      ),
+                    ),
+                  ],
+                ))
+            : SizedBox.shrink();
+      },
     );
   }
 }

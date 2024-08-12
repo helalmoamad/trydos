@@ -49,12 +49,21 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    if(homeBloc.state.getCurrencyForCountryModel == null) {
+    if (homeBloc.state.getCurrencyForCountryModel == null) {
       homeBloc.add(GetCartItemEvent());
       homeBloc.add(GetCurrencyForCountryEvent());
       homeBloc.add(GetHomeBoutiqesEvent(
           categorySlug: "Empty", offset: "1", getWithPagination: false));
     }
+    appBloc.add(ChangeIndexForSearch(0));
+    homeBloc.add(ChangeAppliedFiltersEvent(
+        boutiqueSlug: 'search',
+        filtersAppliedByUser: null,
+        resetAppliedFilters: true));
+    homeBloc.add(ChangeSelectedFiltersEvent(
+      boutiqueSlug: 'search',
+      filtersChoosedByUser: null,
+    ));
     String selectedCategorySlug;
     scrollController.addListener(() {
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;

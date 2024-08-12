@@ -16,6 +16,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
+import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:tuple/tuple.dart';
@@ -36,13 +37,23 @@ class PriceFilter extends StatefulWidget {
     this.boutiqueSlug,
     this.category,
     required this.decimalPoint,
+    required this.exchangeRate,
+    required this.minPrice,
+    required this.maxPrice,
+    this.searchText,
+    required this.fromHomeSearch,
   });
 
   final bool hideTitle;
+  final double exchangeRate;
+  final double minPrice;
+  final String? searchText;
+  final double maxPrice;
   final Prices pricesFiltersRanges;
   final String pricrSymbol;
   final double pricrRate;
   final String? boutiqueSlug;
+  final bool fromHomeSearch;
   final String? category;
   final ValueNotifier<Tuple2<double, double>> lowerAndUpperBound;
   final int decimalPoint;
@@ -53,16 +64,19 @@ class PriceFilter extends StatefulWidget {
 
 class _PriceFilterState extends State<PriceFilter> {
   late final HomeBloc homeBloc;
-
+  String key = '';
   @override
   void initState() {
+    key = widget.boutiqueSlug! + (widget.category ?? '');
     homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if((widget.pricesFiltersRanges.maxPrice! - widget.pricesFiltersRanges!.minPrice!) < 1){
+    if ((widget.pricesFiltersRanges.maxPrice! -
+            widget.pricesFiltersRanges!.minPrice!) <
+        1) {
       return SizedBox.shrink();
     }
     return Padding(
@@ -193,6 +207,26 @@ class _PriceFilterState extends State<PriceFilter> {
                         widget.lowerAndUpperBound.value =
                             Tuple2(lowerValue, upperValue);
                       },
+                      onDragCompleted: (handlerIndex, lowerValue, upperValue) {
+                        print("ffffffffff${widget.exchangeRate}ffffffffff");
+                        Filter filter =
+                            homeBloc.state.choosedFiltersByUser[key]?.filters ??
+                                Filter();
+                        homeBloc.add(ChangeSelectedFiltersEvent(
+                          boutiqueSlug: widget.boutiqueSlug!,
+                          requestToUpdateFilters: true,
+                          fromHomePageSearch: widget.fromHomeSearch,
+                          category: widget.category,
+                          filtersChoosedByUser: GetProductFiltersModel(
+                              filters: filter.copyWithSaveOtherField(
+                                  prices: Prices(
+                                      maxPrice:
+                                          lowerValue / widget.exchangeRate,
+                                      minPrice:
+                                          upperValue / widget.exchangeRate,
+                                      currencySymbol: widget.pricrSymbol))),
+                        ));
+                      },
                     )),
                 Positioned(
                     top: widget.hideTitle ? 10 : 40,
@@ -283,8 +317,9 @@ class _PriceFilterState extends State<PriceFilter> {
                               AppAssets.registerInfoSvg,
                               color: Color(0xffD3D3D3),
                             ),
-                            BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
-                              if (state.getProductFiltersStatus ==
+                            BlocBuilder<HomeBloc, HomeState>(
+                                builder: (context, state) {
+                              if (state.getProductFiltersStatus[key] ==
                                   GetProductFiltersStatus.loading) {
                                 return Row(
                                   children: [
