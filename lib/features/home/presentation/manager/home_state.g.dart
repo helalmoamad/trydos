@@ -169,6 +169,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       searchHistory: (json['searchHistory'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      cashedOrginalBoutique: json['cashedOrginalBoutique'] as bool? ?? false,
       getAllowedCountriesModel: json['getAllowedCountriesModel'] == null
           ? null
           : GetAllowedCountriesModel.fromJson(
@@ -312,6 +313,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.mainCategoriesResponseModel?.toJson(),
       'getProductDetailWithoutRelatedProductsModel':
           instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
+      'cashedOrginalBoutique': instance.cashedOrginalBoutique,
       'startingSetting': instance.startingSetting?.toJson(),
       'CurrentColorSizeForCart': instance.CurrentColorSizeForCart,
       'currentQuantityForCart': instance.currentQuantityForCart,

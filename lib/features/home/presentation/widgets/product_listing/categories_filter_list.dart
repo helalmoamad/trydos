@@ -12,19 +12,21 @@ import '../../../data/models/get_product_listing_with_filters_model.dart';
 import '../../manager/home_event.dart';
 
 class CategoriesFilterList extends StatelessWidget {
-  const CategoriesFilterList(
+  CategoriesFilterList(
       {super.key,
       required this.expandingFiltersStack,
       required this.workWithChoosedFilter,
       required this.boutiqueSlug,
       this.category,
       required this.scaleTheTopItemInFiltersStack,
-      this.fromSearch = false});
+      this.fromSearch = false,
+      this.controller});
 
   final ValueNotifier<int> expandingFiltersStack;
   final ValueNotifier<bool> scaleTheTopItemInFiltersStack;
   final bool workWithChoosedFilter;
   final bool fromSearch;
+  final TextEditingController? controller;
   final String boutiqueSlug;
   final String? category;
 
@@ -34,16 +36,13 @@ class CategoriesFilterList extends StatelessWidget {
     String key = boutiqueSlug + (category ?? '');
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
-        Filter filters = (state
-                        .getProductListingWithFiltersPaginationModels[key]
-                        ?.items
-                        .length ??
-                    0) ==
-                1
-            ? Filter()
-            : state.getProductFiltersModel[key]?.filters ?? Filter();
+        Filter filters = state.getProductFiltersModel[key]?.filters != null
+            ? state.getProductFiltersModel[key]?.filters ?? Filter()
+            : Filter();
         Filter? choosedFilters = state.choosedFiltersByUser[key]?.filters;
         Filter? appliedFilters = state.appliedFiltersByUser[key]?.filters;
+        print(filters.categories?.length ?? 0);
+
         return ListView.builder(
           scrollDirection: Axis.horizontal,
           physics: NeverScrollableScrollPhysics(),
@@ -77,365 +76,465 @@ class CategoriesFilterList extends StatelessWidget {
                                     ? (70 - 50)
                                     : (70 - 50) / 2,
                                 end: currentExpandedIndex == index
-                                    ? innerIndex * 55
+                                    ? innerIndex * 30
                                     : innerIndex >=
                                             (filters.categories![index]
                                                     .subCategories!.length -
                                                 2)
                                         ? (innerIndex - 1) * 3
                                         : 0,
-                                child: FilterCircleWidget(
-                                  width: 50,
-                                  height: 50,
-                                  categoryName: filters.categories![index]
-                                      .subCategories![innerIndex].name
-                                      .toString(),
-                                  imageUrl: filters
-                                      .categories![index]
-                                      .subCategories![innerIndex]
-                                      .mostViewedProductThumbnail!
-                                      .filePath
-                                      .toString(),
-                                  withBackGroundShadow: innerIndex != 0,
-                                  displayFilterMark: !workWithChoosedFilter
-                                      ? ((appliedFilters
-                                                  ?.categories?.isNullOrEmpty ??
-                                              true)
-                                          ? false
-                                          : appliedFilters!.categories!.any(
-                                              (element) =>
-                                                  element.id ==
-                                                  filters
-                                                      .categories![index]
-                                                      .subCategories![
-                                                          innerIndex]
-                                                      .id))
-                                      : ((choosedFilters
-                                                  ?.categories?.isNullOrEmpty ??
-                                              true)
-                                          ? false
-                                          : choosedFilters!.categories!.any(
-                                              (element) =>
-                                                  element.id ==
-                                                  filters
-                                                      .categories![index]
-                                                      .subCategories![
-                                                          innerIndex]
-                                                      .id)),
-                                  addOrRemoveSpecificFilter: (bool add) {
-                                    Filter?
-                                        prevChoosedOrAppliedFilterToAddToIt =
-                                        !workWithChoosedFilter
-                                            ? state.appliedFiltersByUser[key]
-                                                ?.filters
-                                            : state.choosedFiltersByUser[key]
-                                                ?.filters;
-                                    if (add) {
-                                      Category category = Category(
-                                          isSubCategory: true,
-                                          id: filters.categories![index]
-                                              .subCategories![innerIndex].id,
-                                          name: filters.categories![index]
-                                              .subCategories![innerIndex].name,
-                                          mostViewedProductThumbnail: filters
-                                              .categories![index]
-                                              .subCategories![innerIndex]
-                                              .mostViewedProductThumbnail);
-                                      if (prevChoosedOrAppliedFilterToAddToIt ==
-                                          null) {
-                                        prevChoosedOrAppliedFilterToAddToIt =
-                                            Filter();
-                                      }
-                                      prevChoosedOrAppliedFilterToAddToIt =
-                                          prevChoosedOrAppliedFilterToAddToIt
-                                              .copyWithSaveOtherField(
-                                                  prices:
-                                                      prevChoosedOrAppliedFilterToAddToIt
-                                                          .prices,
-                                                  searchText:
-                                                      prevChoosedOrAppliedFilterToAddToIt
-                                                          .searchText,
-                                                  categories:
-                                                      prevChoosedOrAppliedFilterToAddToIt
-                                                              .categories
-                                                              .isNullOrEmpty
-                                                          ? [category]
-                                                          : [
-                                                              ...prevChoosedOrAppliedFilterToAddToIt
-                                                                  .categories!,
-                                                              category
-                                                            ]);
-                                    } else {
-                                      prevChoosedOrAppliedFilterToAddToIt!
-                                          .categories!
-                                          .removeWhere(((element) =>
-                                              element.id ==
-                                              filters
-                                                  .categories![index]
-                                                  .subCategories![innerIndex]
-                                                  .id));
-                                      bool mustDeleteParentCategory =
-                                          !prevChoosedOrAppliedFilterToAddToIt
-                                              .categories!
-                                              .any(((element) => filters
-                                                  .categories![index]
-                                                  .subCategories!
-                                                  .any((sub) =>
-                                                      sub.id == element.id)));
-                                      if (mustDeleteParentCategory) {
+                                child: filters
+                                            .categories![index]
+                                            .subCategories![innerIndex]
+                                            .flatPhotoPath !=
+                                        null
+                                    ? FilterCircleWidget(
+                                        isSvg: true,
+                                        width: 50,
+                                        height: 50,
+                                        categoryName: filters.categories![index]
+                                            .subCategories![innerIndex].name
+                                            .toString(),
+                                        imageUrl: filters
+                                            .categories![index]
+                                            .subCategories![innerIndex]
+                                            .flatPhotoPath!
+                                            .filePath
+                                            .toString(),
+                                        withBackGroundShadow: innerIndex != 0,
+                                        displayFilterMark: !workWithChoosedFilter
+                                            ? ((appliedFilters?.categories
+                                                        ?.isNullOrEmpty ??
+                                                    true)
+                                                ? false
+                                                : appliedFilters!.categories!
+                                                    .any((element) =>
+                                                        element.id ==
+                                                        filters
+                                                            .categories![index]
+                                                            .subCategories![
+                                                                innerIndex]
+                                                            .id))
+                                            : ((choosedFilters?.categories
+                                                        ?.isNullOrEmpty ??
+                                                    true)
+                                                ? false
+                                                : choosedFilters!.categories!
+                                                    .any((element) =>
+                                                        element.id ==
+                                                        filters
+                                                            .categories![index]
+                                                            .subCategories![
+                                                                innerIndex]
+                                                            .id)),
+                                        addOrRemoveSpecificFilter: (bool add) {
+                                          scaleTheTopItemInFiltersStack.value =
+                                              currentExpandedIndex == index;
+
+                                          Filter?
+                                              prevChoosedOrAppliedFilterToAddToIt =
+                                              !workWithChoosedFilter
+                                                  ? state
+                                                      .appliedFiltersByUser[key]
+                                                      ?.filters
+                                                  : state
+                                                      .choosedFiltersByUser[key]
+                                                      ?.filters;
+                                          if (add) {
+                                            Category category = Category(
+                                                slug: filters
+                                                    .categories![index]
+                                                    .subCategories![innerIndex]
+                                                    .slug,
+                                                isSubCategory: true,
+                                                id: filters
+                                                    .categories![index]
+                                                    .subCategories![innerIndex]
+                                                    .id,
+                                                name: filters
+                                                    .categories![index]
+                                                    .subCategories![innerIndex]
+                                                    .name,
+                                                flatPhotoPath: filters
+                                                    .categories![index]
+                                                    .subCategories![innerIndex]
+                                                    .flatPhotoPath);
+                                            if (prevChoosedOrAppliedFilterToAddToIt ==
+                                                null) {
+                                              prevChoosedOrAppliedFilterToAddToIt =
+                                                  Filter();
+                                            }
+                                            prevChoosedOrAppliedFilterToAddToIt =
+                                                prevChoosedOrAppliedFilterToAddToIt
+                                                    .copyWithSaveOtherField(
+                                                        prices:
+                                                            prevChoosedOrAppliedFilterToAddToIt
+                                                                .prices,
+                                                        searchText: controller !=
+                                                                null
+                                                            ? controller!.text
+                                                                        .length >
+                                                                    2
+                                                                ? controller
+                                                                    ?.text
+                                                                : null
+                                                            : null,
+                                                        categories:
+                                                            prevChoosedOrAppliedFilterToAddToIt
+                                                                    .categories
+                                                                    .isNullOrEmpty
+                                                                ? [category]
+                                                                : [
+                                                                    ...prevChoosedOrAppliedFilterToAddToIt
+                                                                        .categories!,
+                                                                    category
+                                                                  ]);
+                                          } else {
+                                            prevChoosedOrAppliedFilterToAddToIt!
+                                                .categories!
+                                                .removeWhere(((element) =>
+                                                    element.id ==
+                                                    filters
+                                                        .categories![index]
+                                                        .subCategories![
+                                                            innerIndex]
+                                                        .id));
+                                            bool mustDeleteParentCategory =
+                                                !prevChoosedOrAppliedFilterToAddToIt
+                                                    .categories!
+                                                    .any(((element) => filters
+                                                        .categories![index]
+                                                        .subCategories!
+                                                        .any((sub) =>
+                                                            sub.id ==
+                                                            element.id)));
+                                            /*    if (mustDeleteParentCategory) {
                                         prevChoosedOrAppliedFilterToAddToIt
                                             .categories!
                                             .removeWhere(((element) =>
                                                 element.id ==
                                                 filters.categories![index].id));
-                                      }
-                                      prevChoosedOrAppliedFilterToAddToIt =
-                                          prevChoosedOrAppliedFilterToAddToIt
-                                              .copyWithSaveOtherField(
-                                        prices:
-                                            prevChoosedOrAppliedFilterToAddToIt
-                                                .prices,
-                                        searchText:
-                                            prevChoosedOrAppliedFilterToAddToIt
-                                                .searchText,
-                                        categories:
-                                            prevChoosedOrAppliedFilterToAddToIt
-                                                .categories,
-                                      );
-                                    }
-                                    if (!workWithChoosedFilter) {
-                                      homeBloc.add(ChangeAppliedFiltersEvent(
-                                        category: category,
-                                        boutiqueSlug: boutiqueSlug,
-                                        filtersAppliedByUser:
-                                            GetProductFiltersModel(
-                                                filters:
-                                                    prevChoosedOrAppliedFilterToAddToIt),
-                                      ));
-                                      homeBloc.add(GetProductsWithFiltersEvent(
-                                          fromSearch: fromSearch,
-                                          boutiqueSlug: boutiqueSlug,
-                                          category: category,
-                                          offset: 1));
-                                    } else {
-                                      homeBloc.add(ChangeSelectedFiltersEvent(
-                                        category: category,
-                                        boutiqueSlug: boutiqueSlug,
-                                        filtersChoosedByUser:
-                                            GetProductFiltersModel(
-                                                filters:
-                                                    prevChoosedOrAppliedFilterToAddToIt),
-                                      ));
-                                    }
-                                  },
-                                  paddingValue:
-                                      currentExpandedIndex == index ? 5 : 0,
-                                  borderColor: context.colorScheme.white,
-                                  isExpanded: currentExpandedIndex == index,
-                                )),
+                                      }*/
+                                            prevChoosedOrAppliedFilterToAddToIt =
+                                                prevChoosedOrAppliedFilterToAddToIt
+                                                    .copyWithSaveOtherField(
+                                              prices:
+                                                  prevChoosedOrAppliedFilterToAddToIt
+                                                      .prices,
+                                              searchText: controller != null
+                                                  ? controller!.text.length > 2
+                                                      ? controller?.text
+                                                      : null
+                                                  : null,
+                                              categories:
+                                                  prevChoosedOrAppliedFilterToAddToIt
+                                                      .categories,
+                                            );
+                                          }
+                                          if (!workWithChoosedFilter) {
+                                            homeBloc
+                                                .add(ChangeAppliedFiltersEvent(
+                                              category: category,
+                                              boutiqueSlug: boutiqueSlug,
+                                              filtersAppliedByUser:
+                                                  GetProductFiltersModel(
+                                                      filters:
+                                                          prevChoosedOrAppliedFilterToAddToIt),
+                                            ));
+                                            homeBloc.add(
+                                                GetProductsWithFiltersEvent(
+                                                    fromSearch: fromSearch,
+                                                    boutiqueSlug: boutiqueSlug,
+                                                    category: category,
+                                                    offset: 1));
+                                          } else {
+                                            homeBloc
+                                                .add(ChangeSelectedFiltersEvent(
+                                              category: category,
+                                              boutiqueSlug: boutiqueSlug,
+                                              filtersChoosedByUser:
+                                                  GetProductFiltersModel(
+                                                      filters:
+                                                          prevChoosedOrAppliedFilterToAddToIt),
+                                            ));
+                                          }
+                                        },
+                                        paddingValue:
+                                            currentExpandedIndex == index
+                                                ? 0
+                                                : 0,
+                                        borderColor: context.colorScheme.white,
+                                        isExpanded:
+                                            currentExpandedIndex == index,
+                                      )
+                                    : SizedBox.shrink()),
                           ),
                           ValueListenableBuilder<bool>(
                               valueListenable: scaleTheTopItemInFiltersStack,
                               builder: (context, scale, _) {
-                                return FilterCircleWidget(
-                                    width: 70,
-                                    height: 70,
-                                    categoryName: filters.categories![index].name
-                                        .toString(),
-                                    imageUrl: filters.categories![index]
-                                        .mostViewedProductThumbnail!.filePath
-                                        .toString(),
-                                    scale: scale,
-                                    paddingValue: 0,
-                                    isExpanded: currentExpandedIndex == index,
-                                    displayFilterMark: !workWithChoosedFilter
-                                        ? ((appliedFilters?.categories?.isNullOrEmpty ?? true)
-                                            ? false
-                                            : appliedFilters!.categories!.any(
-                                                (element) =>
+                                return filters.categories![index].flatPhotoPath !=
+                                        null
+                                    ? FilterCircleWidget(
+                                        isSvg: true,
+                                        width: 70,
+                                        height: 70,
+                                        categoryName: filters
+                                            .categories![index].name
+                                            .toString(),
+                                        imageUrl: filters.categories![index]
+                                            .flatPhotoPath!.filePath
+                                            .toString(),
+                                        scale: scale,
+                                        paddingValue: 0,
+                                        isExpanded:
+                                            currentExpandedIndex == index,
+                                        displayFilterMark: !workWithChoosedFilter
+                                            ? ((appliedFilters?.categories?.isNullOrEmpty ??
+                                                    true)
+                                                ? false
+                                                : appliedFilters!.categories!
+                                                    .any((element) =>
+                                                        element.id ==
+                                                        filters
+                                                            .categories![index]
+                                                            .id))
+                                            : ((choosedFilters?.categories
+                                                        ?.isNullOrEmpty ??
+                                                    true)
+                                                ? false
+                                                : choosedFilters!.categories!
+                                                    .any((element) => element.id == filters.categories![index].id)),
+                                        addOrRemoveSpecificFilter: (bool add) {
+                                          if (appliedFilters?.categories ==
+                                                  null &&
+                                              choosedFilters?.categories ==
+                                                  null) {
+                                            expandingFiltersStack.value = 0;
+                                          } else if (!workWithChoosedFilter
+                                              ? ((appliedFilters?.categories
+                                                          ?.isNullOrEmpty ??
+                                                      true)
+                                                  ? false
+                                                  : appliedFilters!.categories!
+                                                      .any((element) =>
+                                                          element.id ==
+                                                          filters
+                                                              .categories![
+                                                                  index]
+                                                              .id))
+                                              : ((choosedFilters?.categories
+                                                          ?.isNullOrEmpty ??
+                                                      true)
+                                                  ? false
+                                                  : choosedFilters!.categories!
+                                                      .any((element) =>
+                                                          element.id ==
+                                                          filters
+                                                              .categories![
+                                                                  index]
+                                                              .id))) {
+                                            expandingFiltersStack.value = index;
+                                          }
+                                          scaleTheTopItemInFiltersStack.value =
+                                              currentExpandedIndex == index;
+                                          Filter?
+                                              prevChoosedOrAppliedFilterToAddToIt =
+                                              !workWithChoosedFilter
+                                                  ? state
+                                                      .appliedFiltersByUser[key]
+                                                      ?.filters
+                                                  : state
+                                                      .choosedFiltersByUser[key]
+                                                      ?.filters;
+                                          if (add) {
+                                            Category category =
+                                                filters.categories![index];
+                                            if (prevChoosedOrAppliedFilterToAddToIt ==
+                                                null) {
+                                              prevChoosedOrAppliedFilterToAddToIt =
+                                                  Filter();
+                                            }
+                                            prevChoosedOrAppliedFilterToAddToIt =
+                                                prevChoosedOrAppliedFilterToAddToIt
+                                                    .copyWithSaveOtherField(
+                                                        prices:
+                                                            prevChoosedOrAppliedFilterToAddToIt
+                                                                .prices,
+                                                        searchText: controller !=
+                                                                null
+                                                            ? controller!.text
+                                                                        .length >
+                                                                    2
+                                                                ? controller
+                                                                    ?.text
+                                                                : null
+                                                            : null,
+                                                        categories:
+                                                            prevChoosedOrAppliedFilterToAddToIt
+                                                                    .categories
+                                                                    .isNullOrEmpty
+                                                                ? [category]
+                                                                : [
+                                                                    ...prevChoosedOrAppliedFilterToAddToIt
+                                                                        .categories!,
+                                                                    category
+                                                                  ]);
+                                          } else {
+                                            prevChoosedOrAppliedFilterToAddToIt!
+                                                .categories!
+                                                .removeWhere(((element) =>
                                                     element.id ==
-                                                    filters
-                                                        .categories![index].id))
-                                        : ((choosedFilters?.categories?.isNullOrEmpty ??
-                                                true)
-                                            ? false
-                                            : choosedFilters!.categories!.any(
-                                                (element) =>
-                                                    element.id ==
-                                                    filters.categories![index].id)),
-                                    addOrRemoveSpecificFilter: (bool add) {
-                                      Filter?
-                                          prevChoosedOrAppliedFilterToAddToIt =
-                                          !workWithChoosedFilter
-                                              ? state.appliedFiltersByUser[key]
-                                                  ?.filters
-                                              : state.choosedFiltersByUser[key]
-                                                  ?.filters;
-                                      if (add) {
-                                        Category category =
-                                            filters.categories![index];
-                                        if (prevChoosedOrAppliedFilterToAddToIt ==
-                                            null) {
-                                          prevChoosedOrAppliedFilterToAddToIt =
-                                              Filter();
-                                        }
-                                        prevChoosedOrAppliedFilterToAddToIt =
+                                                    filters.categories![index]
+                                                        .id));
+
                                             prevChoosedOrAppliedFilterToAddToIt
-                                                .copyWithSaveOtherField(
-                                                    prices:
-                                                        prevChoosedOrAppliedFilterToAddToIt
-                                                            .prices,
-                                                    searchText:
-                                                        prevChoosedOrAppliedFilterToAddToIt
-                                                            .searchText,
-                                                    categories:
-                                                        prevChoosedOrAppliedFilterToAddToIt
-                                                                .categories
-                                                                .isNullOrEmpty
-                                                            ? [category]
-                                                            : [
-                                                                ...prevChoosedOrAppliedFilterToAddToIt
-                                                                    .categories!,
-                                                                category
-                                                              ]);
-                                      } else {
-                                        prevChoosedOrAppliedFilterToAddToIt!
-                                            .categories!
-                                            .removeWhere(((element) =>
-                                                element.id ==
-                                                filters.categories![index].id));
-                                        prevChoosedOrAppliedFilterToAddToIt
-                                            .categories!
-                                            .removeWhere(((element) => filters
-                                                .categories![index]
-                                                .subCategories!
-                                                .any((sub) =>
-                                                    sub.id == element.id)));
-                                        prevChoosedOrAppliedFilterToAddToIt =
-                                            prevChoosedOrAppliedFilterToAddToIt
-                                                .copyWithSaveOtherField(
-                                          searchText:
-                                              prevChoosedOrAppliedFilterToAddToIt
-                                                  .searchText,
-                                          prices:
-                                              prevChoosedOrAppliedFilterToAddToIt
-                                                  .prices,
-                                          categories:
-                                              prevChoosedOrAppliedFilterToAddToIt
-                                                  .categories,
-                                        );
-                                      }
-                                      if (!workWithChoosedFilter) {
-                                        homeBloc.add(ChangeAppliedFiltersEvent(
-                                          category: category,
-                                          boutiqueSlug: boutiqueSlug,
-                                          filtersAppliedByUser:
-                                              GetProductFiltersModel(
-                                                  filters:
-                                                      prevChoosedOrAppliedFilterToAddToIt),
-                                        ));
-                                        homeBloc.add(
-                                            GetProductsWithFiltersEvent(
-                                                fromSearch: fromSearch,
-                                                boutiqueSlug: boutiqueSlug,
-                                                category: category,
-                                                offset: 1));
-                                      } else {
-                                        homeBloc.add(ChangeSelectedFiltersEvent(
-                                          category: category,
-                                          boutiqueSlug: boutiqueSlug,
-                                          filtersChoosedByUser:
-                                              GetProductFiltersModel(
-                                                  filters:
-                                                      prevChoosedOrAppliedFilterToAddToIt),
-                                        ));
-                                      }
-                                    });
+                                                .categories!
+                                                .removeWhere(((element) =>
+                                                    filters.categories![index]
+                                                        .subCategories!
+                                                        .any((sub) =>
+                                                            sub.id ==
+                                                            element.id)));
+                                            prevChoosedOrAppliedFilterToAddToIt =
+                                                prevChoosedOrAppliedFilterToAddToIt
+                                                    .copyWithSaveOtherField(
+                                              searchText: controller != null
+                                                  ? controller!.text.length > 2
+                                                      ? controller?.text
+                                                      : null
+                                                  : null,
+                                              prices:
+                                                  prevChoosedOrAppliedFilterToAddToIt
+                                                      .prices,
+                                              categories:
+                                                  prevChoosedOrAppliedFilterToAddToIt
+                                                      .categories,
+                                            );
+                                          }
+                                          if (!workWithChoosedFilter) {
+                                            homeBloc
+                                                .add(ChangeAppliedFiltersEvent(
+                                              category: category,
+                                              boutiqueSlug: boutiqueSlug,
+                                              filtersAppliedByUser:
+                                                  GetProductFiltersModel(
+                                                      filters:
+                                                          prevChoosedOrAppliedFilterToAddToIt),
+                                            ));
+
+                                            homeBloc.add(
+                                                GetProductsWithFiltersEvent(
+                                                    fromSearch: fromSearch,
+                                                    boutiqueSlug: boutiqueSlug,
+                                                    category: category,
+                                                    offset: 1));
+                                          } else {
+                                            homeBloc
+                                                .add(ChangeSelectedFiltersEvent(
+                                              category: category,
+                                              boutiqueSlug: boutiqueSlug,
+                                              filtersChoosedByUser:
+                                                  GetProductFiltersModel(
+                                                      filters:
+                                                          prevChoosedOrAppliedFilterToAddToIt),
+                                            ));
+                                          }
+                                        })
+                                    : SizedBox.shrink();
                               }),
                         ],
                       ),
                     );
                   });
             else {
-              return FilterCircleWidget(
-                  width: 70,
-                  height: 70,
-                  imageUrl: filters
-                      .categories![index].mostViewedProductThumbnail!.filePath
-                      .toString(),
-                  categoryName: filters.categories![index].name.toString(),
-                  withBackGroundShadow: true,
-                  displayFilterMark: !workWithChoosedFilter
-                      ? ((appliedFilters?.categories?.isNullOrEmpty ?? true)
-                          ? false
-                          : appliedFilters!.categories!.any((element) =>
-                              element.id == filters.categories![index].id))
-                      : ((choosedFilters?.categories?.isNullOrEmpty ?? true)
-                          ? false
-                          : choosedFilters!.categories!.any((element) =>
-                              element.id == filters.categories![index].id)),
-                  addOrRemoveSpecificFilter: (bool add) {
-                    Filter? prevChoosedOrAppliedFilterToAddToIt =
-                        !workWithChoosedFilter
-                            ? state.appliedFiltersByUser[key]?.filters
-                            : state.choosedFiltersByUser[key]?.filters;
-                    if (add) {
-                      Category category = filters.categories![index];
-                      if (prevChoosedOrAppliedFilterToAddToIt == null) {
-                        prevChoosedOrAppliedFilterToAddToIt = Filter();
-                      }
-                      prevChoosedOrAppliedFilterToAddToIt =
-                          prevChoosedOrAppliedFilterToAddToIt
-                              .copyWithSaveOtherField(
-                                  prices: prevChoosedOrAppliedFilterToAddToIt
-                                      .prices,
-                                  searchText:
-                                      prevChoosedOrAppliedFilterToAddToIt
-                                          .searchText,
-                                  categories:
-                                      prevChoosedOrAppliedFilterToAddToIt
-                                              .categories.isNullOrEmpty
-                                          ? [category]
-                                          : [
-                                              ...prevChoosedOrAppliedFilterToAddToIt
-                                                  .categories!,
-                                              category
-                                            ]);
-                    } else {
-                      prevChoosedOrAppliedFilterToAddToIt!.categories!
-                          .removeWhere(((element) =>
-                              element.id == filters.categories![index].id));
-                      prevChoosedOrAppliedFilterToAddToIt =
-                          prevChoosedOrAppliedFilterToAddToIt
-                              .copyWithSaveOtherField(
-                        prices: prevChoosedOrAppliedFilterToAddToIt.prices,
-                        searchText:
-                            prevChoosedOrAppliedFilterToAddToIt.searchText,
-                        categories:
-                            prevChoosedOrAppliedFilterToAddToIt.categories,
-                      );
-                    }
-                    if (!workWithChoosedFilter) {
-                      homeBloc.add(ChangeAppliedFiltersEvent(
-                        category: category,
-                        boutiqueSlug: boutiqueSlug,
-                        filtersAppliedByUser: GetProductFiltersModel(
-                            filters: prevChoosedOrAppliedFilterToAddToIt),
-                      ));
-                      homeBloc.add(GetProductsWithFiltersEvent(
-                          fromSearch: fromSearch,
-                          boutiqueSlug: boutiqueSlug,
-                          category: category,
-                          offset: 1));
-                    } else {
-                      homeBloc.add(ChangeSelectedFiltersEvent(
-                        category: category,
-                        boutiqueSlug: boutiqueSlug,
-                        filtersChoosedByUser: GetProductFiltersModel(
-                            filters: prevChoosedOrAppliedFilterToAddToIt),
-                      ));
-                    }
-                  });
+              return filters.categories![index].flatPhotoPath != null
+                  ? FilterCircleWidget(
+                      isSvg: true,
+                      width: 65,
+                      height: 65,
+                      imageUrl: filters
+                          .categories![index].flatPhotoPath!.filePath
+                          .toString(),
+                      categoryName: filters.categories![index].name.toString(),
+                      withBackGroundShadow: true,
+                      displayFilterMark: !workWithChoosedFilter
+                          ? ((appliedFilters?.categories?.isNullOrEmpty ?? true)
+                              ? false
+                              : appliedFilters!.categories!.any((element) =>
+                                  element.id == filters.categories![index].id))
+                          : ((choosedFilters?.categories?.isNullOrEmpty ?? true)
+                              ? false
+                              : choosedFilters!.categories!.any((element) =>
+                                  element.id == filters.categories![index].id)),
+                      addOrRemoveSpecificFilter: (bool add) {
+                        Filter? prevChoosedOrAppliedFilterToAddToIt =
+                            !workWithChoosedFilter
+                                ? state.appliedFiltersByUser[key]?.filters
+                                : state.choosedFiltersByUser[key]?.filters;
+                        if (add) {
+                          Category category = filters.categories![index];
+                          if (prevChoosedOrAppliedFilterToAddToIt == null) {
+                            prevChoosedOrAppliedFilterToAddToIt = Filter();
+                          }
+                          prevChoosedOrAppliedFilterToAddToIt =
+                              prevChoosedOrAppliedFilterToAddToIt
+                                  .copyWithSaveOtherField(
+                                      prices:
+                                          prevChoosedOrAppliedFilterToAddToIt
+                                              .prices,
+                                      searchText: controller != null
+                                          ? controller!.text.length > 2
+                                              ? controller?.text
+                                              : null
+                                          : null,
+                                      categories:
+                                          prevChoosedOrAppliedFilterToAddToIt
+                                                  .categories.isNullOrEmpty
+                                              ? [category]
+                                              : [
+                                                  ...prevChoosedOrAppliedFilterToAddToIt
+                                                      .categories!,
+                                                  category
+                                                ]);
+                        } else {
+                          prevChoosedOrAppliedFilterToAddToIt!.categories!
+                              .removeWhere(((element) =>
+                                  element.id == filters.categories![index].id));
+                          prevChoosedOrAppliedFilterToAddToIt =
+                              prevChoosedOrAppliedFilterToAddToIt
+                                  .copyWithSaveOtherField(
+                            prices: prevChoosedOrAppliedFilterToAddToIt.prices,
+                            searchText: controller != null
+                                ? controller!.text.length > 2
+                                    ? controller?.text
+                                    : null
+                                : null,
+                            categories:
+                                prevChoosedOrAppliedFilterToAddToIt.categories,
+                          );
+                        }
+                        if (!workWithChoosedFilter) {
+                          homeBloc.add(ChangeAppliedFiltersEvent(
+                            category: category,
+                            boutiqueSlug: boutiqueSlug,
+                            filtersAppliedByUser: GetProductFiltersModel(
+                                filters: prevChoosedOrAppliedFilterToAddToIt),
+                          ));
+                          homeBloc.add(GetProductsWithFiltersEvent(
+                              fromSearch: fromSearch,
+                              boutiqueSlug: boutiqueSlug,
+                              category: category,
+                              offset: 1));
+                        } else {
+                          homeBloc.add(ChangeSelectedFiltersEvent(
+                            category: category,
+                            boutiqueSlug: boutiqueSlug,
+                            filtersChoosedByUser: GetProductFiltersModel(
+                                filters: prevChoosedOrAppliedFilterToAddToIt),
+                          ));
+                        }
+                      })
+                  : SizedBox.shrink();
             }
           },
         );

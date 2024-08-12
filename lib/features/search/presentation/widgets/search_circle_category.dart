@@ -51,74 +51,78 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 10),
-      padding: EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
-      child: BlocBuilder<HomeBloc, HomeState>(
-        builder: (context, state) {
-          String key = 'search';
-          Filter filters = state.getProductFiltersModel[key]?.filters ?? Filter();
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (context, state) {
+        String key = 'search';
+        Filter filters = state.getProductFiltersModel[key]?.filters ?? Filter();
+        int visible = filters.categories?.length ?? 0;
+        return visible > 0
+            ? Container(
+                margin:
+                    EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 10),
+                padding: EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: Color(0xffC4C2C2), width: 0.3)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    MyTextWidget(
-                      widget.title,
-                      style: context.textTheme.caption?.rq
-                          .copyWith(color: Color(0xff505050), height: 15 / 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          MyTextWidget(
+                            widget.title,
+                            style: context.textTheme.caption?.rq.copyWith(
+                                color: Color(0xff505050), height: 15 / 12),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          widget.isLoading
+                              ? Container(
+                                  width: 15,
+                                  height: 15,
+                                  child: Center(
+                                    child: TrydosLoader(
+                                      color: Colors.black,
+                                      size: 15,
+                                    ),
+                                  ))
+                              : SizedBox.shrink(),
+                          Spacer(),
+                          SvgPicture.asset(
+                            AppAssets.backArrowArabic,
+                            matchTextDirection: true,
+                            color: Color(0xffC4C2C2),
+                            width: 10,
+                            height: 10,
+                          )
+                        ],
+                      ),
                     ),
                     SizedBox(
-                      width: 5,
-                    ),
-                    widget.isLoading
-                        ? Container(
-                            width: 15,
-                            height: 15,
-                            child: Center(
-                              child: TrydosLoader(
-                                color: Colors.black,
-                                size: 15,
-                              ),
-                            ))
-                        : SizedBox.shrink(),
-                    Spacer(),
-                    SvgPicture.asset(
-                      AppAssets.backArrowArabic,
-                      matchTextDirection: true,
-                      color: Color(0xffC4C2C2),
-                      width: 10,
                       height: 10,
-                    )
+                    ),
+                    SizedBox(
+                      height: 90,
+                      child: ScrollConfiguration(
+                          behavior: CupertinoScrollBehavior(),
+                          child: CategoriesFilterList(
+                            controller: widget.controller,
+                            boutiqueSlug: 'search',
+                            fromSearch: true,
+                            expandingFiltersStack: expandingFiltersStack,
+                            scaleTheTopItemInFiltersStack:
+                                scaleTheTopItemInFiltersStack,
+                            workWithChoosedFilter: true,
+                          )),
+                    ),
                   ],
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: 90,
-                child: ScrollConfiguration(
-                    behavior: CupertinoScrollBehavior(),
-                    child: CategoriesFilterList(
-                      boutiqueSlug: 'search',
-                      fromSearch: true,
-                      expandingFiltersStack: expandingFiltersStack,
-                      scaleTheTopItemInFiltersStack:
-                          scaleTheTopItemInFiltersStack,
-                      workWithChoosedFilter: true,
-                    )),
-              ),
-            ],
-          );
-        },
-      ),
+                ))
+            : SizedBox.shrink();
+      },
     );
   }
 }

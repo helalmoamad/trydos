@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/search/presentation/widgets/close_circle.dart';
@@ -39,10 +40,32 @@ class SearchHistoryChip extends StatelessWidget {
                   controller.text = text;
                   buildSearchResult.value = 1;
                   appearTrendingAndHistory.value = true;
+                  Filter filters = BlocProvider.of<HomeBloc>(context)
+                          .state
+                          .choosedFiltersByUser['search']
+                          ?.filters ??
+                      Filter();
+                  BlocProvider.of<HomeBloc>(context)
+                      .add(ChangeAppliedFiltersEvent(
+                    boutiqueSlug: 'search',
+                    filtersAppliedByUser: GetProductFiltersModel(
+                        filters: filters.copyWithSaveOtherField(
+                      prices: filters.prices,
+                      searchText: text,
+                    )),
+                  ));
                   BlocProvider.of<HomeBloc>(context).add(
                       GetProductsWithFiltersEvent(
-                        boutiqueSlug: 'search',
-                          offset: 1, fromSearch: true, searchText: text));
+                          offset: 1,
+                          boutiqueSlug: 'search',
+                          resetChoosedFilters: false,
+                          fromSearch: true,
+                          searchText: text));
+
+                  BlocProvider.of<HomeBloc>(context).add(GetProductFiltersEvent(
+                      fromHomePageSearch: true,
+                      boutiqueSlug: 'search',
+                      searchText: text));
                 },
                 child: Container(
                   height: 28,

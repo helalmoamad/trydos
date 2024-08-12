@@ -75,15 +75,15 @@ class Filter {
   });
 
   Filter changeAttributesAndSaveOthers(
-      {List<Brand>? brands,
-        List<Attribute>? attributes,
-        List<Category>? categories,
-        List<String>? colors,
-        String? searchText,
-        int? totalSize,
-        Prices? prices,
-        String? boutiqueSlug,
-        List<Boutique>? boutiques}) =>
+          {List<Brand>? brands,
+          List<Attribute>? attributes,
+          List<Category>? categories,
+          List<String>? colors,
+          String? searchText,
+          int? totalSize,
+          Prices? prices,
+          String? boutiqueSlug,
+          List<Boutique>? boutiques}) =>
       Filter(
         brands: brands ?? this.brands,
         attributes: attributes,
@@ -313,46 +313,77 @@ class Attribute {
 
 class Brand {
   final int? id;
-  final String? name;
   final String? slug;
-  final String? image;
-  final bool? isSelected;
+  final String? name;
+  final Thumbnail? icon;
 
   Brand({
     this.id,
-    this.name,
     this.slug,
-    this.isSelected = false,
-    this.image,
+    this.name,
+    this.icon,
   });
 
   Brand copyWith({
     int? id,
-    String? name,
     String? slug,
-    String? icon,
-    final bool? isSelected,
+    String? name,
+    Thumbnail? icon,
   }) =>
       Brand(
         id: id ?? this.id,
-        name: name ?? this.name,
-        isSelected: isSelected ?? this.isSelected,
         slug: slug ?? this.slug,
-        image: icon ?? this.image,
+        name: name ?? this.name,
+        icon: icon ?? this.icon,
       );
 
   factory Brand.fromJson(Map<String, dynamic> json) => Brand(
         id: json["id"],
-        name: json["name"],
         slug: json["slug"],
-        image: json["image"],
+        name: json["name"],
+        icon: json["icon"] == null ? null : Thumbnail.fromJson(json["icon"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "name": name,
         "slug": slug,
-        "image": image,
+        "name": name,
+        "icon": icon?.toJson(),
+      };
+}
+
+class Thumbnail {
+  final String? filePath;
+  final String? originalWidth;
+  final String? originalHeight;
+
+  Thumbnail({
+    this.filePath,
+    this.originalWidth,
+    this.originalHeight,
+  });
+
+  Thumbnail copyWith({
+    String? filePath,
+    String? originalWidth,
+    String? originalHeight,
+  }) =>
+      Thumbnail(
+        filePath: filePath ?? this.filePath,
+        originalWidth: originalWidth ?? this.originalWidth,
+        originalHeight: originalHeight ?? this.originalHeight,
+      );
+
+  factory Thumbnail.fromJson(Map<String, dynamic> json) => Thumbnail(
+        filePath: json["file_path"],
+        originalWidth: json["original_width"],
+        originalHeight: json["original_height"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "file_path": filePath,
+        "original_width": originalWidth,
+        "original_height": originalHeight,
       };
 }
 

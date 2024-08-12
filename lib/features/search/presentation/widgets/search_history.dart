@@ -9,6 +9,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/search/presentation/widgets/search_history_chip.dart';
@@ -146,6 +147,30 @@ class _SearchHistoryState extends State<SearchHistory> {
                                 widget.controller.text = _items[index];
                                 //  widget.buildSearchResult.value = 1;
                                 widget.appearTrendingAndHistory.value = true;
+
+                                Filter filters =
+                                    BlocProvider.of<HomeBloc>(context)
+                                            .state
+                                            .choosedFiltersByUser['search']
+                                            ?.filters ??
+                                        Filter();
+                                BlocProvider.of<HomeBloc>(context)
+                                    .add(ChangeAppliedFiltersEvent(
+                                  boutiqueSlug: 'search',
+                                  filtersAppliedByUser: GetProductFiltersModel(
+                                      filters: filters.copyWithSaveOtherField(
+                                    prices: filters.prices,
+                                    searchText: _items[index],
+                                  )),
+                                ));
+                                BlocProvider.of<HomeBloc>(context).add(
+                                    GetProductsWithFiltersEvent(
+                                        offset: 1,
+                                        boutiqueSlug: 'search',
+                                        resetChoosedFilters: false,
+                                        fromSearch: true,
+                                        searchText: _items[index]));
+
                                 BlocProvider.of<HomeBloc>(context).add(
                                     GetProductFiltersEvent(
                                         fromHomePageSearch: true,

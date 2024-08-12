@@ -809,11 +809,18 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 if (widget.productItem.brand != null)
-                                  SvgNetworkWidget(
-                                      svgUrl: widget.productItem.brand!.image
-                                          .toString(),
-                                      width: 169.w,
-                                      height: 10),
+                                  widget.productItem.brand!.icon != null
+                                      ? widget.productItem.brand!.icon!
+                                                  .filePath !=
+                                              null
+                                          ? SvgNetworkWidget(
+                                              svgUrl: widget.productItem.brand!
+                                                  .icon!.filePath!
+                                                  .toString(),
+                                              width: 169.w,
+                                              height: 10)
+                                          : SizedBox.shrink()
+                                      : SizedBox.shrink(),
                                 // SvgPicture.asset(
                                 //   AppAssets.mangoSvg,
                                 //   height: 10,
@@ -840,7 +847,12 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                           child: widget.productItem.category !=
                                                   null
                                               ? SvgNetworkWidget(
-                                                  svgUrl: widget.productItem.category!.mostViewedProductThumbnail!.filePath.toString(),
+                                                  svgUrl: widget
+                                                      .productItem
+                                                      .category!
+                                                      .flatPhotoPath!
+                                                      .filePath
+                                                      .toString(),
                                                   width: 10,
                                                   height: 10)
                                               : SizedBox.shrink()),
@@ -904,7 +916,10 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                     .data!
                                                     .currency!
                                                     .exchangeRate!)
-                                            .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)
+                                            .toStringAsFixed(state
+                                                    .startingSetting
+                                                    ?.decimalPointSetting ??
+                                                2)
                                             .toString(),
                                         style: textTheme.caption?.lq.copyWith(
                                           color: Color(0xff3c3c3c),
@@ -923,7 +938,10 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                     .data!
                                                     .currency!
                                                     .exchangeRate!)
-                                            .toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)
+                                            .toStringAsFixed(state
+                                                    .startingSetting
+                                                    ?.decimalPointSetting ??
+                                                2)
                                             .toString(),
                                         style: textTheme.caption?.bq.copyWith(
                                           color: Color(0xff3c3c3c),

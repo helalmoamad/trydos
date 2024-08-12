@@ -148,7 +148,7 @@ class Data {
         "brands": brands == null
             ? []
             : List<dynamic>.from(brands!.map((x) => x.toJson())),
-    "boutiques": boutiques == null
+        "boutiques": boutiques == null
             ? []
             : List<dynamic>.from(boutiques!.map((x) => x.toJson())),
         "attributes": attributes == null
@@ -299,9 +299,11 @@ class SyncColorImage {
 
 class Category {
   final int? id;
-  final String? name;
   final String? slug;
-  final MostViewedProductThumbnail? mostViewedProductThumbnail;
+  final String? name;
+  final int? numAvailableProduct;
+  final Banner? flatPhotoPath;
+
   final bool isSubCategory;
   final bool isSelected;
 
@@ -309,52 +311,55 @@ class Category {
 
   Category({
     this.id,
+    this.slug,
     this.name,
+    this.numAvailableProduct,
+    this.flatPhotoPath,
     this.isSubCategory = false,
     this.isSelected = false,
-    this.slug,
-    this.mostViewedProductThumbnail,
     this.subCategories,
   });
 
   Category copyWith({
     int? id,
-    String? name,
-    final bool? isSelected,
     String? slug,
-    MostViewedProductThumbnail? mostViewedProductThumbnail,
+    String? name,
+    int? numAvailableProduct,
+    Banner? flatPhotoPath,
+    final bool? isSelected,
     List<SubCategory>? subCategories,
   }) =>
       Category(
         id: id ?? this.id,
-        name: name ?? this.name,
         slug: slug ?? this.slug,
+        name: name ?? this.name,
+        numAvailableProduct: numAvailableProduct ?? this.numAvailableProduct,
+        flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
         isSelected: isSelected ?? this.isSelected,
-        mostViewedProductThumbnail:
-            mostViewedProductThumbnail ?? this.mostViewedProductThumbnail,
         subCategories: subCategories ?? this.subCategories,
       );
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
       id: json["id"],
-      name: json["name"],
       slug: json["slug"],
-      mostViewedProductThumbnail: json["most_viewed_product_thumbnail"] == null
+      name: json["name"],
+      numAvailableProduct: json["num_available_product"],
+      flatPhotoPath: json["flat_photo_path"] == null
           ? null
-          : MostViewedProductThumbnail.fromJson(
-              json["most_viewed_product_thumbnail"]),
-      subCategories: json["childes"] == null
+          : Banner.fromJson(json["flat_photo_path"]),
+      subCategories: json["childes"] == null || json["childes"] == []
           ? []
           : List<SubCategory>.from(
-              json["childes"]!.map((x) => SubCategory.fromJson(x['category']))),
+              json["childes"]!.map((x) => SubCategory.fromJson(x))),
     );
   }
   Map<String, dynamic> toJson() => {
         "id": id,
-        "name": name,
         "slug": slug,
-        "most_viewed_product_thumbnail": mostViewedProductThumbnail?.toJson(),
+        "name": name,
+        "num_available_product": numAvailableProduct,
+        "flat_photo_path": flatPhotoPath?.toJson(),
         "childes": subCategories == null
             ? []
             : List<dynamic>.from(subCategories!.map((x) => x.toJson())),
@@ -363,46 +368,59 @@ class Category {
 
 class SubCategory {
   final int? id;
-  final String? name;
   final String? slug;
-  final MostViewedProductThumbnail? mostViewedProductThumbnail;
-
+  final String? name;
+  final int? numAvailableProduct;
+  final Banner? flatPhotoPath;
+  final List<Category>? childes;
   SubCategory({
     this.id,
-    this.name,
     this.slug,
-    this.mostViewedProductThumbnail,
+    this.name,
+    this.numAvailableProduct,
+    this.flatPhotoPath,
+    this.childes,
   });
 
   SubCategory copyWith({
     int? id,
-    String? name,
     String? slug,
-    MostViewedProductThumbnail? mostViewedProductThumbnail,
+    String? name,
+    int? numAvailableProduct,
+    Banner? flatPhotoPath,
+    List<Category>? childes,
   }) =>
       SubCategory(
         id: id ?? this.id,
-        name: name ?? this.name,
         slug: slug ?? this.slug,
-        mostViewedProductThumbnail:
-            mostViewedProductThumbnail ?? this.mostViewedProductThumbnail,
+        name: name ?? this.name,
+        numAvailableProduct: numAvailableProduct ?? this.numAvailableProduct,
+        flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
+        childes: childes ?? this.childes,
       );
 
   factory SubCategory.fromJson(Map<String, dynamic> json) => SubCategory(
         id: json["id"],
-        name: json["name"],
         slug: json["slug"],
-        mostViewedProductThumbnail:
-            json["most_viewed_product_thumbnail"] == null
-                ? null
-                : MostViewedProductThumbnail.fromJson(
-                    json["most_viewed_product_thumbnail"]),
+        name: json["name"],
+        numAvailableProduct: json["num_available_product"],
+        flatPhotoPath: json["flat_photo_path"] == null
+            ? null
+            : Banner.fromJson(json["flat_photo_path"]),
+        childes: json["childes"] == null
+            ? []
+            : List<Category>.from(
+                json["childes"]!.map((x) => Category.fromJson(x))),
       );
   Map<String, dynamic> toJson() => {
         "id": id,
-        "name": name,
         "slug": slug,
-        "most_viewed_product_thumbnail": mostViewedProductThumbnail?.toJson(),
+        "name": name,
+        "num_available_product": numAvailableProduct,
+        "flat_photo_path": flatPhotoPath?.toJson(),
+        "childes": childes == null
+            ? []
+            : List<dynamic>.from(childes!.map((x) => x.toJson())),
       };
 }
 

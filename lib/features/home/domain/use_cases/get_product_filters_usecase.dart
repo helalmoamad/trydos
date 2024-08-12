@@ -64,6 +64,7 @@ class GetProductsFiltersParams {
           value == 'null' ||
           value == [].toString() ||
           value == [''].toString() ||
-          value == ['null'].toString() ||
+          value == ["null"].toString() ||
+          value == ["search"].toString() ||
           value == "");
 }

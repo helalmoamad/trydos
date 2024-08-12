@@ -52,10 +52,14 @@ class ProductDetailsTitle extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   brand != null
-                      ? SvgNetworkWidget(
-                          svgUrl: brand!.image!,
-                          height: 18,
-                        )
+                      ? brand!.icon != null
+                          ? brand!.icon!.filePath != null
+                              ? SvgNetworkWidget(
+                                  svgUrl: brand!.icon!.filePath!,
+                                  height: 18,
+                                )
+                              : SizedBox.shrink()
+                          : SizedBox.shrink()
                       : SizedBox.shrink(),
                   state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                           GetProductDetailWithoutSimilarRelatedProductsStatus

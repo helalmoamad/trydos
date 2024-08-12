@@ -17,8 +17,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
             thereIsReply: false)) {
     on<AppEvent>((event, emit) {});
     on<ChangeBasePage>(_onChangeBasePage);
+    on<ChangeIndexForSearch>(_onChangeIndexForSearch);
     on<ChangeTab>(_onChangeTab);
     on<ChangeTabInChat>(_onChangeTabInChat);
+
     on<ShowOrHideBars>(_onShowOrHideBars);
     on<HideBottomNavigationBar>(_onHideBottomNavigationBar);
     on<RefreshChatInputField>(_onRefreshChatInputField);
@@ -31,6 +33,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     Emitter<AppState> emit,
   ) {
     emit(state.copyWith(currentIndex: event.index));
+  }
+
+  _onChangeIndexForSearch(
+    ChangeIndexForSearch event,
+    Emitter<AppState> emit,
+  ) {
+    emit(state.copyWith(currentIndexForSearch: event.index));
   }
 
   _onChangeTab(

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
@@ -14,6 +15,7 @@ class AnimatedSearchBar extends StatefulWidget {
   final int animationDurationInMilli;
   final onSuffixTap;
   final bool rtl;
+
   final bool autoFocus;
   final void Function(String)? onFieldSubmitted;
   final TextStyle? style;
@@ -26,10 +28,12 @@ class AnimatedSearchBar extends StatefulWidget {
   final bool boxShadow;
   final Function(String)? onChanged;
   final bool Function() onClickClose;
+
   final InputDecoration? searchDecoration;
   final Widget suffixWidget;
   final Widget prefixWidget;
   final FocusNode focusNode;
+
   final double? height;
   final ValueNotifier<bool> hideTrendingAndHistory;
 
@@ -143,9 +147,10 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
   Widget build(BuildContext context) {
     return BlocListener<AppBloc, AppState>(
       listenWhen: (p, c) =>
-          c.currentIndex == 0 && p.currentIndex != c.currentIndex,
+          c.currentIndex == 0 && p.currentIndex != c.currentIndex ||
+          p.currentIndexForSearch != c.currentIndexForSearch,
       listener: (context, state) {
-        if(mounted) {
+        if (mounted) {
           setState(() {
             toggle = 0;
             unfocusKeyboard();
@@ -267,7 +272,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                             onTap: () {
                               widget.hideTrendingAndHistory.value = false;
                               bool stop = widget.onClickClose.call();
-                              if(stop) return ;
+                              if (stop) return;
                               toggle = 0;
 
                               ///if the autoFocus is true, the keyboard will close, automatically
@@ -283,11 +288,11 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                                 SizedBox(
                                   width: 15,
                                 ),
-                                InkWell(
+                                Container(
                                   child: SvgPicture.asset(
                                     AppAssets.closeSvg,
                                     height: 15,
-                                    width: 15,
+                                    width: 30,
                                     color: Color(0xffFF5F61),
                                   ),
                                 ),

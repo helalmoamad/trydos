@@ -19,10 +19,10 @@ class ColorsListFilter extends StatefulWidget {
   const ColorsListFilter(
       {super.key,
       this.hideTitle = false,
-       this.searchText,
+      this.searchText,
       required this.colors,
       required this.fromHomeSearch,
-        required this.boutiqueSlug,
+      required this.boutiqueSlug,
       this.category});
 
   final List<String> colors;
@@ -37,7 +37,6 @@ class ColorsListFilter extends StatefulWidget {
 }
 
 class _ColorsListFilterState extends State<ColorsListFilter> {
-
   String key = '';
 
   @override
@@ -75,15 +74,22 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                   AppAssets.registerInfoSvg,
                   color: Color(0xffD3D3D3),
                 ),
-               BlocBuilder<HomeBloc,HomeState>(
-                 builder: (context , state){
-                   if(state.getProductFiltersStatus[key] == GetProductFiltersStatus.loading){
-                   return Row(children: [SizedBox(width: 5,),
-                     TrydosLoader(size: 20,),],);
-                   }
-                   return SizedBox.shrink();
-                 }
-               )
+                BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+                  if (state.getProductFiltersStatus[key] ==
+                      GetProductFiltersStatus.loading) {
+                    return Row(
+                      children: [
+                        SizedBox(
+                          width: 5,
+                        ),
+                        TrydosLoader(
+                          size: 20,
+                        ),
+                      ],
+                    );
+                  }
+                  return SizedBox.shrink();
+                })
               ],
             ),
             SizedBox(
@@ -98,11 +104,13 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                   itemBuilder: (ctx, index) {
                     HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
                     bool isSelected = widget.hideTitle
-                        ? (homeBloc.state.appliedFiltersByUser[key]?.filters?.colors
-                        ?.any((element) =>
-                    element == widget.colors[index]) ??
-                        false)
-                        : (homeBloc.state.choosedFiltersByUser[key]?.filters?.colors
+                        ? (homeBloc.state.appliedFiltersByUser[key]?.filters
+                                ?.colors
+                                ?.any((element) =>
+                                    element == widget.colors[index]) ??
+                            false)
+                        : (homeBloc.state.choosedFiltersByUser[key]?.filters
+                                ?.colors
                                 ?.any((element) =>
                                     element == widget.colors[index]) ??
                             false);
@@ -112,10 +120,12 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                         GestureDetector(
                           onTap: () {
                             String color = widget.colors[index];
-                            Filter? prevChoosedOrAppliedFilterToAddToIt = widget
-                                    .hideTitle
-                                ? homeBloc.state.appliedFiltersByUser[key]?.filters
-                                : homeBloc.state.choosedFiltersByUser[key]?.filters;
+                            Filter? prevChoosedOrAppliedFilterToAddToIt =
+                                widget.hideTitle
+                                    ? homeBloc.state.appliedFiltersByUser[key]
+                                        ?.filters
+                                    : homeBloc.state.choosedFiltersByUser[key]
+                                        ?.filters;
                             if (!isSelected) {
                               if (prevChoosedOrAppliedFilterToAddToIt == null) {
                                 prevChoosedOrAppliedFilterToAddToIt = Filter();
@@ -123,8 +133,12 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                               prevChoosedOrAppliedFilterToAddToIt =
                                   prevChoosedOrAppliedFilterToAddToIt
                                       .copyWithSaveOtherField(
-                                    prices: prevChoosedOrAppliedFilterToAddToIt.prices,
-                                    searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
+                                          prices:
+                                              prevChoosedOrAppliedFilterToAddToIt
+                                                  .prices,
+                                          searchText:
+                                              prevChoosedOrAppliedFilterToAddToIt
+                                                  .searchText,
                                           colors:
                                               prevChoosedOrAppliedFilterToAddToIt
                                                       .colors.isNullOrEmpty
@@ -145,7 +159,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                 boutiqueSlug: widget.boutiqueSlug,
                                 filtersAppliedByUser: GetProductFiltersModel(
                                     filters:
-                                    prevChoosedOrAppliedFilterToAddToIt),
+                                        prevChoosedOrAppliedFilterToAddToIt),
                               ));
                               homeBloc.add(GetProductsWithFiltersEvent(
                                   fromSearch: widget.fromHomeSearch,
@@ -155,11 +169,12 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                   offset: 1));
                             } else {
                               homeBloc.add(ChangeSelectedFiltersEvent(
+                                requestToUpdateFilters: true,
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,
                                 filtersChoosedByUser: GetProductFiltersModel(
                                     filters:
-                                    prevChoosedOrAppliedFilterToAddToIt),
+                                        prevChoosedOrAppliedFilterToAddToIt),
                               ));
                             }
                           },

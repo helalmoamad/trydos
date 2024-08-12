@@ -26,7 +26,7 @@ class FiltersNormalList<T> extends StatefulWidget {
       required this.filters,
       this.searchText,
       required this.fromHomeSearch,
-        required this.boutiqueSlug,
+      required this.boutiqueSlug,
       this.category});
 
   final bool isBrandFilter;
@@ -43,7 +43,6 @@ class FiltersNormalList<T> extends StatefulWidget {
 }
 
 class _FiltersNormalListState extends State<FiltersNormalList> {
-
   String key = '';
 
   @override
@@ -112,16 +111,16 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                     HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
                     bool isSelected = widget.hideTitle
                         ? widget.isBrandFilter
-                        ? (homeBloc
-                        .state.appliedFiltersByUser[key]?.filters?.brands
-                        ?.any((element) =>
-                    element.id ==
-                        widget.filters[index].id) ??
-                        false)
-                        : false
+                            ? (homeBloc.state.appliedFiltersByUser[key]?.filters
+                                    ?.brands
+                                    ?.any((element) =>
+                                        element.id ==
+                                        widget.filters[index].id) ??
+                                false)
+                            : false
                         : widget.isBrandFilter
-                            ? (homeBloc
-                                    .state.choosedFiltersByUser[key]?.filters?.brands
+                            ? (homeBloc.state.choosedFiltersByUser[key]?.filters
+                                    ?.brands
                                     ?.any((element) =>
                                         element.id ==
                                         widget.filters[index].id) ??
@@ -132,10 +131,12 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Filter? prevChoosedOrAppliedFilterToAddToIt = widget
-                                    .hideTitle
-                                ? homeBloc.state.appliedFiltersByUser[key]?.filters
-                                : homeBloc.state.choosedFiltersByUser[key]?.filters;
+                            Filter? prevChoosedOrAppliedFilterToAddToIt =
+                                widget.hideTitle
+                                    ? homeBloc.state.appliedFiltersByUser[key]
+                                        ?.filters
+                                    : homeBloc.state.choosedFiltersByUser[key]
+                                        ?.filters;
                             if (!isSelected) {
                               dynamic item = widget.filters[index];
                               if (prevChoosedOrAppliedFilterToAddToIt == null) {
@@ -144,8 +145,12 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                               prevChoosedOrAppliedFilterToAddToIt =
                                   prevChoosedOrAppliedFilterToAddToIt
                                       .copyWithSaveOtherField(
-                                      prices: prevChoosedOrAppliedFilterToAddToIt.prices,
-                                      searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
+                                          prices:
+                                              prevChoosedOrAppliedFilterToAddToIt
+                                                  .prices,
+                                          searchText:
+                                              prevChoosedOrAppliedFilterToAddToIt
+                                                  .searchText,
                                           brands: !widget.isBrandFilter
                                               ? prevChoosedOrAppliedFilterToAddToIt
                                                   .brands
@@ -171,7 +176,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                 boutiqueSlug: widget.boutiqueSlug,
                                 filtersAppliedByUser: GetProductFiltersModel(
                                     filters:
-                                    prevChoosedOrAppliedFilterToAddToIt),
+                                        prevChoosedOrAppliedFilterToAddToIt),
                               ));
                               homeBloc.add(GetProductsWithFiltersEvent(
                                   fromSearch: widget.fromHomeSearch,
@@ -185,7 +190,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                 boutiqueSlug: widget.boutiqueSlug,
                                 filtersChoosedByUser: GetProductFiltersModel(
                                     filters:
-                                    prevChoosedOrAppliedFilterToAddToIt),
+                                        prevChoosedOrAppliedFilterToAddToIt),
                               ));
                             }
                           },
@@ -203,17 +208,30 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                         blurRadius: 3,
                                         offset: Offset(0, 3))
                                   ],
-                                  border: Border.all(color: isSelected ? Color(0xffFF5F61) : Color(0xffC4C2C2),),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? Color(0xffFF5F61)
+                                        : Color(0xffC4C2C2),
+                                  ),
                                 ),
                                 child: Center(
                                   child: widget.isBrandFilter
-                                      ? Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 5.0),
-                                          child: SvgNetworkWidget(
-                                            svgUrl: widget.filters[index].image,
-                                          ),
-                                        )
+                                      ? widget.filters[index].icon != null
+                                          ? widget.filters[index].icon!
+                                                      .filePath !=
+                                                  null
+                                              ? Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 5.0),
+                                                  child: SvgNetworkWidget(
+                                                    svgUrl: widget
+                                                        .filters[index]
+                                                        .icon!
+                                                        .filePath!,
+                                                  ),
+                                                )
+                                              : SizedBox.shrink()
+                                          : SizedBox.shrink()
                                       : SizedBox.shrink(),
                                 ),
                               ),

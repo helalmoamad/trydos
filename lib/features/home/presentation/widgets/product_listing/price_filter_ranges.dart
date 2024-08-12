@@ -39,7 +39,6 @@ class PriceFiltersRangesList extends StatefulWidget {
 }
 
 class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
-
   String key = '';
 
   @override
@@ -74,9 +73,9 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
+                    /*  HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
                     Filter? prevChoosedOrAppliedFilterToAddToIt =
-                        homeBloc.state.appliedFiltersByUser[key]?.filters;
+                        homeBloc.state.choosedFiltersByUser[key]?.filters;
                     if (prevChoosedOrAppliedFilterToAddToIt == null) {
                       prevChoosedOrAppliedFilterToAddToIt = Filter();
                     }
@@ -98,6 +97,8 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                             widget.priceRanges[index].minPrice ||
                         prevChoosedOrAppliedFilterToAddToIt.prices!.maxPrice !=
                             widget.priceRanges[index].maxPrice) {
+                      print(
+                          "*********************************************************************");
                       prevChoosedOrAppliedFilterToAddToIt =
                           prevChoosedOrAppliedFilterToAddToIt
                               .copyWithSaveOtherField(
@@ -111,6 +112,8 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                                       maxPrice:
                                           widget.priceRanges[index].maxPrice));
                     } else {
+                      print(
+                          "*********************************************************************");
                       prevChoosedOrAppliedFilterToAddToIt =
                           prevChoosedOrAppliedFilterToAddToIt
                               .copyWithSaveOtherField(
@@ -119,18 +122,13 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                                       prevChoosedOrAppliedFilterToAddToIt
                                           .searchText);
                     }
-                    homeBloc.add(ChangeAppliedFiltersEvent(
+                    homeBloc.add(ChangeSelectedFiltersEvent(
+                      requestToUpdateFilters: true,
                       category: widget.category,
                       boutiqueSlug: widget.boutiqueSlug,
-                      filtersAppliedByUser: GetProductFiltersModel(
+                      filtersChoosedByUser: GetProductFiltersModel(
                           filters: prevChoosedOrAppliedFilterToAddToIt),
-                    ));
-                    homeBloc.add(GetProductsWithFiltersEvent(
-                        fromSearch: widget.fromHomeSearch,
-                        searchText: widget.searchText,
-                        boutiqueSlug: widget.boutiqueSlug,
-                        category: widget.category,
-                        offset: 1));
+                    ));*/
                   },
                   child: Container(
                     height: 50,
@@ -140,7 +138,8 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                         borderType: BorderType.RRect,
                         strokeCap: StrokeCap.square,
                         strokeWidth: 0.5,
-                        color: isSelected ? Color(0xffFF5F61) : Color(0xff6B6B6B),
+                        color:
+                            isSelected ? Color(0xffFF5F61) : Color(0xff6B6B6B),
                         padding: EdgeInsets.all(8),
                         dashPattern: [3, 3],
                         child: Center(
