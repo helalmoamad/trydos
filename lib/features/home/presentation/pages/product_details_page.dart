@@ -17,12 +17,15 @@ import 'package:trydos/features/app/app_widgets/app_bottom_navigation_bar.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_display_pictures_page.dart';
+import 'package:trydos/features/home/presentation/widgets/cart_page.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/display_sizes_card.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
@@ -109,7 +112,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     action: [
                       Padding(
                         padding: const EdgeInsetsDirectional.only(end: 10.0),
-                        child: SvgPicture.asset(AppAssets.bagsSvg),
+                        child: InkWell(
+                            onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => CartPage(),
+                                  ),
+                                ),
+                            child: SvgPicture.asset(AppAssets.bagsSvg)),
                       ),
                       LanguageService.rtl ? Spacer() : SizedBox.shrink(),
                     ],

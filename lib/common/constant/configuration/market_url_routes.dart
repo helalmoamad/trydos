@@ -11,7 +11,7 @@ extension ScopeApi on String {
   String authScope() => '$_api/${_currentVersion}/auth/$this';
   String countryScope() => '$_api/${_currentVersion}/$this';
   String customerScope() => '$_api/${_currentVersion}/customer/$this';
-  String productsScope() => '$_api/${_currentVersion}/mobile/products/$this';
+  String productsScope() => '$_api/${_currentVersion}/mobile/search/$this';
   String productScope() => '$_api/${_currentVersion}/mobile/product/$this';
   String mobileScope() => '$_api/${_currentVersion}/mobile/$this';
   String productScopeWeb() => '$_api/${_currentVersion}/web/product/$this';

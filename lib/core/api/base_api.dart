@@ -25,7 +25,7 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
             : GetIt.I<PrefsRepository>().countryIso;
       headers = client.options.headers
         ..['lang'] = LanguageService.languageCode == 'ar'
-            ? 'ae'
+            ? 'ar'
             : LanguageService.languageCode;
       headers.addAll({
         'User-Agent': 'device OS:' +

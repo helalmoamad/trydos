@@ -30,7 +30,7 @@ class SizesFiltersList extends StatefulWidget {
     required this.attribute,
     required this.boutiqueSlug,
     this.category,
-     this.searchText,
+    this.searchText,
     required this.fromHomeSearch,
   });
   final Attribute attribute;
@@ -121,24 +121,22 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                       HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
                       bool isSelected = widget.hideTitle
                           ? ((homeBloc.state.appliedFiltersByUser[key]?.filters
-                          ?.attributes?.isNullOrEmpty ??
-                          true)
-                          ? false
-                          : homeBloc.state.appliedFiltersByUser[key]!.filters!
-                          .attributes![0].options
-                          ?.any((element) =>
-                      element ==
-                          widget.attribute.options?[index]) ??
-                          false)
+                                      ?.attributes?.isNullOrEmpty ??
+                                  true)
+                              ? false
+                              : homeBloc.state.appliedFiltersByUser[key]!
+                                      .filters!.attributes![0].options
+                                      ?.any((element) =>
+                                          element ==
+                                          widget.attribute.options?[index]) ??
+                                  false)
                           : ((homeBloc.state.choosedFiltersByUser[key]?.filters
                                       ?.attributes?.isNullOrEmpty ??
                                   true)
                               ? false
-                              : homeBloc.state.choosedFiltersByUser[key]!.filters!
-                                      .attributes![0].options
-                                      ?.any((element) =>
-                                          element ==
-                                          widget.attribute.options?[index]) ??
+                              : homeBloc.state.choosedFiltersByUser[key]!
+                                      .filters!.attributes![0].options
+                                      ?.any((element) => element == widget.attribute.options?[index]) ??
                                   false);
                       return Stack(
                         children: [
@@ -146,10 +144,10 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                             onTap: () {
                               Filter? prevChoosedOrAppliedFilterToAddToIt =
                                   widget.hideTitle
-                                      ? homeBloc
-                                          .state.appliedFiltersByUser[key]?.filters
-                                      : homeBloc
-                                          .state.choosedFiltersByUser[key]?.filters;
+                                      ? homeBloc.state.appliedFiltersByUser[key]
+                                          ?.filters
+                                      : homeBloc.state.choosedFiltersByUser[key]
+                                          ?.filters;
                               if (!isSelected) {
                                 String size = widget.attribute.options![index];
                                 if (prevChoosedOrAppliedFilterToAddToIt ==
@@ -160,8 +158,11 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                 prevChoosedOrAppliedFilterToAddToIt =
                                     prevChoosedOrAppliedFilterToAddToIt
                                         .copyWithSaveOtherField(
-                                      prices: prevChoosedOrAppliedFilterToAddToIt.prices,
-                                      searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
+                                  prices: prevChoosedOrAppliedFilterToAddToIt
+                                      .prices,
+                                  searchText:
+                                      prevChoosedOrAppliedFilterToAddToIt
+                                          .searchText,
                                   attributes:
                                       prevChoosedOrAppliedFilterToAddToIt
                                               .attributes.isNullOrEmpty
@@ -189,20 +190,23 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                     .removeWhere(((element) =>
                                         element ==
                                         widget.attribute.options![index]));
-                                if(prevChoosedOrAppliedFilterToAddToIt.attributes![0].options!.length == 0){
-                                  prevChoosedOrAppliedFilterToAddToIt = prevChoosedOrAppliedFilterToAddToIt.changeAttributesAndSaveOthers(
-                                    attributes: null
-                                  );
+                                if (prevChoosedOrAppliedFilterToAddToIt
+                                        .attributes![0].options!.length ==
+                                    0) {
+                                  prevChoosedOrAppliedFilterToAddToIt =
+                                      prevChoosedOrAppliedFilterToAddToIt
+                                          .changeAttributesAndSaveOthers(
+                                              attributes: null);
                                 }
                               }
                               if (widget.hideTitle) {
                                 homeBloc.add(ChangeAppliedFiltersEvent(
                                   category: widget.category,
                                   boutiqueSlug: widget.boutiqueSlug,
-                                  filtersAppliedByUser:
-                                  GetProductFiltersModel(
+                                  filtersAppliedByUser: GetProductFiltersModel(
                                       filters:
-                                      prevChoosedOrAppliedFilterToAddToIt),));
+                                          prevChoosedOrAppliedFilterToAddToIt),
+                                ));
                                 homeBloc.add(GetProductsWithFiltersEvent(
                                     fromSearch: widget.fromHomeSearch,
                                     searchText: widget.searchText,
@@ -211,11 +215,12 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                     offset: 1));
                               } else {
                                 homeBloc.add(ChangeSelectedFiltersEvent(
+                                  requestToUpdateFilters: true,
                                   category: widget.category,
                                   boutiqueSlug: widget.boutiqueSlug,
                                   filtersChoosedByUser: GetProductFiltersModel(
                                       filters:
-                                      prevChoosedOrAppliedFilterToAddToIt),
+                                          prevChoosedOrAppliedFilterToAddToIt),
                                 ));
                               }
                             },
@@ -227,7 +232,9 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                   borderType: BorderType.RRect,
                                   strokeCap: StrokeCap.round,
                                   strokeWidth: 0.5,
-                                  color: isSelected ? Color(0xffFF5F61) : Color(0xff6B6B6B),
+                                  color: isSelected
+                                      ? Color(0xffFF5F61)
+                                      : Color(0xff6B6B6B),
                                   dashPattern: [3, 3],
                                   child: Center(
                                     child: Text(
