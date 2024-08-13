@@ -423,7 +423,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               20.0),
                                                                   child:
                                                                       AnimatedSearchBar(
-                                                                        key: Key(WidgetsKey.productListingSearchIconKey),
+                                                                        key: Key(WidgetsKey.productListingSearchInputKey),
                                                                     autoFocus:
                                                                         false,
                                                                     width:

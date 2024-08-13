@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:trydos/common/constant/widgets_key.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_card2.dart';
+import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/main.dart' as app;
 
@@ -18,11 +19,12 @@ void main() {
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
-      //////////////////////////
+      //////////// Register As Guest //////////////
       await SharedScenarios.registerGuest(tester: tester);
       ////////////////////////////
       final Finder boutiquesSuccessStatus =
           find.byKey(Key(WidgetsKey.boutiquesSuccessStatusKey));
+      /////////// Test Find Boutiques HomePageCard/////////////////
       await GlobalTestFunctions.findWidget(
         tester: tester,
         actual: boutiquesSuccessStatus,
@@ -39,11 +41,44 @@ void main() {
           tester.widget<HomePageCard2>(boutiqueCard1).boutniqe.id!;
       ////////////////////////////
       print('//////// boutiqueCard1  : $boutiqueId1 //////////');
-      ////////////////////////////
+      ////////////// Tap on first Boutique HomePageCard //////////////
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(boutiqueCard1);
       await tester.pumpAndSettle();
+      ///////////////////////////////
+      final Finder productsList = find.byKey(
+        Key(WidgetsKey.productsListKey),
+      );
       //////////////////////////
+      await GlobalTestFunctions.waitFor(
+        tester,
+        productsList,
+      );
+      ///////////// find productsList //////////////
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: productsList,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find productsList  Success',
+        failedMessage: 'Find productsList  failed',
+      );
+      //////////// get first product name & id befor search from productsList //////////////
+      final productKey = Key('${WidgetsKey.productInBoutiqueListKey}0');
+
+      String productNameBeforeSearch = tester
+          .widget<ProductItem>(find.byKey(productKey))
+          .productItem
+          .name!
+          .toString();
+      String productIdBeforeSearch = tester
+          .widget<ProductItem>(find.byKey(productKey))
+          .productItem
+          .id!
+          .toString();
+      ///////////////////////////
+      await Future.delayed(const Duration(seconds: 2));
+      debugPrint('productNameBeforeSearch : $productNameBeforeSearch');
+      //////////// Tap to search /////////////
       final Finder productListingSearchIcon = find.byKey(
         Key(WidgetsKey.productListingSearchIconKey),
       );
@@ -60,30 +95,64 @@ void main() {
         successMessage: 'Find productListingSearchInput Success',
         failedMessage: 'Find productListingSearchInput failed',
       );
-      String inputTextSearch = 'sof';
+      /////////// get the first three char from the first product Name /////////////////
+      String inputTextSearch = productNameBeforeSearch.substring(0, 3);
       ////////////////////////////
       await tester.enterText(productListingSearchInput, inputTextSearch);
       await tester.pump();
       await Future.delayed(const Duration(seconds: 1));
-      ////////////////////////////
-      final Finder loadingAfterSearch = find.byKey(
-        Key(WidgetsKey.loadingAfterSearchKey),
+      ///////////// test find loaging  ///////////////
+      final Finder boutiqueProductListingLoading = find.byKey(
+        Key(WidgetsKey.boutiqueProductListingLoadingKey),
       );
       await GlobalTestFunctions.findWidget(
         tester: tester,
-        actual: loadingAfterSearch,
+        actual: boutiqueProductListingLoading,
         withDelayAndPumpAndSettle: false,
-        successMessage: 'Find loading After Search Success',
-        failedMessage: 'Find loading After Search failed',
+        successMessage: 'Find boutiqueProductListingLoading Success',
+        failedMessage: 'Find boutiqueProductListingLoading failed',
       );
       await tester.pumpAndSettle();
-      ////////////////////////////
+      //////////// Test search text equals search text in filter widget ////////////////
       final searchText = tester
           .widget<StackedFiltersList>(
               find.byKey(Key(WidgetsKey.productListFilterKey)))
           .searchText
           .toString();
       expect(searchText, equals(inputTextSearch));
+      //////////// get products ids after serach from productsList //////////////
+      int productIndex2 = 0;
+      List<String> productIdsAfterSearchList = [];
+      while (true) {
+        final productKey =
+            Key('${WidgetsKey.productInBoutiqueListKey}$productIndex2');
+        if (find.byKey(productKey).evaluate().isEmpty) {
+          break;
+        }
+
+        final productBoutId = tester
+            .widget<ProductItem>(find.byKey(productKey))
+            .productItem
+            .id!
+            .toString();
+
+        productIdsAfterSearchList.add(productBoutId);
+
+        productIndex2++;
+      }
+      ///////////////////////////
+      await Future.delayed(const Duration(seconds: 2));
+      debugPrint('productIdsAfterSearchList : $productIdsAfterSearchList');
+      ////////////// Test product ID before test in product IDs list after search /////////////
+      bool chackId = false;
+      for (String id in productIdsAfterSearchList) {
+        if (id == productIdBeforeSearch) {
+          chackId = true;
+          break;
+        }
+      }
+      // Verify the result
+      expect(chackId, equals(true));
     },
   );
 }
