@@ -306,13 +306,14 @@ class Category {
 
   final bool isSubCategory;
   final bool isSelected;
-
+  Banner? mostViewedProductThumbnail;
   final List<SubCategory>? subCategories;
 
   Category({
     this.id,
     this.slug,
     this.name,
+    this.mostViewedProductThumbnail,
     this.numAvailableProduct,
     this.flatPhotoPath,
     this.isSubCategory = false,
@@ -326,6 +327,7 @@ class Category {
     String? name,
     int? numAvailableProduct,
     Banner? flatPhotoPath,
+    Banner? mostViewedProductThumbnail,
     final bool? isSelected,
     List<SubCategory>? subCategories,
   }) =>
@@ -336,6 +338,8 @@ class Category {
         numAvailableProduct: numAvailableProduct ?? this.numAvailableProduct,
         flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
         isSelected: isSelected ?? this.isSelected,
+        mostViewedProductThumbnail:
+            mostViewedProductThumbnail ?? this.mostViewedProductThumbnail,
         subCategories: subCategories ?? this.subCategories,
       );
 
@@ -344,6 +348,9 @@ class Category {
       id: json["id"],
       slug: json["slug"],
       name: json["name"],
+      mostViewedProductThumbnail: json["most_viewed_product_thumbnail"] == null
+          ? null
+          : Banner.fromJson(json["most_viewed_product_thumbnail"]),
       numAvailableProduct: json["num_available_product"],
       flatPhotoPath: json["flat_photo_path"] == null
           ? null
@@ -358,6 +365,7 @@ class Category {
         "id": id,
         "slug": slug,
         "name": name,
+        "most_viewed_product_thumbnail": mostViewedProductThumbnail?.toJson(),
         "num_available_product": numAvailableProduct,
         "flat_photo_path": flatPhotoPath?.toJson(),
         "childes": subCategories == null
@@ -370,12 +378,14 @@ class SubCategory {
   final int? id;
   final String? slug;
   final String? name;
+  Banner? mostViewedProductThumbnail;
   final int? numAvailableProduct;
   final Banner? flatPhotoPath;
   final List<Category>? childes;
   SubCategory({
     this.id,
     this.slug,
+    this.mostViewedProductThumbnail,
     this.name,
     this.numAvailableProduct,
     this.flatPhotoPath,
@@ -388,11 +398,14 @@ class SubCategory {
     String? name,
     int? numAvailableProduct,
     Banner? flatPhotoPath,
+    Banner? mostViewedProductThumbnail,
     List<Category>? childes,
   }) =>
       SubCategory(
         id: id ?? this.id,
         slug: slug ?? this.slug,
+        mostViewedProductThumbnail:
+            mostViewedProductThumbnail ?? this.mostViewedProductThumbnail,
         name: name ?? this.name,
         numAvailableProduct: numAvailableProduct ?? this.numAvailableProduct,
         flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
@@ -407,6 +420,10 @@ class SubCategory {
         flatPhotoPath: json["flat_photo_path"] == null
             ? null
             : Banner.fromJson(json["flat_photo_path"]),
+        mostViewedProductThumbnail:
+            json["most_viewed_product_thumbnail"] == null
+                ? null
+                : Banner.fromJson(json["most_viewed_product_thumbnail"]),
         childes: json["childes"] == null
             ? []
             : List<Category>.from(
@@ -416,6 +433,7 @@ class SubCategory {
         "id": id,
         "slug": slug,
         "name": name,
+        "most_viewed_product_thumbnail": mostViewedProductThumbnail?.toJson(),
         "num_available_product": numAvailableProduct,
         "flat_photo_path": flatPhotoPath?.toJson(),
         "childes": childes == null

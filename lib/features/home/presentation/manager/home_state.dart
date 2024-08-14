@@ -9,6 +9,7 @@ import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart'
     as boutiques_model;
 
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
+
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
@@ -90,6 +91,7 @@ class HomeState {
     this.cashedOrginalBoutique = false,
     this.getAllowedCountriesModel,
     this.getCurrencyForCountryModel,
+    this.prefAppliedFilterForExtendFilter,
     this.ListitemForAddToCart,
     this.countOfProductExpectedByFiltering,
     this.getCartItemsStatus = GetCartItemsStatus.init,
@@ -135,7 +137,7 @@ class HomeState {
   List<Story>? storiesForProduct;
   List<String>? sizes;
   int? countOfProductExpectedByFiltering;
-
+  get_filters.Filter? prefAppliedFilterForExtendFilter;
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
   final cart.GetCartShippingItemsModel? getCartShippingItemsModel;
@@ -156,6 +158,7 @@ class HomeState {
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       int? totalProductNumber,
       bool? cashedOrginalBoutique,
+      get_filters.Filter? prefAppliedFilterForExtendFilter,
       Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
       final List<ImageForAddToCart>? ListitemForAddToCart,
       final GetAllowedCountriesModel? getAllowedCountriesModel,
@@ -225,6 +228,8 @@ class HomeState {
       getProductListingWithFiltersPaginationModels:
           getProductListingWithFiltersPaginationModels ??
               this.getProductListingWithFiltersPaginationModels,
+      prefAppliedFilterForExtendFilter: prefAppliedFilterForExtendFilter ??
+          this.prefAppliedFilterForExtendFilter,
       currentQuantityForCart:
           currentQuantityForCart ?? this.currentQuantityForCart,
       productITemForCart: productITemForCart ?? this.productITemForCart,

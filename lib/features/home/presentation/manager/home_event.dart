@@ -282,6 +282,17 @@ class AddCurrentColorSizeEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class AddPrefAppliedFilterForExtendFilterEvent extends HomeEvent {
+  final Filter? prefAppliedFilter;
+
+  AddPrefAppliedFilterForExtendFilterEvent({
+    this.prefAppliedFilter,
+  });
+
+  @override
+  List<Object?> get props => [];
+}
+
 class AddProductItemForCartEvent extends HomeEvent {
   final Products? product;
   final String productId;
