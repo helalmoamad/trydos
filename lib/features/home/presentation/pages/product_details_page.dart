@@ -115,7 +115,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         child: InkWell(
                             onTap: () => Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) => CartPage(),
+                                    builder: (context) => CartPage(
+                                      fromeFilters: true,
+                                    ),
                                   ),
                                 ),
                             child: SvgPicture.asset(AppAssets.bagsSvg)),

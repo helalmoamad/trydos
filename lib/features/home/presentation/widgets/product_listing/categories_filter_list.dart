@@ -49,6 +49,27 @@ class CategoriesFilterList extends StatelessWidget {
           shrinkWrap: true,
           itemCount: filters.categories?.length ?? 0,
           itemBuilder: (ctx, index) {
+            bool isChildCategorySlug = false;
+            if (!(filters.categories?[index].isSubCategory ?? false)) {
+              filters.categories?[index].subCategories?.forEach((elements) {
+                if (!(workWithChoosedFilter)) {
+                  if (homeBloc
+                          .state.appliedFiltersByUser[key]?.filters?.categories
+                          ?.any((element) => (element.slug == elements.slug)) ??
+                      false) {
+                    isChildCategorySlug = true;
+                  }
+                } else {
+                  if (homeBloc
+                          .state.choosedFiltersByUser[key]?.filters?.categories
+                          ?.any((element) => (element.slug == elements.slug)) ??
+                      false) {
+                    isChildCategorySlug = true;
+                  }
+                }
+                ;
+              });
+            }
             if (!(filters.categories![index].subCategories?.isNullOrEmpty ??
                 true))
               return ValueListenableBuilder<int>(
@@ -58,7 +79,8 @@ class CategoriesFilterList extends StatelessWidget {
                       curve: Curves.fastEaseInToSlowEaseOut,
                       duration: Duration(milliseconds: 300),
                       margin: EdgeInsetsDirectional.only(end: 5),
-                      width: currentExpandedIndex == index
+                      width: (currentExpandedIndex == index) ||
+                              isChildCategorySlug
                           ? (75 +
                               filters.categories![index].subCategories!.length *
                                   55)
@@ -72,10 +94,10 @@ class CategoriesFilterList extends StatelessWidget {
                             (innerIndex) => AnimatedPositionedDirectional(
                                 curve: Curves.fastEaseInToSlowEaseOut,
                                 duration: Duration(milliseconds: 300),
-                                top: currentExpandedIndex == index
+                                top: (currentExpandedIndex == index)
                                     ? (70 - 50)
                                     : (70 - 50) / 2,
-                                end: currentExpandedIndex == index
+                                end: (currentExpandedIndex == index)
                                     ? innerIndex * 30
                                     : innerIndex >=
                                             (filters.categories![index]
@@ -86,10 +108,10 @@ class CategoriesFilterList extends StatelessWidget {
                                 child: filters
                                             .categories![index]
                                             .subCategories![innerIndex]
-                                            .flatPhotoPath !=
+                                            .mostViewedProductThumbnail !=
                                         null
                                     ? FilterCircleWidget(
-                                        isSvg: true,
+                                        isSvg: false,
                                         width: 50,
                                         height: 50,
                                         categoryName: filters.categories![index]
@@ -98,7 +120,7 @@ class CategoriesFilterList extends StatelessWidget {
                                         imageUrl: filters
                                             .categories![index]
                                             .subCategories![innerIndex]
-                                            .flatPhotoPath!
+                                            .mostViewedProductThumbnail!
                                             .filePath
                                             .toString(),
                                         withBackGroundShadow: innerIndex != 0,
@@ -129,7 +151,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                             .id)),
                                         addOrRemoveSpecificFilter: (bool add) {
                                           scaleTheTopItemInFiltersStack.value =
-                                              currentExpandedIndex == index;
+                                              (currentExpandedIndex == index);
 
                                           Filter?
                                               prevChoosedOrAppliedFilterToAddToIt =
@@ -141,6 +163,8 @@ class CategoriesFilterList extends StatelessWidget {
                                                       .choosedFiltersByUser[key]
                                                       ?.filters;
                                           if (add) {
+                                            expandingFiltersStack.value =
+                                                innerIndex;
                                             Category category = Category(
                                                 slug: filters
                                                     .categories![index]
@@ -164,6 +188,14 @@ class CategoriesFilterList extends StatelessWidget {
                                               prevChoosedOrAppliedFilterToAddToIt =
                                                   Filter();
                                             }
+                                            List<Category>? categoryParent =
+                                                prevChoosedOrAppliedFilterToAddToIt
+                                                    .categories;
+                                            categoryParent?.removeWhere(
+                                                (element) =>
+                                                    element.slug ==
+                                                    filters.categories?[index]
+                                                        .slug);
                                             prevChoosedOrAppliedFilterToAddToIt =
                                                 prevChoosedOrAppliedFilterToAddToIt
                                                     .copyWithSaveOtherField(
@@ -179,16 +211,13 @@ class CategoriesFilterList extends StatelessWidget {
                                                                     ?.text
                                                                 : null
                                                             : null,
-                                                        categories:
-                                                            prevChoosedOrAppliedFilterToAddToIt
-                                                                    .categories
-                                                                    .isNullOrEmpty
-                                                                ? [category]
-                                                                : [
-                                                                    ...prevChoosedOrAppliedFilterToAddToIt
-                                                                        .categories!,
-                                                                    category
-                                                                  ]);
+                                                        categories: categoryParent
+                                                                .isNullOrEmpty
+                                                            ? [category]
+                                                            : [
+                                                                ...categoryParent!,
+                                                                category
+                                                              ]);
                                           } else {
                                             prevChoosedOrAppliedFilterToAddToIt!
                                                 .categories!
@@ -260,50 +289,53 @@ class CategoriesFilterList extends StatelessWidget {
                                           }
                                         },
                                         paddingValue:
-                                            currentExpandedIndex == index
-                                                ? 0
+                                            (currentExpandedIndex == index) ||
+                                                    isChildCategorySlug
+                                                ? 3
                                                 : 0,
                                         borderColor: context.colorScheme.white,
                                         isExpanded:
-                                            currentExpandedIndex == index,
+                                            (currentExpandedIndex == index) ||
+                                                isChildCategorySlug,
                                       )
                                     : SizedBox.shrink()),
                           ),
                           ValueListenableBuilder<bool>(
                               valueListenable: scaleTheTopItemInFiltersStack,
                               builder: (context, scale, _) {
-                                return filters.categories![index].flatPhotoPath !=
+                                return filters.categories![index].mostViewedProductThumbnail !=
                                         null
                                     ? FilterCircleWidget(
-                                        isSvg: true,
+                                        isSvg: false,
                                         width: 70,
                                         height: 70,
                                         categoryName: filters
                                             .categories![index].name
                                             .toString(),
-                                        imageUrl: filters.categories![index]
-                                            .flatPhotoPath!.filePath
+                                        imageUrl: filters
+                                            .categories![index]
+                                            .mostViewedProductThumbnail!
+                                            .filePath
                                             .toString(),
                                         scale: scale,
                                         paddingValue: 0,
                                         isExpanded:
-                                            currentExpandedIndex == index,
-                                        displayFilterMark: !workWithChoosedFilter
-                                            ? ((appliedFilters?.categories?.isNullOrEmpty ??
-                                                    true)
-                                                ? false
-                                                : appliedFilters!.categories!
-                                                    .any((element) =>
+                                            (currentExpandedIndex == index),
+                                        displayFilterMark: (isChildCategorySlug ||
+                                            (!workWithChoosedFilter
+                                                ? ((appliedFilters?.categories?.isNullOrEmpty ?? true)
+                                                    ? false
+                                                    : appliedFilters!.categories!.any((element) =>
                                                         element.id ==
                                                         filters
                                                             .categories![index]
                                                             .id))
-                                            : ((choosedFilters?.categories
-                                                        ?.isNullOrEmpty ??
-                                                    true)
-                                                ? false
-                                                : choosedFilters!.categories!
-                                                    .any((element) => element.id == filters.categories![index].id)),
+                                                : ((choosedFilters?.categories
+                                                            ?.isNullOrEmpty ??
+                                                        true)
+                                                    ? false
+                                                    : choosedFilters!.categories!
+                                                        .any((element) => element.id == filters.categories![index].id)))),
                                         addOrRemoveSpecificFilter: (bool add) {
                                           if (appliedFilters?.categories ==
                                                   null &&
@@ -380,6 +412,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                                     category
                                                                   ]);
                                           } else {
+                                            expandingFiltersStack.value = -1;
                                             prevChoosedOrAppliedFilterToAddToIt!
                                                 .categories!
                                                 .removeWhere(((element) =>
@@ -447,17 +480,19 @@ class CategoriesFilterList extends StatelessWidget {
                     );
                   });
             else {
-              return filters.categories![index].flatPhotoPath != null
+              return filters.categories![index].mostViewedProductThumbnail !=
+                      null
                   ? FilterCircleWidget(
-                      isSvg: true,
+                      isSvg: false,
                       width: 65,
                       height: 65,
-                      imageUrl: filters
-                          .categories![index].flatPhotoPath!.filePath
+                      imageUrl: filters.categories![index]
+                          .mostViewedProductThumbnail!.filePath
                           .toString(),
                       categoryName: filters.categories![index].name.toString(),
                       withBackGroundShadow: true,
-                      displayFilterMark: !workWithChoosedFilter
+                      displayFilterMark: isChildCategorySlug ||
+                              !workWithChoosedFilter
                           ? ((appliedFilters?.categories?.isNullOrEmpty ?? true)
                               ? false
                               : appliedFilters!.categories!.any((element) =>
