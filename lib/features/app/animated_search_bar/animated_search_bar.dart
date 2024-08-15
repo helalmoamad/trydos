@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 
 import '../../../common/constant/design/assets_provider.dart';
+import '../../../common/constant/widgets_key.dart';
 import '../blocs/app_bloc/app_state.dart';
 
 class AnimatedSearchBar extends StatefulWidget {
@@ -316,6 +317,8 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(15.0),
                     child: GestureDetector(
+                      key: Key(WidgetsKey.productListingSearchIconKey),
+
                       ///if toggle is 1, which means it's open. so show the back icon, which will close it.
                       ///if the toggle is 0, which means it's closed, so tapping on it will expand the widget.
                       ///prefixIcon is of type Icon

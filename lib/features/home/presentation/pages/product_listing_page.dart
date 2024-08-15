@@ -445,7 +445,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     key: WidgetsKey
                                                                             .kTestMode
                                                                         ? Key(WidgetsKey
-                                                                            .productListingSearchIconKey)
+                                                                            .productListingSearchInputKey)
                                                                         : null,
                                                                     autoFocus:
                                                                         false,
