@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -91,7 +92,9 @@ class _TabsBarState extends State<TabsBar> {
                     ],
                   ),
                   child: Row(
-                      key: Key(WidgetsKey.mainCategoriesTabNullKey),
+                      key: WidgetsKey.kTestMode
+                          ? Key(WidgetsKey.mainCategoriesTabNullKey)
+                          : null,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(
                           5,
@@ -416,8 +419,10 @@ class _TabsBarState extends State<TabsBar> {
                                       return SizedBox(
                                         width: 1.sw,
                                         child: Row(
-                                            key: Key(WidgetsKey
-                                                .mainCategoriesTabKey),
+                                            key: WidgetsKey.kTestMode
+                                                ? Key(WidgetsKey
+                                                    .mainCategoriesTabKey)
+                                                : null,
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: List.generate(

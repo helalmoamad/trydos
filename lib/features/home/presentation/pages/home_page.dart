@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
   double? _previousOffset;
   double? _velocity;
   final ScrollController scrollController = ScrollController();
-   Key reRenderingListViewKey  = UniqueKey();
+  Key reRenderingListViewKey = UniqueKey();
   @override
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
@@ -187,22 +187,22 @@ class _HomePageState extends State<HomePage> {
             BlocBuilder<AppBloc, AppState>(
               builder: (context, appState) {
                 return BlocBuilder<HomeBloc, HomeState>(
-                  buildWhen: (p,c){
+                  buildWhen: (p, c) {
                     String? currentSlug = appState.tabIndex != -1
                         ? (c.mainCategoriesResponseModel?.data
-                        ?.mainCategories?[appState.tabIndex].slug ??
-                        "Empty")
+                                ?.mainCategories?[appState.tabIndex].slug ??
+                            "Empty")
                         : "Empty";
                     bool rebuild = p
-                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                    currentSlug]
-                        ?.paginationStatus != c
-                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                    currentSlug]
-                        ?.paginationStatus;
+                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                currentSlug]
+                            ?.paginationStatus !=
+                        c
+                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                currentSlug]
+                            ?.paginationStatus;
                     if (rebuild) {
-                      reRenderingListViewKey =
-                          UniqueKey();
+                      reRenderingListViewKey = UniqueKey();
                     }
                     return rebuild;
                   },
@@ -233,7 +233,9 @@ class _HomePageState extends State<HomePage> {
                                     0) ==
                                 0)) {
                       return sliverListSeparated(
-                          key: Key(WidgetsKey.boutiquesFailureStatusKey),
+                          key: WidgetsKey.kTestMode
+                              ? Key(WidgetsKey.boutiquesFailureStatusKey)
+                              : null,
                           itemBuilder: (_, index) => Padding(
                               padding: HWEdgeInsets.symmetric(horizontal: 15.w),
                               child: ClipRRect(
@@ -297,11 +299,15 @@ class _HomePageState extends State<HomePage> {
                           childCount: 10);
                     }
                     return sliverListSeparated(
-                      key: kDebugMode ? Key(WidgetsKey.boutiquesSuccessStatusKey) : reRenderingListViewKey,
+                      key: WidgetsKey.kTestMode
+                          ? Key(WidgetsKey.boutiquesSuccessStatusKey)
+                          : reRenderingListViewKey,
                       itemBuilder: (_, index) => Padding(
                           padding: HWEdgeInsets.symmetric(horizontal: 15.w),
                           child: HomePageCard2(
-                            key: Key('${WidgetsKey.boutiqueCardKey}$index'),
+                            key: WidgetsKey.kTestMode
+                                ? Key('${WidgetsKey.boutiqueCardKey}$index')
+                                : null,
                             category_Slug: currentSlug,
                             withSlidingImages: homeState
                                     .getHomeBoutiquesPaginationObjectByMainCategory[

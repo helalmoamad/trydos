@@ -130,6 +130,7 @@ class Products {
   final Rating? rating;
   final dynamic flashDealDetails;
   final dynamic flashDealMaxAllowedQuantity;
+  final String? dateNow;
 
   Products({
     this.id,
@@ -154,6 +155,7 @@ class Products {
     this.rating,
     this.flashDealDetails,
     this.flashDealMaxAllowedQuantity,
+    this.dateNow,
   });
 
   Products copyWith({
@@ -179,6 +181,7 @@ class Products {
     Rating? rating,
     dynamic flashDealDetails,
     dynamic flashDealMaxAllowedQuantity,
+    String? date,
   }) =>
       Products(
         id: id ?? this.id,
@@ -204,6 +207,7 @@ class Products {
         flashDealDetails: flashDealDetails ?? this.flashDealDetails,
         flashDealMaxAllowedQuantity:
             flashDealMaxAllowedQuantity ?? this.flashDealMaxAllowedQuantity,
+        dateNow: date ?? this.dateNow,
       );
 
   factory Products.fromJson(Map<String, dynamic> json) => Products(
@@ -244,6 +248,7 @@ class Products {
         rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
         flashDealDetails: json["flash_deal_details"],
         flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
+        dateNow: DateTime.now().toString(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -277,6 +282,7 @@ class Products {
         "rating": rating?.toJson(),
         "flash_deal_details": flashDealDetails,
         "flash_deal_max_allowed_quantity": flashDealMaxAllowedQuantity,
+        "date_now": dateNow,
       };
 }
 

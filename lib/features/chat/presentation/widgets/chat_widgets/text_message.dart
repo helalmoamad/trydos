@@ -210,8 +210,10 @@ class _TextMessageState extends ThemeState<TextMessage> {
                               : Alignment.centerLeft,
                           children: [
                             Container(
-                              key: Key(
-                                  '${WidgetsKey.messageCardKey}${widget.index}'),
+                              key: WidgetsKey.kTestMode
+                                  ? Key(
+                                      '${WidgetsKey.messageCardKey}${widget.index}')
+                                  : null,
                               constraints: BoxConstraints(
                                   minHeight: !widget.withShadow ? 71 : 48),
                               decoration: BoxDecoration(
@@ -376,9 +378,12 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                                         )
                                                                   : SvgPicture
                                                                       .asset(
-                                                                      key: Key(
-                                                                        '${WidgetsKey.messageSentArrowKey}${widget.index}',
-                                                                      ),
+                                                                      key: WidgetsKey
+                                                                              .kTestMode
+                                                                          ? Key(
+                                                                              '${WidgetsKey.messageSentArrowKey}${widget.index}',
+                                                                            )
+                                                                          : null,
                                                                       AppAssets
                                                                           .messageSentArrowSvg,
                                                                       width:
@@ -391,9 +396,9 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                             if (widget.isForwarded) ...{
                                               10.horizontalSpace,
                                               SvgPicture.asset(
-                                                key: Key(
+                                                key: WidgetsKey.kTestMode ?Key(
                                                   '${WidgetsKey.forwardedArrowKey}${widget.index}',
-                                                ),
+                                                ):null,
                                                 AppAssets.forwardedSvg,
                                                 width: 10.sp,
                                                 height: 10.sp,

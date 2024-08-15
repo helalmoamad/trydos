@@ -134,7 +134,9 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                   height: 20,
                 ),
                 InkWell(
-                  key: Key(WidgetsKey.skipForNowKey),
+                  key: WidgetsKey.kTestMode
+                      ? Key(WidgetsKey.skipForNowKey)
+                      : null,
                   focusColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   onTap: () {
