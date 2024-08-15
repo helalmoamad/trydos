@@ -70,7 +70,9 @@ class WelcomeSection extends StatelessWidget {
             height: 30,
           ),
           InkWell(
-            key: Key(WidgetsKey.haveAccountButtonKey),
+            key: WidgetsKey.kTestMode
+                ? Key(WidgetsKey.haveAccountButtonKey)
+                : null,
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () async {
@@ -136,7 +138,9 @@ class WelcomeSection extends StatelessWidget {
             height: 10,
           ),
           InkWell(
-            key: Key(WidgetsKey.createNewAccountButtonKey),
+            key: WidgetsKey.kTestMode
+                ? Key(WidgetsKey.createNewAccountButtonKey)
+                : null,
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () async {
@@ -199,7 +203,7 @@ class WelcomeSection extends StatelessWidget {
           InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
-            key: Key(WidgetsKey.laterTakeLookKey),
+            key: WidgetsKey.kTestMode ? Key(WidgetsKey.laterTakeLookKey) : null,
             onTap: () async {
               if (prefsRepository.isVerifiedPhone != false) {
                 String? deviceId = await HelperFunctions.getDeviceId();

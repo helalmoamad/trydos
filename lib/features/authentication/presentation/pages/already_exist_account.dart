@@ -119,7 +119,9 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                 ),
                 Spacer(),
                 InkWell(
-                  key: Key(WidgetsKey.loginContinueButtonKey),
+                  key: WidgetsKey.kTestMode
+                      ? Key(WidgetsKey.loginContinueButtonKey)
+                      : null,
                   onTap: () {
                     context.go(GRouter.config.applicationRoutes.kBasePage);
                     BlocProvider.of<AuthBloc>(context).add(VerifyOtpSignInEvent(
@@ -153,7 +155,9 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                 ),
                 20.verticalSpace,
                 InkWell(
-                  key: Key(WidgetsKey.takeLookButtonKey),
+                  key: WidgetsKey.kTestMode
+                      ? Key(WidgetsKey.takeLookButtonKey)
+                      : null,
                   focusColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   onTap: () async {

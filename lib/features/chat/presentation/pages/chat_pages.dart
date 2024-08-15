@@ -158,9 +158,11 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
             },
             child: Scaffold(
               floatingActionButton: FloatingActionButton(
-                key: Key(
-                  WidgetsKey.myContactsFloatingActionKey,
-                ),
+                key: WidgetsKey.kTestMode
+                    ? Key(
+                        WidgetsKey.myContactsFloatingActionKey,
+                      )
+                    : null,
                 onPressed: () {
                   context
                       .go(GRouter.config.applicationRoutes.kMyContactsPagePath);

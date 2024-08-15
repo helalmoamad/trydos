@@ -202,9 +202,11 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                           return sliverListSeparated(
                             itemBuilder: (_, index) {
                               return ContactCard(
-                                key: Key(
-                                  '${WidgetsKey.contactCardKey}$index',
-                                ),
+                                key: WidgetsKey.kTestMode
+                                    ? Key(
+                                        '${WidgetsKey.contactCardKey}$index',
+                                      )
+                                    : null,
                                 index: index,
                                 contact: searchedContacts[index],
                               );

@@ -199,7 +199,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           valueListenable: clickBackButton,
                           builder: (context, clicked, _) {
                             return InkWell(
-                              key: Key(WidgetsKey.backFromChatKey),
+                              key: WidgetsKey.kTestMode
+                                  ? Key(WidgetsKey.backFromChatKey)
+                                  : null,
                               onTap: () {
                                 BlocProvider.of<AppBloc>(context).add(
                                     RefreshChatInputField(
@@ -316,7 +318,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             InkWell(
-                              key: Key(WidgetsKey.goToProfileButtonKey),
+                              key: WidgetsKey.kTestMode
+                                  ? Key(WidgetsKey.goToProfileButtonKey)
+                                  : null,
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (_) => ProfilePage(
@@ -613,10 +617,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                   : SizedBox.shrink(),
                                               Flexible(
                                                   child: ListView.builder(
-                                                      key: Key(
+                                                      key:WidgetsKey.kTestMode ? Key(
                                                         WidgetsKey
                                                             .messagesListKey,
-                                                      ),
+                                                      ):null,
                                                       physics:
                                                           const ClampingScrollPhysics(),
                                                       shrinkWrap: true,
@@ -688,8 +692,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                       : 10.verticalSpace,
                                                                   ////////////////
                                                                   GestureDetector(
-                                                                    key: Key(
-                                                                        '${WidgetsKey.messagesListCardKey}$index'),
+                                                                    key: WidgetsKey.kTestMode ?Key(
+                                                                        '${WidgetsKey.messagesListCardKey}$index'):null,
                                                                     onLongPress:
                                                                         () {
                                                                       if (messages[index]
@@ -854,7 +858,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                                                           children: [
                                                                                                             MessageActionWidget(
-                                                                                                              key: Key('${WidgetsKey.forWardMessageKey}$index'),
+                                                                                                              key: WidgetsKey.kTestMode ? Key('${WidgetsKey.forWardMessageKey}$index') : null,
                                                                                                               onTap: () => forwardMessageMethod(messages.firstWhere((element) => element.id == messageId)),
                                                                                                               iconUrl: AppAssets.goBackIconSvg,
                                                                                                               myIndex: lan ? 0 : 5,
@@ -873,13 +877,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                               focusedIndex: focusedIndex,
                                                                                                             ),
                                                                                                             MessageActionWidget(
-                                                                                                              key: Key('${WidgetsKey.deleteMessageKey}$index'),
+                                                                                                              key: WidgetsKey.kTestMode ? Key('${WidgetsKey.deleteMessageKey}$index') : null,
                                                                                                               onTap: () {
                                                                                                                 showDialog(
                                                                                                                   context: context,
                                                                                                                   builder: (context) => AlertDialog(title: Text(LocaleKeys.delete_message.tr()), actions: [
                                                                                                                     MaterialButton(
-                                                                                                                      key: Key('${WidgetsKey.deleteOnlyMeButtonKey}$index'),
+                                                                                                                      key: WidgetsKey.kTestMode ? Key('${WidgetsKey.deleteOnlyMeButtonKey}$index') : null,
                                                                                                                       onPressed: () {
                                                                                                                         callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
                                                                                                                         Navigator.of(context).pop();
@@ -1521,7 +1525,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
         );
       } else {
         return ReplayOnMeMessage(
-            key: Key('${WidgetsKey.replayOnMeMessageKey}$listIndex'),
+            key: WidgetsKey.kTestMode
+                ? Key('${WidgetsKey.replayOnMeMessageKey}$listIndex')
+                : null,
             index: listIndex,
             messageId: message.parentMessageId!,
             receivedAt: messageStatus?.receivedAt,
@@ -1564,7 +1570,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
       switch (message.messageType?.name) {
         case 'TextMessage':
           return TextMessage(
-              key: Key('${WidgetsKey.textMessageCardKey}$listIndex'),
+              key: WidgetsKey.kTestMode
+                  ? Key('${WidgetsKey.textMessageCardKey}$listIndex')
+                  : null,
               index: listIndex,
               receivedAt: messageStatus?.receivedAt,
               createAt: message.createdAt,

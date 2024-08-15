@@ -135,7 +135,9 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                       alignment: Alignment.topCenter,
                       child: state.replyType == 'text'
                           ? Row(
-                              key: Key(WidgetsKey.replayTextKey),
+                              key: WidgetsKey.kTestMode
+                                  ? Key(WidgetsKey.replayTextKey)
+                                  : null,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -652,9 +654,12 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         padding: HWEdgeInsets.symmetric(
                                             vertical: 7.0),
                                         child: AppTextField(
-                                          key: Key(
-                                            WidgetsKey.sendMessageTextFieldKey,
-                                          ),
+                                          key: WidgetsKey.kTestMode
+                                              ? Key(
+                                                  WidgetsKey
+                                                      .sendMessageTextFieldKey,
+                                                )
+                                              : null,
                                           controller: form.controllers[0],
                                           onChange: (text) {
                                             _typingTimer.cancel();
@@ -792,9 +797,12 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     } else ...{
                                       InkWell(
-                                        key: Key(
-                                          WidgetsKey.sendMessageInChatButtonKey,
-                                        ),
+                                        key: WidgetsKey.kTestMode
+                                            ? Key(
+                                                WidgetsKey
+                                                    .sendMessageInChatButtonKey,
+                                              )
+                                            : null,
                                         focusColor: Colors.transparent,
                                         splashColor: Colors.transparent,
                                         onTap: () {

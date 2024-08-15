@@ -127,8 +127,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //     transformer: throttleDroppable(throttleDuration));
     //  on<GetCategoryEvent>(_onGetCategoryEvent,
 //transformer: throttleDroppable(throttleDuration));
-    on<GetHomeBoutiqesEvent>(_onGetHomeBoutiquesEvent,
-        transformer: throttleDroppable(Duration(seconds: 5)));
+    on<GetHomeBoutiqesEvent>(
+      _onGetHomeBoutiquesEvent,
+    );
     on<GetCartItemEvent>(_onGetCartItemEvent,
         transformer: throttleDroppable(Duration(seconds: 5)));
 

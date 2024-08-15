@@ -115,7 +115,9 @@ class _RegistrationPageState extends State<RegistrationPage>
                       builder: (context, index, _) {
                         if (index > 1)
                           return InkWell(
-                            key: Key(WidgetsKey.registerCancelKey),
+                            key: WidgetsKey.kTestMode
+                                ? Key(WidgetsKey.registerCancelKey)
+                                : null,
                             highlightColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onTap: () {
@@ -133,7 +135,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                                     curve: Curves.easeInOut);
                                 return;
                               }
-                                context.go(GRouter.config.applicationRoutes.kBasePage);
+                              context.go(
+                                  GRouter.config.applicationRoutes.kBasePage);
                             },
                             child: Padding(
                               padding: HWEdgeInsets.only(
@@ -206,11 +209,12 @@ class _RegistrationPageState extends State<RegistrationPage>
                                   onChooseWhatsapp: () {
                                     isVisWhatsApp = 1;
                                     pageContent.value = 4;
-                                      pageController.animateToPage(4,
-                                          duration: Duration(milliseconds: 500),
-                                          curve: Curves.easeInOut);
+                                    pageController.animateToPage(4,
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
 
-                                    if (prefsRepository.isTimerForOtpRunning ?? false) {
+                                    if (prefsRepository.isTimerForOtpRunning ??
+                                        false) {
                                       showMessage(
                                           'you must wait for some seconds before try again');
                                       return;
