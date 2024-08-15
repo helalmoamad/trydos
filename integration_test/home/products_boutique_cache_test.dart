@@ -17,9 +17,9 @@ void main() {
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
-      //////////////////////////
+      /////////////  Register As Guest  /////////////
       await SharedScenarios.registerGuest(tester: tester);
-      ////////////////////////////
+      ////////////// Find Boutiques HomePageCard //////////////
       final Finder boutiquesSuccessStatus =
           find.byKey(Key(WidgetsKey.boutiquesSuccessStatusKey));
       await GlobalTestFunctions.findWidget(
@@ -38,12 +38,12 @@ void main() {
           tester.widget<HomePageCard2>(boutiqueCard1).boutniqe.id!;
       ////////////////////////////
       print('//////// boutiqueCard1  : $boutiqueId1 //////////');
-      ////////////////////////////
+      ///////////// Tap on first  boutique  ///////////////
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(boutiqueCard1);
       await tester.pump();
       await Future.delayed(const Duration(seconds: 1));
-      //////////////////////////
+      /////////////  Loading for products  /////////////
       final Finder boutiqueProductListingLoading = find.byKey(
         Key(WidgetsKey.boutiqueProductListingLoadingKey),
       );
@@ -56,7 +56,7 @@ void main() {
         failedMessage: 'Find boutiqueProductListingLoading  failed',
       );
       await tester.pumpAndSettle();
-      ///////////////////////////////
+      //////////////  Find product list  /////////////////
       final Finder productsList = find.byKey(
         Key(WidgetsKey.productsListKey),
       );
@@ -73,36 +73,56 @@ void main() {
         successMessage: 'Find productsList  Success',
         failedMessage: 'Find productsList  failed',
       );
-      //////////////////////////
+
+      ///////////  Test if products belong to the  Boutique  ///////////////
       int productIndex1 = 0;
+      List<String> oldCacheDate = [];
       while (true) {
-        final productKey =
+        Key productKey =
             Key('${WidgetsKey.productInBoutiqueListKey}$productIndex1');
+
+        print('productKey  found 1 : $productKey');
+
         if (find.byKey(productKey).evaluate().isEmpty) {
+          print('productKey not found 1 : $productKey');
           break;
         }
 
-        final productBoutId = tester
+        String productBoutId = tester
             .widget<ProductItem>(find.byKey(productKey))
             .productItem
             .boutiqueId!
             .toString();
-        try {
-          expect(productBoutId, equals(boutiqueId1));
-        } catch (e) {
-          break;
-        }
+
+        String productBoutDateNow = tester
+            .widget<ProductItem>(find.byKey(productKey))
+            .productItem
+            .dateNow!
+            .toString();
+
+        oldCacheDate.add(productBoutDateNow);
+
+        print('productBoutDateNow old : $productBoutDateNow');
+
+        print('boutiqueId1 : $boutiqueId1');
+
+        print('productBoutId : $productBoutId');
+
+        expect(productBoutId, equals(boutiqueId1.toString()));
+
         productIndex1++;
       }
+
+      print('old cache : $oldCacheDate');
       ///////////////////////////
       await Future.delayed(const Duration(seconds: 2));
-      /////////////////////////
+      /////////////  Go Back  ////////////
       final Finder appBarGoBackArrow = find.byKey(
         Key(WidgetsKey.appBarGoBackArrowKey),
       );
       await tester.tap(appBarGoBackArrow);
       await tester.pumpAndSettle();
-      /////////////////////////
+      /////////////// Tap on the second  boutique //////////
       final Finder boutiqueCard2 = find.byKey(
         Key('${WidgetsKey.boutiqueCardKey}1'),
       );
@@ -113,10 +133,8 @@ void main() {
       print('//////// boutiqueId2  : $boutiqueId2 //////////');
       ////////////////////////////
       ////////////////////////////
-      ////////////////////////////
-      ////////////////////////////
       await Future.delayed(const Duration(seconds: 2));
-      await tester.tap(boutiqueCard1);
+      await tester.tap(boutiqueCard2);
       await tester.pump();
       await Future.delayed(const Duration(seconds: 1));
       //////////////////////////
@@ -145,42 +163,40 @@ void main() {
         successMessage: 'Find productsList2  Success',
         failedMessage: 'Find productsList2  failed',
       );
-      //////////////////////////
+      //////////// Test products in the second Boutique belong to it  //////////////
       int productIndex2 = 0;
       while (true) {
-        final productKey =
+        Key productKey =
             Key('${WidgetsKey.productInBoutiqueListKey}$productIndex2');
         if (find.byKey(productKey).evaluate().isEmpty) {
           break;
         }
 
-        final productBoutId = tester
+        String productBoutId = tester
             .widget<ProductItem>(find.byKey(productKey))
             .productItem
             .boutiqueId!
             .toString();
-        try {
-          expect(productBoutId, equals(boutiqueId2));
-        } catch (e) {
-          break;
-        }
+
+        expect(productBoutId, equals(boutiqueId2.toString()));
+
         productIndex2++;
       }
       ///////////////////////////
       await Future.delayed(const Duration(seconds: 2));
-      /////////////////////////
+      //////////////  Go Back ///////////
       final Finder appBarGoBackArrow2 = find.byKey(
         Key(WidgetsKey.appBarGoBackArrowKey),
       );
       await tester.tap(appBarGoBackArrow2);
       await tester.pumpAndSettle();
-      /////////////////////////
+      //////////////  Go Again to the first boutique ///////////
       await Future.delayed(const Duration(seconds: 1));
       await tester.tap(boutiqueCard1);
       await tester.pump();
       await Future.delayed(const Duration(seconds: 1));
       //////////////////////////
-      ///////////////////////////////
+      ///////////////  test the products come from cache (no loading) ////////////////
       await GlobalTestFunctions.findNoWidget(
         tester: tester,
         actual: boutiqueProductListingLoading,
@@ -202,25 +218,41 @@ void main() {
         successMessage: 'Find productsList  Success',
         failedMessage: 'Find productsList  failed',
       );
-      //////////////////////////
+      ////////////
+      await tester.pumpAndSettle();
+      await Future.delayed(const Duration(seconds: 2));
+      ///////////// test the products belong to the first boutique  /////////////
       productIndex1 = 0;
       while (true) {
-        final productKey =
+        Key productKey =
             Key('${WidgetsKey.productInBoutiqueListKey}$productIndex1');
         if (find.byKey(productKey).evaluate().isEmpty) {
+          print('productKey not found : $productKey');
           break;
         }
 
-        final productBoutId = tester
+        String productBoutId = tester
             .widget<ProductItem>(find.byKey(productKey))
             .productItem
             .boutiqueId!
             .toString();
-        try {
-          expect(productBoutId, equals(boutiqueId1));
-        } catch (e) {
-          break;
-        }
+
+        String productBoutDateNow = tester
+            .widget<ProductItem>(find.byKey(productKey))
+            .productItem
+            .dateNow!
+            .toString();
+
+        print('productBoutDateNow : $productBoutDateNow ,,, ');
+
+        DateTime dateNew = DateTime.parse(productBoutDateNow);
+        DateTime dateOld = DateTime.parse(oldCacheDate[productIndex1]);
+
+        print('dateOld : $dateOld ,,, dateNew : $dateNew');
+
+        expect(productBoutId, equals(boutiqueId1.toString()));
+        expect(dateOld.isBefore(dateNew), true);
+
         productIndex1++;
       }
       ///////////////////////////
