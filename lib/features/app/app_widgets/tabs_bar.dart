@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +14,7 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/constant/design/constant_design.dart';
 import '../../../common/constant/widgets_key.dart';
@@ -46,7 +48,7 @@ class TabsBar extends StatefulWidget {
 class _TabsBarState extends State<TabsBar> {
   late AppBloc appBloc;
   late HomeBloc homeBloc;
-
+  int? categoryIndexTap;
   @override
   void initState() {
     widget.appearTrendingAndHistory.value = true;
@@ -437,22 +439,40 @@ class _TabsBarState extends State<TabsBar> {
                                                             .only(end: 15.0),
                                                     child: InkWell(
                                                       onTap: () {
+                                                        if (categoryIndexTap !=
+                                                            index) {
+                                                          appBloc.add(
+                                                              ChangeTab(index));
+                                                          homeBloc.add(GetHomeBoutiqesEvent(
+                                                              getWithPagination:
+                                                                  false,
+                                                              offset: "1",
+                                                              categorySlug: homeState
+                                                                  .mainCategoriesResponseModel!
+                                                                  .data!
+                                                                  .mainCategories![
+                                                                      index]
+                                                                  .slug!));
+                                                          categoryIndexTap =
+                                                              index;
+                                                        } else {
+                                                          categoryIndexTap = -1;
+                                                          appBloc.add(
+                                                              ChangeTab(-1));
+                                                          homeBloc.add(
+                                                              GetHomeBoutiqesEvent(
+                                                                  categorySlug:
+                                                                      "Empty",
+                                                                  offset: "1",
+                                                                  getWithPagination:
+                                                                      false));
+                                                        }
+
                                                         /* appBloc.add(ChangeTab(index));
                                                           BlocProvider.of<HomeBloc>(context).add(
                                                                         GetHomeSectionsEvent(
                                                                             mainCategory.slug.toString()));*/
-                                                        appBloc.add(
-                                                            ChangeTab(index));
-                                                        homeBloc.add(GetHomeBoutiqesEvent(
-                                                            getWithPagination:
-                                                                false,
-                                                            offset: "1",
-                                                            categorySlug: homeState
-                                                                .mainCategoriesResponseModel!
-                                                                .data!
-                                                                .mainCategories![
-                                                                    index]
-                                                                .slug!));
+
                                                         /*   homeBloc.add(
                                                   GetProductsWithoutFiltersEvent(
                                                       offset: 1,
@@ -464,31 +484,33 @@ class _TabsBarState extends State<TabsBar> {
                                                       selectedProssesType:
                                                           'category'));*/
                                                       },
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
+                                                      child: Stack(
                                                         children: [
-                                                          SvgNetworkWidget(
-                                                            svgUrl: mainCategory
-                                                                .flatPhotoPath!
-                                                                .filePath
-                                                                .toString(),
-                                                            height: 20,
-                                                            color: state.tabIndex ==
-                                                                    index
-                                                                ? Colors.black
-                                                                : Color(
-                                                                    0xffC4C2C2),
-                                                          ),
-                                                          4.verticalSpace,
-                                                          MyTextWidget(
-                                                            mainCategory.name
-                                                                .toString(),
-                                                            maxLines: 1,
-                                                            style: textTheme
-                                                                .overline?.lr
-                                                                .copyWith(
+                                                          Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              SvgNetworkWidget(
+                                                                svgUrl: mainCategory
+                                                                    .flatPhotoPath!
+                                                                    .filePath
+                                                                    .toString(),
+                                                                height: 20,
+                                                                color: categoryIndexTap ==
+                                                                        index
+                                                                    ? Colors
+                                                                        .black
+                                                                    : Color(
+                                                                        0xffC4C2C2),
+                                                              ),
+                                                              4.verticalSpace,
+                                                              MyTextWidget(
+                                                                mainCategory
+                                                                    .name
+                                                                    .toString(),
+                                                                maxLines: 1,
+                                                                style: textTheme.overline?.lr.copyWith(
                                                                     letterSpacing:
                                                                         0,
                                                                     color: state.tabIndex !=
@@ -497,7 +519,23 @@ class _TabsBarState extends State<TabsBar> {
                                                                             0xffC4C2C2)
                                                                         : Color(
                                                                             0xff505050)),
+                                                              ),
+                                                            ],
                                                           ),
+                                                          Positioned(
+                                                            top: 0,
+                                                            left: 0,
+                                                            child: Visibility(
+                                                                visible:
+                                                                    categoryIndexTap ==
+                                                                        index,
+                                                                child:
+                                                                    FilterSelectedMark(
+                                                                        width:
+                                                                            12,
+                                                                        height:
+                                                                            12)),
+                                                          )
                                                         ],
                                                       ),
                                                     ));
