@@ -670,8 +670,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                 ),
                                                 Center(
                                                     child: CountryDropdown(
-                                                  key: Key(WidgetsKey
-                                                      .countryDropDownKey),
+                                                  key: WidgetsKey.kTestMode
+                                                      ? Key(WidgetsKey
+                                                          .countryDropDownKey)
+                                                      : null,
                                                   countries: homestate
                                                               .getAllowedCountriesModel !=
                                                           null
@@ -684,8 +686,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                 )),
                                                 SizedBox(height: 80),
                                                 ElevatedButton(
-                                                  key: Key(WidgetsKey
-                                                      .chooseCountryButtonKey),
+                                                  key: WidgetsKey.kTestMode
+                                                      ? Key(WidgetsKey
+                                                          .chooseCountryButtonKey)
+                                                      : null,
                                                   onPressed: () {
                                                     if (_prefsRepository
                                                             .userChoosedCountryIso !=

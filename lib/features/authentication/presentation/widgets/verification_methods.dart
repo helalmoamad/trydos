@@ -122,7 +122,9 @@ class VerificationMethods extends StatelessWidget {
               children: [
                 Expanded(
                   child: InkWell(
-                    key: Key(WidgetsKey.chooseWhatsappButtonKey),
+                    key: WidgetsKey.kTestMode
+                        ? Key(WidgetsKey.chooseWhatsappButtonKey)
+                        : null,
                     highlightColor: Colors.transparent,
                     splashColor: Colors.transparent,
                     onTap: () {

@@ -78,7 +78,9 @@ class _StoriesListState extends State<StoriesList> {
                     switch (state.getStoriesStatus) {
                       case GetStoriesStatus.success:
                         return SizedBox(
-                            key: Key(WidgetsKey.storiesSuccessStatusKey),
+                            key: WidgetsKey.kTestMode
+                                ? Key(WidgetsKey.storiesSuccessStatusKey)
+                                : null,
                             height: 220,
                             child: Directionality(
                               textDirection: ui.TextDirection.ltr,
@@ -474,16 +476,19 @@ class _StoriesListState extends State<StoriesList> {
                                                 width: 100,
                                                 height: 150,
                                                 decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(20.0),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20.0),
                                                   boxShadow: [
                                                     BoxShadow(
-                                                      color: const Color(0xff000000)
+                                                      color: const Color(
+                                                              0xff000000)
                                                           .withOpacity(0.4),
                                                       offset: Offset(0, 3),
                                                       blurRadius: 6,
                                                     )
-                                                  ],)
-                                            ),
+                                                  ],
+                                                )),
                                             Positioned(
                                                 left: 0,
                                                 top: 0,

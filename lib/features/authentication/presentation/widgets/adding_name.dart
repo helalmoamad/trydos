@@ -153,7 +153,9 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                       valueListenable: displaySubmit,
                       builder: (context, display, _) {
                         return NameFormField(
-                          key: Key(WidgetsKey.nameFormFieldKey),
+                          key: WidgetsKey.kTestMode
+                              ? Key(WidgetsKey.nameFormFieldKey)
+                              : null,
                           validator: ((value) {
                             if (value!.length < 8) {
                               return LocaleKeys.must_be_at_least_8_characters
@@ -176,7 +178,9 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                                     height: 15,
                                   )
                                 : InkWell(
-                                    key: Key(WidgetsKey.confirmNameButtonKey),
+                                    key: WidgetsKey.kTestMode
+                                        ? Key(WidgetsKey.confirmNameButtonKey)
+                                        : null,
                                     onTap: () {
                                       if (!widget.fromLogin) {
                                         BlocProvider.of<AuthBloc>(context)
