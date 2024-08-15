@@ -62,7 +62,7 @@ void main() {
         successMessage: 'Find productsList  Success',
         failedMessage: 'Find productsList  failed',
       );
-      //////////// get first product name & id befor search from productsList //////////////
+      //////////// get first product name & id before search from productsList //////////////
       final productKey = Key('${WidgetsKey.productInBoutiqueListKey}0');
 
       String productNameBeforeSearch = tester

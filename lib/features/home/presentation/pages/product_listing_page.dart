@@ -423,7 +423,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               20.0),
                                                                   child:
                                                                       AnimatedSearchBar(
-                                                                        key: Key(WidgetsKey.productListingSearchInputKey),
+                                                                    key: Key(
+                                                                        WidgetsKey
+                                                                            .productListingSearchInputKey),
                                                                     autoFocus:
                                                                         false,
                                                                     width:
@@ -1091,14 +1093,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   pinned: !isExpanded,
                                                   surfaceTintColor: Colors
                                                       .transparent,
-                                                  backgroundColor: colorScheme
-                                                      .white,
+                                                  backgroundColor:
+                                                      colorScheme.white,
                                                   automaticallyImplyLeading:
                                                       false,
                                                   titleSpacing: 0,
                                                   toolbarHeight: isExpanded
                                                       ? 860
-                                                      : (state.getProductFiltersModel[key]?.filters == null &&
+                                                      : (state.getProductFiltersModel[key]?.filters ==
+                                                                  null &&
                                                               state.getProductFiltersStatus[key] !=
                                                                   GetProductFiltersStatus
                                                                       .loading)
@@ -1112,8 +1115,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               : 115,
                                                   flexibleSpace:
                                                       StackedFiltersList(
-                                                  key: Key(WidgetsKey
-                                                      .productListFilterKey),
+                                                          key: Key(WidgetsKey
+                                                              .productListFilterKey),
                                                           textController:
                                                               controller,
                                                           hideTitle: false,
@@ -1129,14 +1132,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             filterPageExpanded
                                                                 .value = false;
                                                           },
-                                                          displayAppliedFiltersOnly: (state
-                                                                      .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
-                                                                          '${state.cashedOrginalBoutique ? 'withoutFilter' : ''}' +
-                                                                          '${(widget.category ?? '')}']
-                                                                      ?.items
-                                                                      .length ??
-                                                                  1) ==
-                                                              1,
+                                                          displayAppliedFiltersOnly:
+                                                              (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ''}' + '${(widget.category ?? '')}']?.items.length ??
+                                                                      1) ==
+                                                                  1,
                                                           category:
                                                               widget.category,
                                                           boutiqueSlug: widget
@@ -1238,8 +1237,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               .success &&
                                                       !state
                                                           .cashedOrginalBoutique)) {
-                                                return ProductListingLoading(key: Key(WidgetsKey
-                                                    .boutiqueProductListingLoadingKey),);
+                                                return ProductListingLoading(
+                                                  key: Key(WidgetsKey
+                                                      .boutiqueProductListingLoadingKey),
+                                                );
                                               }
                                               List<filter_products.Products>
                                                   products = [];
