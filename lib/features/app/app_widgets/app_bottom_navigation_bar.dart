@@ -21,6 +21,8 @@ import 'package:trydos/features/authentication/presentation/pages/login_page.dar
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_page.dart';
 
@@ -45,11 +47,13 @@ class AppBottomNavBar extends StatefulWidget {
 
 class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
   late AppBloc appBloc;
+  late HomeBloc homeBloc;
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
   @override
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
   }
 
@@ -236,6 +240,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       Navigator.of(context).pop();
                     }
                     appBloc.add(ChangeBasePage(0));
+                    homeBloc.add(ResetAllSelectedAppliedFilterEvent());
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
