@@ -232,6 +232,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                 height: 10,
               )
             },
+            if ((widget.displayAppliedFiltersOnly && !isExpanded)) ...{
+              SizedBox.shrink()
+            },
             if ((!widget.displayAppliedFiltersOnly && !isExpanded) ||
                 isExpanded) ...{
               SizedBox(
@@ -302,18 +305,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     SizedBox(
                                       height: 10,
                                     ),
-                                    if (state
-                                                .getProductListingWithFiltersPaginationModels[
-                                                    '${widget.boutiqueSlug}' +
-                                                        '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
-                                                        '${(widget.category ?? '')}']
-                                                ?.paginationStatus !=
-                                            PaginationStatus.success ||
-                                        state.getProductFiltersStatus[key] !=
-                                            GetProductFiltersStatus.success)
-                                      TrydosLoader(
-                                        size: 20,
-                                      )
                                   ],
                                 );
                               }),
