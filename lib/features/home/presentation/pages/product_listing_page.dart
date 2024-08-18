@@ -843,16 +843,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           HomeBloc,
                                                                           HomeState>(
                                                                         buildWhen: (p,c){
-                                                                          return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${c.cashedOrginalBoutique ? 'withoutFilter' : ''}' + '${(widget.category ?? '')}']?.items.length ??
-                                                                              1) != (c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${c.cashedOrginalBoutique ? 'withoutFilter' : ''}' + '${(widget.category ?? '')}']?.items.length ??
-                                                                              1) && (c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${c.cashedOrginalBoutique ? 'withoutFilter' : ''}' + '${(widget.category ?? '')}']?.items.length ??
-                                                                              1) == 1 ;
+                                                                          return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${p.cashedOrginalBoutique ? 'withoutFilter' : p.idForRequest}' + '${(widget.category ?? '')}']?.items.length) != (c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${c.cashedOrginalBoutique ? 'withoutFilter' : c.idForRequest}' + '${(widget.category ?? '')}']?.items.length
+                                                                          );
                                                                         },
                                                                         builder:
                                                                             (context,
                                                                                 state) {
-                                                                          if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ''}' + '${(widget.category ?? '')}']?.items.length ??
-                                                                                  1) ==
+                                                                          if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ??
+                                                                                  0) ==
                                                                               1) {
                                                                             return SizedBox
                                                                                 .shrink();
