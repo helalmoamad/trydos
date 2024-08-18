@@ -420,33 +420,28 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         bool>(
                                                                     valueListenable:
                                                                         displayBoutiqueIconInAppBar,
+                                                                    child: Padding(
+                                                                      padding:
+                                                                      EdgeInsetsDirectional.only(start: 30.w),
+                                                                      child:
+                                                                      SvgNetworkWidget(
+                                                                        svgUrl:
+                                                                        widget.boutiqueIcon ?? "",
+                                                                        height:
+                                                                        20,
+                                                                      ),
+                                                                    ),
                                                                     builder:
                                                                         (context,
                                                                             display,
-                                                                            _) {
-                                                                      return Visibility(
-                                                                        visible:
-                                                                            display,
-                                                                        child:
-                                                                            Padding(
-                                                                          padding:
-                                                                              EdgeInsetsDirectional.only(start: 30.w),
-                                                                          child:
-                                                                              SvgNetworkWidget(
-                                                                            svgUrl:
-                                                                                widget.boutiqueIcon ?? "",
-                                                                            height:
-                                                                                20,
-                                                                          ),
-                                                                        ),
-                                                                      );
+                                                                            child) {
+                                                                      return display ? child! : SizedBox.shrink();
                                                                     }),
                                                                 Padding(
                                                                   padding:
-                                                                      const EdgeInsetsDirectional
+                                                                       EdgeInsetsDirectional
                                                                           .only(
-                                                                          end:
-                                                                              20.0),
+                                                                           end: searchOpen ? 10 :  20.0),
                                                                   child:
                                                                       AnimatedSearchBar(
                                                                     key: WidgetsKey
@@ -457,8 +452,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     autoFocus:
                                                                         false,
                                                                     width:
-                                                                        1.sw -
-                                                                            140,
+                                                                        isExpanded ? (1.sw -
+                                                                            90) : (1.sw -
+                                                                            120),
                                                                     height: 40,
                                                                     onClickClose:
                                                                         () {
@@ -827,104 +823,112 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         hideTrendingAndHistory,
                                                                   ),
                                                                 ),
-                                                                Row(
-                                                                  children: [
-                                                                    isExpanded
-                                                                        ? SizedBox
-                                                                            .shrink()
-                                                                        : Padding(
-                                                                            padding:
-                                                                                const EdgeInsetsDirectional.only(end: 20.0),
-                                                                            child: SvgPicture.asset(AppAssets.sortingSvg,
-                                                                                width: 20,
-                                                                                height: 20),
-                                                                          ),
-                                                                    BlocBuilder<
-                                                                        HomeBloc,
-                                                                        HomeState>(
-                                                                      builder:
-                                                                          (context,
-                                                                              state) {
-                                                                        if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ?? 1) ==
-                                                                                1 &&
-                                                                            state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus ==
-                                                                                PaginationStatus.success) {
-                                                                          return SizedBox
-                                                                              .shrink();
-                                                                        }
-                                                                        return Padding(
-                                                                            padding:
-                                                                                const EdgeInsetsDirectional.only(end: 20.0),
-                                                                            child: GestureDetector(
-                                                                              onTap: () {
-                                                                                if (!filterPageExpanded.value) {
-                                                                                  prefAppliedFilters = homeBloc.state.appliedFiltersByUser[key]?.filters;
-                                                                                  homeBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
-                                                                                  homeBloc.add(ChangeSelectedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, filtersChoosedByUser: GetProductFiltersModel(filters: homeBloc.state.appliedFiltersByUser[key]?.filters)));
-                                                                                  homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, resetAppliedFilters: true));
-                                                                                }
-
-                                                                                resetSearchAfterSearchingWhileRemoveSearch = false;
-
-                                                                                filterPageExpanded.value = true;
-                                                                              },
-                                                                              child: SvgPicture.asset(
-                                                                                AppAssets.filtersSvg,
-                                                                                width: 20,
-                                                                                height: 20,
-                                                                                color: isExpanded ? Color(0xffFF5F61) : null,
-                                                                              ),
-                                                                            ));
-                                                                      },
-                                                                    ),
-                                                                    GestureDetector(
-                                                                        onTap:
-                                                                            () {
-                                                                          if (isExpanded) {
-                                                                            homeBloc.add(ChangeAppliedFiltersEvent(
-                                                                                boutiqueSlug: widget.boutiqueSlug,
-                                                                                category: widget.category,
-                                                                                filtersAppliedByUser: GetProductFiltersModel(filters: homeBloc.state.prefAppliedFilterForExtendFilter ?? Filter())));
-                                                                            homeBloc.add(GetProductFiltersEvent(
-                                                                                fromHomePageSearch: widget.fromSearch,
-                                                                                cashedOrginalBoutique: false,
-                                                                                boutiqueSlug: widget.boutiqueSlug,
-                                                                                category: widget.category,
-                                                                                searchText: widget.searchText,
-                                                                                filtersChoosedByUser: GetProductFiltersModel(filters: homeBloc.state.prefAppliedFilterForExtendFilter ?? Filter())));
-
-                                                                            resetSearchAfterSearchingWhileRemoveSearch =
-                                                                                false;
-
-                                                                            filterPageExpanded.value =
-                                                                                false;
-                                                                          }
+                                                                AnimatedSize(
+                                                                  curve: Curves.easeOut,
+                                                                  duration: Duration(milliseconds: 400),
+                                                                  reverseDuration: Duration(milliseconds: 400),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      isExpanded
+                                                                          ? SizedBox
+                                                                              .shrink()
+                                                                          : Padding(
+                                                                              padding:
+                                                                                   EdgeInsetsDirectional.only(end: searchOpen ? 10 :  20.0),
+                                                                              child: SvgPicture.asset(AppAssets.sortingSvg,
+                                                                                  width: 20,
+                                                                                  height: 20),
+                                                                            ),
+                                                                      BlocBuilder<
+                                                                          HomeBloc,
+                                                                          HomeState>(
+                                                                        buildWhen: (p,c){
+                                                                          return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${c.cashedOrginalBoutique ? 'withoutFilter' : ''}' + '${(widget.category ?? '')}']?.items.length ??
+                                                                              1) != (c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${c.cashedOrginalBoutique ? 'withoutFilter' : ''}' + '${(widget.category ?? '')}']?.items.length ??
+                                                                              1) && (c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${c.cashedOrginalBoutique ? 'withoutFilter' : ''}' + '${(widget.category ?? '')}']?.items.length ??
+                                                                              1) == 1 ;
                                                                         },
-                                                                        child:
-                                                                            SizedBox(
-                                                                          height:
-                                                                              30,
+                                                                        builder:
+                                                                            (context,
+                                                                                state) {
+                                                                          if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ''}' + '${(widget.category ?? '')}']?.items.length ??
+                                                                                  1) ==
+                                                                              1) {
+                                                                            return SizedBox
+                                                                                .shrink();
+                                                                          }
+                                                                          return Padding(
+                                                                              padding:
+                                                                                   EdgeInsetsDirectional.only(end: searchOpen ? 10 :  20.0),
+                                                                              child: InkWell(
+                                                                                onTap: () {
+
+                                                                                  if (!filterPageExpanded.value) {
+                                                                                    filterPageExpanded.value = true;
+                                                                                    controller.clear();
+                                                                                    resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                    prefAppliedFilters = homeBloc.state.appliedFiltersByUser[key]?.filters;
+                                                                                    homeBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
+                                                                                    homeBloc.add(ChangeSelectedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, filtersChoosedByUser: GetProductFiltersModel(filters: homeBloc.state.appliedFiltersByUser[key]?.filters)));
+                                                                                    homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, resetAppliedFilters: true));
+                                                                                  }
+                                                                                },
+                                                                                child: SvgPicture.asset(
+                                                                                  AppAssets.filtersSvg,
+                                                                                  width: 20,
+                                                                                  height: 20,
+                                                                                  color: isExpanded ? Color(0xffFF5F61) : null,
+                                                                                ),
+                                                                              ));
+                                                                        },
+                                                                      ),
+                                                                      InkWell(
+                                                                          onTap:
+                                                                              () {
+                                                                                filterPageExpanded.value =
+                                                                                false;
+                                                                                controller.clear();
+                                                                                resetSearchAfterSearchingWhileRemoveSearch =
+                                                                                false;
+
+                                                                            if (isExpanded) {
+                                                                              homeBloc.add(ChangeAppliedFiltersEvent(
+                                                                                  boutiqueSlug: widget.boutiqueSlug,
+                                                                                  category: widget.category,
+                                                                                  filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                              homeBloc.add(GetProductFiltersEvent(
+                                                                                  fromHomePageSearch: widget.fromSearch,
+                                                                                  cashedOrginalBoutique: false,
+                                                                                  boutiqueSlug: widget.boutiqueSlug,
+                                                                                  category: widget.category,
+                                                                                  searchText: widget.searchText,
+                                                                                  filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                            }
+                                                                          },
                                                                           child:
-                                                                              Row(children: [
-                                                                            !isExpanded
-                                                                                ? SvgPicture.asset(
-                                                                                    AppAssets.shareSvg,
-                                                                                    width: 20,
-                                                                                    height: 20,
-                                                                                    color: Color(0xff3C3C3C),
-                                                                                  )
-                                                                                : GestureDetector(
-                                                                                    child: SvgPicture.asset(
-                                                                                      AppAssets.closeSvg,
-                                                                                      width: 15,
-                                                                                      height: 15,
-                                                                                      color: Color(0xffFF5F61),
-                                                                                    ),
+                                                                              SizedBox(
+                                                                            height:
+                                                                                30,
+                                                                            child:
+                                                                                Row(children: [
+                                                                                  SizedBox(width: !isExpanded ? 10.0 : 12.5),
+                                                                              !isExpanded
+                                                                                  ? SvgPicture.asset(
+                                                                                      AppAssets.shareSvg,
+                                                                                      width: 20,
+                                                                                      height: 20,
+                                                                                      color: Color(0xff3C3C3C),
+                                                                                    )
+                                                                                  : SvgPicture.asset(
+                                                                                    AppAssets.closeSvg,
+                                                                                    width: 15,
+                                                                                    height: 15,
+                                                                                    color: Color(0xffFF5F61),
                                                                                   ),
-                                                                            SizedBox(width: !isExpanded ? 10.0 : 25)
-                                                                          ]),
-                                                                        )),
-                                                                  ],
+                                                                              SizedBox(width: !isExpanded ? 10.0 : 12.5)
+                                                                            ]),                                                                          )),
+                                                                    ],
+                                                                  ),
                                                                 )
                                                               ],
                                                               withShadow:
@@ -1372,7 +1376,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     childCount: products.length,
                                                     (BuildContext context,
                                                         int index) {
-                                                      return GestureDetector(
+                                                      return InkWell(
                                                         onTap: () async {
                                                           Future.delayed(
                                                               Duration(
