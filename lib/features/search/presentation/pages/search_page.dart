@@ -103,6 +103,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
       onPopInvoked: (pop) {
         widget.controller.clear();
         appBloc.add(ChangeBasePage(0));
+        homeBloc.add(ResetAllSelectedAppliedFilterEvent());
         appBloc.add(HideBottomNavigationBar(false));
       },
       child: Scaffold(
@@ -114,9 +115,13 @@ class _SearchPageState extends ThemeState<SearchPage> {
                     current.getProductFiltersStatus[key] ||
                 previous.countOfProductExpectedByFiltering !=
                     current.countOfProductExpectedByFiltering ||
-                previous.getProductListingWithFiltersPaginationModels[key]
+                previous
+                        .getProductListingWithFiltersPaginationModels[
+                            key + "${current.idForRequest}"]
                         ?.paginationStatus !=
-                    current.getProductListingWithFiltersPaginationModels[key]
+                    current
+                        .getProductListingWithFiltersPaginationModels[
+                            key + "${current.idForRequest}"]
                         ?.paginationStatus;
           },
           builder: (context, state) {
@@ -166,12 +171,12 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   SliverToBoxAdapter(
                       child: SizedBox(
                     height: state.getProductListingWithFiltersPaginationModels[
-                                key] ==
+                                key + "${state.idForRequest}"] ==
                             null
                         ? 250.h
                         : state
                                 .getProductListingWithFiltersPaginationModels[
-                                    key]!
+                                    key + "${state.idForRequest}"]!
                                 .items
                                 .isNullOrEmpty
                             ? 250.h
@@ -293,7 +298,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                             ?.filters ??
                                         Filter();
                                     String text = widget.controller.text;
-                                    widget.controller.clear();
+
                                     homeBloc.add(ChangeAppliedFiltersEvent(
                                       boutiqueSlug: key,
                                       filtersAppliedByUser:
@@ -312,6 +317,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                     HelperFunctions.slidingNavigation(
                                         context,
                                         ProductListingPage(
+                                          controllerFormSearchPage:
+                                              widget.controller,
                                           searchText: text,
                                           boutiqueIcon: "",
                                           fromSearch: true,

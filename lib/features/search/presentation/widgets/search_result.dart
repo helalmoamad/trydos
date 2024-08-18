@@ -54,7 +54,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
           String key = 'search';
           if (state
                   .getProductListingWithFiltersPaginationModels['${key}' +
-                      '${state.cashedOrginalBoutique ? 'withoutFilter' : ''}']
+                      '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}']
                   ?.paginationStatus ==
               PaginationStatus.loading) {
             return Column(children: [
@@ -83,10 +83,14 @@ class _SearchResultState extends ThemeState<SearchResult> {
                   ))
             ]);
           }
-          if (state.getProductListingWithFiltersPaginationModels[key]
+          if (state
+                      .getProductListingWithFiltersPaginationModels[
+                          key + "${state.idForRequest}"]
                       ?.paginationStatus !=
                   PaginationStatus.success ||
-              state.getProductListingWithFiltersPaginationModels[key] == null ||
+              state.getProductListingWithFiltersPaginationModels[
+                      key + "${state.idForRequest}"] ==
+                  null ||
               !value) {
             return SizedBox.shrink();
           }
@@ -178,10 +182,15 @@ class _SearchResultState extends ThemeState<SearchResult> {
               ],
             );*/
 
-          if (state.getProductListingWithFiltersPaginationModels[key] == null) {
+          if (state.getProductListingWithFiltersPaginationModels[
+                  key + "${state.idForRequest}"] ==
+              null) {
             return SizedBox.shrink();
           }
-          if (state.getProductListingWithFiltersPaginationModels[key]!.items
+          if (state
+              .getProductListingWithFiltersPaginationModels[
+                  key + "${state.idForRequest}"]!
+              .items
               .isNullOrEmpty) {
             return Padding(
               padding: const EdgeInsets.all(10),
@@ -226,7 +235,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                               ProductDetailsPage(
                                 productItem: state
                                     .getProductListingWithFiltersPaginationModels[
-                                        key]!
+                                        key + "${state.idForRequest}"]!
                                     .items[index],
                               ));
                         },
@@ -247,7 +256,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                                   child: MyTextWidget(
                                     state
                                         .getProductListingWithFiltersPaginationModels[
-                                            key]!
+                                            key + "${state.idForRequest}"]!
                                         .items[index]
                                         .name!,
                                     textAlign: TextAlign.start,
@@ -280,7 +289,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                                 image: NetworkImage(
                                   state
                                       .getProductListingWithFiltersPaginationModels[
-                                          key]!
+                                          key + "${state.idForRequest}"]!
                                       .items[index]
                                       .images![0]
                                       .filePath!,
@@ -289,7 +298,8 @@ class _SearchResultState extends ThemeState<SearchResult> {
                     ],
                   ),
                   itemCount: state
-                      .getProductListingWithFiltersPaginationModels[key]!
+                      .getProductListingWithFiltersPaginationModels[
+                          key + "${state.idForRequest}"]!
                       .items
                       .length,
                   separatorBuilder: (ctx, index) => SizedBox(

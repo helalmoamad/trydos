@@ -27,6 +27,8 @@ import 'package:trydos/features/chat/presentation/pages/calls_page_content.dart'
 import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/stories_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/story_page_content.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/widgets_key.dart';
 import '../../../../common/helper/show_message.dart';
@@ -121,6 +123,8 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
     return WillPopScope(
       onWillPop: () async {
         BlocProvider.of<AppBloc>(context).add(ChangeBasePage(0));
+        BlocProvider.of<HomeBloc>(context)
+            .add(ResetAllSelectedAppliedFilterEvent());
         return false;
       },
       child: BlocListener<CallsBloc, CallsState>(

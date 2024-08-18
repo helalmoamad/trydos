@@ -65,17 +65,17 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
             HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
             bool isSelected = (homeBloc.state.appliedFiltersByUser[key]?.filters
                         ?.prices?.minPrice ==
-                    widget.priceRanges[index].minPrice) &&
+                    widget.priceRanges[index].maxPrice) &&
                 (homeBloc.state.appliedFiltersByUser[key]?.filters?.prices
                         ?.maxPrice ==
-                    widget.priceRanges[index].maxPrice);
+                    widget.priceRanges[index].minPrice);
             return Stack(
               children: [
                 GestureDetector(
                   onTap: () {
-                    /*  HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
+                    HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
                     Filter? prevChoosedOrAppliedFilterToAddToIt =
-                        homeBloc.state.choosedFiltersByUser[key]?.filters;
+                        homeBloc.state.appliedFiltersByUser[key]?.filters;
                     if (prevChoosedOrAppliedFilterToAddToIt == null) {
                       prevChoosedOrAppliedFilterToAddToIt = Filter();
                     }
@@ -89,14 +89,14 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                                   prices: Prices(
                                       currencySymbol: widget.currencySymbol,
                                       minPrice:
-                                          widget.priceRanges[index].minPrice,
+                                          widget.priceRanges[index].maxPrice,
                                       maxPrice:
-                                          widget.priceRanges[index].maxPrice));
+                                          widget.priceRanges[index].minPrice));
                     } else if (prevChoosedOrAppliedFilterToAddToIt
                                 .prices!.minPrice !=
-                            widget.priceRanges[index].minPrice ||
+                            widget.priceRanges[index].maxPrice ||
                         prevChoosedOrAppliedFilterToAddToIt.prices!.maxPrice !=
-                            widget.priceRanges[index].maxPrice) {
+                            widget.priceRanges[index].minPrice) {
                       print(
                           "*********************************************************************");
                       prevChoosedOrAppliedFilterToAddToIt =
@@ -122,13 +122,18 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                                       prevChoosedOrAppliedFilterToAddToIt
                                           .searchText);
                     }
-                    homeBloc.add(ChangeSelectedFiltersEvent(
-                      requestToUpdateFilters: true,
+                    homeBloc.add(ChangeAppliedFiltersEvent(
                       category: widget.category,
                       boutiqueSlug: widget.boutiqueSlug,
-                      filtersChoosedByUser: GetProductFiltersModel(
+                      filtersAppliedByUser: GetProductFiltersModel(
                           filters: prevChoosedOrAppliedFilterToAddToIt),
-                    ));*/
+                    ));
+                    homeBloc.add(GetProductsWithFiltersEvent(
+                        fromSearch: widget.fromHomeSearch,
+                        searchText: widget.searchText,
+                        boutiqueSlug: widget.boutiqueSlug,
+                        category: widget.category,
+                        offset: 1));
                   },
                   child: Container(
                     height: 50,

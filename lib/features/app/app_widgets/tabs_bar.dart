@@ -22,7 +22,7 @@ import '../../../common/constant/widgets_key.dart';
 import '../../../core/utils/responsive_padding.dart';
 import '../../home/data/models/get_product_filters_model.dart';
 import '../../home/data/models/get_product_listing_with_filters_model.dart'
-    as product_listing;
+as product_listing;
 import '../../home/presentation/manager/home_bloc.dart';
 import '../../home/presentation/manager/home_state.dart';
 import '../animated_search_bar/animated_search_bar.dart';
@@ -71,8 +71,8 @@ class _TabsBarState extends State<TabsBar> {
     return SafeArea(
         child: BlocBuilder<HomeBloc, HomeState>(
             buildWhen: (oldState, newState) =>
-                oldState.getMainCategoriesStatus ==
-                    GetMainCategoriesStatus.loading &&
+            oldState.getMainCategoriesStatus ==
+                GetMainCategoriesStatus.loading &&
                 newState.getMainCategoriesStatus ==
                     GetMainCategoriesStatus.success,
             builder: (context, homeState) {
@@ -98,16 +98,12 @@ class _TabsBarState extends State<TabsBar> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(
                           5,
-                          (index) => TrydosLoader(
-                                size: 15.sp,
-                              ))),
+                              (index) => TrydosLoader(
+                            size: 15.sp,
+                          ))),
                 );
               }
-              return BlocBuilder<AppBloc, AppState>(
-                  buildWhen: (oldState, newState) =>
-                      oldState.tabIndex != newState.tabIndex,
-                  builder: (context, state) {
-                    return Container(
+              return Container(
                         width: 1.sw,
                         height: 55.h,
                         padding: EdgeInsets.all(4.r),
@@ -126,13 +122,7 @@ class _TabsBarState extends State<TabsBar> {
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                BlocBuilder<AppBloc, AppState>(
-                                  buildWhen: (p, c) =>
-                                      p.currentIndex != c.currentIndex ||
-                                      p.currentIndexForSearch !=
-                                          c.currentIndexForSearch,
-                                  builder: (context, state) {
-                                    return AnimatedSearchBar(
+                                 AnimatedSearchBar(
                                       autoFocus: true,
                                       onFieldSubmitted: (text) {
                                         if (text.replaceAll(" ", "").length >
@@ -152,49 +142,51 @@ class _TabsBarState extends State<TabsBar> {
                                       onClickClose: () {
                                         if (widget.controller.text.length > 0) {
                                           Filter filters = homeBloc
-                                                  .state
-                                                  .choosedFiltersByUser[
-                                                      'search']
-                                                  ?.filters ??
+                                              .state
+                                              .choosedFiltersByUser[
+                                          'search']
+                                              ?.filters ??
                                               Filter();
                                           Filter appliedFilters = homeBloc
-                                                  .state
-                                                  .appliedFiltersByUser[
-                                                      'search']
-                                                  ?.filters ??
+                                              .state
+                                              .appliedFiltersByUser[
+                                          'search']
+                                              ?.filters ??
                                               Filter();
                                           homeBloc
                                               .add(ChangeAppliedFiltersEvent(
                                             boutiqueSlug: 'search',
                                             filtersAppliedByUser:
-                                                GetProductFiltersModel(
-                                                    filters: appliedFilters
-                                                        .copyWithSaveOtherField(
-                                              prices: appliedFilters.prices,
-                                              searchText: null,
-                                            )),
+                                            GetProductFiltersModel(
+                                                filters: appliedFilters
+                                                    .copyWithSaveOtherField(
+                                                  prices: appliedFilters.prices,
+                                                  searchText: null,
+                                                )),
                                           ));
                                           homeBloc
                                               .add(ChangeSelectedFiltersEvent(
                                             boutiqueSlug: 'search',
                                             fromHomePageSearch: true,
                                             filtersChoosedByUser:
-                                                GetProductFiltersModel(
-                                                    filters: filters
-                                                        .copyWithSaveOtherField(
-                                                            prices:
-                                                                filters.prices,
-                                                            searchText: null)),
+                                            GetProductFiltersModel(
+                                                filters: filters
+                                                    .copyWithSaveOtherField(
+                                                    prices:
+                                                    filters.prices,
+                                                    searchText: null)),
                                           ));
                                           widget.buildSearchResult.value = 0;
                                           widget.controller.clear();
                                           resetSearchAfterSearchingWhileRemoveSearch =
-                                              false;
+                                          false;
                                           widget.appearTrendingAndHistory
                                               .value = true;
                                           return true;
                                         } else {
                                           appBloc.add(ChangeBasePage(0));
+                                          homeBloc.add(
+                                              ResetAllSelectedAppliedFilterEvent());
                                           appBloc.add(
                                               HideBottomNavigationBar(false));
                                         }
@@ -205,7 +197,7 @@ class _TabsBarState extends State<TabsBar> {
                                       onSuffixTap: () {
                                         widget.buildSearchResult.value = 1;
                                         widget.appearTrendingAndHistory.value =
-                                            true;
+                                        true;
 
                                         Future.delayed(
                                             Duration(milliseconds: 300), () {
@@ -331,29 +323,29 @@ class _TabsBarState extends State<TabsBar> {
                                         ),
                                         //context.colorScheme.white,
                                         contentPadding:
-                                            HWEdgeInsetsDirectional.only(
-                                                start: 20,
-                                                end: 10,
-                                                bottom: 12,
-                                                top: 12),
+                                        HWEdgeInsetsDirectional.only(
+                                            start: 20,
+                                            end: 10,
+                                            bottom: 12,
+                                            top: 12),
                                         hintText: 'Search',
                                         hintStyle: context
                                             .textTheme.subtitle1?.lq
                                             .copyWith(color: Color(0xffC4C2C2)),
                                         labelStyle: context.textTheme.bodyText2
                                             ?.copyWith(
-                                                color:
-                                                    context.colorScheme.hint),
+                                            color:
+                                            context.colorScheme.hint),
                                       ),
                                       onChanged: (String text) {
                                         if (text.length > 2) {
                                           resetSearchAfterSearchingWhileRemoveSearch =
-                                              true;
+                                          true;
                                           Filter filters = homeBloc
-                                                  .state
-                                                  .choosedFiltersByUser[
-                                                      'search']
-                                                  ?.filters ??
+                                              .state
+                                              .choosedFiltersByUser[
+                                          'search']
+                                              ?.filters ??
                                               Filter();
 
                                           homeBloc.add(
@@ -364,56 +356,75 @@ class _TabsBarState extends State<TabsBar> {
                                                   resetChoosedFilters: false,
                                                   fromSearch: true,
                                                   searchText: text));
-
-                                          homeBloc.add(GetProductFiltersEvent(
+                                          homeBloc
+                                              .add(ChangeSelectedFiltersEvent(
+                                            boutiqueSlug: 'search',
+                                            requestToUpdateFilters: true,
                                             fromHomePageSearch: true,
                                             filtersChoosedByUser:
-                                                GetProductFiltersModel(
-                                                    filters: filters
-                                                        .copyWithSaveOtherField(
-                                              prices: filters.prices,
-                                              searchText: text,
-                                            )),
-                                            searchText: text,
-                                            boutiqueSlug: 'search',
+                                            GetProductFiltersModel(
+                                                filters: filters
+                                                    .copyWithSaveOtherField(
+                                                  prices: filters.prices,
+                                                  searchText: text,
+                                                )),
                                           ));
 
                                           widget.buildSearchResult.value =
                                               text.length;
                                         }
+                                        if (text.length < 3) {
+                                          Filter filters = homeBloc
+                                              .state
+                                              .choosedFiltersByUser[
+                                          'search']
+                                              ?.filters ??
+                                              Filter();
+                                          homeBloc
+                                              .add(ChangeSelectedFiltersEvent(
+                                            boutiqueSlug: 'search',
+                                            requestToUpdateFilters: false,
+                                            fromHomePageSearch: true,
+                                            filtersChoosedByUser:
+                                            GetProductFiltersModel(
+                                                filters: filters
+                                                    .copyWithSaveOtherField(
+                                                  prices: filters.prices,
+                                                  searchText: null,
+                                                )),
+                                          ));
+                                        }
                                         if (text.length < 1 &&
                                             resetSearchAfterSearchingWhileRemoveSearch) {
                                           resetSearchAfterSearchingWhileRemoveSearch =
-                                              false;
+                                          false;
                                           Filter filters = homeBloc
-                                                  .state
-                                                  .choosedFiltersByUser[
-                                                      'search']
-                                                  ?.filters ??
+                                              .state
+                                              .choosedFiltersByUser[
+                                          'search']
+                                              ?.filters ??
                                               Filter();
-
-                                          homeBloc.add(GetProductFiltersEvent(
-                                            filtersChoosedByUser:
-                                                GetProductFiltersModel(
-                                                    filters: filters
-                                                        .copyWithSaveOtherField(
-                                              prices: filters.prices,
-                                              searchText: null,
-                                            )),
-                                            fromHomePageSearch: true,
-                                            searchText: null,
+                                          homeBloc
+                                              .add(ChangeSelectedFiltersEvent(
                                             boutiqueSlug: 'search',
+                                            requestToUpdateFilters: true,
+                                            fromHomePageSearch: true,
+                                            filtersChoosedByUser:
+                                            GetProductFiltersModel(
+                                                filters: filters
+                                                    .copyWithSaveOtherField(
+                                                  prices: filters.prices,
+                                                  searchText: null,
+                                                )),
                                           ));
                                         }
                                       },
                                       hideTrendingAndHistory:
-                                          widget.appearTrendingAndHistory,
-                                    );
-                                  },
-                                ),
+                                      widget.appearTrendingAndHistory,
+                                    ),
                                 BlocBuilder<AppBloc, AppState>(
                                   buildWhen: (p, c) =>
-                                      p.currentIndex != c.currentIndex,
+                                  p.currentIndex != c.currentIndex,
                                   builder: (context, state) {
                                     if (state.currentIndex != 4) {
                                       return SizedBox(
@@ -421,27 +432,27 @@ class _TabsBarState extends State<TabsBar> {
                                         child: Row(
                                             key: WidgetsKey.kTestMode
                                                 ? Key(WidgetsKey
-                                                    .mainCategoriesTabKey)
+                                                .mainCategoriesTabKey)
                                                 : null,
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                             children: List.generate(
                                               (homeState
-                                                      .mainCategoriesResponseModel
-                                                      ?.data
-                                                      ?.mainCategories
-                                                      ?.length ??
+                                                  .mainCategoriesResponseModel
+                                                  ?.data
+                                                  ?.mainCategories
+                                                  ?.length ??
                                                   0),
-                                              (index) {
+                                                  (index) {
                                                 MainCategory mainCategory =
-                                                    homeState
-                                                        .mainCategoriesResponseModel!
-                                                        .data!
-                                                        .mainCategories![index];
+                                                homeState
+                                                    .mainCategoriesResponseModel!
+                                                    .data!
+                                                    .mainCategories![index];
                                                 return Padding(
                                                     padding:
-                                                        HWEdgeInsetsDirectional
-                                                            .only(end: 15.0),
+                                                    HWEdgeInsetsDirectional
+                                                        .only(end: 6),
                                                     child: InkWell(
                                                       onTap: () {
                                                         if (categoryIndexTap !=
@@ -450,13 +461,13 @@ class _TabsBarState extends State<TabsBar> {
                                                               ChangeTab(index));
                                                           homeBloc.add(GetHomeBoutiqesEvent(
                                                               getWithPagination:
-                                                                  false,
+                                                              false,
                                                               offset: "1",
                                                               categorySlug: homeState
                                                                   .mainCategoriesResponseModel!
                                                                   .data!
                                                                   .mainCategories![
-                                                                      index]
+                                                              index]
                                                                   .slug!));
                                                           categoryIndexTap =
                                                               index;
@@ -467,10 +478,10 @@ class _TabsBarState extends State<TabsBar> {
                                                           homeBloc.add(
                                                               GetHomeBoutiqesEvent(
                                                                   categorySlug:
-                                                                      "Empty",
+                                                                  "Empty",
                                                                   offset: "1",
                                                                   getWithPagination:
-                                                                      false));
+                                                                  false));
                                                         }
 
                                                         /* appBloc.add(ChangeTab(index));
@@ -493,8 +504,8 @@ class _TabsBarState extends State<TabsBar> {
                                                         children: [
                                                           Column(
                                                             crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .center,
+                                                            CrossAxisAlignment
+                                                                .center,
                                                             children: [
                                                               SvgNetworkWidget(
                                                                 svgUrl: mainCategory
@@ -503,11 +514,11 @@ class _TabsBarState extends State<TabsBar> {
                                                                     .toString(),
                                                                 height: 20,
                                                                 color: categoryIndexTap ==
-                                                                        index
+                                                                    index
                                                                     ? Colors
-                                                                        .black
+                                                                    .black
                                                                     : Color(
-                                                                        0xffC4C2C2),
+                                                                    0xffC4C2C2),
                                                               ),
                                                               4.verticalSpace,
                                                               MyTextWidget(
@@ -517,13 +528,13 @@ class _TabsBarState extends State<TabsBar> {
                                                                 maxLines: 1,
                                                                 style: textTheme.overline?.lr.copyWith(
                                                                     letterSpacing:
-                                                                        0,
+                                                                    0,
                                                                     color: state.tabIndex !=
-                                                                            index
+                                                                        index
                                                                         ? Color(
-                                                                            0xffC4C2C2)
+                                                                        0xffC4C2C2)
                                                                         : Color(
-                                                                            0xff505050)),
+                                                                        0xff505050)),
                                                               ),
                                                             ],
                                                           ),
@@ -532,14 +543,14 @@ class _TabsBarState extends State<TabsBar> {
                                                             left: 0,
                                                             child: Visibility(
                                                                 visible:
-                                                                    categoryIndexTap ==
-                                                                        index,
+                                                                categoryIndexTap ==
+                                                                    index,
                                                                 child:
-                                                                    FilterSelectedMark(
-                                                                        width:
-                                                                            12,
-                                                                        height:
-                                                                            12)),
+                                                                FilterSelectedMark(
+                                                                    width:
+                                                                    12,
+                                                                    height:
+                                                                    12)),
                                                           )
                                                         ],
                                                       ),
@@ -553,7 +564,6 @@ class _TabsBarState extends State<TabsBar> {
                                 )
                               ]),
                         ));
-                  });
             }));
   }
 }

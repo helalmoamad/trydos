@@ -284,23 +284,24 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                               ///reverse == close
                               _con.reverse();
                             },
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                Container(
-                                  child: SvgPicture.asset(
+                            child: SizedBox(
+                              height: widget.height,
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  SvgPicture.asset(
                                     AppAssets.closeSvg,
                                     height: 15,
                                     width: 30,
                                     color: Color(0xffFF5F61),
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 25,
-                                ),
-                              ],
+                                  SizedBox(
+                                    width: 25,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                   ],
