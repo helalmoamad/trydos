@@ -420,28 +420,33 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         bool>(
                                                                     valueListenable:
                                                                         displayBoutiqueIconInAppBar,
-                                                                    child: Padding(
-                                                                      padding:
-                                                                      EdgeInsetsDirectional.only(start: 30.w),
+                                                                    child:
+                                                                        Padding(
+                                                                      padding: EdgeInsetsDirectional.only(
+                                                                          start:
+                                                                              30.w),
                                                                       child:
-                                                                      SvgNetworkWidget(
+                                                                          SvgNetworkWidget(
                                                                         svgUrl:
-                                                                        widget.boutiqueIcon ?? "",
+                                                                            widget.boutiqueIcon ??
+                                                                                "",
                                                                         height:
-                                                                        20,
+                                                                            20,
                                                                       ),
                                                                     ),
-                                                                    builder:
-                                                                        (context,
-                                                                            display,
-                                                                            child) {
-                                                                      return display ? child! : SizedBox.shrink();
+                                                                    builder: (context,
+                                                                        display,
+                                                                        child) {
+                                                                      return display
+                                                                          ? child!
+                                                                          : SizedBox
+                                                                              .shrink();
                                                                     }),
                                                                 Padding(
-                                                                  padding:
-                                                                       EdgeInsetsDirectional
-                                                                          .only(
-                                                                           end: searchOpen ? 10 :  20.0),
+                                                                  padding: EdgeInsetsDirectional.only(
+                                                                      end: searchOpen
+                                                                          ? 10
+                                                                          : 20.0),
                                                                   child:
                                                                       AnimatedSearchBar(
                                                                     key: WidgetsKey
@@ -451,9 +456,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         : null,
                                                                     autoFocus:
                                                                         false,
-                                                                    width:
-                                                                        isExpanded ? (1.sw -
-                                                                            90) : (1.sw -
+                                                                    width: isExpanded
+                                                                        ? (1.sw -
+                                                                            90)
+                                                                        : (1.sw -
                                                                             120),
                                                                     height: 40,
                                                                     onClickClose:
@@ -824,45 +830,43 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   ),
                                                                 ),
                                                                 AnimatedSize(
-                                                                  curve: Curves.easeOut,
-                                                                  duration: Duration(milliseconds: 400),
-                                                                  reverseDuration: Duration(milliseconds: 400),
+                                                                  curve: Curves
+                                                                      .easeOut,
+                                                                  duration: Duration(
+                                                                      milliseconds:
+                                                                          400),
+                                                                  reverseDuration:
+                                                                      Duration(
+                                                                          milliseconds:
+                                                                              400),
                                                                   child: Row(
                                                                     children: [
                                                                       isExpanded
                                                                           ? SizedBox
                                                                               .shrink()
                                                                           : Padding(
-                                                                              padding:
-                                                                                   EdgeInsetsDirectional.only(end: searchOpen ? 10 :  20.0),
-                                                                              child: SvgPicture.asset(AppAssets.sortingSvg,
-                                                                                  width: 20,
-                                                                                  height: 20),
+                                                                              padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
+                                                                              child: SvgPicture.asset(AppAssets.sortingSvg, width: 20, height: 20),
                                                                             ),
                                                                       BlocBuilder<
                                                                           HomeBloc,
                                                                           HomeState>(
                                                                         buildWhen: (p,c){
-                                                                          return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${c.cashedOrginalBoutique ? 'withoutFilter' : ''}' + '${(widget.category ?? '')}']?.items.length ??
-                                                                              1) != (c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${c.cashedOrginalBoutique ? 'withoutFilter' : ''}' + '${(widget.category ?? '')}']?.items.length ??
-                                                                              1) && (c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${c.cashedOrginalBoutique ? 'withoutFilter' : ''}' + '${(widget.category ?? '')}']?.items.length ??
-                                                                              1) == 1 ;
+                                                                          return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${p.cashedOrginalBoutique ? 'withoutFilter' : p.idForRequest}' + '${(widget.category ?? '')}']?.items.length) != (c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${c.cashedOrginalBoutique ? 'withoutFilter' : c.idForRequest}' + '${(widget.category ?? '')}']?.items.length
+                                                                          );
                                                                         },
                                                                         builder:
                                                                             (context,
                                                                                 state) {
-                                                                          if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ''}' + '${(widget.category ?? '')}']?.items.length ??
-                                                                                  1) ==
+                                                                          if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ??
+                                                                                  0) ==
                                                                               1) {
-                                                                            return SizedBox
-                                                                                .shrink();
+                                                                            return SizedBox.shrink();
                                                                           }
                                                                           return Padding(
-                                                                              padding:
-                                                                                   EdgeInsetsDirectional.only(end: searchOpen ? 10 :  20.0),
+                                                                              padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
                                                                               child: InkWell(
                                                                                 onTap: () {
-
                                                                                   if (!filterPageExpanded.value) {
                                                                                     filterPageExpanded.value = true;
                                                                                     controller.clear();
@@ -885,24 +889,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       InkWell(
                                                                           onTap:
                                                                               () {
-                                                                                filterPageExpanded.value =
+                                                                            filterPageExpanded.value =
                                                                                 false;
-                                                                                controller.clear();
-                                                                                resetSearchAfterSearchingWhileRemoveSearch =
+                                                                            controller.clear();
+                                                                            resetSearchAfterSearchingWhileRemoveSearch =
                                                                                 false;
 
                                                                             if (isExpanded) {
-                                                                              homeBloc.add(ChangeAppliedFiltersEvent(
-                                                                                  boutiqueSlug: widget.boutiqueSlug,
-                                                                                  category: widget.category,
-                                                                                  filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
-                                                                              homeBloc.add(GetProductFiltersEvent(
-                                                                                  fromHomePageSearch: widget.fromSearch,
-                                                                                  cashedOrginalBoutique: false,
-                                                                                  boutiqueSlug: widget.boutiqueSlug,
-                                                                                  category: widget.category,
-                                                                                  searchText: widget.searchText,
-                                                                                  filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                              homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                              homeBloc.add(GetProductFiltersEvent(fromHomePageSearch: widget.fromSearch, cashedOrginalBoutique: false, boutiqueSlug: widget.boutiqueSlug, category: widget.category, searchText: widget.searchText, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
                                                                             }
                                                                           },
                                                                           child:
@@ -911,7 +906,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 30,
                                                                             child:
                                                                                 Row(children: [
-                                                                                  SizedBox(width: !isExpanded ? 10.0 : 12.5),
+                                                                              SizedBox(width: !isExpanded ? 10.0 : 12.5),
                                                                               !isExpanded
                                                                                   ? SvgPicture.asset(
                                                                                       AppAssets.shareSvg,
@@ -920,13 +915,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                       color: Color(0xff3C3C3C),
                                                                                     )
                                                                                   : SvgPicture.asset(
-                                                                                    AppAssets.closeSvg,
-                                                                                    width: 15,
-                                                                                    height: 15,
-                                                                                    color: Color(0xffFF5F61),
-                                                                                  ),
+                                                                                      AppAssets.closeSvg,
+                                                                                      width: 15,
+                                                                                      height: 15,
+                                                                                      color: Color(0xffFF5F61),
+                                                                                    ),
                                                                               SizedBox(width: !isExpanded ? 10.0 : 12.5)
-                                                                            ]),                                                                          )),
+                                                                            ]),
+                                                                          )),
                                                                     ],
                                                                   ),
                                                                 )
@@ -1138,61 +1134,61 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   titleSpacing: 0,
                                                   toolbarHeight: isExpanded
                                                       ? 860
-                                                      : (state.getProductFiltersModel[key]?.filters == null &&
-                                                              state.getProductFiltersStatus[key] !=
-                                                                  GetProductFiltersStatus
-                                                                      .loading)
-                                                          ? 35
-                                                          : state.appliedFiltersByUser[key] !=
-                                                                  null
-                                                              ? ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ?? 1) == 1 &&
-                                                                      state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus ==
-                                                                          PaginationStatus
-                                                                              .success)
-                                                                  ? 35
-                                                                  : 145
-                                                              : 115,
-                                                  flexibleSpace:
-                                                      StackedFiltersList(
-                                                          key: WidgetsKey.kTestMode
-                                                              ? Key(WidgetsKey
-                                                                  .productListFilterKey)
-                                                              : null,
-                                                          textController:
-                                                              controller,
-                                                          hideTitle: false,
-                                                          fromSearch:
-                                                              fromSearch!,
-                                                          searchText: controller.text.length > 2
-                                                              ? controller.text
-                                                              : widget
-                                                                  .searchText,
-                                                          filterPageExpanded:
-                                                              filterPageExpanded,
-                                                          closeFilterPage: () {
-                                                            filterPageExpanded
-                                                                .value = false;
-                                                          },
-                                                          displayAppliedFiltersOnly:
-                                                              state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length == 1 && state.getProductFiltersStatus[key] == GetProductFiltersStatus.success && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.success,
-                                                          category: widget.category,
-                                                          boutiqueSlug: widget.boutiqueSlug,
-                                                          controller: isExpanded ? scrollController : null,
-                                                          onMoveToAnotherFiltersSection: (title) {
-                                                            timerForDisplayFilterSectionTitle
-                                                                ?.cancel();
-                                                            showTitleForFilterList
-                                                                .value = title;
-                                                            timerForDisplayFilterSectionTitle =
-                                                                Timer(
-                                                                    Duration(
-                                                                        seconds:
-                                                                            3),
-                                                                    () {
-                                                              showTitleForFilterList
-                                                                  .value = null;
-                                                            });
-                                                          }));
+                                                      : ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']?.items.length ??
+                                                                      1) <
+                                                                  2 &&
+                                                              state
+                                                                      .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
+                                                                          'withoutFilter' +
+                                                                          '${(widget.category ?? '')}']
+                                                                      ?.paginationStatus !=
+                                                                  PaginationStatus
+                                                                      .success)
+                                                          ? 25
+                                                          : (state.getProductFiltersModel[key]?.filters ==
+                                                                      null &&
+                                                                  state.getProductFiltersStatus[key] !=
+                                                                      GetProductFiltersStatus
+                                                                          .loading)
+                                                              ? 35
+                                                              : state.appliedFiltersByUser[
+                                                                          key] !=
+                                                                      null
+                                                                  ? ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ?? 1) == 1 &&
+                                                                          state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus ==
+                                                                              PaginationStatus.success)
+                                                                      ? 35
+                                                                      : 145
+                                                                  : 115,
+                                                  flexibleSpace: StackedFiltersList(
+                                                      key: WidgetsKey.kTestMode ? Key(WidgetsKey.productListFilterKey) : null,
+                                                      textController: controller,
+                                                      hideTitle: false,
+                                                      fromSearch: fromSearch!,
+                                                      searchText: controller.text.length > 2 ? controller.text : widget.searchText,
+                                                      filterPageExpanded: filterPageExpanded,
+                                                      closeFilterPage: () {
+                                                        filterPageExpanded
+                                                            .value = false;
+                                                      },
+                                                      displayAppliedFiltersOnly: (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']?.items.length ?? 0) < 2 || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length == 1 && state.getProductFiltersStatus[key] == GetProductFiltersStatus.success && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.success,
+                                                      category: widget.category,
+                                                      boutiqueSlug: widget.boutiqueSlug,
+                                                      controller: isExpanded ? scrollController : null,
+                                                      onMoveToAnotherFiltersSection: (title) {
+                                                        timerForDisplayFilterSectionTitle
+                                                            ?.cancel();
+                                                        showTitleForFilterList
+                                                            .value = title;
+                                                        timerForDisplayFilterSectionTitle =
+                                                            Timer(
+                                                                Duration(
+                                                                    seconds: 3),
+                                                                () {
+                                                          showTitleForFilterList
+                                                              .value = null;
+                                                        });
+                                                      }));
                                             },
                                           );
                                         }),
