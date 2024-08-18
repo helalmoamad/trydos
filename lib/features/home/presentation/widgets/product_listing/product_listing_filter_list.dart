@@ -130,7 +130,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       filter_model.Filter filters = (state
                           .getProductListingWithFiltersPaginationModels[
                               '${widget.boutiqueSlug}' +
-                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : ''}' +
+                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
                                   '${(widget.category ?? '')}']
                           ?.items
                           .length ??
@@ -140,7 +140,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               state
                       .getProductListingWithFiltersPaginationModels[
                           '${widget.boutiqueSlug}' +
-                              '${state.cashedOrginalBoutique ? 'withoutFilter' : ''}' +
+                              '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
                               '${(widget.category ?? '')}']
                       ?.paginationStatus ==
                   PaginationStatus.success &&
@@ -305,7 +305,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     if (state
                                                 .getProductListingWithFiltersPaginationModels[
                                                     '${widget.boutiqueSlug}' +
-                                                        '${state.cashedOrginalBoutique ? 'withoutFilter' : ''}' +
+                                                        '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
                                                         '${(widget.category ?? '')}']
                                                 ?.paginationStatus !=
                                             PaginationStatus.success ||
@@ -910,25 +910,43 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                           flex: 2,
                                           child: InkWell(
                                             onTap: () {
+                                              widget.textController.text = "";
                                               if (lowerAndUpperPrices != null) {
                                                 lowerAndUpperPrices!.value =
                                                     Tuple2(
                                                         minPrice!, maxPrice!);
                                               }
-                                              if (state.choosedFiltersByUser[
-                                                      key] !=
-                                                  null) {
-                                                homeBloc.add(
-                                                    ChangeSelectedFiltersEvent(
-                                                        boutiqueSlug:
-                                                            widget.boutiqueSlug,
-                                                        category:
-                                                            widget.category,
-                                                        resetChoosedFilters:
-                                                            true,
-                                                        filtersChoosedByUser:
-                                                            null));
-                                              }
+
+                                              homeBloc.add(
+                                                  AddPrefAppliedFilterForExtendFilterEvent(
+                                                      prefAppliedFilter:
+                                                          Filter()));
+                                              homeBloc.add(
+                                                  ChangeAppliedFiltersEvent(
+                                                resetAppliedFilters: true,
+                                                boutiqueSlug:
+                                                    widget.boutiqueSlug,
+                                                category: widget.category,
+                                              ));
+
+                                              homeBloc.add(
+                                                  ChangeSelectedFiltersEvent(
+                                                      boutiqueSlug:
+                                                          widget.boutiqueSlug,
+                                                      category: widget.category,
+                                                      resetChoosedFilters: true,
+                                                      filtersChoosedByUser:
+                                                          null));
+                                              homeBloc.add(
+                                                  GetProductsWithFiltersEvent(
+                                                fromSearch: widget.fromSearch,
+                                                boutiqueSlug:
+                                                    widget.boutiqueSlug,
+                                                cashedOrginalBoutique: true,
+                                                searchText: null,
+                                                category: widget.category,
+                                                offset: 1,
+                                              ));
                                             },
                                             child: Stack(
                                               children: [
@@ -1020,6 +1038,14 @@ Widget choosedOrAppliedFiltersWidget({
       String currencySymbol =
           state.getCurrencyForCountryModel?.data?.currency?.symbol ?? '\$';
       filter_model.Filter? filters;
+      filter_model.Filter? filtersForSearchText;
+      if ((state.choosedFiltersByUser[key]?.filters?.searchText?.length ?? 0) >
+          0) {
+        filtersForSearchText = state.choosedFiltersByUser[key]?.filters;
+      } else {
+        filtersForSearchText = state.appliedFiltersByUser[key]?.filters;
+      }
+
       if (choosedFilter) {
         filters = state.choosedFiltersByUser[key]?.filters;
       } else {
@@ -1094,8 +1120,8 @@ Widget choosedOrAppliedFiltersWidget({
                         ),
                         SvgPicture.asset(
                           AppAssets.closeSvg,
-                          width: 20,
-                          height: 20,
+                          width: 15,
+                          height: 15,
                           color: Color(0xffFF5F61),
                         ),
                         SizedBox(
@@ -1138,8 +1164,8 @@ Widget choosedOrAppliedFiltersWidget({
                         ),
                         SvgPicture.asset(
                           AppAssets.closeSvg,
-                          width: 30,
-                          height: 30,
+                          width: 15,
+                          height: 15,
                           color: Color(0xffFF5F61),
                         ),
                         SizedBox(
@@ -1175,13 +1201,20 @@ Widget choosedOrAppliedFiltersWidget({
                     ),
                   ),
               },
-              if (controller != null) ...{
-                controller.text.replaceAll(" ", "").length > 1
+              if ((filtersForSearchText?.searchText?.length ?? 0) > 0) ...{
+                (filtersForSearchText?.searchText?.replaceAll(" ", "").length ??
+                            0) >
+                        1
                     ? Center(child: FilterSelectedMark(width: 15, height: 15))
                     : SizedBox.shrink(),
                 SizedBox(
-                  width:
-                      controller.text.replaceAll(" ", "").length > 1 ? 10 : 0,
+                  width: (filtersForSearchText?.searchText
+                                  ?.replaceAll(" ", "")
+                                  .length ??
+                              0) >
+                          1
+                      ? 10
+                      : 0,
                 ),
                 SizedBox(
                     height: 28,
@@ -1190,10 +1223,19 @@ Widget choosedOrAppliedFiltersWidget({
                         Filter? filter =
                             state.appliedFiltersByUser[key]?.filters;
 
-                        controller.clear();
+                        controller?.clear();
 
                         if (choosedFilter) {
                           filter = state.choosedFiltersByUser[key]?.filters;
+                          homeBloc.add(ChangeSelectedFiltersEvent(
+                              category: category,
+                              boutiqueSlug: boutiqueSlug,
+                              filtersChoosedByUser:
+                                  filter_model.GetProductFiltersModel(
+                                      filters: filter!.copyWithSaveOtherField(
+                                searchText: null,
+                                prices: filter.prices,
+                              ))));
                           homeBloc.add(GetProductsWithFiltersEvent(
                             resetChoosedFilters: false,
                             fromChoosed: true,
@@ -1223,9 +1265,13 @@ Widget choosedOrAppliedFiltersWidget({
                         }
                       },
                       child: Center(
-                        child: controller.text.replaceAll(" ", "").length > 2
+                        child: (filtersForSearchText?.searchText
+                                        ?.replaceAll(" ", "")
+                                        .length ??
+                                    0) >
+                                0
                             ? MyTextWidget(
-                                controller.text,
+                                filtersForSearchText!.searchText!,
                                 maxLines: 1,
                                 textAlign: TextAlign.center,
                                 style: context.textTheme.caption?.rq.copyWith(

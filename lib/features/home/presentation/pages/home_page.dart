@@ -44,6 +44,8 @@ class _HomePageState extends State<HomePage> {
   Key reRenderingListViewKey = UniqueKey();
   @override
   void initState() {
+    print("11122222222223333333333335555555556///////////**************----------------------------********************************//////////////////");
+
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     if (homeBloc.state.getCurrencyForCountryModel == null) {

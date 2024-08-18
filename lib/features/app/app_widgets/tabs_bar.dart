@@ -195,6 +195,8 @@ class _TabsBarState extends State<TabsBar> {
                                           return true;
                                         } else {
                                           appBloc.add(ChangeBasePage(0));
+                                          homeBloc.add(
+                                              ResetAllSelectedAppliedFilterEvent());
                                           appBloc.add(
                                               HideBottomNavigationBar(false));
                                         }
@@ -364,8 +366,10 @@ class _TabsBarState extends State<TabsBar> {
                                                   resetChoosedFilters: false,
                                                   fromSearch: true,
                                                   searchText: text));
-
-                                          homeBloc.add(GetProductFiltersEvent(
+                                          homeBloc
+                                              .add(ChangeSelectedFiltersEvent(
+                                            boutiqueSlug: 'search',
+                                            requestToUpdateFilters: true,
                                             fromHomePageSearch: true,
                                             filtersChoosedByUser:
                                                 GetProductFiltersModel(
@@ -374,12 +378,31 @@ class _TabsBarState extends State<TabsBar> {
                                               prices: filters.prices,
                                               searchText: text,
                                             )),
-                                            searchText: text,
-                                            boutiqueSlug: 'search',
                                           ));
 
                                           widget.buildSearchResult.value =
                                               text.length;
+                                        }
+                                        if (text.length < 3) {
+                                          Filter filters = homeBloc
+                                                  .state
+                                                  .choosedFiltersByUser[
+                                                      'search']
+                                                  ?.filters ??
+                                              Filter();
+                                          homeBloc
+                                              .add(ChangeSelectedFiltersEvent(
+                                            boutiqueSlug: 'search',
+                                            requestToUpdateFilters: false,
+                                            fromHomePageSearch: true,
+                                            filtersChoosedByUser:
+                                                GetProductFiltersModel(
+                                                    filters: filters
+                                                        .copyWithSaveOtherField(
+                                              prices: filters.prices,
+                                              searchText: null,
+                                            )),
+                                          ));
                                         }
                                         if (text.length < 1 &&
                                             resetSearchAfterSearchingWhileRemoveSearch) {
@@ -391,8 +414,11 @@ class _TabsBarState extends State<TabsBar> {
                                                       'search']
                                                   ?.filters ??
                                               Filter();
-
-                                          homeBloc.add(GetProductFiltersEvent(
+                                          homeBloc
+                                              .add(ChangeSelectedFiltersEvent(
+                                            boutiqueSlug: 'search',
+                                            requestToUpdateFilters: true,
+                                            fromHomePageSearch: true,
                                             filtersChoosedByUser:
                                                 GetProductFiltersModel(
                                                     filters: filters
@@ -400,9 +426,6 @@ class _TabsBarState extends State<TabsBar> {
                                               prices: filters.prices,
                                               searchText: null,
                                             )),
-                                            fromHomePageSearch: true,
-                                            searchText: null,
-                                            boutiqueSlug: 'search',
                                           ));
                                         }
                                       },
@@ -441,7 +464,7 @@ class _TabsBarState extends State<TabsBar> {
                                                 return Padding(
                                                     padding:
                                                         HWEdgeInsetsDirectional
-                                                            .only(end: 15.0),
+                                                            .only(end: 6),
                                                     child: InkWell(
                                                       onTap: () {
                                                         if (categoryIndexTap !=
