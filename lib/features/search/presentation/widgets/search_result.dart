@@ -49,12 +49,13 @@ class _SearchResultState extends ThemeState<SearchResult> {
       builder: (context, value, child) => BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (p, c) =>
             p.getProductListingWithFiltersPaginationModels !=
-            c.getProductListingWithFiltersPaginationModels,
+                c.getProductListingWithFiltersPaginationModels ||
+            p.idForRequest != c.idForRequest,
         builder: (context, state) {
           String key = 'search';
           if (state
-                  .getProductListingWithFiltersPaginationModels['${key}' +
-                      '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}']
+                  .getProductListingWithFiltersPaginationModels[
+                      '${key}' + '${state.idForRequest}']
                   ?.paginationStatus ==
               PaginationStatus.loading) {
             return Column(children: [

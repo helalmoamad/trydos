@@ -185,8 +185,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
     super.didChangeDependencies();
   }
 
-  Key gridViewKeyForRendering = UniqueKey();
-
   void postFrameCallback(timer) {
     var context = htmlDescriptionKey.currentContext;
     if (context == null || htmlDescriptionHeight.value > 0) return;
@@ -851,15 +849,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       BlocBuilder<
                                                                           HomeBloc,
                                                                           HomeState>(
-                                                                        buildWhen: (p,c){
-                                                                          return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${p.cashedOrginalBoutique ? 'withoutFilter' : p.idForRequest}' + '${(widget.category ?? '')}']?.items.length) != (c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${c.cashedOrginalBoutique ? 'withoutFilter' : c.idForRequest}' + '${(widget.category ?? '')}']?.items.length
-                                                                          );
+                                                                        buildWhen:
+                                                                            (p, c) {
+                                                                          return (p.getProductListingWithFiltersPaginationModels !=
+                                                                              c.getProductListingWithFiltersPaginationModels);
                                                                         },
                                                                         builder:
                                                                             (context,
                                                                                 state) {
-                                                                          if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ??
-                                                                                  0) ==
+                                                                          if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ?? 0) ==
                                                                               1) {
                                                                             return SizedBox.shrink();
                                                                           }
@@ -1134,29 +1132,30 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   titleSpacing: 0,
                                                   toolbarHeight: isExpanded
                                                       ? 860
-                                                      : ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']?.items.length ??
-                                                                      1) <
-                                                                  2 &&
-                                                              state
-                                                                      .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
-                                                                          'withoutFilter' +
-                                                                          '${(widget.category ?? '')}']
-                                                                      ?.paginationStatus !=
-                                                                  PaginationStatus
-                                                                      .success)
-                                                          ? 25
+                                                      : ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ?? 1) <
+                                                                      2 &&
+                                                                  state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus ==
+                                                                      PaginationStatus
+                                                                          .success) ||
+                                                              ((state.getProductFiltersModel[key]?.filters ==
+                                                                      null &&
+                                                                  state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']?.paginationStatus !=
+                                                                      PaginationStatus
+                                                                          .success &&
+                                                                  (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']?.items.length ??
+                                                                          0) <
+                                                                      2))
+                                                          ? 35
                                                           : (state.getProductFiltersModel[key]?.filters ==
                                                                       null &&
                                                                   state.getProductFiltersStatus[key] !=
                                                                       GetProductFiltersStatus
                                                                           .loading)
                                                               ? 35
-                                                              : state.appliedFiltersByUser[
-                                                                          key] !=
+                                                              : state.appliedFiltersByUser[key] !=
                                                                       null
                                                                   ? ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ?? 1) == 1 &&
-                                                                          state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus ==
-                                                                              PaginationStatus.success)
+                                                                          state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.success)
                                                                       ? 35
                                                                       : 145
                                                                   : 115,
@@ -1171,7 +1170,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         filterPageExpanded
                                                             .value = false;
                                                       },
-                                                      displayAppliedFiltersOnly: (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']?.items.length ?? 0) < 2 || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length == 1 && state.getProductFiltersStatus[key] == GetProductFiltersStatus.success && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.success,
+                                                      displayAppliedFiltersOnly: (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ?? 0) < 2 && state.getProductFiltersStatus[key] == GetProductFiltersStatus.success && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.success,
                                                       category: widget.category,
                                                       boutiqueSlug: widget.boutiqueSlug,
                                                       controller: isExpanded ? scrollController : null,
@@ -1197,28 +1196,31 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                         : BlocBuilder<HomeBloc, HomeState>(
                                             buildWhen: (p, c) {
                                               bool rebuild = p
-                                                          .cashedOrginalBoutique !=
-                                                      c.cashedOrginalBoutique ||
-                                                  p.idForRequest !=
-                                                      c.idForRequest ||
-                                                  p
                                                           .getProductListingWithFiltersPaginationModels[
                                                               '${widget.boutiqueSlug}' +
-                                                                  '${c.cashedOrginalBoutique ? 'withoutFilter' : c.idForRequest}' +
+                                                                  'withoutFilter' +
                                                                   '${(widget.category ?? '')}']
                                                           ?.paginationStatus !=
                                                       c
+                                                          .getProductListingPaginationWithoutFiltersModel[
+                                                              '${widget.boutiqueSlug}' +
+                                                                  'withoutFilter' +
+                                                                  '${(widget.category ?? '')}']
+                                                          ?.paginationStatus ||
+                                                  p
                                                           .getProductListingWithFiltersPaginationModels[
                                                               '${widget.boutiqueSlug}' +
-                                                                  '${c.cashedOrginalBoutique ? 'withoutFilter' : c.idForRequest}' +
+                                                                  '${c.idForRequest}' +
+                                                                  '${(widget.category ?? '')}']
+                                                          ?.paginationStatus !=
+                                                      c
+                                                          .getProductListingPaginationWithoutFiltersModel[
+                                                              '${widget.boutiqueSlug}' +
+                                                                  '${c.idForRequest}' +
                                                                   '${(widget.category ?? '')}']
                                                           ?.paginationStatus ||
                                                   p.cashedOrginalBoutique !=
                                                       c.cashedOrginalBoutique;
-                                              if (rebuild) {
-                                                gridViewKeyForRendering =
-                                                    UniqueKey();
-                                              }
                                               return rebuild;
                                               // ||
                                               // (!widget.fromSearch &&
@@ -1240,7 +1242,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               //         '');
                                               if ((state.getProductListingWithFiltersPaginationModels[
                                                               '${widget.boutiqueSlug}' +
-                                                                  'withoutFilter' +
+                                                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
                                                                   '${(widget.category ?? '')}'] ==
                                                           null &&
                                                       !widget.fromSearch) &&
@@ -1265,33 +1267,62 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               }
                                               if ((((state.getProductListingWithFiltersPaginationModels[
                                                                   '${widget.boutiqueSlug}' +
-                                                                      'withoutFilter' +
+                                                                      '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
                                                                       '${(widget.category ?? '')}'] ==
                                                               null ||
                                                           state
                                                               .getProductListingWithFiltersPaginationModels[
                                                                   '${widget.boutiqueSlug}' +
-                                                                      'withoutFilter' +
+                                                                      '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
                                                                       '${(widget.category ?? '')}']!
                                                               .items
                                                               .isNullOrEmpty) &&
                                                       state
                                                               .getProductListingWithFiltersPaginationModels[
                                                                   '${widget.boutiqueSlug}' +
-                                                                      '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}'
+                                                                      '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}}'
                                                                           '${(widget.category ?? '')}']
-                                                              ?.paginationStatus ==
+                                                              ?.paginationStatus !=
                                                           PaginationStatus
-                                                              .loading &&
-                                                      !widget.fromSearch) ||
+                                                              .success) ||
                                                   state
                                                           .getProductListingWithFiltersPaginationModels[
                                                               '${widget.boutiqueSlug}' +
-                                                                  "${state.idForRequest}"
+                                                                  '${state.idForRequest}'
                                                                       '${(widget.category ?? '')}']
                                                           ?.paginationStatus ==
                                                       PaginationStatus
                                                           .loading)) {
+                                                print((state.getProductListingWithFiltersPaginationModels[
+                                                            '${widget.boutiqueSlug}' +
+                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
+                                                                '${(widget.category ?? '')}'] ==
+                                                        null ||
+                                                    state
+                                                        .getProductListingWithFiltersPaginationModels[
+                                                            '${widget.boutiqueSlug}' +
+                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
+                                                                '${(widget.category ?? '')}']!
+                                                        .items
+                                                        .isNullOrEmpty));
+                                                print('${widget.boutiqueSlug}' +
+                                                    '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
+                                                    '${(widget.category ?? '')}');
+                                                print(state
+                                                        .getProductListingWithFiltersPaginationModels[
+                                                            '${widget.boutiqueSlug}' +
+                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}}'
+                                                                    '${(widget.category ?? '')}']
+                                                        ?.paginationStatus !=
+                                                    PaginationStatus.success);
+                                                print(state
+                                                        .getProductListingWithFiltersPaginationModels[
+                                                            '${widget.boutiqueSlug}' +
+                                                                '${state.idForRequest}'
+                                                                    '${(widget.category ?? '')}']
+                                                        ?.paginationStatus ==
+                                                    PaginationStatus.loading);
+
                                                 return ProductListingLoading(
                                                   key: WidgetsKey.kTestMode
                                                       ? Key(WidgetsKey
@@ -1314,6 +1345,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
                                                             '${(widget.category ?? '')}']!
                                                     .items;
+                                                print(products.length);
+                                                print("ddddddddddddddddd");
                                                 if (products.isEmpty) {
                                                   return SliverToBoxAdapter(
                                                     child: Center(
@@ -1358,7 +1391,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 padding: const EdgeInsets.only(
                                                     top: 10),
                                                 sliver: SliverGrid(
-                                                  key: gridViewKeyForRendering,
                                                   gridDelegate:
                                                       SliverGridDelegateWithFixedCrossAxisCount(
                                                     crossAxisCount: 2,

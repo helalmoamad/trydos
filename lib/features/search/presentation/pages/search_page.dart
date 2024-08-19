@@ -115,6 +115,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                     current.getProductFiltersStatus[key] ||
                 previous.countOfProductExpectedByFiltering !=
                     current.countOfProductExpectedByFiltering ||
+                previous.idForRequest != current.idForRequest ||
                 previous
                         .getProductListingWithFiltersPaginationModels[
                             key + "${current.idForRequest}"]
