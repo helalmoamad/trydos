@@ -355,8 +355,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           5.horizontalSpace,
                                           MyTextWidget(
-                                            key: Key(WidgetsKey
-                                                .imageCountInEachChatKey),
+                                            key: WidgetsKey.kTestMode
+                                                ? Key(WidgetsKey
+                                                    .imageCountInEachChatKey)
+                                                : null,
                                             state.imageCountInEachChat
                                                 .toString(),
                                             style: textTheme.caption?.lr
@@ -376,8 +378,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           5.horizontalSpace,
                                           MyTextWidget(
-                                            key: Key(WidgetsKey
-                                                .videoCountInEachChatKey),
+                                            key: WidgetsKey.kTestMode
+                                                ? Key(WidgetsKey
+                                                    .videoCountInEachChatKey)
+                                                : null,
                                             state.videoCountInEachChat
                                                 .toString(),
                                             style: textTheme.caption?.lr
@@ -397,8 +401,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           5.horizontalSpace,
                                           MyTextWidget(
-                                            key: Key(WidgetsKey
-                                                .fileCountInEachChatKey),
+                                            key: WidgetsKey.kTestMode
+                                                ? Key(WidgetsKey
+                                                    .fileCountInEachChatKey)
+                                                : null,
                                             state.fileCountInEachChat
                                                 .toString(),
                                             style: textTheme.caption?.lr
@@ -544,9 +550,11 @@ class _ProfilePageState extends State<ProfilePage> {
             Padding(
               padding: EdgeInsetsDirectional.fromSTEB(20.w, 15.h, 20.w, 0),
               child: InkWell(
-                key: Key(
-                  WidgetsKey.backFromProfileKey,
-                ),
+                key: WidgetsKey.kTestMode
+                    ? Key(
+                        WidgetsKey.backFromProfileKey,
+                      )
+                    : null,
                 onTap: () {
                   Navigator.pop(context);
                 },

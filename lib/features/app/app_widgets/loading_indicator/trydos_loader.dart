@@ -14,7 +14,9 @@ class TrydosLoader extends StatelessWidget {
   })  : _widget = _TripperLoaderCircle(
           size: size,
           color: color,
-          key: Key(WidgetsKey.loadingAfterSearchKey),
+          key: WidgetsKey.kTestMode
+              ? Key(WidgetsKey.loadingAfterSearchKey)
+              : null,
         ),
         super(key: key);
 

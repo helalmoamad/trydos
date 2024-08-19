@@ -118,7 +118,7 @@ class ChatPageContentState extends State<ChatPageContent> {
           p.deleteChatStatus != c.deleteChatStatus ||
           c.createAnewChat ||
           c.sendMessageStatus == SendMessageStatus.loading ||
-          p.receiveMessageStatus != c.receiveMessageStatus ,
+          p.receiveMessageStatus != c.receiveMessageStatus,
       builder: (context, state) {
         if ((state.getChatsStatus == GetChatsStatus.loading ||
                 state.getChatsStatus == GetChatsStatus.init) &&
@@ -192,9 +192,11 @@ class ChatPageContentState extends State<ChatPageContent> {
                                           searchedChats[index].id.toString()))
                                   : false;
                               return ChatCard(
-                                key: Key(
-                                  '${WidgetsKey.chatConversationCardKey}$index',
-                                ),
+                                key: WidgetsKey.kTestMode
+                                    ? Key(
+                                        '${WidgetsKey.chatConversationCardKey}$index',
+                                      )
+                                    : null,
                                 onSendForwardMessage:
                                     widget.onSendForwardMessage,
                                 chat: searchedChats[index],

@@ -1,7 +1,7 @@
 import 'dart:ui';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,12 +13,9 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
-import 'package:trydos/features/app/app_widgets/tabs_bar.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
-import 'package:trydos/features/app/trydos_shimmer_loading.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
@@ -44,7 +41,7 @@ class _HomePageState extends State<HomePage> {
   double? _previousOffset;
   double? _velocity;
   final ScrollController scrollController = ScrollController();
-
+  Key reRenderingListViewKey = UniqueKey();
   @override
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
@@ -190,6 +187,25 @@ class _HomePageState extends State<HomePage> {
             BlocBuilder<AppBloc, AppState>(
               builder: (context, appState) {
                 return BlocBuilder<HomeBloc, HomeState>(
+                  buildWhen: (p, c) {
+                    String? currentSlug = appState.tabIndex != -1
+                        ? (c.mainCategoriesResponseModel?.data
+                                ?.mainCategories?[appState.tabIndex].slug ??
+                            "Empty")
+                        : "Empty";
+                    bool rebuild = p
+                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                currentSlug]
+                            ?.paginationStatus !=
+                        c
+                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                currentSlug]
+                            ?.paginationStatus;
+                    if (rebuild) {
+                      reRenderingListViewKey = UniqueKey();
+                    }
+                    return rebuild;
+                  },
                   builder: (context, homeState) {
                     String? currentSlug = appState.tabIndex != -1
                         ? (homeState.mainCategoriesResponseModel?.data
@@ -217,7 +233,9 @@ class _HomePageState extends State<HomePage> {
                                     0) ==
                                 0)) {
                       return sliverListSeparated(
-                          key: Key(WidgetsKey.boutiquesFailureStatusKey),
+                          key: WidgetsKey.kTestMode
+                              ? Key(WidgetsKey.boutiquesFailureStatusKey)
+                              : null,
                           itemBuilder: (_, index) => Padding(
                               padding: HWEdgeInsets.symmetric(horizontal: 15.w),
                               child: ClipRRect(
@@ -281,11 +299,15 @@ class _HomePageState extends State<HomePage> {
                           childCount: 10);
                     }
                     return sliverListSeparated(
-                      key: Key(WidgetsKey.boutiquesSuccessStatusKey),
+                      key: WidgetsKey.kTestMode
+                          ? Key(WidgetsKey.boutiquesSuccessStatusKey)
+                          : reRenderingListViewKey,
                       itemBuilder: (_, index) => Padding(
                           padding: HWEdgeInsets.symmetric(horizontal: 15.w),
                           child: HomePageCard2(
-                            key: Key('${WidgetsKey.boutiqueCardKey}$index'),
+                            key: WidgetsKey.kTestMode
+                                ? Key('${WidgetsKey.boutiqueCardKey}$index')
+                                : null,
                             category_Slug: currentSlug,
                             withSlidingImages: homeState
                                     .getHomeBoutiquesPaginationObjectByMainCategory[
