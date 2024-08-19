@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smartlook/flutter_smartlook.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -212,7 +213,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final UpdateItemInCartUseCase updateItemInCartUseCase;
   final GetAllowedCountryUseCase getAllowedCountryUseCase;
 
-  //final Smartlook smartLook = Smartlook.instance;
+  final Smartlook smartLook = Smartlook.instance;
 
   FutureOr<void> _onGetStartingSettingsEvent(
       GetStartingSettingsEvent event, Emitter<HomeState> emit) async {
@@ -233,7 +234,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       isFailedTheFirstTime.remove('GetStartingSettingsEvent');
       // if (r.data!.startingSetting!.smartLook ?? false) {
       //   Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
-      //   initializeSmartLook();
+         initializeSmartLook();
       // }
       emit(state.copyWith(
           startingSetting: r.data!.startingSetting,
@@ -279,16 +280,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
   }
 
-  // initializeSmartLook() async {
-  //   String deviceId = (await HelperFunctions.getDeviceId()).toString();
-  //   await smartLook.preferences
-  //       .setProjectKey('db8b1330aa8b622827ae6092023f88bf4e56be53');
-  //   await smartLook.preferences.setFrameRate(2);
-  //   await smartLook.user.setIdentifier(deviceId);
-  //   await smartLook.user
-  //       .setName(GetIt.I<PrefsRepository>().myChatName ?? 'No_Name');
-  //   await smartLook.start();
-  // }
+  initializeSmartLook() async {
+    String deviceId = (await HelperFunctions.getDeviceId()).toString();
+    await smartLook.preferences
+        .setProjectKey('c8c465313d257c63e0a282ba9856a427973888fe');
+    await smartLook.preferences.setFrameRate(2);
+    await smartLook.user.setIdentifier(deviceId);
+    await smartLook.user
+        .setName(GetIt.I<PrefsRepository>().myChatName ?? 'No_Name');
+    await smartLook.start();
+  }
 
   _onAddCurrentSelectedColorEvent(
       AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
