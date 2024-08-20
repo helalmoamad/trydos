@@ -64,7 +64,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                 ),
                 MyTextWidget(
                   'Filter By Color',
-                  style: context.textTheme.caption?.rq
+                  style: context.textTheme.titleMedium?.rq
                       .copyWith(color: Color(0xff505050), height: 15 / 12),
                 ),
                 SizedBox(

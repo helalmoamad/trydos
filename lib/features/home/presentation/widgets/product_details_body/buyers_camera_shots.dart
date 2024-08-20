@@ -116,7 +116,7 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
                   ),
                   MyTextWidget(
                     'Buyers Camera 12 Shot',
-                    style: context.textTheme.bodyText2?.rq
+                    style: context.textTheme.titleLarge?.rq
                         .copyWith(color: Color(0xff8D8D8D)),
                   ),
                   SizedBox(

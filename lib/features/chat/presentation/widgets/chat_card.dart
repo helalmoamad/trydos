@@ -343,7 +343,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                               : NoImageWidget(
                                   width: 60.w,
                                   height: 80.h,
-                                  textStyle: context.textTheme.subtitle1?.br
+                                  textStyle: context.textTheme.bodyMedium?.br
                                       .copyWith(
                                           color: const Color(0xff6638FF),
                                           letterSpacing: 0.18,
@@ -362,7 +362,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                         fullReceiverName,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: textTheme.subtitle1?.rr.copyWith(
+                                        style: textTheme.bodyMedium?.rr.copyWith(
                                             height: 1.33,
                                             color: const Color(0xff505050)),
                                       ),
@@ -382,7 +382,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                       .getZonedDateInFormat(
                                                           chatTime!),
                                               maxLines: 1,
-                                              style: textTheme.caption?.rr
+                                              style: textTheme.titleMedium?.rr
                                                   .copyWith(
                                                       height: 1.33,
                                                       color: const Color(
@@ -640,7 +640,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                   TextOverflow
                                                                       .ellipsis,
                                                               style: textTheme
-                                                                  .bodyText2?.lr
+                                                                  .titleLarge?.lr
                                                                   .copyWith(
                                                                       height:
                                                                           1.22,
@@ -675,7 +675,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                       .totalUnreadMessageCount!)
                                                   .toString(),
                                               maxLines: 1,
-                                              style: textTheme.caption?.rr
+                                              style: textTheme.titleMedium?.rr
                                                   .copyWith(
                                                       color: const Color(
                                                           0xff007CFF)),
@@ -715,7 +715,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                             widget.activityDescription!.length -
                                                 3),
                                         maxLines: 1,
-                                        style: textTheme.caption?.rr.copyWith(
+                                        style: textTheme.titleMedium?.rr.copyWith(
                                             color: const Color(0xff007CFF)),
                                       ),
                                       8.horizontalSpace,
@@ -845,7 +845,7 @@ class SlidableActionWidget extends StatelessWidget {
               8.verticalSpace,
               MyTextWidget(
                 text,
-                style: context.textTheme.caption?.rr
+                style: context.textTheme.titleMedium?.rr
                     .copyWith(color: foregroundColor),
               )
             ],

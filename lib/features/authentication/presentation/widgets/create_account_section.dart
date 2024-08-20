@@ -39,7 +39,7 @@ class CreateAccountSection extends StatelessWidget {
             children: [
               TextSpan(
                 text: LocaleKeys.to.tr(),
-                style: context.textTheme.bodyText2?.la.copyWith(
+                style: context.textTheme.titleLarge?.la.copyWith(
                   color: const Color(0xff5d5c5d),
                   letterSpacing: 0.14,
                   height: 1.43,
@@ -47,7 +47,7 @@ class CreateAccountSection extends StatelessWidget {
               ),
               TextSpan(
                 text: LocaleKeys.create_new_account.tr(),
-                style: context.textTheme.bodyText2?.lr.copyWith(
+                style: context.textTheme.titleLarge?.lr.copyWith(
                   color: const Color(0xff5d5c5d),
                   letterSpacing: 0.14,
                   height: 1.43,
@@ -62,7 +62,7 @@ class CreateAccountSection extends StatelessWidget {
                     "”" +
                     " " +
                     LocaleKeys.to_accept_trydos.tr(),
-                style: context.textTheme.bodyText2?.la.copyWith(
+                style: context.textTheme.titleLarge?.la.copyWith(
                   color: const Color(0xff5d5c5d),
                   letterSpacing: 0.14,
                   height: 1.43,
@@ -70,7 +70,7 @@ class CreateAccountSection extends StatelessWidget {
               ),
               TextSpan(
                 text: "\n" + LocaleKeys.trydos.tr(),
-                style: context.textTheme.bodyText2?.la.copyWith(
+                style: context.textTheme.titleLarge?.la.copyWith(
                   color: const Color(0xff5d5c5d),
                   letterSpacing: 0.14,
                   height: 1.2,
@@ -91,7 +91,7 @@ class CreateAccountSection extends StatelessWidget {
         ),
         MyTextWidget(
           LocaleKeys.trems_of_services.tr(),
-          style: context.textTheme.bodyText2?.ra.copyWith(
+          style: context.textTheme.titleLarge?.ra.copyWith(
             color: const Color(0xff388CFF),
             height: 1.42,
           ),
@@ -143,7 +143,7 @@ class CreateAccountSection extends StatelessWidget {
                       child: Center(
                         child: MyTextWidget(
                           LocaleKeys.agree_continue.tr(),
-                          style: context.textTheme.bodyText1?.ra.copyWith(
+                          style: context.textTheme.displayMedium?.ra.copyWith(
                             color: const Color(0xff3c3c3c),
                             letterSpacing: 0.16,
                             height: 1.25,
@@ -173,7 +173,7 @@ class CreateAccountSection extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: MyTextWidget(
               LocaleKeys.later_take_look.tr(),
-              style: context.textTheme.bodyText2?.ra.copyWith(
+              style: context.textTheme.titleLarge?.ra.copyWith(
                 color: const Color(0xff4D84FF),
                 letterSpacing: 0.14,
                 height: 1.43,

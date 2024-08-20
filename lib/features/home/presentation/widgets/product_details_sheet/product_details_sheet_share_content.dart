@@ -46,7 +46,7 @@ class ProductDetailsSheetShareContent extends StatelessWidget {
                 width: 10,
               ),
               MyTextWidget('Share This Product With',
-                  style: context.textTheme.subtitle1?.mq.copyWith(
+                  style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: Color(0xff505050),
                   )),
             ],
@@ -63,9 +63,9 @@ class ProductDetailsSheetShareContent extends StatelessWidget {
                 bordersColor: Color(0xffF8F8F8),
                 hintText: 'Search',
                 roundingCornersValue: 30,
-                textStyle: context.textTheme.caption?.lr
+                textStyle: context.textTheme.titleMedium?.lr
                     .copyWith(color: const Color(0xff8D8D8D)),
-                hintTextStyle: context.textTheme.subtitle2?.lr
+                hintTextStyle: context.textTheme.bodySmall?.lr
                     .copyWith(color: const Color(0xff8D8D8D)),
                 prefixIcon: Padding(
                   padding: HWEdgeInsetsDirectional.only(top: 15, bottom: 15),
@@ -185,7 +185,7 @@ class ChatCardForShare extends StatelessWidget {
                   10.verticalSpace,
                   MyTextWidget(
                     'Omar',
-                    style: context.textTheme.subtitle2?.rq
+                    style: context.textTheme.bodySmall?.rq
                         .copyWith(color: Color(0xff505050)),
                   )
                 ],

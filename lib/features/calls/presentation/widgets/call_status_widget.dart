@@ -45,7 +45,7 @@ class _CallStatusWidgetState extends ThemeState<CallStatusWidget> {
         MyTextWidget(
           widget.text,
           textAlign: TextAlign.center,
-          style: textTheme.bodyText2?.lr.copyWith(color: widget.textColor),
+          style: textTheme.titleLarge?.lr.copyWith(color: widget.textColor),
         )
       ],
     );

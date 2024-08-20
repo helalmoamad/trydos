@@ -47,7 +47,7 @@ class WelcomeSection extends StatelessWidget {
             child: MyTextWidget(
               LocaleKeys.welcome_page_description.tr(),
               textAlign: TextAlign.center,
-              style: context.textTheme.bodyText2?.la.copyWith(
+              style: context.textTheme.titleLarge?.la.copyWith(
                 color: Color(0xff5D5C5D),
                 letterSpacing: 0.14,
                 height: 1.43,
@@ -60,7 +60,7 @@ class WelcomeSection extends StatelessWidget {
           MyTextWidget(
             LocaleKeys.why_we_know_you_label.tr(),
             textAlign: TextAlign.center,
-            style: context.textTheme.bodyText2?.la.copyWith(
+            style: context.textTheme.titleLarge?.la.copyWith(
               color: Color(0xffF85555),
               letterSpacing: 0.14,
               height: 1.43,
@@ -121,7 +121,7 @@ class WelcomeSection extends StatelessWidget {
                         child: Center(
                           child: MyTextWidget(
                             LocaleKeys.i_have_account.tr(),
-                            style: context.textTheme.bodyText1?.ra.copyWith(
+                            style: context.textTheme.displayMedium?.ra.copyWith(
                               color: Color(0xff5D5C5D),
                               letterSpacing: 0.16,
                               height: 1.25,
@@ -184,7 +184,7 @@ class WelcomeSection extends StatelessWidget {
                         child: Center(
                           child: MyTextWidget(
                             LocaleKeys.create_new_account.tr(),
-                            style: context.textTheme.bodyText1?.ra.copyWith(
+                            style: context.textTheme.displayMedium?.ra.copyWith(
                               color: Color(0xff5D5C5D),
                               letterSpacing: 0.16,
                               height: 1.25,
@@ -223,7 +223,7 @@ class WelcomeSection extends StatelessWidget {
               child: MyTextWidget(
                 LocaleKeys.later_take_look.tr(),
                 textAlign: TextAlign.center,
-                style: context.textTheme.bodyText2?.ra.copyWith(
+                style: context.textTheme.titleLarge?.ra.copyWith(
                   color: Color(0xff4d84ff),
                   letterSpacing: 0.14,
                   height: 1.43,

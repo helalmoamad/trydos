@@ -39,7 +39,7 @@ class FilesExistPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         MyTextWidget(file.values.toString(),
-                            style: context.textTheme.subtitle1?.rr
+                            style: context.textTheme.bodyMedium?.rr
                                 .copyWith(color: Colors.black)),
                       ],
                     ),

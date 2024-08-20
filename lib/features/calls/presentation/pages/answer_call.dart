@@ -127,7 +127,7 @@ class _AnswerCallState extends State<AnswerCall> {
                           : NoImageWidget(
                               width: 120.w,
                               height: 180.h,
-                              textStyle: context.textTheme.subtitle1?.br
+                              textStyle: context.textTheme.bodyMedium?.br
                                   .copyWith(
                                       color: const Color(0xff6638FF),
                                       letterSpacing: 0.18,
@@ -136,7 +136,7 @@ class _AnswerCallState extends State<AnswerCall> {
                   15.verticalSpace,
                   MyTextWidget(
                     widget.callerName,
-                    style: textTheme.headline5?.rr
+                    style: textTheme.headlineSmall?.rr
                         .copyWith(color: const Color(0xffD3D3D3)),
                   ),
                   80.verticalSpace,

@@ -69,7 +69,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                         padding: HWEdgeInsets.only(left: 4.0),
                         child: MyTextWidget(LocaleKeys.hello.tr(),
                             textAlign: TextAlign.start,
-                            style: textTheme.headline3?.ba.copyWith(
+                            style: textTheme.headlineMedium?.ba.copyWith(
                                 color: Color(0xff5D5C5D), height: 1.25)),
                       ),
                       SizedBox(
@@ -80,7 +80,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                         children: [
                           MyTextWidget(',' + widget.userName,
                               textAlign: TextAlign.start,
-                              style: textTheme.headline3?.la.copyWith(
+                              style: textTheme.headlineMedium?.la.copyWith(
                                 color: Color(0xff5D5C5D),
                                 letterSpacing: 0.3,
                                 height: 0.67,
@@ -90,7 +90,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                           ),
                           MyTextWidget(LocaleKeys.enjoy_with_our_services.tr(),
                               textAlign: TextAlign.center,
-                              style: textTheme.subtitle1?.la.copyWith(
+                              style: textTheme.bodyMedium?.la.copyWith(
                                   color: Color(0xff5D5C5D), height: 1.25)),
                         ],
                       ),
@@ -100,7 +100,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                 Spacer(),
                 MyTextWidget(LocaleKeys.we_recommend.tr(),
                     textAlign: TextAlign.center,
-                    style: textTheme.bodyText2?.la.copyWith(
+                    style: textTheme.titleLarge?.la.copyWith(
                       color: Color(0xff5D5C5D),
                       letterSpacing: 0.14,
                       height: 1.43,
@@ -121,7 +121,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                     children: [
                       MyTextWidget(
                         LocaleKeys.complete_my_profile.tr(),
-                        style: textTheme.bodyText1?.ra.copyWith(
+                        style: textTheme.displayMedium?.ra.copyWith(
                           color: Color(0xff5D5C5D),
                           letterSpacing: 0.16,
                           height: 1.25,
@@ -146,7 +146,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     child: MyTextWidget(
                       LocaleKeys.skip_for_now.tr(),
-                      style: textTheme.bodyText2?.ra.copyWith(
+                      style: textTheme.titleLarge?.ra.copyWith(
                         color: Color(0xff4d84ff),
                         letterSpacing: 0.14,
                         height: 1.43,

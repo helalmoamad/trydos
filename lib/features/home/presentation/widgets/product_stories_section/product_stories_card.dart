@@ -64,7 +64,7 @@ class ProductStoriesCard extends StatelessWidget {
                               ),
                               MyTextWidget(
                                 'Product Story',
-                                style: context.textTheme.bodyText2?.rq
+                                style: context.textTheme.titleLarge?.rq
                                     .copyWith(color: Color(0xff8D8D8D)),
                               ),
                               SvgPicture.asset(

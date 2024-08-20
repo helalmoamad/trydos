@@ -119,7 +119,7 @@ class CartPage2 extends StatelessWidget {
                                     Spacer(),
                                     Text(
                                       "      Your Shopping Bag",
-                                      style: context.textTheme.subtitle1?.ra
+                                      style: context.textTheme.bodyMedium?.ra
                                           .copyWith(
                                               color: const Color(0xff505050),
                                               letterSpacing: 0.18,
@@ -146,7 +146,7 @@ class CartPage2 extends StatelessWidget {
                                 children: [
                                   SvgPicture.asset(AppAssets.countItemSvg),
                                   Text(" ${state.cartCollection!.length} ",
-                                      style: context.textTheme.subtitle1?.mr
+                                      style: context.textTheme.bodyMedium?.mr
                                           .copyWith(
                                               fontSize: 13,
                                               color: const Color(0xff5D5C5D),
@@ -154,7 +154,7 @@ class CartPage2 extends StatelessWidget {
                                               height: 1.33)),
                                   Text(
                                     "item ",
-                                    style: context.textTheme.subtitle1?.la
+                                    style: context.textTheme.bodyMedium?.la
                                         .copyWith(
                                             fontSize: 13,
                                             color: const Color(0xff8D8D8D),
@@ -163,7 +163,7 @@ class CartPage2 extends StatelessWidget {
                                   ),
                                   Text(
                                     "${totlaPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
-                                    style: context.textTheme.subtitle1?.mr
+                                    style: context.textTheme.bodyMedium?.mr
                                         .copyWith(
                                             fontSize: 13,
                                             color: const Color(0xff5D5C5D),
@@ -172,7 +172,7 @@ class CartPage2 extends StatelessWidget {
                                   ),
                                   Text(
                                     "${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""}",
-                                    style: context.textTheme.subtitle1?.la
+                                    style: context.textTheme.bodyMedium?.la
                                         .copyWith(
                                             fontSize: 13,
                                             color: const Color(0xff8D8D8D),
@@ -271,7 +271,7 @@ class CartPage2 extends StatelessWidget {
                                                     Text(
                                                         "  ${state.cartCollection!.values.toList()[index].length} ",
                                                         style: context.textTheme
-                                                            .subtitle1?.mr
+                                                            .bodyMedium?.mr
                                                             .copyWith(
                                                                 fontSize: 13,
                                                                 color: const Color(
@@ -282,7 +282,7 @@ class CartPage2 extends StatelessWidget {
                                                     Text(
                                                       "item ",
                                                       style: context.textTheme
-                                                          .subtitle1?.la
+                                                          .bodyMedium?.la
                                                           .copyWith(
                                                               fontSize: 13,
                                                               color: const Color(
@@ -294,7 +294,7 @@ class CartPage2 extends StatelessWidget {
                                                     Text(
                                                       " ${price.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}",
                                                       style: context.textTheme
-                                                          .subtitle1?.mr
+                                                          .bodyMedium?.mr
                                                           .copyWith(
                                                               fontSize: 13,
                                                               color: const Color(
@@ -306,7 +306,7 @@ class CartPage2 extends StatelessWidget {
                                                     Text(
                                                       " ${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""}",
                                                       style: context.textTheme
-                                                          .subtitle1?.la
+                                                          .bodyMedium?.la
                                                           .copyWith(
                                                               fontSize: 13,
                                                               color: const Color(
@@ -528,7 +528,7 @@ class CartPage2 extends StatelessWidget {
                                                                   "${indexes + 1}",
                                                                   style: context
                                                                       .textTheme
-                                                                      .subtitle1
+                                                                      .bodyMedium
                                                                       ?.ra
                                                                       .copyWith(
                                                                     decorationColor:
@@ -578,7 +578,7 @@ class CartPage2 extends StatelessWidget {
                                                                   '''${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""}''',
                                                                   style: context
                                                                       .textTheme
-                                                                      .subtitle1
+                                                                      .bodyMedium
                                                                       ?.ra
                                                                       .copyWith(
                                                                     decorationColor:
@@ -793,7 +793,7 @@ class CartPage2 extends StatelessWidget {
                                                                           "${indexs + 1}",
                                                                           style: context
                                                                               .textTheme
-                                                                              .subtitle1
+                                                                              .bodyMedium
                                                                               ?.ra
                                                                               .copyWith(
                                                                             decorationColor:
@@ -824,7 +824,7 @@ class CartPage2 extends StatelessWidget {
                                                                 '''${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""}''',
                                                                 style: context
                                                                     .textTheme
-                                                                    .subtitle1
+                                                                    .bodyMedium
                                                                     ?.ra
                                                                     .copyWith(
                                                                   decorationColor:

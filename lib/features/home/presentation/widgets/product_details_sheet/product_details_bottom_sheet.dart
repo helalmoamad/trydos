@@ -618,7 +618,7 @@ class ShareButton extends StatelessWidget {
                     10.horizontalSpace,
                     MyTextWidget(
                       'Send',
-                      style: context.textTheme.headline6?.rq
+                      style: context.textTheme.bodyLarge?.rq
                           .copyWith(color: Colors.white),
                     )
                   ],

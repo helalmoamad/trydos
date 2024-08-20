@@ -138,7 +138,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         : NoImageWidget(
                             height: 150.h,
                             width: 150.w,
-                            textStyle: context.textTheme.subtitle1?.br.copyWith(
+                            textStyle: context.textTheme.bodyMedium?.br.copyWith(
                                 color: const Color(0xff6638FF),
                                 letterSpacing: 0.18,
                                 height: 1.33),
@@ -146,13 +146,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     17.verticalSpace,
                     MyTextWidget(
                       widget.fullReceiverName,
-                      style: textTheme.headline5?.rr
+                      style: textTheme.headlineSmall?.rr
                           .copyWith(color: const Color(0xff5D5C5D)),
                     ),
                     8.verticalSpace,
                     MyTextWidget(
                       widget.receiverPhone,
-                      style: textTheme.bodyText2?.rr
+                      style: textTheme.titleLarge?.rr
                           .copyWith(color: const Color(0xff5D5C5D)),
                     ),
                   ],
@@ -226,7 +226,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             10.verticalSpace,
                             MyTextWidget(
                               LocaleKeys.call.tr(),
-                              style: textTheme.caption?.rr
+                              style: textTheme.titleMedium?.rr
                                   .copyWith(color: const Color(0xff5D5C5D)),
                             ),
                           ],
@@ -278,7 +278,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             10.verticalSpace,
                             MyTextWidget(
                               LocaleKeys.video.tr(),
-                              style: textTheme.caption?.rr
+                              style: textTheme.titleMedium?.rr
                                   .copyWith(color: const Color(0xff5D5C5D)),
                             ),
                           ],
@@ -298,7 +298,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             10.verticalSpace,
                             MyTextWidget(
                               LocaleKeys.search.tr(),
-                              style: textTheme.caption?.rr
+                              style: textTheme.titleMedium?.rr
                                   .copyWith(color: const Color(0xff5D5C5D)),
                             ),
                           ],
@@ -330,7 +330,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             MyTextWidget(
                               LocaleKeys.media_files.tr(),
-                              style: textTheme.bodyText1?.rr
+                              style: textTheme.displayMedium?.rr
                                   .copyWith(color: const Color(0xff5D5C5D)),
                             ),
                             10.verticalSpace,
@@ -361,7 +361,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 : null,
                                             state.imageCountInEachChat
                                                 .toString(),
-                                            style: textTheme.caption?.lr
+                                            style: textTheme.titleMedium?.lr
                                                 .copyWith(
                                                     color: const Color(
                                                         0xff5D5C5D)),
@@ -384,7 +384,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 : null,
                                             state.videoCountInEachChat
                                                 .toString(),
-                                            style: textTheme.caption?.lr
+                                            style: textTheme.titleMedium?.lr
                                                 .copyWith(
                                                     color: const Color(
                                                         0xff5D5C5D)),
@@ -407,7 +407,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 : null,
                                             state.fileCountInEachChat
                                                 .toString(),
-                                            style: textTheme.caption?.lr
+                                            style: textTheme.titleMedium?.lr
                                                 .copyWith(
                                                     color: const Color(
                                                         0xff5D5C5D)),
@@ -519,13 +519,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       20.horizontalSpace,
                       MyTextWidget(
                         LocaleKeys.save_to_gallery.tr(),
-                        style: textTheme.bodyText1?.rr
+                        style: textTheme.displayMedium?.rr
                             .copyWith(color: const Color(0xff5D5C5D)),
                       ),
                       const Spacer(),
                       MyTextWidget(
                         LocaleKeys.never.tr(),
-                        style: textTheme.bodyText1?.lr
+                        style: textTheme.displayMedium?.lr
                             .copyWith(color: const Color(0xff5D5C5D)),
                       ),
                       36.horizontalSpace,

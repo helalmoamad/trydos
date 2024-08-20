@@ -149,7 +149,7 @@ class AppTextField extends StatelessWidget {
           FilteringTextInputFormatter.allow(RegExp("[0-9]")),
         ...?inputFormatters
       ],
-      style:textStyle ??  context.textTheme.bodyText1?.rr.copyWith(
+      style:textStyle ??  context.textTheme.displayMedium?.rr.copyWith(
         color: const Color(0xff404040),
         decoration: TextDecoration.none,
         decorationColor: context.colorScheme.borderTextField,
@@ -187,9 +187,9 @@ class AppTextField extends StatelessWidget {
         suffixIcon: suffixIcon,
         suffix: suffix,
         hintText: hintText?.tr(),
-        hintStyle: hintTextStyle ?? context.textTheme.bodyText1?.rt.copyWith(color: context.colorScheme.grey200),
+        hintStyle: hintTextStyle ?? context.textTheme.displayMedium?.rt.copyWith(color: context.colorScheme.grey200),
         labelText: labelText?.tr(),
-        labelStyle: context.textTheme.bodyText2?.copyWith(color: context.colorScheme.hint),
+        labelStyle: context.textTheme.titleLarge?.copyWith(color: context.colorScheme.hint),
       ),
     );
   }

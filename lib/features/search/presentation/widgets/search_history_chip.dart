@@ -76,7 +76,7 @@ class SearchHistoryChip extends StatelessWidget {
                   child: Center(
                     child: Text(
                       text,
-                      style: context.textTheme.bodyText2?.rq
+                      style: context.textTheme.titleLarge?.rq
                           .copyWith(height: 18 / 14, color: Color(0xff8D8D8D)),
                     ),
                   ),

@@ -308,9 +308,9 @@ class _TabsBarState extends State<TabsBar> {
                               contentPadding: HWEdgeInsetsDirectional.only(
                                   start: 20, end: 10, bottom: 12, top: 12),
                               hintText: 'Search',
-                              hintStyle: context.textTheme.subtitle1?.lq
+                              hintStyle: context.textTheme.bodyMedium?.lq
                                   .copyWith(color: Color(0xffC4C2C2)),
-                              labelStyle: context.textTheme.bodyText2
+                              labelStyle: context.textTheme.titleLarge
                                   ?.copyWith(color: context.colorScheme.hint),
                             ),
                             onChanged: (String text) {
@@ -514,7 +514,7 @@ class _TabsBarState extends State<TabsBar> {
                                                           .toString(),
                                                       maxLines: 1,
                                                       style: textTheme
-                                                          .overline?.lr
+                                                          .titleSmall?.lr
                                                           .copyWith(
                                                               letterSpacing:
                                                                   0,

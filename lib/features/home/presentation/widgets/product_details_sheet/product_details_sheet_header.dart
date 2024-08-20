@@ -114,7 +114,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                     children: [
                       MyTextWidget(
                         widget.price,
-                        style: textTheme.headline3?.rq.copyWith(
+                        style: textTheme.headlineMedium?.rq.copyWith(
                           color: Color(0xffC4C2C2),
                           decoration: TextDecoration.lineThrough,
                           height: 0,
@@ -125,7 +125,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                       ),
                       MyTextWidget(
                         double.parse(widget.offerPrice).toStringAsFixed(widget.decimalPoint),
-                        style: textTheme.headline3?.bq.copyWith(
+                        style: textTheme.headlineMedium?.bq.copyWith(
                           color: Color(0xff505050),
                           height: 0,
                         ),
@@ -135,7 +135,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                       ),
                       MyTextWidget(
                         widget.priceSymbol,
-                        style: textTheme.caption?.rq.copyWith(
+                        style: textTheme.titleMedium?.rq.copyWith(
                           fontSize: 18,
                           color: Color(0xffC4C2C2),
                           height: 0,
@@ -152,7 +152,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                     children: [
                                       MyTextWidget(
                                         'x$itemCount = ${itemCount * 70} ',
-                                        style: textTheme.caption?.bq.copyWith(
+                                        style: textTheme.titleMedium?.bq.copyWith(
                                           color: Color(0xff505050),
                                           height: 0,
                                         ),
@@ -161,7 +161,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                       ),
                                       // MyTextWidget(
                                       //   widget.price.split(" ").toList()[1],
-                                      //   style: textTheme.caption?.rq.copyWith(
+                                      //   style: textTheme.titleMedium?.rq.copyWith(
                                       //     color: Color(0xffC4C2C2),
                                       //     height: 0,
                                       //   ),
@@ -183,7 +183,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                         padding: HWEdgeInsets.only(bottom: 12.0),
                         child: MyTextWidget(
                           'All Inclusive Without Additions',
-                          style: textTheme.caption?.rq.copyWith(
+                          style: textTheme.titleMedium?.rq.copyWith(
                             color: Color(0xff8D8D8D),
                             height: 0,
                           ),
@@ -213,7 +213,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                   ),
                                   MyTextWidget(
                                     texts[index],
-                                    style: textTheme.caption?.rq.copyWith(
+                                    style: textTheme.titleMedium?.rq.copyWith(
                                       color: Color(0xff8D8D8D),
                                       height: 0,
                                     ),

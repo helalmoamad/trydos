@@ -377,14 +377,14 @@ class MediaMessageContent {
   final String? filePath;
   final String? fileName;
   final String? messageId;
-  final String? caption;
+  final String? titleMedium;
 
   MediaMessageContent({
     this.id,
     this.filePath,
     this.fileName,
     this.messageId,
-    this.caption,
+    this.titleMedium,
   });
 
   factory MediaMessageContent.fromJson(Map<String, dynamic> json) =>
@@ -393,7 +393,7 @@ class MediaMessageContent {
         filePath: json["file_path"],
         fileName: json["file_name"],
         messageId: json["message_id"].toString(),
-        caption: json["caption"],
+        titleMedium: json["titleMedium"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -401,7 +401,7 @@ class MediaMessageContent {
         "file_path": filePath,
         "file_name": fileName,
         "message_id": messageId,
-        "caption": caption,
+        "titleMedium": titleMedium,
       };
 }
 

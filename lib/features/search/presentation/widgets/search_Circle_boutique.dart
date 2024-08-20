@@ -67,7 +67,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                         children: [
                           MyTextWidget(
                             widget.title,
-                            style: context.textTheme.caption?.rq.copyWith(
+                            style: context.textTheme.titleMedium?.rq.copyWith(
                                 color: Color(0xff505050), height: 15 / 12),
                           ),
                           SizedBox(
@@ -209,7 +209,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                     Center(
                                         child: MyTextWidget(
                                       filters.boutiques![index].name!,
-                                      style: context.textTheme.bodyText2?.rq
+                                      style: context.textTheme.titleLarge?.rq
                                           .copyWith(
                                               height: 12 / 14,
                                               color: Color(0xff8D8D8D)),

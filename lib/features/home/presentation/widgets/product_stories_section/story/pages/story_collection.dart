@@ -451,7 +451,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               ? NoImageWidget(
                                   height: 40,
                                   width: 40,
-                                  textStyle: context.textTheme.subtitle1?.br
+                                  textStyle: context.textTheme.bodyMedium?.br
                                       .copyWith(
                                           color: const Color(0xff6638FF),
                                           letterSpacing: 0.18,
@@ -477,7 +477,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                         Padding(
                           padding: EdgeInsetsDirectional.only(start: 10),
                           child: MyTextWidget(
-                              style: textTheme.headline6?.rr
+                              style: textTheme.bodyLarge?.rr
                                   .copyWith(color: Colors.white),
                               state.storiesCollections[widget.collectionIndex]
                                           .name ==

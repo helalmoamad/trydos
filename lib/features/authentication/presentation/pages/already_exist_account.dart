@@ -77,7 +77,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                           children: [
                             MyTextWidget(
                               LocaleKeys.this_numbber_already.tr(),
-                              style: context.textTheme.bodyText2?.ra.copyWith(
+                              style: context.textTheme.titleLarge?.ra.copyWith(
                                   color: Color(0xff5D5C5D), height: 1.42),
                             ),
                             Row(
@@ -94,7 +94,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                                 MyTextWidget(
                                   widget.phoneNumber,
                                   textAlign: TextAlign.start,
-                                  style: context.textTheme.caption?.ra.copyWith(
+                                  style: context.textTheme.titleMedium?.ra.copyWith(
                                       color: Color(0xff8D8D8D), height: 1.25),
                                 ),
                               ],
@@ -106,7 +106,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                                 15.horizontalSpace,
                                 MyTextWidget(
                                   LocaleKeys.you_can_login_now.tr(),
-                                  style: context.textTheme.caption?.ra.copyWith(
+                                  style: context.textTheme.titleMedium?.ra.copyWith(
                                       color: Color(0xffC4C2C2), height: 1.25),
                                 )
                               ],
@@ -143,7 +143,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                       children: [
                         MyTextWidget(
                           LocaleKeys.login_continue.tr(),
-                          style: textTheme.bodyText1?.ra.copyWith(
+                          style: textTheme.displayMedium?.ra.copyWith(
                             color: Color(0xff5D5C5D),
                             letterSpacing: 0.16,
                             height: 1.25,
@@ -174,7 +174,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                       LocaleKeys.cancel.tr() +
                           " , " +
                           LocaleKeys.take_look.tr(),
-                      style: textTheme.bodyText2?.ra.copyWith(
+                      style: textTheme.titleLarge?.ra.copyWith(
                         color: Color(0xff4d84ff),
                         letterSpacing: 0.14,
                         height: 1.43,

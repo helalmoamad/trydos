@@ -276,7 +276,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                       : NoImageWidget(
                           height: 40,
                           width: 40.w,
-                          textStyle: context.textTheme.subtitle1?.br.copyWith(
+                          textStyle: context.textTheme.bodyMedium?.br.copyWith(
                               color: const Color(0xff6638FF),
                               letterSpacing: 0.18,
                               height: 1.33),
@@ -298,7 +298,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                   widget.fullReceiverName,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: textTheme.subtitle1?.rr
+                                  style: textTheme.bodyMedium?.rr
                                       .copyWith(color: const Color(0xff505050)),
                                 ),
                                 30.horizontalSpace
@@ -325,7 +325,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                           ? LocaleKeys.income.tr()
                                           : LocaleKeys.Outcome.tr(),
                                   maxLines: 1,
-                                  style: textTheme.bodyText2?.lr.copyWith(
+                                  style: textTheme.titleLarge?.lr.copyWith(
                                       color: Color(widget.isMissing
                                           ? 0xffFF5F61
                                           : 0xff8E8D92)),
@@ -436,7 +436,7 @@ class SlidableActionWidgete extends StatelessWidget {
             8.verticalSpace,
             Text(
               text,
-              style: context.textTheme.caption?.rr
+              style: context.textTheme.titleMedium?.rr
                   .copyWith(color: foregroundColor),
             ),
           ],

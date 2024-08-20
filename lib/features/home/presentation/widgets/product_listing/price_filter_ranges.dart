@@ -89,9 +89,9 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                                   prices: Prices(
                                       currencySymbol: widget.currencySymbol,
                                       minPrice:
-                                          widget.priceRanges[index].maxPrice,
+                                          widget.priceRanges[index].minPrice,
                                       maxPrice:
-                                          widget.priceRanges[index].minPrice));
+                                          widget.priceRanges[index].maxPrice));
                     } else if (prevChoosedOrAppliedFilterToAddToIt
                                 .prices!.minPrice !=
                             widget.priceRanges[index].maxPrice ||
@@ -152,7 +152,7 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                             '${(widget.priceRanges[index].minPrice! * widget.exchangeRate).toStringAsFixed(widget.decimalPoint)} - ${(widget.priceRanges[index].maxPrice! * widget.exchangeRate).toStringAsFixed(2)} ${widget.currencySymbol}',
                             overflow: TextOverflow.ellipsis,
                             textDirection: TextDirection.ltr,
-                            style: textTheme.bodyText2?.mq.copyWith(
+                            style: textTheme.titleLarge?.mq.copyWith(
                               height: 1.3,
                               fontSize: 15.sp,
                               color: const Color(0xff5D5C5D),

@@ -49,11 +49,9 @@ class _HomePageState extends State<HomePage> {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     if (homeBloc.state.getCurrencyForCountryModel == null) {
-      homeBloc.add(GetCartItemEvent());
       homeBloc.add(GetCurrencyForCountryEvent());
-      homeBloc.add(GetHomeBoutiqesEvent(
-          categorySlug: "Empty", offset: "1", getWithPagination: false));
     }
+      homeBloc.add(GetCartItemEvent());
     appBloc.add(ChangeIndexForSearch(0));
     homeBloc.add(ChangeAppliedFiltersEvent(
         boutiqueSlug: 'search',
@@ -175,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           MyTextWidget(
                             LocaleKeys.story.tr(),
-                            style: context.textTheme.bodyText2?.rr.copyWith(
+                            style: context.textTheme.titleLarge?.rr.copyWith(
                                 height: 0.86, color: Color(0xff3C3C3C)),
                           )
                         ],

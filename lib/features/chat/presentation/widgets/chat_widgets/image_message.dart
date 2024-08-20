@@ -316,7 +316,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                               : HelperFunctions
                                                   .getZonedDateInFormat(
                                                       widget.createAt!),
-                                          style: context.textTheme.overline?.rr
+                                          style: context.textTheme.titleSmall?.rr
                                               .copyWith(
                                                   color: context
                                                       .colorScheme.white),
@@ -452,7 +452,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                             width: 30.w,
                                             height: 30,
                                             textStyle: context
-                                                .textTheme.caption?.br
+                                                .textTheme.titleMedium?.br
                                                 .copyWith(
                                                     color:
                                                         const Color(0xff6638FF),

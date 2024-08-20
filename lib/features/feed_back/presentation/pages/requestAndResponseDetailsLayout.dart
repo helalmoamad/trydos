@@ -157,11 +157,11 @@ class RequestAndResponseDetailsLayout extends StatelessWidget {
   }
 
   TextStyle titleStyle(BuildContext context) =>
-      context.textTheme.subtitle1!.copyWith(
+      context.textTheme.bodyMedium!.copyWith(
           fontWeight: FontWeight.w700, color: context.colorScheme.tertiary);
 
   TextStyle bodyStyle(BuildContext context) =>
-      context.textTheme.subtitle1!.copyWith(
+      context.textTheme.bodyMedium!.copyWith(
         fontWeight: FontWeight.w400,
       );
 }

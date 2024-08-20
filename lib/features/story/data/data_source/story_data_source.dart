@@ -8,6 +8,7 @@ import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
 import 'package:trydos/core/api/client_config.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/post.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/api/methods/get.dart';
 import '../../presentation/bloc/story_bloc.dart';
 import '../models/image_detail.dart';
@@ -53,6 +54,9 @@ class StoriesDataSource {
   }
 
   Future<GetStoriesModel> getStories() {
+    ///// for test /////
+    WidgetsKey.getStoriesFlag = true;
+    ////////////////////
     GetClient<GetStoriesModel> getStories = GetClient<GetStoriesModel>(
       serverName: ServerName.stories,
       requestPrams: RequestConfig<GetStoriesModel>(

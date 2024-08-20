@@ -70,7 +70,7 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                         children: [
                           MyTextWidget(
                             widget.title,
-                            style: context.textTheme.caption?.rq.copyWith(
+                            style: context.textTheme.titleMedium?.rq.copyWith(
                                 color: Color(0xff505050), height: 15 / 12),
                           ),
                           SizedBox(
