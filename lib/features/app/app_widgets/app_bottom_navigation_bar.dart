@@ -288,7 +288,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       MyTextWidget(
                         LocaleKeys.cart.tr(),
                         maxLines: 1,
-                        style: textTheme.overline?.lr.copyWith(
+                        style: textTheme.titleSmall?.lr.copyWith(
                             color: state.currentIndex != 1
                                 ? colorScheme.grey200
                                 : colorScheme.black,
@@ -348,7 +348,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       MyTextWidget(
                         LocaleKeys.chat.tr(),
                         maxLines: 1,
-                        style: textTheme.overline?.lr.copyWith(
+                        style: textTheme.titleSmall?.lr.copyWith(
                             letterSpacing: 0.28,
                             color: state.currentIndex != 2
                                 ? colorScheme.grey200
@@ -522,7 +522,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       MyTextWidget(
                         LocaleKeys.me.tr(),
                         maxLines: 1,
-                        style: textTheme.overline?.lr.copyWith(
+                        style: textTheme.titleSmall?.lr.copyWith(
                             letterSpacing: 0.28,
                             color: state.currentIndex != 3
                                 ? colorScheme.grey200

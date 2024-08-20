@@ -83,7 +83,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
             MyTextWidget(
               appBarParams.title!,
               style: appBarParams.tittleStyle ??
-                  Theme.of(context).textTheme.headline3?.copyWith(
+                  Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: appBarParams.textColor,
                       ),
             ),

@@ -45,7 +45,7 @@ class AddStoryCard extends StatelessWidget {
                             ? NoImageWidget(
                                 width: 60.r,
                                 height: 60.r,
-                                textStyle: context.textTheme.subtitle1?.br
+                                textStyle: context.textTheme.bodyMedium?.br
                                     .copyWith(
                                         color: const Color(0xff6638FF),
                                         letterSpacing: 0.18,
@@ -73,7 +73,7 @@ class AddStoryCard extends StatelessWidget {
                                     LocaleKeys.my_stories.tr(),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: context.textTheme.subtitle1?.rr
+                                    style: context.textTheme.bodyMedium?.rr
                                         .copyWith(
                                             height: 1.33,
                                             color: const Color(0xff505050)),
@@ -88,7 +88,7 @@ class AddStoryCard extends StatelessWidget {
                                     LocaleKeys.click_to_add_story.tr(),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: context.textTheme.subtitle1?.rr
+                                    style: context.textTheme.bodyMedium?.rr
                                         .copyWith(
                                             height: 1.33,
                                             color: const Color(0xff505050)),

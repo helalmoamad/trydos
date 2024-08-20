@@ -258,7 +258,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                           ),
                                           MyTextWidget(
                                             'Available ${syncColorImageList!.length ~/ 2} Color',
-                                            style: textTheme.bodyText2?.rq
+                                            style: textTheme.titleLarge?.rq
                                                 .copyWith(
                                                     color: const Color(
                                                         0xff8D8D8D)),
@@ -607,7 +607,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                             style: currentIndexInSlider ==
                                                                     index
                                                                 ? textTheme
-                                                                    .bodyText2
+                                                                    .titleLarge
                                                                     ?.mq
                                                                     .copyWith(
                                                                     color: Color(
@@ -616,7 +616,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                         1.35,
                                                                   )
                                                                 : textTheme
-                                                                    .bodyText2
+                                                                    .titleLarge
                                                                     ?.rq
                                                                     .copyWith(
                                                                         color: Color(
@@ -629,7 +629,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                       MyTextWidget(
                                                         'Offer',
                                                         style: textTheme
-                                                            .caption?.mq
+                                                            .titleMedium?.mq
                                                             .copyWith(
                                                           color:
                                                               Color(0xff388CFF),
@@ -639,7 +639,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                       // if (mode == 1) ...{
                                                       //   MyTextWidget(
                                                       //     'Trend',
-                                                      //     style: textTheme.overline?.mq.copyWith(
+                                                      //     style: textTheme.titleSmall?.mq.copyWith(
                                                       //       color: Color(0xffFF5F61),
                                                       //       height: 1.3,
                                                       //     ),

@@ -170,7 +170,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                 Expanded(
                                   child: MyTextWidget(
                                     state.message.toString(),
-                                    style: textTheme.caption?.lr.copyWith(
+                                    style: textTheme.titleMedium?.lr.copyWith(
                                         color: colorScheme.grey200,
                                         height: 1.66),
                                     maxLines: 2,
@@ -191,7 +191,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     : NoImageWidget(
                                         width: 30.sp,
                                         height: 30.sp,
-                                        textStyle: context.textTheme.caption?.br
+                                        textStyle: context.textTheme.titleMedium?.br
                                             .copyWith(
                                                 color: const Color(0xff6638FF),
                                                 letterSpacing: 0.18,
@@ -267,7 +267,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     10.horizontalSpace,
                                     MyTextWidget(
                                       LocaleKeys.photo.tr(),
-                                      style: textTheme.caption?.lr.copyWith(
+                                      style: textTheme.titleMedium?.lr.copyWith(
                                           color: colorScheme.grey200,
                                           height: 1.66),
                                       maxLines: 1,
@@ -288,7 +288,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             width: 30.sp,
                                             height: 30.sp,
                                             textStyle: context
-                                                .textTheme.caption?.br
+                                                .textTheme.titleMedium?.br
                                                 .copyWith(
                                                     color:
                                                         const Color(0xff6638FF),
@@ -338,7 +338,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           width: 200.w,
                                           child: MyTextWidget(
                                             state.message.toString(),
-                                            style: textTheme.caption?.lr
+                                            style: textTheme.titleMedium?.lr
                                                 .copyWith(
                                                     color: colorScheme.grey200,
                                                     height: 1.66),
@@ -361,7 +361,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 width: 30.sp,
                                                 height: 30.sp,
                                                 textStyle: context
-                                                    .textTheme.caption?.br
+                                                    .textTheme.titleMedium?.br
                                                     .copyWith(
                                                         color: const Color(
                                                             0xff6638FF),
@@ -412,7 +412,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               width: 200.w,
                                               child: MyTextWidget(
                                                 state.message.toString(),
-                                                style: textTheme.caption?.lr
+                                                style: textTheme.titleMedium?.lr
                                                     .copyWith(
                                                         color:
                                                             colorScheme.grey200,
@@ -437,7 +437,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                     width: 30.sp,
                                                     height: 30.sp,
                                                     textStyle: context
-                                                        .textTheme.caption?.br
+                                                        .textTheme.titleMedium?.br
                                                         .copyWith(
                                                             color: const Color(
                                                                 0xff6638FF),
@@ -485,7 +485,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             10.horizontalSpace,
                                             MyTextWidget(
                                               LocaleKeys.voice.tr(),
-                                              style: textTheme.caption?.lr
+                                              style: textTheme.titleMedium?.lr
                                                   .copyWith(
                                                       color:
                                                           colorScheme.grey200,
@@ -508,7 +508,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                     width: 30.sp,
                                                     height: 30.sp,
                                                     textStyle: context
-                                                        .textTheme.caption?.br
+                                                        .textTheme.titleMedium?.br
                                                         .copyWith(
                                                             color: const Color(
                                                                 0xff6638FF),
@@ -559,7 +559,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
 
                                           return MyTextWidget(
                                               '$minutes:$seconds',
-                                              style: textTheme.subtitle1?.rr
+                                              style: textTheme.bodyMedium?.rr
                                                   .copyWith(
                                                 color: const Color(0xff404040),
                                                 letterSpacing: 0.18,
@@ -588,7 +588,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       },
                                       child: MyTextWidget(
                                           LocaleKeys.cansel.tr(),
-                                          style: textTheme.bodyText2?.rr
+                                          style: textTheme.titleLarge?.rr
                                               .copyWith(
                                                   letterSpacing: 0.14,
                                                   height: 1.4285714285714286,

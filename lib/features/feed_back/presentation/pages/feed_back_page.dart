@@ -99,7 +99,7 @@ class FeedBackScreen extends StatelessWidget {
                                           color: context.colorScheme.tertiary, shape: BoxShape.circle),
                                       child: Center(
                                         child: MyTextWidget('X',
-                                            style: context.textTheme.bodyText2!.rr.copyWith(
+                                            style: context.textTheme.titleLarge!.rr.copyWith(
                                               color: context.colorScheme.white
                                             )),
                                       ),

@@ -141,7 +141,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                                       ),
                                       MyTextWidget(
                                         'X',
-                                        style: context.textTheme.headline6?.ba
+                                        style: context.textTheme.bodyLarge?.ba
                                             .copyWith(
                                           color: Colors.grey,
                                         ),
@@ -197,7 +197,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                           left: 8,
                           bottom: 25,
                           child: MyTextWidget(getPosition(),
-                              style: context.textTheme.bodyText2?.rr
+                              style: context.textTheme.titleLarge?.rr
                                   .copyWith(color: Colors.white)),
                         ),
                       ],

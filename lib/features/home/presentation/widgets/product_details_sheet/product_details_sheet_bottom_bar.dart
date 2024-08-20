@@ -381,7 +381,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                   if (currentTab != 3) ...{
                                                                                     MyTextWidget(
                                                                                       itemCount > 0 ? '$itemCount' : 'Add to bag',
-                                                                                      style: itemCount > 0 ? textTheme.caption?.bq.copyWith(color: const Color(0xff505050)) : textTheme.caption?.rq.copyWith(color: const Color(0xff505050)),
+                                                                                      style: itemCount > 0 ? textTheme.titleMedium?.bq.copyWith(color: const Color(0xff505050)) : textTheme.titleMedium?.rq.copyWith(color: const Color(0xff505050)),
                                                                                     )
                                                                                   } else ...{
                                                                                     Row(
@@ -389,27 +389,27 @@ class _ProductDetailsSheetBottomBarState
                                                                                       children: [
                                                                                         MyTextWidget(
                                                                                           'Add ',
-                                                                                          style: textTheme.caption?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                          style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                         ),
                                                                                         MyTextWidget(
                                                                                           'to bag ',
-                                                                                          style: textTheme.caption?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                          style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                         ),
                                                                                         MyTextWidget(
                                                                                           'blue ',
-                                                                                          style: textTheme.caption?.mq.copyWith(height: 15 / 12, color: Colors.blue),
+                                                                                          style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: Colors.blue),
                                                                                         ),
                                                                                         MyTextWidget(
                                                                                           'color ',
-                                                                                          style: textTheme.caption?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                          style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                         ),
                                                                                         MyTextWidget(
                                                                                           'Medium ',
-                                                                                          style: textTheme.caption?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                          style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                         ),
                                                                                         MyTextWidget(
                                                                                           'size',
-                                                                                          style: textTheme.caption?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                          style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                         ),
                                                                                       ],
                                                                                     )
@@ -565,7 +565,7 @@ class BarWidget extends StatelessWidget {
             if (text != null) ...{
               5.verticalSpace,
               MyTextWidget(text!,
-                  style: context.textTheme.caption?.rq.copyWith(
+                  style: context.textTheme.titleMedium?.rq.copyWith(
                     color: Color(0xff8D8D8D),
                   ))
             }

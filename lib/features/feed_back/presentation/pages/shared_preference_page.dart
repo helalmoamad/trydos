@@ -111,14 +111,14 @@ class SharedPreferenceCard extends StatelessWidget {
           children: [
             MyTextWidget(
               title,
-              style: context.textTheme.headline6?.rr
+              style: context.textTheme.bodyLarge?.rr
                   .copyWith(color: Colors.deepOrangeAccent),
             ),
             10.verticalSpace,
             MyTextWidget(
               value,
               style:
-                  context.textTheme.subtitle1?.rr.copyWith(color: Colors.black),
+                  context.textTheme.bodyMedium?.rr.copyWith(color: Colors.black),
             )
           ],
         ),

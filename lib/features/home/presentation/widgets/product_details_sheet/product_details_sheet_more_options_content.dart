@@ -24,7 +24,7 @@ class ProductDetailsSheetMoreOptionsContent extends StatelessWidget {
           10.verticalSpace,
           MyTextWidget('More Options',
               textAlign: TextAlign.center,
-              style: context.textTheme.subtitle1?.mq.copyWith(
+              style: context.textTheme.bodyMedium?.mq.copyWith(
                 color: Color(0xff505050),
               )),
         ],

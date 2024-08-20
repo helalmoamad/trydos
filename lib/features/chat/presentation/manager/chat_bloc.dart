@@ -198,7 +198,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                   ? [
                       MediaMessageContent(
                           filePath: event.mediaContent?[0]['file_path'],
-                          caption: event.mediaContent?[0]['caption'])
+                          titleMedium: event.mediaContent?[0]['titleMedium'])
                     ]
                   : null,
               parentMessage: parentMessageId != null
@@ -621,7 +621,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                   ? r.secureUrl!
                   : r.data!.filePath!,
               'file_name': event.fileName,
-              'caption': 'test image'
+              'titleMedium': 'test image'
             }
           ],
           messageType: event.messageType,

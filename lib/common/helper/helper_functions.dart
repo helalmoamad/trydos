@@ -386,7 +386,7 @@ class HelperFunctions {
                           ),
                           MyTextWidget(
                             'Suitable Occasions',
-                            style: context.textTheme.bodyText1?.mq.copyWith(
+                            style: context.textTheme.displayMedium?.mq.copyWith(
                                 color: Color(0xff8D8D8D),
                                 fontSize: 15.sp,
                                 height: 1.26),
@@ -401,7 +401,7 @@ class HelperFunctions {
                         children: [
                           MyTextWidget(
                             'According To The Opinions Of Our Fashion Team, The Appropriate Occasions For This Product Have Been Identified Based On Long Experience. We Provide An Opinion Only And Opinions May Differ From One Person To Another. So It Is Suitable For',
-                            style: context.textTheme.bodyText2?.rq.copyWith(
+                            style: context.textTheme.titleLarge?.rq.copyWith(
                                 height: 1.23,
                                 color: Color(0xff8D8D8D),
                                 fontSize: 13.sp),
@@ -422,7 +422,7 @@ class HelperFunctions {
                                     if (withIcon) ...{
                                       MyTextWidget(
                                         '97%',
-                                        style: context.textTheme.bodyText2?.rq
+                                        style: context.textTheme.titleLarge?.rq
                                             .copyWith(
                                                 height: 1.23,
                                                 color: Color(0xff505050),
@@ -440,7 +440,7 @@ class HelperFunctions {
                                     },
                                     MyTextWidget(
                                       'Casual',
-                                      style: context.textTheme.bodyText2?.rq
+                                      style: context.textTheme.titleLarge?.rq
                                           .copyWith(
                                               height: 1.23,
                                               color: Color(0xff8D8D8D),

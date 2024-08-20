@@ -97,7 +97,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                   10.horizontalSpace,
                   MyTextWidget(
                     LocaleKeys.contacts_list.tr(),
-                    style: textTheme.subtitle1?.rr
+                    style: textTheme.bodyMedium?.rr
                         .copyWith(color: const Color(0xff388CFF)),
                   ),
                 ],
@@ -122,7 +122,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                   filledColor: colorScheme.grey50,
                   bordersColor: colorScheme.grey50,
                   hintText: LocaleKeys.search_chat_contact_startNewChat.tr(),
-                  hintTextStyle: textTheme.subtitle2?.lr
+                  hintTextStyle: textTheme.bodySmall?.lr
                       .copyWith(color: const Color(0xffD3D3D3)),
                   onChange: (String? text) {
                     if (text?.isEmpty ?? true) {

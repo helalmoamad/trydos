@@ -31,7 +31,7 @@ class SearchChip extends StatelessWidget {
               children: [
                 MyTextWidget(
                   title,
-                  style: context.textTheme.caption?.rq
+                  style: context.textTheme.titleMedium?.rq
                       .copyWith(color: Color(0xff505050), height: 15 / 12),
                 ),
                 SvgPicture.asset(
@@ -86,7 +86,7 @@ class SearchChip extends StatelessWidget {
                                       ),
                                       MyTextWidget(
                                         'T-Shirt',
-                                        style: context.textTheme.bodyText2?.rq
+                                        style: context.textTheme.titleLarge?.rq
                                             .copyWith(
                                                 height: 18 / 14,
                                                 color: Color(0xff8D8D8D)),

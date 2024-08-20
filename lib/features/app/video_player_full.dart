@@ -128,7 +128,7 @@ class _MYVideoPlayerFullState extends State<MYVideoPlayerFull> {
                             left: 8,
                             bottom: 30,
                             child: MyTextWidget(getPosition(),
-                                style: context.textTheme.bodyText2?.rr
+                                style: context.textTheme.titleLarge?.rr
                                     .copyWith(color: Colors.white)),
                           ),
                           Positioned(

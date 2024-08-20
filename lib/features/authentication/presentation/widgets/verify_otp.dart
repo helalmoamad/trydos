@@ -173,7 +173,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                               children: [
                                 MyTextWidget(
                                   LocaleKeys.we_have_sent_code.tr(),
-                                  style: context.textTheme.caption?.ra.copyWith(
+                                  style: context.textTheme.titleMedium?.ra.copyWith(
                                       color: Color(0xff5D5C5D), height: 1.42),
                                 ),
                                 Row(
@@ -190,7 +190,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                     MyTextWidget(
                                       widget.phoneNumber,
                                       textAlign: TextAlign.start,
-                                      style: context.textTheme.caption?.ra
+                                      style: context.textTheme.titleMedium?.ra
                                           .copyWith(
                                               color: Color(0xffC4C2C2),
                                               height: 1.25),
@@ -209,7 +209,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                               .please_enter_the_verification_cod
                                               .tr() +
                                           ' ${widget.methodIcon == AppAssets.whatsappSvg ? LocaleKeys.whatsApp.tr() : LocaleKeys.sms.tr()}',
-                                      style: context.textTheme.caption?.ra
+                                      style: context.textTheme.titleMedium?.ra
                                           .copyWith(
                                               color: Color(0xffC4C2C2),
                                               height: 1.25),
@@ -242,7 +242,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                         .didnt_receive_code
                                                         .tr(),
                                                 style: context
-                                                    .textTheme.caption?.ra
+                                                    .textTheme.titleMedium?.ra
                                                     .copyWith(
                                                         color:
                                                             Color(0xffC4C2C2),
@@ -276,7 +276,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                               '0${remainingTime?.min ?? '0'} : $seconds ',
                                                               style: context
                                                                   .textTheme
-                                                                  .caption
+                                                                  .titleMedium
                                                                   ?.ra
                                                                   .copyWith(
                                                                       color: Color(
@@ -303,7 +303,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                                 .tr() +
                                                             " ",
                                                         style: context.textTheme
-                                                            .caption?.ra
+                                                            .titleMedium?.ra
                                                             .copyWith(
                                                                 color: Color(
                                                                     0xff4D84FF),
@@ -315,7 +315,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                   ? MyTextWidget(
                                                       LocaleKeys.or.tr() + " ",
                                                       style: context
-                                                          .textTheme.caption?.ra
+                                                          .textTheme.titleMedium?.ra
                                                           .copyWith(
                                                               color: Color(
                                                                   0xff5D5C5D),
@@ -330,7 +330,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                             .tr(),
                                                         maxLines: 2,
                                                         style: context.textTheme
-                                                            .caption?.ra
+                                                            .titleMedium?.ra
                                                             .copyWith(
                                                                 color: Color(
                                                                     0xff4D84FF),
@@ -352,7 +352,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                           .tr(),
                                                       maxLines: 2,
                                                       style: context
-                                                          .textTheme.caption?.ra
+                                                          .textTheme.titleMedium?.ra
                                                           .copyWith(
                                                               color: Color(
                                                                   0xff4D84FF),
@@ -587,7 +587,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                 : LocaleKeys
                                                     .the_code_sent_has_expired
                                                     .tr(),
-                                            style: context.textTheme.caption?.ra
+                                            style: context.textTheme.titleMedium?.ra
                                                 .copyWith(
                                                     color: Color(0xff5D5C5D),
                                                     height: 1.25),

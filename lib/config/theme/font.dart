@@ -124,11 +124,11 @@ abstract class _FontSize {
 
   static const double _body_02FontSize = 14;
 
-  static double get caption => _captionFontSize.sp;
+  static double get titleMedium => _titleMediumFontSize.sp;
 
-  static const double _captionFontSize = 12;
+  static const double _titleMediumFontSize = 12;
 
-  static double get overline => _overlineFontSize.sp;
+  static double get titleSmall => _titleSmallFontSize.sp;
 
-  static const double _overlineFontSize = 10;
+  static const double _titleSmallFontSize = 10;
 }

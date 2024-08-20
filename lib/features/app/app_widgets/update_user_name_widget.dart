@@ -61,7 +61,7 @@ class UpdateUserNameWidget extends StatelessWidget {
                 children: [
                   MyTextWidget(
                     LocaleKeys.insert_name_to_continue.tr(),
-                    style: context.textTheme.subtitle2,
+                    style: context.textTheme.bodySmall,
                   ),
                   10.verticalSpace,
                   Form(

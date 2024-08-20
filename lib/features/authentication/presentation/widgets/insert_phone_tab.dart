@@ -95,7 +95,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                           (widget.fromLogin
                               ? LocaleKeys.to_login.tr()
                               : LocaleKeys.registered_with_us.tr()),
-                      style: context.textTheme.caption?.ra
+                      style: context.textTheme.titleMedium?.ra
                           .copyWith(color: Color(0xff5D5C5D), height: 1.42),
                     ),
                     Row(
@@ -111,7 +111,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                           LocaleKeys.enter_your_phonenumber_registered_with_us
                               .tr(),
                           textAlign: TextAlign.start,
-                          style: context.textTheme.caption?.ra
+                          style: context.textTheme.titleMedium?.ra
                               .copyWith(color: Color(0xffC4C2C2), height: 1.25),
                         )
                       ],
@@ -130,7 +130,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                             width: 1.sw - 120,
                             child: MyTextWidget(
                               LocaleKeys.we_will_send_code.tr(),
-                              style: context.textTheme.caption?.ra.copyWith(
+                              style: context.textTheme.titleMedium?.ra.copyWith(
                                   color: Color(0xffC4C2C2), height: 1.25),
                             ),
                           )
@@ -152,7 +152,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                               LocaleKeys.your_Privacy.tr(),
                               textAlign: TextAlign.start,
                               maxLines: 2,
-                              style: context.textTheme.caption?.ra.copyWith(
+                              style: context.textTheme.titleMedium?.ra.copyWith(
                                   color: Color(0xffC4C2C2), height: 1.25.h),
                             ),
                           )
@@ -237,7 +237,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                           10.horizontalSpace,
                           MyTextWidget(
                             '+',
-                            style: context.textTheme.subtitle1?.rr
+                            style: context.textTheme.bodyMedium?.rr
                                 .copyWith(color: Color(0xff8E8E8E)),
                           ),
                           4.horizontalSpace

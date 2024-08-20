@@ -255,7 +255,7 @@
 //                                 //                 : HelperFunctions
 //                                 //                 .getZonedDateInFormat(
 //                                 //                 widget.time),
-//                                 //             style: context.textTheme.overline?.rr
+//                                 //             style: context.textTheme.titleSmall?.rr
 //                                 //                 .copyWith(
 //                                 //                 color:
 //                                 //                 context.colorScheme.white),
@@ -352,7 +352,7 @@
 //                                           width: 30.w,
 //                                           height: 30,
 //                                           textStyle: context
-//                                               .textTheme.caption?.br
+//                                               .textTheme.titleMedium?.br
 //                                               .copyWith(
 //                                                   color:
 //                                                       const Color(0xff6638FF),

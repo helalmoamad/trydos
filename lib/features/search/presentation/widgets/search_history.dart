@@ -74,7 +74,7 @@ class _SearchHistoryState extends State<SearchHistory> {
                                   children: [
                                     MyTextWidget(
                                       'Search History',
-                                      style: context.textTheme.bodyText2?.mq
+                                      style: context.textTheme.titleLarge?.mq
                                           .copyWith(
                                               height: 18 / 14,
                                               color: Color(0xff505050)),
@@ -89,7 +89,7 @@ class _SearchHistoryState extends State<SearchHistory> {
                                       },
                                       child: MyTextWidget(
                                         'Clear All',
-                                        style: context.textTheme.bodyText2?.rq
+                                        style: context.textTheme.titleLarge?.rq
                                             .copyWith(
                                                 height: 18 / 14,
                                                 decoration:
@@ -180,7 +180,7 @@ class _SearchHistoryState extends State<SearchHistory> {
                               child: MyTextWidget(
                                 _items[index],
                                 textAlign: TextAlign.start,
-                                style: context.textTheme.bodyText2?.rq.copyWith(
+                                style: context.textTheme.titleLarge?.rq.copyWith(
                                     height: 18 / 14, color: Color(0xff8D8D8D)),
                               ),
                             ),

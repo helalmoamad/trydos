@@ -69,7 +69,7 @@ class _ProductDetailsDescriptionWidgetState
                                 text: !readMore
                                     ? LocaleKeys.read_less.tr()
                                     : LocaleKeys.read_more.tr(),
-                                style: context.textTheme.bodyText2?.rq.copyWith(
+                                style: context.textTheme.titleLarge?.rq.copyWith(
                                     height: 1.23,
                                     color: Color(0xff388CFF),
                                     fontSize: 13),
@@ -91,13 +91,13 @@ class _ProductDetailsDescriptionWidgetState
                 text: TextSpan(children: [
                   TextSpan(
                     text: readMore ? twoLines : text,
-                    style: context.textTheme.bodyText2?.rq.copyWith(
+                    style: context.textTheme.titleLarge?.rq.copyWith(
                         height: 1.23, color: Color(0xff8D8D8D), fontSize: 13),
                   ),
                   readMores
                       ? TextSpan(
                           text: !readMore ? "Read Less..." : "Read More...",
-                          style: context.textTheme.bodyText2?.rq.copyWith(
+                          style: context.textTheme.titleLarge?.rq.copyWith(
                               height: 1.23,
                               color: Color(0xff388CFF),
                               fontSize: 13),
