@@ -17,6 +17,7 @@ void main() {
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
+      WidgetsKey.kTestMode = true;
       /////////////  Register As Guest  /////////////
       await SharedScenarios.registerGuest(tester: tester);
       ////////////// Find Boutiques HomePageCard //////////////
