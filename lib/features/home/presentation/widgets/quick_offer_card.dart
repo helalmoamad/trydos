@@ -89,7 +89,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                   ),
                   MyTextWidget(
                     'Mango Famous Turkish Brand Best Discounts',
-                    style: context.textTheme.caption?.rq.copyWith(
+                    style: context.textTheme.titleMedium?.rq.copyWith(
                       color: const Color(0xff505050),
                     ),
                   ),
@@ -109,13 +109,13 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           MyTextWidget('Quick Offer',
-                              style: textTheme.bodyText2?.mq.copyWith(
+                              style: textTheme.titleLarge?.mq.copyWith(
                                 color: const Color(0xff3c3c3c),
                                 height: 0.85,
                               )),
                           MyTextWidget(
                               'This Offer Is For Only 4 Hours, Remaining:',
-                              style: textTheme.overline?.rq.copyWith(
+                              style: textTheme.titleSmall?.rq.copyWith(
                                 color: const Color(0xff505050),
                                 height: 1.3,
                               ))

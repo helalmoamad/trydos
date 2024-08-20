@@ -92,7 +92,7 @@ class ProductDetailsTitle extends StatelessWidget {
                                       .reviewsCount
                                       .toString()
                                   : "0",
-                              style: context.textTheme.caption?.rq.copyWith(
+                              style: context.textTheme.titleMedium?.rq.copyWith(
                                   color: Color(0xff505050), height: 1.26),
                             )
                           ],
@@ -109,7 +109,7 @@ class ProductDetailsTitle extends StatelessWidget {
                 children: [
                   MyTextWidget(
                     productName,
-                    style: context.textTheme.subtitle1?.mq.copyWith(
+                    style: context.textTheme.bodyMedium?.mq.copyWith(
                         color: Color(0xff5D5C5D),
                         height: 1.26,
                         fontSize: 15.sp),
@@ -139,7 +139,7 @@ class ProductDetailsTitle extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: MyTextWidget(
                       colorName,
-                      style: context.textTheme.subtitle1?.rq.copyWith(
+                      style: context.textTheme.bodyMedium?.rq.copyWith(
                           color: Color(0xff404E68),
                           height: 1.26,
                           fontSize: 15.sp),

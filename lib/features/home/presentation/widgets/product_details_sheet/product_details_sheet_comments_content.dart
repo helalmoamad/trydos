@@ -56,7 +56,7 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                     width: 10,
                   ),
                   MyTextWidget('Comment About This Product',
-                      style: context.textTheme.subtitle1?.mq.copyWith(
+                      style: context.textTheme.bodyMedium?.mq.copyWith(
                         color: Color(0xff505050),
                       )),
                 ],
@@ -185,12 +185,12 @@ class CommentCard extends StatelessWidget {
                   children: [
                     MyTextWidget(
                       names,
-                      style: context.textTheme.subtitle2?.rq
+                      style: context.textTheme.bodySmall?.rq
                           .copyWith(color: Color(0xff969696)),
                     ),
                     MyTextWidget(
                       date,
-                      style: context.textTheme.overline?.rq
+                      style: context.textTheme.titleSmall?.rq
                           .copyWith(color: Color(0xff969696)),
                     ),
                   ],
@@ -198,7 +198,7 @@ class CommentCard extends StatelessWidget {
                 Flexible(
                   child: MyTextWidget(
                     comment,
-                    style: context.textTheme.subtitle2?.rq
+                    style: context.textTheme.bodySmall?.rq
                         .copyWith(color: Color(0xff5D5C5D)),
                     maxLines: 5,
                   ),

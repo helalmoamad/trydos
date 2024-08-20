@@ -162,7 +162,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                               )
                             : MyTextWidget(
                                 widget.boutniqe.name!,
-                                style: context.textTheme.caption?.rd.copyWith(
+                                style: context.textTheme.titleMedium?.rd.copyWith(
                                   fontSize: 16,
                                   color: ui.Color.fromARGB(255, 15, 15, 15),
                                 ),
@@ -560,7 +560,7 @@ class ProductItemCircle extends StatelessWidget {
                       name,
                       maxLines: 1,
                       textAlign: TextAlign.center,
-                      style: context.textTheme.caption?.rr.copyWith(
+                      style: context.textTheme.titleMedium?.rr.copyWith(
                           color: Color(0xff8E8E8E),
                           letterSpacing: 0,
                           height: 1.43),
@@ -568,7 +568,7 @@ class ProductItemCircle extends StatelessWidget {
                     MyTextWidget(
                       countProducts,
                       textAlign: TextAlign.center,
-                      style: context.textTheme.caption?.rr.copyWith(
+                      style: context.textTheme.titleMedium?.rr.copyWith(
                           color: Color(0xff8E8E8E),
                           fontSize: 8.sp,
                           letterSpacing: 0,
@@ -644,7 +644,7 @@ class ProductItemCircle extends StatelessWidget {
                 index == 8
                     ? MyTextWidget(
                         'More',
-                        style: context.textTheme.overline?.rq
+                        style: context.textTheme.titleSmall?.rq
                             .copyWith(color: Colors.white),
                       )
                     : const SizedBox.shrink(),

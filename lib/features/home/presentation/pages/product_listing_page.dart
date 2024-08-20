@@ -714,13 +714,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           'Search',
                                                                       hintStyle: context
                                                                           .textTheme
-                                                                          .subtitle1
+                                                                          .bodyMedium
                                                                           ?.lq
                                                                           .copyWith(
                                                                               color: Color(0xffC4C2C2)),
                                                                       labelStyle: context
                                                                           .textTheme
-                                                                          .bodyText2
+                                                                          .titleLarge
                                                                           ?.copyWith(
                                                                               color: context.colorScheme.hint),
                                                                     ),
@@ -1265,7 +1265,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   ),
                                                 );
                                               }
-                                              if ((((state.getProductListingWithFiltersPaginationModels[
+                                              if (((state.getProductListingWithFiltersPaginationModels[
                                                                   '${widget.boutiqueSlug}' +
                                                                       '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
                                                                       '${(widget.category ?? '')}'] ==
@@ -1292,37 +1292,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       '${(widget.category ?? '')}']
                                                           ?.paginationStatus ==
                                                       PaginationStatus
-                                                          .loading)) {
-                                                print((state.getProductListingWithFiltersPaginationModels[
-                                                            '${widget.boutiqueSlug}' +
-                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
-                                                                '${(widget.category ?? '')}'] ==
-                                                        null ||
-                                                    state
-                                                        .getProductListingWithFiltersPaginationModels[
-                                                            '${widget.boutiqueSlug}' +
-                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
-                                                                '${(widget.category ?? '')}']!
-                                                        .items
-                                                        .isNullOrEmpty));
-                                                print('${widget.boutiqueSlug}' +
-                                                    '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
-                                                    '${(widget.category ?? '')}');
-                                                print(state
-                                                        .getProductListingWithFiltersPaginationModels[
-                                                            '${widget.boutiqueSlug}' +
-                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}}'
-                                                                    '${(widget.category ?? '')}']
-                                                        ?.paginationStatus !=
-                                                    PaginationStatus.success);
-                                                print(state
-                                                        .getProductListingWithFiltersPaginationModels[
-                                                            '${widget.boutiqueSlug}' +
-                                                                '${state.idForRequest}'
-                                                                    '${(widget.category ?? '')}']
-                                                        ?.paginationStatus ==
-                                                    PaginationStatus.loading);
-
+                                                          .loading) {
                                                 return ProductListingLoading(
                                                   key: WidgetsKey.kTestMode
                                                       ? Key(WidgetsKey
@@ -1345,8 +1315,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
                                                             '${(widget.category ?? '')}']!
                                                     .items;
-                                                print(products.length);
-                                                print("ddddddddddddddddd");
                                                 if (products.isEmpty) {
                                                   return SliverToBoxAdapter(
                                                     child: Center(
@@ -1542,7 +1510,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   child: Center(
                                     child: MyTextWidget(
                                       title ?? '',
-                                      style: textTheme.bodyText2?.rq.copyWith(
+                                      style: textTheme.titleLarge?.rq.copyWith(
                                           color: colorScheme.white,
                                           height: 18 / 14),
                                     ),

@@ -97,7 +97,7 @@ class _NotifyWhenQuantityAvailableButtonState extends State<NotifyWhenQuantityAv
                                       MyTextWidget(
                                         'Notify Me When Size Is Available',
                                         style: textTheme
-                                            .caption?.rq
+                                            .titleMedium?.rq
                                             .copyWith(
                                           height: 15 / 12,
                                             color: const Color(
@@ -110,7 +110,7 @@ class _NotifyWhenQuantityAvailableButtonState extends State<NotifyWhenQuantityAv
                                           MyTextWidget(
                                             'We Will Inform You When A ',
                                             style: textTheme
-                                                .caption?.rq
+                                                .titleMedium?.rq
                                                 .copyWith(
                                                 height: 15 / 12 ,
                                                 color: const Color(
@@ -119,7 +119,7 @@ class _NotifyWhenQuantityAvailableButtonState extends State<NotifyWhenQuantityAv
                                           MyTextWidget(
                                             '${widget.unAvailableSize} ',
                                             style: textTheme
-                                                .caption?.bq
+                                                .titleMedium?.bq
                                                 .copyWith(
                                                 height: 15 / 12 ,
                                                 color: const Color(
@@ -128,7 +128,7 @@ class _NotifyWhenQuantityAvailableButtonState extends State<NotifyWhenQuantityAv
                                           MyTextWidget(
                                             'Size Is Available',
                                             style: textTheme
-                                                .caption?.rq
+                                                .titleMedium?.rq
                                                 .copyWith(
                                                 height: 15 / 12 ,
                                                 color: const Color(

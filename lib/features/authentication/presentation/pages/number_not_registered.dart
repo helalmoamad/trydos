@@ -94,7 +94,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                         LocaleKeys
                                             .sorry_this_number_is_not_registered_with_us
                                             .tr(),
-                                        style: context.textTheme.bodyText2?.ra
+                                        style: context.textTheme.titleLarge?.ra
                                             .copyWith(
                                                 color: Color(0xff5D5C5D),
                                                 height: 1.42),
@@ -115,7 +115,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                           MyTextWidget(
                                             widget.phoneNumber,
                                             textAlign: TextAlign.start,
-                                            style: context.textTheme.caption?.ra
+                                            style: context.textTheme.titleMedium?.ra
                                                 .copyWith(
                                                     color: Color(0xff8D8D8D),
                                                     height: 1.25),
@@ -132,7 +132,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                             LocaleKeys
                                                 .register_create_new_account
                                                 .tr(),
-                                            style: context.textTheme.caption?.ra
+                                            style: context.textTheme.titleMedium?.ra
                                                 .copyWith(
                                                     color: Color(0xffC4C2C2),
                                                     height: 1.25),
@@ -169,7 +169,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                 children: [
                                   MyTextWidget(
                                     LocaleKeys.create_new_account_continue.tr(),
-                                    style: textTheme.bodyText1?.ra.copyWith(
+                                    style: textTheme.displayMedium?.ra.copyWith(
                                       color: Color(0xff5D5C5D),
                                       letterSpacing: 0.16,
                                       height: 1.25,
@@ -201,7 +201,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                 LocaleKeys.cancel.tr() +
                                     "&" +
                                     LocaleKeys.later_take_look.tr(),
-                                style: textTheme.bodyText2?.ra.copyWith(
+                                style: textTheme.titleLarge?.ra.copyWith(
                                   color: Color(0xff4d84ff),
                                   letterSpacing: 0.14,
                                   height: 1.43,

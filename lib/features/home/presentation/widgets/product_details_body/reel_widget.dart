@@ -118,12 +118,12 @@ class ReelWidget extends StatelessWidget {
                       children: [
                         MyTextWidget(
                           'Yxxx Oxxx',
-                          style: context.textTheme.subtitle2?.rq
+                          style: context.textTheme.bodySmall?.rq
                               .copyWith(color: Color(0xff969696)),
                         ),
                         MyTextWidget(
                           '18 feb',
-                          style: context.textTheme.overline?.rq
+                          style: context.textTheme.titleSmall?.rq
                               .copyWith(color: Color(0xff8D8D8D)),
                         ),
                       ],
@@ -134,7 +134,7 @@ class ReelWidget extends StatelessWidget {
                     Flexible(
                       child: MyTextWidget(
                         'Amazing Product I Buy It And I Saw It Is Good Quality Regarding Price',
-                        style: context.textTheme.subtitle2?.rq
+                        style: context.textTheme.bodySmall?.rq
                             .copyWith(color: Color(0xff5D5C5D)),
                         maxLines: 5,
                       ),
@@ -151,7 +151,7 @@ class ReelWidget extends StatelessWidget {
                         ),
                         MyTextWidget(
                           '110k',
-                          style: context.textTheme.caption?.rq
+                          style: context.textTheme.titleMedium?.rq
                               .copyWith(color: Color(0xff8D8D8D)),
                         ),
                       ],

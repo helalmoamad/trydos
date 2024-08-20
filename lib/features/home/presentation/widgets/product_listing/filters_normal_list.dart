@@ -70,7 +70,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                 ),
                 MyTextWidget(
                   widget.filterListTitle,
-                  style: context.textTheme.caption?.rq
+                  style: context.textTheme.titleMedium?.rq
                       .copyWith(color: Color(0xff505050), height: 15 / 12),
                 ),
                 SizedBox(
@@ -249,7 +249,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                               : 'T-shirt',
                           maxLines: 1,
                           textAlign: TextAlign.center,
-                          style: context.textTheme.caption?.rq.copyWith(
+                          style: context.textTheme.titleMedium?.rq.copyWith(
                               color: Color(0xff8E8E8E),
                               letterSpacing: 0,
                               height: 1.25),

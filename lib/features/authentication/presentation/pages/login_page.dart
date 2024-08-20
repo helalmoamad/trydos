@@ -67,11 +67,11 @@
 //                   children: [
 //                     TextSpan(
 //                       text: 'Please enter your',
-//                       style: textTheme.headline5?.rr,
+//                       style: textTheme.headlineSmall?.rr,
 //                     ),
 //                     TextSpan(
 //                       text: 'Phone Number',
-//                       style: textTheme.headline5?.rr
+//                       style: textTheme.headlineSmall?.rr
 //                           .copyWith(color: colorScheme.secondary),
 //                     ),
 //                   ],

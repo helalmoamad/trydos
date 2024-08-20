@@ -258,7 +258,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                             BoxConstraints(maxWidth: 310.w),
                                         child: MyTextWidget(
                                           widget.message,
-                                          style: textTheme.bodyText2?.rr
+                                          style: textTheme.titleLarge?.rr
                                               .copyWith(
                                                   color: widget.withImageShadow
                                                       ? const Color(0xff505050)
@@ -279,7 +279,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                   : HelperFunctions
                                                       .getZonedDateInFormat(
                                                           widget.createAt!),
-                                              style: textTheme.overline?.rr
+                                              style: textTheme.titleSmall?.rr
                                                   .copyWith(
                                                       color:
                                                           widget.withImageShadow
@@ -469,7 +469,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                     ? 30
                                                     : 20,
                                                 textStyle: context
-                                                    .textTheme.caption?.br
+                                                    .textTheme.titleMedium?.br
                                                     .copyWith(
                                                         color: const Color(
                                                             0xff6638FF),

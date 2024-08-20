@@ -325,7 +325,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                                               : HelperFunctions.getTimeInFormat(duration),
                                                                           style: context
                                                                               .textTheme
-                                                                              .overline
+                                                                              .titleSmall
                                                                               ?.rt
                                                                               .copyWith(color: const Color(0xff404040), height: 1.4),
                                                                           textAlign:
@@ -475,7 +475,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                                               : HelperFunctions.getTimeInFormat(duration),
                                                                           style: context
                                                                               .textTheme
-                                                                              .overline
+                                                                              .titleSmall
                                                                               ?.rt
                                                                               .copyWith(color: const Color(0xff404040), height: 1.4),
                                                                           textAlign:
@@ -564,7 +564,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                                 widget
                                                                     .createAt!),
                                                     style: context
-                                                        .textTheme.overline?.rr
+                                                        .textTheme.titleSmall?.rr
                                                         .copyWith(
                                                             color: const Color(
                                                                 0xff505050)),
@@ -685,7 +685,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                 width: 30.w,
                                                 height: 30,
                                                 textStyle: context
-                                                    .textTheme.caption?.br
+                                                    .textTheme.titleMedium?.br
                                                     .copyWith(
                                                         color: const Color(
                                                             0xff6638FF),
@@ -724,7 +724,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                       //   ),
                       //   padding: HWEdgeInsets.symmetric(horizontal: 16 , vertical: 5),
                       //   child: Center(
-                      //     child: MyTextWidget('Forwarded Message' , style: context.textTheme.overline?.rr.copyWith(
+                      //     child: MyTextWidget('Forwarded Message' , style: context.textTheme.titleSmall?.rr.copyWith(
                       //       color: const Color(0xff505050),
                       //       height: 1.4
                       //     )),

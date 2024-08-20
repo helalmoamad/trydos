@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as carousel_slider;
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
@@ -39,7 +39,7 @@ class SelectSizeContent extends StatefulWidget {
 class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   List<String> sizes = [];
 
-  final CarouselController carouselController = CarouselController();
+  final carousel_slider.CarouselController carouselController = carousel_slider.CarouselController();
   late final ValueNotifier<int> currentIndexInSizes;
   late HomeBloc homeBloc;
   @override
@@ -108,12 +108,12 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                   ),
                   MyTextWidget(
                     'Please Select The Appropriate ',
-                    style: textTheme.bodyText2?.rq
+                    style: textTheme.titleLarge?.rq
                         .copyWith(height: 0.86, color: const Color(0xff505050)),
                   ),
                   MyTextWidget(
                     'Size',
-                    style: textTheme.bodyText2?.mq
+                    style: textTheme.titleLarge?.mq
                         .copyWith(height: 0.86, color: const Color(0xff505050)),
                   )
                 ],
@@ -198,7 +198,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                               )
                             ],
                           ),
-                          CarouselSlider.builder(
+                          carousel_slider.CarouselSlider.builder(
                               itemCount: sizes.length,
                               carouselController: carouselController,
                               itemBuilder: (ctx, index, _) {
@@ -208,7 +208,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                   child: Center(
                                     child: Text(
                                       sizes[index],
-                                      style: textTheme.headline2?.bq.copyWith(
+                                      style: textTheme.headlineLarge?.bq.copyWith(
                                         height: 1.3,
                                         fontSize: index != currentIndex
                                             ? index < currentIndex
@@ -239,7 +239,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                   ),
                                 );
                               },
-                              options: CarouselOptions(
+                              options: carousel_slider.CarouselOptions(
                                   initialPage: sizes.length ~/ 2,
                                   height: 80,
                                   enableInfiniteScroll: false,
@@ -302,7 +302,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                     if (sizes[currentIndex] == 'S') {
                       return MyTextWidget(
                         'Not Available Now, Stock Is Sold Out',
-                        style: textTheme.caption?.mq.copyWith(
+                        style: textTheme.titleMedium?.mq.copyWith(
                             height: 1, color: const Color(0xffFF5F61)),
                       );
                     }
@@ -311,33 +311,33 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                       children: [
                         MyTextWidget(
                           'M ',
-                          style: textTheme.caption?.bq.copyWith(
+                          style: textTheme.titleMedium?.bq.copyWith(
                               height: 1, color: const Color(0xff505050)),
                         ),
                         MyTextWidget(
                           'Recommended ',
-                          style: textTheme.caption?.rq.copyWith(
+                          style: textTheme.titleMedium?.rq.copyWith(
                               height: 1, color: const Color(0xff505050)),
                         ),
                         MyTextWidget(
                           'Size ',
-                          style: textTheme.caption?.bq.copyWith(
+                          style: textTheme.titleMedium?.bq.copyWith(
                               height: 1, color: const Color(0xff505050)),
                         ),
                         MyTextWidget(
                           'For You ',
-                          style: textTheme.caption?.rq.copyWith(
+                          style: textTheme.titleMedium?.rq.copyWith(
                               height: 1, color: const Color(0xff505050)),
                         ),
                         if (sizes[currentIndex] == 'XS') ...{
                           MyTextWidget(
                             'Last ',
-                            style: textTheme.caption?.rq.copyWith(
+                            style: textTheme.titleMedium?.rq.copyWith(
                                 height: 1, color: const Color(0xffFFAF5F)),
                           ),
                           MyTextWidget(
                             '2',
-                            style: textTheme.caption?.mq.copyWith(
+                            style: textTheme.titleMedium?.mq.copyWith(
                                 height: 1, color: const Color(0xffFFAF5F)),
                           ),
                         }
@@ -371,7 +371,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                             ),
                             MyTextWidget(
                               'Need Help Finding Your Size?',
-                              style: textTheme.bodyText2?.rq
+                              style: textTheme.titleLarge?.rq
                                   .copyWith(color: const Color(0xff505050)),
                             ),
                           ],

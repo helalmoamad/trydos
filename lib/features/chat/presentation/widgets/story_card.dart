@@ -86,7 +86,7 @@ class StoryCard extends StatelessWidget {
                                   width: 60.r,
                                   height: 60.r,
                                   radius: 180,
-                                  textStyle: context.textTheme.subtitle1?.br
+                                  textStyle: context.textTheme.bodyMedium?.br
                                       .copyWith(
                                           color: const Color(0xff6638FF),
                                           letterSpacing: 0.18,
@@ -128,7 +128,7 @@ class StoryCard extends StatelessWidget {
                                         LocaleKeys.unknown_user.tr(),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: context.textTheme.subtitle1?.rr
+                                    style: context.textTheme.bodyMedium?.rr
                                         .copyWith(
                                             height: 1.33,
                                             color: const Color(0xff505050)),

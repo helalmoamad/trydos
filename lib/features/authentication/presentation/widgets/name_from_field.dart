@@ -190,7 +190,7 @@ class _NameFormFieldState extends State<NameFormField> {
                   textAlign: TextAlign.start,
                   cursorHeight: 0,
                   toolbarOptions: widget.toolbarOptions,
-                  style: context.textTheme.bodyText1?.ra.copyWith(
+                  style: context.textTheme.displayMedium?.ra.copyWith(
                     color: const Color(0xff5D5C5D),
                     letterSpacing: 0.16,
                     height: 3,
@@ -226,7 +226,7 @@ class _NameFormFieldState extends State<NameFormField> {
               return show
                   ? MyTextWidget(
                       LocaleKeys.enter_your_name.tr(),
-                      style: context.textTheme.bodyText1?.ra
+                      style: context.textTheme.displayMedium?.ra
                           .copyWith(color: Color(0xffC4C2C2)),
                     )
                   : const SizedBox.shrink();

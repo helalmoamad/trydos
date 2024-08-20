@@ -13,11 +13,11 @@ class TitledTextWidget extends StatelessWidget {
       maxLines: maxLines ?? 1,
       text: TextSpan(
         children: <TextSpan>[
-          TextSpan(text: title, style: context.textTheme.subtitle1!.copyWith(
+          TextSpan(text: title, style: context.textTheme.bodyMedium!.copyWith(
           fontWeight: FontWeight.w700, color: context.colorScheme.tertiary)),
           TextSpan(
               text: '$body\n',
-              style: context.textTheme.bodyText1!.copyWith(
+              style: context.textTheme.displayMedium!.copyWith(
                 fontWeight: FontWeight.w400,
               )),
         ],

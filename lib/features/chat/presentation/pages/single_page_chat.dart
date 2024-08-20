@@ -269,7 +269,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                     (state.unReadMessagesFromAllChats -
                                             countMessagesReceivedToMeNow)
                                         .toString(),
-                                    style: textTheme.subtitle1?.rr.copyWith(
+                                    style: textTheme.bodyMedium?.rr.copyWith(
                                         color: const Color(0xff388CFF)),
                                   ),
                                 ],
@@ -304,7 +304,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           : NoImageWidget(
                               height: 40,
                               width: 40.w,
-                              textStyle: context.textTheme.subtitle1?.br
+                              textStyle: context.textTheme.bodyMedium?.br
                                   .copyWith(
                                       color: const Color(0xff6638FF),
                                       letterSpacing: 0.18,
@@ -334,7 +334,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               },
                               child: MyTextWidget(
                                 widget.fullReceiverName,
-                                style: textTheme.subtitle1?.mr
+                                style: textTheme.bodyMedium?.mr
                                     .copyWith(color: const Color(0xff5D5C5D)),
                               ),
                             ),
@@ -349,7 +349,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                               int.parse(widget.chatId)]
                                           .toString(),
                                       overflow: TextOverflow.ellipsis,
-                                      style: textTheme.caption?.mr.copyWith(
+                                      style: textTheme.titleMedium?.mr.copyWith(
                                           color: const Color(0xff007CFF)),
                                     );
                                   } else {
@@ -372,7 +372,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                 ? MyTextWidget("Online",
                                                     overflow:
                                                         TextOverflow.ellipsis,
-                                                    style: textTheme.caption?.mr
+                                                    style: textTheme.titleMedium?.mr
                                                         .copyWith(
                                                             color: const Color(
                                                                 0xff007CFF)))
@@ -382,7 +382,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                           style: textTheme
-                                                              .caption?.mr
+                                                              .titleMedium?.mr
                                                               .copyWith(
                                                                   color: const Color(
                                                                       0xff007CFF))),
@@ -397,7 +397,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                           style: textTheme
-                                                              .caption?.mr
+                                                              .titleMedium?.mr
                                                               .copyWith(
                                                                   color: const Color(
                                                                       0xff007CFF))),
@@ -405,7 +405,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                           style: textTheme
-                                                              .caption?.mr
+                                                              .titleMedium?.mr
                                                               .copyWith(
                                                                   color: const Color(
                                                                       0xff007CFF))),
@@ -419,7 +419,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                           style: textTheme
-                                                              .caption?.mr
+                                                              .titleMedium?.mr
                                                               .copyWith(
                                                                   color: const Color(
                                                                       0xff007CFF))),
@@ -990,7 +990,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                           child: Center(
                                                                                                             child: MyTextWidget(
                                                                                                               LocaleKeys.replay.tr(),
-                                                                                                              style: textTheme.overline?.rr.copyWith(color: colorScheme.white, height: 1.4),
+                                                                                                              style: textTheme.titleSmall?.rr.copyWith(color: colorScheme.white, height: 1.4),
                                                                                                             ),
                                                                                                           ),
                                                                                                         )
@@ -1154,7 +1154,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                           child: Center(
                                                                                                             child: MyTextWidget(
                                                                                                               LocaleKeys.replay.tr(),
-                                                                                                              style: textTheme.overline?.rr.copyWith(color: colorScheme.white, height: 1.4),
+                                                                                                              style: textTheme.titleSmall?.rr.copyWith(color: colorScheme.white, height: 1.4),
                                                                                                             ),
                                                                                                           ),
                                                                                                         )
@@ -1732,7 +1732,7 @@ class MessagesDate extends StatelessWidget {
           ),
           child: Center(
             child: MyTextWidget(formatDate(date),
-                style: context.textTheme.caption?.rr
+                style: context.textTheme.titleMedium?.rr
                     .copyWith(color: context.colorScheme.white)),
           ),
         ),
@@ -1816,7 +1816,7 @@ class MessageSubtitleWidget extends StatelessWidget {
       child: Center(
         child: MyTextWidget(
           hoverText,
-          style: context.textTheme.overline?.rr
+          style: context.textTheme.titleSmall?.rr
               .copyWith(color: context.colorScheme.white, height: 1.4),
         ),
       ),

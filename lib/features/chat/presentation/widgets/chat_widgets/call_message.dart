@@ -77,7 +77,7 @@ class CallMessage extends StatelessWidget {
                             10.horizontalSpace,
                             MyTextWidget(
                               '$message  ${!time.isUtc ? HelperFunctions.getDateInFormat(time) : HelperFunctions.getZonedDateInFormat(time)}',
-                              style: context.textTheme.caption?.rr.copyWith(
+                              style: context.textTheme.titleMedium?.rr.copyWith(
                                   color: const Color(0xff404040), height: 1.66),
                               textDirection: TextDirection.ltr,
                             ),
@@ -112,7 +112,7 @@ class CallMessage extends StatelessWidget {
                           : NoImageWidget(
                               width: 30.w,
                               height: 30,
-                              textStyle: context.textTheme.caption?.br.copyWith(
+                              textStyle: context.textTheme.titleMedium?.br.copyWith(
                                   color: const Color(0xff6638FF),
                                   letterSpacing: 0.18,
                                   height: 1.33),

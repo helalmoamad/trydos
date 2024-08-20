@@ -211,7 +211,7 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                                     FilteringTextInputFormatter.digitsOnly,
                                   ],
                                   style:
-                                      context.textTheme.headline5?.ra.copyWith(
+                                      context.textTheme.headlineSmall?.ra.copyWith(
                                     color: const Color(0xff707070),
                                     height: 0.6,
                                     decoration: TextDecoration.none,

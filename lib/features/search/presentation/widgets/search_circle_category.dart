@@ -74,7 +74,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                         children: [
                           MyTextWidget(
                             widget.title,
-                            style: context.textTheme.caption?.rq.copyWith(
+                            style: context.textTheme.titleMedium?.rq.copyWith(
                                 color: Color(0xff505050), height: 15 / 12),
                           ),
                           SizedBox(
@@ -202,7 +202,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                         children: [
                           MyTextWidget(
                             widget.title,
-                            style: context.textTheme.caption?.rq.copyWith(
+                            style: context.textTheme.titleMedium?.rq.copyWith(
                                 color: Color(0xff505050), height: 15 / 12),
                           ),
                           SizedBox(
@@ -366,7 +366,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                 filters
                                                     .categories![index].name!,
                                                 style: context
-                                                    .textTheme.bodyText2?.rq
+                                                    .textTheme.titleLarge?.rq
                                                     .copyWith(
                                                         height: 12 / 14,
                                                         color:
@@ -567,7 +567,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                                 .name!,
                                                             style: context
                                                                 .textTheme
-                                                                .bodyText2
+                                                                .titleLarge
                                                                 ?.rq
                                                                 .copyWith(
                                                                     height:

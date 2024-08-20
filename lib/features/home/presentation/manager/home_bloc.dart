@@ -258,11 +258,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       apisMustNotToRequest.add('GetMainCategoriesEvent');
       isFailedTheFirstTime.remove('GetMainCategoriesEvent');
 
-      /*if (state.getHomeBoutiquesPaginationObjectByMainCategory['Men_36']
+      if (state.getHomeBoutiquesPaginationObjectByMainCategory['Empty']
               ?.paginationStatus ==
           PaginationStatus.success) {
         requestAPIAfterHome();
-      }*/
+      }
       emit(state.copyWith(
           mainCategoriesResponseModel: r,
           getMainCategoriesStatus: GetMainCategoriesStatus.success));
@@ -755,7 +755,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                     prevAppliedFiltersByUser[key]?.filters?.prices?.minPrice !=
                         null)
                 ? [
-                    '"${prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice}-${prevAppliedFiltersByUser[key]?.filters?.prices?.minPrice}"'
+                    '"${prevAppliedFiltersByUser[key]?.filters?.prices?.minPrice}-${prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice}"'
                   ]
                 : null,
             searchText: event.fromChoosed ?? false
@@ -809,11 +809,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
           Map<String, filters_model.GetProductFiltersModel?> data =
               Map.of(state.getProductFiltersModel);
+          List<filters_model.PriceRange> ranges =  r.data!.prices?.priceRanges ?? [];
+          ranges.removeWhere((element) => element.count == 0);
           data[key] = filters_model.GetProductFiltersModel(
               filters: filters_model.Filter(
             brands: r.data!.brands,
             attributes: r.data!.attributes,
-            prices: r.data!.prices,
+            prices: r.data!.prices?.copyWith(
+              priceRanges: ranges
+            ),
             boutiques: r.data!.boutiques,
             colors: r.data!.colors,
             searchText: filters.searchText,
@@ -1093,7 +1097,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       colors: filters.colors?.map((e) => '"${e.toString()}"').toList(),
       prices:
           filters.prices?.maxPrice != null && filters.prices?.minPrice != null
-              ? ['"${filters.prices!.maxPrice}-${filters.prices!.minPrice}"']
+              ? ['"${filters.prices!.minPrice}-${filters.prices!.maxPrice}"']
               : null,
     ));
     response.fold((l) {
@@ -1116,7 +1120,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         statuses[key] = GetProductFiltersStatus.success;
         Map<String, filters_model.GetProductFiltersModel?> data =
             Map.of(state.getProductFiltersModel);
-        data[key] = r;
+        List<filters_model.PriceRange> ranges =  r.filters!.prices?.priceRanges ?? [];
+        ranges.removeWhere((element) => element.count == 0);
+
+        data[key] = r.copyWith(filters: r.filters?.copyWithSaveOtherField(
+          prices: r.filters?.prices?.copyWith(
+            priceRanges: ranges
+          ),
+          searchText: r.filters?.searchText
+        ));
 
         emit(state.copyWith(
             totalProductNumber: r.filters!.totalSize,

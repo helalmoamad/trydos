@@ -238,7 +238,7 @@ class _PriceFilterState extends State<PriceFilter> {
                             children: [
                               MyTextWidget(
                                 'Min ${filterData.item1.toStringAsFixed(widget.decimalPoint)} ',
-                                style: textTheme.caption?.rq.copyWith(
+                                style: textTheme.titleMedium?.rq.copyWith(
                                     color: filterData.item1 >
                                             (widget.pricesFiltersRanges
                                                     .minPrice! *
@@ -248,7 +248,7 @@ class _PriceFilterState extends State<PriceFilter> {
                               ),
                               MyTextWidget(
                                 widget.pricrSymbol,
-                                style: textTheme.caption?.rq.copyWith(
+                                style: textTheme.titleMedium?.rq.copyWith(
                                     color: filterData.item1 >
                                             widget.pricesFiltersRanges
                                                     .minPrice! *
@@ -269,7 +269,7 @@ class _PriceFilterState extends State<PriceFilter> {
                             children: [
                               MyTextWidget(
                                 'Max ${filterData.item2.toStringAsFixed(widget.decimalPoint)} ',
-                                style: textTheme.caption?.rq.copyWith(
+                                style: textTheme.titleMedium?.rq.copyWith(
                                     color: filterData.item2 <
                                             widget.pricesFiltersRanges
                                                     .maxPrice! *
@@ -279,7 +279,7 @@ class _PriceFilterState extends State<PriceFilter> {
                               ),
                               MyTextWidget(
                                 widget.pricrSymbol,
-                                style: textTheme.caption?.rq.copyWith(
+                                style: textTheme.titleMedium?.rq.copyWith(
                                     color: filterData.item2 <
                                             widget.pricesFiltersRanges
                                                     .maxPrice! *
@@ -307,7 +307,7 @@ class _PriceFilterState extends State<PriceFilter> {
                             ),
                             MyTextWidget(
                               'Filter By Price',
-                              style: context.textTheme.caption?.rq.copyWith(
+                              style: context.textTheme.titleMedium?.rq.copyWith(
                                   color: Color(0xff505050), height: 15 / 12),
                             ),
                             SizedBox(

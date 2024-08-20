@@ -1,4 +1,3 @@
-import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
@@ -33,6 +32,7 @@ class SizesFiltersList extends StatefulWidget {
     this.searchText,
     required this.fromHomeSearch,
   });
+
   final Attribute attribute;
 
   final bool hideTitle;
@@ -46,9 +46,9 @@ class SizesFiltersList extends StatefulWidget {
 }
 
 class _SizesFiltersListState extends State<SizesFiltersList> {
-  final CarouselController carouselController = CarouselController();
   late final ValueNotifier<int> currentIndexInSizes;
   String key = '';
+
   @override
   void initState() {
     key = widget.boutiqueSlug + (widget.category ?? '');
@@ -73,7 +73,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                 ),
                 MyTextWidget(
                   'Filter By Size',
-                  style: context.textTheme.caption?.rq
+                  style: context.textTheme.titleMedium?.rq
                       .copyWith(color: Color(0xff505050), height: 15 / 12),
                 ),
                 SizedBox(
@@ -242,13 +242,13 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                       overflow: TextOverflow.ellipsis,
                                       style:
                                           // index == currentIndex
-                                          //     ? textTheme.bodyText2?.bq.copyWith(
+                                          //     ? textTheme.titleLarge?.bq.copyWith(
                                           //   height: 1.3,
                                           //   fontSize: 15.sp,
                                           //   color: const Color(0xff5D5C5D),
                                           // )
                                           //     :
-                                          textTheme.bodyText2?.mq.copyWith(
+                                          textTheme.titleLarge?.mq.copyWith(
                                         height: 1.3,
                                         fontSize: 15.sp,
                                         color: const Color(0xff5D5C5D),

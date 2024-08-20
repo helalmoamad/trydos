@@ -53,7 +53,7 @@ class VerificationMethods extends StatelessWidget {
                   children: [
                     MyTextWidget(
                       LocaleKeys.we_will_send_code.tr(),
-                      style: context.textTheme.caption?.ra
+                      style: context.textTheme.titleMedium?.ra
                           .copyWith(color: Color(0xff5D5C5D), height: 1.42),
                     ),
                     Row(
@@ -68,7 +68,7 @@ class VerificationMethods extends StatelessWidget {
                         MyTextWidget(
                           phoneNumber,
                           textAlign: TextAlign.start,
-                          style: context.textTheme.caption?.ra
+                          style: context.textTheme.titleMedium?.ra
                               .copyWith(color: Color(0xffC4C2C2), height: 1.25),
                         ),
                         InkWell(
@@ -99,7 +99,7 @@ class VerificationMethods extends StatelessWidget {
                         5.horizontalSpace,
                         MyTextWidget(
                           LocaleKeys.choose_verification.tr(),
-                          style: context.textTheme.caption?.ra
+                          style: context.textTheme.titleMedium?.ra
                               .copyWith(color: Color(0xffC4C2C2), height: 1.25),
                         )
                       ],
@@ -167,7 +167,7 @@ class VerificationMethods extends StatelessWidget {
                                   10.horizontalSpace,
                                   MyTextWidget(
                                     LocaleKeys.whatsApp.tr(),
-                                    style: context.textTheme.bodyText2?.ra
+                                    style: context.textTheme.titleLarge?.ra
                                         .copyWith(
                                             color: Color(0xff5D5C5D),
                                             height: 1.42),
@@ -224,7 +224,7 @@ class VerificationMethods extends StatelessWidget {
                                   10.horizontalSpace,
                                   MyTextWidget(
                                     LocaleKeys.sms.tr(),
-                                    style: context.textTheme.bodyText2?.ra
+                                    style: context.textTheme.titleLarge?.ra
                                         .copyWith(
                                             color: Color(0xff5D5C5D),
                                             height: 1.42),

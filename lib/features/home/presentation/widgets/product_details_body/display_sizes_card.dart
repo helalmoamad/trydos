@@ -254,7 +254,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                   MyTextWidget(
                                                     'Available ${sizes!.length ~/ 2} Sizes',
                                                     style: textTheme
-                                                        .bodyText2?.rq
+                                                        .titleLarge?.rq
                                                         .copyWith(
                                                             color: const Color(
                                                                 0xff8D8D8D)),
@@ -529,7 +529,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                 ),
                                                 MyTextWidget(
                                                   'L ',
-                                                  style: textTheme.caption?.bq
+                                                  style: textTheme.titleMedium?.bq
                                                       .copyWith(
                                                           height: 1,
                                                           color: const Color(
@@ -537,7 +537,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                 ),
                                                 MyTextWidget(
                                                   'Recommended ',
-                                                  style: textTheme.caption?.rq
+                                                  style: textTheme.titleMedium?.rq
                                                       .copyWith(
                                                           height: 1,
                                                           color: const Color(
@@ -545,7 +545,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                 ),
                                                 MyTextWidget(
                                                   'Size ',
-                                                  style: textTheme.caption?.bq
+                                                  style: textTheme.titleMedium?.bq
                                                       .copyWith(
                                                           height: 1,
                                                           color: const Color(
@@ -553,7 +553,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                 ),
                                                 MyTextWidget(
                                                   'For You ',
-                                                  style: textTheme.caption?.rq
+                                                  style: textTheme.titleMedium?.rq
                                                       .copyWith(
                                                           height: 1,
                                                           color: const Color(
@@ -561,7 +561,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                 ),
                                                 MyTextWidget(
                                                   'Last ',
-                                                  style: textTheme.caption?.rq
+                                                  style: textTheme.titleMedium?.rq
                                                       .copyWith(
                                                           height: 1,
                                                           color: const Color(
@@ -569,7 +569,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                 ),
                                                 MyTextWidget(
                                                   '2',
-                                                  style: textTheme.caption?.mq
+                                                  style: textTheme.titleMedium?.mq
                                                       .copyWith(
                                                           height: 1,
                                                           color: const Color(
@@ -606,7 +606,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                 ),
                                                 MyTextWidget(
                                                   'Need Help Finding Your Size?',
-                                                  style: textTheme.caption?.rq
+                                                  style: textTheme.titleMedium?.rq
                                                       .copyWith(
                                                           color: const Color(
                                                               0xff505050)),
@@ -903,7 +903,7 @@ class SizeItemWidget extends StatelessWidget {
         child: Center(
           child: Text(
             sizeName,
-            style: context.textTheme.headline2?.rq.copyWith(
+            style: context.textTheme.headlineLarge?.rq.copyWith(
               height: 1.3,
               fontSize: index != currentIndex
                   ? index < currentIndex

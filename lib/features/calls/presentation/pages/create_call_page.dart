@@ -124,7 +124,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                   : NoImageWidget(
                                       width: 60.w,
                                       height: 80.h,
-                                      textStyle: context.textTheme.subtitle1?.br
+                                      textStyle: context.textTheme.bodyMedium?.br
                                           .copyWith(
                                               color: const Color(0xff6638FF),
                                               letterSpacing: 0.18,
@@ -133,7 +133,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                               15.verticalSpace,
                               MyTextWidget(
                                 widget.fullReceiverName,
-                                style: textTheme.headline5?.rr
+                                style: textTheme.headlineSmall?.rr
                                     .copyWith(color: const Color(0xffD3D3D3)),
                               ),
                               80.verticalSpace,
@@ -177,7 +177,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                 10.verticalSpace,
                                 MyTextWidget(
                                   LocaleKeys.end_call.tr(),
-                                  style: textTheme.bodyText2?.lr
+                                  style: textTheme.titleLarge?.lr
                                       .copyWith(color: const Color(0xffFF5F61)),
                                 ),
                               ],
