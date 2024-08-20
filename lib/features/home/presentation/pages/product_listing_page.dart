@@ -1139,10 +1139,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           .success) ||
                                                               ((state.getProductFiltersModel[key]?.filters ==
                                                                       null &&
-                                                                  state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']?.paginationStatus !=
+                                                                  state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus !=
                                                                       PaginationStatus
                                                                           .success &&
-                                                                  (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']?.items.length ??
+                                                                  (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ??
                                                                           0) <
                                                                       2))
                                                           ? 35
@@ -1210,7 +1210,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   p
                                                           .getProductListingWithFiltersPaginationModels[
                                                               '${widget.boutiqueSlug}' +
-                                                                  '${c.idForRequest}' +
+                                                                  '${p.idForRequest}' +
                                                                   '${(widget.category ?? '')}']
                                                           ?.paginationStatus !=
                                                       c

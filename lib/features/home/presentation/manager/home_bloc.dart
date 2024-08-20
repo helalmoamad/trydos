@@ -119,9 +119,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onGetSearchResultEventEvent,
     );*/
 
-    on<GetProductFiltersEvent>(
-      _onGetProductFiltersEvent,
-    );
+    on<GetProductFiltersEvent>(_onGetProductFiltersEvent,
+        transformer: restartable());
     on<ChangeSelectedFiltersEvent>(_onChangeSelectedFiltersEvent);
     on<ChangeAppliedFiltersEvent>(_onChangeAppliedFiltersEvent);
     on<AddSearchTextToHistoryEvent>(
