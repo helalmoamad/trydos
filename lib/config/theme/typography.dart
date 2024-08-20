@@ -28,8 +28,8 @@ TextTheme   appTextTheme(TextTheme base, Color textColor) => base
         letterSpacing:0,
         fontFamily: _sFDisplayLightFamily,
       ),
-      headline4: base.headline4?.copyWith(
-        fontSize: _FontSize.heading_04, /// 24
+      headline4: base.headline4?.copyWith( 
+        fontSize: _FontSize.heading_04, /// 24 
         fontWeight: _regular,
         letterSpacing:0,
         fontFamily: _sFDisplayLightFamily,

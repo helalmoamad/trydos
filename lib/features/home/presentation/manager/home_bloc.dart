@@ -119,9 +119,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onGetSearchResultEventEvent,
     );*/
 
-    on<GetProductFiltersEvent>(
-      _onGetProductFiltersEvent,
-    );
+    on<GetProductFiltersEvent>(_onGetProductFiltersEvent,
+        transformer: restartable());
     on<ChangeSelectedFiltersEvent>(_onChangeSelectedFiltersEvent);
     on<ChangeAppliedFiltersEvent>(_onChangeAppliedFiltersEvent);
     on<AddSearchTextToHistoryEvent>(
@@ -258,11 +257,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       apisMustNotToRequest.add('GetMainCategoriesEvent');
       isFailedTheFirstTime.remove('GetMainCategoriesEvent');
 
-      /*if (state.getHomeBoutiquesPaginationObjectByMainCategory['Men_36']
+      if (state.getHomeBoutiquesPaginationObjectByMainCategory['Empty']
               ?.paginationStatus ==
           PaginationStatus.success) {
         requestAPIAfterHome();
-      }*/
+      }
       emit(state.copyWith(
           mainCategoriesResponseModel: r,
           getMainCategoriesStatus: GetMainCategoriesStatus.success));
