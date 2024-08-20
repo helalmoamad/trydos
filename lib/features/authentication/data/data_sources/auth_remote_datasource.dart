@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
+import 'package:trydos/common/constant/widgets_key.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/authentication/data/models/login_to_stories_response_model.dart';
@@ -118,6 +119,9 @@ class AuthRemoteDatasource {
   }
 
   Future<GetUserCountryResponseModel> getUserCountry() {
+    ///// for test /////
+    WidgetsKey.getUserCountryFlag = true;
+    ////////////////////
     GetClient<GetUserCountryResponseModel> getUserCountry =
         GetClient<GetUserCountryResponseModel>(
       serverName: ServerName.location,

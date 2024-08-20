@@ -97,7 +97,7 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   @override
   Future<Either<Failure, GetCartShippingItemsModel>> getCartShippingItem() {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.GetCartShippingItems());
+        tryCall: () => dataSource.getCartShippingItems());
   }
 
   @override
