@@ -41,9 +41,9 @@ class _CountryDropdownState extends State<CountryDropdown> {
               _prefsRepository.setUserChoosedCountryIso(newValue);
             });
           },
-          buttonHeight: 40,
-          buttonWidth: 1.sw / 2,
-          itemHeight: 40,
+          // buttonHeight: 40,
+          // buttonWidth: 1.sw / 2,
+          // itemHeight: 40,
         ),
       ),
     );

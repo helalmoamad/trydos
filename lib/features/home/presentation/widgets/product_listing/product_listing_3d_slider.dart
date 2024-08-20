@@ -1,6 +1,7 @@
 import 'dart:math';
 
-import 'package:carousel_slider/carousel_slider.dart' as carousel_slider;
+import 'package:carousel_slider/carousel_controller.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
@@ -98,7 +99,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
   late HomeBloc homeBloc;
   late int prevIndexInSecondSlider;
   int slideModeIndex = 0;
-  final carousel_slider.CarouselController carouselController = carousel_slider.CarouselController();
+  final CarouselSliderController carouselController = CarouselSliderController();
   List<productListingModel.SyncColorImage>? syncColorImageList;
 
   @override
@@ -613,7 +614,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                         SizedBox(
                                           height: 290,
                                           width: 200,
-                                          child: carousel_slider.CarouselSlider.builder(
+                                          child: CarouselSlider.builder(
                                               itemCount: syncColorImageList
                                                       .isNullOrEmpty
                                                   ? widget.productItem.images!
@@ -624,7 +625,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                       .length,
                                               carouselController:
                                                   carouselController,
-                                              options: carousel_slider.CarouselOptions(
+                                              options: CarouselOptions(
                                                 initialPage:
                                                     indicatorForProductImages
                                                             .value[
