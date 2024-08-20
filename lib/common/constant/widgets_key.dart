@@ -1,5 +1,12 @@
 class WidgetsKey {
   static bool kTestMode = false;
+  static bool getMainCategoriesFlag = false;
+  static bool getStoriesFlag = false;
+  static bool getBoutiquesFlag = false;
+  static bool getStartingSettingsFlag = false;
+  static bool getAllowedCountriesFlag = false;
+  static bool getUserCountryFlag = false;
+
   static const haveAccountButtonKey = 'have_already_account_button';
   static const createNewAccountButtonKey = 'create_new_account_button';
   static const agreeContinueButtonKey = 'agree_continue_button';

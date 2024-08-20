@@ -10,6 +10,7 @@ class AppBarParams {
     this.withShadow = true,
     this.child,
     this.leading,
+    this.backButton,
     this.title,
     this.iconColor,
     this.action,
@@ -29,6 +30,7 @@ class AppBarParams {
   final String? title;
   final Widget? child;
   final Widget? leading;
+  final Widget? backButton;
   final List<Widget>? action;
   final bool translateTitle;
   final double? elevation;

@@ -336,20 +336,6 @@ class _PriceFilterState extends State<PriceFilter> {
                             })
                           ],
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            widget.lowerAndUpperBound.value = Tuple2(
-                                widget.pricesFiltersRanges.minPrice!,
-                                widget.pricesFiltersRanges.maxPrice!);
-                            setState(() {});
-                          },
-                          child: CloseCircle(
-                            width: 20,
-                            height: 20,
-                            borderColor: Color(0xff707070),
-                            closeSvgColor: Color(0xffFF5F61),
-                          ),
-                        )
                       ],
                     ),
                   )

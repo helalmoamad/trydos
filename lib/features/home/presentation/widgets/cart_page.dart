@@ -139,6 +139,8 @@ class _CartPageState extends State<CartPage> {
                                               context.pop();
                                             } else {
                                               appBloc.add(ChangeBasePage(0));
+                                              homeBloc.add(
+                                                  ResetAllSelectedAppliedFilterEvent());
                                             }
                                           },
                                           child: SvgPicture.asset(

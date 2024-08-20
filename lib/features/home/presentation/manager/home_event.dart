@@ -293,6 +293,13 @@ class AddPrefAppliedFilterForExtendFilterEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class ResetAllSelectedAppliedFilterEvent extends HomeEvent {
+  ResetAllSelectedAppliedFilterEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class AddProductItemForCartEvent extends HomeEvent {
   final Products? product;
   final String productId;
