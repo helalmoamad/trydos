@@ -894,6 +894,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 false;
 
                                                                             if (isExpanded) {
+                                                                              prefAppliedFilters = homeBloc.state.appliedFiltersByUser[key]?.filters;
                                                                               homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
                                                                               homeBloc.add(GetProductFiltersEvent(fromHomePageSearch: widget.fromSearch, cashedOrginalBoutique: false, boutiqueSlug: widget.boutiqueSlug, category: widget.category, searchText: widget.searchText, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
                                                                             }

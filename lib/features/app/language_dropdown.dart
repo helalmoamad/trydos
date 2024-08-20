@@ -46,9 +46,9 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
             _prefsRepository.setLanguage(newValue);
             context.setLocale(HelperFunctions.getInitLocale());
           },
-          buttonHeight: 30,
-          buttonWidth: 95,
-          itemHeight: 30,
+          // buttonHeight: 30,
+          // buttonWidth: 95,
+          // itemHeight: 30,
         ),
       ),
     );

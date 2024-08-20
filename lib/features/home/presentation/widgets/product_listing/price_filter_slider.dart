@@ -219,6 +219,7 @@ class _PriceFilterState extends State<PriceFilter> {
                           category: widget.category,
                           filtersChoosedByUser: GetProductFiltersModel(
                               filters: filter.copyWithSaveOtherField(
+                                  searchText: widget.searchText,
                                   prices: Prices(
                                       maxPrice:
                                           lowerValue / widget.exchangeRate,

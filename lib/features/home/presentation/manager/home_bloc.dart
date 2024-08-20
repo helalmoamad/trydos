@@ -808,15 +808,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
           Map<String, filters_model.GetProductFiltersModel?> data =
               Map.of(state.getProductFiltersModel);
-          List<filters_model.PriceRange> ranges =  r.data!.prices?.priceRanges ?? [];
+          List<filters_model.PriceRange> ranges =
+              r.data!.prices?.priceRanges ?? [];
           ranges.removeWhere((element) => element.count == 0);
           data[key] = filters_model.GetProductFiltersModel(
               filters: filters_model.Filter(
             brands: r.data!.brands,
             attributes: r.data!.attributes,
-            prices: r.data!.prices?.copyWith(
-              priceRanges: ranges
-            ),
+            prices: r.data!.prices?.copyWith(priceRanges: ranges),
             boutiques: r.data!.boutiques,
             colors: r.data!.colors,
             searchText: filters.searchText,
@@ -1055,7 +1054,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         ],
         attributes: attribute,
         prices:
-            filters.prices ?? state.appliedFiltersByUser[key]?.filters?.prices,
+            filters.prices ?? state.choosedFiltersByUser[key]?.filters?.prices,
         searchText: filters.searchText ??
             state.appliedFiltersByUser[key]?.filters?.searchText,
         boutiques: event.fromHomePageSearch
@@ -1097,7 +1096,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       prices:
           filters.prices?.maxPrice != null && filters.prices?.minPrice != null
               ? ['"${filters.prices!.minPrice}-${filters.prices!.maxPrice}"']
-              : null,
+              : [],
     ));
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetProductFiltersEvent')) {
@@ -1119,15 +1118,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         statuses[key] = GetProductFiltersStatus.success;
         Map<String, filters_model.GetProductFiltersModel?> data =
             Map.of(state.getProductFiltersModel);
-        List<filters_model.PriceRange> ranges =  r.filters!.prices?.priceRanges ?? [];
+        List<filters_model.PriceRange> ranges =
+            r.filters!.prices?.priceRanges ?? [];
         ranges.removeWhere((element) => element.count == 0);
 
-        data[key] = r.copyWith(filters: r.filters?.copyWithSaveOtherField(
-          prices: r.filters?.prices?.copyWith(
-            priceRanges: ranges
-          ),
-          searchText: r.filters?.searchText
-        ));
+        data[key] = r.copyWith(
+            filters: r.filters?.copyWithSaveOtherField(
+                prices: r.filters?.prices?.copyWith(priceRanges: ranges),
+                searchText: r.filters?.searchText));
 
         emit(state.copyWith(
             totalProductNumber: r.filters!.totalSize,
@@ -1742,8 +1740,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           filtersChoosedByUser:
               makeChoosedFiltersNull ? null : event.filtersChoosedByUser));
     }
-    if (state.choosedFiltersByUser[key] == null &&
-        state.appliedFiltersByUser[key] == null) {}
   }
 
   FutureOr<void> _onAddMultiItemsToCartEvent(
@@ -1896,8 +1892,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onResetAllSelectedAppliedFilterEvent(
       ResetAllSelectedAppliedFilterEvent event, Emitter<HomeState> emit) async {
-    print(
-        "dddddddddddddddddddddddddddddddddddd*/*********************************************************************");
-    emit(state.copyWith(choosedFiltersByUser: {}, appliedFiltersByUser: {}));
+    emit(state.copyWith(
+        choosedFiltersByUser: {},
+        appliedFiltersByUser: {},
+        prefAppliedFilterForExtendFilter: filters_model.Filter()));
   }
 }

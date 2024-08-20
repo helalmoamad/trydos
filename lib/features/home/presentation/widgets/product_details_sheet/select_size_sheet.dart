@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:carousel_slider/carousel_slider.dart' as carousel_slider;
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
@@ -39,7 +39,7 @@ class SelectSizeContent extends StatefulWidget {
 class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   List<String> sizes = [];
 
-  final carousel_slider.CarouselController carouselController = carousel_slider.CarouselController();
+  final CarouselSliderController carouselController = CarouselSliderController();
   late final ValueNotifier<int> currentIndexInSizes;
   late HomeBloc homeBloc;
   @override
@@ -198,7 +198,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                               )
                             ],
                           ),
-                          carousel_slider.CarouselSlider.builder(
+                         CarouselSlider.builder(
                               itemCount: sizes.length,
                               carouselController: carouselController,
                               itemBuilder: (ctx, index, _) {
@@ -239,7 +239,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                   ),
                                 );
                               },
-                              options: carousel_slider.CarouselOptions(
+                              options: CarouselOptions(
                                   initialPage: sizes.length ~/ 2,
                                   height: 80,
                                   enableInfiniteScroll: false,
