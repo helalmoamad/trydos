@@ -115,6 +115,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                     current.getProductFiltersStatus[key] ||
                 previous.countOfProductExpectedByFiltering !=
                     current.countOfProductExpectedByFiltering ||
+                previous.idForRequest != current.idForRequest ||
                 previous
                         .getProductListingWithFiltersPaginationModels[
                             key + "${current.idForRequest}"]
@@ -354,7 +355,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                             children: [
                                               MyTextWidget(
                                                 'Search ',
-                                                style: textTheme.headline6?.rq
+                                                style: textTheme.bodyLarge?.rq
                                                     .copyWith(
                                                         color:
                                                             Color(0xffFEFEFE),
@@ -365,7 +366,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                                   ? MyTextWidget(
                                                       "(${state.countOfProductExpectedByFiltering} products)",
                                                       style: textTheme
-                                                          .subtitle1?.rq
+                                                          .bodyMedium?.rq
                                                           .copyWith(
                                                               color: Color(
                                                                   0xffFEFEFE),
@@ -418,7 +419,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                     child: Center(
                                       child: MyTextWidget(
                                         'Reset',
-                                        style: textTheme.headline6?.rq.copyWith(
+                                        style: textTheme.bodyLarge?.rq.copyWith(
                                             color: Color(0xff388CFF),
                                             height: 23 / 18),
                                       ),

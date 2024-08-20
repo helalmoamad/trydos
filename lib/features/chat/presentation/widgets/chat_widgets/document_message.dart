@@ -243,7 +243,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                               widget.fileName,
                                               maxLines: 3,
                                               style: context
-                                                  .textTheme.bodyText2?.rr
+                                                  .textTheme.titleLarge?.rr
                                                   .copyWith(
                                                       color: const Color(
                                                           0xffC4C2C2),
@@ -308,7 +308,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                                     .getZonedDateInFormat(
                                                         widget.createAt!),
                                             style: context
-                                                .textTheme.overline?.rr
+                                                .textTheme.titleSmall?.rr
                                                 .copyWith(
                                                     color: const Color(
                                                         0xffC4C2C2)),
@@ -440,7 +440,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                             width: 30.w,
                                             height: 30,
                                             textStyle: context
-                                                .textTheme.caption?.br
+                                                .textTheme.titleMedium?.br
                                                 .copyWith(
                                                     color:
                                                         const Color(0xff6638FF),

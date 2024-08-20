@@ -88,7 +88,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                           children: [
                             MyTextWidget(
                               LocaleKeys.logged_in_successfully.tr(),
-                              style: context.textTheme.bodyText2?.ra.copyWith(
+                              style: context.textTheme.titleLarge?.ra.copyWith(
                                   color: Color(0xff5D5C5D), height: 1.42),
                             ),
                             Row(
@@ -105,7 +105,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                 MyTextWidget(
                                   widget.phoneNumber,
                                   textAlign: TextAlign.start,
-                                  style: context.textTheme.caption?.ra.copyWith(
+                                  style: context.textTheme.titleMedium?.ra.copyWith(
                                       color: Color(0xff8D8D8D), height: 1.25),
                                 ),
                               ],
@@ -120,7 +120,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                     padding: HWEdgeInsets.only(left: 4.0),
                                     child: MyTextWidget(LocaleKeys.hello.tr(),
                                         textAlign: TextAlign.start,
-                                        style: textTheme.headline3?.ba.copyWith(
+                                        style: textTheme.headlineMedium?.ba.copyWith(
                                             color: Color(0xff5D5C5D),
                                             height: 1.25)),
                                   ),
@@ -140,7 +140,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                                   state.marketUser!.name
                                                       .toString(),
                                               textAlign: TextAlign.start,
-                                              style: textTheme.headline3?.la
+                                              style: textTheme.headlineMedium?.la
                                                   .copyWith(
                                                 color: Color(0xff5D5C5D),
                                                 letterSpacing: 0.3,
@@ -153,7 +153,7 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                           LocaleKeys.enjoy_with_our_services
                                               .tr(),
                                           textAlign: TextAlign.center,
-                                          style: textTheme.subtitle1?.la
+                                          style: textTheme.bodyMedium?.la
                                               .copyWith(
                                                   color: Color(0xff5D5C5D),
                                                   height: 1.25)),

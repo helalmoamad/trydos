@@ -103,7 +103,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                       children: [
                         MyTextWidget(
                           LocaleKeys.the_number_verifieds_successfully.tr(),
-                          style: context.textTheme.caption?.ra
+                          style: context.textTheme.titleMedium?.ra
                               .copyWith(color: Color(0xff5D5C5D), height: 1.42),
                         ),
                         Row(
@@ -118,7 +118,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                             MyTextWidget(
                               LocaleKeys.last_step.tr(),
                               textAlign: TextAlign.start,
-                              style: context.textTheme.caption?.ra.copyWith(
+                              style: context.textTheme.titleMedium?.ra.copyWith(
                                   color: Color(0xffC4C2C2), height: 1.25),
                             ),
                           ],
@@ -132,7 +132,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                             5.horizontalSpace,
                             MyTextWidget(
                               LocaleKeys.your_Privacy.tr(),
-                              style: context.textTheme.caption?.ra.copyWith(
+                              style: context.textTheme.titleMedium?.ra.copyWith(
                                   color: Color(0xffC4C2C2), height: 1.25),
                             )
                           ],

@@ -203,7 +203,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                           ),
                           MyTextWidget(
                             'Filter By Category',
-                            style: context.textTheme.caption?.rq.copyWith(
+                            style: context.textTheme.titleMedium?.rq.copyWith(
                                 color: Color(0xff505050), height: 15 / 12),
                           ),
                           SizedBox(
@@ -639,7 +639,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     .copyWith(left: 10),
                                 child: MyTextWidget(
                                   'The Products Will Be Shown As Below',
-                                  style: context.textTheme.caption?.rq.copyWith(
+                                  style: context.textTheme.titleMedium?.rq.copyWith(
                                       color: Color(0xff505050),
                                       height: 15 / 12),
                                 ),
@@ -855,7 +855,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                 null) ...{
                                               MyTextWidget(
                                                 '(${state.countOfProductExpectedByFiltering}  products)',
-                                                style: textTheme.subtitle1?.mq
+                                                style: textTheme.bodyMedium?.mq
                                                     .copyWith(
                                                         color:
                                                             Color(0xffFEFEFE),
@@ -864,7 +864,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                             },
                                             MyTextWidget(
                                               ' Apply   ',
-                                              style: textTheme.headline6?.rq
+                                              style: textTheme.bodyLarge?.rq
                                                   .copyWith(
                                                       color: Color(0xffFEFEFE),
                                                       height: 23 / 18),
@@ -972,7 +972,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     child: MyTextWidget(
                                                       'Reset',
                                                       style: textTheme
-                                                          .headline6?.rq
+                                                          .bodyLarge?.rq
                                                           .copyWith(
                                                               color: Color(
                                                                   0xff388CFF),
@@ -1173,7 +1173,7 @@ Widget choosedOrAppliedFiltersWidget({
                       'Choosed: ',
                       maxLines: 1,
                       textAlign: TextAlign.center,
-                      style: context.textTheme.bodyText2?.bq.copyWith(
+                      style: context.textTheme.titleLarge?.bq.copyWith(
                           color: Color(0xffFF5F61),
                           letterSpacing: 0,
                           height: 1.25),
@@ -1185,7 +1185,7 @@ Widget choosedOrAppliedFiltersWidget({
                       'Applied: ',
                       maxLines: 1,
                       textAlign: TextAlign.center,
-                      style: context.textTheme.bodyText2?.bq.copyWith(
+                      style: context.textTheme.titleLarge?.bq.copyWith(
                           color: Color(0xffFF5F61),
                           letterSpacing: 0,
                           height: 1.25),
@@ -1265,7 +1265,7 @@ Widget choosedOrAppliedFiltersWidget({
                                 filtersForSearchText!.searchText!,
                                 maxLines: 1,
                                 textAlign: TextAlign.center,
-                                style: context.textTheme.caption?.rq.copyWith(
+                                style: context.textTheme.titleMedium?.rq.copyWith(
                                     color: Color(0xff8E8E8E),
                                     letterSpacing: 0,
                                     height: 1.25),
@@ -1342,7 +1342,7 @@ Widget choosedOrAppliedFiltersWidget({
                                 filters.boutiques![index].name.toString(),
                                 maxLines: 1,
                                 textAlign: TextAlign.center,
-                                style: context.textTheme.caption?.rq.copyWith(
+                                style: context.textTheme.titleMedium?.rq.copyWith(
                                     color: Color(0xff8E8E8E),
                                     letterSpacing: 0,
                                     height: 1.25),
@@ -1431,7 +1431,7 @@ Widget choosedOrAppliedFiltersWidget({
                               filters.categories![index].name.toString(),
                               maxLines: 1,
                               textAlign: TextAlign.center,
-                              style: context.textTheme.caption?.rq.copyWith(
+                              style: context.textTheme.titleMedium?.rq.copyWith(
                                   color: Color(0xff8E8E8E),
                                   letterSpacing: 0,
                                   height: 1.25),
@@ -1510,7 +1510,7 @@ Widget choosedOrAppliedFiltersWidget({
                               filters.brands![index].name.toString(),
                               maxLines: 1,
                               textAlign: TextAlign.center,
-                              style: context.textTheme.caption?.rq.copyWith(
+                              style: context.textTheme.titleMedium?.rq.copyWith(
                                   color: Color(0xff8E8E8E),
                                   letterSpacing: 0,
                                   height: 1.25),
@@ -1588,7 +1588,7 @@ Widget choosedOrAppliedFiltersWidget({
                                   .toString(),
                               maxLines: 1,
                               textAlign: TextAlign.center,
-                              style: context.textTheme.caption?.rq.copyWith(
+                              style: context.textTheme.titleMedium?.rq.copyWith(
                                   color: Color(0xff8E8E8E),
                                   letterSpacing: 0,
                                   height: 1.25),
@@ -1723,7 +1723,7 @@ Widget choosedOrAppliedFiltersWidget({
                             : "",
                         maxLines: 1,
                         textAlign: TextAlign.center,
-                        style: context.textTheme.caption?.rq.copyWith(
+                        style: context.textTheme.titleMedium?.rq.copyWith(
                             color: Color(0xff8E8E8E),
                             letterSpacing: 0,
                             height: 1.25),
@@ -1734,7 +1734,7 @@ Widget choosedOrAppliedFiltersWidget({
                             : "",
                         maxLines: 1,
                         textAlign: TextAlign.center,
-                        style: context.textTheme.caption?.rq.copyWith(
+                        style: context.textTheme.titleMedium?.rq.copyWith(
                             color: Color(0xff8E8E8E),
                             letterSpacing: 0,
                             height: 1.25),
@@ -1745,7 +1745,7 @@ Widget choosedOrAppliedFiltersWidget({
                             : "",
                         maxLines: 1,
                         textAlign: TextAlign.center,
-                        style: context.textTheme.caption?.rq.copyWith(
+                        style: context.textTheme.titleMedium?.rq.copyWith(
                             color: Color(0xff8E8E8E),
                             letterSpacing: 0,
                             height: 1.25),
@@ -1872,7 +1872,7 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                     widget.categoryName,
                     maxLines: 1,
                     textAlign: TextAlign.center,
-                    style: context.textTheme.caption?.rq.copyWith(
+                    style: context.textTheme.titleMedium?.rq.copyWith(
                         color: Color(0xff8E8E8E),
                         letterSpacing: 0,
                         height: 1.25),

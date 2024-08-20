@@ -188,7 +188,7 @@ class PhoneFormField extends StatelessWidget {
                 textCapitalization: textCapitalization,
                 toolbarOptions: toolbarOptions,
                 inputFormatters: [PhoneNumberFormatter()],
-                style: context.textTheme.headline5?.ra.copyWith(
+                style: context.textTheme.headlineSmall?.ra.copyWith(
                   color: const Color(0xff5D5C5D),
                   height: 0.6,
                   decoration: TextDecoration.none,
@@ -201,7 +201,7 @@ class PhoneFormField extends StatelessWidget {
                   suffixIcon: suffixIcon,
                   counterText: '',
                   hintText: hintText?.tr(),
-                  hintStyle: context.textTheme.bodyText1?.ra
+                  hintStyle: context.textTheme.displayMedium?.ra
                       .copyWith(color: Color(0xffC4C2C2)),
                 ),
               ),

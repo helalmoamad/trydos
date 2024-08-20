@@ -51,7 +51,7 @@ class SlidingUpPanelForReels extends StatelessWidget {
                       ),
                       MyTextWidget(
                         'Buyers Camera 12 Shot',
-                        style: context.textTheme.bodyText2?.rq
+                        style: context.textTheme.titleLarge?.rq
                             .copyWith(color: const Color(0xff8D8D8D)),
                       ),
                       const SizedBox(
@@ -74,7 +74,7 @@ class SlidingUpPanelForReels extends StatelessWidget {
                     children: [
                       MyTextWidget(
                         'These Shots Are Made By Users Who Have Already Purchased And Received The Product',
-                        style: context.textTheme.caption?.rq.copyWith(
+                        style: context.textTheme.titleMedium?.rq.copyWith(
                             height: 1.23,
                             color: Color(0xffC4C2C2),
                             fontSize: 11.sp),

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -98,7 +99,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
   late HomeBloc homeBloc;
   late int prevIndexInSecondSlider;
   int slideModeIndex = 0;
-  final CarouselController carouselController = CarouselController();
+  final CarouselSliderController carouselController = CarouselSliderController();
   List<productListingModel.SyncColorImage>? syncColorImageList;
 
   @override
@@ -588,7 +589,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                   .colorName
                                                   .toString(),
                                           textAlign: TextAlign.center,
-                                          style: textTheme.caption?.mq.copyWith(
+                                          style: textTheme.titleMedium?.mq.copyWith(
                                             color: Color(int.parse(
                                                 '0xff${widget.productItem.colors![currentIndex % widget.productItem.colors!.length].color!.substring(1)}')),
                                           ),
@@ -834,7 +835,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     MyTextWidget('1',
-                                        style: textTheme.overline?.mq.copyWith(
+                                        style: textTheme.titleSmall?.mq.copyWith(
                                           color: Color(0xff5d5d5d),
                                         )),
                                     const SizedBox(
@@ -883,7 +884,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style:
-                                              textTheme.overline?.rq.copyWith(
+                                              textTheme.titleSmall?.rq.copyWith(
                                             color: Color(0xff3c3c3c),
                                           )),
                                     ),
@@ -921,7 +922,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                     ?.decimalPointSetting ??
                                                 2)
                                             .toString(),
-                                        style: textTheme.caption?.lq.copyWith(
+                                        style: textTheme.titleMedium?.lq.copyWith(
                                           color: Color(0xff3c3c3c),
                                           decoration:
                                               TextDecoration.lineThrough,
@@ -943,7 +944,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                     ?.decimalPointSetting ??
                                                 2)
                                             .toString(),
-                                        style: textTheme.caption?.bq.copyWith(
+                                        style: textTheme.titleMedium?.bq.copyWith(
                                           color: Color(0xff3c3c3c),
                                           height: 0,
                                         ),
@@ -963,7 +964,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     children: [
                                       MyTextWidget(
                                         'Buy',
-                                        style: textTheme.overline?.lq.copyWith(
+                                        style: textTheme.titleSmall?.lq.copyWith(
                                           color: Color(0xff414141),
                                           height: 1.4,
                                         ),

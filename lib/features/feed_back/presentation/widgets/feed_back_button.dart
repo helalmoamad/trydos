@@ -51,7 +51,7 @@
 //                 children: [
 //                   MyTextWidget(
 //                     '',
-//                     style:textTheme.subtitle2?.rr.copyWith(
+//                     style:textTheme.bodySmall?.rr.copyWith(
 //                       color: colorScheme.tertiary
 //                     )
 //                   ),

@@ -51,7 +51,7 @@ class _TrendingSectionState extends State<TrendingSection> {
                       if (value) ...{
                         MyTextWidget(
                           'Popular Search',
-                          style: context.textTheme.bodyText2?.mq.copyWith(
+                          style: context.textTheme.titleLarge?.mq.copyWith(
                               height: 18 / 14, color: Color(0xff505050)),
                         ),
                       } else ...{
@@ -72,7 +72,7 @@ class _TrendingSectionState extends State<TrendingSection> {
                                     index % 2 == 0
                                         ? 'Birthday'
                                         : 'Man Pantalon',
-                                    style: context.textTheme.bodyText2?.rq
+                                    style: context.textTheme.titleLarge?.rq
                                         .copyWith(
                                             height: 18 / 14,
                                             color: Color(0xff8D8D8D)),
@@ -117,7 +117,7 @@ class _TrendingSectionState extends State<TrendingSection> {
                                         ? 'Birthday'
                                         : 'Man Pantalon',
                                     textAlign: TextAlign.start,
-                                    style: context.textTheme.bodyText2?.rq
+                                    style: context.textTheme.titleLarge?.rq
                                         .copyWith(
                                             height: 18 / 14,
                                             color: Color(0xff8D8D8D)),
@@ -127,7 +127,7 @@ class _TrendingSectionState extends State<TrendingSection> {
                                       MyTextWidget(
                                         '100,000',
                                         textAlign: TextAlign.start,
-                                        style: context.textTheme.overline?.rq
+                                        style: context.textTheme.titleSmall?.rq
                                             .copyWith(
                                                 height: 1.3,
                                                 color: Color(0xff8D8D8D)),

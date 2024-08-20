@@ -49,7 +49,7 @@ class ProductDetailsChipWidget extends StatelessWidget {
               children: [
                 MyTextWidget(
                   descriptor!.descriptorGroup!.name!,
-                  style: context.textTheme.overline?.rq
+                  style: context.textTheme.titleSmall?.rq
                       .copyWith(color: Color(0xffC4C2C2), height: 1.3),
                 ),
                 SizedBox(
@@ -67,7 +67,7 @@ class ProductDetailsChipWidget extends StatelessWidget {
                             if (withIcon) ...{
                               MyTextWidget(
                                 descriptor!.descriptors![index].value!,
-                                style: context.textTheme.bodyText2?.rq.copyWith(
+                                style: context.textTheme.titleLarge?.rq.copyWith(
                                     height: 1.23,
                                     color: Color(0xff505050),
                                     fontSize: 13.sp),
@@ -84,7 +84,7 @@ class ProductDetailsChipWidget extends StatelessWidget {
                             },
                             MyTextWidget(
                               descriptor!.descriptors![index].descriptor!.name!,
-                              style: context.textTheme.caption?.rq.copyWith(
+                              style: context.textTheme.titleMedium?.rq.copyWith(
                                   height: 1.23,
                                   color: Color(0xff8D8D8D),
                                   fontSize: 13.sp),

@@ -151,7 +151,7 @@ class _CartPageState extends State<CartPage> {
                                         Spacer(),
                                         Text(
                                           "      Your Shopping Bag",
-                                          style: context.textTheme.subtitle1?.ra
+                                          style: context.textTheme.bodyMedium?.ra
                                               .copyWith(
                                                   color:
                                                       const Color(0xff505050),
@@ -189,7 +189,7 @@ class _CartPageState extends State<CartPage> {
                                           child: SvgPicture.asset(
                                               AppAssets.countItemSvg)),
                                       Text(" ${state.cartCollection!.length} ",
-                                          style: context.textTheme.subtitle1?.mr
+                                          style: context.textTheme.bodyMedium?.mr
                                               .copyWith(
                                                   fontSize: 13,
                                                   color:
@@ -198,7 +198,7 @@ class _CartPageState extends State<CartPage> {
                                                   height: 1.33)),
                                       Text(
                                         "item ",
-                                        style: context.textTheme.subtitle1?.la
+                                        style: context.textTheme.bodyMedium?.la
                                             .copyWith(
                                                 fontSize: 13,
                                                 color: const Color(0xff8D8D8D),
@@ -207,7 +207,7 @@ class _CartPageState extends State<CartPage> {
                                       ),
                                       Text(
                                         "${totlaPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
-                                        style: context.textTheme.subtitle1?.mr
+                                        style: context.textTheme.bodyMedium?.mr
                                             .copyWith(
                                                 fontSize: 13,
                                                 color: const Color(0xff5D5C5D),
@@ -216,7 +216,7 @@ class _CartPageState extends State<CartPage> {
                                       ),
                                       Text(
                                         "${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""} ",
-                                        style: context.textTheme.subtitle1?.la
+                                        style: context.textTheme.bodyMedium?.la
                                             .copyWith(
                                                 fontSize: 13,
                                                 color: const Color(0xff8D8D8D),
@@ -310,7 +310,7 @@ class _CartPageState extends State<CartPage> {
                                                     Text(
                                                         "  ${state.cartCollection!.values.toList()[index].length} ",
                                                         style: context.textTheme
-                                                            .subtitle1?.mr
+                                                            .bodyMedium?.mr
                                                             .copyWith(
                                                                 fontSize: 13,
                                                                 color: const Color(
@@ -321,7 +321,7 @@ class _CartPageState extends State<CartPage> {
                                                     Text(
                                                       "item ",
                                                       style: context.textTheme
-                                                          .subtitle1?.la
+                                                          .bodyMedium?.la
                                                           .copyWith(
                                                               fontSize: 13,
                                                               color: const Color(
@@ -333,7 +333,7 @@ class _CartPageState extends State<CartPage> {
                                                     Text(
                                                       " ${price.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}",
                                                       style: context.textTheme
-                                                          .subtitle1?.mr
+                                                          .bodyMedium?.mr
                                                           .copyWith(
                                                               fontSize: 13,
                                                               color: const Color(
@@ -345,7 +345,7 @@ class _CartPageState extends State<CartPage> {
                                                     Text(
                                                       " ${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""}",
                                                       style: context.textTheme
-                                                          .subtitle1?.la
+                                                          .bodyMedium?.la
                                                           .copyWith(
                                                               fontSize: 13,
                                                               color: const Color(
@@ -683,7 +683,7 @@ class _CartPageState extends State<CartPage> {
                                                                     child: Text(
                                                                         state.cartCollection![groupCartkeys[index]]![indexes].name ??
                                                                             "",
-                                                                        style: context.textTheme.subtitle1?.ra.copyWith(
+                                                                        style: context.textTheme.bodyMedium?.ra.copyWith(
                                                                             fontSize:
                                                                                 12,
                                                                             color: const Color(
@@ -723,7 +723,7 @@ class _CartPageState extends State<CartPage> {
                                                                           ),
                                                                           Text(
                                                                             " Composed Of ${state.cartCollection![groupCartkeys[index]]![indexes].quantity} Piece",
-                                                                            style: context.textTheme.subtitle1?.la.copyWith(
+                                                                            style: context.textTheme.bodyMedium?.la.copyWith(
                                                                                 fontWeight: FontWeight.w100,
                                                                                 fontSize: 12,
                                                                                 color: const Color(0xff707070),
@@ -762,11 +762,11 @@ class _CartPageState extends State<CartPage> {
                                                                                   ),
                                                                                   Text(
                                                                                     "Color, ",
-                                                                                    style: context.textTheme.subtitle1?.la.copyWith(fontWeight: FontWeight.normal, fontSize: 12, color: const Color(0xff505050), letterSpacing: 0.18, height: 1.33),
+                                                                                    style: context.textTheme.bodyMedium?.la.copyWith(fontWeight: FontWeight.normal, fontSize: 12, color: const Color(0xff505050), letterSpacing: 0.18, height: 1.33),
                                                                                   ),
                                                                                   Text(
                                                                                     !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "",
-                                                                                    style: context.textTheme.subtitle1?.ra.copyWith(
+                                                                                    style: context.textTheme.bodyMedium?.ra.copyWith(
                                                                                       fontSize: 13,
                                                                                       color: const Color((0xff505050)),
                                                                                       letterSpacing: 0.18,
@@ -806,11 +806,11 @@ class _CartPageState extends State<CartPage> {
                                                                                   ),
                                                                                   Text(
                                                                                     "Size, ",
-                                                                                    style: context.textTheme.subtitle1?.la.copyWith(fontWeight: FontWeight.normal, fontSize: 12, color: const Color(0xff505050), letterSpacing: 0.18, height: 1.33),
+                                                                                    style: context.textTheme.bodyMedium?.la.copyWith(fontWeight: FontWeight.normal, fontSize: 12, color: const Color(0xff505050), letterSpacing: 0.18, height: 1.33),
                                                                                   ),
                                                                                   Text(
                                                                                     !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "",
-                                                                                    style: context.textTheme.subtitle1?.ra.copyWith(
+                                                                                    style: context.textTheme.bodyMedium?.ra.copyWith(
                                                                                       fontSize: 13,
                                                                                       color: const Color((0xff505050)),
                                                                                       letterSpacing: 0.18,
@@ -834,7 +834,7 @@ class _CartPageState extends State<CartPage> {
                                                                         .toStringAsFixed(
                                                                             state.startingSetting?.decimalPointSetting ??
                                                                                 2),
-                                                                    style: context.textTheme.subtitle1?.ra.copyWith(
+                                                                    style: context.textTheme.bodyMedium?.ra.copyWith(
                                                                         decorationColor:
                                                                             Color(
                                                                                 0xffC4C2C2),
@@ -852,7 +852,7 @@ class _CartPageState extends State<CartPage> {
                                                                       "${(state.cartCollection![groupCartkeys[index]]![indexes].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                                                       style: context
                                                                           .textTheme
-                                                                          .subtitle1
+                                                                          .bodyMedium
                                                                           ?.br
                                                                           .copyWith(
                                                                         decorationColor:
@@ -871,7 +871,7 @@ class _CartPageState extends State<CartPage> {
                                                                         "",
                                                                     style: context
                                                                         .textTheme
-                                                                        .subtitle1
+                                                                        .bodyMedium
                                                                         ?.ra
                                                                         .copyWith(
                                                                       decorationColor:
@@ -908,7 +908,7 @@ class _CartPageState extends State<CartPage> {
                                                                   "${indexes + 1}",
                                                                   style: context
                                                                       .textTheme
-                                                                      .subtitle1
+                                                                      .bodyMedium
                                                                       ?.ra
                                                                       .copyWith(
                                                                     decorationColor:

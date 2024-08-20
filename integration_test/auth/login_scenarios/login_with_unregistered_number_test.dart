@@ -16,6 +16,7 @@ void main() {
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
+      WidgetsKey.kTestMode = true;
       //////////////////////////
       await SharedScenarios.goToVerifyOtp(
         tester: tester,

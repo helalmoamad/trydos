@@ -49,12 +49,13 @@ class _SearchResultState extends ThemeState<SearchResult> {
       builder: (context, value, child) => BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (p, c) =>
             p.getProductListingWithFiltersPaginationModels !=
-            c.getProductListingWithFiltersPaginationModels,
+                c.getProductListingWithFiltersPaginationModels ||
+            p.idForRequest != c.idForRequest,
         builder: (context, state) {
           String key = 'search';
           if (state
-                  .getProductListingWithFiltersPaginationModels['${key}' +
-                      '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}']
+                  .getProductListingWithFiltersPaginationModels[
+                      '${key}' + '${state.idForRequest}']
                   ?.paginationStatus ==
               PaginationStatus.loading) {
             return Column(children: [
@@ -65,7 +66,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                 padding: const EdgeInsetsDirectional.only(start: 20.0),
                 child: MyTextWidget(
                   LocaleKeys.find_products.tr(),
-                  style: textTheme.caption?.rq
+                  style: textTheme.titleMedium?.rq
                       .copyWith(height: 15 / 12, color: Color(0xff505050)),
                 ),
               ),
@@ -103,7 +104,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                   padding: const EdgeInsetsDirectional.only(start: 20.0),
                   child: MyTextWidget(
                     LocaleKeys.find_products.tr(),
-                    style: textTheme.caption?.rq
+                    style: textTheme.titleMedium?.rq
                         .copyWith(height: 15 / 12, color: Color(0xff505050)),
                   ),
                 ),
@@ -212,7 +213,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                 padding: const EdgeInsetsDirectional.only(start: 20.0),
                 child: MyTextWidget(
                   LocaleKeys.find_products.tr(),
-                  style: textTheme.caption?.rq
+                  style: textTheme.titleMedium?.rq
                       .copyWith(height: 15 / 12, color: Color(0xff505050)),
                 ),
               ),
@@ -262,7 +263,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                                     textAlign: TextAlign.start,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
-                                    style: context.textTheme.bodyText2?.lq
+                                    style: context.textTheme.titleLarge?.lq
                                         .copyWith(
                                             height: 15 / 12,
                                             color: Color(0xffC4C2C2)),

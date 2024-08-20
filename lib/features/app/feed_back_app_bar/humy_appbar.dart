@@ -57,7 +57,7 @@ class FeedBackAppBar extends StatelessWidget implements PreferredSizeWidget {
             AppTextView(
               text: appBarParams.title!,
               style: appBarParams.tittleStyle ??
-                  Theme.of(context).textTheme.headline3?.copyWith(
+                  Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: appBarParams.textColor,
                       ),
             ),

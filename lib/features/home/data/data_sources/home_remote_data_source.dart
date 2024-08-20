@@ -15,6 +15,7 @@ import 'package:trydos/features/home/data/models/starting_settings_response_mode
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import '../../../../common/constant/configuration/market_url_routes.dart';
 import '../../../../common/constant/configuration/stories_url_routes.dart';
+import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/api/client_config.dart';
 import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/api/methods/post.dart';
@@ -26,6 +27,9 @@ import '../models/get_story_for_product_model.dart';
 @injectable
 class HomeRemoteDatasource {
   Future<StartingSettingsResponseModel> getStartingSettings() {
+    ///// for test /////
+    WidgetsKey.getStartingSettingsFlag = true;
+    ////////////////////
     GetClient<StartingSettingsResponseModel> getStartingSettings =
         GetClient<StartingSettingsResponseModel>(
       serverName: ServerName.market,
@@ -130,6 +134,9 @@ class HomeRemoteDatasource {
   }
 */
   Future<MainCategoriesResponseModel> getMainCategories() {
+    ///// for test /////
+    WidgetsKey.getMainCategoriesFlag = true;
+    ////////////////////
     GetClient<MainCategoriesResponseModel> getMainCategories =
         GetClient<MainCategoriesResponseModel>(
       serverName: ServerName.market,
@@ -172,7 +179,7 @@ class HomeRemoteDatasource {
     return getStories();
   }
 
-  Future<GetCartShippingItemsModel> GetCartShippingItems() {
+  Future<GetCartShippingItemsModel> getCartShippingItems() {
     GetClient<GetCartShippingItemsModel> getCartShippingItems =
         GetClient<GetCartShippingItemsModel>(
       serverName: ServerName.market,
@@ -187,6 +194,9 @@ class HomeRemoteDatasource {
   }
 
   Future<GetHomeBoutiquesModel> getHomeBoutiques(Map<String, dynamic> params) {
+    ///// for test /////
+    WidgetsKey.getBoutiquesFlag = true;
+    ////////////////////
     GetClient<GetHomeBoutiquesModel> getHomeBoutiques =
         GetClient<GetHomeBoutiquesModel>(
       serverName: ServerName.market,
@@ -271,6 +281,9 @@ class HomeRemoteDatasource {
   }
 
   Future<GetAllowedCountriesModel> getAllowedCountries() {
+    ///// for test /////
+    WidgetsKey.getAllowedCountriesFlag = true;
+    ////////////////////
     GetClient<GetAllowedCountriesModel> verifyOtpSignIn =
         GetClient<GetAllowedCountriesModel>(
       serverName: ServerName.market,

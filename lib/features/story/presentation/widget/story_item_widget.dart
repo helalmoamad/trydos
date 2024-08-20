@@ -181,11 +181,11 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                     textAlign: TextAlign.center,
                                     overflow: TextOverflow.ellipsis,
                                     style: !widget.resize
-                                        ? textTheme.caption?.rr.copyWith(
+                                        ? textTheme.titleMedium?.rr.copyWith(
                                             letterSpacing: 0.036,
                                             height: 3,
                                             color: Colors.white)
-                                        : textTheme.bodyText1?.rr.copyWith(
+                                        : textTheme.displayMedium?.rr.copyWith(
                                             letterSpacing: 0.048,
                                             height: 2.25,
                                             color: Colors.white),
@@ -239,7 +239,7 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                                         radius: 180,
                                                         textStyle: context
                                                             .textTheme
-                                                            .subtitle1
+                                                            .bodyMedium
                                                             ?.br
                                                             .copyWith(
                                                                 color: const Color(

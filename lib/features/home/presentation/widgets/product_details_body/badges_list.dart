@@ -32,7 +32,7 @@ class BadgesList extends StatelessWidget {
                 ),
                 MyTextWidget(
                   lable![index].label!,
-                  style: context.textTheme.caption?.rq
+                  style: context.textTheme.titleMedium?.rq
                       .copyWith(height: 1.27, color: Color(0xff8D8D8D)),
                 )
               ],
