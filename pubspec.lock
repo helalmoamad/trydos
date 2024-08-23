@@ -1333,10 +1333,10 @@ packages:
     dependency: "direct main"
     description:
       name: overscroll_pop
-      sha256: "397bcdb2ca1bdfa6ac6192c893a2cf681d2f821f7901c301c7667c1931a1fda2"
+      sha256: "364efe8b80a344aa564313b1d87ec716db8f88aaa9d9fe9478eabf9101666613"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.9"
+    version: "0.1.0"
   package_config:
     dependency: transitive
     description:
