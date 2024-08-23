@@ -106,7 +106,7 @@ dependencies:
   camera: ^0.10.5+5
   lottie: 2.7.0
   store_redirect: ^2.0.1
-  overscroll_pop: ^0.0.9
+  overscroll_pop: ^0.1.0
   vibration: 1.8.4
   webview_flutter: 4.4.2
   flutter_inappwebview: 6.0.0

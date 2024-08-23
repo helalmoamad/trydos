@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'

@@ -13,7 +13,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
-import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:store_redirect/store_redirect.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/constant/countries.dart';

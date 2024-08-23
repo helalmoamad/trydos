@@ -60,7 +60,8 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
       dealWithStoryWhileDrag: (bool startStories) {
         startStoriesNotifier.value = startStories;
       },
-      child: BlocBuilder<StoryBloc, StoryState>(
+      child:
+       BlocBuilder<StoryBloc, StoryState>(
         buildWhen: (p, c) => false,
         builder: (context, state) {
           animationControllers = List.generate(state.storiesCollections.length,
@@ -261,8 +262,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                         itemCount: state.storiesCollections.length);
                   }));
         },
-      ),
-    );
+    ));
   }
 }
 
