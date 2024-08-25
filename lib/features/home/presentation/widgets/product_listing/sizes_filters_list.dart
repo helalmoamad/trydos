@@ -189,9 +189,13 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                             ],
                                 );
                               } else {
-                                sizes[0].options!.removeWhere(((element) =>
+                                List<String> options = List.of(sizes[0].options ?? []);
+                                options.removeWhere(((element) =>
                                     element ==
                                     widget.attribute.options![index]));
+                                sizes[0] = sizes[0].copyWith(
+                                  options: options
+                                );
                                 prevChoosedOrAppliedFilterToAddToIt =
                                     prevChoosedOrAppliedFilterToAddToIt!
                                         .copyWithSaveOtherField(
