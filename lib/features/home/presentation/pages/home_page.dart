@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -21,7 +22,7 @@ import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../story/presentation/widget/stories_list.dart';
@@ -44,14 +45,15 @@ class _HomePageState extends State<HomePage> {
   Key reRenderingListViewKey = UniqueKey();
   @override
   void initState() {
-    print("11122222222223333333333335555555556///////////**************----------------------------********************************//////////////////");
+    print(
+        "11122222222223333333333335555555556///////////**************----------------------------********************************//////////////////");
 
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     if (homeBloc.state.getCurrencyForCountryModel == null) {
       homeBloc.add(GetCurrencyForCountryEvent());
     }
-      homeBloc.add(GetCartItemEvent());
+    homeBloc.add(GetCartItemEvent());
     appBloc.add(ChangeIndexForSearch(0));
     homeBloc.add(ChangeAppliedFiltersEvent(
         boutiqueSlug: 'search',
@@ -233,7 +235,7 @@ class _HomePageState extends State<HomePage> {
                                     0) ==
                                 0)) {
                       return sliverListSeparated(
-                          key: WidgetsKey.kTestMode
+                          key: TestVariables.kTestMode
                               ? Key(WidgetsKey.boutiquesFailureStatusKey)
                               : null,
                           itemBuilder: (_, index) => Padding(
@@ -299,13 +301,13 @@ class _HomePageState extends State<HomePage> {
                           childCount: 10);
                     }
                     return sliverListSeparated(
-                      key: WidgetsKey.kTestMode
+                      key: TestVariables.kTestMode
                           ? Key(WidgetsKey.boutiquesSuccessStatusKey)
                           : reRenderingListViewKey,
                       itemBuilder: (_, index) => Padding(
                           padding: HWEdgeInsets.symmetric(horizontal: 15.w),
                           child: HomePageCard2(
-                            key: WidgetsKey.kTestMode
+                            key: TestVariables.kTestMode
                                 ? Key('${WidgetsKey.boutiqueCardKey}$index')
                                 : null,
                             category_Slug: currentSlug,

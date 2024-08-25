@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -18,11 +18,9 @@ import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/constant/design/constant_design.dart';
-import '../../../common/constant/widgets_key.dart';
+import '../../../common/test_utils/widgets_keys.dart';
 import '../../../core/utils/responsive_padding.dart';
 import '../../home/data/models/get_product_filters_model.dart';
-import '../../home/data/models/get_product_listing_with_filters_model.dart'
-    as product_listing;
 import '../../home/presentation/manager/home_bloc.dart';
 import '../../home/presentation/manager/home_state.dart';
 import '../animated_search_bar/animated_search_bar.dart';
@@ -92,7 +90,7 @@ class _TabsBarState extends State<TabsBar> {
                     ],
                   ),
                   child: Row(
-                      key: WidgetsKey.kTestMode
+                      key: TestVariables.kTestMode
                           ? Key(WidgetsKey.mainCategoriesTabNullKey)
                           : null,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -392,7 +390,7 @@ class _TabsBarState extends State<TabsBar> {
                                 return SizedBox(
                                   width: 1.sw,
                                   child: Row(
-                                      key: WidgetsKey.kTestMode
+                                      key: TestVariables.kTestMode
                                           ? Key(WidgetsKey.mainCategoriesTabKey)
                                           : null,
                                       mainAxisAlignment:
@@ -415,7 +413,10 @@ class _TabsBarState extends State<TabsBar> {
                                                       end: 6),
                                               child: InkWell(
                                                 onTap: () {
-                                                  if (BlocProvider.of<AppBloc>(context).state.tabIndex !=
+                                                  if (BlocProvider.of<AppBloc>(
+                                                              context)
+                                                          .state
+                                                          .tabIndex !=
                                                       index) {
                                                     appBloc
                                                         .add(ChangeTab(index));
@@ -458,8 +459,7 @@ class _TabsBarState extends State<TabsBar> {
                                                 },
                                                 child: Column(
                                                   crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .center,
+                                                      CrossAxisAlignment.center,
                                                   children: [
                                                     BlocBuilder<AppBloc,
                                                         AppState>(
@@ -484,23 +484,24 @@ class _TabsBarState extends State<TabsBar> {
                                                             ),
                                                             BlocBuilder<AppBloc,
                                                                 AppState>(
-                                                              buildWhen: (p, c) =>
-                                                              p.tabIndex !=
+                                                              buildWhen: (p,
+                                                                      c) =>
+                                                                  p.tabIndex !=
                                                                   c.tabIndex,
-                                                              builder:
-                                                                  (context, state) {
+                                                              builder: (context,
+                                                                  state) {
                                                                 return Positioned(
                                                                   top: 0,
                                                                   left: 0,
                                                                   child: Visibility(
                                                                       visible: state
-                                                                          .tabIndex ==
+                                                                              .tabIndex ==
                                                                           index,
-                                                                      child:
-                                                                      FilterSelectedMark(
-                                                                          width: 12,
+                                                                      child: FilterSelectedMark(
+                                                                          width:
+                                                                              12,
                                                                           height:
-                                                                          12)),
+                                                                              12)),
                                                                 );
                                                               },
                                                             )
@@ -516,8 +517,7 @@ class _TabsBarState extends State<TabsBar> {
                                                       style: textTheme
                                                           .titleSmall?.lr
                                                           .copyWith(
-                                                              letterSpacing:
-                                                                  0,
+                                                              letterSpacing: 0,
                                                               color: state.tabIndex !=
                                                                       index
                                                                   ? Color(

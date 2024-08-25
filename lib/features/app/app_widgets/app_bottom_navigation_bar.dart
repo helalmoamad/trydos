@@ -10,29 +10,26 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/common/constant/widgets_key.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/test_utils/widgets_keys.dart';
+
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
 import 'package:trydos/features/app/language_dropdown.dart';
-import 'package:trydos/features/authentication/presentation/pages/login_page.dart';
+
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/pages/home_page.dart';
-import 'package:trydos/features/home/presentation/widgets/cart_page.dart';
 
 import 'package:trydos/generated/locale_keys.g.dart';
+import '../../../common/test_utils/test_var.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/theme_state.dart';
 import '../../../routes/router.dart';
-import '../../authentication/presentation/pages/first_registeration_page.dart';
-import '../../chat/presentation/manager/chat_bloc.dart';
-import '../../chat/presentation/manager/chat_event.dart';
+
 import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
 import '../blocs/app_bloc/app_state.dart';
@@ -300,7 +297,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               ),
               Expanded(
                 child: InkWell(
-                  key: WidgetsKey.kTestMode
+                  key: TestVariables.kTestMode
                       ? Key(WidgetsKey.chatNavBarKey)
                       : null,
                   onTap: () async {

@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -16,7 +17,7 @@ import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/features/authentication/presentation/widgets/pin_item.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
@@ -173,8 +174,10 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                               children: [
                                 MyTextWidget(
                                   LocaleKeys.we_have_sent_code.tr(),
-                                  style: context.textTheme.titleMedium?.ra.copyWith(
-                                      color: Color(0xff5D5C5D), height: 1.42),
+                                  style: context.textTheme.titleMedium?.ra
+                                      .copyWith(
+                                          color: Color(0xff5D5C5D),
+                                          height: 1.42),
                                 ),
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,7 +271,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                                     ? '0${remainingTime?.sec}'
                                                                     : '${remainingTime?.sec}';
                                                             return MyTextWidget(
-                                                              key: WidgetsKey
+                                                              key: TestVariables
                                                                       .kTestMode
                                                                   ? Key(WidgetsKey
                                                                       .otpRemainingTimeKey)
@@ -294,7 +297,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                     return InkWell(
                                                       onTap: _onResendSucceed,
                                                       child: MyTextWidget(
-                                                        key: WidgetsKey
+                                                        key: TestVariables
                                                                 .kTestMode
                                                             ? Key(WidgetsKey
                                                                 .resendCodeButtonKey)
@@ -314,8 +317,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                               resend
                                                   ? MyTextWidget(
                                                       LocaleKeys.or.tr() + " ",
-                                                      style: context
-                                                          .textTheme.titleMedium?.ra
+                                                      style: context.textTheme
+                                                          .titleMedium?.ra
                                                           .copyWith(
                                                               color: Color(
                                                                   0xff5D5C5D),
@@ -351,8 +354,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                           .the_method_of_receiving
                                                           .tr(),
                                                       maxLines: 2,
-                                                      style: context
-                                                          .textTheme.titleMedium?.ra
+                                                      style: context.textTheme
+                                                          .titleMedium?.ra
                                                           .copyWith(
                                                               color: Color(
                                                                   0xff4D84FF),
@@ -587,7 +590,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                 : LocaleKeys
                                                     .the_code_sent_has_expired
                                                     .tr(),
-                                            style: context.textTheme.titleMedium?.ra
+                                            style: context
+                                                .textTheme.titleMedium?.ra
                                                 .copyWith(
                                                     color: Color(0xff5D5C5D),
                                                     height: 1.25),

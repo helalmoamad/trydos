@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter/material.dart' as icon;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
@@ -11,9 +11,8 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:trydos/common/constant/design/constant_design.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -22,21 +21,16 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/animated_search_bar/animated_search_bar.dart';
-import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as filter_products;
-import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
-import 'package:trydos/features/home/presentation/pages/product_listing_search.dart';
-import 'package:trydos/features/search/presentation/pages/search_listing_page.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
 import '../../../../common/constant/design/assets_provider.dart';
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
@@ -447,7 +441,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           : 20.0),
                                                                   child:
                                                                       AnimatedSearchBar(
-                                                                    key: WidgetsKey
+                                                                    key: TestVariables
                                                                             .kTestMode
                                                                         ? Key(WidgetsKey
                                                                             .productListingSearchInputKey)
@@ -1161,7 +1155,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       : 145
                                                                   : 115,
                                                   flexibleSpace: StackedFiltersList(
-                                                      key: WidgetsKey.kTestMode ? Key(WidgetsKey.productListFilterKey) : null,
+                                                      key: TestVariables.kTestMode ? Key(WidgetsKey.productListFilterKey) : null,
                                                       textController: controller,
                                                       hideTitle: false,
                                                       fromSearch: fromSearch!,
@@ -1295,7 +1289,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       PaginationStatus
                                                           .loading) {
                                                 return ProductListingLoading(
-                                                  key: WidgetsKey.kTestMode
+                                                  key: TestVariables.kTestMode
                                                       ? Key(WidgetsKey
                                                           .boutiqueProductListingLoadingKey)
                                                       : null,
@@ -1353,7 +1347,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               // [];
                                               //                                                     }
                                               return SliverPadding(
-                                                key: WidgetsKey.kTestMode
+                                                key: TestVariables.kTestMode
                                                     ? Key(WidgetsKey
                                                         .productsListKey)
                                                     : null,
@@ -1453,7 +1447,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       )));
                                                         },
                                                         child: ProductItem(
-                                                          key: WidgetsKey
+                                                          key: TestVariables
                                                                   .kTestMode
                                                               ? Key(
                                                                   '${WidgetsKey.productInBoutiqueListKey}$index')

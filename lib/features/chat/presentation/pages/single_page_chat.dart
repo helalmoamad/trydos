@@ -15,6 +15,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/file_saving.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -24,7 +25,6 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
-import 'package:trydos/features/calls/presentation/widgets/calls_card.dart';
 import 'package:trydos/features/chat/presentation/pages/profile_page.dart';
 import 'package:trydos/features/chat/presentation/utils/firebase_presence.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_input_field.dart';
@@ -35,7 +35,7 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/video_message.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:uuid/uuid.dart';
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -199,7 +199,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           valueListenable: clickBackButton,
                           builder: (context, clicked, _) {
                             return InkWell(
-                              key: WidgetsKey.kTestMode
+                              key: TestVariables.kTestMode
                                   ? Key(WidgetsKey.backFromChatKey)
                                   : null,
                               onTap: () {
@@ -318,7 +318,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             InkWell(
-                              key: WidgetsKey.kTestMode
+                              key: TestVariables.kTestMode
                                   ? Key(WidgetsKey.goToProfileButtonKey)
                                   : null,
                               onTap: () {
@@ -355,12 +355,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                   } else {
                                     return BlocBuilder<ChatBloc, ChatState>(
                                       builder: (context, state) {
-                                        return state.userConnectedStatuse != ' ' &&
+                                        return state.userConnectedStatuse !=
+                                                    ' ' &&
                                                 DateTime.tryParse(state
                                                         .userConnectedStatuse) !=
                                                     null
-                                            ? DateTime.parse(state
-                                                            .userConnectedStatuse)
+                                            ? DateTime.parse(state.userConnectedStatuse)
                                                         .subtract(Duration(
                                                             minutes: duration))
                                                         .difference(
@@ -372,7 +372,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                 ? MyTextWidget("Online",
                                                     overflow:
                                                         TextOverflow.ellipsis,
-                                                    style: textTheme.titleMedium?.mr
+                                                    style: textTheme
+                                                        .titleMedium?.mr
                                                         .copyWith(
                                                             color: const Color(
                                                                 0xff007CFF)))
@@ -617,10 +618,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                   : SizedBox.shrink(),
                                               Flexible(
                                                   child: ListView.builder(
-                                                      key:WidgetsKey.kTestMode ? Key(
-                                                        WidgetsKey
-                                                            .messagesListKey,
-                                                      ):null,
+                                                      key: TestVariables
+                                                              .kTestMode
+                                                          ? Key(
+                                                              WidgetsKey
+                                                                  .messagesListKey,
+                                                            )
+                                                          : null,
                                                       physics:
                                                           const ClampingScrollPhysics(),
                                                       shrinkWrap: true,
@@ -692,8 +696,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                       : 10.verticalSpace,
                                                                   ////////////////
                                                                   GestureDetector(
-                                                                    key: WidgetsKey.kTestMode ?Key(
-                                                                        '${WidgetsKey.messagesListCardKey}$index'):null,
+                                                                    key: TestVariables
+                                                                            .kTestMode
+                                                                        ? Key(
+                                                                            '${WidgetsKey.messagesListCardKey}$index')
+                                                                        : null,
                                                                     onLongPress:
                                                                         () {
                                                                       if (messages[index]
@@ -858,7 +865,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                                                           children: [
                                                                                                             MessageActionWidget(
-                                                                                                              key: WidgetsKey.kTestMode ? Key('${WidgetsKey.forWardMessageKey}$index') : null,
+                                                                                                              key: TestVariables.kTestMode ? Key('${WidgetsKey.forWardMessageKey}$index') : null,
                                                                                                               onTap: () => forwardMessageMethod(messages.firstWhere((element) => element.id == messageId)),
                                                                                                               iconUrl: AppAssets.goBackIconSvg,
                                                                                                               myIndex: lan ? 0 : 5,
@@ -877,13 +884,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                               focusedIndex: focusedIndex,
                                                                                                             ),
                                                                                                             MessageActionWidget(
-                                                                                                              key: WidgetsKey.kTestMode ? Key('${WidgetsKey.deleteMessageKey}$index') : null,
+                                                                                                              key: TestVariables.kTestMode ? Key('${WidgetsKey.deleteMessageKey}$index') : null,
                                                                                                               onTap: () {
                                                                                                                 showDialog(
                                                                                                                   context: context,
                                                                                                                   builder: (context) => AlertDialog(title: Text(LocaleKeys.delete_message.tr()), actions: [
                                                                                                                     MaterialButton(
-                                                                                                                      key: WidgetsKey.kTestMode ? Key('${WidgetsKey.deleteOnlyMeButtonKey}$index') : null,
+                                                                                                                      key: TestVariables.kTestMode ? Key('${WidgetsKey.deleteOnlyMeButtonKey}$index') : null,
                                                                                                                       onPressed: () {
                                                                                                                         callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
                                                                                                                         Navigator.of(context).pop();
@@ -1525,7 +1532,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         );
       } else {
         return ReplayOnMeMessage(
-            key: WidgetsKey.kTestMode
+            key: TestVariables.kTestMode
                 ? Key('${WidgetsKey.replayOnMeMessageKey}$listIndex')
                 : null,
             index: listIndex,
@@ -1570,7 +1577,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       switch (message.messageType?.name) {
         case 'TextMessage':
           return TextMessage(
-              key: WidgetsKey.kTestMode
+              key: TestVariables.kTestMode
                   ? Key('${WidgetsKey.textMessageCardKey}$listIndex')
                   : null,
               index: listIndex,
