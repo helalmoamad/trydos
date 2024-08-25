@@ -203,13 +203,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
         searchVisible.value = false;
         if (filterPageExpanded.value) {
+          print(
+              "111111111111111111111111111111111dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
           prefAppliedFilters =
               homeBloc.state.prefAppliedFilterForExtendFilter ?? Filter();
-          homeBloc.add(ChangeAppliedFiltersEvent(
-              boutiqueSlug: widget.boutiqueSlug,
-              category: widget.category,
-              filtersAppliedByUser:
-                  GetProductFiltersModel(filters: prefAppliedFilters)));
+
           homeBloc.add(GetProductFiltersEvent(
               fromHomePageSearch: widget.fromSearch,
               cashedOrginalBoutique: false,
@@ -217,6 +216,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
               category: widget.category,
               searchText: widget.searchText,
               filtersChoosedByUser:
+                  GetProductFiltersModel(filters: prefAppliedFilters)));
+          homeBloc.add(ChangeAppliedFiltersEvent(
+              boutiqueSlug: widget.boutiqueSlug,
+              category: widget.category,
+              filtersAppliedByUser:
                   GetProductFiltersModel(filters: prefAppliedFilters)));
 
           resetSearchAfterSearchingWhileRemoveSearch = false;
@@ -226,6 +230,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
           return Future.value(false);
         } else {
           if (!widget.fromSearch) {
+            print(
+                "2222222222222222222222dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
             homeBloc.add(ChangeAppliedFiltersEvent(
                 boutiqueSlug: widget.boutiqueSlug,
                 category: widget.category,
@@ -238,6 +245,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
             ));
           }
           if (widget.fromSearch) {
+            print(
+                "333333333333333333333333333333dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
             homeBloc.add(ChangeSelectedFiltersEvent(
               requestToUpdateFilters: false,
               boutiqueSlug: widget.boutiqueSlug,
@@ -340,6 +350,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       appBarParams:
                                                           AppBarParams(
                                                               onBack: () {
+                                                                print(
+                                                                    "444444444444444444444dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
                                                                 if (widget
                                                                     .fromSearch) {
                                                                   widget.controllerFormSearchPage
@@ -376,6 +389,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 }
                                                                 if (!widget
                                                                     .fromSearch) {
+                                                                  print(
+                                                                      "55555555555555555555555dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
                                                                   homeBloc.add(
                                                                       ChangeSelectedFiltersEvent(
                                                                     requestToUpdateFilters:
@@ -466,6 +482,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           controller
                                                                               .text
                                                                               .isNotEmpty) {
+                                                                        print(
+                                                                            "66666666666666dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
                                                                         Filter
                                                                             filters =
                                                                             homeBloc.state.appliedFiltersByUser[key]?.filters ??
@@ -753,6 +772,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       }
                                                                       if (text.length >
                                                                           2) {
+                                                                        print(
+                                                                            "8888888888888dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
                                                                         resetSearchAfterSearchingWhileRemoveSearch =
                                                                             true;
                                                                         Filter
@@ -796,6 +818,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                             filters =
                                                                             homeBloc.state.appliedFiltersByUser[key]?.filters ??
                                                                                 Filter();
+                                                                        print(
+                                                                            "777777777777777dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
                                                                         homeBloc
                                                                             .add(ChangeAppliedFiltersEvent(
                                                                           category:
@@ -816,6 +841,19 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               fromSearch ?? false,
                                                                           searchText:
                                                                               null,
+                                                                          category:
+                                                                              widget.category,
+                                                                          boutiqueSlug:
+                                                                              widget.boutiqueSlug,
+                                                                        ));
+                                                                        homeBloc
+                                                                            .add(GetProductsWithFiltersEvent(
+                                                                          offset:
+                                                                              1,
+                                                                          searchText:
+                                                                              null,
+                                                                          fromSearch:
+                                                                              fromSearch,
                                                                           category:
                                                                               widget.category,
                                                                           boutiqueSlug:
@@ -857,7 +895,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         builder:
                                                                             (context,
                                                                                 state) {
-                                                                          if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ?? 0) ==
+                                                                          if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 0) ==
                                                                               1) {
                                                                             return SizedBox.shrink();
                                                                           }
@@ -865,14 +903,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
                                                                               child: InkWell(
                                                                                 onTap: () {
-                                                                                  if (!filterPageExpanded.value) {
-                                                                                    filterPageExpanded.value = true;
+                                                                                  print(".....................dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
+                                                                                  if (!isExpanded) {
+                                                                                    prefAppliedFilters = homeBloc.state.appliedFiltersByUser[key]?.filters;
+                                                                                    homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, resetAppliedFilters: true));
+                                                                                    homeBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
+                                                                                    homeBloc.add(ChangeSelectedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+
                                                                                     controller.clear();
                                                                                     resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                                    prefAppliedFilters = homeBloc.state.appliedFiltersByUser[key]?.filters;
-                                                                                    homeBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
-                                                                                    homeBloc.add(ChangeSelectedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, filtersChoosedByUser: GetProductFiltersModel(filters: homeBloc.state.appliedFiltersByUser[key]?.filters)));
-                                                                                    homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, resetAppliedFilters: true));
+                                                                                    filterPageExpanded.value = true;
                                                                                   }
                                                                                 },
                                                                                 child: SvgPicture.asset(
@@ -887,17 +928,18 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       InkWell(
                                                                           onTap:
                                                                               () {
+                                                                            if (isExpanded) {
+                                                                              prefAppliedFilters = homeBloc.state.prefAppliedFilterForExtendFilter;
+
+                                                                              print(homeBloc.state.prefAppliedFilterForExtendFilter?.brands);
+                                                                              homeBloc.add(GetProductFiltersEvent(fromHomePageSearch: widget.fromSearch, cashedOrginalBoutique: false, boutiqueSlug: widget.boutiqueSlug, category: widget.category, searchText: widget.searchText, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                              homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                            }
                                                                             filterPageExpanded.value =
                                                                                 false;
                                                                             controller.clear();
                                                                             resetSearchAfterSearchingWhileRemoveSearch =
                                                                                 false;
-
-                                                                            if (isExpanded) {
-                                                                              prefAppliedFilters = homeBloc.state.appliedFiltersByUser[key]?.filters;
-                                                                              homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
-                                                                              homeBloc.add(GetProductFiltersEvent(fromHomePageSearch: widget.fromSearch, cashedOrginalBoutique: false, boutiqueSlug: widget.boutiqueSlug, category: widget.category, searchText: widget.searchText, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
-                                                                            }
                                                                           },
                                                                           child:
                                                                               SizedBox(
@@ -1133,30 +1175,30 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   titleSpacing: 0,
                                                   toolbarHeight: isExpanded
                                                       ? 860
-                                                      : ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ?? 1) <
-                                                                      2 &&
-                                                                  state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus ==
+                                                      : ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 1) < 2 &&
+                                                                  state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.paginationStatus ==
                                                                       PaginationStatus
                                                                           .success) ||
                                                               ((state.getProductFiltersModel[key]?.filters ==
                                                                       null &&
-                                                                  state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus !=
+                                                                  state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.paginationStatus !=
                                                                       PaginationStatus
                                                                           .success &&
-                                                                  (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ??
+                                                                  (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ??
                                                                           0) <
                                                                       2))
                                                           ? 35
-                                                          : (state.getProductFiltersModel[key]?.filters ==
-                                                                      null &&
-                                                                  state.getProductFiltersStatus[key] !=
-                                                                      GetProductFiltersStatus
-                                                                          .loading)
+                                                          : (state
+                                                                      .getProductFiltersModel[
+                                                                          key]
+                                                                      ?.filters
+                                                                      ?.totalSize ==
+                                                                  0)
                                                               ? 35
                                                               : state.appliedFiltersByUser[key] !=
                                                                       null
-                                                                  ? ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ?? 1) == 1 &&
-                                                                          state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.success)
+                                                                  ? ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 1) == 1 &&
+                                                                          state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.success)
                                                                       ? 35
                                                                       : 145
                                                                   : 115,
@@ -1171,7 +1213,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         filterPageExpanded
                                                             .value = false;
                                                       },
-                                                      displayAppliedFiltersOnly: (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ?? 0) < 2 && state.getProductFiltersStatus[key] == GetProductFiltersStatus.success && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.success,
+                                                      displayAppliedFiltersOnly: (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 0) < 2 && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.success,
                                                       category: widget.category,
                                                       boutiqueSlug: widget.boutiqueSlug,
                                                       controller: isExpanded ? scrollController : null,
@@ -1196,7 +1238,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                         ? SliverToBoxAdapter()
                                         : BlocBuilder<HomeBloc, HomeState>(
                                             buildWhen: (p, c) {
-                                              bool rebuild = p
+                                              return p
                                                           .getProductListingWithFiltersPaginationModels[
                                                               '${widget.boutiqueSlug}' +
                                                                   'withoutFilter' +
@@ -1211,18 +1253,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   p
                                                           .getProductListingWithFiltersPaginationModels[
                                                               '${widget.boutiqueSlug}' +
-                                                                  '${p.idForRequest}' +
                                                                   '${(widget.category ?? '')}']
                                                           ?.paginationStatus !=
                                                       c
                                                           .getProductListingPaginationWithoutFiltersModel[
                                                               '${widget.boutiqueSlug}' +
-                                                                  '${c.idForRequest}' +
                                                                   '${(widget.category ?? '')}']
                                                           ?.paginationStatus ||
                                                   p.cashedOrginalBoutique !=
                                                       c.cashedOrginalBoutique;
-                                              return rebuild;
+
                                               // ||
                                               // (!widget.fromSearch &&
                                               //     p
@@ -1235,6 +1275,63 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               //             ?.paginationStatus);
                                             },
                                             builder: (context, state) {
+                                              if (((state
+                                                              .getProductListingWithFiltersPaginationModels[
+                                                                  '${widget.boutiqueSlug}' +
+                                                                      'withoutFilter' +
+                                                                      '${(widget.category ?? '')}']
+                                                              ?.paginationStatus ==
+                                                          PaginationStatus
+                                                              .loading) &&
+                                                      state
+                                                          .getProductListingWithFiltersPaginationModels[
+                                                              '${widget.boutiqueSlug}' +
+                                                                  'withoutFilter' +
+                                                                  '${(widget.category ?? '')}']!
+                                                          .items
+                                                          .isNullOrEmpty) ||
+                                                  (state.getProductListingWithFiltersPaginationModels[
+                                                          '${widget.boutiqueSlug}' +
+                                                              'withoutFilter' +
+                                                              '${(widget.category ?? '')}'] ==
+                                                      PaginationModel.init())) {
+                                                return ProductListingLoading();
+                                              }
+                                              if ((state
+                                                              .getProductListingWithFiltersPaginationModels[
+                                                                  '${widget.boutiqueSlug}' +
+                                                                      'withoutFilter' +
+                                                                      '${(widget.category ?? '')}']
+                                                              ?.paginationStatus ==
+                                                          PaginationStatus
+                                                              .failure &&
+                                                      state
+                                                          .getProductListingWithFiltersPaginationModels[
+                                                              '${widget.boutiqueSlug}' +
+                                                                  'withoutFilter' +
+                                                                  '${(widget.category ?? '')}']!
+                                                          .items
+                                                          .isNullOrEmpty) ||
+                                                  (state
+                                                              .getProductListingWithFiltersPaginationModels[
+                                                                  '${widget.boutiqueSlug}' +
+                                                                      '${(widget.category ?? '')}']
+                                                              ?.paginationStatus ==
+                                                          PaginationStatus
+                                                              .failure &&
+                                                      !state
+                                                          .cashedOrginalBoutique)) {
+                                                return SliverToBoxAdapter(
+                                                  child: Center(
+                                                    child: MyTextWidget(
+                                                      "No Internet Connected",
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 18),
+                                                    ),
+                                                  ),
+                                                );
+                                              }
                                               print('fcfcfcfcfcsfasfafas');
                                               // String key = (widget
                                               //             .boutiqueSlug ??
@@ -1243,14 +1340,20 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               //         '');
                                               if ((state.getProductListingWithFiltersPaginationModels[
                                                               '${widget.boutiqueSlug}' +
-                                                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
+                                                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                                   '${(widget.category ?? '')}'] ==
-                                                          null &&
-                                                      !widget.fromSearch) &&
+                                                          null ||
+                                                      state
+                                                          .getProductListingWithFiltersPaginationModels[
+                                                              '${widget.boutiqueSlug}' +
+                                                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                  '${(widget.category ?? '')}']!
+                                                          .items
+                                                          .isNullOrEmpty) &&
                                                   state
                                                           .getProductListingWithFiltersPaginationModels[
                                                               '${widget.boutiqueSlug}' +
-                                                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}'
+                                                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
                                                                       '${(widget.category ?? '')}']
                                                           ?.paginationStatus ==
                                                       PaginationStatus
@@ -1268,38 +1371,34 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               }
                                               if (((state.getProductListingWithFiltersPaginationModels[
                                                                   '${widget.boutiqueSlug}' +
-                                                                      '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
+                                                                      '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                                       '${(widget.category ?? '')}'] ==
                                                               null ||
                                                           state
                                                               .getProductListingWithFiltersPaginationModels[
                                                                   '${widget.boutiqueSlug}' +
-                                                                      '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
+                                                                      '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                                       '${(widget.category ?? '')}']!
                                                               .items
                                                               .isNullOrEmpty) &&
                                                       state
                                                               .getProductListingWithFiltersPaginationModels[
                                                                   '${widget.boutiqueSlug}' +
-                                                                      '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}}'
+                                                                      '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}}'
                                                                           '${(widget.category ?? '')}']
                                                               ?.paginationStatus !=
                                                           PaginationStatus
                                                               .success) ||
-                                                  state
-                                                          .getProductListingWithFiltersPaginationModels[
-                                                              '${widget.boutiqueSlug}' +
-                                                                  '${state.idForRequest}'
+                                                  (state
+                                                              .getProductListingWithFiltersPaginationModels[
+                                                                  '${widget.boutiqueSlug}' +
                                                                       '${(widget.category ?? '')}']
-                                                          ?.paginationStatus ==
-                                                      PaginationStatus
-                                                          .loading) {
-                                                return ProductListingLoading(
-                                                  key: WidgetsKey.kTestMode
-                                                      ? Key(WidgetsKey
-                                                          .boutiqueProductListingLoadingKey)
-                                                      : null,
-                                                );
+                                                              ?.paginationStatus ==
+                                                          PaginationStatus
+                                                              .loading &&
+                                                      !state
+                                                          .cashedOrginalBoutique)) {
+                                                return ProductListingLoading();
                                               }
 
                                               List<filter_products.Products>
@@ -1307,13 +1406,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                                               if (state.getProductListingWithFiltersPaginationModels[
                                                       '${widget.boutiqueSlug}' +
-                                                          '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
+                                                          '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                           '${(widget.category ?? '')}'] !=
                                                   null) {
                                                 products = state
                                                     .getProductListingWithFiltersPaginationModels[
                                                         '${widget.boutiqueSlug}' +
-                                                            '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
+                                                            '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                             '${(widget.category ?? '')}']!
                                                     .items;
                                                 if (products.isEmpty) {
@@ -1351,7 +1450,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               // key]
                                               //     ?.items ??
                                               // [];
-                                              //                                                     }
+                                              //
+                                              //                                             }
                                               return SliverPadding(
                                                 key: WidgetsKey.kTestMode
                                                     ? Key(WidgetsKey

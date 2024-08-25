@@ -415,7 +415,10 @@ class _TabsBarState extends State<TabsBar> {
                                                       end: 6),
                                               child: InkWell(
                                                 onTap: () {
-                                                  if (BlocProvider.of<AppBloc>(context).state.tabIndex !=
+                                                  if (BlocProvider.of<AppBloc>(
+                                                              context)
+                                                          .state
+                                                          .tabIndex !=
                                                       index) {
                                                     appBloc
                                                         .add(ChangeTab(index));
@@ -458,8 +461,7 @@ class _TabsBarState extends State<TabsBar> {
                                                 },
                                                 child: Column(
                                                   crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .center,
+                                                      CrossAxisAlignment.center,
                                                   children: [
                                                     BlocBuilder<AppBloc,
                                                         AppState>(
@@ -484,23 +486,24 @@ class _TabsBarState extends State<TabsBar> {
                                                             ),
                                                             BlocBuilder<AppBloc,
                                                                 AppState>(
-                                                              buildWhen: (p, c) =>
-                                                              p.tabIndex !=
+                                                              buildWhen: (p,
+                                                                      c) =>
+                                                                  p.tabIndex !=
                                                                   c.tabIndex,
-                                                              builder:
-                                                                  (context, state) {
+                                                              builder: (context,
+                                                                  state) {
                                                                 return Positioned(
                                                                   top: 0,
                                                                   left: 0,
                                                                   child: Visibility(
                                                                       visible: state
-                                                                          .tabIndex ==
+                                                                              .tabIndex ==
                                                                           index,
-                                                                      child:
-                                                                      FilterSelectedMark(
-                                                                          width: 12,
+                                                                      child: FilterSelectedMark(
+                                                                          width:
+                                                                              12,
                                                                           height:
-                                                                          12)),
+                                                                              12)),
                                                                 );
                                                               },
                                                             )
@@ -516,8 +519,7 @@ class _TabsBarState extends State<TabsBar> {
                                                       style: textTheme
                                                           .titleSmall?.lr
                                                           .copyWith(
-                                                              letterSpacing:
-                                                                  0,
+                                                              letterSpacing: 0,
                                                               color: state.tabIndex !=
                                                                       index
                                                                   ? Color(

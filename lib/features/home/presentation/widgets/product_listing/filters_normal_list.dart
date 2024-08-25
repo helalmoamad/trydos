@@ -171,6 +171,9 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                               }
                             }
                             if (widget.hideTitle) {
+                              print(
+                                  "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
                               homeBloc.add(ChangeAppliedFiltersEvent(
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,

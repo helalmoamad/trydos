@@ -261,6 +261,9 @@ class CategoriesFilterList extends StatelessWidget {
                                             );
                                           }
                                           if (!workWithChoosedFilter) {
+                                            print(
+                                                "***************dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
                                             homeBloc
                                                 .add(ChangeAppliedFiltersEvent(
                                               category: category,
@@ -445,6 +448,9 @@ class CategoriesFilterList extends StatelessWidget {
                                             );
                                           }
                                           if (!workWithChoosedFilter) {
+                                            print(
+                                                "dddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+
                                             homeBloc
                                                 .add(ChangeAppliedFiltersEvent(
                                               category: category,
@@ -549,6 +555,9 @@ class CategoriesFilterList extends StatelessWidget {
                           );
                         }
                         if (!workWithChoosedFilter) {
+                          print(
+                              "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqdddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
                           homeBloc.add(ChangeAppliedFiltersEvent(
                             category: category,
                             boutiqueSlug: boutiqueSlug,
