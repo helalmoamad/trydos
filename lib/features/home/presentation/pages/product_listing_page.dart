@@ -909,8 +909,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                     prefAppliedFilters = homeBloc.state.appliedFiltersByUser[key]?.filters;
                                                                                     homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, resetAppliedFilters: true));
                                                                                     homeBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
-                                                                                    homeBloc.add(ChangeSelectedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
 
+                                                                                    homeBloc.add(ChangeSelectedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
                                                                                     controller.clear();
                                                                                     resetSearchAfterSearchingWhileRemoveSearch = false;
                                                                                     filterPageExpanded.value = true;
