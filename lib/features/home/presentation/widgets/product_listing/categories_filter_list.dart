@@ -162,6 +162,11 @@ class CategoriesFilterList extends StatelessWidget {
                                                   : state
                                                       .choosedFiltersByUser[key]
                                                       ?.filters;
+                                          List<Category>? categories = List.of(
+                                              prevChoosedOrAppliedFilterToAddToIt
+                                                      ?.categories ??
+                                                  []);
+
                                           if (add) {
                                             expandingFiltersStack.value =
                                                 innerIndex;
@@ -219,20 +224,15 @@ class CategoriesFilterList extends StatelessWidget {
                                                                 category
                                                               ]);
                                           } else {
-                                            prevChoosedOrAppliedFilterToAddToIt!
-                                                .categories!
-                                                .removeWhere(((element) =>
-                                                    element.id ==
-                                                    filters
-                                                        .categories![index]
-                                                        .subCategories![
-                                                            innerIndex]
-                                                        .id));
+                                            categories.removeWhere(((element) =>
+                                                element.id ==
+                                                filters
+                                                    .categories![index]
+                                                    .subCategories![innerIndex]
+                                                    .id));
                                             bool mustDeleteParentCategory =
-                                                !prevChoosedOrAppliedFilterToAddToIt
-                                                    .categories!
-                                                    .any(((element) => filters
-                                                        .categories![index]
+                                                categories.any(((element) =>
+                                                    filters.categories![index]
                                                         .subCategories!
                                                         .any((sub) =>
                                                             sub.id ==
@@ -245,7 +245,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                 filters.categories![index].id));
                                       }*/
                                             prevChoosedOrAppliedFilterToAddToIt =
-                                                prevChoosedOrAppliedFilterToAddToIt
+                                                prevChoosedOrAppliedFilterToAddToIt!
                                                     .copyWithSaveOtherField(
                                               prices:
                                                   prevChoosedOrAppliedFilterToAddToIt
@@ -255,9 +255,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                       ? controller?.text
                                                       : null
                                                   : null,
-                                              categories:
-                                                  prevChoosedOrAppliedFilterToAddToIt
-                                                      .categories,
+                                              categories: categories,
                                             );
                                           }
                                           if (!workWithChoosedFilter) {
@@ -381,6 +379,11 @@ class CategoriesFilterList extends StatelessWidget {
                                                   : state
                                                       .choosedFiltersByUser[key]
                                                       ?.filters;
+                                          List<Category>? categories = List.of(
+                                              prevChoosedOrAppliedFilterToAddToIt
+                                                      ?.categories ??
+                                                  []);
+
                                           if (add) {
                                             Category category =
                                                 filters.categories![index];
@@ -416,23 +419,17 @@ class CategoriesFilterList extends StatelessWidget {
                                                                   ]);
                                           } else {
                                             expandingFiltersStack.value = -1;
-                                            prevChoosedOrAppliedFilterToAddToIt!
-                                                .categories!
-                                                .removeWhere(((element) =>
-                                                    element.id ==
-                                                    filters.categories![index]
-                                                        .id));
+                                            categories.removeWhere(((element) =>
+                                                element.id ==
+                                                filters.categories![index].id));
 
-                                            prevChoosedOrAppliedFilterToAddToIt
-                                                .categories!
-                                                .removeWhere(((element) =>
-                                                    filters.categories![index]
-                                                        .subCategories!
-                                                        .any((sub) =>
-                                                            sub.id ==
-                                                            element.id)));
+                                            categories.removeWhere(((element) =>
+                                                filters.categories![index]
+                                                    .subCategories!
+                                                    .any((sub) =>
+                                                        sub.id == element.id)));
                                             prevChoosedOrAppliedFilterToAddToIt =
-                                                prevChoosedOrAppliedFilterToAddToIt
+                                                prevChoosedOrAppliedFilterToAddToIt!
                                                     .copyWithSaveOtherField(
                                               searchText: controller != null
                                                   ? controller!.text.length > 2
@@ -442,9 +439,7 @@ class CategoriesFilterList extends StatelessWidget {
                                               prices:
                                                   prevChoosedOrAppliedFilterToAddToIt
                                                       .prices,
-                                              categories:
-                                                  prevChoosedOrAppliedFilterToAddToIt
-                                                      .categories,
+                                              categories: categories,
                                             );
                                           }
                                           if (!workWithChoosedFilter) {
@@ -512,6 +507,9 @@ class CategoriesFilterList extends StatelessWidget {
                             !workWithChoosedFilter
                                 ? state.appliedFiltersByUser[key]?.filters
                                 : state.choosedFiltersByUser[key]?.filters;
+                        List<Category>? categories = List.of(
+                            prevChoosedOrAppliedFilterToAddToIt?.categories ??
+                                []);
                         if (add) {
                           Category category = filters.categories![index];
                           if (prevChoosedOrAppliedFilterToAddToIt == null) {
@@ -538,11 +536,10 @@ class CategoriesFilterList extends StatelessWidget {
                                                   category
                                                 ]);
                         } else {
-                          prevChoosedOrAppliedFilterToAddToIt!.categories!
-                              .removeWhere(((element) =>
-                                  element.id == filters.categories![index].id));
+                          categories.removeWhere(((element) =>
+                              element.id == filters.categories![index].id));
                           prevChoosedOrAppliedFilterToAddToIt =
-                              prevChoosedOrAppliedFilterToAddToIt
+                              prevChoosedOrAppliedFilterToAddToIt!
                                   .copyWithSaveOtherField(
                             prices: prevChoosedOrAppliedFilterToAddToIt.prices,
                             searchText: controller != null
@@ -550,8 +547,7 @@ class CategoriesFilterList extends StatelessWidget {
                                     ? controller?.text
                                     : null
                                 : null,
-                            categories:
-                                prevChoosedOrAppliedFilterToAddToIt.categories,
+                            categories: categories,
                           );
                         }
                         if (!workWithChoosedFilter) {

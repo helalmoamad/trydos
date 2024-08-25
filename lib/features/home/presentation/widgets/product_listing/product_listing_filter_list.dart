@@ -753,7 +753,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                         return Container(
                           width: 1.sw,
                           height: (!((state.choosedFiltersByUser[key]?.filters?.attributes?.isNullOrEmpty ?? true) &&
-                                      (state.choosedFiltersByUser[key]?.filters?.colors?.isNullOrEmpty ??
+                                      (state.choosedFiltersByUser[key]?.filters
+                                              ?.colors?.isNullOrEmpty ??
                                           true) &&
                                       (state.choosedFiltersByUser[key]?.filters
                                               ?.brands?.isNullOrEmpty ??
@@ -770,7 +771,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                       (state.choosedFiltersByUser[key]?.filters?.prices?.maxPrice ==
                                           null) &&
                                       (state.choosedFiltersByUser[key]?.filters?.prices?.minPrice ==
-                                          null) )||
+                                          null)) ||
                                   (lowerAndUpperPrices != null &&
                                       (lowerAndUpperPrices!.value.item1 > minPrice! ||
                                           lowerAndUpperPrices!.value.item2 < maxPrice!)))
@@ -1482,17 +1483,20 @@ Widget choosedOrAppliedFiltersWidget({
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       scrollDirection: Axis.horizontal,
-                      itemCount: filters!.boutiques!.length,
+                      itemCount: filters?.boutiques?.length,
                       itemBuilder: (ctx, index) {
                         return InkWell(
                           onTap: () {
+                            print(
+                                "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
+
                             List<filter_model.Boutique> newBoutiques =
-                                filters!.boutiques ?? [];
+                                filters?.boutiques ?? [];
                             newBoutiques.removeAt(index);
                             filter_model.GetProductFiltersModel
                                 newGetProductFiltersModel =
                                 filter_model.GetProductFiltersModel(
-                                    filters: filters.copyWithSaveOtherField(
+                                    filters: filters?.copyWithSaveOtherField(
                                         prices: filters.prices,
                                         searchText: filters.searchText,
                                         boutiques: newBoutiques));
@@ -1500,12 +1504,14 @@ Widget choosedOrAppliedFiltersWidget({
                               BlocProvider.of<HomeBloc>(context)
                                   .add(ChangeSelectedFiltersEvent(
                                 category: category,
+                                requestToUpdateFilters: true,
                                 boutiqueSlug: boutiqueSlug,
                                 filtersChoosedByUser: newGetProductFiltersModel,
                               ));
 
                               return;
                             }
+
                             homeBloc.add(ChangeAppliedFiltersEvent(
                                 category: category,
                                 boutiqueSlug: boutiqueSlug,

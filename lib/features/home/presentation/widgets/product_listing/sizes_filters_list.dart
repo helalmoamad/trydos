@@ -148,6 +148,10 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                           ?.filters
                                       : homeBloc.state.choosedFiltersByUser[key]
                                           ?.filters;
+                              List<Attribute>? sizes = List.of(
+                                  prevChoosedOrAppliedFilterToAddToIt
+                                          ?.attributes ??
+                                      []);
                               if (!isSelected) {
                                 String size = widget.attribute.options![index];
                                 if (prevChoosedOrAppliedFilterToAddToIt ==
@@ -185,14 +189,20 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                             ],
                                 );
                               } else {
-                                prevChoosedOrAppliedFilterToAddToIt!
-                                    .attributes![0].options!
-                                    .removeWhere(((element) =>
-                                        element ==
-                                        widget.attribute.options![index]));
-                                if (prevChoosedOrAppliedFilterToAddToIt
-                                        .attributes![0].options!.length ==
-                                    0) {
+                                sizes[0].options!.removeWhere(((element) =>
+                                    element ==
+                                    widget.attribute.options![index]));
+                                prevChoosedOrAppliedFilterToAddToIt =
+                                    prevChoosedOrAppliedFilterToAddToIt!
+                                        .copyWithSaveOtherField(
+                                            searchText:
+                                                prevChoosedOrAppliedFilterToAddToIt
+                                                    .searchText,
+                                            prices:
+                                                prevChoosedOrAppliedFilterToAddToIt
+                                                    .prices,
+                                            attributes: sizes);
+                                if (sizes[0].options!.length == 0) {
                                   prevChoosedOrAppliedFilterToAddToIt =
                                       prevChoosedOrAppliedFilterToAddToIt
                                           .changeAttributesAndSaveOthers(
