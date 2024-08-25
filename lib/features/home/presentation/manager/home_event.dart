@@ -31,6 +31,7 @@ class GetProductFiltersEvent extends HomeEvent {
       this.fromHomePageSearch = false,
       required this.boutiqueSlug,
       this.searchText,
+      this.fromExpandPage = false,
       this.cashedOrginalBoutique = false,
       this.forceUpdate = false,
       this.resetAppliesFilters = false,
@@ -43,6 +44,7 @@ class GetProductFiltersEvent extends HomeEvent {
   final bool forceUpdate;
 
   final bool fromHomePageSearch;
+  final bool fromExpandPage;
   final bool resetAppliesFilters;
   final GetProductFiltersModel? filtersChoosedByUser;
 

@@ -115,6 +115,99 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
           countOfListInPage: isExpanded ? 6 : 1,
         );
       }
+      if (state.getProductFiltersModel[key]?.filters?.totalSize == 0 &&
+          isExpanded) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 40,
+              ),
+              state.getProductFiltersStatus[key] ==
+                      GetProductFiltersStatus.loading
+                  ? Center(
+                      child: TrydosLoader(
+                        size: 20,
+                      ),
+                    )
+                  : Center(
+                      child: MyTextWidget(
+                        "No Filters Found",
+                        style: TextStyle(color: Colors.black, fontSize: 18),
+                      ),
+                    ),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                width: 200,
+                child: InkWell(
+                  onTap: () {
+                    widget.textController.text = "";
+                    if (lowerAndUpperPrices != null) {
+                      lowerAndUpperPrices!.value = Tuple2(minPrice!, maxPrice!);
+                    }
+                    print(
+                        "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
+                    homeBloc.add(AddPrefAppliedFilterForExtendFilterEvent(
+                        prefAppliedFilter: Filter()));
+                    homeBloc.add(ChangeAppliedFiltersEvent(
+                      resetAppliedFilters: true,
+                      boutiqueSlug: widget.boutiqueSlug,
+                      category: widget.category,
+                    ));
+
+                    homeBloc.add(ChangeSelectedFiltersEvent(
+                        boutiqueSlug: widget.boutiqueSlug,
+                        category: widget.category,
+                        resetChoosedFilters: true,
+                        filtersChoosedByUser: null));
+                    homeBloc.add(GetProductsWithFiltersEvent(
+                      fromSearch: widget.fromSearch,
+                      boutiqueSlug: widget.boutiqueSlug,
+                      cashedOrginalBoutique: true,
+                      searchText: null,
+                      category: widget.category,
+                      offset: 1,
+                    ));
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: 65,
+                        decoration: BoxDecoration(
+                            color: colorScheme.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 6,
+                                  offset: Offset(0, 3)),
+                              BoxShadow(
+                                  color: Colors.white.withOpacity(0.4),
+                                  blurRadius: 6,
+                                  offset: Offset(0, 3),
+                                  inset: true)
+                            ],
+                            border: Border.all(color: Color(0xff388CFF))),
+                        child: Center(
+                          child: MyTextWidget(
+                            'Reset',
+                            style: textTheme.bodyLarge?.rq.copyWith(
+                                color: Color(0xff388CFF), height: 23 / 18),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
       // if (state.getProductFiltersStatus == GetProductFiltersStatus.failure) {
       //   return Center(child: TryAgainWidget(tryAgain: () {
       //     BlocProvider.of<HomeBloc>(context).add(GetProductFiltersEvent());
@@ -130,7 +223,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       filter_model.Filter filters = (state
                           .getProductListingWithFiltersPaginationModels[
                               '${widget.boutiqueSlug}' +
-                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
+                                  '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                   '${(widget.category ?? '')}']
                           ?.items
                           .length ??
@@ -140,7 +233,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               state
                       .getProductListingWithFiltersPaginationModels[
                           '${widget.boutiqueSlug}' +
-                              '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
+                              '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                               '${(widget.category ?? '')}']
                       ?.paginationStatus ==
                   PaginationStatus.success &&
@@ -639,9 +732,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     .copyWith(left: 10),
                                 child: MyTextWidget(
                                   'The Products Will Be Shown As Below',
-                                  style: context.textTheme.titleMedium?.rq.copyWith(
-                                      color: Color(0xff505050),
-                                      height: 15 / 12),
+                                  style: context.textTheme.titleMedium?.rq
+                                      .copyWith(
+                                          color: Color(0xff505050),
+                                          height: 15 / 12),
                                 ),
                               ),
                               Container(
@@ -791,6 +885,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                   exchangeRate,
                                         );
                                       }-*/
+                                      print(
+                                          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
                                       widget.closeFilterPage.call();
                                       homeBloc.add(ChangeAppliedFiltersEvent(
                                           category: widget.category,
@@ -907,7 +1004,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     Tuple2(
                                                         minPrice!, maxPrice!);
                                               }
-
+                                              print(
+                                                  "ddddddddddddddddddddddddddddddddddddddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
                                               homeBloc.add(
                                                   AddPrefAppliedFilterForExtendFilterEvent(
                                                       prefAppliedFilter:
@@ -1058,13 +1156,18 @@ Widget choosedOrAppliedFiltersWidget({
       if ((filters?.brands.isNullOrEmpty ?? true) &&
           (filters?.categories.isNullOrEmpty ?? true) &&
           filters?.prices == null &&
-          (controller!.text.length < 3 && choosedFilter) &&
+          (controller!.text.length < 3) &&
           (filters?.colors.isNullOrEmpty ?? true) &&
           (filters?.boutiques.isNullOrEmpty ?? true) &&
           (filters?.attributes.isNullOrEmpty ?? true)) {
-        if ((!fromSearch && lowerAndUpperPrices == null && choosedFilter))
-          return SizedBox.shrink();
+        return SizedBox.shrink();
       }
+      print((filters?.brands.isNullOrEmpty ?? true) &&
+          (filters?.categories.isNullOrEmpty ?? true) &&
+          filters?.prices == null &&
+          (filters?.colors.isNullOrEmpty ?? true) &&
+          (filters?.boutiques.isNullOrEmpty ?? true) &&
+          (filters?.attributes.isNullOrEmpty ?? true));
       Widget widget = SizedBox(
         height: 20,
         width: 30,
@@ -1078,6 +1181,7 @@ Widget choosedOrAppliedFiltersWidget({
                   onTap: () {
                     controller?.clear();
                     homeBloc.add(ChangeAppliedFiltersEvent(
+                      category: category,
                       resetAppliedFilters: true,
                       boutiqueSlug: boutiqueSlug,
                     ));
@@ -1128,10 +1232,12 @@ Widget choosedOrAppliedFiltersWidget({
                     controller?.clear();
 
                     homeBloc.add(ChangeAppliedFiltersEvent(
+                      category: category,
                       resetAppliedFilters: true,
                       boutiqueSlug: boutiqueSlug,
                     ));
                     homeBloc.add(ChangeSelectedFiltersEvent(
+                      category: category,
                       requestToUpdateFilters: true,
                       resetChoosedFilters: true,
                       boutiqueSlug: boutiqueSlug,
@@ -1166,32 +1272,30 @@ Widget choosedOrAppliedFiltersWidget({
                     ),
                   ),
                 ),
-              if (fromSearch) ...{
-                if (choosedFilter)
-                  Center(
-                    child: MyTextWidget(
-                      'Choosed: ',
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.titleLarge?.bq.copyWith(
-                          color: Color(0xffFF5F61),
-                          letterSpacing: 0,
-                          height: 1.25),
-                    ),
-                  )
-                else
-                  Center(
-                    child: MyTextWidget(
-                      'Applied: ',
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.titleLarge?.bq.copyWith(
-                          color: Color(0xffFF5F61),
-                          letterSpacing: 0,
-                          height: 1.25),
-                    ),
+              if (choosedFilter)
+                Center(
+                  child: MyTextWidget(
+                    'Choosed: ',
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.titleLarge?.bq.copyWith(
+                        color: Color(0xffFF5F61),
+                        letterSpacing: 0,
+                        height: 1.25),
                   ),
-              },
+                )
+              else
+                Center(
+                  child: MyTextWidget(
+                    'Applied: ',
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.titleLarge?.bq.copyWith(
+                        color: Color(0xffFF5F61),
+                        letterSpacing: 0,
+                        height: 1.25),
+                  ),
+                ),
               if ((filtersForSearchText?.searchText?.length ?? 0) > 0) ...{
                 (filtersForSearchText?.searchText?.replaceAll(" ", "").length ??
                             0) >
@@ -1265,10 +1369,11 @@ Widget choosedOrAppliedFiltersWidget({
                                 filtersForSearchText!.searchText!,
                                 maxLines: 1,
                                 textAlign: TextAlign.center,
-                                style: context.textTheme.titleMedium?.rq.copyWith(
-                                    color: Color(0xff8E8E8E),
-                                    letterSpacing: 0,
-                                    height: 1.25),
+                                style: context.textTheme.titleMedium?.rq
+                                    .copyWith(
+                                        color: Color(0xff8E8E8E),
+                                        letterSpacing: 0,
+                                        height: 1.25),
                               )
                             : SizedBox.shrink(),
                       ),
@@ -1342,10 +1447,11 @@ Widget choosedOrAppliedFiltersWidget({
                                 filters.boutiques![index].name.toString(),
                                 maxLines: 1,
                                 textAlign: TextAlign.center,
-                                style: context.textTheme.titleMedium?.rq.copyWith(
-                                    color: Color(0xff8E8E8E),
-                                    letterSpacing: 0,
-                                    height: 1.25),
+                                style: context.textTheme.titleMedium?.rq
+                                    .copyWith(
+                                        color: Color(0xff8E8E8E),
+                                        letterSpacing: 0,
+                                        height: 1.25),
                               ),
                               SizedBox(
                                 width: 15,

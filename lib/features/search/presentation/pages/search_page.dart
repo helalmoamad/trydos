@@ -115,14 +115,9 @@ class _SearchPageState extends ThemeState<SearchPage> {
                     current.getProductFiltersStatus[key] ||
                 previous.countOfProductExpectedByFiltering !=
                     current.countOfProductExpectedByFiltering ||
-                previous.idForRequest != current.idForRequest ||
-                previous
-                        .getProductListingWithFiltersPaginationModels[
-                            key + "${current.idForRequest}"]
+                previous.getProductListingWithFiltersPaginationModels[key]
                         ?.paginationStatus !=
-                    current
-                        .getProductListingWithFiltersPaginationModels[
-                            key + "${current.idForRequest}"]
+                    current.getProductListingWithFiltersPaginationModels[key]
                         ?.paginationStatus;
           },
           builder: (context, state) {
@@ -172,12 +167,12 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   SliverToBoxAdapter(
                       child: SizedBox(
                     height: state.getProductListingWithFiltersPaginationModels[
-                                key + "${state.idForRequest}"] ==
+                                key] ==
                             null
                         ? 250.h
                         : state
                                 .getProductListingWithFiltersPaginationModels[
-                                    key + "${state.idForRequest}"]!
+                                    key]!
                                 .items
                                 .isNullOrEmpty
                             ? 250.h

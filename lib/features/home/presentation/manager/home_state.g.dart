@@ -178,6 +178,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : GetCurrencyForCountryModel.fromJson(
               json['getCurrencyForCountryModel'] as Map<String, dynamic>),
+      prefAppliedFilterForExtendFilter:
+          json['prefAppliedFilterForExtendFilter'] == null
+              ? null
+              : get_filters.Filter.fromJson(
+                  json['prefAppliedFilterForExtendFilter']
+                      as Map<String, dynamic>),
       ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -299,6 +305,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'sizes': instance.sizes,
       'countOfProductExpectedByFiltering':
           instance.countOfProductExpectedByFiltering,
+      'prefAppliedFilterForExtendFilter':
+          instance.prefAppliedFilterForExtendFilter?.toJson(),
       'getProductListingPaginationWithoutFiltersModel': instance
           .getProductListingPaginationWithoutFiltersModel
           .map((k, e) => MapEntry(

@@ -81,7 +81,7 @@ class HomeState {
     this.getProductListingStatus = GetProductListingStatus.init,
     this.selectedCollection,
     this.cartCollection = const {},
-    this.idForRequest,
+    //this.idForRequest,
     this.getProductListingWithFiltersPaginationModels = const {},
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
@@ -119,7 +119,7 @@ class HomeState {
   final Map<String, get_filters.GetProductFiltersModel?> choosedFiltersByUser;
   int? selectedCollection;
   int currentPage;
-  String? idForRequest;
+  // String? idForRequest;
   List<String>? searchHistory;
   Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
   Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
@@ -160,7 +160,7 @@ class HomeState {
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       int? totalProductNumber,
       bool? cashedOrginalBoutique,
-      String? idForRequest,
+      // String? idForRequest,
       get_filters.Filter? prefAppliedFilterForExtendFilter,
       Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
       final List<ImageForAddToCart>? ListitemForAddToCart,
@@ -216,7 +216,7 @@ class HomeState {
       getCommentForProductModel:
           getCommentForProductModel ?? this.getCommentForProductModel,
       sizes: sizes ?? this.sizes,
-      idForRequest: idForRequest ?? this.idForRequest,
+      // idForRequest: idForRequest ?? this.idForRequest,
       cashedOrginalBoutique:
           cashedOrginalBoutique ?? this.cashedOrginalBoutique,
       countOfProductExpectedByFiltering: countOfProductExpectedByFiltering ??
