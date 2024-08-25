@@ -1094,7 +1094,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       prices:
           filters.prices?.maxPrice != null && filters.prices?.minPrice != null
               ? ['"${filters.prices!.minPrice}-${filters.prices!.maxPrice}"']
-              : [],
+              : null,
     ));
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetProductFiltersEvent')) {
@@ -1696,7 +1696,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             (filters.categories?.isNotEmpty ?? false) ||
             (filters.boutiques?.isNotEmpty ?? false) ||
             filters.searchText != null ||
-            filters.prices != null))) {
+            (filters.prices?.maxPrice != null ||
+                filters.prices?.minPrice != null)))) {
       appliedFilters[key] = null;
     } else {
       appliedFilters[key] = event.filtersAppliedByUser;
@@ -1719,7 +1720,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           event.filtersChoosedByUser!.filters!.boutiques.isNullOrEmpty &&
           event.filtersChoosedByUser!.filters!.categories.isNullOrEmpty &&
           event.filtersChoosedByUser!.filters!.searchText == null &&
-          event.filtersChoosedByUser!.filters!.prices == null) {
+          (event.filtersChoosedByUser!.filters!.prices?.minPrice == null ||
+              event.filtersChoosedByUser!.filters!.prices?.maxPrice == null)) {
         makeChoosedFiltersNull = true;
       }
     } else {
