@@ -668,11 +668,58 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
           if (!isExpanded) ...{
             Container(
               padding: EdgeInsets.only(
-                  top: state.appliedFiltersByUser[key] != null ? 5 : 0),
+                  top: (state.appliedFiltersByUser[key]?.filters?.attributes
+                                  ?.isNullOrEmpty ??
+                              true) &&
+                          (state.appliedFiltersByUser[key]?.filters?.colors
+                                  ?.isNullOrEmpty ??
+                              true) &&
+                          (state.appliedFiltersByUser[key]?.filters?.brands
+                                  ?.isNullOrEmpty ??
+                              true) &&
+                          (state.appliedFiltersByUser[key]?.filters?.boutiques
+                                  ?.isNullOrEmpty ??
+                              true) &&
+                          (state.appliedFiltersByUser[key]?.filters?.categories
+                                  ?.isNullOrEmpty ??
+                              true) &&
+                          (state.appliedFiltersByUser[key]?.filters?.searchText
+                                  ?.isEmpty ??
+                              true) &&
+                          (state.appliedFiltersByUser[key]?.filters?.prices?.maxPrice ==
+                              null) &&
+                          (state.appliedFiltersByUser[key]?.filters?.prices?.minPrice == null)
+                      ? 0
+                      : 5),
               color: Color(0xffF8F8F8),
               child: Container(
                 width: 1.sw,
-                height: state.appliedFiltersByUser[key] != null ? 30 : 0,
+                height: (state.appliedFiltersByUser[key]?.filters?.attributes
+                                ?.isNullOrEmpty ??
+                            true) &&
+                        (state.appliedFiltersByUser[key]?.filters?.colors
+                                ?.isNullOrEmpty ??
+                            true) &&
+                        (state.appliedFiltersByUser[key]?.filters?.brands
+                                ?.isNullOrEmpty ??
+                            true) &&
+                        (state.appliedFiltersByUser[key]?.filters?.boutiques
+                                ?.isNullOrEmpty ??
+                            true) &&
+                        (state.appliedFiltersByUser[key]?.filters?.categories
+                                ?.isNullOrEmpty ??
+                            true) &&
+                        (state.appliedFiltersByUser[key]?.filters?.searchText
+                                ?.isEmpty ??
+                            true) &&
+                        (state.appliedFiltersByUser[key]?.filters?.prices
+                                ?.maxPrice ==
+                            null) &&
+                        (state.appliedFiltersByUser[key]?.filters?.prices
+                                ?.minPrice ==
+                            null)
+                    ? 0
+                    : 30,
                 margin: EdgeInsets.symmetric(horizontal: 10),
                 padding: EdgeInsets.only(left: 10),
                 decoration: BoxDecoration(
@@ -705,12 +752,28 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       builder: (context, _, __) {
                         return Container(
                           width: 1.sw,
-                          height: (state.choosedFiltersByUser[key] != null ||
+                          height: (!((state.choosedFiltersByUser[key]?.filters?.attributes?.isNullOrEmpty ?? true) &&
+                                      (state.choosedFiltersByUser[key]?.filters?.colors?.isNullOrEmpty ??
+                                          true) &&
+                                      (state.choosedFiltersByUser[key]?.filters
+                                              ?.brands?.isNullOrEmpty ??
+                                          true) &&
+                                      (state.choosedFiltersByUser[key]?.filters
+                                              ?.boutiques?.isNullOrEmpty ??
+                                          true) &&
+                                      (state.choosedFiltersByUser[key]?.filters
+                                              ?.categories?.isNullOrEmpty ??
+                                          true) &&
+                                      (state.choosedFiltersByUser[key]?.filters
+                                              ?.searchText?.isEmpty ??
+                                          true) &&
+                                      (state.choosedFiltersByUser[key]?.filters?.prices?.maxPrice ==
+                                          null) &&
+                                      (state.choosedFiltersByUser[key]?.filters?.prices?.minPrice ==
+                                          null) )||
                                   (lowerAndUpperPrices != null &&
-                                      (lowerAndUpperPrices!.value.item1 >
-                                              minPrice! ||
-                                          lowerAndUpperPrices!.value.item2 <
-                                              maxPrice!)))
+                                      (lowerAndUpperPrices!.value.item1 > minPrice! ||
+                                          lowerAndUpperPrices!.value.item2 < maxPrice!)))
                               ? 55
                               : 0,
                           margin: EdgeInsets.symmetric(horizontal: 10),
@@ -740,14 +803,44 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               ),
                               Container(
                                 width: 1.sw,
-                                height: (state.choosedFiltersByUser[key] !=
-                                            null ||
+                                height: (!((state.choosedFiltersByUser[key]?.filters?.attributes?.isNullOrEmpty ?? true) &&
+                                            (state
+                                                    .choosedFiltersByUser[key]
+                                                    ?.filters
+                                                    ?.colors
+                                                    ?.isNullOrEmpty ??
+                                                true) &&
+                                            (state
+                                                    .choosedFiltersByUser[key]
+                                                    ?.filters
+                                                    ?.brands
+                                                    ?.isNullOrEmpty ??
+                                                true) &&
+                                            (state
+                                                    .choosedFiltersByUser[key]
+                                                    ?.filters
+                                                    ?.boutiques
+                                                    ?.isNullOrEmpty ??
+                                                true) &&
+                                            (state
+                                                    .choosedFiltersByUser[key]
+                                                    ?.filters
+                                                    ?.categories
+                                                    ?.isNullOrEmpty ??
+                                                true) &&
+                                            (state
+                                                    .choosedFiltersByUser[key]
+                                                    ?.filters
+                                                    ?.searchText
+                                                    ?.isEmpty ??
+                                                true) &&
+                                            (state.choosedFiltersByUser[key]?.filters?.prices?.maxPrice ==
+                                                null) &&
+                                            (state.choosedFiltersByUser[key]?.filters?.prices?.minPrice ==
+                                                null)) ||
                                         (lowerAndUpperPrices != null &&
-                                            (lowerAndUpperPrices!.value.item1 >
-                                                    minPrice! ||
-                                                lowerAndUpperPrices!
-                                                        .value.item2 <
-                                                    maxPrice!)))
+                                            (lowerAndUpperPrices!.value.item1 > minPrice! ||
+                                                lowerAndUpperPrices!.value.item2 < maxPrice!)))
                                     ? 30
                                     : 0,
                                 padding: EdgeInsets.only(left: 10),
@@ -1155,19 +1248,15 @@ Widget choosedOrAppliedFiltersWidget({
       }
       if ((filters?.brands.isNullOrEmpty ?? true) &&
           (filters?.categories.isNullOrEmpty ?? true) &&
-          filters?.prices == null &&
+          (filters?.prices?.minPrice == null ||
+              filters?.prices?.minPrice == null) &&
           (controller!.text.length < 3) &&
           (filters?.colors.isNullOrEmpty ?? true) &&
           (filters?.boutiques.isNullOrEmpty ?? true) &&
           (filters?.attributes.isNullOrEmpty ?? true)) {
         return SizedBox.shrink();
       }
-      print((filters?.brands.isNullOrEmpty ?? true) &&
-          (filters?.categories.isNullOrEmpty ?? true) &&
-          filters?.prices == null &&
-          (filters?.colors.isNullOrEmpty ?? true) &&
-          (filters?.boutiques.isNullOrEmpty ?? true) &&
-          (filters?.attributes.isNullOrEmpty ?? true));
+      print(filters?.prices?.maxPrice);
       Widget widget = SizedBox(
         height: 20,
         width: 30,
