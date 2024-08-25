@@ -154,6 +154,9 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                       element == widget.colors[index]));
                             }
                             if (widget.hideTitle) {
+                              print(
+                                  "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
                               homeBloc.add(ChangeAppliedFiltersEvent(
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,

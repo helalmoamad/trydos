@@ -85,7 +85,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                   boutiqueSlug: widget.boutniqe.slug!,
                   boutiqueDescription: widget.boutniqe.description!,
                   boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
-                  boutiqueIcon: widget.boutniqe.icon!.filePath!,
+                  boutiqueIcon: widget.boutniqe.icon?.filePath!,
                 ));
           },
           child: Stack(
@@ -162,7 +162,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                               )
                             : MyTextWidget(
                                 widget.boutniqe.name!,
-                                style: context.textTheme.titleMedium?.rd.copyWith(
+                                style:
+                                    context.textTheme.titleMedium?.rd.copyWith(
                                   fontSize: 16,
                                   color: ui.Color.fromARGB(255, 15, 15, 15),
                                 ),
