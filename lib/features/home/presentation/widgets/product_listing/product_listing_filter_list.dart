@@ -1577,7 +1577,7 @@ Widget choosedOrAppliedFiltersWidget({
                               .map((e) => e.id.toString())
                               .toList();
                           List<product_listing.Category> newCategories =
-                              filters.categories ?? [];
+                              List.of(filters.categories ?? []);
                           newCategories.removeAt(index);
                           categories.removeAt(index);
                           filter_model.GetProductFiltersModel
@@ -1662,7 +1662,7 @@ Widget choosedOrAppliedFiltersWidget({
                       return InkWell(
                         onTap: () {
                           List<filter_model.Brand> newBrands =
-                              filters!.brands ?? [];
+                          List.of(filters!.brands ?? []);
                           newBrands.removeAt(index);
                           filter_model.GetProductFiltersModel
                               newGetProductFiltersModel =
@@ -1743,8 +1743,8 @@ Widget choosedOrAppliedFiltersWidget({
                       return InkWell(
                         onTap: () {
                           List<String>? options =
-                              filters!.attributes![0].options;
-                          options?.removeAt(index);
+                          List.of(filters!.attributes![0].options ?? []);
+                          options.removeAt(index);
                           filter_model.GetProductFiltersModel
                               newGetProductFiltersModel =
                               filter_model.GetProductFiltersModel(
@@ -1817,8 +1817,8 @@ Widget choosedOrAppliedFiltersWidget({
                       itemBuilder: (ctx, index) {
                         return InkWell(
                           onTap: () {
-                            List<String>? colors = filters!.colors;
-                            colors?.removeAt(index);
+                            List<String>? colors = List.of(filters!.colors ?? []);
+                            colors.removeAt(index);
                             filter_model.GetProductFiltersModel
                                 newGetProductFiltersModel =
                                 filter_model.GetProductFiltersModel(
