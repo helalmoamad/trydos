@@ -239,6 +239,10 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     if (context.canPop()) {
                       Navigator.of(context).pop();
                     }
+                    if(state.currentIndex != 0) {
+                      homeBloc.add(GetHomeBoutiqesEvent(
+                          offset: '1', categorySlug: 'Empty'));
+                    }
                     appBloc.add(ChangeBasePage(0));
                     homeBloc.add(ResetAllSelectedAppliedFilterEvent());
                   },
