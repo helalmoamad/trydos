@@ -60,4 +60,19 @@ class WidgetsKey {
   static const productListingSearchInputKey =
       'product_listing_search_input_key';
   static const loadingAfterSearchKey = 'loading_after_search_key';
+
+  static const categoriesProductListingFilterListKey =
+      'categories_filter_list_key';
+  static const brandsProductListingFilterListKey = 'brands_filter_list_key';
+  static const sizesProductListingFilterListKey = 'sizes_filter_list_key';
+  static const colorsProductListingFilterListKey = 'colors_filter_list_key';
+  static const pricesProductListingFilterListKey = 'prices_filter_list_key';
+
+  static const categoryCircleProductListingFilterKey =
+      'category_circle_filter_key';
+  static const brandCircleProductListingFilterKey = 'brand_circle_filter_key';
+
+  static const appliedFiltersProductListingKey = 'applied_filters_key';
+  static const appliedFiltersProductListingCloseKey =
+      'applied_filters_close_key';
 }

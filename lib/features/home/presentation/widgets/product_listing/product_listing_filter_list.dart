@@ -24,6 +24,8 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/price_
 import 'package:trydos/features/home/presentation/widgets/product_listing/price_filter_slider.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/sizes_filters_list.dart';
 import 'package:tuple/tuple.dart';
+import '../../../../../common/test_utils/test_var.dart';
+import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/my_cached_network_image.dart';
@@ -409,6 +411,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                             titleOfFilterSection[index ~/ 2] ==
                                                 'View By Categories'
                                         ? CategoriesFilterList(
+                                            key: TestVariables.kTestMode ==
+                                                    false
+                                                ? null
+                                                : Key(WidgetsKey
+                                                    .categoriesProductListingFilterListKey),
                                             boutiqueSlug: widget.boutiqueSlug,
                                             fromSearch: widget.fromSearch,
                                             expandingFiltersStack:
@@ -423,6 +430,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                         index ~/ 2] ==
                                                     'View By Brands'
                                             ? FiltersNormalList(
+                                                key: TestVariables.kTestMode ==
+                                                        false
+                                                    ? null
+                                                    : Key(WidgetsKey
+                                                        .brandsProductListingFilterListKey),
                                                 hideTitle: true,
                                                 boutiqueSlug:
                                                     widget.boutiqueSlug,
@@ -440,6 +452,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                             index ~/ 2] ==
                                                         'View By Sizes'
                                                 ? SizesFiltersList(
+                                                    key: TestVariables
+                                                                .kTestMode ==
+                                                            false
+                                                        ? null
+                                                        : Key(WidgetsKey
+                                                            .sizesProductListingFilterListKey),
                                                     hideTitle: true,
                                                     boutiqueSlug:
                                                         widget.boutiqueSlug,
@@ -456,6 +474,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                 index ~/ 2] ==
                                                             'View By Colors'
                                                     ? ColorsListFilter(
+                                                        key: TestVariables
+                                                                    .kTestMode ==
+                                                                false
+                                                            ? null
+                                                            : Key(WidgetsKey
+                                                                .colorsProductListingFilterListKey),
                                                         hideTitle: true,
                                                         boutiqueSlug:
                                                             widget.boutiqueSlug,
@@ -470,6 +494,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                 [],
                                                       )
                                                     : PriceFiltersRangesList(
+                                                        key: TestVariables
+                                                                    .kTestMode ==
+                                                                false
+                                                            ? null
+                                                            : Key(WidgetsKey
+                                                                .pricesProductListingFilterListKey),
                                                         exchangeRate:
                                                             exchangeRate,
                                                         decimalPoint: state
@@ -639,9 +669,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     .copyWith(left: 10),
                                 child: MyTextWidget(
                                   'The Products Will Be Shown As Below',
-                                  style: context.textTheme.titleMedium?.rq.copyWith(
-                                      color: Color(0xff505050),
-                                      height: 15 / 12),
+                                  style: context.textTheme.titleMedium?.rq
+                                      .copyWith(
+                                          color: Color(0xff505050),
+                                          height: 15 / 12),
                                 ),
                               ),
                               Container(
@@ -1069,12 +1100,18 @@ Widget choosedOrAppliedFiltersWidget({
         height: 20,
         width: 30,
         child: ListView(
+            key: TestVariables.kTestMode == false
+                ? null
+                : Key(WidgetsKey.appliedFiltersProductListingKey),
             shrinkWrap: true,
             physics: ClampingScrollPhysics(),
             scrollDirection: Axis.horizontal,
             children: [
               if (!choosedFilter)
                 InkWell(
+                  key: TestVariables.kTestMode == false
+                      ? null
+                      : Key(WidgetsKey.appliedFiltersProductListingCloseKey),
                   onTap: () {
                     controller?.clear();
                     homeBloc.add(ChangeAppliedFiltersEvent(
@@ -1265,10 +1302,11 @@ Widget choosedOrAppliedFiltersWidget({
                                 filtersForSearchText!.searchText!,
                                 maxLines: 1,
                                 textAlign: TextAlign.center,
-                                style: context.textTheme.titleMedium?.rq.copyWith(
-                                    color: Color(0xff8E8E8E),
-                                    letterSpacing: 0,
-                                    height: 1.25),
+                                style: context.textTheme.titleMedium?.rq
+                                    .copyWith(
+                                        color: Color(0xff8E8E8E),
+                                        letterSpacing: 0,
+                                        height: 1.25),
                               )
                             : SizedBox.shrink(),
                       ),
@@ -1342,10 +1380,11 @@ Widget choosedOrAppliedFiltersWidget({
                                 filters.boutiques![index].name.toString(),
                                 maxLines: 1,
                                 textAlign: TextAlign.center,
-                                style: context.textTheme.titleMedium?.rq.copyWith(
-                                    color: Color(0xff8E8E8E),
-                                    letterSpacing: 0,
-                                    height: 1.25),
+                                style: context.textTheme.titleMedium?.rq
+                                    .copyWith(
+                                        color: Color(0xff8E8E8E),
+                                        letterSpacing: 0,
+                                        height: 1.25),
                               ),
                               SizedBox(
                                 width: 15,

@@ -7,6 +7,8 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
+import '../../../../../common/test_utils/test_var.dart';
+import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../data/models/get_product_filters_model.dart';
 import '../../../data/models/get_product_listing_with_filters_model.dart';
 import '../../manager/home_event.dart';
@@ -238,12 +240,12 @@ class CategoriesFilterList extends StatelessWidget {
                                                             sub.id ==
                                                             element.id)));
                                             /*    if (mustDeleteParentCategory) {
-                                        prevChoosedOrAppliedFilterToAddToIt
-                                            .categories!
-                                            .removeWhere(((element) =>
-                                                element.id ==
-                                                filters.categories![index].id));
-                                      }*/
+                                      prevChoosedOrAppliedFilterToAddToIt
+                                          .categories!
+                                          .removeWhere(((element) =>
+                                              element.id ==
+                                              filters.categories![index].id));
+                                    }*/
                                             prevChoosedOrAppliedFilterToAddToIt =
                                                 prevChoosedOrAppliedFilterToAddToIt
                                                     .copyWithSaveOtherField(
@@ -306,6 +308,10 @@ class CategoriesFilterList extends StatelessWidget {
                                 return filters.categories![index].mostViewedProductThumbnail !=
                                         null
                                     ? FilterCircleWidget(
+                                        key: TestVariables.kTestMode == false
+                                            ? null
+                                            : Key(
+                                                '${WidgetsKey.categoryCircleProductListingFilterKey}$index'),
                                         isSvg: false,
                                         width: 70,
                                         height: 70,
@@ -330,12 +336,9 @@ class CategoriesFilterList extends StatelessWidget {
                                                         filters
                                                             .categories![index]
                                                             .id))
-                                                : ((choosedFilters?.categories
-                                                            ?.isNullOrEmpty ??
-                                                        true)
+                                                : ((choosedFilters?.categories?.isNullOrEmpty ?? true)
                                                     ? false
-                                                    : choosedFilters!.categories!
-                                                        .any((element) => element.id == filters.categories![index].id)))),
+                                                    : choosedFilters!.categories!.any((element) => element.id == filters.categories![index].id)))),
                                         addOrRemoveSpecificFilter: (bool add) {
                                           if (appliedFilters?.categories ==
                                                   null &&
