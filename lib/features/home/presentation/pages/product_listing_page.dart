@@ -838,7 +838,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         homeBloc
                                                                             .add(GetProductFiltersEvent(
                                                                           fromHomePageSearch:
-                                                                              fromSearch ?? false,
+                                                                              widget.fromSearch,
                                                                           searchText:
                                                                               null,
                                                                           category:
@@ -910,7 +910,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                     homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, resetAppliedFilters: true));
                                                                                     homeBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
 
-                                                                                    homeBloc.add(ChangeSelectedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                                    homeBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch,boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
                                                                                     controller.clear();
                                                                                     resetSearchAfterSearchingWhileRemoveSearch = false;
                                                                                     filterPageExpanded.value = true;
