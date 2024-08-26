@@ -1491,7 +1491,7 @@ Widget choosedOrAppliedFiltersWidget({
                                 "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
 
                             List<filter_model.Boutique> newBoutiques =
-                                filters?.boutiques ?? [];
+                                List.of(filters?.boutiques ?? []);
                             newBoutiques.removeAt(index);
                             filter_model.GetProductFiltersModel
                                 newGetProductFiltersModel =
@@ -1662,7 +1662,7 @@ Widget choosedOrAppliedFiltersWidget({
                       return InkWell(
                         onTap: () {
                           List<filter_model.Brand> newBrands =
-                          List.of(filters!.brands ?? []);
+                              List.of(filters!.brands ?? []);
                           newBrands.removeAt(index);
                           filter_model.GetProductFiltersModel
                               newGetProductFiltersModel =
@@ -1743,7 +1743,7 @@ Widget choosedOrAppliedFiltersWidget({
                       return InkWell(
                         onTap: () {
                           List<String>? options =
-                          List.of(filters!.attributes![0].options ?? []);
+                              List.of(filters!.attributes![0].options ?? []);
                           options.removeAt(index);
                           filter_model.GetProductFiltersModel
                               newGetProductFiltersModel =
@@ -1817,7 +1817,8 @@ Widget choosedOrAppliedFiltersWidget({
                       itemBuilder: (ctx, index) {
                         return InkWell(
                           onTap: () {
-                            List<String>? colors = List.of(filters!.colors ?? []);
+                            List<String>? colors =
+                                List.of(filters!.colors ?? []);
                             colors.removeAt(index);
                             filter_model.GetProductFiltersModel
                                 newGetProductFiltersModel =

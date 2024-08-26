@@ -151,7 +151,8 @@ class _CartPageState extends State<CartPage> {
                                         Spacer(),
                                         Text(
                                           "      Your Shopping Bag",
-                                          style: context.textTheme.bodyMedium?.ra
+                                          style: context
+                                              .textTheme.bodyMedium?.ra
                                               .copyWith(
                                                   color:
                                                       const Color(0xff505050),
@@ -189,7 +190,8 @@ class _CartPageState extends State<CartPage> {
                                           child: SvgPicture.asset(
                                               AppAssets.countItemSvg)),
                                       Text(" ${state.cartCollection!.length} ",
-                                          style: context.textTheme.bodyMedium?.mr
+                                          style: context
+                                              .textTheme.bodyMedium?.mr
                                               .copyWith(
                                                   fontSize: 13,
                                                   color:
@@ -448,7 +450,7 @@ class _CartPageState extends State<CartPage> {
                                                                           AppElevatedButton(
                                                                             onPressed:
                                                                                 () {
-                                                                              homeBloc.add(UpdateItemInCartEvent(currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", colorName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), quantity: int.tryParse(quantityController.text)!, image: state.cartCollection?[groupCartkeys[index]]![indexes].image ?? "", cartId: state.cartCollection![groupCartkeys[index]]![indexes].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                                              homeBloc.add(UpdateItemInCartEvent(countOfPieces: state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces, currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", colorName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), quantity: int.tryParse(quantityController.text)!, image: state.cartCollection?[groupCartkeys[index]]![indexes].image ?? "", cartId: state.cartCollection![groupCartkeys[index]]![indexes].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
                                                                               Navigator.pop(context);
                                                                             },
                                                                             text:
@@ -492,11 +494,10 @@ class _CartPageState extends State<CartPage> {
                                                                       onPressed:
                                                                           () {
                                                                         homeBloc.add(RemoveItemFormCartEvent(
-                                                                            image: state.cartCollection![groupCartkeys[index]]![indexes].image ??
-                                                                                '',
-                                                                            currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
-                                                                                ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? ""
-                                                                                : "",
+                                                                            countOfPieces:
+                                                                                state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces,
+                                                                            image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? '',
+                                                                            currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "",
                                                                             ColoName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "",
                                                                             productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(),
                                                                             itemId: state.cartCollection![groupCartkeys[index]]![indexes].id.toString(),
@@ -722,7 +723,7 @@ class _CartPageState extends State<CartPage> {
                                                                                 5,
                                                                           ),
                                                                           Text(
-                                                                            " Composed Of ${state.cartCollection![groupCartkeys[index]]![indexes].quantity} Piece",
+                                                                            " Composed Of ${state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces} Piece",
                                                                             style: context.textTheme.bodyMedium?.la.copyWith(
                                                                                 fontWeight: FontWeight.w100,
                                                                                 fontSize: 12,
@@ -905,7 +906,7 @@ class _CartPageState extends State<CartPage> {
                                                                         BorderRadiusDirectional.circular(
                                                                             20)),
                                                                 child: Text(
-                                                                  "${indexes + 1}",
+                                                                  "${state.cartCollection![groupCartkeys[index]]![indexes].quantity}",
                                                                   style: context
                                                                       .textTheme
                                                                       .bodyMedium

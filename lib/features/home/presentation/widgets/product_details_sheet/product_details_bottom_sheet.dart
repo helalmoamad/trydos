@@ -39,6 +39,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final String currentColorName;
   final String currentColornum;
   final String currentSize;
+  final int countOfPieces;
 
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final List<String> sizes;
@@ -48,6 +49,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
       required this.addToBagButtonShapeNotifier,
       required this.boutiqueIcon,
       required this.sizes,
+      required this.countOfPieces,
       required this.currentSize,
       required this.currentColornum,
       required this.boutiqueId,
@@ -516,6 +518,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               builder: (context, indices, _) {
                 return indices.isEmpty
                     ? ProductDetailsSheetBottomBar(
+                        countOfPieces: widget.countOfPieces,
                         colorNum: widget.currentColornum,
                         size: widget.currentSize,
                         colorName: widget.currentColorName,

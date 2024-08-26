@@ -492,6 +492,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     state.currentSelectedColorForEveryProduct[productId] ??
                         (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
                 return ProductDetailsBottomSheet(
+                  countOfPieces: state.cachedProductWithoutRelatedProductsModel[
+                              widget.productItem.id.toString()] !=
+                          null
+                      ? state
+                              .cachedProductWithoutRelatedProductsModel[
+                                  widget.productItem.id.toString()]!
+                              .product!
+                              .countOfPieces ??
+                          0
+                      : 0,
                   currentSize: state.CurrentColorSizeForCart != null
                       ? state.CurrentColorSizeForCart!["size"] ?? ""
                       : "",

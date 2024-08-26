@@ -1239,6 +1239,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     if (!CurrentQuantity[key].isNullOrEmpty) {
       if (CurrentQuantity[key]![0] > 0) {
         add(UpdateItemInCartEvent(
+            countOfPieces: event.countOfPieces,
             image: event.image,
             currentSize: currentSize,
             colorName: event.colorName,
@@ -1260,6 +1261,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     BoutiquesCart boutiquesCart = BoutiquesCart(
         icon: IconCart(filePath: event.boutiqueIcon), id: event.boutiqueId);
     Cart cart = Cart(
+      countOfPieces: event.countOfPieces,
       image: event.image,
       boutique: boutiquesCart,
       offerPrice: event.products.offerPrice,
@@ -1297,6 +1299,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('AddCartItemEvent')) {
         add(AddItemToCartEvent(
+            countOfPieces: event.countOfPieces,
             colorName: event.colorName,
             image: event.image,
             products: event.products,
@@ -1461,6 +1464,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       UpdateItemInCartEvent event, Emitter<HomeState> emit) async {
     if (event.quantity == 0) {
       add(RemoveItemFormCartEvent(
+          countOfPieces: event.countOfPieces,
           image: event.image,
           currentSize: event.currentSize,
           ColoName: event.colorName,
@@ -1750,6 +1754,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     state.ListitemForAddToCart!.forEach((element) {
       if (element.quantity! > 0) {
         add(AddItemToCartEvent(
+            countOfPieces: element.countOfPieces,
             image: element.images!,
             color: element.colorNum,
             colorName: element.colorName!,
@@ -1799,6 +1804,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         colorNum: event.imageForAddToCart.colorNum,
         colorName: event.imageForAddToCart.colorName,
         quantity: event.imageForAddToCart.quantity,
+        countOfPieces: event.imageForAddToCart.countOfPieces,
         images: event.imageForAddToCart.images,
         size: state.CurrentColorSizeForCart != null
             ? state.CurrentColorSizeForCart!["size"]
@@ -1818,6 +1824,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           element.quantity = element.quantity! + 1;
           ListitemForAddToCart!.addAll([
             ImageForAddToCart(
+                countOfPieces: element.countOfPieces,
                 isDuplicate: true,
                 quantity: 0,
                 size: element.size,
@@ -1849,6 +1856,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 e.size == itemLast.size &&
                 e.images == itemLast.images) {
               return ImageForAddToCart(
+                  countOfPieces: e.countOfPieces,
                   colorName: itemLast.colorName,
                   images: e.images,
                   quantity: e.quantity! - 1,

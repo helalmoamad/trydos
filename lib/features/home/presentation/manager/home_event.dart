@@ -237,6 +237,7 @@ class AddItemToCartEvent extends HomeEvent {
   final String? color;
   final String image;
   final int? quantity;
+  final int? countOfPieces;
   final String? boutiqueIcon;
   final String? choice_1;
   final int? boutiqueId;
@@ -248,6 +249,7 @@ class AddItemToCartEvent extends HomeEvent {
       this.boutiqueIcon,
       this.boutiqueId,
       required this.image,
+      required this.countOfPieces,
       required this.colorName,
       this.color,
       this.choice_1,
@@ -324,10 +326,12 @@ class RemoveItemFormCartEvent extends HomeEvent {
   final String itemId;
   final String productId;
   final String currentSize;
+  final int? countOfPieces;
   final String ColoName;
   final String image;
   RemoveItemFormCartEvent({
     required this.itemId,
+    required this.countOfPieces,
     required this.boutiqueId,
     required this.image,
     required this.currentSize,
@@ -347,12 +351,14 @@ class UpdateItemInCartEvent extends HomeEvent {
   final String colorName;
   final String image;
   final String boutiqueId;
+  final int? countOfPieces;
 
   UpdateItemInCartEvent({
     required this.quantity,
     required this.colorName,
     required this.cartId,
     required this.image,
+    required this.countOfPieces,
     required this.currentSize,
     required this.productId,
     required this.boutiqueId,

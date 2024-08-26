@@ -38,6 +38,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
       required this.colorName,
       required this.colorNum,
       required this.size,
+      required this.countOfPieces,
       required this.currentActiveTab,
       required this.sizeIsNotAvailableNotifier,
       required this.imageUrl});
@@ -48,6 +49,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
 
   final PanelController panelController;
   final String imageUrl;
+  final int countOfPieces;
   final String productId;
   final String colorName;
   final String colorNum;
@@ -148,6 +150,7 @@ class _ProductDetailsSheetBottomBarState
                                         builder: (context, itemCount, _) {
                                           ImageForAddToCart imageForAddToCart =
                                               ImageForAddToCart(
+                                            countOfPieces: widget.countOfPieces,
                                             colorNum: widget.colorNum,
                                             quantity: 1,
                                             images: widget.imageUrl,
@@ -581,12 +584,14 @@ class ImageForAddToCart {
   final String? images;
   int? quantity;
   final String? size;
+  final int? countOfPieces;
   final String? colorNum;
   bool isDuplicate;
 
   ImageForAddToCart({
     this.colorName,
     this.colorNum,
+    this.countOfPieces,
     this.images,
     this.quantity,
     this.isDuplicate = false,
@@ -598,12 +603,14 @@ class ImageForAddToCart {
           final String? images,
           int? quantity,
           final String? size,
+          final int? countOfPieces,
           final String? colorNum,
           bool? isDuplicate}) =>
       ImageForAddToCart(
           colorName: colorName ?? this.colorNum,
           images: images ?? this.images,
           quantity: quantity ?? this.quantity,
+          countOfPieces: countOfPieces ?? this.countOfPieces,
           size: size ?? this.size,
           colorNum: colorName ?? this.colorName);
 
@@ -613,6 +620,7 @@ class ImageForAddToCart {
         images: json["images"],
         size: json["size"],
         quantity: json["quantity"],
+        countOfPieces: json["count_of_pieces"],
         colorNum: json["colorNum"]?.toDouble(),
       );
 
@@ -621,6 +629,7 @@ class ImageForAddToCart {
         "images": images,
         "size": size,
         "quantity": quantity,
+        "count_of_pieces": countOfPieces,
         "colorNum": colorNum,
       };
 }
