@@ -123,6 +123,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
     Timer.periodic(Duration(milliseconds: 100), postFrameCallback);
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    appBloc.add(HideBottomNavigationBar(false));
+    appBloc.add(ShowOrHideBars(true));
     appBloc.add(ChangeIndexForSearch(1));
     // if (!widget.fromSearch) {
     //   homeBloc.add(GetProductsWithoutFiltersEvent(
@@ -282,7 +284,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     buildWhen: (p, c) => p.showBars != c.showBars,
                     builder: (context, state) {
                       if (state.showBars == true) {
-                        return const AppBottomNavBar();
+                        return BlocBuilder<AppBloc, AppState>(
+                            buildWhen: (p, c) =>
+                            p.hideBottomNavigationBar !=
+                                c.hideBottomNavigationBar,
+                            builder: (context, state) {
+                              return state.hideBottomNavigationBar
+                                  ? const SizedBox.shrink()
+                                  : const AppBottomNavBar();
+                            });
                       } else {
                         return const SizedBox.shrink();
                       }
@@ -310,11 +320,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         _previousOffset = currentOffset;
                         return true;
                       }
-                      if (_velocity! <= (1.5e-8) && _velocity! >= (1.42e-8)) {
-                        appBloc.add(ShowOrHideBars(true));
-                      } else {
-                        appBloc.add(ShowOrHideBars(false));
-                      }
+                      // if (_velocity! <= (1.5e-8) && _velocity! >= (1.42e-8)) {
+                      //   appBloc.add(ShowOrHideBars(true));
+                      // } else {
+                      //   appBloc.add(ShowOrHideBars(false));
+                      // }
                     }
                     _previousOffset = currentOffset;
                     return true;
