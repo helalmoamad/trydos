@@ -411,6 +411,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   page: 0,
                   hasReachedMax: false);
     }
+    if((event.getWithPagination &&
+        (getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
+            .hasReachedMax || getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!.paginationStatus ==
+            PaginationStatus.loading ))){
+      return ;
+    }
     /* if ((!event.getWithPagination &&
             getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
                     .paginationStatus ==
