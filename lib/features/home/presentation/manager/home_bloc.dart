@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smartlook/flutter_smartlook.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -232,7 +233,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       isFailedTheFirstTime.remove('GetStartingSettingsEvent');
       // if (r.data!.startingSetting!.smartLook ?? false) {
       //   Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
-        initializeSmartLook();
+      initializeSmartLook();
       // }
       emit(state.copyWith(
           startingSetting: r.data!.startingSetting,
@@ -278,16 +279,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
   }
 
-   initializeSmartLook() async {
-  String deviceId = (await HelperFunctions.getDeviceId()).toString();
-  await smartLook.preferences
-      .setProjectKey('c8c465313d257c63e0a282ba9856a427973888fe');
-  await smartLook.preferences.setFrameRate(2);
-  await smartLook.user.setIdentifier(deviceId);
-  await smartLook.user
-      .setName(GetIt.I<PrefsRepository>().myChatName ?? 'No_Name');
-  await smartLook.start();
-   }
+  initializeSmartLook() async {
+    String deviceId = (await HelperFunctions.getDeviceId()).toString();
+    await smartLook.preferences
+        .setProjectKey('c8c465313d257c63e0a282ba9856a427973888fe');
+    await smartLook.preferences.setFrameRate(2);
+    await smartLook.user.setIdentifier(deviceId);
+    await smartLook.user
+        .setName(GetIt.I<PrefsRepository>().myChatName ?? 'No_Name');
+    await smartLook.start();
+  }
 
   _onAddCurrentSelectedColorEvent(
       AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
@@ -644,11 +645,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         prevChoosedFiltersByUser;
     prevChoosedFiltersByUser = Map.of(state.choosedFiltersByUser);
     prevAppliedFiltersByUser = Map.of(state.appliedFiltersByUser);
+    filters_model.Prices? prePrice =
+        state.appliedFiltersByUser[key]?.filters?.prices;
     filters_model.Filter filters = event.fromChoosed ?? false
         ? state.choosedFiltersByUser[key]?.filters
                 ?.copyWithSaveOtherField(searchText: event.searchText) ??
             filters_model.Filter()
-        : state.appliedFiltersByUser[key]?.filters ?? filters_model.Filter();
+        : state.appliedFiltersByUser[key]?.filters?.copyWithSaveOtherField(
+                searchText: event.searchText, prices: prePrice) ??
+            filters_model.Filter();
 
     // List<filters_model.Attribute>? attribute;
     // attribute = filters.attributes.isNullOrEmpty
@@ -757,9 +762,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                     '"${prevAppliedFiltersByUser[key]?.filters?.prices?.minPrice}-${prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice}"'
                   ]
                 : null,
-            searchText: event.fromChoosed ?? false
-                ? event.searchText
-                : filters.searchText));
+            searchText: filters.searchText ??
+                state.appliedFiltersByUser[key]?.filters?.searchText));
 
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetProductsWithFiltersEvent')) {

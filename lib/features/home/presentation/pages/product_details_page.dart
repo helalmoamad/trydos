@@ -525,13 +525,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   .boutique !=
                               null
                           ? state
-                                  .cachedProductWithoutRelatedProductsModel[
-                                      widget.productItem.id.toString()]!
-                                  .product!
-                                  .boutique!
-                                  .icon!
-                                  .filePath ??
-                              ""
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          widget.productItem.id.toString()]!
+                                      .product!
+                                      .boutique!
+                                      .icon !=
+                                  null
+                              ? state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          widget.productItem.id.toString()]!
+                                      .product!
+                                      .boutique!
+                                      .icon!
+                                      .filePath ??
+                                  ""
+                              : ""
                           : ""
                       : "",
                   boutiqueId: state.cachedProductWithoutRelatedProductsModel[

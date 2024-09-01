@@ -134,10 +134,13 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                             Filter? prevChoosedOrAppliedFilterToAddToIt =
                                 widget.hideTitle
                                     ? homeBloc.state.appliedFiltersByUser[key]
-                                        ?.filters?.copyWithSaveOtherField()
+                                        ?.filters
+                                        ?.copyWithSaveOtherField()
                                     : homeBloc.state.choosedFiltersByUser[key]
                                         ?.filters;
-                            List<Brand>? brands = List.of(prevChoosedOrAppliedFilterToAddToIt?.brands ?? []);
+                            List<Brand>? brands = List.of(
+                                prevChoosedOrAppliedFilterToAddToIt?.brands ??
+                                    []);
                             if (!isSelected) {
                               dynamic item = widget.filters[index];
                               if (prevChoosedOrAppliedFilterToAddToIt == null) {
@@ -165,15 +168,17 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                                     ]);
                             } else {
                               if (widget.isBrandFilter) {
-                                brands
-                                    .removeWhere(((element) =>
-                                        element.id ==
-                                        widget.filters[index].id));
+                                brands.removeWhere(((element) =>
+                                    element.id == widget.filters[index].id));
                               }
-                              prevChoosedOrAppliedFilterToAddToIt = prevChoosedOrAppliedFilterToAddToIt?.copyWithSaveOtherField(
+                              prevChoosedOrAppliedFilterToAddToIt =
+                                  prevChoosedOrAppliedFilterToAddToIt
+                                      ?.copyWithSaveOtherField(
                                 brands: brands,
-                                searchText: prevChoosedOrAppliedFilterToAddToIt.searchText,
-                                prices: prevChoosedOrAppliedFilterToAddToIt.prices,
+                                searchText: prevChoosedOrAppliedFilterToAddToIt
+                                    .searchText,
+                                prices:
+                                    prevChoosedOrAppliedFilterToAddToIt.prices,
                               );
                             }
                             if (widget.hideTitle) {
@@ -184,9 +189,8 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,
                                 filtersAppliedByUser: GetProductFiltersModel(
-                                    filters:prevChoosedOrAppliedFilterToAddToIt
-
-                                ),
+                                    filters:
+                                        prevChoosedOrAppliedFilterToAddToIt),
                               ));
                               homeBloc.add(GetProductsWithFiltersEvent(
                                   fromSearch: widget.fromHomeSearch,
@@ -195,8 +199,10 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                   category: widget.category,
                                   offset: 1));
                             } else {
-                              print('dwwdwdwqe32e23e ${homeBloc.state.prefAppliedFilterForExtendFilter?.brands}');
+                              print(
+                                  'dwwdwdwqe32e23e ${homeBloc.state.prefAppliedFilterForExtendFilter?.brands}');
                               homeBloc.add(ChangeSelectedFiltersEvent(
+                                fromHomePageSearch: widget.fromHomeSearch,
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,
                                 filtersChoosedByUser: GetProductFiltersModel(

@@ -189,13 +189,12 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                             ],
                                 );
                               } else {
-                                List<String> options = List.of(sizes[0].options ?? []);
+                                List<String> options =
+                                    List.of(sizes[0].options ?? []);
                                 options.removeWhere(((element) =>
                                     element ==
                                     widget.attribute.options![index]));
-                                sizes[0] = sizes[0].copyWith(
-                                  options: options
-                                );
+                                sizes[0] = sizes[0].copyWith(options: options);
                                 prevChoosedOrAppliedFilterToAddToIt =
                                     prevChoosedOrAppliedFilterToAddToIt!
                                         .copyWithSaveOtherField(
@@ -229,6 +228,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                     offset: 1));
                               } else {
                                 homeBloc.add(ChangeSelectedFiltersEvent(
+                                  fromHomePageSearch: widget.fromHomeSearch,
                                   requestToUpdateFilters: true,
                                   category: widget.category,
                                   boutiqueSlug: widget.boutiqueSlug,

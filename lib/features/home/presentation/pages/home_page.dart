@@ -60,6 +60,7 @@ class _HomePageState extends State<HomePage> {
         filtersAppliedByUser: null,
         resetAppliedFilters: true));
     homeBloc.add(ChangeSelectedFiltersEvent(
+      fromHomePageSearch: true,
       boutiqueSlug: 'search',
       filtersChoosedByUser: null,
     ));

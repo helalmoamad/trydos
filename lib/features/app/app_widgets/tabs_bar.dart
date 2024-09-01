@@ -181,6 +181,7 @@ class _TabsBarState extends State<TabsBar> {
                             textController: widget.controller,
                             focusNode: focusNode,
                             onSuffixTap: () {
+                              appBloc.add(ChangeIndexForSearch(2));
                               widget.buildSearchResult.value = 1;
                               widget.appearTrendingAndHistory.value = true;
 
@@ -396,11 +397,8 @@ class _TabsBarState extends State<TabsBar> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: List.generate(
-                                      (homeState
-                                              .mainCategoriesResponseModel
-                                              ?.data
-                                              ?.mainCategories
-                                              ?.length ??
+                                      (homeState.mainCategoriesResponseModel
+                                              ?.data?.mainCategories?.length ??
                                           0),
                                       (index) {
                                         MainCategory mainCategory = homeState
@@ -414,13 +412,14 @@ class _TabsBarState extends State<TabsBar> {
                                                     end: 6),
                                             child: InkWell(
                                               onTap: () {
-                                                if (BlocProvider.of<AppBloc>(context).state.tabIndex !=
+                                                if (BlocProvider.of<AppBloc>(
+                                                            context)
+                                                        .state
+                                                        .tabIndex !=
                                                     index) {
-                                                  appBloc
-                                                      .add(ChangeTab(index));
+                                                  appBloc.add(ChangeTab(index));
                                                   homeBloc.add(GetHomeBoutiqesEvent(
-                                                      getWithPagination:
-                                                          false,
+                                                      getWithPagination: false,
                                                       offset: "1",
                                                       categorySlug: homeState
                                                           .mainCategoriesResponseModel!
@@ -432,18 +431,17 @@ class _TabsBarState extends State<TabsBar> {
                                                   appBloc.add(ChangeTab(-1));
                                                   homeBloc.add(
                                                       GetHomeBoutiqesEvent(
-                                                          categorySlug:
-                                                              "Empty",
+                                                          categorySlug: "Empty",
                                                           offset: "1",
                                                           getWithPagination:
                                                               false));
                                                 }
-                                
+
                                                 /* appBloc.add(ChangeTab(index));
                                                         BlocProvider.of<HomeBloc>(context).add(
                                                                       GetHomeSectionsEvent(
                                                                           mainCategory.slug.toString()));*/
-                                
+
                                                 /*   homeBloc.add(
                                                 GetProductsWithoutFiltersEvent(
                                                     offset: 1,
@@ -457,16 +455,14 @@ class _TabsBarState extends State<TabsBar> {
                                               },
                                               child: Column(
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .center,
+                                                    CrossAxisAlignment.center,
                                                 children: [
                                                   BlocBuilder<AppBloc,
                                                       AppState>(
                                                     buildWhen: (p, c) =>
                                                         p.tabIndex !=
                                                         c.tabIndex,
-                                                    builder:
-                                                        (context, state) {
+                                                    builder: (context, state) {
                                                       return Stack(
                                                         children: [
                                                           SvgNetworkWidget(
@@ -484,22 +480,22 @@ class _TabsBarState extends State<TabsBar> {
                                                           BlocBuilder<AppBloc,
                                                               AppState>(
                                                             buildWhen: (p, c) =>
-                                                            p.tabIndex !=
+                                                                p.tabIndex !=
                                                                 c.tabIndex,
-                                                            builder:
-                                                                (context, state) {
+                                                            builder: (context,
+                                                                state) {
                                                               return Positioned(
                                                                 top: 0,
                                                                 left: 0,
                                                                 child: Visibility(
                                                                     visible: state
-                                                                        .tabIndex ==
+                                                                            .tabIndex ==
                                                                         index,
-                                                                    child:
-                                                                    FilterSelectedMark(
-                                                                        width: 12,
+                                                                    child: FilterSelectedMark(
+                                                                        width:
+                                                                            12,
                                                                         height:
-                                                                        12)),
+                                                                            12)),
                                                               );
                                                             },
                                                           )
@@ -515,16 +511,14 @@ class _TabsBarState extends State<TabsBar> {
                                                     style: textTheme
                                                         .titleSmall?.lr
                                                         .copyWith(
-                                                            letterSpacing:
-                                                                0,
-                                                            color:Color(
-                                                                0xff505050),
-                                                            // color: state.tabIndex !=
-                                                            //         index
-                                                            //     ? Color(
-                                                            //         0xffC4C2C2)
-                                                            //     : Color(
-                                                            //         0xff505050)
+                                                      letterSpacing: 0,
+                                                      color: Color(0xff505050),
+                                                      // color: state.tabIndex !=
+                                                      //         index
+                                                      //     ? Color(
+                                                      //         0xffC4C2C2)
+                                                      //     : Color(
+                                                      //         0xff505050)
                                                     ),
                                                   ),
                                                 ],

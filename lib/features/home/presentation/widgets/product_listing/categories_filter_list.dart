@@ -273,6 +273,8 @@ class CategoriesFilterList extends StatelessWidget {
                                             ));
                                             homeBloc.add(
                                                 GetProductsWithFiltersEvent(
+                                                    searchText:
+                                                        controller?.text,
                                                     fromSearch: fromSearch,
                                                     boutiqueSlug: boutiqueSlug,
                                                     category: category,
@@ -280,6 +282,7 @@ class CategoriesFilterList extends StatelessWidget {
                                           } else {
                                             homeBloc
                                                 .add(ChangeSelectedFiltersEvent(
+                                              fromHomePageSearch: fromSearch,
                                               category: category,
                                               boutiqueSlug: boutiqueSlug,
                                               filtersChoosedByUser:
@@ -458,6 +461,8 @@ class CategoriesFilterList extends StatelessWidget {
 
                                             homeBloc.add(
                                                 GetProductsWithFiltersEvent(
+                                                    searchText:
+                                                        controller?.text,
                                                     fromSearch: fromSearch,
                                                     boutiqueSlug: boutiqueSlug,
                                                     category: category,
@@ -465,6 +470,7 @@ class CategoriesFilterList extends StatelessWidget {
                                           } else {
                                             homeBloc
                                                 .add(ChangeSelectedFiltersEvent(
+                                              fromHomePageSearch: fromSearch,
                                               category: category,
                                               boutiqueSlug: boutiqueSlug,
                                               filtersChoosedByUser:
@@ -561,12 +567,14 @@ class CategoriesFilterList extends StatelessWidget {
                                 filters: prevChoosedOrAppliedFilterToAddToIt),
                           ));
                           homeBloc.add(GetProductsWithFiltersEvent(
+                              searchText: controller?.text,
                               fromSearch: fromSearch,
                               boutiqueSlug: boutiqueSlug,
                               category: category,
                               offset: 1));
                         } else {
                           homeBloc.add(ChangeSelectedFiltersEvent(
+                            fromHomePageSearch: fromSearch,
                             category: category,
                             boutiqueSlug: boutiqueSlug,
                             filtersChoosedByUser: GetProductFiltersModel(
