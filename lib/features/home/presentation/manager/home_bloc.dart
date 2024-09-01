@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smartlook/flutter_smartlook.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -211,7 +212,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final UpdateItemInCartUseCase updateItemInCartUseCase;
   final GetAllowedCountryUseCase getAllowedCountryUseCase;
 
-  //final Smartlook smartLook = Smartlook.instance;
+  final Smartlook smartLook = Smartlook.instance;
 
   FutureOr<void> _onGetStartingSettingsEvent(
       GetStartingSettingsEvent event, Emitter<HomeState> emit) async {
@@ -232,7 +233,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       isFailedTheFirstTime.remove('GetStartingSettingsEvent');
       // if (r.data!.startingSetting!.smartLook ?? false) {
       //   Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
-      //   initializeSmartLook();
+      initializeSmartLook();
       // }
       emit(state.copyWith(
           startingSetting: r.data!.startingSetting,
@@ -278,16 +279,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
   }
 
-  // initializeSmartLook() async {
-  //   String deviceId = (await HelperFunctions.getDeviceId()).toString();
-  //   await smartLook.preferences
-  //       .setProjectKey('db8b1330aa8b622827ae6092023f88bf4e56be53');
-  //   await smartLook.preferences.setFrameRate(2);
-  //   await smartLook.user.setIdentifier(deviceId);
-  //   await smartLook.user
-  //       .setName(GetIt.I<PrefsRepository>().myChatName ?? 'No_Name');
-  //   await smartLook.start();
-  // }
+  initializeSmartLook() async {
+    String deviceId = (await HelperFunctions.getDeviceId()).toString();
+    await smartLook.preferences
+        .setProjectKey('c8c465313d257c63e0a282ba9856a427973888fe');
+    await smartLook.preferences.setFrameRate(2);
+    await smartLook.user.setIdentifier(deviceId);
+    await smartLook.user
+        .setName(GetIt.I<PrefsRepository>().myChatName ?? 'No_Name');
+    await smartLook.start();
+  }
 
   _onAddCurrentSelectedColorEvent(
       AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
@@ -409,6 +410,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   paginationStatus: PaginationStatus.initial,
                   page: 0,
                   hasReachedMax: false);
+    }
+    if((event.getWithPagination &&
+        (getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
+            .hasReachedMax || getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!.paginationStatus ==
+            PaginationStatus.loading ))){
+      return ;
     }
     /* if ((!event.getWithPagination &&
             getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
@@ -644,11 +651,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         prevChoosedFiltersByUser;
     prevChoosedFiltersByUser = Map.of(state.choosedFiltersByUser);
     prevAppliedFiltersByUser = Map.of(state.appliedFiltersByUser);
+    filters_model.Prices? prePrice =
+        state.appliedFiltersByUser[key]?.filters?.prices;
     filters_model.Filter filters = event.fromChoosed ?? false
         ? state.choosedFiltersByUser[key]?.filters
                 ?.copyWithSaveOtherField(searchText: event.searchText) ??
             filters_model.Filter()
-        : state.appliedFiltersByUser[key]?.filters ?? filters_model.Filter();
+        : state.appliedFiltersByUser[key]?.filters?.copyWithSaveOtherField(
+                searchText: event.searchText, prices: prePrice) ??
+            filters_model.Filter();
 
     // List<filters_model.Attribute>? attribute;
     // attribute = filters.attributes.isNullOrEmpty
@@ -757,9 +768,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                     '"${prevAppliedFiltersByUser[key]?.filters?.prices?.minPrice}-${prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice}"'
                   ]
                 : null,
-            searchText: event.fromChoosed ?? false
-                ? event.searchText
-                : filters.searchText));
+            searchText: filters.searchText ??
+                state.appliedFiltersByUser[key]?.filters?.searchText));
 
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetProductsWithFiltersEvent')) {
@@ -1239,6 +1249,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     if (!CurrentQuantity[key].isNullOrEmpty) {
       if (CurrentQuantity[key]![0] > 0) {
         add(UpdateItemInCartEvent(
+            countOfPieces: event.countOfPieces,
             image: event.image,
             currentSize: currentSize,
             colorName: event.colorName,
@@ -1260,6 +1271,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     BoutiquesCart boutiquesCart = BoutiquesCart(
         icon: IconCart(filePath: event.boutiqueIcon), id: event.boutiqueId);
     Cart cart = Cart(
+      countOfPieces: event.countOfPieces,
       image: event.image,
       boutique: boutiquesCart,
       offerPrice: event.products.offerPrice,
@@ -1297,6 +1309,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('AddCartItemEvent')) {
         add(AddItemToCartEvent(
+            countOfPieces: event.countOfPieces,
             colorName: event.colorName,
             image: event.image,
             products: event.products,
@@ -1461,6 +1474,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       UpdateItemInCartEvent event, Emitter<HomeState> emit) async {
     if (event.quantity == 0) {
       add(RemoveItemFormCartEvent(
+          countOfPieces: event.countOfPieces,
           image: event.image,
           currentSize: event.currentSize,
           ColoName: event.colorName,
@@ -1750,6 +1764,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     state.ListitemForAddToCart!.forEach((element) {
       if (element.quantity! > 0) {
         add(AddItemToCartEvent(
+            countOfPieces: element.countOfPieces,
             image: element.images!,
             color: element.colorNum,
             colorName: element.colorName!,
@@ -1799,6 +1814,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         colorNum: event.imageForAddToCart.colorNum,
         colorName: event.imageForAddToCart.colorName,
         quantity: event.imageForAddToCart.quantity,
+        countOfPieces: event.imageForAddToCart.countOfPieces,
         images: event.imageForAddToCart.images,
         size: state.CurrentColorSizeForCart != null
             ? state.CurrentColorSizeForCart!["size"]
@@ -1818,6 +1834,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           element.quantity = element.quantity! + 1;
           ListitemForAddToCart!.addAll([
             ImageForAddToCart(
+                countOfPieces: element.countOfPieces,
                 isDuplicate: true,
                 quantity: 0,
                 size: element.size,
@@ -1849,6 +1866,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 e.size == itemLast.size &&
                 e.images == itemLast.images) {
               return ImageForAddToCart(
+                  countOfPieces: e.countOfPieces,
                   colorName: itemLast.colorName,
                   images: e.images,
                   quantity: e.quantity! - 1,

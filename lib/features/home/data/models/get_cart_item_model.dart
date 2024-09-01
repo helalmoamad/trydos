@@ -252,6 +252,7 @@ class Cart {
   final double? discount;
   final String? slug;
   final String? name;
+  final int? countOfPieces;
   final Shop? shop;
   final CartBrand? brand;
   final BoutiquesCart? boutique;
@@ -277,6 +278,7 @@ class Cart {
     this.offerPrice,
     this.offerPriceFormatted,
     this.tax,
+    this.countOfPieces,
     this.discount,
     this.slug,
     this.name,
@@ -303,6 +305,7 @@ class Cart {
     String? vendorName,
     int? quantity,
     double? price,
+    int? countOfPieces,
     double? offerPrice,
     String? offerPriceFormatted,
     int? tax,
@@ -338,6 +341,7 @@ class Cart {
         slug: slug ?? this.slug,
         name: name ?? this.name,
         shop: shop ?? this.shop,
+        countOfPieces: countOfPieces ?? this.countOfPieces,
         brand: brand ?? this.brand,
         boutique: boutique ?? this.boutique,
         thumbnail: thumbnail ?? this.thumbnail,
@@ -361,6 +365,7 @@ class Cart {
             : List<VariationCart>.from(
                 json["variations"]!.map((x) => VariationCart.fromJson(x))),
         variant: json["variant"],
+        countOfPieces: json["count_of_pieces"],
         availableQuantity: json["available_quantity"],
         maxAllowedQty: json["max_allowed_qty"],
         vendorName: json["vendor_name"],
@@ -403,6 +408,7 @@ class Cart {
         "max_allowed_qty": maxAllowedQty,
         "vendor_name": vendorName,
         "quantity": quantity,
+        "count_of_pieces": countOfPieces,
         "price": price,
         "offer_price": offerPrice,
         "offer_price_formatted": offerPriceFormatted,

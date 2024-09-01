@@ -395,7 +395,7 @@ class CartPage2 extends StatelessWidget {
                                                                             children: [
                                                                               AppElevatedButton(
                                                                                 onPressed: () {
-                                                                                  BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? "", currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", colorName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), quantity: int.tryParse(quantityController.text)!, cartId: state.cartCollection![groupCartkeys[index]]![indexes].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                                                  BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(countOfPieces: state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces, image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? "", currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", colorName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), quantity: int.tryParse(quantityController.text)!, cartId: state.cartCollection![groupCartkeys[index]]![indexes].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
                                                                                   Navigator.pop(context);
                                                                                 },
                                                                                 text: "Yes",
@@ -437,6 +437,7 @@ class CartPage2 extends StatelessWidget {
                                                                           onPressed:
                                                                               () {
                                                                             BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(
+                                                                                countOfPieces: state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces,
                                                                                 image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? '',
                                                                                 currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "",
                                                                                 ColoName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "",
@@ -525,7 +526,7 @@ class CartPage2 extends StatelessWidget {
                                                                         BorderRadiusDirectional.circular(
                                                                             15)),
                                                                 child: Text(
-                                                                  "${indexes + 1}",
+                                                                  "${state.cartCollection![groupCartkeys[index]]![indexes].quantity}",
                                                                   style: context
                                                                       .textTheme
                                                                       .bodyMedium
@@ -677,7 +678,7 @@ class CartPage2 extends StatelessWidget {
                                                                                   children: [
                                                                                     AppElevatedButton(
                                                                                       onPressed: () {
-                                                                                        BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? "", currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", colorName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), quantity: int.tryParse(quantityController.text)!, cartId: state.cartCollection![groupCartkeys[index]]![indexs].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                                                        BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(countOfPieces: state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces, image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? "", currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", colorName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), quantity: int.tryParse(quantityController.text)!, cartId: state.cartCollection![groupCartkeys[index]]![indexs].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
                                                                                         Navigator.pop(context);
                                                                                       },
                                                                                       text: "Yes",
@@ -716,7 +717,7 @@ class CartPage2 extends StatelessWidget {
                                                                             children: [
                                                                               AppElevatedButton(
                                                                                 onPressed: () {
-                                                                                  BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? '', currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", ColoName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), itemId: state.cartCollection![groupCartkeys[index]]![indexes].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                                                  BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(countOfPieces: state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces, image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? '', currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", ColoName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), itemId: state.cartCollection![groupCartkeys[index]]![indexes].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
                                                                                   Navigator.pop(context);
                                                                                 },
                                                                                 text: "Yes",
@@ -790,7 +791,7 @@ class CartPage2 extends StatelessWidget {
                                                                             borderRadius: BorderRadiusDirectional.circular(20)),
                                                                         child:
                                                                             Text(
-                                                                          "${indexs + 1}",
+                                                                          "${state.cartCollection![groupCartkeys[index]]![indexes].quantity}",
                                                                           style: context
                                                                               .textTheme
                                                                               .bodyMedium

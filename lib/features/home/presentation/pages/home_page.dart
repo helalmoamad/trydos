@@ -60,6 +60,7 @@ class _HomePageState extends State<HomePage> {
         filtersAppliedByUser: null,
         resetAppliedFilters: true));
     homeBloc.add(ChangeSelectedFiltersEvent(
+      fromHomePageSearch: true,
       boutiqueSlug: 'search',
       filtersChoosedByUser: null,
     ));
@@ -76,16 +77,9 @@ class _HomePageState extends State<HomePage> {
       if (selectedCategorySlug == '') return;
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent *
-              0.7 *
-              (homeBloc.state.getHomeBoutiquesPaginationObjectByMainCategory[
-                          selectedCategorySlug] !=
-                      null
-                  ? homeBloc
-                      .state
-                      .getHomeBoutiquesPaginationObjectByMainCategory[
-                          selectedCategorySlug]!
-                      .page
-                  : 1))) {
+              0.7
+              ) ) {
+        print('fcfcfcfcf');
         homeBloc.add(GetHomeBoutiqesEvent(
             categorySlug: selectedCategorySlug,
             offset: homeBloc

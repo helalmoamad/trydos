@@ -123,7 +123,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
     Timer.periodic(Duration(milliseconds: 100), postFrameCallback);
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
+    appBloc.add(HideBottomNavigationBar(false));
+    appBloc.add(ShowOrHideBars(true));
+    appBloc.add(ChangeIndexForSearch(1));
     // if (!widget.fromSearch) {
     //   homeBloc.add(GetProductsWithoutFiltersEvent(
     //     boutiqueSlug: widget.boutiqueSlug!,
@@ -167,7 +169,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
   @override
   void dispose() {
     appBloc.add(HideBottomNavigationBar(false));
-    appBloc.add(ChangeIndexForSearch(1));
+    if (!widget.fromSearch) {
+      appBloc.add(ChangeIndexForSearch(0));
+    }
     focusNode.dispose();
     appBloc.add(ShowOrHideBars(true));
     scrollController.dispose();
@@ -198,7 +202,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        widget.controllerFormSearchPage?.text = controller.text;
+        if (widget.fromSearch) {
+          widget.controllerFormSearchPage?.text = controller.text;
+        }
+
         itExpendForFirst = false;
 
         searchVisible.value = false;
@@ -222,6 +229,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
               category: widget.category,
               filtersAppliedByUser:
                   GetProductFiltersModel(filters: prefAppliedFilters)));
+          controller.text = prefAppliedFilters!.searchText ?? "";
 
           resetSearchAfterSearchingWhileRemoveSearch = false;
 
@@ -239,6 +247,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 filtersAppliedByUser: null,
                 resetAppliedFilters: true));
             homeBloc.add(ChangeSelectedFiltersEvent(
+              fromHomePageSearch: widget.fromSearch,
               boutiqueSlug: widget.boutiqueSlug,
               category: widget.category,
               filtersChoosedByUser: null,
@@ -250,6 +259,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
             homeBloc.add(ChangeSelectedFiltersEvent(
               requestToUpdateFilters: false,
+              fromHomePageSearch: widget.fromSearch,
               boutiqueSlug: widget.boutiqueSlug,
               category: widget.category,
               filtersChoosedByUser: GetProductFiltersModel(
@@ -274,7 +284,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     buildWhen: (p, c) => p.showBars != c.showBars,
                     builder: (context, state) {
                       if (state.showBars == true) {
-                        return const AppBottomNavBar();
+                        return BlocBuilder<AppBloc, AppState>(
+                            buildWhen: (p, c) =>
+                            p.hideBottomNavigationBar !=
+                                c.hideBottomNavigationBar,
+                            builder: (context, state) {
+                              return state.hideBottomNavigationBar
+                                  ? const SizedBox.shrink()
+                                  : const AppBottomNavBar();
+                            });
                       } else {
                         return const SizedBox.shrink();
                       }
@@ -302,11 +320,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         _previousOffset = currentOffset;
                         return true;
                       }
-                      if (_velocity! <= (1.5e-8) && _velocity! >= (1.42e-8)) {
-                        appBloc.add(ShowOrHideBars(true));
-                      } else {
-                        appBloc.add(ShowOrHideBars(false));
-                      }
+                      // if (_velocity! <= (1.5e-8) && _velocity! >= (1.42e-8)) {
+                      //   appBloc.add(ShowOrHideBars(true));
+                      // } else {
+                      //   appBloc.add(ShowOrHideBars(false));
+                      // }
                     }
                     _previousOffset = currentOffset;
                     return true;
@@ -375,6 +393,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           false));
                                                                   homeBloc.add(
                                                                       ChangeSelectedFiltersEvent(
+                                                                    fromHomePageSearch:
+                                                                        widget
+                                                                            .fromSearch,
                                                                     boutiqueSlug:
                                                                         widget
                                                                             .boutiqueSlug,
@@ -394,6 +415,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                                                                   homeBloc.add(
                                                                       ChangeSelectedFiltersEvent(
+                                                                    fromHomePageSearch:
+                                                                        widget
+                                                                            .fromSearch,
                                                                     requestToUpdateFilters:
                                                                         false,
                                                                     boutiqueSlug:
@@ -517,8 +541,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                             homeBloc.state.choosedFiltersByUser[key]?.filters ??
                                                                                 Filter();
                                                                         homeBloc.add(ChangeSelectedFiltersEvent(
-                                                                            boutiqueSlug:
-                                                                                widget.boutiqueSlug,
+                                                                            fromHomePageSearch:
+                                                                                widget.fromSearch,
+                                                                            boutiqueSlug: widget.boutiqueSlug,
                                                                             filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
                                                                       }
                                                                       resetSearchAfterSearchingWhileRemoveSearch =
@@ -756,6 +781,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           resetSearchAfterSearchingWhileRemoveSearch =
                                                                               true;
                                                                           homeBloc.add(ChangeSelectedFiltersEvent(
+                                                                              fromHomePageSearch: widget.fromSearch,
                                                                               boutiqueSlug: widget.boutiqueSlug,
                                                                               filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: text))));
                                                                         }
@@ -765,6 +791,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           resetSearchAfterSearchingWhileRemoveSearch =
                                                                               false;
                                                                           homeBloc.add(ChangeSelectedFiltersEvent(
+                                                                              fromHomePageSearch: widget.fromSearch,
                                                                               boutiqueSlug: widget.boutiqueSlug,
                                                                               filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
                                                                         }
@@ -838,7 +865,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         homeBloc
                                                                             .add(GetProductFiltersEvent(
                                                                           fromHomePageSearch:
-                                                                              fromSearch ?? false,
+                                                                              widget.fromSearch,
                                                                           searchText:
                                                                               null,
                                                                           category:
@@ -910,8 +937,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                     homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, resetAppliedFilters: true));
                                                                                     homeBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
 
-                                                                                    homeBloc.add(ChangeSelectedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
-                                                                                    controller.clear();
+                                                                                    homeBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+
                                                                                     resetSearchAfterSearchingWhileRemoveSearch = false;
                                                                                     filterPageExpanded.value = true;
                                                                                   }
@@ -930,14 +957,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               () {
                                                                             if (isExpanded) {
                                                                               prefAppliedFilters = homeBloc.state.prefAppliedFilterForExtendFilter;
-
+                                                                              controller.text = prefAppliedFilters!.searchText ?? "";
                                                                               print(homeBloc.state.prefAppliedFilterForExtendFilter?.brands);
                                                                               homeBloc.add(GetProductFiltersEvent(fromHomePageSearch: widget.fromSearch, cashedOrginalBoutique: false, boutiqueSlug: widget.boutiqueSlug, category: widget.category, searchText: widget.searchText, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
                                                                               homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
                                                                             }
                                                                             filterPageExpanded.value =
                                                                                 false;
-                                                                            controller.clear();
+
                                                                             resetSearchAfterSearchingWhileRemoveSearch =
                                                                                 false;
                                                                           },
