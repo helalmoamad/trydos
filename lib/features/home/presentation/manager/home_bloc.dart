@@ -274,8 +274,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       GetIt.I<AuthBloc>().add(GetCustomerInfoEvent());
     }
     add(GetStartingSettingsEvent());
-    if (prefsRepository.chatToken != null) {
-      GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
+    if(GetIt.I<ChatBloc>().state.firstRequestForGetChats) {
+      if (prefsRepository.chatToken != null) {
+        GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
+      }
     }
   }
 

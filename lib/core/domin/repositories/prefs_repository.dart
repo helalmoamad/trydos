@@ -40,6 +40,10 @@ abstract class PrefsRepository {
 
   String? get myMarketName;
 
+  String? get getMarketUrl;
+  String? get getStoryUrl;
+  String? get getChatUrl;
+
   String? get myPhoneNumber;
   String? get currentEvent;
   String? get language;
@@ -89,6 +93,10 @@ abstract class PrefsRepository {
   Future<bool> setChatToEditFromBackground(String chat);
 
   Future<bool> setMyStoriesId(int id);
+
+  Future<bool> setMarketUrl(String url);
+  Future<bool> setStoryUrl(String url);
+  Future<bool> setChatUrl(String url);
 
   Future<bool> setMyMarketId(String id);
 

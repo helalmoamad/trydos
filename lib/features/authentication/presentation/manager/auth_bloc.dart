@@ -429,6 +429,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onGetCustomerInfoEvent(
       GetCustomerInfoEvent event, Emitter<AuthState> emit) async {
+    if(state.getCustomerInfoStatus == GetCustomerInfoStatus.success) return ;
     emit(state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.loading));
     final response = await getCustomerInfoUseCase(NoParams());
     response.fold((l) {
