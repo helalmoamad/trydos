@@ -355,12 +355,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                   } else {
                                     return BlocBuilder<ChatBloc, ChatState>(
                                       builder: (context, state) {
-                                        return state.userConnectedStatuse != ' ' &&
+                                        return state.userConnectedStatuse !=
+                                                    ' ' &&
                                                 DateTime.tryParse(state
                                                         .userConnectedStatuse) !=
                                                     null
-                                            ? DateTime.parse(state
-                                                            .userConnectedStatuse)
+                                            ? DateTime.parse(state.userConnectedStatuse)
                                                         .subtract(Duration(
                                                             minutes: duration))
                                                         .difference(
