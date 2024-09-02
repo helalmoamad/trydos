@@ -33,6 +33,7 @@ import '../../../routes/router.dart';
 import '../../authentication/presentation/pages/first_registeration_page.dart';
 import '../../chat/presentation/manager/chat_bloc.dart';
 import '../../chat/presentation/manager/chat_event.dart';
+import '../../feed_back/presentation/pages/edit_urls_page.dart';
 import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
 import '../blocs/app_bloc/app_state.dart';
@@ -373,7 +374,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                             actions: [
                               Container(
                                 width: 300,
-                                height: 200,
+                                height: 300,
                                 child: Stack(
                                   children: [
                                     Positioned(
@@ -431,13 +432,20 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                               child:
                                                   MyTextWidget('files exists'),
                                             ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            EditUrlsPage()));
+                                              },
+                                              child:
+                                              MyTextWidget('Edit Urls'),
+                                            ),
+                                            LanguageDropdown(),
                                           ],
                                         )),
-                                    Positioned(
-                                      child: LanguageDropdown(),
-                                      bottom: 40,
-                                      right: 5,
-                                    )
                                   ],
                                 ),
                               )

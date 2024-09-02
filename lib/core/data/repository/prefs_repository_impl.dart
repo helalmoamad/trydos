@@ -17,6 +17,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   String? get chatToken => _preferences.getString(PrefsKey.chatToken);
+
   @override
   Future<bool> setUserChoosedCountryIso(String? countryIso) =>
       _preferences.setString(PrefsKey.currentCountry, countryIso!);
@@ -303,9 +304,11 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> removeMessageFromBackground() => _preferences.remove('message');
+
   @override
   Future<bool> removeMessageWatchStatusFromBackground() =>
       _preferences.remove('messageWatchStatus');
+
   @override
   Future<bool> removeMessageReceivedStatusFromBackground() =>
       _preferences.remove('messageReceivedStatus');
@@ -341,12 +344,14 @@ class PrefsRepositoryImpl extends PrefsRepository {
       .getStringList('removedMessage')
       ?.map((e) => (convert.jsonDecode(e)) as Map)
       .toList();
+
   @override
   // TODO: implement getTheRemovedMessageFromBackground
   List<Map>? get getTheMessageWatchStatusFromBackground => _preferences
       .getStringList('messageWatchStatus')
       ?.map((e) => (convert.jsonDecode(e)) as Map)
       .toList();
+
   @override
   // TODO: implement getTheRemovedMessageFromBackground
   List<Map>? get getTheMessageReceivedStatusFromBackground => _preferences
@@ -491,6 +496,26 @@ class PrefsRepositoryImpl extends PrefsRepository {
     return _preferences.setString(PrefsKey.language, language!);
   }
 
+  @override
+  String? get getChatUrl => _preferences.getString(PrefsKey.chatUrl);
+
+  @override
+  String? get getMarketUrl => _preferences.getString(PrefsKey.marketUrl);
+
+  @override
+  String? get getStoryUrl => _preferences.getString(PrefsKey.storyUrl);
+
+  @override
+  Future<bool> setChatUrl(String url) =>
+      _preferences.setString(PrefsKey.chatUrl, url);
+
+  @override
+  Future<bool> setMarketUrl(String url) =>
+      _preferences.setString(PrefsKey.marketUrl, url);
+
+  @override
+  Future<bool> setStoryUrl(String url) =>
+      _preferences.setString(PrefsKey.storyUrl, url);
 // @override
 
 // List<Map<String,dynamic>> get localMessages {
