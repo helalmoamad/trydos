@@ -109,8 +109,9 @@ abstract class ChatUrls {
   static String get baseUrlWithHttp => _baseUrlDevWithHttp;
 
   static Uri get baseUri => Uri.parse(_baseUrlDev);
+  static set setBaseUrl(String url) => _baseUrlDev = url;
 
-  static const String _baseUrlDev =
+  static String _baseUrlDev =
       'https://chating_staging_trydos.antiksef.online';
   static const String _baseUrlDevWithHttp =
       'http://chating_staging_trydos.antiksef.online';
