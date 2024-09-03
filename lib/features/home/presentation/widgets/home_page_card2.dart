@@ -316,7 +316,6 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
               )),
               PositionedDirectional(
                 child: cupertino.Container(
-                  width: 60,
                   height: 12,
                   child: cupertino.ListView.separated(
                     separatorBuilder: (context, index) => 13.horizontalSpace,

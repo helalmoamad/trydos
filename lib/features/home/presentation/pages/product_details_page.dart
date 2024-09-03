@@ -479,6 +479,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               )),
           BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (previous, current) =>
+              previous.CurrentColorSizeForCart?["size"] != current.CurrentColorSizeForCart?["size"] ||
                   previous.currentSelectedColorForEveryProduct[
                           widget.productItem.id.toString()] !=
                       current.currentSelectedColorForEveryProduct[

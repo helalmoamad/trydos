@@ -24,6 +24,8 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/price_
 import 'package:trydos/features/home/presentation/widgets/product_listing/price_filter_slider.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/sizes_filters_list.dart';
 import 'package:tuple/tuple.dart';
+import '../../../../../common/test_utils/test_var.dart';
+import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/my_cached_network_image.dart';
@@ -343,16 +345,17 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       visible: !isExpanded,
                       child: InkWell(
                         onTap: () {
-                          currentActiveSection.value =
-                              currentActiveSection.value == (countOfFilters - 1)
-                                  ? 0
-                                  : (currentActiveSection.value + 1);
-                          autoScrollController.scrollToIndex(
-                              2 * currentActiveSection.value,
-                              duration: Duration(milliseconds: 200),
-                              preferPosition: AutoScrollPosition.begin);
-                          widget.onMoveToAnotherFiltersSection.call(
-                              titleOfFilterSection[currentActiveSection.value]);
+                          print('cate');
+                          // currentActiveSection.value =
+                          //     currentActiveSection.value == (countOfFilters - 1)
+                          //         ? 0
+                          //         : (currentActiveSection.value + 1);
+                          // autoScrollController.scrollToIndex(
+                          //     2 * currentActiveSection.value,
+                          //     duration: Duration(milliseconds: 200),
+                          //     preferPosition: AutoScrollPosition.begin);
+                          // widget.onMoveToAnotherFiltersSection.call(
+                          //     titleOfFilterSection[currentActiveSection.value]);
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(top: 35.0),
@@ -460,6 +463,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       behavior: CupertinoScrollBehavior(),
                       child: Expanded(
                         child: InViewNotifierList(
+                            key: TestVariables.kTestMode == false
+                                ? null
+                                : Key(WidgetsKey.productListingFilterListKey),
                             isInViewPortCondition: (double deltaTop,
                                 double deltaBottom, double vpWidth) {
                               print(
@@ -503,6 +509,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                             titleOfFilterSection[index ~/ 2] ==
                                                 'View By Categories'
                                         ? CategoriesFilterList(
+                                            key: TestVariables.kTestMode ==
+                                                    false
+                                                ? null
+                                                : Key(WidgetsKey
+                                                    .categoriesProductListingFilterListKey),
                                             boutiqueSlug: widget.boutiqueSlug,
                                             fromSearch: widget.fromSearch,
                                             expandingFiltersStack:
@@ -517,6 +528,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                         index ~/ 2] ==
                                                     'View By Brands'
                                             ? FiltersNormalList(
+                                                key: TestVariables.kTestMode ==
+                                                        false
+                                                    ? null
+                                                    : Key(WidgetsKey
+                                                        .brandsProductListingFilterListKey),
                                                 hideTitle: true,
                                                 boutiqueSlug:
                                                     widget.boutiqueSlug,
@@ -534,6 +550,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                             index ~/ 2] ==
                                                         'View By Sizes'
                                                 ? SizesFiltersList(
+                                                    key: TestVariables
+                                                                .kTestMode ==
+                                                            false
+                                                        ? null
+                                                        : Key(WidgetsKey
+                                                            .sizesProductListingFilterListKey),
                                                     hideTitle: true,
                                                     boutiqueSlug:
                                                         widget.boutiqueSlug,
@@ -550,6 +572,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                 index ~/ 2] ==
                                                             'View By Colors'
                                                     ? ColorsListFilter(
+                                                        key: TestVariables
+                                                                    .kTestMode ==
+                                                                false
+                                                            ? null
+                                                            : Key(WidgetsKey
+                                                                .colorsProductListingFilterListKey),
                                                         hideTitle: true,
                                                         boutiqueSlug:
                                                             widget.boutiqueSlug,
@@ -564,6 +592,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                 [],
                                                       )
                                                     : PriceFiltersRangesList(
+                                                        key: TestVariables
+                                                                    .kTestMode ==
+                                                                false
+                                                            ? null
+                                                            : Key(WidgetsKey
+                                                                .pricesProductListingFilterListKey),
                                                         exchangeRate:
                                                             exchangeRate,
                                                         decimalPoint: state
@@ -1270,12 +1304,18 @@ Widget choosedOrAppliedFiltersWidget({
         height: 20,
         width: 30,
         child: ListView(
+            key: TestVariables.kTestMode == false
+                ? null
+                : Key(WidgetsKey.appliedFiltersProductListingKey),
             shrinkWrap: true,
             physics: ClampingScrollPhysics(),
             scrollDirection: Axis.horizontal,
             children: [
               if (!choosedFilter)
                 InkWell(
+                  key: TestVariables.kTestMode == false
+                      ? null
+                      : Key(WidgetsKey.appliedFiltersProductListingCloseKey),
                   onTap: () {
                     controller?.clear();
                     homeBloc.add(ChangeAppliedFiltersEvent(

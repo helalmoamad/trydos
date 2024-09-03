@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -15,10 +16,9 @@ import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/widgets/contact_card.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
-import '../../../../main.dart';
 import '../../../../service/language_service.dart';
 import '../../../app/app_widgets/app_text_field.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -29,7 +29,6 @@ import '../../../home/presentation/widgets/sliver_list_seprated.dart';
 import '../../data/models/my_contacts_response_model.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_state.dart';
-import '../widgets/chat_card.dart';
 
 class MyContactsPage extends StatefulWidget {
   const MyContactsPage({Key? key}) : super(key: key);
@@ -202,7 +201,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                           return sliverListSeparated(
                             itemBuilder: (_, index) {
                               return ContactCard(
-                                key: WidgetsKey.kTestMode
+                                key: TestVariables.kTestMode
                                     ? Key(
                                         '${WidgetsKey.contactCardKey}$index',
                                       )

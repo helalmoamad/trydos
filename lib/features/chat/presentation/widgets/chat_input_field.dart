@@ -12,6 +12,7 @@ import 'package:mime/mime.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -24,7 +25,7 @@ import 'package:uuid/uuid.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 //import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../app/app_widgets/app_text_field.dart';
@@ -135,7 +136,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                       alignment: Alignment.topCenter,
                       child: state.replyType == 'text'
                           ? Row(
-                              key: WidgetsKey.kTestMode
+                              key: TestVariables.kTestMode
                                   ? Key(WidgetsKey.replayTextKey)
                                   : null,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -191,7 +192,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     : NoImageWidget(
                                         width: 30.sp,
                                         height: 30.sp,
-                                        textStyle: context.textTheme.titleMedium?.br
+                                        textStyle: context
+                                            .textTheme.titleMedium?.br
                                             .copyWith(
                                                 color: const Color(0xff6638FF),
                                                 letterSpacing: 0.18,
@@ -436,8 +438,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 : NoImageWidget(
                                                     width: 30.sp,
                                                     height: 30.sp,
-                                                    textStyle: context
-                                                        .textTheme.titleMedium?.br
+                                                    textStyle: context.textTheme
+                                                        .titleMedium?.br
                                                         .copyWith(
                                                             color: const Color(
                                                                 0xff6638FF),
@@ -507,8 +509,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 : NoImageWidget(
                                                     width: 30.sp,
                                                     height: 30.sp,
-                                                    textStyle: context
-                                                        .textTheme.titleMedium?.br
+                                                    textStyle: context.textTheme
+                                                        .titleMedium?.br
                                                         .copyWith(
                                                             color: const Color(
                                                                 0xff6638FF),
@@ -654,7 +656,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         padding: HWEdgeInsets.symmetric(
                                             vertical: 7.0),
                                         child: AppTextField(
-                                          key: WidgetsKey.kTestMode
+                                          key: TestVariables.kTestMode
                                               ? Key(
                                                   WidgetsKey
                                                       .sendMessageTextFieldKey,
@@ -797,7 +799,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     } else ...{
                                       InkWell(
-                                        key: WidgetsKey.kTestMode
+                                        key: TestVariables.kTestMode
                                             ? Key(
                                                 WidgetsKey
                                                     .sendMessageInChatButtonKey,

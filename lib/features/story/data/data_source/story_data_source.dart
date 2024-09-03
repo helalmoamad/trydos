@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/client_config.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/post.dart';
-import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/api/methods/get.dart';
 import '../../presentation/bloc/story_bloc.dart';
 import '../models/image_detail.dart';
@@ -55,7 +55,7 @@ class StoriesDataSource {
 
   Future<GetStoriesModel> getStories() {
     ///// for test /////
-    WidgetsKey.getStoriesFlag = true;
+    TestVariables.getStoriesFlag = true;
     ////////////////////
     GetClient<GetStoriesModel> getStories = GetClient<GetStoriesModel>(
       serverName: ServerName.stories,

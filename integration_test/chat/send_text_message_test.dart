@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:trydos/common/constant/widgets_key.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
+import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_pages.dart';
@@ -21,7 +22,7 @@ void main() {
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
-      WidgetsKey.kTestMode = true;
+      TestVariables.kTestMode = true;
       //////////////////////////
       await SharedScenarios.goToVerifyOtp(tester: tester, isForLogin: true);
       ////////////////////////////

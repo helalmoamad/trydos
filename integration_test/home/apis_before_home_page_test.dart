@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:trydos/common/constant/widgets_key.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -20,7 +20,7 @@ void main() {
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
-      WidgetsKey.kTestMode = true;
+      TestVariables.kTestMode = true;
 
       //////////// Register As Guest //////////////
       await SharedScenarios.registerGuest(tester: tester);
@@ -28,27 +28,27 @@ void main() {
       await tester.pumpAndSettle();
       /////////// check by flag if apis are requested  /////////////////
 
-      expect(WidgetsKey.getMainCategoriesFlag, isTrue);
+      expect(TestVariables.getMainCategoriesFlag, isTrue);
 
       ///
 
-      expect(WidgetsKey.getStoriesFlag, isTrue);
+      expect(TestVariables.getStoriesFlag, isTrue);
 
       ///
 
-      expect(WidgetsKey.getBoutiquesFlag, isTrue);
+      expect(TestVariables.getBoutiquesFlag, isTrue);
 
       ///
 
-      expect(WidgetsKey.getStartingSettingsFlag, isTrue);
+      expect(TestVariables.getStartingSettingsFlag, isTrue);
 
       ///
 
-      expect(WidgetsKey.getAllowedCountriesFlag, isTrue);
+      expect(TestVariables.getAllowedCountriesFlag, isTrue);
 
       ///
 
-      expect(WidgetsKey.getUserCountryFlag, isTrue);
+      expect(TestVariables.getUserCountryFlag, isTrue);
 
       ///////////////// test the state of getting apis  /////////////////////////////
 

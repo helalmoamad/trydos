@@ -1,12 +1,4 @@
 class WidgetsKey {
-  static bool kTestMode = false;
-  static bool getMainCategoriesFlag = false;
-  static bool getStoriesFlag = false;
-  static bool getBoutiquesFlag = false;
-  static bool getStartingSettingsFlag = false;
-  static bool getAllowedCountriesFlag = false;
-  static bool getUserCountryFlag = false;
-
   static const haveAccountButtonKey = 'have_already_account_button';
   static const createNewAccountButtonKey = 'create_new_account_button';
   static const agreeContinueButtonKey = 'agree_continue_button';
@@ -68,4 +60,24 @@ class WidgetsKey {
   static const productListingSearchInputKey =
       'product_listing_search_input_key';
   static const loadingAfterSearchKey = 'loading_after_search_key';
+
+  static const categoriesProductListingFilterListKey =
+      'categories_filter_list_key';
+  static const brandsProductListingFilterListKey = 'brands_filter_list_key';
+  static const sizesProductListingFilterListKey = 'sizes_filter_list_key';
+  static const colorsProductListingFilterListKey = 'colors_filter_list_key';
+  static const pricesProductListingFilterListKey = 'prices_filter_list_key';
+
+  static const categoryCircleProductListingFilterKey =
+      'category_circle_filter_key';
+  static const brandCircleProductListingFilterKey = 'brand_circle_filter_key';
+  static const brandProductListingFilterNameKey = 'brand_filter_name_key';
+
+  static const appliedFiltersProductListingKey = 'applied_filters_key';
+  static const appliedFiltersProductListingCloseKey =
+      'applied_filters_close_key';
+
+  static const filterIconKey = 'filter_icon_key';
+
+  static const productListingFilterListKey = 'product_listing_filter_list_key';
 }

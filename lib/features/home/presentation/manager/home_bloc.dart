@@ -274,7 +274,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       GetIt.I<AuthBloc>().add(GetCustomerInfoEvent());
     }
     add(GetStartingSettingsEvent());
-    if(GetIt.I<ChatBloc>().state.firstRequestForGetChats) {
+    if (GetIt.I<ChatBloc>().state.firstRequestForGetChats) {
       if (prefsRepository.chatToken != null) {
         GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
       }
@@ -413,11 +413,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   page: 0,
                   hasReachedMax: false);
     }
-    if((event.getWithPagination &&
+    if ((event.getWithPagination &&
         (getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
-            .hasReachedMax || getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!.paginationStatus ==
-            PaginationStatus.loading ))){
-      return ;
+                .hasReachedMax ||
+            getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
+                    .paginationStatus ==
+                PaginationStatus.loading))) {
+      return;
     }
     /* if ((!event.getWithPagination &&
             getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
@@ -441,7 +443,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         offset: event.offset, categorySlug: event.categorySlug));
 
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('GetHomeSectionsEvent')) {
+      if (!isFailedTheFirstTime.contains('GetHomeBoutiqesEvent')) {
         add(GetHomeBoutiqesEvent(
             offset: event.offset,
             getWithPagination: event.getWithPagination,
@@ -623,7 +625,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         idForRequest: idForRequest,
       ));
     }*/
+    print(
+        "5////////////****************************************************************************${event.cashedOrginalBoutique}");
     emit(state.copyWith(cashedOrginalBoutique: event.cashedOrginalBoutique));
+
     Map<String, PaginationModel<product.Products>?>
         getProductListingWithFiltersPaginationModels =
         Map.of(state.getProductListingWithFiltersPaginationModels);

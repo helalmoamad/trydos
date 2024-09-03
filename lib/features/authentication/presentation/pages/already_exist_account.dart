@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -13,7 +14,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
@@ -94,8 +95,10 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                                 MyTextWidget(
                                   widget.phoneNumber,
                                   textAlign: TextAlign.start,
-                                  style: context.textTheme.titleMedium?.ra.copyWith(
-                                      color: Color(0xff8D8D8D), height: 1.25),
+                                  style: context.textTheme.titleMedium?.ra
+                                      .copyWith(
+                                          color: Color(0xff8D8D8D),
+                                          height: 1.25),
                                 ),
                               ],
                             ),
@@ -106,8 +109,10 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                                 15.horizontalSpace,
                                 MyTextWidget(
                                   LocaleKeys.you_can_login_now.tr(),
-                                  style: context.textTheme.titleMedium?.ra.copyWith(
-                                      color: Color(0xffC4C2C2), height: 1.25),
+                                  style: context.textTheme.titleMedium?.ra
+                                      .copyWith(
+                                          color: Color(0xffC4C2C2),
+                                          height: 1.25),
                                 )
                               ],
                             ),
@@ -119,7 +124,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                 ),
                 Spacer(),
                 InkWell(
-                  key: WidgetsKey.kTestMode
+                  key: TestVariables.kTestMode
                       ? Key(WidgetsKey.loginContinueButtonKey)
                       : null,
                   onTap: () {
@@ -155,7 +160,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                 ),
                 20.verticalSpace,
                 InkWell(
-                  key: WidgetsKey.kTestMode
+                  key: TestVariables.kTestMode
                       ? Key(WidgetsKey.takeLookButtonKey)
                       : null,
                   focusColor: Colors.transparent,

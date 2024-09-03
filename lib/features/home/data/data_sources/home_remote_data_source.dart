@@ -1,10 +1,9 @@
 import 'package:injectable/injectable.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
-import 'package:trydos/features/home/data/models/get_brand_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
-import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
@@ -15,7 +14,6 @@ import 'package:trydos/features/home/data/models/starting_settings_response_mode
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import '../../../../common/constant/configuration/market_url_routes.dart';
 import '../../../../common/constant/configuration/stories_url_routes.dart';
-import '../../../../common/constant/widgets_key.dart';
 import '../../../../core/api/client_config.dart';
 import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/api/methods/post.dart';
@@ -28,7 +26,7 @@ import '../models/get_story_for_product_model.dart';
 class HomeRemoteDatasource {
   Future<StartingSettingsResponseModel> getStartingSettings() {
     ///// for test /////
-    WidgetsKey.getStartingSettingsFlag = true;
+    TestVariables.getStartingSettingsFlag = true;
     ////////////////////
     GetClient<StartingSettingsResponseModel> getStartingSettings =
         GetClient<StartingSettingsResponseModel>(
@@ -135,7 +133,7 @@ class HomeRemoteDatasource {
 */
   Future<MainCategoriesResponseModel> getMainCategories() {
     ///// for test /////
-    WidgetsKey.getMainCategoriesFlag = true;
+    TestVariables.getMainCategoriesFlag = true;
     ////////////////////
     GetClient<MainCategoriesResponseModel> getMainCategories =
         GetClient<MainCategoriesResponseModel>(
@@ -195,7 +193,7 @@ class HomeRemoteDatasource {
 
   Future<GetHomeBoutiquesModel> getHomeBoutiques(Map<String, dynamic> params) {
     ///// for test /////
-    WidgetsKey.getBoutiquesFlag = true;
+    TestVariables.getBoutiquesFlag = true;
     ////////////////////
     GetClient<GetHomeBoutiquesModel> getHomeBoutiques =
         GetClient<GetHomeBoutiquesModel>(
@@ -282,7 +280,7 @@ class HomeRemoteDatasource {
 
   Future<GetAllowedCountriesModel> getAllowedCountries() {
     ///// for test /////
-    WidgetsKey.getAllowedCountriesFlag = true;
+    TestVariables.getAllowedCountriesFlag = true;
     ////////////////////
     GetClient<GetAllowedCountriesModel> verifyOtpSignIn =
         GetClient<GetAllowedCountriesModel>(
