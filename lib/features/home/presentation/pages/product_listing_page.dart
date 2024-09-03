@@ -858,6 +858,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           return Padding(
                                                                               padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
                                                                               child: InkWell(
+                                                                                key: TestVariables.kTestMode ? Key(WidgetsKey.filterIconKey) : null,
                                                                                 onTap: () {
                                                                                   if (!filterPageExpanded.value) {
                                                                                     filterPageExpanded.value = true;
@@ -1155,44 +1156,20 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       : 145
                                                                   : 115,
                                                   flexibleSpace: StackedFiltersList(
-                                                      key: TestVariables.kTestMode
-                                                          ? Key(WidgetsKey
-                                                              .productListFilterKey)
-                                                          : null,
-                                                      textController:
-                                                          controller,
+                                                      key: TestVariables.kTestMode ? Key(WidgetsKey.productListFilterKey) : null,
+                                                      textController: controller,
                                                       hideTitle: false,
                                                       fromSearch: fromSearch!,
-                                                      searchText: controller.text.length > 2
-                                                          ? controller.text
-                                                          : widget.searchText,
-                                                      filterPageExpanded:
-                                                          filterPageExpanded,
+                                                      searchText: controller.text.length > 2 ? controller.text : widget.searchText,
+                                                      filterPageExpanded: filterPageExpanded,
                                                       closeFilterPage: () {
                                                         filterPageExpanded
                                                             .value = false;
                                                       },
-                                                      displayAppliedFiltersOnly: (state
-                                                                      .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
-                                                                          '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' +
-                                                                          '${(widget.category ?? '')}']
-                                                                      ?.items
-                                                                      .length ??
-                                                                  0) <
-                                                              2 &&
-                                                          state.getProductFiltersStatus[key] ==
-                                                              GetProductFiltersStatus
-                                                                  .success &&
-                                                          state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus ==
-                                                              PaginationStatus
-                                                                  .success,
-                                                      category:
-                                                          widget.category,
-                                                      boutiqueSlug:
-                                                          widget.boutiqueSlug,
-                                                      controller: isExpanded
-                                                          ? scrollController
-                                                          : null,
+                                                      displayAppliedFiltersOnly: (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.items.length ?? 0) < 2 && state.getProductFiltersStatus[key] == GetProductFiltersStatus.success && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : state.idForRequest}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.success,
+                                                      category: widget.category,
+                                                      boutiqueSlug: widget.boutiqueSlug,
+                                                      controller: isExpanded ? scrollController : null,
                                                       onMoveToAnotherFiltersSection: (title) {
                                                         timerForDisplayFilterSectionTitle
                                                             ?.cancel();
@@ -1201,8 +1178,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         timerForDisplayFilterSectionTitle =
                                                             Timer(
                                                                 Duration(
-                                                                    seconds:
-                                                                        3),
+                                                                    seconds: 3),
                                                                 () {
                                                           showTitleForFilterList
                                                               .value = null;

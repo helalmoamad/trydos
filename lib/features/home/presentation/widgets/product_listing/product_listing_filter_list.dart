@@ -251,16 +251,17 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       visible: !isExpanded,
                       child: InkWell(
                         onTap: () {
-                          currentActiveSection.value =
-                              currentActiveSection.value == (countOfFilters - 1)
-                                  ? 0
-                                  : (currentActiveSection.value + 1);
-                          autoScrollController.scrollToIndex(
-                              2 * currentActiveSection.value,
-                              duration: Duration(milliseconds: 200),
-                              preferPosition: AutoScrollPosition.begin);
-                          widget.onMoveToAnotherFiltersSection.call(
-                              titleOfFilterSection[currentActiveSection.value]);
+                          print('cate');
+                          // currentActiveSection.value =
+                          //     currentActiveSection.value == (countOfFilters - 1)
+                          //         ? 0
+                          //         : (currentActiveSection.value + 1);
+                          // autoScrollController.scrollToIndex(
+                          //     2 * currentActiveSection.value,
+                          //     duration: Duration(milliseconds: 200),
+                          //     preferPosition: AutoScrollPosition.begin);
+                          // widget.onMoveToAnotherFiltersSection.call(
+                          //     titleOfFilterSection[currentActiveSection.value]);
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(top: 35.0),
@@ -368,6 +369,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       behavior: CupertinoScrollBehavior(),
                       child: Expanded(
                         child: InViewNotifierList(
+                            key: TestVariables.kTestMode == false
+                                ? null
+                                : Key(WidgetsKey.productListingFilterListKey),
                             isInViewPortCondition: (double deltaTop,
                                 double deltaBottom, double vpWidth) {
                               print(

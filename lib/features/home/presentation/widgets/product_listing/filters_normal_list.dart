@@ -250,6 +250,10 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                         ),
                         SizedBox(height: 5),
                         MyTextWidget(
+                          key: TestVariables.kTestMode == false
+                              ? null
+                              : Key(
+                                  '${WidgetsKey.brandProductListingFilterNameKey}$index'),
                           widget.isBrandFilter
                               ? widget.filters[index].name
                               : 'T-shirt',

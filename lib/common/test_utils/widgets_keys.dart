@@ -71,8 +71,13 @@ class WidgetsKey {
   static const categoryCircleProductListingFilterKey =
       'category_circle_filter_key';
   static const brandCircleProductListingFilterKey = 'brand_circle_filter_key';
+  static const brandProductListingFilterNameKey = 'brand_filter_name_key';
 
   static const appliedFiltersProductListingKey = 'applied_filters_key';
   static const appliedFiltersProductListingCloseKey =
       'applied_filters_close_key';
+
+  static const filterIconKey = 'filter_icon_key';
+
+  static const productListingFilterListKey = 'product_listing_filter_list_key';
 }
