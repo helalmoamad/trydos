@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -16,7 +17,7 @@ import 'package:trydos/routes/router.dart';
 
 import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
@@ -115,7 +116,8 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                           MyTextWidget(
                                             widget.phoneNumber,
                                             textAlign: TextAlign.start,
-                                            style: context.textTheme.titleMedium?.ra
+                                            style: context
+                                                .textTheme.titleMedium?.ra
                                                 .copyWith(
                                                     color: Color(0xff8D8D8D),
                                                     height: 1.25),
@@ -132,7 +134,8 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                             LocaleKeys
                                                 .register_create_new_account
                                                 .tr(),
-                                            style: context.textTheme.titleMedium?.ra
+                                            style: context
+                                                .textTheme.titleMedium?.ra
                                                 .copyWith(
                                                     color: Color(0xffC4C2C2),
                                                     height: 1.25),
@@ -147,7 +150,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                           ),
                           Spacer(),
                           InkWell(
-                            key: WidgetsKey.kTestMode
+                            key: TestVariables.kTestMode
                                 ? Key(WidgetsKey.createNewAccountContinueKey)
                                 : null,
                             onTap: () {

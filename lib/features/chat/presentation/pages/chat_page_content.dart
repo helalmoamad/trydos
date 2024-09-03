@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
@@ -16,9 +17,7 @@ import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/main.dart';
-
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../home/presentation/widgets/sliver_list_seprated.dart';
@@ -192,7 +191,7 @@ class ChatPageContentState extends State<ChatPageContent> {
                                           searchedChats[index].id.toString()))
                                   : false;
                               return ChatCard(
-                                key: WidgetsKey.kTestMode
+                                key: TestVariables.kTestMode
                                     ? Key(
                                         '${WidgetsKey.chatConversationCardKey}$index',
                                       )

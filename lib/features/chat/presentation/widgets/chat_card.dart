@@ -10,6 +10,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -22,7 +23,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/no_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/configuration/chat_url_routes.dart';
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
@@ -227,7 +228,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       iconUrl: AppAssets.archiveSvg,
                     ),
                     SlidableActionWidget(
-                      key: WidgetsKey.kTestMode
+                      key: TestVariables.kTestMode
                           ? Key(
                               '${WidgetsKey.deleteChatConversationIconKey}${widget.index}')
                           : null,
@@ -362,9 +363,10 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                         fullReceiverName,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: textTheme.bodyMedium?.rr.copyWith(
-                                            height: 1.33,
-                                            color: const Color(0xff505050)),
+                                        style: textTheme.bodyMedium?.rr
+                                            .copyWith(
+                                                height: 1.33,
+                                                color: const Color(0xff505050)),
                                       ),
                                       const Spacer(),
                                       if (chatTime == null)
@@ -640,7 +642,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                   TextOverflow
                                                                       .ellipsis,
                                                               style: textTheme
-                                                                  .titleLarge?.lr
+                                                                  .titleLarge
+                                                                  ?.lr
                                                                   .copyWith(
                                                                       height:
                                                                           1.22,
@@ -715,8 +718,9 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                             widget.activityDescription!.length -
                                                 3),
                                         maxLines: 1,
-                                        style: textTheme.titleMedium?.rr.copyWith(
-                                            color: const Color(0xff007CFF)),
+                                        style: textTheme.titleMedium?.rr
+                                            .copyWith(
+                                                color: const Color(0xff007CFF)),
                                       ),
                                       8.horizontalSpace,
 //                                      Transform.translate(

@@ -1,22 +1,17 @@
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mime/mime.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/vedio_player.dart';
-import 'package:trydos/features/authentication/presentation/widgets/adding_name.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
@@ -25,7 +20,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../common/constant/design/assets_provider.dart';
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/show_message.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
@@ -357,7 +352,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           5.horizontalSpace,
                                           MyTextWidget(
-                                            key: WidgetsKey.kTestMode
+                                            key: TestVariables.kTestMode
                                                 ? Key(WidgetsKey
                                                     .imageCountInEachChatKey)
                                                 : null,
@@ -380,7 +375,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           5.horizontalSpace,
                                           MyTextWidget(
-                                            key: WidgetsKey.kTestMode
+                                            key: TestVariables.kTestMode
                                                 ? Key(WidgetsKey
                                                     .videoCountInEachChatKey)
                                                 : null,
@@ -403,7 +398,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           5.horizontalSpace,
                                           MyTextWidget(
-                                            key: WidgetsKey.kTestMode
+                                            key: TestVariables.kTestMode
                                                 ? Key(WidgetsKey
                                                     .fileCountInEachChatKey)
                                                 : null,
@@ -553,7 +548,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Padding(
               padding: EdgeInsetsDirectional.fromSTEB(20.w, 15.h, 20.w, 0),
               child: InkWell(
-                key: WidgetsKey.kTestMode
+                key: TestVariables.kTestMode
                     ? Key(
                         WidgetsKey.backFromProfileKey,
                       )

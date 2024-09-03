@@ -4,6 +4,7 @@ import 'package:adobe_xd/pinned.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/country_dropdown.dart';
@@ -35,7 +36,7 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
-import 'common/constant/widgets_key.dart';
+import 'common/test_utils/widgets_keys.dart';
 import 'features/app/app_widgets/tabs_bar.dart';
 import 'features/authentication/presentation/pages/first_registeration_page.dart';
 import 'features/calls/presentation/pages/in_app_view.dart';
@@ -670,7 +671,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                 ),
                                                 Center(
                                                     child: CountryDropdown(
-                                                  key: WidgetsKey.kTestMode
+                                                  key: TestVariables.kTestMode
                                                       ? Key(WidgetsKey
                                                           .countryDropDownKey)
                                                       : null,
@@ -686,7 +687,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                 )),
                                                 SizedBox(height: 80),
                                                 ElevatedButton(
-                                                  key: WidgetsKey.kTestMode
+                                                  key: TestVariables.kTestMode
                                                       ? Key(WidgetsKey
                                                           .chooseCountryButtonKey)
                                                       : null,
