@@ -211,6 +211,15 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                           MessageContent(content: event.parentMessageContent))
                   : null));
     }
+    if (event.messageType != 'TextMessage') {
+      int index = messages.indexWhere((element) =>
+          element.localId == event.parentMessageId &&
+          event.parentMessageId != null);
+      parentMessageId = event.parentMessageId;
+      if (index != -1) {
+        parentMessageId = messages[index].id;
+      }
+    }
 
     //todo remove the chat  and reinsert it in the first of the List<Chat>
     List<Chat> chats;
@@ -253,6 +262,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             currentFailedMessage: currentFailedMessage));
       },
       (r) {
+        print("///-------------------------------------*${r.parentMessage}");
+
 //        debugPrint('count  ${messages.length}');
         print('mediaMessageContent ${r.mediaMessageContent}');
         if (currentOpenedChatId == event.channelId) {

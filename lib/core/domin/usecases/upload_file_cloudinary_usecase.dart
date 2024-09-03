@@ -9,6 +9,7 @@ import 'package:trydos/core/data/model/upload_file_cloudinary_response.dart';
 import 'package:trydos/core/domin/repositories/common_use_repository.dart';
 import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+
 @injectable
 class UploadFileCloudinaryUseCase extends UseCase<
     UploadFileCloudinaryResponseModel, UploadFileCloudinaryParams> {
@@ -45,6 +46,10 @@ class UploadFileCloudinaryParams {
       ),
       "upload_preset": CloudinaryUrls.LoadPreset
     });
-    return {'data': data ,'usingOnUploadingFinishedFunction':usingOnUploadingFinishedFunction,'usingSendProgressFunction':usingSendProgressFunction };
+    return {
+      'data': data,
+      'usingOnUploadingFinishedFunction': usingOnUploadingFinishedFunction,
+      'usingSendProgressFunction': usingSendProgressFunction
+    };
   }
 }

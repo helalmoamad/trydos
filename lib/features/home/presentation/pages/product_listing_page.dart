@@ -286,7 +286,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       if (state.showBars == true) {
                         return BlocBuilder<AppBloc, AppState>(
                             buildWhen: (p, c) =>
-                            p.hideBottomNavigationBar !=
+                                p.hideBottomNavigationBar !=
                                 c.hideBottomNavigationBar,
                             builder: (context, state) {
                               return state.hideBottomNavigationBar
@@ -1272,13 +1272,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   '${(widget.category ?? '')}']
                                                           ?.paginationStatus !=
                                                       c
-                                                          .getProductListingPaginationWithoutFiltersModel[
+                                                          .getProductListingWithFiltersPaginationModels[
                                                               '${widget.boutiqueSlug}' +
                                                                   'withoutFilter' +
                                                                   '${(widget.category ?? '')}']
                                                           ?.paginationStatus ||
                                                   p
-                                                          .getProductListingWithFiltersPaginationModels[
+                                                          .getProductListingPaginationWithoutFiltersModel[
                                                               '${widget.boutiqueSlug}' +
                                                                   '${(widget.category ?? '')}']
                                                           ?.paginationStatus !=
@@ -1316,12 +1316,22 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   'withoutFilter' +
                                                                   '${(widget.category ?? '')}']!
                                                           .items
-                                                          .isNullOrEmpty) ||
+                                                          .isNullOrEmpty &&
+                                                      state
+                                                          .cashedOrginalBoutique) ||
                                                   (state.getProductListingWithFiltersPaginationModels[
-                                                          '${widget.boutiqueSlug}' +
-                                                              'withoutFilter' +
-                                                              '${(widget.category ?? '')}'] ==
-                                                      PaginationModel.init())) {
+                                                              '${widget.boutiqueSlug}' +
+                                                                  'withoutFilter' +
+                                                                  '${(widget.category ?? '')}'] ==
+                                                          PaginationModel
+                                                              .init() &&
+                                                      state
+                                                          .getProductListingWithFiltersPaginationModels[
+                                                              '${widget.boutiqueSlug}' +
+                                                                  'withoutFilter' +
+                                                                  '${(widget.category ?? '')}']!
+                                                          .items
+                                                          .isNullOrEmpty)) {
                                                 return ProductListingLoading();
                                               }
                                               if ((state
@@ -1359,7 +1369,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   ),
                                                 );
                                               }
-                                              print('fcfcfcfcfcsfasfafas');
+                                              print('fcfcfcfcfcsfasfafas1132132142141');
                                               // String key = (widget
                                               //             .boutiqueSlug ??
                                               //         '') +
