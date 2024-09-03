@@ -160,7 +160,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     String? parentMessageId;
 
     //todo just add the message to the waiting list and give it the local info like localParentMessageId
-    if (!ids.contains(event.messageId)) {
+    if (!ids.contains(event.messageId) ||
+        (event.messageType != 'TextMessage')) {
       ids.add(event.messageId);
 
       //todo check if the message has a parentMessage an get it
@@ -253,6 +254,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             currentFailedMessage: currentFailedMessage));
       },
       (r) {
+        print("///-------------------------------------*${r.parentMessage}");
+
 //        debugPrint('count  ${messages.length}');
         print('mediaMessageContent ${r.mediaMessageContent}');
         if (currentOpenedChatId == event.channelId) {

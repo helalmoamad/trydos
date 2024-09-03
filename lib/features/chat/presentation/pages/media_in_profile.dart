@@ -103,7 +103,6 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
                   children: [
                     InkWell(
                       onTap: () {
-                     
                         GoRouter.of(context).pop();
                       },
                       child: Padding(
@@ -155,7 +154,7 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
         child: BlocBuilder<AppBloc, AppState>(
             buildWhen: (p, c) => p.tabIndex != c.tabIndex,
             builder: (context, state) {
-              return chatPages[state.tabIndex];
+              return chatPages[state.tabIndex == -1 ? 0 : state.tabIndex];
             }),
       ),
     );
@@ -281,7 +280,8 @@ class _VideoInProfileState extends ThemeState<VideoInProfile> {
     widget.files!.forEach((element) {
       String mimeStr = element.split(" ")[0];
 
-      if (mimeStr.split('/').contains("video")) {
+      if (mimeStr.split('/').contains("video") &&
+          !mimeStr.split('.').contains("aac")) {
         videos.add(element.split(" ")[1]);
       }
     });

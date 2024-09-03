@@ -71,13 +71,14 @@ class _ProfilePageState extends State<ProfilePage> {
     chatBloc = BlocProvider.of<ChatBloc>(context);
     images!.forEach((element) {
       mimeStr = element.split(" ")[0];
-      if (mimeStr.split('/').contains("video")) {
+      if (mimeStr.split('/').contains("video") &&
+          !mimeStr.split('.').contains("aac")) {
         videoss++;
       } else if (mimeStr.split('/').contains("image")) {
         imagess = imagess + 1;
-      } else {
+      } else if (mimeStr.split('/').contains("files")) {
         filess++;
-      }
+      } else {}
     });
     chatBloc.add(
         AddMediaCountEvent(images: imagess, videos: videoss, file: filess));
@@ -138,10 +139,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         : NoImageWidget(
                             height: 150.h,
                             width: 150.w,
-                            textStyle: context.textTheme.bodyMedium?.br.copyWith(
-                                color: const Color(0xff6638FF),
-                                letterSpacing: 0.18,
-                                height: 1.33),
+                            textStyle: context.textTheme.bodyMedium?.br
+                                .copyWith(
+                                    color: const Color(0xff6638FF),
+                                    letterSpacing: 0.18,
+                                    height: 1.33),
                             name: widget.receiverName),
                     17.verticalSpace,
                     MyTextWidget(
@@ -462,7 +464,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     itemCount: images!.length,
                     itemBuilder: (context, index) {
                       String mimeStr = images![index].split(" ")[0];
-                      if (mimeStr.split('/').contains("video")) {
+                      if (mimeStr.split('/').contains("video") &&
+                          !mimeStr.split('.').contains("aac")) {
                         return Container(
                           margin: EdgeInsets.all(2),
                           width: 200.w,

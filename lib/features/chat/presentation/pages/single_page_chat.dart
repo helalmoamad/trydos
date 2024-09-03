@@ -372,7 +372,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                 ? MyTextWidget("Online",
                                                     overflow:
                                                         TextOverflow.ellipsis,
-                                                    style: textTheme.titleMedium?.mr
+                                                    style: textTheme
+                                                        .titleMedium?.mr
                                                         .copyWith(
                                                             color: const Color(
                                                                 0xff007CFF)))
@@ -617,10 +618,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                   : SizedBox.shrink(),
                                               Flexible(
                                                   child: ListView.builder(
-                                                      key:WidgetsKey.kTestMode ? Key(
-                                                        WidgetsKey
-                                                            .messagesListKey,
-                                                      ):null,
+                                                      key: WidgetsKey.kTestMode
+                                                          ? Key(
+                                                              WidgetsKey
+                                                                  .messagesListKey,
+                                                            )
+                                                          : null,
                                                       physics:
                                                           const ClampingScrollPhysics(),
                                                       shrinkWrap: true,
@@ -692,8 +695,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                       : 10.verticalSpace,
                                                                   ////////////////
                                                                   GestureDetector(
-                                                                    key: WidgetsKey.kTestMode ?Key(
-                                                                        '${WidgetsKey.messagesListCardKey}$index'):null,
+                                                                    key: WidgetsKey
+                                                                            .kTestMode
+                                                                        ? Key(
+                                                                            '${WidgetsKey.messagesListCardKey}$index')
+                                                                        : null,
                                                                     onLongPress:
                                                                         () {
                                                                       if (messages[index]
@@ -1336,9 +1342,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
         true,
         message.messageType!.name == 'TextMessage'
             ? "Text"
-            : message.messageType!.name == 'TextMessage'
+            : message.messageType!.name == 'ImageMessage'
                 ? "Photo"
-                : "Voice",
+                : message.messageType!.name == 'VoiceMessage'
+                    ? "Voice"
+                    : "video",
         message.senderUserId == myChatId,
         messageId: message.id,
         senderParentMessageId: message.senderUserId,
@@ -1479,6 +1487,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
       if (parentMessage.senderUserId != message.senderUserId) {
         return ReplayMessage(
+          index: listIndex,
+          messageType: message.messageType?.name ?? "",
           watchedAt: messageStatus?.watchedAt,
           messageDate: parentMessage.createdAt ?? DateTime.now(),
           createAt: message.createdAt,
@@ -1525,6 +1535,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         );
       } else {
         return ReplayOnMeMessage(
+            messageType: message.messageType?.name ?? "",
             key: WidgetsKey.kTestMode
                 ? Key('${WidgetsKey.replayOnMeMessageKey}$listIndex')
                 : null,
