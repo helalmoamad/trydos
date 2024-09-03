@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -18,11 +18,9 @@ import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/constant/design/constant_design.dart';
-import '../../../common/constant/widgets_key.dart';
+import '../../../common/test_utils/widgets_keys.dart';
 import '../../../core/utils/responsive_padding.dart';
 import '../../home/data/models/get_product_filters_model.dart';
-import '../../home/data/models/get_product_listing_with_filters_model.dart'
-    as product_listing;
 import '../../home/presentation/manager/home_bloc.dart';
 import '../../home/presentation/manager/home_state.dart';
 import '../animated_search_bar/animated_search_bar.dart';
@@ -92,7 +90,7 @@ class _TabsBarState extends State<TabsBar> {
                     ],
                   ),
                   child: Row(
-                      key: WidgetsKey.kTestMode
+                      key: TestVariables.kTestMode
                           ? Key(WidgetsKey.mainCategoriesTabNullKey)
                           : null,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -391,7 +389,7 @@ class _TabsBarState extends State<TabsBar> {
                             builder: (context, state) {
                               if (state.currentIndex != 4) {
                                 return Row(
-                                    key: WidgetsKey.kTestMode
+                                    key: TestVariables.kTestMode
                                         ? Key(WidgetsKey.mainCategoriesTabKey)
                                         : null,
                                     mainAxisAlignment:

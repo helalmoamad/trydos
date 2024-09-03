@@ -2,16 +2,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
-import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-
 import '../../../../base_page.dart';
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
@@ -134,7 +131,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                   height: 20,
                 ),
                 InkWell(
-                  key: WidgetsKey.kTestMode
+                  key: TestVariables.kTestMode
                       ? Key(WidgetsKey.skipForNowKey)
                       : null,
                   focusColor: Colors.transparent,

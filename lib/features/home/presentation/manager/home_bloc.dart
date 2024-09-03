@@ -443,7 +443,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         offset: event.offset, categorySlug: event.categorySlug));
 
     response.fold((l) {
-      if (!isFailedTheFirstTime.contains('GetHomeSectionsEvent')) {
+      if (!isFailedTheFirstTime.contains('GetHomeBoutiqesEvent')) {
         add(GetHomeBoutiqesEvent(
             offset: event.offset,
             getWithPagination: event.getWithPagination,

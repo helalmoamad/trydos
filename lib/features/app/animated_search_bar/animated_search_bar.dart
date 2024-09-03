@@ -7,7 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 
 import '../../../common/constant/design/assets_provider.dart';
-import '../../../common/constant/widgets_key.dart';
+import '../../../common/test_utils/widgets_keys.dart';
 import '../blocs/app_bloc/app_state.dart';
 
 class AnimatedSearchBar extends StatefulWidget {

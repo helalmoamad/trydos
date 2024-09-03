@@ -7,13 +7,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/features/authentication/presentation/widgets/name_from_field.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
@@ -153,7 +154,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                       valueListenable: displaySubmit,
                       builder: (context, display, _) {
                         return NameFormField(
-                          key: WidgetsKey.kTestMode
+                          key: TestVariables.kTestMode
                               ? Key(WidgetsKey.nameFormFieldKey)
                               : null,
                           validator: ((value) {
@@ -161,6 +162,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                               return LocaleKeys.must_be_at_least_8_characters
                                   .tr();
                             }
+                            return null;
                           }),
                           autoFocus: true,
                           ready: display,
@@ -178,7 +180,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                                     height: 15,
                                   )
                                 : InkWell(
-                                    key: WidgetsKey.kTestMode
+                                    key: TestVariables.kTestMode
                                         ? Key(WidgetsKey.confirmNameButtonKey)
                                         : null,
                                     onTap: () {

@@ -12,6 +12,8 @@ import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
+import '../../../../../common/test_utils/test_var.dart';
+import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
 import '../../manager/home_event.dart';
@@ -214,6 +216,10 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                           child: Stack(
                             children: [
                               Container(
+                                key: TestVariables.kTestMode == false
+                                    ? null
+                                    : Key(
+                                        '${WidgetsKey.brandCircleProductListingFilterKey}$index'),
                                 width: 70,
                                 height: 70,
                                 decoration: BoxDecoration(
@@ -261,6 +267,10 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                         ),
                         SizedBox(height: 5),
                         MyTextWidget(
+                          key: TestVariables.kTestMode == false
+                              ? null
+                              : Key(
+                                  '${WidgetsKey.brandProductListingFilterNameKey}$index'),
                           widget.isBrandFilter
                               ? widget.filters[index].name
                               : 'T-shirt',

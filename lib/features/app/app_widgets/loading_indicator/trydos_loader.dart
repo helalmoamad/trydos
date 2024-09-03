@@ -3,7 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/test_var.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import 'edited_spinkit_three_bounce.dart';
 
 class TrydosLoader extends StatelessWidget {
@@ -14,7 +15,7 @@ class TrydosLoader extends StatelessWidget {
   })  : _widget = _TripperLoaderCircle(
           size: size,
           color: color,
-          key: WidgetsKey.kTestMode
+          key: TestVariables.kTestMode
               ? Key(WidgetsKey.loadingAfterSearchKey)
               : null,
         ),

@@ -2,15 +2,15 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_countdown_timer/countdown_timer_controller.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/base_page.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
-import '../../../../common/constant/widgets_key.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/show_message.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
@@ -115,7 +115,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                       builder: (context, index, _) {
                         if (index > 1)
                           return InkWell(
-                            key: WidgetsKey.kTestMode
+                            key: TestVariables.kTestMode
                                 ? Key(WidgetsKey.registerCancelKey)
                                 : null,
                             highlightColor: Colors.transparent,

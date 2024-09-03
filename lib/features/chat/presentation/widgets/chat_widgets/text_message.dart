@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,16 +7,15 @@ import 'package:get_it/get_it.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
-import 'package:trydos/features/authentication/presentation/widgets/phone_form_fields.dart';
-import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
-import '../../../../../common/constant/widgets_key.dart';
+import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
@@ -210,7 +207,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                               : Alignment.centerLeft,
                           children: [
                             Container(
-                              key: WidgetsKey.kTestMode
+                              key: TestVariables.kTestMode
                                   ? Key(
                                       '${WidgetsKey.messageCardKey}${widget.index}')
                                   : null,
@@ -378,7 +375,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                                         )
                                                                   : SvgPicture
                                                                       .asset(
-                                                                      key: WidgetsKey
+                                                                      key: TestVariables
                                                                               .kTestMode
                                                                           ? Key(
                                                                               '${WidgetsKey.messageSentArrowKey}${widget.index}',
@@ -396,9 +393,11 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                             if (widget.isForwarded) ...{
                                               10.horizontalSpace,
                                               SvgPicture.asset(
-                                                key: WidgetsKey.kTestMode ?Key(
-                                                  '${WidgetsKey.forwardedArrowKey}${widget.index}',
-                                                ):null,
+                                                key: TestVariables.kTestMode
+                                                    ? Key(
+                                                        '${WidgetsKey.forwardedArrowKey}${widget.index}',
+                                                      )
+                                                    : null,
                                                 AppAssets.forwardedSvg,
                                                 width: 10.sp,
                                                 height: 10.sp,

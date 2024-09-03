@@ -91,6 +91,13 @@ class _EditUrlsPageState extends State<EditUrlsPage> {
                       _prefsRepository.setStoryUrl(storyController.text);
                       _prefsRepository.setChatUrl(chatController.text);
                     }),
+                30.verticalSpace,
+                AppElevatedButton(
+                    text: 'Clear tokens',
+                    onPressed: () async {
+                      _prefsRepository.clearTokenForMarket();
+                      _prefsRepository.clearTokensForChatAndStory();
+                    }),
               ],
             ),
           ),
