@@ -160,8 +160,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     String? parentMessageId;
 
     //todo just add the message to the waiting list and give it the local info like localParentMessageId
-    if (!ids.contains(event.messageId) ||
-        (event.messageType != 'TextMessage')) {
+    if (!ids.contains(event.messageId)) {
       ids.add(event.messageId);
 
       //todo check if the message has a parentMessage an get it
@@ -211,6 +210,15 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                       messageContent:
                           MessageContent(content: event.parentMessageContent))
                   : null));
+    }
+    if (event.messageType != 'TextMessage') {
+      int index = messages.indexWhere((element) =>
+          element.localId == event.parentMessageId &&
+          event.parentMessageId != null);
+      parentMessageId = event.parentMessageId;
+      if (index != -1) {
+        parentMessageId = messages[index].id;
+      }
     }
 
     //todo remove the chat  and reinsert it in the first of the List<Chat>

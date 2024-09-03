@@ -228,7 +228,7 @@ class Products {
             ? []
             : List<Category>.from(
                 json["categories"]!.map((x) => Category.fromJson(x))),
-        category: json["category"] == null
+        category: json["category"] == null || json["category"] != []
             ? null
             : Category.fromJson(json["category"]),
         brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
