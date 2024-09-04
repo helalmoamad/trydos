@@ -479,6 +479,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               )),
           BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (previous, current) =>
+              previous.CurrentColorSizeForCart?["size"] != current.CurrentColorSizeForCart?["size"] ||
                   previous.currentSelectedColorForEveryProduct[
                           widget.productItem.id.toString()] !=
                       current.currentSelectedColorForEveryProduct[
@@ -492,6 +493,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     state.currentSelectedColorForEveryProduct[productId] ??
                         (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
                 return ProductDetailsBottomSheet(
+                  countOfPieces: state.cachedProductWithoutRelatedProductsModel[
+                              widget.productItem.id.toString()] !=
+                          null
+                      ? state
+                              .cachedProductWithoutRelatedProductsModel[
+                                  widget.productItem.id.toString()]!
+                              .product!
+                              .countOfPieces ??
+                          0
+                      : 0,
                   currentSize: state.CurrentColorSizeForCart != null
                       ? state.CurrentColorSizeForCart!["size"] ?? ""
                       : "",
@@ -515,13 +526,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   .boutique !=
                               null
                           ? state
-                                  .cachedProductWithoutRelatedProductsModel[
-                                      widget.productItem.id.toString()]!
-                                  .product!
-                                  .boutique!
-                                  .icon!
-                                  .filePath ??
-                              ""
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          widget.productItem.id.toString()]!
+                                      .product!
+                                      .boutique!
+                                      .icon !=
+                                  null
+                              ? state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          widget.productItem.id.toString()]!
+                                      .product!
+                                      .boutique!
+                                      .icon!
+                                      .filePath ??
+                                  ""
+                              : ""
                           : ""
                       : "",
                   boutiqueId: state.cachedProductWithoutRelatedProductsModel[

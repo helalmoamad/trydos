@@ -143,8 +143,12 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                 widget.hideTitle
                                     ? homeBloc.state.appliedFiltersByUser[key]
                                         ?.filters
+                                        ?.copyWithSaveOtherField()
                                     : homeBloc.state.choosedFiltersByUser[key]
                                         ?.filters;
+                            List<Brand>? brands = List.of(
+                                prevChoosedOrAppliedFilterToAddToIt?.brands ??
+                                    []);
                             if (!isSelected) {
                               dynamic item = widget.filters[index];
                               if (prevChoosedOrAppliedFilterToAddToIt == null) {
@@ -172,13 +176,23 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                                     ]);
                             } else {
                               if (widget.isBrandFilter) {
-                                prevChoosedOrAppliedFilterToAddToIt!.brands!
-                                    .removeWhere(((element) =>
-                                        element.id ==
-                                        widget.filters[index].id));
+                                brands.removeWhere(((element) =>
+                                    element.id == widget.filters[index].id));
                               }
+                              prevChoosedOrAppliedFilterToAddToIt =
+                                  prevChoosedOrAppliedFilterToAddToIt
+                                      ?.copyWithSaveOtherField(
+                                brands: brands,
+                                searchText: prevChoosedOrAppliedFilterToAddToIt
+                                    .searchText,
+                                prices:
+                                    prevChoosedOrAppliedFilterToAddToIt.prices,
+                              );
                             }
                             if (widget.hideTitle) {
+                              print(
+                                  "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
                               homeBloc.add(ChangeAppliedFiltersEvent(
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,
@@ -193,7 +207,10 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                   category: widget.category,
                                   offset: 1));
                             } else {
+                              print(
+                                  'dwwdwdwqe32e23e ${homeBloc.state.prefAppliedFilterForExtendFilter?.brands}');
                               homeBloc.add(ChangeSelectedFiltersEvent(
+                                fromHomePageSearch: widget.fromHomeSearch,
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,
                                 filtersChoosedByUser: GetProductFiltersModel(

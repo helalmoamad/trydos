@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage> {
         selectedCategorySlug = "Empty";
       } else {
         selectedCategorySlug = homeBloc.state.mainCategoriesResponseModel?.data
-                ?.mainCategories?[currentSelectedMainCategoryTab].slug ??
+            ?.mainCategories?[currentSelectedMainCategoryTab].slug ??
             '';
       }
       if (selectedCategorySlug == '') return;
@@ -78,20 +78,20 @@ class _HomePageState extends State<HomePage> {
           (scrollController.position.maxScrollExtent *
               0.7 *
               (homeBloc.state.getHomeBoutiquesPaginationObjectByMainCategory[
-                          selectedCategorySlug] !=
-                      null
+              selectedCategorySlug] !=
+                  null
                   ? homeBloc
-                      .state
-                      .getHomeBoutiquesPaginationObjectByMainCategory[
-                          selectedCategorySlug]!
-                      .page
+                  .state
+                  .getHomeBoutiquesPaginationObjectByMainCategory[
+              selectedCategorySlug]!
+                  .page
                   : 1))) {
         homeBloc.add(GetHomeBoutiqesEvent(
             categorySlug: selectedCategorySlug,
             offset: homeBloc
                 .state
                 .getHomeBoutiquesPaginationObjectByMainCategory[
-                    selectedCategorySlug]!
+            selectedCategorySlug]!
                 .page
                 .toString(),
             getWithPagination: true));
@@ -120,231 +120,231 @@ class _HomePageState extends State<HomePage> {
     };
     return SafeArea(
         child: Padding(
-      padding: HWEdgeInsets.symmetric(horizontal: 0.w),
-      child: NotificationListener<ScrollUpdateNotification>(
-        onNotification: (notification) {
-          if (notification.metrics.axis == Axis.horizontal) return false;
-          final currentOffset = notification.metrics.pixels;
-          if (_previousOffset != null) {
-            final distance = (currentOffset - _previousOffset!).abs();
-            final time =
-                notification.dragDetails?.sourceTimeStamp?.inMilliseconds ??
-                    0.000001;
-            _velocity = distance / time;
-            if (scrollController.position.pixels <= 80) {
+          padding: HWEdgeInsets.symmetric(horizontal: 0.w),
+          child: NotificationListener<ScrollUpdateNotification>(
+            onNotification: (notification) {
+              if (notification.metrics.axis == Axis.horizontal) return false;
+              final currentOffset = notification.metrics.pixels;
+              if (_previousOffset != null) {
+                final distance = (currentOffset - _previousOffset!).abs();
+                final time =
+                    notification.dragDetails?.sourceTimeStamp?.inMilliseconds ??
+                        0.000001;
+                _velocity = distance / time;
+                if (scrollController.position.pixels <= 80) {
+                  _previousOffset = currentOffset;
+                  return true;
+                }
+                if (_velocity! <= (1.5e-8) && _velocity! >= (1.42e-8)) {
+                  appBloc.add(ShowOrHideBars(true));
+                } else {
+                  appBloc.add(ShowOrHideBars(false));
+                }
+              }
+              debugPrint(_velocity.toString());
               _previousOffset = currentOffset;
               return true;
-            }
-            if (_velocity! <= (1.5e-8) && _velocity! >= (1.42e-8)) {
-              appBloc.add(ShowOrHideBars(true));
-            } else {
-              appBloc.add(ShowOrHideBars(false));
-            }
-          }
-          debugPrint(_velocity.toString());
-          _previousOffset = currentOffset;
-          return true;
-        },
-        child: CustomScrollView(
-          controller: scrollController,
-          physics: const ClampingScrollPhysics(),
-          scrollBehavior: const CupertinoScrollBehavior(),
-          slivers: [
-            SliverToBoxAdapter(child: 50.verticalSpace),
-            SliverToBoxAdapter(
-              child: 40.verticalSpace,
-            ),
-            SliverToBoxAdapter(
-              child: Stack(
-                children: [
-                  StoriesList(),
-                  Positioned(
-                      top: 0,
-                      right: currentLocale.languageCode == "ar" ? 30 : null,
-                      left: currentLocale.languageCode == "ar" ? null : 30,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SvgPicture.asset(
-                            AppAssets.storyFilmSvg,
-                            width: 20,
-                            height: 20,
-                          ),
-                          SizedBox(
-                            width: 7,
-                          ),
-                          MyTextWidget(
-                            LocaleKeys.story.tr(),
-                            style: context.textTheme.titleLarge?.rr.copyWith(
-                                height: 0.86, color: Color(0xff3C3C3C)),
-                          )
-                        ],
-                      ))
-                ],
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: 5.verticalSpace,
-            ),
-            BlocBuilder<AppBloc, AppState>(
-              builder: (context, appState) {
-                return BlocBuilder<HomeBloc, HomeState>(
-                  buildWhen: (p, c) {
-                    String? currentSlug = appState.tabIndex != -1
-                        ? (c.mainCategoriesResponseModel?.data
-                                ?.mainCategories?[appState.tabIndex].slug ??
+            },
+            child: CustomScrollView(
+              controller: scrollController,
+              physics: const ClampingScrollPhysics(),
+              scrollBehavior: const CupertinoScrollBehavior(),
+              slivers: [
+                SliverToBoxAdapter(child: 50.verticalSpace),
+                SliverToBoxAdapter(
+                  child: 40.verticalSpace,
+                ),
+                SliverToBoxAdapter(
+                  child: Stack(
+                    children: [
+                      StoriesList(),
+                      Positioned(
+                          top: 0,
+                          right: currentLocale.languageCode == "ar" ? 30 : null,
+                          left: currentLocale.languageCode == "ar" ? null : 30,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SvgPicture.asset(
+                                AppAssets.storyFilmSvg,
+                                width: 20,
+                                height: 20,
+                              ),
+                              SizedBox(
+                                width: 7,
+                              ),
+                              MyTextWidget(
+                                LocaleKeys.story.tr(),
+                                style: context.textTheme.titleLarge?.rr.copyWith(
+                                    height: 0.86, color: Color(0xff3C3C3C)),
+                              )
+                            ],
+                          ))
+                    ],
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: 5.verticalSpace,
+                ),
+                BlocBuilder<AppBloc, AppState>(
+                  builder: (context, appState) {
+                    return BlocBuilder<HomeBloc, HomeState>(
+                      buildWhen: (p, c) {
+                        String? currentSlug = appState.tabIndex != -1
+                            ? (c.mainCategoriesResponseModel?.data
+                            ?.mainCategories?[appState.tabIndex].slug ??
                             "Empty")
-                        : "Empty";
-                    bool rebuild = p
+                            : "Empty";
+                        bool rebuild = p
                             .getHomeBoutiquesPaginationObjectByMainCategory[
-                                currentSlug]
+                        currentSlug]
                             ?.paginationStatus !=
-                        c
-                            .getHomeBoutiquesPaginationObjectByMainCategory[
-                                currentSlug]
-                            ?.paginationStatus;
-                    if (rebuild) {
-                      reRenderingListViewKey = UniqueKey();
-                    }
-                    return rebuild;
-                  },
-                  builder: (context, homeState) {
-                    String? currentSlug = appState.tabIndex != -1
-                        ? (homeState.mainCategoriesResponseModel?.data
-                                ?.mainCategories?[appState.tabIndex].slug ??
+                            c
+                                .getHomeBoutiquesPaginationObjectByMainCategory[
+                            currentSlug]
+                                ?.paginationStatus;
+                        if (rebuild) {
+                          reRenderingListViewKey = UniqueKey();
+                        }
+                        return rebuild;
+                      },
+                      builder: (context, homeState) {
+                        String? currentSlug = appState.tabIndex != -1
+                            ? (homeState.mainCategoriesResponseModel?.data
+                            ?.mainCategories?[appState.tabIndex].slug ??
                             "Empty")
-                        : "Empty";
-                    if (homeState.getHomeBoutiquesPaginationObjectByMainCategory[
-                                currentSlug] ==
+                            : "Empty";
+                        if (homeState.getHomeBoutiquesPaginationObjectByMainCategory[
+                        currentSlug] ==
                             null ||
-                        ((homeState
-                                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                                            currentSlug]
-                                        ?.paginationStatus ==
-                                    PaginationStatus.loading ||
+                            ((homeState
+                                .getHomeBoutiquesPaginationObjectByMainCategory[
+                            currentSlug]
+                                ?.paginationStatus ==
+                                PaginationStatus.loading ||
                                 homeState
-                                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                                            currentSlug]
-                                        ?.paginationStatus ==
+                                    .getHomeBoutiquesPaginationObjectByMainCategory[
+                                currentSlug]
+                                    ?.paginationStatus ==
                                     PaginationStatus.initial) &&
-                            (homeState
-                                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                                            currentSlug]
-                                        ?.items
-                                        .length ??
+                                (homeState
+                                    .getHomeBoutiquesPaginationObjectByMainCategory[
+                                currentSlug]
+                                    ?.items
+                                    .length ??
                                     0) ==
-                                0)) {
-                      return sliverListSeparated(
-                          key: TestVariables.kTestMode
-                              ? Key(WidgetsKey.boutiquesFailureStatusKey)
-                              : null,
-                          itemBuilder: (_, index) => Padding(
-                              padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20.0),
-                                child: Shimmer.fromColors(
-                                    baseColor: Colors.grey.shade300,
-                                    highlightColor: Colors.grey.shade100,
-                                    enabled: true,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        Container(
-                                            width: 1.sw,
-                                            height: 235,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
+                                    0)) {
+                          return sliverListSeparated(
+                              key: TestVariables.kTestMode
+                                  ? Key(WidgetsKey.boutiquesFailureStatusKey)
+                                  : null,
+                              itemBuilder: (_, index) => Padding(
+                                  padding: HWEdgeInsets.symmetric(horizontal: 15.w),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    child: Shimmer.fromColors(
+                                        baseColor: Colors.grey.shade300,
+                                        highlightColor: Colors.grey.shade100,
+                                        enabled: true,
+                                        child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            Container(
+                                                width: 1.sw,
+                                                height: 235,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
                                                   BorderRadius.circular(20.0),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: const Color(0xff000000)
-                                                      .withOpacity(0.4),
-                                                  offset: Offset(0, 3),
-                                                  blurRadius: 6,
-                                                )
-                                              ],
-                                            )),
-                                        Container(
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 20),
-                                            width: 1.sw,
-                                            height: 135,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: const Color(0xff000000)
+                                                          .withOpacity(0.4),
+                                                      offset: Offset(0, 3),
+                                                      blurRadius: 6,
+                                                    )
+                                                  ],
+                                                )),
+                                            Container(
+                                                margin: EdgeInsets.symmetric(
+                                                    horizontal: 20),
+                                                width: 1.sw,
+                                                height: 135,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
                                                   BorderRadius.circular(20.0),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: const Color(0xff000000)
-                                                      .withOpacity(0.6),
-                                                  offset: Offset(0, 3),
-                                                  blurRadius: 6,
-                                                )
-                                              ],
-                                            )),
-                                        Positioned(
-                                          bottom: 30,
-                                          child: Row(
-                                            children: List.generate(
-                                                5,
-                                                (index) => CircleAvatar(
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: const Color(0xff000000)
+                                                          .withOpacity(0.6),
+                                                      offset: Offset(0, 3),
+                                                      blurRadius: 6,
+                                                    )
+                                                  ],
+                                                )),
+                                            Positioned(
+                                              bottom: 30,
+                                              child: Row(
+                                                children: List.generate(
+                                                    5,
+                                                        (index) => CircleAvatar(
                                                       radius: 20,
                                                     )),
-                                          ),
-                                        )
-                                      ],
-                                    )),
-                              )),
-                          //HomePageCard(showWhite: index % 2 == 0),
-                          separator: SizedBox(
-                            height: 20,
-                          ),
-                          childCount: 10);
-                    }
-                    return sliverListSeparated(
-                      key: TestVariables.kTestMode
-                          ? Key(WidgetsKey.boutiquesSuccessStatusKey)
-                          : reRenderingListViewKey,
-                      itemBuilder: (_, index) => Padding(
-                          padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                          child: HomePageCard2(
-                            key: TestVariables.kTestMode
-                                ? Key('${WidgetsKey.boutiqueCardKey}$index')
-                                : null,
-                            category_Slug: currentSlug,
-                            withSlidingImages: homeState
+                                              ),
+                                            )
+                                          ],
+                                        )),
+                                  )),
+                              //HomePageCard(showWhite: index % 2 == 0),
+                              separator: SizedBox(
+                                height: 20,
+                              ),
+                              childCount: 10);
+                        }
+                        return sliverListSeparated(
+                          key: TestVariables.kTestMode
+                              ? Key(WidgetsKey.boutiquesSuccessStatusKey)
+                              : reRenderingListViewKey,
+                          itemBuilder: (_, index) => Padding(
+                              padding: HWEdgeInsets.symmetric(horizontal: 15.w),
+                              child: HomePageCard2(
+                                key: TestVariables.kTestMode
+                                    ? Key('${WidgetsKey.boutiqueCardKey}$index')
+                                    : null,
+                                category_Slug: currentSlug,
+                                withSlidingImages: homeState
                                     .getHomeBoutiquesPaginationObjectByMainCategory[
-                                        currentSlug]!
+                                currentSlug]!
                                     .items[index]
                                     .banners!
                                     .length >
-                                1,
-                            boutniqe: homeState
-                                .getHomeBoutiquesPaginationObjectByMainCategory[
-                                    currentSlug]!
-                                .items[index],
-                          )
-                          //HomePageCard(showWhite: index % 2 == 0),
+                                    1,
+                                boutniqe: homeState
+                                    .getHomeBoutiquesPaginationObjectByMainCategory[
+                                currentSlug]!
+                                    .items[index],
+                              )
+                            //HomePageCard(showWhite: index % 2 == 0),
                           ),
-                      separator: SizedBox(
-                        height: 20,
-                      ),
-                      childCount: homeState
+                          separator: SizedBox(
+                            height: 20,
+                          ),
+                          childCount: homeState
                               .getHomeBoutiquesPaginationObjectByMainCategory[
-                                  currentSlug]
+                          currentSlug]
                               ?.items
                               .length ??
-                          0,
+                              0,
+                        );
+                      },
                     );
                   },
-                );
-              },
+                ),
+                SliverToBoxAdapter(
+                  child: 20.verticalSpace,
+                ),
+              ],
             ),
-            SliverToBoxAdapter(
-              child: 20.verticalSpace,
-            ),
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 }

@@ -103,7 +103,7 @@ class _TabsBarState extends State<TabsBar> {
               }
               return Container(
                   width: 1.sw,
-                  height: 55.h,
+                  height: 40,
                   padding: EdgeInsets.all(4.r),
                   decoration: BoxDecoration(
                     color: colorScheme.white,
@@ -179,6 +179,7 @@ class _TabsBarState extends State<TabsBar> {
                             textController: widget.controller,
                             focusNode: focusNode,
                             onSuffixTap: () {
+                              appBloc.add(ChangeIndexForSearch(2));
                               widget.buildSearchResult.value = 1;
                               widget.appearTrendingAndHistory.value = true;
 
@@ -387,150 +388,142 @@ class _TabsBarState extends State<TabsBar> {
                                 p.currentIndex != c.currentIndex,
                             builder: (context, state) {
                               if (state.currentIndex != 4) {
-                                return SizedBox(
-                                  width: 1.sw,
-                                  child: Row(
-                                      key: TestVariables.kTestMode
-                                          ? Key(WidgetsKey.mainCategoriesTabKey)
-                                          : null,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: List.generate(
-                                        (homeState
-                                                .mainCategoriesResponseModel
-                                                ?.data
-                                                ?.mainCategories
-                                                ?.length ??
-                                            0),
-                                        (index) {
-                                          MainCategory mainCategory = homeState
-                                              .mainCategoriesResponseModel!
-                                              .data!
-                                              .mainCategories![index];
-                                          return Padding(
-                                              padding:
-                                                  HWEdgeInsetsDirectional.only(
-                                                      end: 6),
-                                              child: InkWell(
-                                                onTap: () {
-                                                  if (BlocProvider.of<AppBloc>(
-                                                              context)
-                                                          .state
-                                                          .tabIndex !=
-                                                      index) {
-                                                    appBloc
-                                                        .add(ChangeTab(index));
-                                                    homeBloc.add(GetHomeBoutiqesEvent(
-                                                        getWithPagination:
-                                                            false,
-                                                        offset: "1",
-                                                        categorySlug: homeState
-                                                            .mainCategoriesResponseModel!
-                                                            .data!
-                                                            .mainCategories![
-                                                                index]
-                                                            .slug!));
-                                                  } else {
-                                                    appBloc.add(ChangeTab(-1));
-                                                    homeBloc.add(
-                                                        GetHomeBoutiqesEvent(
-                                                            categorySlug:
-                                                                "Empty",
-                                                            offset: "1",
-                                                            getWithPagination:
-                                                                false));
-                                                  }
-
-                                                  /* appBloc.add(ChangeTab(index));
-                                                          BlocProvider.of<HomeBloc>(context).add(
-                                                                        GetHomeSectionsEvent(
-                                                                            mainCategory.slug.toString()));*/
-
-                                                  /*   homeBloc.add(
-                                                  GetProductsWithoutFiltersEvent(
-                                                      offset: 1,
-                                                      category: homeState
+                                return Row(
+                                    key: TestVariables.kTestMode
+                                        ? Key(WidgetsKey.mainCategoriesTabKey)
+                                        : null,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: List.generate(
+                                      (homeState.mainCategoriesResponseModel
+                                              ?.data?.mainCategories?.length ??
+                                          0),
+                                      (index) {
+                                        MainCategory mainCategory = homeState
+                                            .mainCategoriesResponseModel!
+                                            .data!
+                                            .mainCategories![index];
+                                        print('dsdsds ${mainCategory.name}');
+                                        return Padding(
+                                            padding:
+                                                HWEdgeInsetsDirectional.only(
+                                                    end: 6),
+                                            child: InkWell(
+                                              onTap: () {
+                                                if (BlocProvider.of<AppBloc>(
+                                                            context)
+                                                        .state
+                                                        .tabIndex !=
+                                                    index) {
+                                                  appBloc.add(ChangeTab(index));
+                                                  homeBloc.add(GetHomeBoutiqesEvent(
+                                                      getWithPagination: false,
+                                                      offset: "1",
+                                                      categorySlug: homeState
                                                           .mainCategoriesResponseModel!
                                                           .data!
-                                                          .mainCategories![index]
-                                                          .slug!,
-                                                      selectedProssesType:
-                                                          'category'));*/
-                                                },
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    BlocBuilder<AppBloc,
-                                                        AppState>(
-                                                      buildWhen: (p, c) =>
-                                                          p.tabIndex !=
-                                                          c.tabIndex,
-                                                      builder:
-                                                          (context, state) {
-                                                        return Stack(
-                                                          children: [
-                                                            SvgNetworkWidget(
-                                                              svgUrl: mainCategory
-                                                                  .flatPhotoPath!
-                                                                  .filePath
-                                                                  .toString(),
-                                                              height: 20,
-                                                              color: state.tabIndex ==
-                                                                      index
-                                                                  ? Colors.black
-                                                                  : Color(
-                                                                      0xffC4C2C2),
-                                                            ),
-                                                            BlocBuilder<AppBloc,
-                                                                AppState>(
-                                                              buildWhen: (p,
-                                                                      c) =>
-                                                                  p.tabIndex !=
-                                                                  c.tabIndex,
-                                                              builder: (context,
-                                                                  state) {
-                                                                return Positioned(
-                                                                  top: 0,
-                                                                  left: 0,
-                                                                  child: Visibility(
-                                                                      visible: state
-                                                                              .tabIndex ==
-                                                                          index,
-                                                                      child: FilterSelectedMark(
-                                                                          width:
-                                                                              12,
-                                                                          height:
-                                                                              12)),
-                                                                );
-                                                              },
-                                                            )
-                                                          ],
-                                                        );
-                                                      },
+                                                          .mainCategories![
+                                                              index]
+                                                          .slug!));
+                                                } else {
+                                                  appBloc.add(ChangeTab(-1));
+                                                  homeBloc.add(
+                                                      GetHomeBoutiqesEvent(
+                                                          categorySlug: "Empty",
+                                                          offset: "1",
+                                                          getWithPagination:
+                                                              false));
+                                                }
+
+                                                /* appBloc.add(ChangeTab(index));
+                                                        BlocProvider.of<HomeBloc>(context).add(
+                                                                      GetHomeSectionsEvent(
+                                                                          mainCategory.slug.toString()));*/
+
+                                                /*   homeBloc.add(
+                                                GetProductsWithoutFiltersEvent(
+                                                    offset: 1,
+                                                    category: homeState
+                                                        .mainCategoriesResponseModel!
+                                                        .data!
+                                                        .mainCategories![index]
+                                                        .slug!,
+                                                    selectedProssesType:
+                                                        'category'));*/
+                                              },
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  BlocBuilder<AppBloc,
+                                                      AppState>(
+                                                    buildWhen: (p, c) =>
+                                                        p.tabIndex !=
+                                                        c.tabIndex,
+                                                    builder: (context, state) {
+                                                      return Stack(
+                                                        children: [
+                                                          SvgNetworkWidget(
+                                                            svgUrl: mainCategory
+                                                                .flatPhotoPath!
+                                                                .filePath
+                                                                .toString(),
+                                                            height: 20,
+                                                            // color: state.tabIndex ==
+                                                            //         index
+                                                            //     ? Colors.black
+                                                            //     : Color(
+                                                            //         0xffC4C2C2),
+                                                          ),
+                                                          BlocBuilder<AppBloc,
+                                                              AppState>(
+                                                            buildWhen: (p, c) =>
+                                                                p.tabIndex !=
+                                                                c.tabIndex,
+                                                            builder: (context,
+                                                                state) {
+                                                              return Positioned(
+                                                                top: 0,
+                                                                left: 0,
+                                                                child: Visibility(
+                                                                    visible: state
+                                                                            .tabIndex ==
+                                                                        index,
+                                                                    child: FilterSelectedMark(
+                                                                        width:
+                                                                            12,
+                                                                        height:
+                                                                            12)),
+                                                              );
+                                                            },
+                                                          )
+                                                        ],
+                                                      );
+                                                    },
+                                                  ),
+                                                  4.verticalSpace,
+                                                  MyTextWidget(
+                                                    mainCategory.name
+                                                        .toString(),
+                                                    maxLines: 1,
+                                                    style: textTheme
+                                                        .titleSmall?.lr
+                                                        .copyWith(
+                                                      letterSpacing: 0,
+                                                      color: Color(0xff505050),
+                                                      // color: state.tabIndex !=
+                                                      //         index
+                                                      //     ? Color(
+                                                      //         0xffC4C2C2)
+                                                      //     : Color(
+                                                      //         0xff505050)
                                                     ),
-                                                    4.verticalSpace,
-                                                    MyTextWidget(
-                                                      mainCategory.name
-                                                          .toString(),
-                                                      maxLines: 1,
-                                                      style: textTheme
-                                                          .titleSmall?.lr
-                                                          .copyWith(
-                                                              letterSpacing: 0,
-                                                              color: state.tabIndex !=
-                                                                      index
-                                                                  ? Color(
-                                                                      0xffC4C2C2)
-                                                                  : Color(
-                                                                      0xff505050)),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ));
-                                        },
-                                      )),
-                                );
+                                                  ),
+                                                ],
+                                              ),
+                                            ));
+                                      },
+                                    ));
                               }
                               return SizedBox.shrink();
                             },

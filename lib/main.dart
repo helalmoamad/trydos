@@ -12,7 +12,9 @@ import 'package:flutter_callkit_incoming/entities/notification_params.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:get_it/get_it.dart';
 import 'package:eraser/eraser.dart';
-
+import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
+import 'package:trydos/common/constant/configuration/market_url_routes.dart';
+import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
 import 'package:uuid/uuid.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -251,6 +253,7 @@ void main() async {
   String SessionId = Uuid().v4();
   GetIt.I<PrefsRepository>().setSessionId(SessionId);
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
+  fetchServersUrlsFromSharedPreference();
   NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
@@ -266,4 +269,16 @@ void main() async {
           navKey: navigatorKey,
         ))),
   );
+}
+
+fetchServersUrlsFromSharedPreference()async{
+  if(GetIt.I<PrefsRepository>().getMarketUrl != null) {
+    MarketUrls.setBaseUrl = GetIt.I<PrefsRepository>().getMarketUrl!;
+  }
+  if(GetIt.I<PrefsRepository>().getChatUrl != null) {
+    ChatUrls.setBaseUrl = GetIt.I<PrefsRepository>().getChatUrl!;
+  }
+  if(GetIt.I<PrefsRepository>().getStoryUrl != null) {
+    StoriesUrls.setBaseUrl = GetIt.I<PrefsRepository>().getStoryUrl!;
+  }
 }

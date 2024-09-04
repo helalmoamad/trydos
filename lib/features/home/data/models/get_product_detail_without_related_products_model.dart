@@ -64,6 +64,7 @@ class Product {
   final Seller? seller;
   final Shop? shop;
   final bool? isFavSeller;
+  final int? countOfPieces;
   final List<dynamic>? reviews;
   final bool? hasWholeSale;
   final dynamic wholeSaleLink;
@@ -77,6 +78,7 @@ class Product {
     this.model,
     this.features,
     this.inStock,
+    this.countOfPieces,
     this.variation,
     this.choiceOptions,
     this.hasDiscount,
@@ -111,6 +113,7 @@ class Product {
     bool? hasTax,
     String? deliveryAt,
     String? tax,
+    int? countOfPieces,
     String? unitPrice,
     int? currentStock,
     int? leftStock,
@@ -145,6 +148,7 @@ class Product {
         reviewsCount: reviewsCount ?? this.reviewsCount,
         sellerId: sellerId ?? this.sellerId,
         seller: seller ?? this.seller,
+        countOfPieces: countOfPieces ?? this.countOfPieces,
         shop: shop ?? this.shop,
         boutique: boutique ?? this.boutique,
         isFavSeller: isFavSeller ?? this.isFavSeller,
@@ -159,6 +163,7 @@ class Product {
   factory Product.fromJson(Map<String, dynamic> json) => Product(
         id: json["id"],
         description: json["description"],
+        countOfPieces: json["count_of_pieces"],
         model: json["model"],
         features: json["features"],
         boutique: json["boutique"] == null
@@ -219,6 +224,7 @@ class Product {
         "tax": tax,
         "unit_price": unitPrice,
         "current_stock": currentStock,
+        "count_of_pieces": countOfPieces,
         "Left_stock": leftStock,
         "reviews_count": reviewsCount,
         "seller_id": sellerId,

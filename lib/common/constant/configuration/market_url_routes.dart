@@ -68,7 +68,9 @@ abstract class MarketUrls {
 
   static Uri get baseUri => Uri.parse(_baseUrlDev);
 
-  static const String _baseUrlDev = 'https://market_staging.antiksef.online';
+  static set setBaseUrl(String url) => _baseUrlDev = url;
+
+  static String _baseUrlDev = 'https://market_under_dev_backend.trydos.dev';
   static const String _baseUrlDevWithHttp =
-      'http://market_staging.antiksef.online';
+      'http://market_under_dev_backend.trydos.dev';
 }

@@ -29,7 +29,7 @@ import '../../../common/test_utils/test_var.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/theme_state.dart';
 import '../../../routes/router.dart';
-
+import '../../feed_back/presentation/pages/edit_urls_page.dart';
 import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
 import '../blocs/app_bloc/app_state.dart';
@@ -236,6 +236,10 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     if (context.canPop()) {
                       Navigator.of(context).pop();
                     }
+                    if(state.currentIndex != 0) {
+                      homeBloc.add(GetHomeBoutiqesEvent(
+                          offset: '1', categorySlug: 'Empty'));
+                    }
                     appBloc.add(ChangeBasePage(0));
                     homeBloc.add(ResetAllSelectedAppliedFilterEvent());
                   },
@@ -366,7 +370,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                             actions: [
                               Container(
                                 width: 300,
-                                height: 200,
+                                height: 300,
                                 child: Stack(
                                   children: [
                                     Positioned(
@@ -424,13 +428,20 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                               child:
                                                   MyTextWidget('files exists'),
                                             ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            EditUrlsPage()));
+                                              },
+                                              child:
+                                              MyTextWidget('Edit Urls'),
+                                            ),
+                                            LanguageDropdown(),
                                           ],
                                         )),
-                                    Positioned(
-                                      child: LanguageDropdown(),
-                                      bottom: 40,
-                                      right: 5,
-                                    )
                                   ],
                                 ),
                               )

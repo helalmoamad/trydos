@@ -222,9 +222,9 @@ class _PriceFilterState extends State<PriceFilter> {
                                   searchText: widget.searchText,
                                   prices: Prices(
                                       maxPrice:
-                                          lowerValue / widget.exchangeRate,
-                                      minPrice:
                                           upperValue / widget.exchangeRate,
+                                      minPrice:
+                                          lowerValue / widget.exchangeRate,
                                       currencySymbol: widget.pricrSymbol))),
                         ));
                       },

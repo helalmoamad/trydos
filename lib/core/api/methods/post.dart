@@ -76,15 +76,6 @@ class PostClient<T> extends BaseApi<T> {
           .then((response) {
         stopWatch.stop();
         log('request time: ${stopWatch.elapsed.toString()}');
-        GetIt.I<PrefsRepository>().saveRequestsData(
-            response.requestOptions.path,
-            response.data is! FormData ? response.data : {'data': 'formData'},
-            response.requestOptions.headers,
-            response.statusCode,
-            response.requestOptions.method,
-            response.requestOptions.queryParameters,
-            response.data is! FormData ? response.data : {'data': 'formData'},
-            responseTime: stopWatch.elapsed.toString());
         onUploadingFinished?.call(true);
         return response;
       }).catchError((error, errorStack) {

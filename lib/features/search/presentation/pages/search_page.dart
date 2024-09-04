@@ -89,6 +89,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
         filtersAppliedByUser: null,
         resetAppliedFilters: true));
     homeBloc.add(ChangeSelectedFiltersEvent(
+      fromHomePageSearch: true,
       boutiqueSlug: 'search',
       filtersChoosedByUser: null,
     ));
@@ -115,14 +116,9 @@ class _SearchPageState extends ThemeState<SearchPage> {
                     current.getProductFiltersStatus[key] ||
                 previous.countOfProductExpectedByFiltering !=
                     current.countOfProductExpectedByFiltering ||
-                previous.idForRequest != current.idForRequest ||
-                previous
-                        .getProductListingWithFiltersPaginationModels[
-                            key + "${current.idForRequest}"]
+                previous.getProductListingWithFiltersPaginationModels[key]
                         ?.paginationStatus !=
-                    current
-                        .getProductListingWithFiltersPaginationModels[
-                            key + "${current.idForRequest}"]
+                    current.getProductListingWithFiltersPaginationModels[key]
                         ?.paginationStatus;
           },
           builder: (context, state) {
@@ -172,12 +168,12 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   SliverToBoxAdapter(
                       child: SizedBox(
                     height: state.getProductListingWithFiltersPaginationModels[
-                                key + "${state.idForRequest}"] ==
+                                key] ==
                             null
                         ? 250.h
                         : state
                                 .getProductListingWithFiltersPaginationModels[
-                                    key + "${state.idForRequest}"]!
+                                    key]!
                                 .items
                                 .isNullOrEmpty
                             ? 250.h
@@ -250,7 +246,27 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   BlocBuilder<HomeBloc, HomeState>(
                     builder: (context, state) {
                       return SliverToBoxAdapter(
-                          child: state.choosedFiltersByUser[key] == null &&
+                          child: ((state.choosedFiltersByUser[key]?.filters
+                                              ?.attributes?.isNullOrEmpty ??
+                                          true) &&
+                                      (state.choosedFiltersByUser[key]?.filters
+                                              ?.colors?.isNullOrEmpty ??
+                                          true) &&
+                                      (state.choosedFiltersByUser[key]?.filters
+                                              ?.brands?.isNullOrEmpty ??
+                                          true) &&
+                                      (state.choosedFiltersByUser[key]?.filters
+                                              ?.boutiques?.isNullOrEmpty ??
+                                          true) &&
+                                      (state.choosedFiltersByUser[key]?.filters
+                                              ?.categories?.isNullOrEmpty ??
+                                          true) &&
+                                      ((state.appliedFiltersByUser[key]?.filters
+                                                  ?.searchText?.isEmpty ??
+                                              true) ||
+                                          (state.appliedFiltersByUser[key]?.filters?.searchText?.length ?? 0) < 2) &&
+                                      (state.choosedFiltersByUser[key]?.filters?.prices?.maxPrice == null) &&
+                                      (state.choosedFiltersByUser[key]?.filters?.prices?.minPrice == null)) &&
                                   widget.controller.text.length < 3
                               ? SizedBox.shrink()
                               : Container(
@@ -392,6 +408,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                         resetAppliedFilters: true));
                                     homeBloc.add(ChangeSelectedFiltersEvent(
                                       boutiqueSlug: key,
+                                      fromHomePageSearch: true,
                                       filtersChoosedByUser: null,
                                     ));
                                     widget.controller.clear();

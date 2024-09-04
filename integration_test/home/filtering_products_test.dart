@@ -120,6 +120,7 @@ void main() {
           ////////////// get the category of the filtered products /////////////////////////////
           int productIndex1 = 0;
           List<String> productsCategoryAfterFilter = [];
+          List<String> productsNameAfterFilter = [];
           while (true) {
             Key productKey =
                 Key('${WidgetsKey.productInBoutiqueListKey}$productIndex1');
@@ -138,7 +139,14 @@ void main() {
                 .name
                 .toString();
 
+            String productName = tester
+                .widget<ProductItem>(find.byKey(productKey))
+                .productItem
+                .name
+                .toString();
+
             productsCategoryAfterFilter.add(productBoutCategoryName);
+            productsNameAfterFilter.add(productName);
 
             print('productBoutCategory first : $productBoutCategoryName');
 
@@ -199,6 +207,7 @@ void main() {
           ////////////// get the Brand of the filtered products /////////////////////////////
           int productIndex2 = 0;
           List<String> productsBrandAfterFilter = [];
+          String productBrandFilterName = '';
           while (true) {
             Key productKey =
                 Key('${WidgetsKey.productInBoutiqueListKey}$productIndex2');
@@ -214,6 +223,12 @@ void main() {
                 .widget<ProductItem>(find.byKey(productKey))
                 .productItem
                 .brand!
+                .name
+                .toString();
+
+            productBrandFilterName = tester
+                .widget<ProductItem>(find.byKey(productKey))
+                .productItem
                 .name
                 .toString();
 
@@ -269,6 +284,214 @@ void main() {
           );
 
           expect(filterIconButton, findsOneWidget);
+          await Future.delayed(const Duration(seconds: 2));
+          //////////////////////////////////////////////////////////////////////////////
+          //////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+          //////////////// Filter page /////////////////////////////////
+          await tester.tap(filterIconButton);
+          await tester.pump();
+          await Future.delayed(const Duration(seconds: 1));
+          /////////////  Loading for categoris and brands  /////////////
+          final Finder getCategoriesLoading = find.byKey(
+            Key(WidgetsKey.getCategoriesLoadingKey),
+          );
+          final Finder getBrandsLoadingKey = find.byKey(
+            Key(WidgetsKey.getCategoriesLoadingKey),
+          );
+
+          final Finder filterByCategoryHead = find.byKey(
+            Key(WidgetsKey.filterByCategoryHeadKey),
+          );
+          final Finder filterByBrandHead = find.byKey(
+            Key(WidgetsKey.filterByBrandHeadKey),
+          );
+          ///////////////////////////////
+          expect(getCategoriesLoading, findsOneWidget);
+          expect(getBrandsLoadingKey, findsOneWidget);
+
+          expect(filterByCategoryHead, findsOneWidget);
+          expect(filterByBrandHead, findsOneWidget);
+
+          await tester.pumpAndSettle();
+
+          expect(getCategoriesLoading, findsNothing);
+          expect(getBrandsLoadingKey, findsNothing);
+
+          //////////// filter by category in filter page //////
+
+          final Finder categoryCircleFilterWidget2 = find.byKey(
+            Key('${WidgetsKey.categoryCircleProductListingFilterKey}0'),
+          );
+
+          String categoryName2 = tester
+              .widget<FilterCircleWidget>(categoryCircleFilterWidget2)
+              .categoryName
+              .toString();
+
+          print('Filter Category name $categoryName2');
+
+          await tester.tap(categoryCircleFilterWidget2);
+          await tester.pump();
+          await Future.delayed(const Duration(microseconds: 500));
+
+          expect(getCategoriesLoading, findsOneWidget);
+          expect(getBrandsLoadingKey, findsOneWidget);
+
+          await tester.pumpAndSettle();
+
+          //////////////  Applay Filter Button /////////////////
+
+          final Finder applayFilterButtonWidget = find.byKey(
+            Key(WidgetsKey.applayFilterButtonKey),
+          );
+          expect(applayFilterButtonWidget, findsOneWidget);
+
+          await tester.tap(applayFilterButtonWidget);
+
+          await tester.pumpAndSettle();
+
+          //////////// Filtered products  ///////////////////
+          int productIndex3 = 0;
+          List<String> productsCategoryAfterFilter2 = [];
+          while (true) {
+            Key productKey =
+                Key('${WidgetsKey.productInBoutiqueListKey}$productIndex3');
+
+            print('productKey  found 1 : $productKey');
+
+            if (find.byKey(productKey).evaluate().isEmpty) {
+              print('productKey not found 1 : $productKey');
+              break;
+            }
+
+            String productBoutCategoryName = tester
+                .widget<ProductItem>(find.byKey(productKey))
+                .productItem
+                .categories![0]
+                .name
+                .toString();
+
+            String productName = tester
+                .widget<ProductItem>(find.byKey(productKey))
+                .productItem
+                .name
+                .toString();
+
+            productsCategoryAfterFilter2.add(productBoutCategoryName);
+
+            print('productBoutCategory first : $productBoutCategoryName');
+
+            expect(productBoutCategoryName, equals(categoryName));
+
+            expect(productName, equals(productsNameAfterFilter[productIndex3]));
+
+            productIndex3++;
+          }
+
+          print('first Products Category 2 : $productsCategoryAfterFilter2');
+
+          await Future.delayed(const Duration(seconds: 2));
+          //////////// return to filter page ///////////////////
+          await tester.tap(filterIconButton);
+          await tester.pumpAndSettle();
+          await Future.delayed(const Duration(seconds: 1));
+
+          final Finder resetFiltersButtonWidget = find.byKey(
+            Key(WidgetsKey.resetFiltersKey),
+          );
+
+          expect(resetFiltersButtonWidget, findsOneWidget);
+
+          await tester.tap(resetFiltersButtonWidget);
+
+          await tester.pumpAndSettle();
+
+          await Future.delayed(const Duration(seconds: 2));
+
+          /////////////  Filter By Brand in filter page  /////////////////
+
+          String brandName2 = tester
+              .widget<MyTextWidget>(brandFilterNameWidget)
+              .text
+              .toString();
+
+          print('Filter Brand name $brandName2');
+
+          await tester.tap(brandCircleFilterWidget);
+
+          await tester.pumpAndSettle();
+          await Future.delayed(const Duration(seconds: 1));
+
+          ////////////////////////////
+          expect(applayFilterButtonWidget, findsOneWidget);
+
+          await tester.tap(applayFilterButtonWidget);
+
+          await tester.pumpAndSettle();
+
+          ////////////// filtered products by brand /////////////////////////////
+          int productIndex4 = 0;
+          List<String> productsBrandAfterFilter2 = [];
+          while (true) {
+            Key productKey =
+                Key('${WidgetsKey.productInBoutiqueListKey}$productIndex4');
+
+            print('productKey  found 1 : $productKey');
+
+            if (find.byKey(productKey).evaluate().isEmpty) {
+              print('productKey not found 1 : $productKey');
+              break;
+            }
+
+            String productBoutBrandName = tester
+                .widget<ProductItem>(find.byKey(productKey))
+                .productItem
+                .brand!
+                .name
+                .toString();
+
+            String productName = tester
+                .widget<ProductItem>(find.byKey(productKey))
+                .productItem
+                .name
+                .toString();
+
+            productsBrandAfterFilter2.add(productBoutBrandName);
+
+            print('productBoutBrandName  : $productBoutBrandName');
+
+            expect(productBoutBrandName, equals(brandName));
+
+            expect(productName, equals(productBrandFilterName));
+
+            productIndex4++;
+          }
+
+          print('first Products Category : $productsBrandAfterFilter2');
+          expect(productsBrandAfterFilter2.length, equals(1));
+
+          await Future.delayed(const Duration(seconds: 2));
+
+          ////////// check there are no filters  //////////////////
+
+          await GlobalTestFunctions.findWidget(
+            tester: tester,
+            actual: appliedFiltersProductListingWidget,
+            withDelayAndPumpAndSettle: false,
+            successMessage: 'Find Applied Filters Widget Success',
+            failedMessage: 'Find Applied Filters Widget failed',
+          );
+          ///////////////////////////
+          await GlobalTestFunctions.findNoWidget(
+            tester: tester,
+            actual: productListingFilterListWidget,
+            withDelayAndPumpAndSettle: false,
+            successMessage: 'Find No product List Filter Widget  Success',
+            failedMessage: 'Find No product List Filte Widget failed',
+          );
+
+          expect(filterIconButton, findsNothing);
         },
       );
     },

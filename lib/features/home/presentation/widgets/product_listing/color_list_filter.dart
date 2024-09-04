@@ -126,6 +126,9 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                         ?.filters
                                     : homeBloc.state.choosedFiltersByUser[key]
                                         ?.filters;
+                            List<String>? colors = List.of(
+                                prevChoosedOrAppliedFilterToAddToIt?.colors ??
+                                    []);
                             if (!isSelected) {
                               if (prevChoosedOrAppliedFilterToAddToIt == null) {
                                 prevChoosedOrAppliedFilterToAddToIt = Filter();
@@ -149,11 +152,22 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                                       color
                                                     ]);
                             } else {
-                              prevChoosedOrAppliedFilterToAddToIt!.colors!
-                                  .removeWhere(((element) =>
-                                      element == widget.colors[index]));
+                              colors.removeWhere(((element) =>
+                                  element == widget.colors[index]));
+                              prevChoosedOrAppliedFilterToAddToIt =
+                                  prevChoosedOrAppliedFilterToAddToIt
+                                      ?.copyWithSaveOtherField(
+                                colors: colors,
+                                searchText: prevChoosedOrAppliedFilterToAddToIt
+                                    .searchText,
+                                prices:
+                                    prevChoosedOrAppliedFilterToAddToIt.prices,
+                              );
                             }
                             if (widget.hideTitle) {
+                              print(
+                                  "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
                               homeBloc.add(ChangeAppliedFiltersEvent(
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,
@@ -169,6 +183,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                   offset: 1));
                             } else {
                               homeBloc.add(ChangeSelectedFiltersEvent(
+                                fromHomePageSearch: widget.fromHomeSearch,
                                 requestToUpdateFilters: true,
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,

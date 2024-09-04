@@ -47,4 +47,8 @@ abstract class PrefsKey {
   static const isAuthorizedGetAssets = r'__$__isAuthorizedGetAssets__$__';
 
   static const fcmToken = r'__$__fcmToken__$__';
+
+  static const marketUrl = r'__$__marketUrl__$__';
+  static const storyUrl = r'__$__storyUrl__$__';
+  static const chatUrl = r'__$__chatUrl__$__';
 }

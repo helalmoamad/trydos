@@ -39,7 +39,8 @@ class SelectSizeContent extends StatefulWidget {
 class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   List<String> sizes = [];
 
-  final CarouselSliderController carouselController = CarouselSliderController();
+  final CarouselSliderController carouselController =
+      CarouselSliderController();
   late final ValueNotifier<int> currentIndexInSizes;
   late HomeBloc homeBloc;
   @override
@@ -198,7 +199,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                               )
                             ],
                           ),
-                         CarouselSlider.builder(
+                          CarouselSlider.builder(
                               itemCount: sizes.length,
                               carouselController: carouselController,
                               itemBuilder: (ctx, index, _) {
@@ -208,7 +209,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                   child: Center(
                                     child: Text(
                                       sizes[index],
-                                      style: textTheme.headlineLarge?.bq.copyWith(
+                                      style:
+                                          textTheme.headlineLarge?.bq.copyWith(
                                         height: 1.3,
                                         fontSize: index != currentIndex
                                             ? index < currentIndex
