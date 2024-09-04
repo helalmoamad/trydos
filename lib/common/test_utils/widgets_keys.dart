@@ -80,4 +80,14 @@ class WidgetsKey {
   static const filterIconKey = 'filter_icon_key';
 
   static const productListingFilterListKey = 'product_listing_filter_list_key';
+
+  static const applayFilterButtonKey = 'applay_filter_button_key';
+  static const filterByCategoryHeadKey = 'filter_by_category_head_key';
+  static const getCategoriesLoadingKey = 'get_categories_loading_key';
+  static const filterByBrandHeadKey = 'filter_by_brand_head_key';
+  static const getBrandsLoadingKey = 'get_brands_loading_key';
+
+  static const closeFiltersPageKey = 'close_filters_page_key';
+
+  static const resetFiltersKey = 'reset_filters_key';
 }

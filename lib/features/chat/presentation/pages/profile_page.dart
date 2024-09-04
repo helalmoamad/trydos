@@ -64,6 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     images = _prefsRepository.getTheLocalPathForChannel(widget.chatId) ?? [];
     chatBloc = BlocProvider.of<ChatBloc>(context);
+    print(images);
     images!.forEach((element) {
       mimeStr = element.split(" ")[0];
       if (mimeStr.split('/').contains("video") &&
@@ -75,6 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
         filess++;
       } else {}
     });
+
     chatBloc.add(
         AddMediaCountEvent(images: imagess, videos: videoss, file: filess));
     super.initState();
