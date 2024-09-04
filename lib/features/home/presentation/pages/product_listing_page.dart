@@ -1274,12 +1274,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   '${(widget.category ?? '')}']
                                                           ?.paginationStatus ||
                                                   p
-                                                          .getProductListingPaginationWithoutFiltersModel[
+                                                          .getProductListingWithFiltersPaginationModels[
                                                               '${widget.boutiqueSlug}' +
                                                                   '${(widget.category ?? '')}']
                                                           ?.paginationStatus !=
                                                       c
-                                                          .getProductListingPaginationWithoutFiltersModel[
+                                                          .getProductListingWithFiltersPaginationModels[
                                                               '${widget.boutiqueSlug}' +
                                                                   '${(widget.category ?? '')}']
                                                           ?.paginationStatus ||

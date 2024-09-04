@@ -203,7 +203,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
   bool isAFilePathExist(String filePath, String chatId) {
     List<String> files = getExistenceFiles();
     String path = files.firstWhere(
-        (element) => element.contains(filePath.split(" ")[0]),
+        (element) => (element.contains(filePath.split(" ")[0]) &&
+            element.contains('"${chatId}"' + ":")),
         orElse: () => '');
     return path != '';
   }
@@ -222,7 +223,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> removeAFilePathExist(String filePath, String chatId) {
     List<String> files = getExistenceFiles();
 
-    files.removeWhere((element) => element.contains(filePath));
+    files.removeWhere((element) => (element.contains(filePath.split(" ")[0]) &&
+        element.contains('"${chatId}"' + ":")));
     return _preferences.setStringList(PrefsKey.existenceFiles, files);
   }
 
@@ -238,7 +240,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
   String? getTheLocalPathForFile(String filePath, String chatId) {
     List<String> files = getExistenceFiles();
 
-    String path = files.firstWhere((element) => element.contains(filePath));
+    String path =
+        files.firstWhere((element) => element.contains('"${chatId}"' + ":"));
 
     Map paths = convert.jsonDecode(path);
     return paths[chatId].toString().split(' ').length > 1
@@ -260,6 +263,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
         }
       }
     });
+
     return paths.reversed.toList();
   }
 
@@ -384,7 +388,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> removeAllFilePathExistInChat(String chatId) {
     List<String> files = getExistenceFiles();
-    files.removeWhere((element) => element.contains(chatId));
+    files.removeWhere((element) => element.contains('"${chatId}"' + ":"));
 
     return _preferences.setStringList(PrefsKey.existenceFiles, files);
   }
