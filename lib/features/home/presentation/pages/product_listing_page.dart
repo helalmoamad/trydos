@@ -909,6 +909,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                       color: Color(0xff3C3C3C),
                                                                                     )
                                                                                   : SvgPicture.asset(
+                                                                                      key: TestVariables.kTestMode ? Key(WidgetsKey.closeFiltersPageKey) : null,
                                                                                       AppAssets.closeSvg,
                                                                                       width: 15,
                                                                                       height: 15,

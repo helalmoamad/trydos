@@ -198,6 +198,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                   ? Padding(
                       padding: EdgeInsetsDirectional.only(start: 25),
                       child: Row(
+                        key: TestVariables.kTestMode
+                            ? Key(WidgetsKey.filterByCategoryHeadKey)
+                            : null,
                         children: [
                           FilterSelectedMark(width: 20, height: 20),
                           SizedBox(
@@ -218,6 +221,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                           if (state.getProductFiltersStatus[key] ==
                               GetProductFiltersStatus.loading)
                             Row(
+                              key: TestVariables.kTestMode
+                                  ? Key(WidgetsKey.getCategoriesLoadingKey)
+                                  : null,
                               children: [
                                 SizedBox(
                                   width: 5,
@@ -251,17 +257,16 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       visible: !isExpanded,
                       child: InkWell(
                         onTap: () {
-                          print('cate');
-                          // currentActiveSection.value =
-                          //     currentActiveSection.value == (countOfFilters - 1)
-                          //         ? 0
-                          //         : (currentActiveSection.value + 1);
-                          // autoScrollController.scrollToIndex(
-                          //     2 * currentActiveSection.value,
-                          //     duration: Duration(milliseconds: 200),
-                          //     preferPosition: AutoScrollPosition.begin);
-                          // widget.onMoveToAnotherFiltersSection.call(
-                          //     titleOfFilterSection[currentActiveSection.value]);
+                          currentActiveSection.value =
+                              currentActiveSection.value == (countOfFilters - 1)
+                                  ? 0
+                                  : (currentActiveSection.value + 1);
+                          autoScrollController.scrollToIndex(
+                              2 * currentActiveSection.value,
+                              duration: Duration(milliseconds: 200),
+                              preferPosition: AutoScrollPosition.begin);
+                          widget.onMoveToAnotherFiltersSection.call(
+                              titleOfFilterSection[currentActiveSection.value]);
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(top: 35.0),
@@ -733,6 +738,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 Expanded(
                                   flex: 5,
                                   child: InkWell(
+                                    key: TestVariables.kTestMode
+                                        ? Key(WidgetsKey.applayFilterButtonKey)
+                                        : null,
                                     onTap: () {
                                       List<filter_model.Brand>? brands = [
                                         ...state.appliedFiltersByUser[key]
@@ -1005,6 +1013,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                               0xff388CFF))),
                                                   child: Center(
                                                     child: MyTextWidget(
+                                                      key: TestVariables
+                                                              .kTestMode
+                                                          ? Key(WidgetsKey
+                                                              .resetFiltersKey)
+                                                          : null,
                                                       'Reset',
                                                       style: textTheme
                                                           .bodyLarge?.rq

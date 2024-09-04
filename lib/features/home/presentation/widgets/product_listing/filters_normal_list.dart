@@ -65,6 +65,9 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
         children: [
           if (!widget.hideTitle) ...{
             Row(
+              key: TestVariables.kTestMode
+                  ? Key(WidgetsKey.filterByBrandHeadKey)
+                  : null,
               children: [
                 FilterSelectedMark(width: 20, height: 20),
                 SizedBox(
@@ -86,6 +89,9 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                   if (state.getProductFiltersStatus[key] ==
                       GetProductFiltersStatus.loading) {
                     return Row(
+                      key: TestVariables.kTestMode
+                          ? Key(WidgetsKey.getBrandsLoadingKey)
+                          : null,
                       children: [
                         SizedBox(
                           width: 5,
