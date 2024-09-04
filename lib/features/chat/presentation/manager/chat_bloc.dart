@@ -97,18 +97,21 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<GetMessagesForChatEvent>(_onGetMessagesForChatEvent);
     on<GetAllMessagesBetweenEvent>(_onGetAllMessagesBetweenEvent,
         transformer: throttleDroppable(throttleDuration));
-    on<SaveContactsEvent>(_onSaveContactsEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<SaveContactsEvent>(
+      _onSaveContactsEvent,
+    );
     on<GetChatsEvent>(_onGetChatsEvent,
         transformer: throttleDroppable(throttleDuration));
-    on<ReceiveMissCallEvent>(_onReceiveMissCallEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<ReceiveMissCallEvent>(
+      _onReceiveMissCallEvent,
+    );
 
     on<GetContactsEvent>(_onGetContactsEvent,
         transformer: throttleDroppable(throttleDuration));
 
-    on<AddMediaCountEvent>(_onAddMediaCountEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<AddMediaCountEvent>(
+      _onAddMediaCountEvent,
+    );
   }
 
   final SendMessageUseCase sendMessageUseCase;
