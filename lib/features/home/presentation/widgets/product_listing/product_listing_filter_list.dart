@@ -98,6 +98,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       isExpanded = widget.filterPageExpanded.value;
     });
     autoScrollController = AutoScrollController();
+
     super.initState();
   }
 
@@ -124,7 +125,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SizedBox(
-                height: 40,
+                height: 150,
               ),
               state.getProductFiltersStatus[key] ==
                       GetProductFiltersStatus.loading
@@ -140,7 +141,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       ),
                     ),
               SizedBox(
-                height: 20,
+                height: 100,
               ),
               Container(
                 width: 200,
@@ -150,8 +151,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                     if (lowerAndUpperPrices != null) {
                       lowerAndUpperPrices!.value = Tuple2(minPrice!, maxPrice!);
                     }
-                    print(
-                        "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
 
                     homeBloc.add(AddPrefAppliedFilterForExtendFilterEvent(
                         prefAppliedFilter: Filter()));
