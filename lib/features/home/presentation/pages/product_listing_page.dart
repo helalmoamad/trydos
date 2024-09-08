@@ -127,23 +127,23 @@ class _ProductListingPageState extends State<ProductListingPage> {
     //     offset: 1,
     //   ));
     // }
-    if (!widget.fromSearch) {
-      homeBloc.add(GetProductFiltersEvent(
-          cashedOrginalBoutique: true,
-          fromHomePageSearch: widget.fromSearch,
-          boutiqueSlug: widget.boutiqueSlug,
-          category: widget.category,
-          searchText: widget.fromSearch ? widget.searchText : null));
-    }
-    if (!widget.fromSearch) {
-      homeBloc.add(GetProductsWithFiltersEvent(
-          cashedOrginalBoutique: !widget.fromSearch,
-          boutiqueSlug: widget.boutiqueSlug,
-          fromSearch: widget.fromSearch,
-          category: widget.category,
-          searchText: widget.fromSearch ? widget.searchText : null,
-          offset: 1));
-    }
+    // if (!widget.fromSearch) {
+    //   homeBloc.add(GetProductFiltersEvent(
+    //       cashedOrginalBoutique: true,
+    //       fromHomePageSearch: widget.fromSearch,
+    //       boutiqueSlug: widget.boutiqueSlug,
+    //       category: widget.category,
+    //       searchText: widget.fromSearch ? widget.searchText : null));
+    // }
+    // if (!widget.fromSearch) {
+    //   homeBloc.add(GetProductsWithFiltersEvent(
+    //       cashedOrginalBoutique: !widget.fromSearch,
+    //       boutiqueSlug: widget.boutiqueSlug,
+    //       fromSearch: widget.fromSearch,
+    //       category: widget.category,
+    //       searchText: widget.fromSearch ? widget.searchText : null,
+    //       offset: 1));
+    // }
     scrollController.addListener(() {
       if (filterPageExpanded.value) return;
       if (scrollController.position.pixels <= 80) {
