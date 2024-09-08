@@ -1010,6 +1010,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           reRequestTheseBoutiques: {},
           reRequestProductWithFilters: {},
           productStatus: {},
+          boutiquesThatDidPrefetch: {},
           choosedFiltersByUser: {},
           appliedFiltersByUser: {},
           cashedOrginalBoutique: false,
@@ -1025,15 +1026,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onGetProductFiltersEvent(
       GetProductFiltersEvent event, Emitter<HomeState> emit) async {
     String key = event.boutiqueSlug + (event.category ?? '');
-    Map<String , bool> boutiquesThatDidPrefetch = Map.of(state.boutiquesThatDidPrefetch);
+    Map<String, bool> boutiquesThatDidPrefetch =
+        Map.of(state.boutiquesThatDidPrefetch);
     boutiquesThatDidPrefetch[key] = true;
     Map<String, GetProductFiltersStatus> statuses =
         Map.of(state.getProductFiltersStatus);
     statuses[key] = GetProductFiltersStatus.loading;
     emit(state.copyWith(
-      getProductFiltersStatus: Map.of(statuses),
-        boutiquesThatDidPrefetch : boutiquesThatDidPrefetch
-    ));
+        getProductFiltersStatus: Map.of(statuses),
+        boutiquesThatDidPrefetch: boutiquesThatDidPrefetch));
     filters_model.Filter filters =
         event.filtersChoosedByUser?.filters ?? filters_model.Filter();
 
