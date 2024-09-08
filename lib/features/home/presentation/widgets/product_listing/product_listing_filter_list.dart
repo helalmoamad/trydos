@@ -1604,6 +1604,10 @@ Widget choosedOrAppliedFiltersWidget({
                                 width: 5,
                               ),
                               MyTextWidget(
+                                key: TestVariables.kTestMode
+                                    ? Key(WidgetsKey
+                                        .appliedFiltersBoutiqueNameKey)
+                                    : null,
                                 filters.boutiques![index].name.toString(),
                                 maxLines: 1,
                                 textAlign: TextAlign.center,

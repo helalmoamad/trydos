@@ -88,6 +88,12 @@ class WidgetsKey {
   static const getBrandsLoadingKey = 'get_brands_loading_key';
 
   static const closeFiltersPageKey = 'close_filters_page_key';
-
   static const resetFiltersKey = 'reset_filters_key';
+
+  static const homeSearchIconKey = 'home_search_icon_key';
+  static const searchPageBoutiqueNameKey = 'search_page_boutique_key';
+  static const searchPageBoutiqueListKey = 'applied_filters_boutique_list_key';
+  static const searchButtonInSearchPageKey = 'search_button_in_search_page_key';
+  static const appliedFiltersBoutiqueNameKey =
+      'applied_filters_boutique_name_key';
 }
