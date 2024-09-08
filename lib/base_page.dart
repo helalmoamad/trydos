@@ -380,19 +380,19 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
-      if (event.data['type'] == 'RefuseCallEvent') {
+      Map remoteMessage = convert.jsonDecode(event.data['data']);
+
+      if (remoteMessage['type'] == 'RefuseCallEvent') {
         Map<String, dynamic> data =
-            convert.jsonDecode(event.data['data'].toString());
+            convert.jsonDecode(remoteMessage['message'].toString());
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'RefuseCall for message ForeGround ${data['message_id']}');
         if (data['duration_in_seconds']!.toString().contains("-1")) {
           chatBloc.add(ReceiveMissCallEvent(true,
               channelId: data['channel_id'].toString()));
-
           GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
         }
-
         if ((data['message_id'].toString() !=
                 callsBloc.state.currentActiveCallId) &&
             callsBloc.state.currentActiveCallId != '-1') {
@@ -404,7 +404,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             navigatorKey.currentState!.context.widget is! SinglePageChat) {
           navigatorKey.currentState!.context.pop();
         }
-      } else if (event.data['type'] == 'VideoCallEvent') {
+      } else if (remoteMessage['type'] == 'VideoCallEvent') {
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'VideoCallEvent ForeGround Message');
@@ -431,7 +431,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               auth_token: prefsRepository.chatToken!,
               uId: prefsRepository.myChatId!.toString()),
         ));
-      } else if (event.data['type'] == 'VoiceCallEvent') {
+      } else if (remoteMessage['type'] == 'VoiceCallEvent') {
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'VoiceCallEvent ForeGround Message');
@@ -458,9 +458,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               auth_token: prefsRepository.chatToken!,
               uId: prefsRepository.myChatId!.toString()),
         ));
-      } else if (event.data['type'] == 'AnswerCallEvent') {
+      } else if (remoteMessage['type'] == 'AnswerCallEvent') {
         Map<String, dynamic> data =
-            convert.jsonDecode(event.data['data'].toString());
+            convert.jsonDecode(remoteMessage['message'].toString());
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'AnswerCallEvent Message');
@@ -478,54 +478,48 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           navigatorKey.currentState!.context.pop();
         }
         callsBloc.add(UserInteractWithCall(rejectIt: false));
-      } else if (event.data['type'] == 'ChannelDeletedEvent') {
+      } else if (remoteMessage['type'] == 'ChannelDeletedEvent') {
         Map<String, dynamic> data =
-            convert.jsonDecode(event.data["data"].toString());
+            convert.jsonDecode(remoteMessage["message"].toString());
         GetIt.I<ChatBloc>()
             .add(DeleteChatFromNotificationEvent(channelId: data['channelId']));
-      } else if (event.data['type'] == 'UpdatingMessageEvent') {
+      } else if (remoteMessage['type'] == 'UpdatingMessageEvent') {
         Map<String, dynamic> data =
-            convert.jsonDecode(event.data["data"].toString());
+            convert.jsonDecode(remoteMessage["message"].toString());
         GetIt.I<CallsBloc>().add(DeleteMessageNotificationReceivedInCallsEvent(
-            channelId: data['message']["channel_id"],
-            messageId: data['message']["id"],
-            deleteFromBoth: data['message']["auth_message_status"]
-                    ["delete_for_all"]
-                ? 1
-                : 0,
-            type: !data['message']["message_type"]["name"]
-                    .toString()
-                    .contains('Call')
+            channelId: data["channel_id"],
+            messageId: data["id"],
+            deleteFromBoth:
+                data["auth_message_status"]["delete_for_all"] ? 1 : 0,
+            type: !data["message_type"]["name"].toString().contains('Call')
                 ? "message"
                 : "call",
-            deleteFromId: data['message']["deleted_by_user_id"] ?? 0));
-      } else if (event.data['type'] == 'ChannelUpdatedEvent') {
+            deleteFromId: data["deleted_by_user_id"] ?? 0));
+      } else if (remoteMessage['type'] == 'ChannelUpdatedEvent') {
         Map<String, dynamic> data =
-            convert.jsonDecode(event.data["data"].toString());
+            convert.jsonDecode(remoteMessage["message"].toString());
         GetIt.I<ChatBloc>().add(UpdateChannelObjectFromNotificationEvent(
             chat: Chat.fromJson(data['channel'])));
-      } else if (event.data['type'] == 'ChannelWatchedEvent') {
+      } else if (remoteMessage['type'] == 'ChannelWatchedEvent') {
         Map<String, dynamic> data =
-            convert.jsonDecode(event.data['data'].toString());
+            convert.jsonDecode(remoteMessage['message'].toString());
         chatBloc.add(WatchedMessageFromPusherEvent(
           data['channel_id'].toString(),
           data['auth_user_id'],
           data['last_message_id'],
           DateTime.parse(data['watched_at']),
         ));
-      } else if (event.data['type'] == 'ChannelReceivedEvent') {
+      } else if (remoteMessage['type'] == 'ChannelReceivedEvent') {
         Map<String, dynamic> data =
-            convert.jsonDecode(event.data['data'].toString());
+            convert.jsonDecode(remoteMessage['message'].toString());
         chatBloc.add(ReceiveMessageFromPusherEvent(
             data['channel_id'].toString(),
             data['auth_user_id'],
             data['last_message_id'],
             DateTime.parse(data['received_at'])));
       } else {
-        log(event.data['message'].toString());
-        Message message =
-            Message.fromJson(convert.jsonDecode(event.data['message']));
-        String prevMessageId = event.data['prev_message_id'];
+        Message message = Message.fromJson(remoteMessage['message']);
+        String prevMessageId = remoteMessage['prev_message_id'].toString();
         chatBloc.add(AddChannelToChannels(message: message));
         chatBloc.add(ReceiveMessageEvent(
             message: message, prevMessageId: prevMessageId));
@@ -703,9 +697,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                           .setUserCountryIsAvailable(
                                                               1);
                                                     } else {
-                                                      print("88888888888888" +
-                                                          "-------------------------------------------------");
-
                                                       showMessage(
                                                           "you have to choose a country",
                                                           backGroundColor:

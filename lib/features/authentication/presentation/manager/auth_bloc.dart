@@ -84,7 +84,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SendOtpEvent>(_onSendOtpEvent);
     on<VerifyOtpSignInEvent>(_onVerifyOtpSignInEvent);
     on<VerifyOtpSignUpEvent>(_onVerifyOtpSignUpEvent);
-    on<VerifyGuestPhoneEvent>(_onVerifyGuestPhoneEvent,);
+    on<VerifyGuestPhoneEvent>(
+      _onVerifyGuestPhoneEvent,
+    );
     on<RegisterGuestEvent>(_onRegisterGuestEvent,
         transformer: throttleDroppable(throttleDuration));
     on<UpdateNameEvent>(_onUpdateNameEvent,
@@ -289,6 +291,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setMyMarketName(r.data!.user!.name!);
         }
         _prefsRepository.setMarketToken(r.data!.token!);
+        print(
+            "*****************************-----------------------------${r.data!.token!}");
         _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
         _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
         add(LoginToChatEvent(
@@ -347,6 +351,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository.setMyMarketName(r.data!.user!.name!);
       }
       _prefsRepository.setMarketToken(r.data!.token!);
+      print(
+          ".................................*****************************-----------------------------${r.data!.token!}");
+
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
       add(LoginToChatEvent(
@@ -398,6 +405,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
+      print(
+          "////////////////////*****************************-----------------------------${r.data!.token!}");
+
       emit(state.copyWith(
           registerGuestStatus: RegisterGuestStatus.success,
           marketUser: r.data!.user));
@@ -429,7 +439,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onGetCustomerInfoEvent(
       GetCustomerInfoEvent event, Emitter<AuthState> emit) async {
-    if(state.getCustomerInfoStatus == GetCustomerInfoStatus.success) return ;
+    if (state.getCustomerInfoStatus == GetCustomerInfoStatus.success) return;
     emit(state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.loading));
     final response = await getCustomerInfoUseCase(NoParams());
     response.fold((l) {

@@ -92,6 +92,7 @@ bool declineCallBecauseOfNotificationButton = false;
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  HttpOverrides.global = MyHttpOverrides();
   if (!isHydratedStorageInitialized) {
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: await getApplicationDocumentsDirectory(),
@@ -103,23 +104,24 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     isDependencyInitialized = true;
   }
   try {
-    if (message.data['type'] == 'VideoCallEvent' ||
-        message.data['type'] == 'VoiceCallEvent') {
+    Map remoteMessage = convert.jsonDecode(message.data['data']);
+    if (remoteMessage['type'] == 'VideoCallEvent' ||
+        remoteMessage['type'] == 'VoiceCallEvent') {
       String currentUuid = const Uuid().v4();
       Map<String, dynamic> data =
-          convert.jsonDecode(message.data['data'].toString());
+          convert.jsonDecode(remoteMessage['message'].toString());
       if (DateTime.now()
               .difference(HelperFunctions.getZonedDate(
-                  DateTime.parse(data['message']['created_at'])))
+                  DateTime.parse(data['created_at'])))
               .inMinutes >=
           1) {
         return;
       }
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
-          error: '${message.data['type']} background  ${data['message_id']}');
-      GetIt.I<CallsBloc>().add(
-          UpdateCurrentActiveCallIdEvent(id: data["message"]["id"].toString()));
+          error: '${remoteMessage['type']} background  ${data['message_id']}');
+      GetIt.I<CallsBloc>()
+          .add(UpdateCurrentActiveCallIdEvent(id: data["id"].toString()));
       FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
         switch (event!.event) {
           case Event.actionCallDecline:
@@ -129,7 +131,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
                 GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
                     duration: 0,
                     payload: {'Target': 'Application  From terminated'},
-                    messageId: data["message"]["id"].toString()));
+                    messageId: data["id"].toString()));
               }
             }
             break;
@@ -144,11 +146,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         declineCallBecauseOfNotificationButton = false;
       });
       showCallKitIncoming(data, currentUuid,
-          isVideo: message.data['type'] == 'VideoCallEvent');
-    } else if (message.data['type'] == 'RefuseCallEvent') {
+          isVideo: remoteMessage['type'] == 'VideoCallEvent');
+    } else if (remoteMessage['type'] == 'RefuseCallEvent') {
       declineCallBecauseOfNotificationButton = true;
       Map<String, dynamic> data =
-          convert.jsonDecode(message.data['data'].toString());
+          convert.jsonDecode(remoteMessage['message'].toString());
 
       if (data['duration_in_seconds']!.toString().contains("-1")) {
         GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
@@ -163,10 +165,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           error: 'RefuseCall for message backGround ${data['message_id']}');
       FlutterCallkitIncoming.endAllCalls();
       GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: true));
-    } else if (message.data['type'] == 'AnswerCallEvent') {
+    } else if (remoteMessage['type'] == 'AnswerCallEvent') {
       declineCallBecauseOfNotificationButton = true;
       Map<String, dynamic> data =
-          convert.jsonDecode(message.data['data'].toString());
+          convert.jsonDecode(remoteMessage['message'].toString());
       if (data['message_id'].toString() !=
               GetIt.I<CallsBloc>().state.currentActiveCallId &&
           GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
@@ -174,36 +176,34 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       }
       FlutterCallkitIncoming.endAllCalls();
       GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false));
-    } else if (message.data['type'] == 'ChannelReceivedEvent') {
+    } else if (remoteMessage['type'] == 'ChannelReceivedEvent') {
       GetIt.I<PrefsRepository>()
           .setMessageReceivedStatusFromBackground(message.data['data']);
-    } else if (message.data['type'] == 'ChannelWatchedEvent') {
+    } else if (remoteMessage['type'] == 'ChannelWatchedEvent') {
       GetIt.I<PrefsRepository>()
           .setMessageWatchStatusFromBackground(message.data['data']);
-    } else if (message.data['type'] == 'UpdatingMessageEvent') {
+    } else if (remoteMessage['type'] == 'UpdatingMessageEvent') {
       GetIt.I<PrefsRepository>()
           .setRemovedMessageFromBackground(message.data['data']);
-    } else if (message.data['type'] == 'ChannelUpdatedEvent') {
+    } else if (remoteMessage['type'] == 'ChannelUpdatedEvent') {
       Map<String, dynamic> data =
           convert.jsonDecode(message.data["data"].toString());
       GetIt.I<PrefsRepository>()
           .setMessageFromBackground(convert.jsonEncode(data['channel']));
     } else if (message.data['type'] == 'ChannelDeletedEvent') {
       Map<String, dynamic> data =
-          convert.jsonDecode(message.data["data"].toString());
+          convert.jsonDecode(remoteMessage['message'].toString());
       GetIt.I<PrefsRepository>()
           .setRemovedChatFromBackground(data['channel_id'].toString());
     } else {
-      if (message.data['message'] == null) return;
-
-      Message myMessage =
-          Message.fromJson(convert.jsonDecode(message.data['message']));
+      if (remoteMessage['message'] == null) return;
+      Message myMessage = Message.fromJson(remoteMessage['message']);
       if (myMessage.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
         GetIt.I<ChatBloc>().add(
             NotifyThatIReceivedMessageEvent(channelId: myMessage.channelId!));
       }
-      GetIt.I<PrefsRepository>()
-          .setMessageFromBackground(message.data['message']);
+      GetIt.I<PrefsRepository>().setMessageFromBackground(
+          convert.jsonEncode(remoteMessage['message']));
       if (myMessage.channel!.channelMembers!
                   .firstWhere((element) =>
                       element.userId == GetIt.I<PrefsRepository>().myChatId)
@@ -271,14 +271,14 @@ void main() async {
   );
 }
 
-fetchServersUrlsFromSharedPreference()async{
-  if(GetIt.I<PrefsRepository>().getMarketUrl != null) {
+fetchServersUrlsFromSharedPreference() async {
+  if (GetIt.I<PrefsRepository>().getMarketUrl != null) {
     MarketUrls.setBaseUrl = GetIt.I<PrefsRepository>().getMarketUrl!;
   }
-  if(GetIt.I<PrefsRepository>().getChatUrl != null) {
+  if (GetIt.I<PrefsRepository>().getChatUrl != null) {
     ChatUrls.setBaseUrl = GetIt.I<PrefsRepository>().getChatUrl!;
   }
-  if(GetIt.I<PrefsRepository>().getStoryUrl != null) {
+  if (GetIt.I<PrefsRepository>().getStoryUrl != null) {
     StoriesUrls.setBaseUrl = GetIt.I<PrefsRepository>().getStoryUrl!;
   }
 }

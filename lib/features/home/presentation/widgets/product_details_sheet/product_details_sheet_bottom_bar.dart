@@ -389,20 +389,24 @@ class _ProductDetailsSheetBottomBarState
                                                                                               '${widget.colorName} ',
                                                                                               style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
                                                                                             ),
-                                                                                      MyTextWidget(
-                                                                                        'color ',
-                                                                                        style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                      ),
+                                                                                      widget.colorNum == ""
+                                                                                          ? SizedBox.shrink()
+                                                                                          : MyTextWidget(
+                                                                                              'color ',
+                                                                                              style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                            ),
                                                                                       widget.size == ""
                                                                                           ? SizedBox.shrink()
                                                                                           : MyTextWidget(
                                                                                               '${widget.size} ',
                                                                                               style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                             ),
-                                                                                      MyTextWidget(
-                                                                                        'size',
-                                                                                        style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                      ),
+                                                                                      widget.size == ""
+                                                                                          ? SizedBox.shrink()
+                                                                                          : MyTextWidget(
+                                                                                              'size',
+                                                                                              style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                            ),
                                                                                     ],
                                                                                   )
                                                                                 }

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,6 +44,7 @@ class _HomePageState extends State<HomePage> {
   double? _velocity;
   final ScrollController scrollController = ScrollController();
   Key reRenderingListViewKey = UniqueKey();
+
   @override
   void initState() {
     print(
@@ -65,6 +67,7 @@ class _HomePageState extends State<HomePage> {
     ));
     String selectedCategorySlug;
     scrollController.addListener(() {
+      print('Scroll position index: ${(scrollController.position.viewportDimension - 320) ~/ 235}');
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
       if (currentSelectedMainCategoryTab == -1) {
         selectedCategorySlug = "Empty";
@@ -74,6 +77,7 @@ class _HomePageState extends State<HomePage> {
             '';
       }
       if (selectedCategorySlug == '') return;
+      prefetchBoutiques(selectedCategorySlug);
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
         print(
@@ -94,6 +98,40 @@ class _HomePageState extends State<HomePage> {
       }
     });
     super.initState();
+  }
+
+  prefetchBoutiques(String currentSlug){
+    for (int i = 0;
+    i <
+        min( (1.sh - 220 - 50 - 50) ~/ 235 + 1 , (homeBloc.state
+            .getHomeBoutiquesPaginationObjectByMainCategory[
+        currentSlug]
+            ?.items
+            .length ??
+            1000000));
+    i++) {
+      String slug = homeBloc.state
+          .getHomeBoutiquesPaginationObjectByMainCategory[
+      currentSlug]!
+          .items[i]
+          .slug
+          .toString();
+      if (homeBloc.state.boutiquesThatDidPrefetch[slug] != true) {
+        homeBloc.add(GetProductFiltersEvent(
+            cashedOrginalBoutique: true,
+            fromHomePageSearch: false,
+            boutiqueSlug: slug,
+            category: null,
+            searchText: null));
+        homeBloc.add(GetProductsWithFiltersEvent(
+            cashedOrginalBoutique: true,
+            boutiqueSlug: slug,
+            fromSearch: false,
+            category: null,
+            searchText: null,
+            offset: 1));
+      }
+    }
   }
 
   @override
@@ -149,7 +187,7 @@ class _HomePageState extends State<HomePage> {
             SliverToBoxAdapter(
               child: Stack(
                 children: [
-                  StoriesList(),
+                  StoriesList(), // height 220
                   Positioned(
                       top: 0,
                       right: currentLocale.languageCode == "ar" ? 30 : null,
@@ -180,7 +218,51 @@ class _HomePageState extends State<HomePage> {
             ),
             BlocBuilder<AppBloc, AppState>(
               builder: (context, appState) {
-                return BlocBuilder<HomeBloc, HomeState>(
+                return BlocConsumer<HomeBloc, HomeState>(
+                  listener: (context, state) {
+                    String? currentSlug = appState.tabIndex != -1
+                        ? (state.mainCategoriesResponseModel?.data
+                                ?.mainCategories?[appState.tabIndex].slug ??
+                            "Empty")
+                        : "Empty";
+                    if (state
+                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                currentSlug]
+                            ?.paginationStatus ==
+                        PaginationStatus.success) {
+                      for (int i = 0;
+                          i <
+                              min( (1.sh - 220 - 50 - 50) ~/ 235 + 1 , (state
+                                      .getHomeBoutiquesPaginationObjectByMainCategory[
+                                          currentSlug]
+                                      ?.items
+                                      .length ??
+                                  1000000));
+                          i++) {
+                        String slug = state
+                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                currentSlug]!
+                            .items[i]
+                            .slug
+                            .toString();
+                        if (state.boutiquesThatDidPrefetch[slug] != true) {
+                          homeBloc.add(GetProductFiltersEvent(
+                              cashedOrginalBoutique: true,
+                              fromHomePageSearch: false,
+                              boutiqueSlug: slug,
+                              category: null,
+                              searchText: null));
+                          homeBloc.add(GetProductsWithFiltersEvent(
+                              cashedOrginalBoutique: true,
+                              boutiqueSlug: slug,
+                              fromSearch: false,
+                              category: null,
+                              searchText: null,
+                              offset: 1));
+                        }
+                      }
+                    }
+                  },
                   buildWhen: (p, c) {
                     String? currentSlug = appState.tabIndex != -1
                         ? (c.mainCategoriesResponseModel?.data
