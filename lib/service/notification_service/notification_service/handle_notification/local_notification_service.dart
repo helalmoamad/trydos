@@ -61,9 +61,9 @@ class LocalNotificationService {
   @pragma('vm:entry-point')
   Future<void> showNotificationWithPayload(
       {required RemoteMessage message}) async {
-    chat.Message myMessage =
-        chat.Message.fromJson(convert.jsonDecode(message.data['message']));
-    String prevMessageId = message.data['prev_message_id'];
+    Map RemoteMessage = convert.jsonDecode(message.data['data']);
+    chat.Message myMessage = chat.Message.fromJson(RemoteMessage["message"]);
+    String prevMessageId = RemoteMessage['prev_message_id'].toString();
     String type = myMessage.messageType!.name.toString();
     await _localNotificationPlugin.show(
         0,
