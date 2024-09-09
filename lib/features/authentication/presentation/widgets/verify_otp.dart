@@ -63,7 +63,6 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
 
   @override
   void initState() {
-    print('fuckkkkkkkkkkkkkk');
     enabledResendNotifier = ValueNotifier<bool>(false);
     if (countdownTimerController == null) {
       countdownTimerController =

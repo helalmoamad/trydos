@@ -78,11 +78,15 @@ class NotificationProcess {
   }
 
   setupInteractedMessage() {
+    print(
+        "-*******444444444444444444444444444----------------*****************---------------***********---------");
+
     handleTappedNotificationOnTerminatedState();
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      Map remoteMessage = convert.jsonDecode(event.data['data']);
       handleOpenChatPageFromNotificationInBackground(
-          event.data['prev_message_id'],
-          message: Message.fromJson(convert.jsonDecode(event.data['message'])));
+          remoteMessage['prev_message_id'],
+          message: Message.fromJson(remoteMessage['message']));
     });
   }
 
@@ -96,7 +100,8 @@ class NotificationProcess {
         Message myMessage = Message.fromJson(convert
             .jsonDecode(details.notificationResponse!.payload!.split(',,')[0]));
         print(myMessage.messageContent?.content);
-        GetIt.I<ChatBloc>().add(GetChatsEvent(chatToNavigateFromTerminated: myMessage.channel,limit: 10));
+        GetIt.I<ChatBloc>().add(GetChatsEvent(
+            chatToNavigateFromTerminated: myMessage.channel, limit: 10));
       }
     }
   }

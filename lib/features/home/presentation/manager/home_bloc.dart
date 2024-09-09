@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_smartlook/flutter_smartlook.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
@@ -485,6 +486,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
 */
       reRequestTheseBoutiques[event.categorySlug] = true;
+      if(!event.getWithPagination){
+        prefetchBoutiques(event.categorySlug);
+      }
       emit(state.copyWith(
           reRequestTheseBoutiques: Map.of(reRequestTheseBoutiques),
           getHomeBoutiquesPaginationObjectByMainCategory:
@@ -1023,6 +1027,41 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         .toJson();
   }
 
+  prefetchBoutiques(String currentSlug){
+    for (int i = 0;
+    i <
+        min( (1.sh - 220 - 50) ~/ 235 , (state
+            .getHomeBoutiquesPaginationObjectByMainCategory[
+        currentSlug]
+            ?.items
+            .length ??
+            1000000));
+    i++) {
+      String slug = state
+          .getHomeBoutiquesPaginationObjectByMainCategory[
+      currentSlug]!
+          .items[i]
+          .slug
+          .toString();
+      if (state.boutiquesThatDidPrefetch[slug] != true) {
+        add(GetProductFiltersEvent(
+            cashedOrginalBoutique: true,
+            fromHomePageSearch: false,
+            boutiqueSlug: slug,
+            category: null,
+            searchText: null));
+        add(GetProductsWithFiltersEvent(
+            cashedOrginalBoutique: true,
+            boutiqueSlug: slug,
+            fromSearch: false,
+            category: null,
+            searchText: null,
+            offset: 1));
+      }
+    }
+  }
+
+
   FutureOr<void> _onGetProductFiltersEvent(
       GetProductFiltersEvent event, Emitter<HomeState> emit) async {
     String key = event.boutiqueSlug + (event.category ?? '');
@@ -1034,7 +1073,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     statuses[key] = GetProductFiltersStatus.loading;
     emit(state.copyWith(
         getProductFiltersStatus: Map.of(statuses),
-        boutiquesThatDidPrefetch: boutiquesThatDidPrefetch));
+        boutiquesThatDidPrefetch: Map.of(boutiquesThatDidPrefetch)));
     filters_model.Filter filters =
         event.filtersChoosedByUser?.filters ?? filters_model.Filter();
 
