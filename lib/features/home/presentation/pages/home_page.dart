@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,6 +44,7 @@ class _HomePageState extends State<HomePage> {
   double? _velocity;
   final ScrollController scrollController = ScrollController();
   Key reRenderingListViewKey = UniqueKey();
+  Map<String , int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques = {};
   @override
   void initState() {
     print(
@@ -65,6 +67,8 @@ class _HomePageState extends State<HomePage> {
     ));
     String selectedCategorySlug;
     scrollController.addListener(() {
+      print('lastIndexSeenByUser: ${(scrollController.position.pixels + scrollController.position.viewportDimension - 270) ~/ 235}');
+      int lastIndexSeenByUser = (scrollController.position.pixels + scrollController.position.viewportDimension - 270) ~/ 235 ;
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
       if (currentSelectedMainCategoryTab == -1) {
         selectedCategorySlug = "Empty";
@@ -74,6 +78,13 @@ class _HomePageState extends State<HomePage> {
             '';
       }
       if (selectedCategorySlug == '') return;
+      if(lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug] == null){
+        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug] = -1;
+      }
+      if(lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug] != lastIndexSeenByUser) {
+        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug] = lastIndexSeenByUser;
+        prefetchBoutiques(selectedCategorySlug);
+      }
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
         print(
@@ -94,6 +105,35 @@ class _HomePageState extends State<HomePage> {
       }
     });
     super.initState();
+  }
+
+  prefetchBoutiques(String currentSlug){
+    print('rtrth5e445eh ${lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[currentSlug]}');
+    for (int i = 0;
+    i < (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[currentSlug] ?? 0);
+    i++) {
+      String slug = homeBloc.state
+          .getHomeBoutiquesPaginationObjectByMainCategory[
+      currentSlug]!
+          .items[i]
+          .slug
+          .toString();
+      if (homeBloc.state.boutiquesThatDidPrefetch[slug] != true) {
+        homeBloc.add(GetProductFiltersEvent(
+            cashedOrginalBoutique: true,
+            fromHomePageSearch: false,
+            boutiqueSlug: slug,
+            category: null,
+            searchText: null));
+        homeBloc.add(GetProductsWithFiltersEvent(
+            cashedOrginalBoutique: true,
+            boutiqueSlug: slug,
+            fromSearch: false,
+            category: null,
+            searchText: null,
+            offset: 1));
+      }
+    }
   }
 
   @override
@@ -149,7 +189,7 @@ class _HomePageState extends State<HomePage> {
             SliverToBoxAdapter(
               child: Stack(
                 children: [
-                  StoriesList(),
+                  StoriesList(), // height 220
                   Positioned(
                       top: 0,
                       right: currentLocale.languageCode == "ar" ? 30 : null,
