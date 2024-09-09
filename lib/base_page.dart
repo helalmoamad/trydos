@@ -146,6 +146,9 @@ class BasePage extends StatefulWidget {
 
 handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
     {required Message message}) async {
+  print(
+      "-*******----------------*****************---------------***********---------");
+
   DealWithMessagesStoredFromBackground();
   DealWithChatsToDeleteFromBackground();
   DealWithChatsToEditStoredFromBackground();

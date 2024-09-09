@@ -78,7 +78,8 @@ class LocalNotificationService {
                         ? 'Video'
                         : 'File',
         _notificationDetails(),
-        payload: '${message.data['message']},,${prevMessageId}');
+        payload:
+            '${convert.jsonEncode(RemoteMessage['message'])},,${prevMessageId}');
   }
 
   static void sendIReceivedTheMessage(String channelId) async {
@@ -142,6 +143,7 @@ class LocalNotificationService {
     chat.Message myMessage = chat.Message.fromJson(
         convert.jsonDecode(notificationResponse.payload!.split(',,')[0]));
     String prevMessageId = notificationResponse.payload!.split(',,')[1];
+
     handleOpenChatPageFromNotificationInBackground(prevMessageId,
         message: myMessage);
   }
